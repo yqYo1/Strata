@@ -13238,7 +13238,7 @@
       }
     },
     "device_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "route-off",
       "source_commit": "2b17f472833b498a96af5f0f3bd4f3dbdda50e30",
       "inputs": {
@@ -13598,6 +13598,107 @@
         },
         "validation": {
           "pid": 3765491,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "route-off",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": true,
+        "model_executed": false,
+        "model_qualified": false,
+        "controller_commit": "2b17f472833b498a96af5f0f3bd4f3dbdda50e30",
+        "plan_commit": "85a6adb5e36a80f5b5e85a6176b46458b59123c2",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "coverage": {
+          "result_counts": {
+            "selected_route": 8
+          },
+          "cases": [],
+          "post_BF16_FP32_oracles": 0,
+          "production_routes": [
+            {
+              "rows": 2333,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2333,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2334,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2334,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2335,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2335
+            },
+            {
+              "rows": 2335,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2335
+            },
+            {
+              "rows": 8192,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 8192
+            },
+            {
+              "rows": 8192,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 8192
+            }
+          ],
+          "limitation": "Fixture post-BF16 consumer contract only;selected-job gathers,not everyjob. No model/performance qualification."
+        },
+        "validation": {
+          "pid": 3780731,
           "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "threads_before": 1,
           "preinit": 37,
