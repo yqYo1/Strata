@@ -17,7 +17,7 @@ sys.dont_write_bytecode=True
 import matrix_shapes as q
 import qsa_head_sources as g
 r,P,B=q.r,q.P,q.B
-ROOT=B/'qsa-head-native-v1'
+ROOT=B/'qsa-head-native-v2'
 RESULT=q.RESULT
 NATIVE=['src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','src/kernels/sycl/prompt_attention.cpp']
 FIXTURE='bench/sycl/qsa_head_oracle.cpp'
@@ -62,6 +62,8 @@ def prepare():
     require(not ROOT.exists(),'fresh component only;inspect owner first')
     record=r.validation.committed(RESULT);query=record['qsa_head_geometry']['shape_query']
     require(query['passed'] and query['M4_component_eligible'] and query['retirement']['verified_absent'],'positive capability and ended property generation required')
+    prior=record['qsa_head_geometry']['component']['retirement']
+    require(prior['verified_absent'] and prior['all_owned_processes_stopped'] and not Path(prior['root']).exists(),'retire closed coordinate prototype first')
     require('component' not in record['qsa_head_geometry'],'do not overwrite original outcome')
     rt=r.validation.committed(r.RESULT);full=r.current(rt);revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip()
     pins=sources(revision);sdk=q.closure.sdk_inputs();data=native_sources(revision)
@@ -78,6 +80,8 @@ def prepare():
     units += [(n,ROOT/'source/bench/sycl'/(n+'.cpp'),[]) for n in ['original','candidate']]
     units += [('oracle'+str(page),ROOT/'source'/FIXTURE,['-DSTRATA_QSA_TEST_PAGE_SIZE='+str(page)]) for page in [4,16]]
     commands=[];objects=[]
+    for name in ['original','candidate']:
+        commands.append(['IR'+name,[full['compiler']['path'],*flags,'-fsycl-device-only','-S','-emit-llvm',str(ROOT/'source/bench/sycl'/(name+'.cpp')),'-o',str(ROOT/(name+'.ll'))]])
     for label,path,extra in units:
         obj=ROOT/(label+'.o');objects.append(str(obj));commands.append([label,[full['compiler']['path'],*flags,*extra,'-MD','-MF',str(ROOT/(label+'.d')),'-c',str(path),'-o',str(obj)]])
     for page in [4,16]:commands.append(['link'+str(page),[full['compiler']['path'],*flags,'-save-temps=obj','-v','-Wl,-t',*objects[:6],str(ROOT/('oracle'+str(page)+'.o')),'-pthread','-ldl','-o',str(ROOT/('qsa_head_p'+str(page)))]])
@@ -89,11 +93,11 @@ def prepare():
         active=False,ownership_closed=True,passed=False,GPU_executed=False,production_or_decode_changed=False,
         criteria='CPU build only,zero uncovered actual compiler/link inputs;property-only4normal/state kernels before submit. Reviewed convergence/layout before bounded tiny trace. Independent FP32state+full BF16tensor oracle,guards,admission and physical262144component addresses atPage4/16 follow;not full-model context or performance/adoption.',
         retention='One imminent head-geometry native comparison generation;keep original selected6e40+12fixtures. Retire this extra build/raw output after its gate/decision and exact original source/recipe recovery.')
-    admitted(row);write(ROOT/'record.json',row);record['qsa_head_geometry']['component']=dict(build=compact(row));write(RESULT,record);print('Component prepared;commit frozen plan before compile.',flush=True)
+    admitted(row);write(ROOT/'record.json',row);record['qsa_head_geometry']['component_v2']=dict(build=compact(row));write(RESULT,record);print('Component prepared;commit frozen plan before compile.',flush=True)
 
 
 def build():
-    record=r.validation.committed(RESULT);row=json.loads((ROOT/'record.json').read_text());require(row['stage']=='prepared' and compact(row)==record['qsa_head_geometry']['component']['build'],'fresh committed build plan')
+    record=r.validation.committed(RESULT);row=json.loads((ROOT/'record.json').read_text());require(row['stage']=='prepared' and compact(row)==record['qsa_head_geometry']['component_v2']['build'],'fresh committed build plan')
     allowed,_=admitted(row);owner=None
     def persist():
         row['active']=bool(owner and owner.active is not None);write(ROOT/'record.json',dict(row,commands_executed=owner.commands if owner else []))
@@ -105,6 +109,7 @@ def build():
             entry,out,err=owner.run(label,argv,row['environment'],ROOT,**row['budgets'])
             require(r.supervision.closed(entry) and entry['exit_code']==0,'compile failed:'+label+':'+err.read_text()[-3500:])
             if label.startswith('link'):links[label]=q.linking.traced_inputs(out.read_text(),err.read_text(),allowed,ROOT,ROOT)
+        require('JointMatrixGetElementCoordINTEL' in (ROOT/'original.ll').read_text() and 'JointMatrixGetElementCoordINTEL' not in (ROOT/'candidate.ll').read_text(),'original coordinate control or candidate noncoordinate IR differs')
         observed={}
         for dep in ROOT.glob('*.d'):
             for name in shlex.split(dep.read_text().replace('\\\n',' ').split(':',1)[1]):
@@ -115,12 +120,12 @@ def build():
         admitted(row)
     except BaseException as error:row.update(stage='failed',passed=False,error=repr(error))
     finally:
-        row.update(active=False,ownership_closed=owner.active is None and all(r.supervision.closed(c) for c in owner.commands),commands_executed=owner.commands);row['passed']=bool(row['passed'] and row['ownership_closed']);write(ROOT/'record.json',row);record['qsa_head_geometry']['component']['build']=compact(row);write(RESULT,record)
+        row.update(active=False,ownership_closed=owner.active is None and all(r.supervision.closed(c) for c in owner.commands),commands_executed=owner.commands);row['passed']=bool(row['passed'] and row['ownership_closed']);write(ROOT/'record.json',row);record['qsa_head_geometry']['component_v2']['build']=compact(row);write(RESULT,record)
     print(json.dumps({k:row.get(k) for k in ['stage','passed','ownership_closed','error']}),flush=True);require(row['passed'],'component build failed')
 
 
 def prepare_gate(mode,page):
-    record=r.validation.committed(RESULT);component=record['qsa_head_geometry']['component'];row=json.loads((ROOT/'record.json').read_text());require(row['passed'] and row['ownership_closed'] and not row['active'] and compact(row)==component['build'],'closed source-bound component required');_,rt=admitted(row)
+    record=r.validation.committed(RESULT);component=record['qsa_head_geometry']['component_v2'];row=json.loads((ROOT/'record.json').read_text());require(row['passed'] and row['ownership_closed'] and not row['active'] and compact(row)==component['build'],'closed source-bound component required');_,rt=admitted(row)
     name=mode+str(page);require(name not in component,'never overwrite prior gate');folder=ROOT/name;require(not folder.exists(),'fresh native gate only')
     if mode!='properties':require(component['properties4']['outcome']['passed'],'compiled properties before submissions')
     if mode=='component':require(component['tiny4']['outcome']['passed'],'tiny traced gate before extended components')
@@ -145,15 +150,15 @@ def dispatches(trace,properties):
         if prop is None:continue
         require('.numArgs = '+prop['arguments']+',' in line and re.search(r'\.pLocalWorkSize = 0x[0-9a-f]+ \('+prop['wg']+r'\)',line),'actual launch ABI/WG differs')
         sizes=sorted(int(v) for v in re.findall(r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = \d+, \.size = (\d+)',line))
-        require(sizes==sorted([16384,768,48,48,48,256,48,1584] if prop['arm']=='candidate' else [16384,1024,64,64,64,256,64,2112]),'actual local extents differ');counts[name]+=1
+        require(sizes==sorted([16384,768,48,48,48,256,48,1584,1536] if prop['arm']=='candidate' else [16384,1024,64,64,64,256,64,2112]),'actual local extents differ');counts[name]+=1
     require(all(v>0 for v in counts.values()),'missing normal/state arm dispatch');return {hashlib.sha256(k.encode()).hexdigest():v for k,v in counts.items()}
 
 
 def run_gate(mode,page):
-    record=r.validation.committed(RESULT);component=record['qsa_head_geometry']['component'];name=mode+str(page);plan=component[name];folder=ROOT/name;row=json.loads((ROOT/'record.json').read_text());require(plan['stage']=='prepared' and plan==json.loads((folder/'plan.json').read_text()) and not (folder/'owned').exists(),'fresh committed native plan');_,rt=admitted(row)
+    record=r.validation.committed(RESULT);component=record['qsa_head_geometry']['component_v2'];name=mode+str(page);plan=component[name];folder=ROOT/name;row=json.loads((ROOT/'record.json').read_text());require(plan['stage']=='prepared' and plan==json.loads((folder/'plan.json').read_text()) and not (folder/'owned').exists(),'fresh committed native plan');_,rt=admitted(row)
     require(sources(row['source_commit'])==plan['source_sha256'],'gate source differs')
     if mode!='properties':
-        review=r.validation.committed(RESULT.with_name('research-index.json'),('qsa_uniform_m4_source_audit_20261029','native_review'));require(review['source_accepted'],'review actual M4 source before submit')
+        review=r.validation.committed(RESULT.with_name('research-index.json'),('qsa_uniform_m4_portable_source_audit_20261029','native_review'));require(review['source_accepted'],'review actual M4 source before submit')
     text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15);cursor=next(v.split(': ',1)[1] for v in text.splitlines() if v.startswith('-- cursor: '))
     outcome=dict(complete=False,passed=False,host_probe_accepted=False);owner=None;lines=[]
     def persist():write(folder/'record.json',dict(outcome,active=bool(owner and owner.active is not None),commands=owner.commands if owner else []))
