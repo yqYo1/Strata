@@ -23,6 +23,79 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def exact_suite(self, target=32768, runs=2):
+        return bench.Suite('http://localhost','',65536,runs,True,log=lambda _:None,
+            prefill_only=True,prefill_exact_tokens=target,workload_id='exact-fixture')
+
+    @staticmethod
+    def counted_chars(messages, timeout):
+        return len(messages[0]['content'])+29
+
+    def exact_reply(self, suite, mutate=None):
+        def reply(_base,_key,messages,cap,think):
+            raw=response(generated=24)
+            if messages[0]['content'].startswith('[bench '):
+                self.assertEqual(len(suite.frozen_prefill_hashes),suite.runs)
+                self.assertTrue(think)
+                actual=self.counted_chars(messages,30)
+                raw['usage']['prompt_tokens']=raw['timings']['prompt_n']=actual
+                raw['timings']['prompt_per_second']=actual
+                raw['request_sha256']=hashlib.sha256(json.dumps(bench.chat_body(messages,cap,think)).encode()).hexdigest()
+                if mutate:
+                    mutate(raw)
+            return raw
+        return reply
+
+    def test_exact_prefill_freezes_all_bodies_before_any_timed_request(self):
+        suite=self.exact_suite()
+        with patch.object(bench,'count_chat_tokens',side_effect=self.counted_chars) as counter, \
+             patch.object(bench,'chat',side_effect=self.exact_reply(suite)) as chat:
+            suite.run_prefill_only()
+        result=suite.out['prefill_only']
+        self.assertTrue(result['complete'])
+        self.assertEqual(chat.call_count,3)  # One reported warmup, two timed requests.
+        self.assertEqual(len(result['count_preflight']),2)
+        self.assertLessEqual(counter.call_count,64)
+        for row in result['requests']:
+            self.assertEqual(row['actual_read_tokens'],32768)
+            self.assertEqual(row['timing_frontend_state'],'post-count-preflight')
+        for proof in result['count_preflight']:
+            self.assertEqual(proof['counted_input_tokens'],32768)
+
+    def test_exact_prefill_rejects_a_larger_count_that_meets_the_minimum(self):
+        suite=self.exact_suite()
+        def changed(raw):
+            raw['usage']['prompt_tokens']+=1
+            raw['timings']['prompt_n']+=1
+        with patch.object(bench,'count_chat_tokens',side_effect=self.counted_chars), \
+             patch.object(bench,'chat',side_effect=self.exact_reply(suite,changed)) as chat:
+            with self.assertRaises(bench.EngineRequestError):
+                suite.run_prefill_only()
+        self.assertEqual(chat.call_count,2)
+        self.assertFalse(suite.out['prefill_only']['complete'])
+
+    def test_exact_prefill_rejects_changed_body_after_counting(self):
+        suite=self.exact_suite()
+        with patch.object(bench,'count_chat_tokens',side_effect=self.counted_chars), \
+             patch.object(bench,'chat',side_effect=self.exact_reply(suite,lambda raw:raw.update(request_sha256='changed'))):
+            with self.assertRaises(bench.EngineRequestError):
+                suite.run_prefill_only()
+
+    def test_unreachable_count_is_bounded_and_does_not_calibrate_with_inference(self):
+        suite=self.exact_suite(target=32769)
+        with patch.object(bench,'count_chat_tokens',side_effect=lambda messages,timeout:2*len(messages[0]['content'])+100) as count, \
+             patch.object(bench,'chat',return_value=response(generated=24)) as chat:
+            with self.assertRaises(bench.EngineRequestError):
+                suite.run_prefill_only()
+        self.assertEqual(chat.call_count,1)
+        self.assertLessEqual(count.call_count,32)
+
+    def test_exact_prefill_rejects_conflicting_cli_scopes_before_launch(self):
+        for tail in [['--prefill-tokens','65536'],['--prefill-scaling']]:
+            with patch('sys.stderr',io.StringIO()),self.assertRaises(SystemExit) as stopped:
+                bench.main(['--prefill-exact-tokens','32768',*tail])
+            self.assertEqual(stopped.exception.code,2)
+
     def test_ttft_stops_at_reasoning_and_ignores_empty_stream_events(self):
         events = [dict(choices=[dict(delta=dict(role='assistant'))]),
                   dict(choices=[dict(delta={})]),

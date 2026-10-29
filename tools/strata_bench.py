@@ -222,6 +222,19 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
                 request_end_monotonic_ns=time.monotonic_ns())}
 
 
+def count_chat_tokens(base, key, messages, timeout):
+    """The fork's count-only extension, using the exact timed request body."""
+    body = chat_body(messages, LONG_MAX_TOKENS, True)
+    req = urllib.request.Request(base+'/v1/chat/completions/count_tokens',
+        data=json.dumps(body).encode(), headers={'Content-Type': 'application/json',
+            **({'Authorization': 'Bearer '+key} if key else {})})
+    with urllib.request.urlopen(req, timeout=timeout) as reply:
+        value = json.load(reply).get('input_tokens')
+    if type(value) is not int or value <= 0:
+        raise ValueError('count-only endpoint did not return a positive integer input_tokens')
+    return value
+
+
 def digest(r: dict) -> dict:
     """The numbers of one request, the engine's own where it reported them."""
     u, t = r.get("usage") or {}, r.get("timings") or {}
@@ -451,9 +464,17 @@ def profile_request_gate(stage, phase, run):
 class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
                  want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False,
-                 generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False):
+                 generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False,
+                 prefill_exact_tokens=None):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
+        self.prefill_exact_tokens = prefill_exact_tokens
+        self.frozen_prefill_hashes = {}
+        if prefill_exact_tokens is not None:
+            validate_prefill_tokens(prefill_exact_tokens)
+            if not prefill_only or characterize_prefill:
+                raise ValueError('exact prefill needs its own prefill-only scope')
+            self.prefill_tokens = prefill_exact_tokens
         self.characterize_prefill = characterize_prefill
         if characterize_prefill and not prefill_only:
             raise ValueError('prefill characterization requires its independent prefill-only scope')
@@ -516,6 +537,14 @@ class Suite:
         if phase == "prefill-only" or phase.startswith('prefill-scaling/'):
             minimum = int(phase.rsplit('/', 1)[1]) if phase.startswith('prefill-scaling/') else self.prefill_tokens
             row.update(prefill_eligibility(raw, row, minimum, self.ctx))
+            if phase == 'prefill-only' and self.prefill_exact_tokens is not None:
+                errors = row['eligibility_errors']
+                if row.get('actual_prompt_tokens') != self.prefill_exact_tokens or row.get('actual_read_tokens') != self.prefill_exact_tokens:
+                    errors.append('actual prompt/read count differs from exact preflight target')
+                if raw.get('request_sha256') != self.frozen_prefill_hashes.get(run):
+                    errors.append('timed body differs from count-verified frozen body')
+                row.update(eligible=not errors, timing_frontend_state='post-count-preflight',
+                           exact_input_tokens=self.prefill_exact_tokens)
             if not row["eligible"]:
                 row.update(ok=False, err="; ".join(row["eligibility_errors"]))
         if phase.startswith("long-generation/"):
@@ -542,6 +571,15 @@ class Suite:
     def prefill_plan(self):
         if self.characterize_prefill:
             return prefill_scaling.plan(self)
+        if self.prefill_exact_tokens is not None:
+            return dict(mode='prefill-only', requested_min_tokens=self.prefill_exact_tokens,
+                exact_input_tokens=self.prefill_exact_tokens, construction_target_tokens=self.prefill_exact_tokens,
+                initial_word_factory_target_tokens=self.prefill_exact_tokens*5//4, construction_version=2,
+                max_tokens=LONG_MAX_TOKENS, thinking_requested=True, workload=self.workload_identity(),
+                freshness='Distinct fixed run tags;actual reuse must be zero.',
+                calibration='Count-only preflight,at most32calls/120seconds perbody;all bodies frozen before timed inference,no inference calibration or post-timing repair.',
+                timing_frontend_state='post-count-preflight',
+                limits='Exact rendered/read prompt counts do not prove physical engine rows,route or context capacity.')
         return {"mode":"prefill-only", "requested_min_tokens":self.prefill_tokens,
                 "construction_target_tokens":self.prefill_tokens * 5 // 4,
                 "construction_tokens_per_word":1.1, "construction_overhead":40,
@@ -567,13 +605,30 @@ class Suite:
             raise EngineRequestError(reason)
         # Only the existing bounded short chat warmup; no calibration requests.
         self.request("warm-up/chat",None,None,[{"role":"user","content":PROMPTS[0]}],24,True)
-        label=f"{self.prefill_tokens}-minimum"
+        label=f"{self.prefill_tokens}-"+("exact" if self.prefill_exact_tokens is not None else "minimum")
         self.out["prompts"][label]=cohort
+        frozen = []
+        if self.prefill_exact_tokens is not None:
+            cohort['count_preflight'] = []
+            try:
+                for run in range(self.runs):
+                    messages, proof = prefill_scaling.exact_prompt(self, run,
+                        lambda messages, timeout: count_chat_tokens(self.base, self.key, messages, timeout))
+                    body_sha = hashlib.sha256(json.dumps(chat_body(messages,LONG_MAX_TOKENS,True)).encode()).hexdigest()
+                    proof['body_sha256'] = body_sha
+                    self.frozen_prefill_hashes[run] = body_sha
+                    frozen.append(messages)
+                    cohort['count_preflight'].append(proof)
+            except Exception as error:
+                reason = 'exact count preflight failed: '+str(error)
+                self.out['terminal_failure'] = dict(phase='prefill-only/count-preflight',error=reason)
+                self.fail('prefill-only/count-preflight',dict(err=reason))
+                raise EngineRequestError(reason) from error
         try:
             for run in range(self.runs):
                 before=len(self.out.get("request_samples",[]))
                 try:
-                    self.request("prefill-only",run,None,self.prefill_prompt(run),LONG_MAX_TOKENS,True)
+                    self.request("prefill-only",run,None,frozen[run] if frozen else self.prefill_prompt(run),LONG_MAX_TOKENS,True)
                 finally:
                     # Failed and interrupted returned responses remain individual samples.
                     for sample in self.out.get("request_samples",[])[before:]:
@@ -1447,6 +1502,8 @@ def main(argv=None) -> int:
     ap.add_argument('--prefill-scaling', action='store_true',
                     help='characterize six short/long input lengths with thinking, total prefill time and TTFT; separate first long request, then ordered warmed rounds')
     ap.add_argument("--prefill-tokens", type=prefill_token_argument, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only, 32768..131072 (default 65536)")
+    ap.add_argument('--prefill-exact-tokens',type=prefill_token_argument,
+                    help='opt-in exact prompt/read count,32768..131072;count-only preflight requires this fork server extension;implies --prefill-only')
     ap.add_argument('--profile-request-gates',action='store_true',
                     help='diagnostic only: wait for owner acknowledgement around prefill-only or long-generation-only requests')
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
@@ -1458,6 +1515,11 @@ def main(argv=None) -> int:
                     help="stop after the first returned failed request digest (default off; incompatible with --clients)")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
+    if a.prefill_exact_tokens is not None:
+        if a.prefill_tokens is not None or a.prefill_scaling:
+            ap.error('--prefill-exact-tokens cannot combine with --prefill-tokens or --prefill-scaling')
+        a.prefill_only = True
+        a.prefill_tokens = a.prefill_exact_tokens
     if a.prefill_scaling:
         if a.prefill_only or a.prefill_tokens is not None:
             ap.error('--prefill-scaling selects its own lengths; do not combine with --prefill-only/--prefill-tokens')
@@ -1548,7 +1610,7 @@ def main(argv=None) -> int:
                       generation_workload=a.long_generation_workload,
                       generation_speed_only=a.long_generation_speed_only,
                       generation_max_tokens=a.long_generation_max_tokens,
-                      characterize_prefill=a.prefill_scaling,
+                      characterize_prefill=a.prefill_scaling, prefill_exact_tokens=a.prefill_exact_tokens,
                       request_gate=profile_request_gate if a.profile_request_gates else None)
         journal.append("identity", "suite", source=client_fingerprint(),
                        long_generation_speed_only=a.long_generation_speed_only,
@@ -1576,7 +1638,7 @@ def main(argv=None) -> int:
             if not machine.get("gpu"):
                 machine["gpu"] = pre.get("gpu")
             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
-                   "params": {"mode":a.mode, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                   "params": {"mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
                               "long_generation_speed_only": a.long_generation_speed_only,
                               "long_generation_max_tokens": a.long_generation_max_tokens,
@@ -1585,7 +1647,7 @@ def main(argv=None) -> int:
                                                     "--think" if a.think else "",
                                                     "--long-generation-speed-only" if a.long_generation_speed_only else "",
                                                     f"--long-generation-max-tokens {a.long_generation_max_tokens}" if suite.want_long_generation else "",
-                                                    '--prefill-scaling' if a.prefill_scaling else f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
+                                                    '--prefill-scaling' if a.prefill_scaling else f"--prefill-exact-tokens {a.prefill_exact_tokens}" if a.prefill_exact_tokens is not None else f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
                                                     f"--workload-id {a.workload_id}" if a.workload_id is not None else "",
                                                     "--fail-fast-engine-error" if a.fail_fast_engine_error else "", f"--runs {a.runs}" if a.runs != 3 else "",
                                                     "--long-generation-only" if a.long_generation_only else
@@ -1628,7 +1690,7 @@ def main(argv=None) -> int:
                           complete=False, qualified=False, error=repr(error)[:300])
             if a.prefill_only:
                 partial={"schema":SCHEMA,"tool":"tools/strata_bench.py","date":datetime.date.today().isoformat(),
-                         "params":{"mode":a.mode,"prefill_tokens":a.prefill_tokens if not a.prefill_scaling else None,"think":True,
+                         "params":{"mode":a.mode,"prefill_exact_tokens":a.prefill_exact_tokens,"prefill_tokens":a.prefill_tokens if not a.prefill_scaling else None,"think":True,
                                    "runs":suite.runs,"workload":suite.workload_identity(),"started_server":started},
                          "comparison_identity":{"mode":a.mode,"prefill_plan":suite.prefill_plan(),
                                                 "workload":suite.workload_identity(),"client":client_fingerprint()},

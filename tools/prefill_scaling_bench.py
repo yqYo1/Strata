@@ -1,8 +1,83 @@
 """Length characterization for the official bench.sh client; no native launcher."""
 import math
 import statistics
+import time
 
 MINIMA = (1024, 4096, 16384, 32768, 65536, 98304)
+
+
+def exact_prompt(suite, run, count):
+    """Freeze a checked text body using only bounded count-only requests.
+
+    Character-prefix counts need not be monotonic. Binary proposals are merely
+    a search heuristic: only an exact final server count admits a body.
+    Preserve the official varied word list, nonce and final question. Padding
+    is limited to32 words, rather than replacing the workload with one token.
+    """
+    target = suite.prefill_exact_tokens
+    started = time.monotonic()
+    deadline, probes = started + 120, 0
+    original = suite.prefill_prompt(run)[0]['content']
+    header, separator, text = original.partition('\n')
+    core, tail_separator, question = text.rpartition('\n\n')
+    if not separator or not tail_separator:
+        raise ValueError('exact prefill requires the pinned official prompt structure')
+
+    def candidate(cut, padding=0):
+        return [dict(role='user', content=header+'\n'+core[:cut]+(' a'*padding)+'\n\n'+question)]
+
+    def probe(messages):
+        nonlocal probes
+        remaining = deadline-time.monotonic()
+        if probes >= 32 or remaining <= 0:
+            raise ValueError('exact prompt count preflight exhausted its32-probe/120-second budget')
+        probes += 1
+        value = count(messages, min(30, remaining))
+        if time.monotonic() > deadline:
+            raise ValueError('exact prompt count preflight exceeded120seconds')
+        if type(value) is not int or value <= 0:
+            raise ValueError('invalid server token count')
+        return value
+
+    def accepted(messages, value):
+        if value != target:
+            raise ValueError('final count does not equal the frozen target')
+        return messages, dict(run=run, target_input_tokens=target, counted_input_tokens=value,
+            count_requests=probes, construction_seconds=time.monotonic()-started,
+            timing_frontend_state='post-count-preflight',
+            limits='Rendered prompt count only;actual read/reuse and physical engine rows/route still require measurement.')
+
+    low, high = 0, len(core)
+    best = (0, probe(candidate(0)))
+    if best[1] > target:
+        raise ValueError('fixed prompt framing exceeds exact target')
+    full = probe(candidate(high))
+    if full == target:
+        return accepted(candidate(high), full)
+    if full < target:
+        best, low = (high, full), high+1
+    while low <= high and probes < 28:
+        cut = (low+high)//2
+        messages = candidate(cut)
+        value = probe(messages)
+        if value == target:
+            return accepted(messages, value)
+        if value < target:
+            if value > best[1]:
+                best = cut, value
+            low = cut+1
+        else:
+            high = cut-1
+    padding = target-best[1]
+    for _ in range(4):
+        if not 0 <= padding <= 32:
+            break
+        messages = candidate(best[0], padding)
+        value = probe(messages)
+        if value == target:
+            return accepted(messages, value)
+        padding += target-value
+    raise ValueError('cannot construct the exact count within the declared preflight;no inference body is admitted')
 
 
 def order(round_index):

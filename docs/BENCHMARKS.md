@@ -124,6 +124,20 @@ For the length characterization, with a qualified server configured for at least
 ./bench.sh --url http://127.0.0.1:18096 --prefill-scaling --runs 3
 ```
 
+For a boundary diagnostic, `--prefill-exact-tokens 81922` selects an independent
+prefill-only run with exactly81922 prompt/read tokens. It requires this fork's
+`/v1/chat/completions/count_tokens` extension; `--prefill-tokens` keeps its
+existing minimum-count meaning. Count-only preflight preserves the varied word
+list, nonce and question, limits padding to32 words, and allows at most32 count
+requests/120seconds per body. Every final body is frozen before timed long
+inference; count mismatch, changed body or nonzero reuse fails the sample.
+Preflight does not generate tokens, but warms tokenizer piece caches: report
+TTFT as **post-count-preflight** and retain the count-call total, construction
+time and final body hash. Keep first long GPU use separate from later requests.
+Exact prompt/read counts do not establish physical engine rows, route or
+context admission. Verify those from the engine under exclusive ownership;
+use separate fresh processes when comparing allocation/window boundaries.
+
 This new mode requests minima1024,4096,16384,32768,65536,98304; construction
 targets are1.25 times those values and the actual engine token counts are the
 fit inputs. It retains one maximum-length first request separately, then runs

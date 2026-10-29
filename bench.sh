@@ -2,6 +2,7 @@
 # Benchmark this Strata install the way it is used and write a report you can share (docs/COMMUNITY_BENCHMARKS.md).
 # It starts the model with your settings (or uses the one already running), takes about 10 minutes and changes nothing.
 # --prefill-only [--prefill-tokens N, 32768..131072] runs short warmup + fresh long prompts (thinking on).
+# --prefill-exact-tokens N adds bounded count-only preflight for exact prompt/read counts (fork server).
 # --prefill-scaling characterizes short/long input lengths, total prefill time and thinking-inclusive TTFT.
 # --long includes the standard agent session; --long-generation adds two ~1K-output MTP workloads.
 cd "$(dirname "$0")" || exit 1
