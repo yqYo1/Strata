@@ -1499,13 +1499,21 @@ The opt-in candidate now has a separate split-capacity planner,ordinary/fused
 scatter and model caller with owned tail allocation and final guard/drain checks.
 The ordinary81920-row path is preserved. Two CPU-only ASan/UBSan controls pass
 complete bank coverage,guard reservations,one-byte-short refusal and split/legacy
-routes with up to15jobs/expert. Luna source review permits bounded component
-validation;it does not qualify actual device allocation,numerics or speed.
+routes with up to15jobs/expert. Four subsequent bounded GPU stages pass on
+this B570/runtime:traced3/17-row smoke with16refusals/3bad-map masks and unwind;
+six65537/81921/117488regular/irregular cases with complete post-BF16 FP32
+CPU-oracle/capture/guard checks;and8production-route cases per immutable
+off/on process. No new driver faults;all owners close. Mixed-weight mappings
+cover every job,but mixed gather output checks cover selected jobs only.
+These fixture allocations do not qualify model-pressure allocation,model
+quality,clean speed,decode or physical262144execution.
 Production selection is limited to90113..117488engine rows and default-off;
 other lengths retain the existing plan,including262144. Build exact selected6e40
 with only the reviewed split changes and the independent prefix maximum-allocation
-guard,then pass traced tiny,extended split and production-route checks before
-model work. Measure actual job/dequant/upload changes and critical-path service;
+guard;the source/actual1400compiler-input closure and all3executables pass.
+Next qualify current-source frontend probes and an exact117489-read request,
+observing117488engine rows,128-slot admission and checked tail retirement
+before clean model comparison. Measure job/dequant/upload changes and critical-path service;
 larger windows and a smaller expert bank do not establish a throughput gain
 or the limiting hardware unit. Decode/handoff,model quality and physical-context
 qualification remain separate pending gates.
