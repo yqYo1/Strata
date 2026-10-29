@@ -480,6 +480,16 @@ held-out errors42.96%,52.30% and51.47%;none is adopted as a global formula.
 Only two short-route lengths are available,insufficient to validate their own
 time model. Higher R-squared alone would hide that problem.
 
+Adjacent long-median slopes are0.920277,0.828004and0.994131milliseconds per
+additional token. Their variation is another reason to keep the affine model
+coarse rather than interpreting its coefficient as one physical kernel cost.
+For65536actual read tokens,the formula predicts72.4500seconds,or904.6tok/s;
+1000tok/s at that exact extent would require6.9140seconds less than this
+prediction. This is an unmeasured estimate,not a64Kbenchmark result or a new
+fit. The measured117489-token local process medians below instead need about
+3seconds removed. Evaluate the next admitted route at an unfit length before
+generalizing its gain across contexts.
+
 A source-grounded nonlinear hypothesis was also checked against these same four
 long medians. With fresh engine rows`n-1`,Page4and chunk8192,the prospective
 packing feature above takes530880,1454112,5365008and11731728logical rows.
