@@ -218,14 +218,32 @@ and decode unchanged. See`qsa_head_geometry.component_v2` in
 Keep the existing multi-length time approximation until new model observations
 justify a change.
 
-The next bounded candidate changes a distinct operation:skip the matrix
+The next bounded candidate changed a distinct operation:skip the matrix
 accumulator rescale only when all eight head coefficients owned by that
-subgroup equal FP32`1.f`exactly. It retains the original M8/WG128geometry,
+subgroup equal FP32`1.f`exactly. It retained the original M8/WG128geometry,
 ordered softmax,state,storage and barriers. No approximate comparison or
-first-tile shortcut is used. The added subgroup vote may cost more than the
-removed multiplication;source/denormal/convergence review,numerical gates and
-the same full-wrapper timing screen decide advancement. This remains an
-isolated component,with no production/decode caller change.
+first-tile shortcut was used. Properties,traced tiny and Page4/Page16oracle
+cases pass. A separate traced M8matrix operator checks128finite FP32states,
+including80subnormals and`0x8200`(`2^-134+2^-140`):matrix load/store preserves
+every input bit,and multiplying by1matches bypass exactly. The initial edge
+fixture's raw-pointer API build refusal remains failed;the corrected explicit
+global`multi_ptr`build and fresh gate provide the positive evidence.
+
+The same three-process,72sample timing screen nevertheless **rejects identity
+rescale skipping**. Candidate/original wall-time geometric means are1.330049,
+1.635727,1.341319and1.465628in the same four cases above;every process and
+all wall/attention/combined-service criteria fail. These are valid matched
+component measurements,not a model regression or an adopted change.
+See`qsa_identity_rescale.performance_v2`in the linked resource result.
+Keep6e40selected and do not start a gated model trial. Main moves to bounded
+compiler/source optimizations rather than extending failure forensics.
+
+The next discriminator is CPU-only:compare the exact original against an
+explicit128workgroup-size annotation and,only after its source/range proof,
+an integer ID-query range. GPU math and safety settings stay unchanged.
+Require a relevant optimized-IR difference before native qualification;
+metadata alone is not a speedup. The source review must include the full
+physical262144context and admitted pack/attention ranges,not only8192chunks.
 
 ## Measured performance and rejected comparisons
 
