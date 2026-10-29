@@ -1758,7 +1758,7 @@
     },
     "qualification": {
       "properties": {
-        "stage": "prepared",
+        "stage": "closed",
         "source_commit": "daaea5888306698c86dd9bb014325e54b5e61b67",
         "controller_inputs": {
           "tools/sycl/qsa_pair_probe.py": "3eb9044623378c20e5f059e7d5fa873234346b406905239795d866feb7c08b04",
@@ -1910,7 +1910,93 @@
         },
         "criteria": "Ordered owned children;pre-main UR validation;live exact native ELF/provider/environment/B570DRM checks at runtime-ready and before-exit;silent parameter validation;complete expected case/property markers;independent set/BF16tensor oracle and guards/input immutability;no fresh fault,boot/driver change or survivors. Property-only has zero enqueue;other gates require actual kernel submissions. Stop first failure;no speed/model/context qualification.",
         "expected_cases": 3,
-        "retention": "Keep compact property/case oracle samples,source/executable/runtime identity and fault/closure outcomes;retire successful traces and repeated logs after verification. No full trace retention question."
+        "retention": "Keep compact property/case oracle samples,source/executable/runtime identity and fault/closure outcomes;retire successful traces and repeated logs after verification. No full trace retention question.",
+        "outcome": {
+          "passed": true,
+          "complete": true,
+          "active": false,
+          "ownership_closed": true,
+          "processes": [
+            {
+              "label": "process-0",
+              "passed": true,
+              "cases": [
+                {
+                  "kind": "attention",
+                  "wg": "192",
+                  "sg": "16",
+                  "maximum": "1024",
+                  "args": "22",
+                  "static_slm": "4096",
+                  "declared_slm": "21856",
+                  "spill_descriptor": "6848",
+                  "kernel_name_sha256": "ff7b5ffc8e421fefe33e02a34fe222f6d8f7105239155e4fbc062b4edd839a85"
+                },
+                {
+                  "kind": "selected",
+                  "wg": "128",
+                  "sg": "16",
+                  "maximum": "1024",
+                  "args": "18",
+                  "static_slm": "32",
+                  "declared_slm": "20036",
+                  "spill_descriptor": "12480",
+                  "kernel_name_sha256": "264d099601d1c64257836bb82a0ac91b8ba33ab605bf1870649e2940c8cb3487"
+                },
+                {
+                  "kind": "union",
+                  "wg": "128",
+                  "sg": "32",
+                  "maximum": "1024",
+                  "args": "8",
+                  "static_slm": "4096",
+                  "declared_slm": "0",
+                  "spill_descriptor": "0",
+                  "kernel_name_sha256": "b0b04e117b7a02a1c6a43883b2c5a640f98b9d4e424812d265918043ebeec98c"
+                }
+              ],
+              "validation": {
+                "pid": 1419822,
+                "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+                "threads_before": 1,
+                "preinit": 37,
+                "config_enabled": true,
+                "first_init": true,
+                "dispatch_result": 46,
+                "output_untouched": true,
+                "retained_reference_until_exit": true,
+                "runtime_teardown_qualified": false
+              },
+              "observed": {
+                "start": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                },
+                "end": {
+                  "mapped_qualified_runtime": true,
+                  "observed_NEO": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+                  "DRM_descriptors": 1,
+                  "environment_immutable": true
+                }
+              }
+            }
+          ],
+          "model_qualified": false,
+          "postchecks_complete": true,
+          "postcheck_errors": [],
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
       }
     }
   }
