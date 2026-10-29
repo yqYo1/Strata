@@ -10,6 +10,7 @@ import subprocess
 import sys
 sys.dont_write_bytecode=True
 import build_qsa_pair_model as build
+import qsa_pair_model_link as link
 import measurement_guards as guards
 from measure_down_scatter import postchecks
 
@@ -36,16 +37,23 @@ def inputs(revision):
 
 
 def admitted(record):
-    row=record[KEY]['build'];require(row['stage']=='built-not-executed' and row['passed'] and
-        row['model_built'] and row['ownership_closed'] and not row['active'],'closed successful model build required')
-    require(record[KEY].get('link_contract',{}).get('passed') is True,
+    proof=record[KEY].get('link_contract',{})
+    require(proof.get('passed') is True and proof.get('ownership_closed') is True and not proof.get('active'),
         'prospective actual linker input and exact final executable proof required before native execution')
-    full=json.loads((ROOT/'record.json').read_text())
-    require(build.compact(full)==row,'model build receipt differs');build.admit(full)
-    for item in [*row['binaries'].values(),row['fixture'],*row['common_production_objects'].values()]:
+    private=json.loads((link.OUT/'record.json').read_text())
+    require(link.compact(private)==proof and all(runtime.supervision.closed(c) for c in private['commands_executed']),
+            'actual-link proof receipt/closure differs')
+    row,_=link.admit(private)
+    require(build.compact(row)==record[KEY]['build'] and row['stage']=='built-not-executed' and row['model_built'],
+            'model build receipt differs')
+    actual=proof['actual_links'];require(actual['uncovered_inputs']==0 and digest(actual['path'])==actual['sha256'],
+            'actual resolved input evidence changed')
+    for name,item in proof['outputs'].items():
+        original=row['fixture'] if name=='fixture' else row['binaries'][name]
+        require(item['matches_original'] and digest(item['path'])==item['sha256']==original['sha256'],
+                'resolved-input proof no longer matches original executable')
+    for item in row['common_production_objects'].values():
         require(digest(item['path'])==item['sha256'],'production artifact changed')
-    manifest=row['actual_compiler_inputs'];require(digest(manifest['path'])==manifest['sha256'],'dependency evidence changed')
-    for path,sha in json.loads(Path(manifest['path']).read_text()).items():require(digest(path)==sha,'compiled input changed:'+path)
     rt=runtime.validation.committed(runtime.RESULT);runtime.current(rt)
     return row,rt
 
