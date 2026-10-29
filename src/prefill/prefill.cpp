@@ -50,6 +50,7 @@
 #include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
+#include "strata/kernels/qsa_pair_prefix.hpp"
 #include "strata/kernels/mrope.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
@@ -635,6 +636,8 @@ struct Prefill::Impl {
     bool native16_active = false;
     GdnChunkBuffers gdn_chunk;
     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
+    strata::kernels::QsaPairScratch qsa_pair; // transient long-prefill metadata;never decode
+    uint64_t qsa_pair_calls = 0, qsa_pair_queries = 0;
     qsa_score_gemm::Scratch score_gemm; // attn_h arena + independent sticky status, long lease only
     // Disjoint typed subviews of existing QSA reservations; no new allocation.
     uint16_t *qsa_Kraw16 = nullptr, *qsa_Krope16 = nullptr, *qsa_V16 = nullptr,
@@ -3001,7 +3004,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
                         const auto arithmetic = native16::qsa::attention_math();
-                        if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)
+                        if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_pair) {
+                            matrix_used = strata::kernels::qsa_bf16_pair_prefix_batch(
+                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.qsa_pair, m.cs);
+                            if (matrix_used) { ++m.qsa_pair_calls; m.qsa_pair_queries += uint64_t(T); }
+                        } else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)
                             matrix_used = strata::kernels::qsa_bf16_prefix_subgroup_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
                                 {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
