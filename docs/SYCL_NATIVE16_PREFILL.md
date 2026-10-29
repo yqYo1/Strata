@@ -1576,6 +1576,15 @@ MoE resource hypothesis,qualify one documented metric/method with a tiny known
 workload,an idle control and observer-cost/coverage checks. The full bounded
 inventory remains external only for that imminent selection;enumeration alone
 does not qualify collection or measure utilization.
+Installed flag definitions are EVENT_BASED=1 and TIME_BASED=2;the ComputeBasic
+event entry is group3,domain3,83metrics. Select by properties and flags rather
+than the index alone. The independently authored
+[`metric_known_work.cpp`](../bench/sycl/metric_known_work.cpp) is prepared but
+unbuilt and unexecuted. It offers one65536-element exact integer kernel and a
+matched-copy control,with checked bounds,drain and physical-device selection.
+The copy-only control is not a globally idle GPU measurement. Qualify the
+collector's initialization,permissions,coverage and observer cost separately;
+this fixture does not establish model throughput or hardware saturation.
 
 A20261028 source-only check of selected`6e40afc1b` also rules out treating
 head release as a configuration-only way to fund the additional accumulator.
