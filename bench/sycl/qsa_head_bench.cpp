@@ -97,9 +97,18 @@ void run_case(int context,int pattern,int process,int scenario) {
     return candidate?qsa_head_candidate::batch(query.data(),pools,ids.data(),steps.data(),Cap,shape,out.data(),Queries,{pages,pages},context,scratch,&rt->compute(),attention,pack):
                      qsa_head_original::batch(query.data(),pools,ids.data(),steps.data(),Cap,shape,out.data(),Queries,{pages,pages},context,scratch,&rt->compute(),attention,pack);
   };
-  // Both entrypoints warm outside timing; compare every BF16 result bit.
-  check(invoke(false,nullptr,nullptr),"original refused");rt->wait();const auto expected=out.get();
-  check(invoke(true,nullptr,nullptr),"candidate refused");rt->wait();check(out.get()==expected,"full-output bit parity");
+  // Numerical qualification is the separate lossless interval gate. A changed
+  // reduction order can cross a BF16 midpoint. Freeze each arm's complete
+  // result outside timing; require its own exact repeat and finite payload.
+  check(invoke(false,nullptr,nullptr),"original refused");rt->wait();const auto original=out.get();
+  check(invoke(true,nullptr,nullptr),"candidate refused");rt->wait();const auto candidate_output=out.get();
+  size_t changed=0;
+  for(size_t i=Guard;i<original.size()-Guard;++i) {
+    check((original[i]&0x7f80)!=0x7f80 && (candidate_output[i]&0x7f80)!=0x7f80,"nonfinite calibration output");
+    changed+=original[i]!=candidate_output[i];
+  }
+  std::cout<<"HEAD_OUTPUT scenario="<<scenario<<" elements="<<hq.size()<<" changed_bits="<<changed
+           <<" finite=1 numerical_gate=SEPARATE model_quality=UNRUN\n";
   auto measure=[&](bool candidate) {
     std::vector<sycl::event> attention(Batch),pack(Batch);rt->wait();
     const auto start=std::chrono::steady_clock::now();
@@ -117,7 +126,7 @@ void run_case(int context,int pattern,int process,int scenario) {
     check(sample.wall_ms>=100,"ineligible batch below100ms");
     check(std::isfinite(sample.wall_ms) && std::isfinite(sample.pack_ms) && std::isfinite(sample.attention_ms),"nonfinite timing");
     check(sample.pack_ms+sample.attention_ms<=sample.wall_ms*1.01,"service exceeds enclosing in-order batch");
-    check(out.get()==expected,"timed output bit parity");
+    check(out.get()==(candidate?candidate_output:original),"timed output differs from its own calibration");
     return sample;
   };
   for(int round=0;round<3;++round)for(int slot=0;slot<2;++slot) {
@@ -125,11 +134,11 @@ void run_case(int context,int pattern,int process,int scenario) {
     const auto sample=measure(candidate);
     std::cout<<"HEAD_SAMPLE process="<<process<<" scenario="<<scenario<<" context="<<context<<" pattern="<<pattern
       <<" queries="<<Queries<<" cap="<<Cap<<" page="<<Page<<" batch="<<Batch<<" round="<<round<<" arm="<<(candidate?"candidate":"original")
-      <<" wall_ms="<<sample.wall_ms<<" pack_ms="<<sample.pack_ms<<" attention_ms="<<sample.attention_ms<<" bit_parity=1\n";
+      <<" wall_ms="<<sample.wall_ms<<" pack_ms="<<sample.pack_ms<<" attention_ms="<<sample.attention_ms<<" arm_repeat=1\n";
   }
   k.immutable();v.immutable();ks.immutable();vs.immutable();query.immutable();table.immutable();ids.immutable();steps.immutable();
   (void)packed_k.get();(void)packed_v.get();(void)bad.get();
-  std::cout<<"HEAD_CASE scenario="<<scenario<<" all_inputs_immutable=1 guards=1 bit_parity=1\n";
+  std::cout<<"HEAD_CASE scenario="<<scenario<<" all_inputs_immutable=1 guards=1 arm_repeat=1\n";
 }
 }
 int main(int argc,char **argv) {

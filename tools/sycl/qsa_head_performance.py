@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded full-path native bounded-ID comparison,after component qualification.
+"""Bounded full-path normalizer comparison,after lossless numerical qualification.
 
 Own project code,repository LICENSE. Synthetic varied operands and selected-ID
 patterns are not an actual-model throughput or hardware saturation measurement.
@@ -16,6 +16,7 @@ import subprocess
 import sys
 sys.dont_write_bytecode=True
 import qsa_head_native as n
+import qsa_normalizer_check as numeric
 q,r,P,B=n.q,n.r,n.P,n.B
 ROOT=n.ROOT/'performance-v1'
 PERF='performance'
@@ -29,8 +30,10 @@ def sources(revision):return q.sources(revision,Path(__file__).resolve(),[CPP,n.
 
 def qualification():
     record=r.validation.committed(RESULT);component=record[n.KEY]
-    for key in ['properties4','tiny4','component4','component16']:
-        o=component[key]['outcome'];require(o['passed'] and o['complete'] and o['ownership_closed'] and not o['fresh_faults'],'finish all native safety/numerical gates first:'+key)
+    require(component['properties4']['outcome']['passed'],'compiled native properties first')
+    for key in ['tiny4','component4','component16']:
+        o=component[numeric.KEY][key]['outcome'];require(o['passed'] and o['complete'] and o['ownership_closed'] and not o['fresh_faults'],'finish all lossless numerical gates first:'+key)
+    numeric.built();numeric.contract()
     row=json.loads((n.ROOT/'record.json').read_text());require(n.compact(row)==component['build'] and row['passed'] and row['ownership_closed'],'exact native build required')
     allowed,rt=n.admitted(row);return record,row,allowed,rt
 
@@ -59,7 +62,7 @@ def prepare():
     for path in [Path(v) for v in link if v.endswith('.o') and Path(v)!=ROOT/'bench.o']:
         require(path.is_file() and path.is_relative_to(n.ROOT),'unexpected kernel/runtime object');allowed[str(path)]=digest(path)
     allowed.update({str(P/name):h for name,h in pins.items()});write(ROOT/'input-inventory.json',allowed)
-    row=dict(stage='prepared',source_commit=revision,source_sha256=pins,native_build_source=native['source_commit'],native_geometry=native['geometry_proof'],runtime_sha256=digest(r.RESULT),boot=rt['boot'],commands=[['compile',compile_command],['link',link]],environment=dict(native['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),input_inventory=dict(path=str(ROOT/'input-inventory.json'),sha256=digest(ROOT/'input-inventory.json'),files=len(allowed)),budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),passed=False,active=False,ownership_closed=True,criteria='CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.',retention='Same imminent bounded-ID comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.')
+    row=dict(stage='prepared',source_commit=revision,source_sha256=pins,native_build_source=native['source_commit'],native_geometry=native['geometry_proof'],runtime_sha256=digest(r.RESULT),boot=rt['boot'],commands=[['compile',compile_command],['link',link]],environment=dict(native['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),input_inventory=dict(path=str(ROOT/'input-inventory.json'),sha256=digest(ROOT/'input-inventory.json'),files=len(allowed)),budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),passed=False,active=False,ownership_closed=True,criteria='CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.',retention='Same imminent normalizer comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.')
     admitted(row);write(ROOT/'record.json',row);record[n.KEY][PERF]=dict(build=compact(row));write(RESULT,record);print('Performance build prepared;commit before compile.',flush=True)
 
 
@@ -89,7 +92,7 @@ def prepare_run():
         folder=ROOT/str(index);folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
         env=dict(rt['environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
         plans.append(dict(index=index,root=str(folder),command=[built['binary']['path'],str(index)],environment=env))
-    row=dict(stage='prepared',source_commit=built['source_commit'],source_sha256=built['source_sha256'],binary=built['binary'],plans=plans,budgets=dict(wall=900,cpu=1800,rss_cap=8<<30,text_cap=16<<20,file_cap=128<<20,total_cap=2<<30),boot=rt['boot'],processes=[],passed=False,complete=False,ownership_closed=True,criteria='All3fresh processes use exact native objects already qualified by compiled properties,traced tiny and Page4/Page16 full bit/state oracle.4cases(context32768/117488 bycontiguous/strided sortedunique causalIDs),Page4,8192queries,cap2051,varied nonzero Q/K/V/scales;syntheticnotmodelcapture.2warmups+3alternating paired rounds percase,batch8,floor100ms. Exact complete outputbits/inputimmutability/guards,knownproviders/immutableenv/pre-mainvalidation,clockmedian<=1000ns/p99<=10000ns/resolution<=1000ns,actualpackandattentioneventdurationenclosure,closedowner/no newfault. Stop first invalid/numerical/fault,incomplete isnotperformancefail. Keep all72samples. Advanceonlyifeachprocessmedian candidate/original<1 forwall+attention+pack/attentionservice,and eachcase3processGM<=0.99 forall3metrics. No retries/exclusions/adoption fromfixture. No PCIe/HW saturation claim.')
+    row=dict(stage='prepared',source_commit=built['source_commit'],source_sha256=built['source_sha256'],binary=built['binary'],plans=plans,budgets=dict(wall=900,cpu=1800,rss_cap=8<<30,text_cap=16<<20,file_cap=128<<20,total_cap=2<<30),boot=rt['boot'],processes=[],passed=False,complete=False,ownership_closed=True,criteria='All3fresh processes use exact native objects already qualified by compiled properties,traced tiny and Page4/Page16 lossless operand/normalizer/output interval gates.4cases(context32768/117488 bycontiguous/strided sortedunique causalIDs),Page4,8192queries,cap2051,varied nonzero Q/K/V/scales;syntheticnotmodelcapture.2warmups+3alternating paired rounds percase,batch8,floor100ms. Exact within-arm fulloutputrepeat and finite payload outside timing;paired changedbits are descriptive only and separate numerical gate remains mandatory. Inputimmutability/guards,knownproviders/immutableenv/pre-mainvalidation,clockmedian<=1000ns/p99<=10000ns/resolution<=1000ns,actualpackandattentioneventdurationenclosure,closedowner/no newfault. Stop first invalid/numerical/fault,incomplete isnotperformancefail. Keep all72samples. Advanceonlyifeachprocessmedian candidate/original<1 forwall+attention+pack/attentionservice,and eachcase3processGM<=0.99 forall3metrics. No retries/exclusions/adoption fromfixture. No PCIe/HW saturation claim.')
     write(ROOT/'comparison.json',row);scope['comparison']=compact(row);write(RESULT,record);print('Three-process comparison prepared;commit frozen order/criteria before run.',flush=True)
 
 
@@ -100,10 +103,12 @@ def parse(stdout,index):
     samples=[];seen=set()
     for row in rows:
         sample={k:(float(v) if k.endswith('_ms') else v if k=='arm' else int(v)) for k,v in row.items()}
-        case=sample['scenario'];require(case in range(4) and sample['process']==index and sample['context']==[32768,32768,117488,117488][case] and sample['pattern']==case%2 and sample['queries']==8192 and sample['cap']==2051 and sample['page']==4 and sample['batch']==8 and sample['round'] in range(3) and sample['arm'] in ['original','candidate'] and sample['bit_parity']==1,'sample workload differs')
+        case=sample['scenario'];require(case in range(4) and sample['process']==index and sample['context']==[32768,32768,117488,117488][case] and sample['pattern']==case%2 and sample['queries']==8192 and sample['cap']==2051 and sample['page']==4 and sample['batch']==8 and sample['round'] in range(3) and sample['arm'] in ['original','candidate'] and sample['arm_repeat']==1,'sample workload differs')
         key=(case,sample['round'],sample['arm']);require(key not in seen,'duplicate sample');seen.add(key)
         require(all(math.isfinite(sample[k]) and sample[k]>0 for k in ['wall_ms','pack_ms','attention_ms']) and sample['wall_ms']>=100 and sample['pack_ms']+sample['attention_ms']<=sample['wall_ms']*1.01,'invalid/ineligible clocks');samples.append(sample)
-    require(stdout.count('HEAD_CASE scenario=')==4 and all('HEAD_CASE scenario='+str(k)+' all_inputs_immutable=1 guards=1 bit_parity=1' in stdout for k in range(4)) and 'HEAD_BENCH_DONE passed=1 scenarios=4 samples=24' in stdout,'posttiming checks incomplete')
+    require(stdout.count('HEAD_CASE scenario=')==4 and all('HEAD_CASE scenario='+str(k)+' all_inputs_immutable=1 guards=1 arm_repeat=1' in stdout for k in range(4)) and 'HEAD_BENCH_DONE passed=1 scenarios=4 samples=24' in stdout,'posttiming checks incomplete')
+    outputs=[dict(v.split('=',1) for v in line.split()[1:]) for line in stdout.splitlines() if line.startswith('HEAD_OUTPUT ')]
+    require(len(outputs)==4 and {int(v['scenario']) for v in outputs}==set(range(4)) and all(int(v['elements'])==8192*24*256 and 0<=int(v['changed_bits'])<=int(v['elements']) and v['finite']=='1' and v['numerical_gate']=='SEPARATE' and v['model_quality']=='UNRUN' for v in outputs),'paired output classification incomplete')
     medians=[]
     for case in range(4):
         values={arm:[s for s in samples if s['scenario']==case and s['arm']==arm] for arm in ['original','candidate']}
@@ -112,7 +117,7 @@ def parse(stdout,index):
             def value(s):return s['pack_ms']+s['attention_ms'] if metric=='service_ms' else s[metric]
             a=statistics.median(value(s) for s in values['original']);b=statistics.median(value(s) for s in values['candidate']);metrics[metric]=dict(original=a,candidate=b,ratio=b/a)
         medians.append(dict(scenario=case,metrics=metrics))
-    return dict(clock=clock,samples=samples,medians=medians)
+    return dict(clock=clock,samples=samples,medians=medians,output_calibration=outputs)
 
 
 def run():
