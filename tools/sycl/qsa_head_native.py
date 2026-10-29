@@ -148,8 +148,25 @@ def prepare_gate(mode,page):
     write(folder/'plan.json',plan);component[name]=plan;write(RESULT,record);print('Native gate prepared;commit before run.',flush=True)
 
 
+def paired_kernel(name):
+    markers=['17qsa_head_original','18qsa_head_candidate']
+    present=[marker for marker in markers if marker in name]
+    require(len(present)==1,'ambiguous original/candidate kernel identity')
+    return name.replace(present[0],'ARM'),int(present[0]==markers[1])
+
+
+def paired_properties(properties):
+    pairs={}
+    for prop in properties:
+        identity,arm=paired_kernel(prop['name']);pair=pairs.setdefault(identity,{})
+        require(arm not in pair,'duplicate paired kernel property');pair[arm]=prop
+    require(len(pairs)==2 and all(set(pair)=={0,1} and pair[0]['arguments']==pair[1]['arguments'] for pair in pairs.values()),'normal/state original/candidate argument-count mismatch')
+    return pairs
+
+
 def dispatches(trace,properties):
-    created={};counts={v['name']:0 for v in properties}
+    pairs=paired_properties(properties)
+    created={};counts={v['name']:0 for v in properties};signatures={}
     for line in trace.splitlines():
         if '<--- urKernelCreate(' in line and 'UR_RESULT_SUCCESS' in line:
             match=re.search(r'\((_ZTS\S+)\).*?\.phKernel = .*?\((0x[0-9a-f]+)\)',line)
@@ -159,9 +176,13 @@ def dispatches(trace,properties):
         prop=next((p for p in properties if p['name']==name),None)
         if prop is None:continue
         require('.numArgs = '+prop['arguments']+',' in line and re.search(r'\.pLocalWorkSize = 0x[0-9a-f]+ \('+prop['wg']+r'\)',line),'actual launch ABI/WG differs')
-        sizes=sorted(int(v) for v in re.findall(r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = \d+, \.size = (\d+)',line))
-        require(sizes==sorted([16384,1024,64,64,64,256,64,2112]),'actual local extents differ');counts[name]+=1
-    require(all(v>0 for v in counts.values()),'missing normal/state arm dispatch');return {hashlib.sha256(k.encode()).hexdigest():v for k,v in counts.items()}
+        signature=sorted((int(index),int(size)) for index,size in re.findall(r'UR_EXP_KERNEL_ARG_TYPE_LOCAL, \.index = (\d+), \.size = (\d+)',line))
+        require(len(signature)==8 and len({index for index,size in signature})==8 and all(index<int(prop['arguments']) for index,size in signature) and sorted(size for index,size in signature)==sorted([16384,1024,64,64,64,256,64,2112]),'actual indexed local extents differ')
+        require(name not in signatures or signatures[name]==signature,'local argument signature changed between launches')
+        signatures[name]=signature;counts[name]+=1
+    require(all(v>0 for v in counts.values()),'missing normal/state arm dispatch')
+    require(all(signatures[pair[0]['name']]==signatures[pair[1]['name']] for pair in pairs.values()),'paired normal/state indexed local-argument mismatch')
+    return dict(counts={hashlib.sha256(k.encode()).hexdigest():v for k,v in counts.items()},indexed_local_arguments={hashlib.sha256(k.encode()).hexdigest():v for k,v in signatures.items()},paired_signatures_equal=True)
 
 
 def run_gate(mode,page):
@@ -188,7 +209,7 @@ def run_gate(mode,page):
         proof=r.validation.preload_evidence(err.read_text(),entry['pid']);require(proof['loader']==rt['preload']['loader'],'pre-main provider differs');warning=folder/'validation.log';require(not warning.exists() or not warning.stat().st_size,'validation warning');require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|HEAD_ERROR|terminate called|cleanup failed',err.read_text()),'native runtime error')
         stdout=out.read_text();properties=[];actual=None
         if mode=='properties':
-            properties=[dict(part.split('=',1) for part in v[len('HEAD_PROPERTY '):].split()) for v in lines if v.startswith('HEAD_PROPERTY ')];require(len(properties)==4 and 'HEAD_DONE mode=--properties passed=1' in stdout,'property coverage');require(not re.search(r'urEnqueue\w*Kernel',(folder/'api.trace').read_text()),'property query submittedkernel')
+            properties=[dict(part.split('=',1) for part in v[len('HEAD_PROPERTY '):].split()) for v in lines if v.startswith('HEAD_PROPERTY ')];require(len(properties)==4 and 'HEAD_DONE mode=--properties passed=1' in stdout and 'HEAD_ABI pairs=2 exact_argument_counts=1' in stdout,'property/pairedABI coverage');paired_properties(properties);require(not re.search(r'urEnqueue\w*Kernel',(folder/'api.trace').read_text()),'property query submittedkernel')
         else:
             require(('HEAD_DONE mode=--tiny passed=1' if mode=='tiny' else 'fixture_status=PASS model_quality=UNRUN') in stdout,'oracle completion absent')
             require(stdout.count('case exact_FP32_online_state=PASS')==(1 if mode=='tiny' else 11),'state/case coverage')

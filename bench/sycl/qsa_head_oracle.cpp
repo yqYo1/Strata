@@ -4,6 +4,8 @@
 #include <dlfcn.h>
 #include <sycl/ext/oneapi/backend/level_zero.hpp>
 #include <level_zero/ze_api.h>
+#include <array>
+#include <map>
 
 namespace strata::kernels {
 #define HEAD_ARGUMENTS const uint16_t *query, const QsaAttnPools &pools, \
@@ -43,6 +45,7 @@ static void properties(const char *path) {
   const auto query=reinterpret_cast<decltype(&zeKernelGetProperties)>(dlsym(loader,"zeKernelGetProperties"));
   require(query,"Level Zero kernel property API missing");
   auto &queue=rt->compute();int count=0;
+  std::map<std::string,std::array<uint32_t,2>> paired_arguments;
   for (const auto &id:sycl::get_kernel_ids()) {
     const std::string name=id.get_name();
     const bool candidate=name.find("qsa_head_candidate")!=std::string::npos;
@@ -61,6 +64,14 @@ static void properties(const char *path) {
     require((!p.requiredGroupSizeX || p.requiredGroupSizeX==wg) &&
         (!p.requiredGroupSizeY || p.requiredGroupSizeY==1) && (!p.requiredGroupSizeZ || p.requiredGroupSizeZ==1) &&
         (!p.requiredNumSubGroups || p.requiredNumSubGroups==wg/16),"compiled required shape differs");
+    std::string identity=name;
+    const std::string marker=candidate ? "18qsa_head_candidate" : "17qsa_head_original";
+    const auto position=identity.find(marker);
+    require(position!=std::string::npos,"missing exact arm identity");
+    identity.replace(position,marker.size(),"ARM");
+    auto &pair=paired_arguments[identity];
+    require(!pair[candidate] && p.numKernelArgs,"duplicate or empty paired kernel ABI");
+    pair[candidate]=p.numKernelArgs;
     require(size_t(p.localMemSize)+declared+4096<=queue.get_device().get_info<sycl::info::device::local_mem_size>(),"conservative local budget");
     std::cout<<"HEAD_PROPERTY arm="<<(candidate?"candidate":"original")<<" name="<<name
       <<" wg="<<wg<<" subgroup="<<sg<<" arguments="<<p.numKernelArgs
@@ -69,6 +80,10 @@ static void properties(const char *path) {
       <<" spill_descriptor="<<p.spillMemSize<<'\n';++count;
   }
   require(count==4,"exactly four normal/state attention kernels required");
+  require(paired_arguments.size()==2,"exactly two paired normal/state ABIs required");
+  for (const auto &entry:paired_arguments)
+    require(entry.second[0] && entry.second[0]==entry.second[1],"original/candidate argument-count mismatch before enqueue");
+  std::cout<<"HEAD_ABI pairs=2 exact_argument_counts=1\n";
   dlclose(loader);
 }
 int main(int argc,char **argv) {

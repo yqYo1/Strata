@@ -16664,7 +16664,7 @@
   },
   "qsa_required_workgroup_native_contract_20261030": {
     "classification": "decision support",
-    "status": "completed_native_curation_running",
+    "status": "source_review_blocked_ABI_correction_pending_recheck",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-30/qsa_required_workgroup_native_contract_20261030.md",
@@ -16710,16 +16710,33 @@
     "report_bytes": 8443,
     "report_sha256": "4d17046dd0c1043bada2f34197b98f44b217079f50e127d538279e4be8926d08",
     "native_review": {
-      "status": "running",
-      "agent": "/root/curate_required_wg_native_20261030",
-      "model": "gpt-6-luna",
-      "reasoning_effort": "max",
-      "path": ".cache/research/2026-10-30/qsa_required_workgroup_native_contract_20261030.review.json"
-    }
+      "source_accepted_for_component": false,
+      "candidate_source_status": "conditionally_coherent",
+      "reason": "The one-attribute source change matches the existing 1-D local-128 launch and leaves arithmetic, local storage declarations, subgroup operations, and barriers unchanged. The current controller does not enforce its declared original-versus-candidate kernel ABI equivalence, so the component gate is incomplete until that check is added and committed.",
+      "blockers": [
+        {
+          "id": "counterpart_kernel_abi_not_checked",
+          "location": "tools/sycl/qsa_head_native.py:151-164",
+          "evidence": "dispatches() checks each launch argument count against that launch kernel's own queried property and checks the local-size multiset. It does not compare original/candidate normal kernels or original/candidate state kernels. Sorting local argument sizes also discards each argument index.",
+          "required_action": "Before the tiny gate, compare queried numKernelArgs for each matching normal/state pair. Preserve and compare ordered (local argument index, size) signatures across both arms in the launch trace; do not sort away the indices. If the acceptance wording requires the local signature to be known before the first tiny submission, prove it from pinned compiled/source metadata before submission, since the current trace is only produced by the submission itself.",
+          "pass_condition": "A committed controller/plan rejects any paired argument-count or indexed local-argument mismatch and records the exact checked signature for all four kernels."
+        }
+      ],
+      "limits": [
+        "No native build, compiled-property result, launch trace, numerical result, or timing result exists in the reviewed evidence.",
+        "CPU LLVM body equality does not establish equal SPIR-V/IGC/GEN code, resource use, correctness, or speed.",
+        "The direct synthetic component benchmark does not exercise production dispatch/fallback, model prefill throughput, decode, or the physical 262144-token model route.",
+        "The candidate is not evidence that a measured hardware bottleneck was relieved; keep the limiting resource and model-level adoption questions open."
+      ],
+      "review_path": ".cache/research/2026-10-30/qsa_required_workgroup_native_contract_20261030.review.json",
+      "review_sha256": "2563ba85d24416e59a21fa2bd4b043bc68d0d59dc131b5a3c29d828a879a408b",
+      "review_bytes": 8649
+    },
+    "pending_source_correction": "Pair normal/state original/candidate argument counts beforeenqueue;preserve and compare indexedlocalargument signatures in tinytrace,with negativehostadmission tests. No nativebuild prepared or GPU enqueued."
   },
   "prefill_exact_row_workload_construction_contract_20261030": {
     "classification": "decision support",
-    "status": "completed_native_curation_running",
+    "status": "reviewed_implementation_design",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report": ".cache/research/2026-10-30/prefill_exact_row_workload_construction_contract_20261030.md",
@@ -16747,11 +16764,13 @@
     "report_bytes": 14230,
     "report_sha256": "8cb8eabc9fb7d4925e015dda6a444d4139083afd7f8b1b418ee8171cfbd77364",
     "native_review": {
-      "status": "running",
-      "agent": "/root/curate_exact_row_workload_20261030",
+      "status": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/research/2026-10-30/prefill_exact_row_workload_construction_contract_20261030.review.json"
-    }
+      "path": ".cache/research/2026-10-30/prefill_exact_row_workload_construction_contract_20261030.review.json",
+      "sha256": "d5f97c3070eea295674205af4ba3082acdc1d51a27cd94ec99e1bdc722b07dab",
+      "bytes": 10206
+    },
+    "corrected_digest": "Opt-in exact-row mode should keep existingprefillminimum unchanged. Anthropic/v1/messages/count_tokens uses same normalization+encode_prompt(store=False) withoutengine,not context/route/reuse qualification. TimedAnthropicresponse lacksengine timings;need exclusive/statuscorrelation or verifiedofflineOpenAIrenderer. Countprobeswarmtokenizer cache:label TTFTpost-preflight. Freeze finalbody beforetiming;no inferencecalibration/adaptiverepair."
   }
 }
