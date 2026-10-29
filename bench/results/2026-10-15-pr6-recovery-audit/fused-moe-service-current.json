@@ -6537,37 +6537,7 @@
     },
     "component_v2": {
       "build": {
-        "stage": "built",
         "source_commit": "593d756a63e569f9ed26dd46759debf7e57b61f2",
-        "compiler": {
-          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-          "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
-        },
-        "sdk": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
-          "sha256": "436cedc9dbd41810cd882e9040a129e6d8b7dbebb98806b00c4f2950b1dc1705",
-          "original_files": 8697,
-          "admitted_files": 8697,
-          "prospective_system_header_updates": {
-            "/usr/include/metee.h": [
-              "f063edcb00c88f3ddebc10f9b0487fe813cfb7ba71dc4b798729bed8902018a3",
-              "d07e18ce9228c3fc570b186eab13bf8a3e6c04214992f0de9d53b855dc837252"
-            ],
-            "/usr/include/opencl-c-base.h": [
-              "e1683c3db9cf9a95e9d02acbbfa74dcd29d4deaf4a856430f538d76985b04114",
-              "673c4720f879c2f101504979edbd0216c9cb6a982ce2b62bd467b81fd53d8e33"
-            ],
-            "/usr/include/opencl-c.h": [
-              "579b58f482ab0b3dfd396cab32ea3e0537bc5cf4c1067377b83fe417cbcc513b",
-              "aa7e871a8f7d961aa4126a9fadc2196f822c21811946c90147dc7415fe677de9"
-            ]
-          },
-          "updated_header_packages": [
-            "libigdfcl2 2.41.15-1~24.04",
-            "libmetee-dev 6.2.5-1~24.04~ppa2"
-          ],
-          "condition": "New v2 input snapshot only;all8694 other original hashes remain mandatory. Actual dependency closure records which updated headers were compiled. No qualification inherited for the new fixture."
-        },
         "geometry_proof": {
           "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
           "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
@@ -6589,8 +6559,6 @@
           "preservation": "Same Q scale/BF16 rounding,d ascending16,K/V4loop bounds,FP32 cell sum c0..31,PV c0,16,output conversion;all whole-group barriers unchanged and uniform. No padded score/probability/state rows are consumed. M4matrix arithmetic/registers/speed still require native observation.",
           "production_or_decode_changed": false
         },
-        "native_source_files": 163,
-        "native_source_digest": "8208b7926ca3e9fefc492eb1762c022afb15fe1675980579b60284db50774d62",
         "original_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
         "selected_binary": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
@@ -6599,367 +6567,6 @@
         },
         "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
         "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-        "input_inventory": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/input-inventory.json",
-          "sha256": "829d1efaf1e53e0674419b9cc873183e261850c0f85a3e9fa5c8231567fb14cb",
-          "files": 9269
-        },
-        "commands": [
-          [
-            "IRoriginal",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-fsycl-device-only",
-              "-S",
-              "-emit-llvm",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl/original.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/original.ll"
-            ]
-          ],
-          [
-            "IRcandidate",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-fsycl-device-only",
-              "-S",
-              "-emit-llvm",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl/candidate.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/candidate.ll"
-            ]
-          ],
-          [
-            "runtime",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/runtime.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/src/sycl/runtime.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/runtime.o"
-            ]
-          ],
-          [
-            "compat",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/compat.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/src/sycl/compat.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/compat.o"
-            ]
-          ],
-          [
-            "command_profile",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/command_profile.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/src/sycl/command_profile.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/command_profile.o"
-            ]
-          ],
-          [
-            "prompt_attention",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/prompt_attention.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/src/kernels/sycl/prompt_attention.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/prompt_attention.o"
-            ]
-          ],
-          [
-            "original",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/original.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl/original.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/original.o"
-            ]
-          ],
-          [
-            "candidate",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/candidate.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl/candidate.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/candidate.o"
-            ]
-          ],
-          [
-            "oracle4",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-DSTRATA_QSA_TEST_PAGE_SIZE=4",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/oracle4.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl/qsa_head_oracle.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/oracle4.o"
-            ]
-          ],
-          [
-            "oracle16",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-DSTRATA_QSA_TEST_PAGE_SIZE=16",
-              "-MD",
-              "-MF",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/oracle16.d",
-              "-c",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl/qsa_head_oracle.cpp",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/oracle16.o"
-            ]
-          ],
-          [
-            "link4",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-save-temps=obj",
-              "-v",
-              "-Wl,-t",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/runtime.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/compat.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/command_profile.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/prompt_attention.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/original.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/candidate.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/oracle4.o",
-              "-pthread",
-              "-ldl",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4"
-            ]
-          ],
-          [
-            "link16",
-            [
-              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-              "-std=c++20",
-              "-O3",
-              "-DNDEBUG",
-              "-g0",
-              "-fsycl",
-              "-fsycl-id-queries-range=size_t",
-              "-fno-fast-math",
-              "-ffp-contract=off",
-              "-DSTRATA_ENABLE_SYCL=1",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-              "-save-temps=obj",
-              "-v",
-              "-Wl,-t",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/runtime.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/compat.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/command_profile.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/prompt_attention.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/original.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/candidate.o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/oracle16.o",
-              "-pthread",
-              "-ldl",
-              "-o",
-              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p16"
-            ]
-          ]
-        ],
-        "environment": {
-          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-          "OMP_NUM_THREADS": "1",
-          "GIT_TERMINAL_PROMPT": "0",
-          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-          "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-          "PIP_CONFIG_FILE": "/dev/null",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/cache",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/tmp"
-        },
-        "budgets": {
-          "wall": 600,
-          "cpu": 1800,
-          "rss_cap": 8589934592,
-          "text_cap": 33554432,
-          "file_cap": 268435456,
-          "total_cap": 2147483648
-        },
-        "active": false,
-        "ownership_closed": true,
-        "passed": true,
-        "GPU_executed": false,
-        "production_or_decode_changed": false,
-        "criteria": "CPU build only,zero uncovered actual compiler/link inputs;property-only4normal/state kernels before submit. Reviewed convergence/layout before bounded tiny trace. Independent FP32state+full BF16tensor oracle,guards,admission and physical262144component addresses atPage4/16 follow;not full-model context or performance/adoption.",
-        "retention": "One imminent head-geometry native comparison generation;keep original selected6e40+12fixtures. Retire this extra build/raw output after its gate/decision and exact original source/recipe recovery.",
         "binaries": {
           "4": {
             "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4",
@@ -6972,6 +6579,8 @@
             "bytes": 1243496
           }
         },
+        "passed": true,
+        "ownership_closed": true,
         "actual_compiler_inputs": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/compiler-inputs.json",
           "sha256": "74049c2f09e458c1ec811040a69d6919d3d5ed4c29f70722f690fc0c52496cad",
@@ -6987,108 +6596,12 @@
           },
           "uncovered": 0
         },
-        "source_inputs": {
-          "files": 42,
-          "aggregate_sha256": "f2bee488aff24645af780d0144303a5e947111e6c248779fba01f8a56e48e304"
-        }
+        "full_recipe_archive": "2148ad3934f2b981622aaef76e4c2901234a59a8"
       },
       "properties4": {
-        "stage": "closed",
         "source_commit": "2940c9e47b6fd9b5fdb89b5939c3446f196b4c84",
-        "source_sha256": {
-          "tools/sycl/qsa_head_native.py": "4de77050be9f7bd8c2e7a43fd6d1bbdcecf5019da02fbe75bc11c2d36c4778c2",
-          "tools/sycl/qsa_head_sources.py": "1fb682dc267f8964a4012aced0c0c97f1001f94aa68221e05f5c9cf0f343ea3e",
-          "tools/sycl/matrix_shapes.py": "331347ffa1d12509101cac71b7f95832683cabed63068df50d916bf43c0dca27",
-          "tools/sycl/relink_qsa_k_model.py": "ded5c1a6f7996316eebbb985f60cd476eabd3d9a3e002655f1d65f357b86aa3b",
-          "tools/sycl/build_qsa_k_model.py": "9d62d7b69827452921fdb07427a8cb07b72bb8a7713f0f79405bdfac50ccebae",
-          "tools/sycl/qsa_k_model_sources.py": "bfa93179b63d6231f17864d9935efd72ae5a1fe98288174bbaf2e66927fe558d",
-          "tools/sycl/qsa_k_loop_sources.py": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
-          "tools/sycl/build_qsa_k_loop.py": "2ec319c4fb1f27390618353e0965d2c7029c86def5673510600b0073d676eda3",
-          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-          "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-          "tools/sycl/generation_engine.py": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
-          "tools/sycl/decode_footer.py": "6e7bf40ed4b08c5dbaeb0ec977715239a177b6aa537bb2d2b048a6599bb0838c",
-          "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-          "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
-          "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
-          "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
-          "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
-          "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
-          "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
-          "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
-          "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
-          "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
-          "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
-          "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
-          "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
-          "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
-          "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
-          "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
-          "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
-          "tools/sycl/bench_engine.py": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
-          "tools/sycl/command_service.py": "c59f4945ba8c15c982f40386155deec65e42d063a3de14d29fb90e0a0dcc4881",
-          "tools/sycl/build_fused_profile.py": "0eb0c36c3290716e2589e01a9f613607a131b8525afb5e99f114495b6671caae",
-          "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-          "tools/sycl/check_layout_source.py": "b11db83b899fd8bd09b7b1329843e0a267c79ff9b301d6a3b68936a76eef6b3f",
-          "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-          "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
-          "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-          "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
-          "bench/sycl/matrix_shapes.cpp": "7760f81d378aa1fff3bcac94885745ddc545ca39d855f4a8ca2b8750c5ea1f3e",
-          "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-          "bench/sycl/qsa_head_oracle.cpp": "a45bf3fa0cbd89f5b08279a278ce2a20e4426467be82a4bee2f1266b97c79163",
-          "tests/sycl/qsa_bf16_prefix.cpp": "d64e8e5a75f3893274fcc63eb83067c81be26565f36bdac43d49f01579120d58"
-        },
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4",
-          "sha256": "567bdabb5a8d780cac23dcec0d3c41f07b2ad8d61e16fba6a8dad1aaa47d8886",
-          "bytes": 1243496
-        },
-        "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4",
-          "--properties",
-          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
-        ],
-        "environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/properties4/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/properties4/validation.log",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/properties4/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/properties4/cache",
-          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "STRATA_TEST_MAIN_GATES": "1"
-        },
         "mode": "properties",
         "page": 4,
-        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-        "budgets": {
-          "wall": 600,
-          "cpu": 1200,
-          "rss_cap": 8589934592,
-          "text_cap": 33554432,
-          "file_cap": 67108864,
-          "total_cap": 536870912
-        },
-        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
         "outcome": {
           "complete": true,
           "passed": true,
@@ -7159,101 +6672,9 @@
         }
       },
       "tiny4": {
-        "stage": "closed",
         "source_commit": "935b37d98f40e518c19302dad0e8d585b6d8c869",
-        "source_sha256": {
-          "tools/sycl/qsa_head_native.py": "4de77050be9f7bd8c2e7a43fd6d1bbdcecf5019da02fbe75bc11c2d36c4778c2",
-          "tools/sycl/qsa_head_sources.py": "1fb682dc267f8964a4012aced0c0c97f1001f94aa68221e05f5c9cf0f343ea3e",
-          "tools/sycl/matrix_shapes.py": "331347ffa1d12509101cac71b7f95832683cabed63068df50d916bf43c0dca27",
-          "tools/sycl/relink_qsa_k_model.py": "ded5c1a6f7996316eebbb985f60cd476eabd3d9a3e002655f1d65f357b86aa3b",
-          "tools/sycl/build_qsa_k_model.py": "9d62d7b69827452921fdb07427a8cb07b72bb8a7713f0f79405bdfac50ccebae",
-          "tools/sycl/qsa_k_model_sources.py": "bfa93179b63d6231f17864d9935efd72ae5a1fe98288174bbaf2e66927fe558d",
-          "tools/sycl/qsa_k_loop_sources.py": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
-          "tools/sycl/build_qsa_k_loop.py": "2ec319c4fb1f27390618353e0965d2c7029c86def5673510600b0073d676eda3",
-          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-          "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-          "tools/sycl/generation_engine.py": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
-          "tools/sycl/decode_footer.py": "6e7bf40ed4b08c5dbaeb0ec977715239a177b6aa537bb2d2b048a6599bb0838c",
-          "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-          "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
-          "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
-          "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
-          "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
-          "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
-          "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
-          "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
-          "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
-          "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
-          "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
-          "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
-          "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
-          "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
-          "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
-          "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
-          "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
-          "tools/sycl/bench_engine.py": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
-          "tools/sycl/command_service.py": "c59f4945ba8c15c982f40386155deec65e42d063a3de14d29fb90e0a0dcc4881",
-          "tools/sycl/build_fused_profile.py": "0eb0c36c3290716e2589e01a9f613607a131b8525afb5e99f114495b6671caae",
-          "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-          "tools/sycl/check_layout_source.py": "b11db83b899fd8bd09b7b1329843e0a267c79ff9b301d6a3b68936a76eef6b3f",
-          "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-          "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
-          "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-          "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
-          "bench/sycl/matrix_shapes.cpp": "7760f81d378aa1fff3bcac94885745ddc545ca39d855f4a8ca2b8750c5ea1f3e",
-          "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-          "bench/sycl/qsa_head_oracle.cpp": "a45bf3fa0cbd89f5b08279a278ce2a20e4426467be82a4bee2f1266b97c79163",
-          "tests/sycl/qsa_bf16_prefix.cpp": "d64e8e5a75f3893274fcc63eb83067c81be26565f36bdac43d49f01579120d58"
-        },
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4",
-          "sha256": "567bdabb5a8d780cac23dcec0d3c41f07b2ad8d61e16fba6a8dad1aaa47d8886",
-          "bytes": 1243496
-        },
-        "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4",
-          "--tiny"
-        ],
-        "environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/tiny4/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/tiny4/validation.log",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/tiny4/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/tiny4/cache",
-          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "STRATA_TEST_MAIN_GATES": "1"
-        },
         "mode": "tiny",
         "page": 4,
-        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-        "budgets": {
-          "wall": 600,
-          "cpu": 1200,
-          "rss_cap": 8589934592,
-          "text_cap": 33554432,
-          "file_cap": 67108864,
-          "total_cap": 536870912
-        },
-        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
         "outcome": {
           "complete": true,
           "passed": true,
@@ -7284,101 +6705,9 @@
         }
       },
       "component4": {
-        "stage": "closed",
         "source_commit": "f0e057429d5cc8b3fd25a54002e9578fd47c08d4",
-        "source_sha256": {
-          "tools/sycl/qsa_head_native.py": "4de77050be9f7bd8c2e7a43fd6d1bbdcecf5019da02fbe75bc11c2d36c4778c2",
-          "tools/sycl/qsa_head_sources.py": "1fb682dc267f8964a4012aced0c0c97f1001f94aa68221e05f5c9cf0f343ea3e",
-          "tools/sycl/matrix_shapes.py": "331347ffa1d12509101cac71b7f95832683cabed63068df50d916bf43c0dca27",
-          "tools/sycl/relink_qsa_k_model.py": "ded5c1a6f7996316eebbb985f60cd476eabd3d9a3e002655f1d65f357b86aa3b",
-          "tools/sycl/build_qsa_k_model.py": "9d62d7b69827452921fdb07427a8cb07b72bb8a7713f0f79405bdfac50ccebae",
-          "tools/sycl/qsa_k_model_sources.py": "bfa93179b63d6231f17864d9935efd72ae5a1fe98288174bbaf2e66927fe558d",
-          "tools/sycl/qsa_k_loop_sources.py": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
-          "tools/sycl/build_qsa_k_loop.py": "2ec319c4fb1f27390618353e0965d2c7029c86def5673510600b0073d676eda3",
-          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-          "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-          "tools/sycl/generation_engine.py": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
-          "tools/sycl/decode_footer.py": "6e7bf40ed4b08c5dbaeb0ec977715239a177b6aa537bb2d2b048a6599bb0838c",
-          "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-          "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
-          "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
-          "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
-          "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
-          "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
-          "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
-          "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
-          "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
-          "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
-          "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
-          "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
-          "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
-          "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
-          "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
-          "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
-          "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
-          "tools/sycl/bench_engine.py": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
-          "tools/sycl/command_service.py": "c59f4945ba8c15c982f40386155deec65e42d063a3de14d29fb90e0a0dcc4881",
-          "tools/sycl/build_fused_profile.py": "0eb0c36c3290716e2589e01a9f613607a131b8525afb5e99f114495b6671caae",
-          "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-          "tools/sycl/check_layout_source.py": "b11db83b899fd8bd09b7b1329843e0a267c79ff9b301d6a3b68936a76eef6b3f",
-          "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-          "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
-          "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-          "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
-          "bench/sycl/matrix_shapes.cpp": "7760f81d378aa1fff3bcac94885745ddc545ca39d855f4a8ca2b8750c5ea1f3e",
-          "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-          "bench/sycl/qsa_head_oracle.cpp": "a45bf3fa0cbd89f5b08279a278ce2a20e4426467be82a4bee2f1266b97c79163",
-          "tests/sycl/qsa_bf16_prefix.cpp": "d64e8e5a75f3893274fcc63eb83067c81be26565f36bdac43d49f01579120d58"
-        },
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4",
-          "sha256": "567bdabb5a8d780cac23dcec0d3c41f07b2ad8d61e16fba6a8dad1aaa47d8886",
-          "bytes": 1243496
-        },
-        "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p4",
-          "--component"
-        ],
-        "environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component4/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component4/validation.log",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component4/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component4/cache",
-          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "STRATA_TEST_MAIN_GATES": "1"
-        },
         "mode": "component",
         "page": 4,
-        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-        "budgets": {
-          "wall": 600,
-          "cpu": 1200,
-          "rss_cap": 8589934592,
-          "text_cap": 33554432,
-          "file_cap": 67108864,
-          "total_cap": 536870912
-        },
-        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
         "outcome": {
           "complete": true,
           "passed": true,
@@ -7404,101 +6733,9 @@
         }
       },
       "component16": {
-        "stage": "closed",
         "source_commit": "324c41d5caeb708a9807b98cc7f965aae0ca9bfe",
-        "source_sha256": {
-          "tools/sycl/qsa_head_native.py": "4de77050be9f7bd8c2e7a43fd6d1bbdcecf5019da02fbe75bc11c2d36c4778c2",
-          "tools/sycl/qsa_head_sources.py": "1fb682dc267f8964a4012aced0c0c97f1001f94aa68221e05f5c9cf0f343ea3e",
-          "tools/sycl/matrix_shapes.py": "331347ffa1d12509101cac71b7f95832683cabed63068df50d916bf43c0dca27",
-          "tools/sycl/relink_qsa_k_model.py": "ded5c1a6f7996316eebbb985f60cd476eabd3d9a3e002655f1d65f357b86aa3b",
-          "tools/sycl/build_qsa_k_model.py": "9d62d7b69827452921fdb07427a8cb07b72bb8a7713f0f79405bdfac50ccebae",
-          "tools/sycl/qsa_k_model_sources.py": "bfa93179b63d6231f17864d9935efd72ae5a1fe98288174bbaf2e66927fe558d",
-          "tools/sycl/qsa_k_loop_sources.py": "526f02d967f0f03f7cfc8239a7633b9f9840e0533dee047171b38a7dd061db6c",
-          "tools/sycl/build_qsa_k_loop.py": "2ec319c4fb1f27390618353e0965d2c7029c86def5673510600b0073d676eda3",
-          "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
-          "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
-          "tools/sycl/generation_engine.py": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9",
-          "tools/sycl/decode_footer.py": "6e7bf40ed4b08c5dbaeb0ec977715239a177b6aa537bb2d2b048a6599bb0838c",
-          "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
-          "tools/sycl/query_profile.py": "7136a71790d412394fc1ae345af03efb6eaffa09065c49a3b4cffb10a21477d8",
-          "tools/sycl/check_verifier_retirement.py": "1896bf9dd31954bc1fb95c03e3b18679e280f4690a0b46679493b6d6c11c350e",
-          "tools/sycl/cpu_capacity.py": "685b981462cdf8e667f67bc844d8e522be84c776df57238327a4dad8dbbefa51",
-          "tools/sycl/resource_engine.py": "7ec369dfb1a908db55a5501a02a4e37b50522a6376e348c2ad1917f29b2b0446",
-          "tools/sycl/generation_compare.py": "89eca5bc23bc7b45bbe441490ff2e7c324edf37cc002673118ce5ea9dd9bc4df",
-          "tools/sycl/packed_bank.py": "eee4e623697a2bf935339fddd51fc437359e0412dbfc1a903a46691aacc0235f",
-          "tools/sycl/cache_long.py": "1113563f582bd01bfb7535f8b73d70bf92f8e336dbef60301a6de7f2c28c1548",
-          "tools/sycl/cache_capacity.py": "9d39d3851bfc634901d6b5fd6f984918c53f8f44337df7fd506b6cb2ab3252f5",
-          "tools/sycl/cache_borrow.py": "900a2364d19beea0e1fa3e3c657f980455d676363660c013f6ef9058eeb43450",
-          "tools/sycl/mtp_model_observer.py": "d08adf85cd4f644ec651ba6b598d7f431930aa6c8dbb6e7a08b941b2bf1ceeff",
-          "tools/sycl/check_expert_bank.py": "31896d82f9f948784720c13044938fd64d5445e5a28168c2ccd569e3cb769eee",
-          "tools/sycl/iq2_pair_model.py": "618c3d8c6680ed2dcc3834c9aa6cbf9a67f97c4fc8c78fcdd5e5c83c583e0769",
-          "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
-          "tools/sycl/cpu_census_engine.py": "40013d84a4b7a347c46efc6b7f99b7ea8f253b94c3ad217ea62c7b0dd6000d09",
-          "tools/sycl/cpu_iq2.py": "73aa915408be2d1641922fbbeb4047e135313ad257cdb7087a9545ccfe250b79",
-          "tools/sycl/cpu_roofline.py": "7f1ec28fa1537f6a860165e152b53f07fae3a9828cf2c119cb9bfabfcf19e161",
-          "tools/sycl/bench_engine.py": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
-          "tools/sycl/command_service.py": "c59f4945ba8c15c982f40386155deec65e42d063a3de14d29fb90e0a0dcc4881",
-          "tools/sycl/build_fused_profile.py": "0eb0c36c3290716e2589e01a9f613607a131b8525afb5e99f114495b6671caae",
-          "tools/sycl/build_full_context.py": "6e2aa8c584e0fd014157cfd08360945ae2d28ad2db660499d9f4eb900e517b72",
-          "tools/sycl/check_layout_source.py": "b11db83b899fd8bd09b7b1329843e0a267c79ff9b301d6a3b68936a76eef6b3f",
-          "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
-          "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
-          "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
-          "tools/sycl/cache_long_compare.py": "e96f1fd77a50e3535e7b0ed545464811e334e2f3bd329cc870675916dd5de4af",
-          "bench/sycl/matrix_shapes.cpp": "7760f81d378aa1fff3bcac94885745ddc545ca39d855f4a8ca2b8750c5ea1f3e",
-          "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
-          "bench/sycl/qsa_head_oracle.cpp": "a45bf3fa0cbd89f5b08279a278ce2a20e4426467be82a4bee2f1266b97c79163",
-          "tests/sycl/qsa_bf16_prefix.cpp": "d64e8e5a75f3893274fcc63eb83067c81be26565f36bdac43d49f01579120d58"
-        },
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p16",
-          "sha256": "a5bc5f6dd1dc85d39e8ff53a815538da2d432efe9db2c4f378357a6e4baa7f11",
-          "bytes": 1243496
-        },
-        "command": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/qsa_head_p16",
-          "--component"
-        ],
-        "environment": {
-          "PATH": "/usr/bin:/bin",
-          "HOME": "/home/yayoi",
-          "LANG": "C.UTF-8",
-          "LC_ALL": "C.UTF-8",
-          "PYTHONDONTWRITEBYTECODE": "1",
-          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-          "NEOReadDebugKeys": "1",
-          "EnableDirectSubmission": "0",
-          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-          "SYCL_CACHE_PERSISTENT": "0",
-          "ZES_ENABLE_SYSMAN": "0",
-          "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component16/api.trace",
-          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component16/validation.log",
-          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component16/tmp",
-          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/component16/cache",
-          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-          "STRATA_TEST_MAIN_GATES": "1"
-        },
         "mode": "component",
         "page": 16,
-        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-        "budgets": {
-          "wall": 600,
-          "cpu": 1200,
-          "rss_cap": 8589934592,
-          "text_cap": 33554432,
-          "file_cap": 67108864,
-          "total_cap": 536870912
-        },
-        "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
         "outcome": {
           "complete": true,
           "passed": true,
@@ -7524,1904 +6761,1024 @@
         }
       },
       "performance": {
-        "build": {
-          "stage": "built",
-          "source_commit": "7541cd03b29322003bcd2b985ee74ed802d6e1c7",
-          "native_build_source": "593d756a63e569f9ed26dd46759debf7e57b61f2",
-          "native_geometry": {
-            "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-            "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
-            "generated_sha256": {
-              "original.cpp": "f9e1aaa7c1f5d146da1ae097a47cade3630da758809c6f75c5c729e3e305e32c",
-              "candidate.cpp": "4326cc3121d56cc83ae561aebc08ca75854a0aab4386bf54172e7235ecca1cf5",
-              "qsa-head.hpp": "dc15535160bb9a8fd915ff0c46cf84ac33c58d97809e7606bd84bfed7ba0f199"
+        "source_commit": "7541cd03b29322003bcd2b985ee74ed802d6e1c7",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench",
+          "sha256": "de131e57e314b6c0ff66b785b3cf77031f2fa94145f2a9dcaac59364f56d8e4d",
+          "bytes": 1216904
+        },
+        "native_build_source": "593d756a63e569f9ed26dd46759debf7e57b61f2",
+        "command_recipe_archive": "2148ad3934f2b981622aaef76e4c2901234a59a8",
+        "actual_compiler_inputs": 664,
+        "actual_link_frozen": 20,
+        "criteria": "All3fresh processes,4cases(context32768/117488 bycontiguous/strided sortedunique causalIDs),Page4,8192queries,cap2051,varied nonzero Q/K/V/scales;syntheticnotmodelcapture.2warmups+3alternating paired rounds percase,batch8,floor100ms. Exact complete outputbits/inputimmutability/guards,knownproviders/immutableenv/pre-mainvalidation,clockmedian<=1000ns/p99<=10000ns/resolution<=1000ns,actualpackandattentioneventdurationenclosure,closedowner/no newfault. Stop first invalid/numerical/fault,incomplete isnotperformancefail. Keep all72samples. Advanceonlyifeachprocessmedian candidate/original<1 forwall+attention+pack/attentionservice,and eachcase3processGM<=0.99 forall3metrics. No retries/exclusions/adoption fromfixture. No PCIe/HW saturation claim.",
+        "sample_columns": [
+          "scenario",
+          "round",
+          "arm",
+          "wall_ms",
+          "pack_ms",
+          "attention_ms"
+        ],
+        "processes": [
+          {
+            "index": 0,
+            "clock": {
+              "resolution_ns": 1.0,
+              "median_ns": 30.0,
+              "p99_ns": 40.0,
+              "max_ns": 5220.0,
+              "floor_ms": 100.0
             },
-            "geometry": "M4,N16,K16,WG96,SG16;QK3headblocks*2cellblocks;PV3headblocks*2dim128blocks*8fragments;12real heads only.",
-            "softmax": "h=subgroup;h<12;h+=6 gives exactly one writer per head,independent of QK head-block ownership.",
-            "declared_local_bytes": 20724,
-            "reversible_geometry_edits": 26,
-            "reversible_event_edits": 3,
-            "reversible_portable_matrix_edits": 9,
-            "subgroup_local_tiles_bytes": 1536,
-            "coordinate_matrix_apply_used": false,
-            "private_fragment_mapping_assumed": false,
-            "local_traffic_note": "Additional logical FP32 scratch accesses versus register alpha/output;physical transactions and speed unknown. Three subgroup barriers retire each PV tile reuse;all original whole-group barriers remain.",
-            "preservation": "Same Q scale/BF16 rounding,d ascending16,K/V4loop bounds,FP32 cell sum c0..31,PV c0,16,output conversion;all whole-group barriers unchanged and uniform. No padded score/probability/state rows are consumed. M4matrix arithmetic/registers/speed still require native observation.",
-            "production_or_decode_changed": false
-          },
-          "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-          "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-          "commands": [
-            [
-              "compile",
+            "samples": [
               [
-                "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-                "-std=c++20",
-                "-O3",
-                "-DNDEBUG",
-                "-g0",
-                "-fsycl",
-                "-fsycl-id-queries-range=size_t",
-                "-fno-fast-math",
-                "-ffp-contract=off",
-                "-DSTRATA_ENABLE_SYCL=1",
-                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-                "-MD",
-                "-MF",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench.d",
-                "-c",
-                "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_head_bench.cpp",
-                "-o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench.o"
+                0,
+                0,
+                "original",
+                1430.824599,
+                3.973228,
+                1426.475625
+              ],
+              [
+                0,
+                0,
+                "candidate",
+                1559.485252,
+                3.951981,
+                1555.168124
+              ],
+              [
+                0,
+                1,
+                "candidate",
+                1558.649414,
+                3.984064,
+                1554.318437
+              ],
+              [
+                0,
+                1,
+                "original",
+                1430.546677,
+                3.984688,
+                1426.216355
+              ],
+              [
+                0,
+                2,
+                "original",
+                1430.559434,
+                3.953022,
+                1426.253751
+              ],
+              [
+                0,
+                2,
+                "candidate",
+                1559.045111,
+                3.952708,
+                1554.721876
+              ],
+              [
+                1,
+                0,
+                "candidate",
+                1405.602302,
+                3.960522,
+                1401.290002
+              ],
+              [
+                1,
+                0,
+                "original",
+                1274.655543,
+                3.975103,
+                1270.34875
+              ],
+              [
+                1,
+                1,
+                "original",
+                1274.722913,
+                3.9725,
+                1270.419272
+              ],
+              [
+                1,
+                1,
+                "candidate",
+                1405.25557,
+                3.961043,
+                1400.949479
+              ],
+              [
+                1,
+                2,
+                "candidate",
+                1405.262786,
+                3.956042,
+                1400.947395
+              ],
+              [
+                1,
+                2,
+                "original",
+                1274.749301,
+                3.977082,
+                1270.421458
+              ],
+              [
+                2,
+                0,
+                "original",
+                1506.929428,
+                14.587187,
+                1491.992709
+              ],
+              [
+                2,
+                0,
+                "candidate",
+                1653.031217,
+                14.615728,
+                1638.060624
+              ],
+              [
+                2,
+                1,
+                "candidate",
+                1652.195018,
+                14.621459,
+                1637.020937
+              ],
+              [
+                2,
+                1,
+                "original",
+                1506.5679,
+                14.590835,
+                1491.619062
+              ],
+              [
+                2,
+                2,
+                "original",
+                1506.870773,
+                14.587917,
+                1491.912811
+              ],
+              [
+                2,
+                2,
+                "candidate",
+                1651.877072,
+                14.590832,
+                1636.73875
+              ],
+              [
+                3,
+                0,
+                "candidate",
+                1827.621746,
+                14.611563,
+                1812.644271
+              ],
+              [
+                3,
+                0,
+                "original",
+                1807.509318,
+                14.579792,
+                1792.572605
+              ],
+              [
+                3,
+                1,
+                "original",
+                1811.386555,
+                14.622709,
+                1796.399061
+              ],
+              [
+                3,
+                1,
+                "candidate",
+                1824.86616,
+                14.604478,
+                1809.902501
+              ],
+              [
+                3,
+                2,
+                "candidate",
+                1826.479278,
+                14.605314,
+                1811.513542
+              ],
+              [
+                3,
+                2,
+                "original",
+                1810.295438,
+                14.576665,
+                1795.357084
               ]
             ],
-            [
-              "link",
-              [
-                "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-                "-std=c++20",
-                "-O3",
-                "-DNDEBUG",
-                "-g0",
-                "-fsycl",
-                "-fsycl-id-queries-range=size_t",
-                "-fno-fast-math",
-                "-ffp-contract=off",
-                "-DSTRATA_ENABLE_SYCL=1",
-                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include",
-                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/include/strata/sycl/compat",
-                "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/source/bench/sycl",
-                "-save-temps=obj",
-                "-v",
-                "-Wl,-t",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/runtime.o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/compat.o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/command_profile.o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/prompt_attention.o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/original.o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/candidate.o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench.o",
-                "-pthread",
-                "-ldl",
-                "-o",
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench"
-              ]
+            "medians": [
+              {
+                "scenario": 0,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1430.559434,
+                    "candidate": 1559.045111,
+                    "ratio": 1.089814987022762
+                  },
+                  "attention_ms": {
+                    "original": 1426.253751,
+                    "candidate": 1554.721876,
+                    "ratio": 1.0900738209522158
+                  },
+                  "service_ms": {
+                    "original": 1430.2067729999999,
+                    "candidate": 1558.674584,
+                    "ratio": 1.0898246417408066
+                  }
+                }
+              },
+              {
+                "scenario": 1,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1274.722913,
+                    "candidate": 1405.262786,
+                    "ratio": 1.102406469412855
+                  },
+                  "attention_ms": {
+                    "original": 1270.419272,
+                    "candidate": 1400.949479,
+                    "ratio": 1.1027457705317305
+                  },
+                  "service_ms": {
+                    "original": 1274.3917720000002,
+                    "candidate": 1404.9105220000001,
+                    "ratio": 1.1024165039885394
+                  }
+                }
+              },
+              {
+                "scenario": 2,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1506.870773,
+                    "candidate": 1652.195018,
+                    "ratio": 1.096441080153593
+                  },
+                  "attention_ms": {
+                    "original": 1491.912811,
+                    "candidate": 1637.020937,
+                    "ratio": 1.0972631409356535
+                  },
+                  "service_ms": {
+                    "original": 1506.500728,
+                    "candidate": 1651.642396,
+                    "ratio": 1.0963435764101404
+                  }
+                }
+              },
+              {
+                "scenario": 3,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1810.295438,
+                    "candidate": 1826.479278,
+                    "ratio": 1.0089398888492365
+                  },
+                  "attention_ms": {
+                    "original": 1795.357084,
+                    "candidate": 1811.513542,
+                    "ratio": 1.0089990220574971
+                  },
+                  "service_ms": {
+                    "original": 1809.933749,
+                    "candidate": 1826.1188559999998,
+                    "ratio": 1.00894237538194
+                  }
+                }
+              }
             ]
-          ],
-          "environment": {
-            "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-            "HOME": "/home/yayoi",
-            "LANG": "C.UTF-8",
-            "LC_ALL": "C.UTF-8",
-            "PYTHONDONTWRITEBYTECODE": "1",
-            "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-            "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-            "OMP_NUM_THREADS": "1",
-            "GIT_TERMINAL_PROMPT": "0",
-            "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-            "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
-            "PIP_CONFIG_FILE": "/dev/null",
-            "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-            "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-            "SYCL_CACHE_PERSISTENT": "0",
-            "NEOReadDebugKeys": "1",
-            "EnableDirectSubmission": "0",
-            "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-            "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-            "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-            "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/cache",
-            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/tmp"
           },
-          "input_inventory": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/input-inventory.json",
-            "sha256": "46a599235c376deb705df6aeb77909d3513965ef8f77d1dc54b178cc6181e89b",
-            "files": 9277
+          {
+            "index": 1,
+            "clock": {
+              "resolution_ns": 1.0,
+              "median_ns": 30.0,
+              "p99_ns": 31.0,
+              "max_ns": 50.0,
+              "floor_ms": 100.0
+            },
+            "samples": [
+              [
+                0,
+                0,
+                "candidate",
+                1559.497337,
+                3.970104,
+                1555.145416
+              ],
+              [
+                0,
+                0,
+                "original",
+                1431.139893,
+                3.958853,
+                1426.812709
+              ],
+              [
+                0,
+                1,
+                "original",
+                1431.244763,
+                3.957085,
+                1426.924791
+              ],
+              [
+                0,
+                1,
+                "candidate",
+                1558.663618,
+                3.951042,
+                1554.355832
+              ],
+              [
+                0,
+                2,
+                "candidate",
+                1559.46028,
+                3.95302,
+                1554.943643
+              ],
+              [
+                0,
+                2,
+                "original",
+                1428.822727,
+                3.959272,
+                1424.525626
+              ],
+              [
+                1,
+                0,
+                "original",
+                1275.117253,
+                3.973231,
+                1270.592502
+              ],
+              [
+                1,
+                0,
+                "candidate",
+                1405.459808,
+                3.959793,
+                1401.156979
+              ],
+              [
+                1,
+                1,
+                "candidate",
+                1405.610835,
+                3.957813,
+                1401.087707
+              ],
+              [
+                1,
+                1,
+                "original",
+                1274.553119,
+                3.974374,
+                1270.239271
+              ],
+              [
+                1,
+                2,
+                "original",
+                1274.885206,
+                3.992918,
+                1270.346042
+              ],
+              [
+                1,
+                2,
+                "candidate",
+                1405.46024,
+                3.959375,
+                1401.139582
+              ],
+              [
+                2,
+                0,
+                "candidate",
+                1651.821585,
+                14.621561,
+                1636.711771
+              ],
+              [
+                2,
+                0,
+                "original",
+                1505.66321,
+                14.634584,
+                1490.679165
+              ],
+              [
+                2,
+                1,
+                "original",
+                1508.699353,
+                14.626356,
+                1493.722915
+              ],
+              [
+                2,
+                1,
+                "candidate",
+                1652.095571,
+                14.585313,
+                1637.156146
+              ],
+              [
+                2,
+                2,
+                "candidate",
+                1652.004654,
+                14.583854,
+                1637.058123
+              ],
+              [
+                2,
+                2,
+                "original",
+                1508.042348,
+                14.589584,
+                1493.106563
+              ],
+              [
+                3,
+                0,
+                "original",
+                1812.177775,
+                14.591979,
+                1797.219168
+              ],
+              [
+                3,
+                0,
+                "candidate",
+                1825.456063,
+                14.57552,
+                1810.513959
+              ],
+              [
+                3,
+                1,
+                "candidate",
+                1824.667674,
+                14.630625,
+                1809.669689
+              ],
+              [
+                3,
+                1,
+                "original",
+                1812.54544,
+                14.624999,
+                1797.349164
+              ],
+              [
+                3,
+                2,
+                "original",
+                1811.493126,
+                14.578228,
+                1796.553126
+              ],
+              [
+                3,
+                2,
+                "candidate",
+                1826.033747,
+                14.587188,
+                1811.083332
+              ]
+            ],
+            "medians": [
+              {
+                "scenario": 0,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1431.139893,
+                    "candidate": 1559.46028,
+                    "ratio": 1.0896630634277205
+                  },
+                  "attention_ms": {
+                    "original": 1426.812709,
+                    "candidate": 1554.943643,
+                    "ratio": 1.0898022096325468
+                  },
+                  "service_ms": {
+                    "original": 1430.7715620000001,
+                    "candidate": 1558.896663,
+                    "ratio": 1.0895496558660283
+                  }
+                }
+              },
+              {
+                "scenario": 1,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1274.885206,
+                    "candidate": 1405.46024,
+                    "ratio": 1.1024210127982301
+                  },
+                  "attention_ms": {
+                    "original": 1270.346042,
+                    "candidate": 1401.139582,
+                    "ratio": 1.1029589857217819
+                  },
+                  "service_ms": {
+                    "original": 1274.3389599999998,
+                    "candidate": 1405.098957,
+                    "ratio": 1.1026100598854798
+                  }
+                }
+              },
+              {
+                "scenario": 2,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1508.042348,
+                    "candidate": 1652.004654,
+                    "ratio": 1.0954630393443037
+                  },
+                  "attention_ms": {
+                    "original": 1493.106563,
+                    "candidate": 1637.058123,
+                    "ratio": 1.09641077439963
+                  },
+                  "service_ms": {
+                    "original": 1507.696147,
+                    "candidate": 1651.641977,
+                    "ratio": 1.0954740318773262
+                  }
+                }
+              },
+              {
+                "scenario": 3,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1812.177775,
+                    "candidate": 1825.456063,
+                    "ratio": 1.0073272546342755
+                  },
+                  "attention_ms": {
+                    "original": 1797.219168,
+                    "candidate": 1810.513959,
+                    "ratio": 1.0073974233286165
+                  },
+                  "service_ms": {
+                    "original": 1811.8111470000001,
+                    "candidate": 1825.0894790000002,
+                    "ratio": 1.007328761621754
+                  }
+                }
+              }
+            ]
           },
-          "budgets": {
-            "wall": 600,
-            "cpu": 1800,
-            "rss_cap": 8589934592,
-            "text_cap": 33554432,
-            "file_cap": 268435456,
-            "total_cap": 2147483648
-          },
-          "passed": true,
-          "active": false,
-          "ownership_closed": true,
-          "criteria": "CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.",
-          "retention": "Same imminent v2comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.",
-          "binary": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench",
-            "sha256": "de131e57e314b6c0ff66b785b3cf77031f2fa94145f2a9dcaac59364f56d8e4d",
-            "bytes": 1216904
-          },
-          "actual_compiler_inputs": {
-            "files": 664,
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/compiler-inputs.json",
-            "sha256": "71e68e71fe0a8ad4b3c5c109330fc26059d82f8074803100b5023414296d3813",
-            "uncovered": 0
-          },
-          "actual_link_inputs": {
-            "frozen": 20,
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/link-inputs.json",
-            "sha256": "8a4e2718f0c31a803615e116e4f0437ffd26d195327c3b5d4314106b08fc9442",
-            "uncovered": 0
+          {
+            "index": 2,
+            "clock": {
+              "resolution_ns": 1.0,
+              "median_ns": 30.0,
+              "p99_ns": 31.0,
+              "max_ns": 80.0,
+              "floor_ms": 100.0
+            },
+            "samples": [
+              [
+                0,
+                0,
+                "original",
+                1429.880697,
+                3.959893,
+                1425.556771
+              ],
+              [
+                0,
+                0,
+                "candidate",
+                1559.22167,
+                3.948024,
+                1554.895625
+              ],
+              [
+                0,
+                1,
+                "candidate",
+                1559.984068,
+                3.951354,
+                1555.474895
+              ],
+              [
+                0,
+                1,
+                "original",
+                1430.949365,
+                3.954999,
+                1426.633542
+              ],
+              [
+                0,
+                2,
+                "original",
+                1430.690771,
+                3.957082,
+                1426.357083
+              ],
+              [
+                0,
+                2,
+                "candidate",
+                1558.578122,
+                3.954584,
+                1554.270314
+              ],
+              [
+                1,
+                0,
+                "candidate",
+                1405.483651,
+                3.960521,
+                1401.154167
+              ],
+              [
+                1,
+                0,
+                "original",
+                1274.848818,
+                3.970001,
+                1270.518438
+              ],
+              [
+                1,
+                1,
+                "original",
+                1274.653843,
+                3.972187,
+                1270.325312
+              ],
+              [
+                1,
+                1,
+                "candidate",
+                1405.583124,
+                3.992916,
+                1401.224791
+              ],
+              [
+                1,
+                2,
+                "candidate",
+                1405.51024,
+                3.961564,
+                1401.195313
+              ],
+              [
+                1,
+                2,
+                "original",
+                1274.573879,
+                3.96823,
+                1270.265104
+              ],
+              [
+                2,
+                0,
+                "original",
+                1507.670249,
+                14.627085,
+                1492.69875
+              ],
+              [
+                2,
+                0,
+                "candidate",
+                1651.758552,
+                14.61823,
+                1636.786249
+              ],
+              [
+                2,
+                1,
+                "candidate",
+                1653.038873,
+                14.591251,
+                1638.089166
+              ],
+              [
+                2,
+                1,
+                "original",
+                1506.080508,
+                14.596042,
+                1491.134689
+              ],
+              [
+                2,
+                2,
+                "original",
+                1507.638521,
+                14.624062,
+                1492.656979
+              ],
+              [
+                2,
+                2,
+                "candidate",
+                1653.353143,
+                14.618958,
+                1638.367813
+              ],
+              [
+                3,
+                0,
+                "candidate",
+                1825.699871,
+                14.579688,
+                1810.547708
+              ],
+              [
+                3,
+                0,
+                "original",
+                1809.529713,
+                14.57354,
+                1794.592291
+              ],
+              [
+                3,
+                1,
+                "original",
+                1813.809256,
+                14.576666,
+                1798.880522
+              ],
+              [
+                3,
+                1,
+                "candidate",
+                1824.868079,
+                14.57698,
+                1809.933228
+              ],
+              [
+                3,
+                2,
+                "candidate",
+                1823.344487,
+                14.630936,
+                1808.130522
+              ],
+              [
+                3,
+                2,
+                "original",
+                1811.498169,
+                14.575625,
+                1796.555729
+              ]
+            ],
+            "medians": [
+              {
+                "scenario": 0,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1430.690771,
+                    "candidate": 1559.22167,
+                    "ratio": 1.0898383505403908
+                  },
+                  "attention_ms": {
+                    "original": 1426.357083,
+                    "candidate": 1554.895625,
+                    "ratio": 1.090116664005096
+                  },
+                  "service_ms": {
+                    "original": 1430.314165,
+                    "candidate": 1558.8436490000001,
+                    "ratio": 1.0898610159537923
+                  }
+                }
+              },
+              {
+                "scenario": 1,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1274.653843,
+                    "candidate": 1405.51024,
+                    "ratio": 1.1026603400747759
+                  },
+                  "attention_ms": {
+                    "original": 1270.325312,
+                    "candidate": 1401.195313,
+                    "ratio": 1.1030208559679553
+                  },
+                  "service_ms": {
+                    "original": 1274.297499,
+                    "candidate": 1405.156877,
+                    "ratio": 1.1026913872958954
+                  }
+                }
+              },
+              {
+                "scenario": 2,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1507.638521,
+                    "candidate": 1653.038873,
+                    "ratio": 1.0964424495492178
+                  },
+                  "attention_ms": {
+                    "original": 1492.656979,
+                    "candidate": 1638.089166,
+                    "ratio": 1.0974317536085427
+                  },
+                  "service_ms": {
+                    "original": 1507.2810410000002,
+                    "candidate": 1652.680417,
+                    "ratio": 1.096464675163389
+                  }
+                }
+              },
+              {
+                "scenario": 3,
+                "metrics": {
+                  "wall_ms": {
+                    "original": 1811.498169,
+                    "candidate": 1824.868079,
+                    "ratio": 1.007380581569884
+                  },
+                  "attention_ms": {
+                    "original": 1796.555729,
+                    "candidate": 1809.933228,
+                    "ratio": 1.0074461920574245
+                  },
+                  "service_ms": {
+                    "original": 1811.1313539999999,
+                    "candidate": 1824.5102080000001,
+                    "ratio": 1.0073870147355422
+                  }
+                }
+              }
+            ]
           }
-        },
-        "comparison": {
-          "stage": "closed",
-          "source_commit": "7541cd03b29322003bcd2b985ee74ed802d6e1c7",
-          "binary": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench",
-            "sha256": "de131e57e314b6c0ff66b785b3cf77031f2fa94145f2a9dcaac59364f56d8e4d",
-            "bytes": 1216904
+        ],
+        "decision": [
+          {
+            "scenario": 0,
+            "metrics": {
+              "wall_ms": {
+                "process_ratios": [
+                  1.089814987022762,
+                  1.0896630634277205,
+                  1.0898383505403908
+                ],
+                "geometric_mean_ratio": 1.0897721308927135,
+                "passed": false
+              },
+              "attention_ms": {
+                "process_ratios": [
+                  1.0900738209522158,
+                  1.0898022096325468,
+                  1.090116664005096
+                ],
+                "geometric_mean_ratio": 1.0899975559693034,
+                "passed": false
+              },
+              "service_ms": {
+                "process_ratios": [
+                  1.0898246417408066,
+                  1.0895496558660283,
+                  1.0898610159537923
+                ],
+                "geometric_mean_ratio": 1.0897450956549686,
+                "passed": false
+              }
+            }
           },
-          "plans": [
-            {
-              "index": 0,
-              "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/0",
-              "command": [
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench",
-                "0"
-              ],
-              "environment": {
-                "PATH": "/usr/bin:/bin",
-                "HOME": "/home/yayoi",
-                "LANG": "C.UTF-8",
-                "LC_ALL": "C.UTF-8",
-                "PYTHONDONTWRITEBYTECODE": "1",
-                "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-                "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-                "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-                "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-                "NEOReadDebugKeys": "1",
-                "EnableDirectSubmission": "0",
-                "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-                "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-                "SYCL_CACHE_PERSISTENT": "0",
-                "ZES_ENABLE_SYSMAN": "0",
-                "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-                "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-                "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/0/validation.log",
-                "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-                "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-                "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-                "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-                "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/0/tmp",
-                "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/0/cache",
-                "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
-              }
-            },
-            {
-              "index": 1,
-              "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/1",
-              "command": [
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench",
-                "1"
-              ],
-              "environment": {
-                "PATH": "/usr/bin:/bin",
-                "HOME": "/home/yayoi",
-                "LANG": "C.UTF-8",
-                "LC_ALL": "C.UTF-8",
-                "PYTHONDONTWRITEBYTECODE": "1",
-                "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-                "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-                "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-                "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-                "NEOReadDebugKeys": "1",
-                "EnableDirectSubmission": "0",
-                "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-                "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-                "SYCL_CACHE_PERSISTENT": "0",
-                "ZES_ENABLE_SYSMAN": "0",
-                "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-                "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-                "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/1/validation.log",
-                "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-                "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-                "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-                "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-                "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/1/tmp",
-                "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/1/cache",
-                "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
-              }
-            },
-            {
-              "index": 2,
-              "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/2",
-              "command": [
-                "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/bench",
-                "2"
-              ],
-              "environment": {
-                "PATH": "/usr/bin:/bin",
-                "HOME": "/home/yayoi",
-                "LANG": "C.UTF-8",
-                "LC_ALL": "C.UTF-8",
-                "PYTHONDONTWRITEBYTECODE": "1",
-                "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-                "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-                "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
-                "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-                "NEOReadDebugKeys": "1",
-                "EnableDirectSubmission": "0",
-                "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-                "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-                "SYCL_CACHE_PERSISTENT": "0",
-                "ZES_ENABLE_SYSMAN": "0",
-                "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-                "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
-                "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/2/validation.log",
-                "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-                "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-                "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-                "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-                "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/2/tmp",
-                "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2/performance/2/cache",
-                "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+          {
+            "scenario": 1,
+            "metrics": {
+              "wall_ms": {
+                "process_ratios": [
+                  1.102406469412855,
+                  1.1024210127982301,
+                  1.1026603400747759
+                ],
+                "geometric_mean_ratio": 1.1024959346176444,
+                "passed": false
+              },
+              "attention_ms": {
+                "process_ratios": [
+                  1.1027457705317305,
+                  1.1029589857217819,
+                  1.1030208559679553
+                ],
+                "geometric_mean_ratio": 1.102908531112403,
+                "passed": false
+              },
+              "service_ms": {
+                "process_ratios": [
+                  1.1024165039885394,
+                  1.1026100598854798,
+                  1.1026913872958954
+                ],
+                "geometric_mean_ratio": 1.1025726443615131,
+                "passed": false
               }
             }
-          ],
-          "budgets": {
-            "wall": 900,
-            "cpu": 1800,
-            "rss_cap": 8589934592,
-            "text_cap": 16777216,
-            "file_cap": 134217728,
-            "total_cap": 2147483648
           },
-          "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-          "processes": [
-            {
-              "index": 0,
-              "host_probe_accepted": true,
-              "clock": {
-                "resolution_ns": 1.0,
-                "median_ns": 30.0,
-                "p99_ns": 40.0,
-                "max_ns": 5220.0,
-                "floor_ms": 100.0
+          {
+            "scenario": 2,
+            "metrics": {
+              "wall_ms": {
+                "process_ratios": [
+                  1.096441080153593,
+                  1.0954630393443037,
+                  1.0964424495492178
+                ],
+                "geometric_mean_ratio": 1.096115425895449,
+                "passed": false
               },
-              "samples": [
-                {
-                  "process": 0,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1430.824599,
-                  "pack_ms": 3.973228,
-                  "attention_ms": 1426.475625,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1559.485252,
-                  "pack_ms": 3.951981,
-                  "attention_ms": 1555.168124,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1558.649414,
-                  "pack_ms": 3.984064,
-                  "attention_ms": 1554.318437,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1430.546677,
-                  "pack_ms": 3.984688,
-                  "attention_ms": 1426.216355,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1430.559434,
-                  "pack_ms": 3.953022,
-                  "attention_ms": 1426.253751,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1559.045111,
-                  "pack_ms": 3.952708,
-                  "attention_ms": 1554.721876,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1405.602302,
-                  "pack_ms": 3.960522,
-                  "attention_ms": 1401.290002,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1274.655543,
-                  "pack_ms": 3.975103,
-                  "attention_ms": 1270.34875,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1274.722913,
-                  "pack_ms": 3.9725,
-                  "attention_ms": 1270.419272,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1405.25557,
-                  "pack_ms": 3.961043,
-                  "attention_ms": 1400.949479,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1405.262786,
-                  "pack_ms": 3.956042,
-                  "attention_ms": 1400.947395,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1274.749301,
-                  "pack_ms": 3.977082,
-                  "attention_ms": 1270.421458,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1506.929428,
-                  "pack_ms": 14.587187,
-                  "attention_ms": 1491.992709,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1653.031217,
-                  "pack_ms": 14.615728,
-                  "attention_ms": 1638.060624,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1652.195018,
-                  "pack_ms": 14.621459,
-                  "attention_ms": 1637.020937,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1506.5679,
-                  "pack_ms": 14.590835,
-                  "attention_ms": 1491.619062,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1506.870773,
-                  "pack_ms": 14.587917,
-                  "attention_ms": 1491.912811,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1651.877072,
-                  "pack_ms": 14.590832,
-                  "attention_ms": 1636.73875,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1827.621746,
-                  "pack_ms": 14.611563,
-                  "attention_ms": 1812.644271,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1807.509318,
-                  "pack_ms": 14.579792,
-                  "attention_ms": 1792.572605,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1811.386555,
-                  "pack_ms": 14.622709,
-                  "attention_ms": 1796.399061,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1824.86616,
-                  "pack_ms": 14.604478,
-                  "attention_ms": 1809.902501,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1826.479278,
-                  "pack_ms": 14.605314,
-                  "attention_ms": 1811.513542,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 0,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1810.295438,
-                  "pack_ms": 14.576665,
-                  "attention_ms": 1795.357084,
-                  "bit_parity": 1
-                }
-              ],
-              "medians": [
-                {
-                  "scenario": 0,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1430.559434,
-                      "candidate": 1559.045111,
-                      "ratio": 1.089814987022762
-                    },
-                    "attention_ms": {
-                      "original": 1426.253751,
-                      "candidate": 1554.721876,
-                      "ratio": 1.0900738209522158
-                    },
-                    "service_ms": {
-                      "original": 1430.2067729999999,
-                      "candidate": 1558.674584,
-                      "ratio": 1.0898246417408066
-                    }
-                  }
-                },
-                {
-                  "scenario": 1,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1274.722913,
-                      "candidate": 1405.262786,
-                      "ratio": 1.102406469412855
-                    },
-                    "attention_ms": {
-                      "original": 1270.419272,
-                      "candidate": 1400.949479,
-                      "ratio": 1.1027457705317305
-                    },
-                    "service_ms": {
-                      "original": 1274.3917720000002,
-                      "candidate": 1404.9105220000001,
-                      "ratio": 1.1024165039885394
-                    }
-                  }
-                },
-                {
-                  "scenario": 2,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1506.870773,
-                      "candidate": 1652.195018,
-                      "ratio": 1.096441080153593
-                    },
-                    "attention_ms": {
-                      "original": 1491.912811,
-                      "candidate": 1637.020937,
-                      "ratio": 1.0972631409356535
-                    },
-                    "service_ms": {
-                      "original": 1506.500728,
-                      "candidate": 1651.642396,
-                      "ratio": 1.0963435764101404
-                    }
-                  }
-                },
-                {
-                  "scenario": 3,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1810.295438,
-                      "candidate": 1826.479278,
-                      "ratio": 1.0089398888492365
-                    },
-                    "attention_ms": {
-                      "original": 1795.357084,
-                      "candidate": 1811.513542,
-                      "ratio": 1.0089990220574971
-                    },
-                    "service_ms": {
-                      "original": 1809.933749,
-                      "candidate": 1826.1188559999998,
-                      "ratio": 1.00894237538194
-                    }
-                  }
-                }
-              ],
-              "ownership_closed": true,
-              "fresh_faults": [],
-              "boot_unchanged": true,
-              "driver_after": {
-                "pci": "/sys/bus/pci/devices/0000:05:00.0",
-                "driver": "xe",
-                "vendor": "0x8086",
-                "device": "0xe20c",
-                "kernel": "7.0.0-38-generic",
-                "devcoredump": false
+              "attention_ms": {
+                "process_ratios": [
+                  1.0972631409356535,
+                  1.09641077439963,
+                  1.0974317536085427
+                ],
+                "geometric_mean_ratio": 1.0970351319446816,
+                "passed": false
               },
-              "passed": true
-            },
-            {
-              "index": 1,
-              "host_probe_accepted": true,
-              "clock": {
-                "resolution_ns": 1.0,
-                "median_ns": 30.0,
-                "p99_ns": 31.0,
-                "max_ns": 50.0,
-                "floor_ms": 100.0
-              },
-              "samples": [
-                {
-                  "process": 1,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1559.497337,
-                  "pack_ms": 3.970104,
-                  "attention_ms": 1555.145416,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1431.139893,
-                  "pack_ms": 3.958853,
-                  "attention_ms": 1426.812709,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1431.244763,
-                  "pack_ms": 3.957085,
-                  "attention_ms": 1426.924791,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1558.663618,
-                  "pack_ms": 3.951042,
-                  "attention_ms": 1554.355832,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1559.46028,
-                  "pack_ms": 3.95302,
-                  "attention_ms": 1554.943643,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1428.822727,
-                  "pack_ms": 3.959272,
-                  "attention_ms": 1424.525626,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1275.117253,
-                  "pack_ms": 3.973231,
-                  "attention_ms": 1270.592502,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1405.459808,
-                  "pack_ms": 3.959793,
-                  "attention_ms": 1401.156979,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1405.610835,
-                  "pack_ms": 3.957813,
-                  "attention_ms": 1401.087707,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1274.553119,
-                  "pack_ms": 3.974374,
-                  "attention_ms": 1270.239271,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1274.885206,
-                  "pack_ms": 3.992918,
-                  "attention_ms": 1270.346042,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1405.46024,
-                  "pack_ms": 3.959375,
-                  "attention_ms": 1401.139582,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1651.821585,
-                  "pack_ms": 14.621561,
-                  "attention_ms": 1636.711771,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1505.66321,
-                  "pack_ms": 14.634584,
-                  "attention_ms": 1490.679165,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1508.699353,
-                  "pack_ms": 14.626356,
-                  "attention_ms": 1493.722915,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1652.095571,
-                  "pack_ms": 14.585313,
-                  "attention_ms": 1637.156146,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1652.004654,
-                  "pack_ms": 14.583854,
-                  "attention_ms": 1637.058123,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1508.042348,
-                  "pack_ms": 14.589584,
-                  "attention_ms": 1493.106563,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1812.177775,
-                  "pack_ms": 14.591979,
-                  "attention_ms": 1797.219168,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1825.456063,
-                  "pack_ms": 14.57552,
-                  "attention_ms": 1810.513959,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1824.667674,
-                  "pack_ms": 14.630625,
-                  "attention_ms": 1809.669689,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1812.54544,
-                  "pack_ms": 14.624999,
-                  "attention_ms": 1797.349164,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1811.493126,
-                  "pack_ms": 14.578228,
-                  "attention_ms": 1796.553126,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 1,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1826.033747,
-                  "pack_ms": 14.587188,
-                  "attention_ms": 1811.083332,
-                  "bit_parity": 1
-                }
-              ],
-              "medians": [
-                {
-                  "scenario": 0,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1431.139893,
-                      "candidate": 1559.46028,
-                      "ratio": 1.0896630634277205
-                    },
-                    "attention_ms": {
-                      "original": 1426.812709,
-                      "candidate": 1554.943643,
-                      "ratio": 1.0898022096325468
-                    },
-                    "service_ms": {
-                      "original": 1430.7715620000001,
-                      "candidate": 1558.896663,
-                      "ratio": 1.0895496558660283
-                    }
-                  }
-                },
-                {
-                  "scenario": 1,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1274.885206,
-                      "candidate": 1405.46024,
-                      "ratio": 1.1024210127982301
-                    },
-                    "attention_ms": {
-                      "original": 1270.346042,
-                      "candidate": 1401.139582,
-                      "ratio": 1.1029589857217819
-                    },
-                    "service_ms": {
-                      "original": 1274.3389599999998,
-                      "candidate": 1405.098957,
-                      "ratio": 1.1026100598854798
-                    }
-                  }
-                },
-                {
-                  "scenario": 2,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1508.042348,
-                      "candidate": 1652.004654,
-                      "ratio": 1.0954630393443037
-                    },
-                    "attention_ms": {
-                      "original": 1493.106563,
-                      "candidate": 1637.058123,
-                      "ratio": 1.09641077439963
-                    },
-                    "service_ms": {
-                      "original": 1507.696147,
-                      "candidate": 1651.641977,
-                      "ratio": 1.0954740318773262
-                    }
-                  }
-                },
-                {
-                  "scenario": 3,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1812.177775,
-                      "candidate": 1825.456063,
-                      "ratio": 1.0073272546342755
-                    },
-                    "attention_ms": {
-                      "original": 1797.219168,
-                      "candidate": 1810.513959,
-                      "ratio": 1.0073974233286165
-                    },
-                    "service_ms": {
-                      "original": 1811.8111470000001,
-                      "candidate": 1825.0894790000002,
-                      "ratio": 1.007328761621754
-                    }
-                  }
-                }
-              ],
-              "ownership_closed": true,
-              "fresh_faults": [],
-              "boot_unchanged": true,
-              "driver_after": {
-                "pci": "/sys/bus/pci/devices/0000:05:00.0",
-                "driver": "xe",
-                "vendor": "0x8086",
-                "device": "0xe20c",
-                "kernel": "7.0.0-38-generic",
-                "devcoredump": false
-              },
-              "passed": true
-            },
-            {
-              "index": 2,
-              "host_probe_accepted": true,
-              "clock": {
-                "resolution_ns": 1.0,
-                "median_ns": 30.0,
-                "p99_ns": 31.0,
-                "max_ns": 80.0,
-                "floor_ms": 100.0
-              },
-              "samples": [
-                {
-                  "process": 2,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1429.880697,
-                  "pack_ms": 3.959893,
-                  "attention_ms": 1425.556771,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1559.22167,
-                  "pack_ms": 3.948024,
-                  "attention_ms": 1554.895625,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1559.984068,
-                  "pack_ms": 3.951354,
-                  "attention_ms": 1555.474895,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1430.949365,
-                  "pack_ms": 3.954999,
-                  "attention_ms": 1426.633542,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1430.690771,
-                  "pack_ms": 3.957082,
-                  "attention_ms": 1426.357083,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 0,
-                  "context": 32768,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1558.578122,
-                  "pack_ms": 3.954584,
-                  "attention_ms": 1554.270314,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1405.483651,
-                  "pack_ms": 3.960521,
-                  "attention_ms": 1401.154167,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1274.848818,
-                  "pack_ms": 3.970001,
-                  "attention_ms": 1270.518438,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1274.653843,
-                  "pack_ms": 3.972187,
-                  "attention_ms": 1270.325312,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1405.583124,
-                  "pack_ms": 3.992916,
-                  "attention_ms": 1401.224791,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1405.51024,
-                  "pack_ms": 3.961564,
-                  "attention_ms": 1401.195313,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 1,
-                  "context": 32768,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1274.573879,
-                  "pack_ms": 3.96823,
-                  "attention_ms": 1270.265104,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1507.670249,
-                  "pack_ms": 14.627085,
-                  "attention_ms": 1492.69875,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1651.758552,
-                  "pack_ms": 14.61823,
-                  "attention_ms": 1636.786249,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1653.038873,
-                  "pack_ms": 14.591251,
-                  "attention_ms": 1638.089166,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1506.080508,
-                  "pack_ms": 14.596042,
-                  "attention_ms": 1491.134689,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1507.638521,
-                  "pack_ms": 14.624062,
-                  "attention_ms": 1492.656979,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 2,
-                  "context": 117488,
-                  "pattern": 0,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1653.353143,
-                  "pack_ms": 14.618958,
-                  "attention_ms": 1638.367813,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "candidate",
-                  "wall_ms": 1825.699871,
-                  "pack_ms": 14.579688,
-                  "attention_ms": 1810.547708,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 0,
-                  "arm": "original",
-                  "wall_ms": 1809.529713,
-                  "pack_ms": 14.57354,
-                  "attention_ms": 1794.592291,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "original",
-                  "wall_ms": 1813.809256,
-                  "pack_ms": 14.576666,
-                  "attention_ms": 1798.880522,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 1,
-                  "arm": "candidate",
-                  "wall_ms": 1824.868079,
-                  "pack_ms": 14.57698,
-                  "attention_ms": 1809.933228,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "candidate",
-                  "wall_ms": 1823.344487,
-                  "pack_ms": 14.630936,
-                  "attention_ms": 1808.130522,
-                  "bit_parity": 1
-                },
-                {
-                  "process": 2,
-                  "scenario": 3,
-                  "context": 117488,
-                  "pattern": 1,
-                  "queries": 8192,
-                  "cap": 2051,
-                  "page": 4,
-                  "batch": 8,
-                  "round": 2,
-                  "arm": "original",
-                  "wall_ms": 1811.498169,
-                  "pack_ms": 14.575625,
-                  "attention_ms": 1796.555729,
-                  "bit_parity": 1
-                }
-              ],
-              "medians": [
-                {
-                  "scenario": 0,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1430.690771,
-                      "candidate": 1559.22167,
-                      "ratio": 1.0898383505403908
-                    },
-                    "attention_ms": {
-                      "original": 1426.357083,
-                      "candidate": 1554.895625,
-                      "ratio": 1.090116664005096
-                    },
-                    "service_ms": {
-                      "original": 1430.314165,
-                      "candidate": 1558.8436490000001,
-                      "ratio": 1.0898610159537923
-                    }
-                  }
-                },
-                {
-                  "scenario": 1,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1274.653843,
-                      "candidate": 1405.51024,
-                      "ratio": 1.1026603400747759
-                    },
-                    "attention_ms": {
-                      "original": 1270.325312,
-                      "candidate": 1401.195313,
-                      "ratio": 1.1030208559679553
-                    },
-                    "service_ms": {
-                      "original": 1274.297499,
-                      "candidate": 1405.156877,
-                      "ratio": 1.1026913872958954
-                    }
-                  }
-                },
-                {
-                  "scenario": 2,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1507.638521,
-                      "candidate": 1653.038873,
-                      "ratio": 1.0964424495492178
-                    },
-                    "attention_ms": {
-                      "original": 1492.656979,
-                      "candidate": 1638.089166,
-                      "ratio": 1.0974317536085427
-                    },
-                    "service_ms": {
-                      "original": 1507.2810410000002,
-                      "candidate": 1652.680417,
-                      "ratio": 1.096464675163389
-                    }
-                  }
-                },
-                {
-                  "scenario": 3,
-                  "metrics": {
-                    "wall_ms": {
-                      "original": 1811.498169,
-                      "candidate": 1824.868079,
-                      "ratio": 1.007380581569884
-                    },
-                    "attention_ms": {
-                      "original": 1796.555729,
-                      "candidate": 1809.933228,
-                      "ratio": 1.0074461920574245
-                    },
-                    "service_ms": {
-                      "original": 1811.1313539999999,
-                      "candidate": 1824.5102080000001,
-                      "ratio": 1.0073870147355422
-                    }
-                  }
-                }
-              ],
-              "ownership_closed": true,
-              "fresh_faults": [],
-              "boot_unchanged": true,
-              "driver_after": {
-                "pci": "/sys/bus/pci/devices/0000:05:00.0",
-                "driver": "xe",
-                "vendor": "0x8086",
-                "device": "0xe20c",
-                "kernel": "7.0.0-38-generic",
-                "devcoredump": false
-              },
-              "passed": true
-            }
-          ],
-          "passed": true,
-          "complete": true,
-          "ownership_closed": true,
-          "criteria": "All3fresh processes,4cases(context32768/117488 bycontiguous/strided sortedunique causalIDs),Page4,8192queries,cap2051,varied nonzero Q/K/V/scales;syntheticnotmodelcapture.2warmups+3alternating paired rounds percase,batch8,floor100ms. Exact complete outputbits/inputimmutability/guards,knownproviders/immutableenv/pre-mainvalidation,clockmedian<=1000ns/p99<=10000ns/resolution<=1000ns,actualpackandattentioneventdurationenclosure,closedowner/no newfault. Stop first invalid/numerical/fault,incomplete isnotperformancefail. Keep all72samples. Advanceonlyifeachprocessmedian candidate/original<1 forwall+attention+pack/attentionservice,and eachcase3processGM<=0.99 forall3metrics. No retries/exclusions/adoption fromfixture. No PCIe/HW saturation claim.",
-          "host_probe_accepted": true,
-          "decision": [
-            {
-              "scenario": 0,
-              "metrics": {
-                "wall_ms": {
-                  "process_ratios": [
-                    1.089814987022762,
-                    1.0896630634277205,
-                    1.0898383505403908
-                  ],
-                  "geometric_mean_ratio": 1.0897721308927135,
-                  "passed": false
-                },
-                "attention_ms": {
-                  "process_ratios": [
-                    1.0900738209522158,
-                    1.0898022096325468,
-                    1.090116664005096
-                  ],
-                  "geometric_mean_ratio": 1.0899975559693034,
-                  "passed": false
-                },
-                "service_ms": {
-                  "process_ratios": [
-                    1.0898246417408066,
-                    1.0895496558660283,
-                    1.0898610159537923
-                  ],
-                  "geometric_mean_ratio": 1.0897450956549686,
-                  "passed": false
-                }
-              }
-            },
-            {
-              "scenario": 1,
-              "metrics": {
-                "wall_ms": {
-                  "process_ratios": [
-                    1.102406469412855,
-                    1.1024210127982301,
-                    1.1026603400747759
-                  ],
-                  "geometric_mean_ratio": 1.1024959346176444,
-                  "passed": false
-                },
-                "attention_ms": {
-                  "process_ratios": [
-                    1.1027457705317305,
-                    1.1029589857217819,
-                    1.1030208559679553
-                  ],
-                  "geometric_mean_ratio": 1.102908531112403,
-                  "passed": false
-                },
-                "service_ms": {
-                  "process_ratios": [
-                    1.1024165039885394,
-                    1.1026100598854798,
-                    1.1026913872958954
-                  ],
-                  "geometric_mean_ratio": 1.1025726443615131,
-                  "passed": false
-                }
-              }
-            },
-            {
-              "scenario": 2,
-              "metrics": {
-                "wall_ms": {
-                  "process_ratios": [
-                    1.096441080153593,
-                    1.0954630393443037,
-                    1.0964424495492178
-                  ],
-                  "geometric_mean_ratio": 1.096115425895449,
-                  "passed": false
-                },
-                "attention_ms": {
-                  "process_ratios": [
-                    1.0972631409356535,
-                    1.09641077439963,
-                    1.0974317536085427
-                  ],
-                  "geometric_mean_ratio": 1.0970351319446816,
-                  "passed": false
-                },
-                "service_ms": {
-                  "process_ratios": [
-                    1.0963435764101404,
-                    1.0954740318773262,
-                    1.096464675163389
-                  ],
-                  "geometric_mean_ratio": 1.0960940056601072,
-                  "passed": false
-                }
-              }
-            },
-            {
-              "scenario": 3,
-              "metrics": {
-                "wall_ms": {
-                  "process_ratios": [
-                    1.0089398888492365,
-                    1.0073272546342755,
-                    1.007380581569884
-                  ],
-                  "geometric_mean_ratio": 1.0078822975869561,
-                  "passed": false
-                },
-                "attention_ms": {
-                  "process_ratios": [
-                    1.0089990220574971,
-                    1.0073974233286165,
-                    1.0074461920574245
-                  ],
-                  "geometric_mean_ratio": 1.007947271491764,
-                  "passed": false
-                },
-                "service_ms": {
-                  "process_ratios": [
-                    1.00894237538194,
-                    1.007328761621754,
-                    1.0073870147355422
-                  ],
-                  "geometric_mean_ratio": 1.007885773622617,
-                  "passed": false
-                }
+              "service_ms": {
+                "process_ratios": [
+                  1.0963435764101404,
+                  1.0954740318773262,
+                  1.096464675163389
+                ],
+                "geometric_mean_ratio": 1.0960940056601072,
+                "passed": false
               }
             }
-          ],
-          "advance_to_model": false,
-          "model_adopted": false,
-          "model_PP_measured": false,
-          "fresh_faults": [],
-          "boot_unchanged": true,
-          "driver_after": {
-            "pci": "/sys/bus/pci/devices/0000:05:00.0",
-            "driver": "xe",
-            "vendor": "0x8086",
-            "device": "0xe20c",
-            "kernel": "7.0.0-38-generic",
-            "devcoredump": false
+          },
+          {
+            "scenario": 3,
+            "metrics": {
+              "wall_ms": {
+                "process_ratios": [
+                  1.0089398888492365,
+                  1.0073272546342755,
+                  1.007380581569884
+                ],
+                "geometric_mean_ratio": 1.0078822975869561,
+                "passed": false
+              },
+              "attention_ms": {
+                "process_ratios": [
+                  1.0089990220574971,
+                  1.0073974233286165,
+                  1.0074461920574245
+                ],
+                "geometric_mean_ratio": 1.007947271491764,
+                "passed": false
+              },
+              "service_ms": {
+                "process_ratios": [
+                  1.00894237538194,
+                  1.007328761621754,
+                  1.0073870147355422
+                ],
+                "geometric_mean_ratio": 1.007885773622617,
+                "passed": false
+              }
+            }
           }
-        }
+        ],
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "advance_to_model": false,
+        "model_adopted": false,
+        "fresh_faults": []
       },
       "retirement": {
-        "stage": "prepared",
+        "stage": "retired",
         "archive_commit": "2148ad3934f2b981622aaef76e4c2901234a59a8",
         "source_recovery": {
           "native_source": "593d756a63e569f9ed26dd46759debf7e57b61f2",
@@ -9442,7 +7799,7 @@
         "bytes": 19698071,
         "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-head-native-v2-retired-20261029.jsonl",
         "manifest_sha256": "903480ad26e4f0d924dceab8d98549b8d711d8af20110ed1815fc1a88d49a733",
-        "verified_absent": false,
+        "verified_absent": true,
         "selected_retained": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
           "bytes": 22190000,
