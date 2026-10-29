@@ -250,6 +250,21 @@ only with overflow-safe range checks and a size_t-compiled fallback. Production
 items. The broad public pack API can exceed INT_MAX;never narrow addresses or
 silently reject those callers. Keep decode and selected6e40unchanged.
 
+The guarded ID-int component (source16ad0e76e) now passes compiled properties,
+traced tiny and11Page4/11Page16oracle cases,including physical262144component
+addresses. The six host range-boundary checks pass. FP32online state and BF16
+outputs remain bit-identical;guards,input immutability,providers,ownership and
+fault gates pass. The overflow-safe dispatcher returns broad ranges to the
+separate size_t image before any int enqueue. Huge public allocations and full
+model context/state are not exercised by these component tests.
+
+Its three-process72sample full-path timing comparison nevertheless rejects
+advancement:wall-time geometric means are0.999454,0.999809,0.999667and0.999726
+for32Kcontiguous/strided and117488contiguous/strided. Every metric misses the
+predeclared1percent gain;some per-process cases also increase slightly. Static
+IR simplification is not a useful throughput gain here. No model trial or
+adoption follows,and Main closes this candidate without more failure forensics.
+
 One independent Orca Luna decision-support task now audits framework-compatible
 parallel normalizer sums against pinned SGLang/vLLM contracts. It differs from
 the prior order-preserving survey:the user accepts validated framework FP32
