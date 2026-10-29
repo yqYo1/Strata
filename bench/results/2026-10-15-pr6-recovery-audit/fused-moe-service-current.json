@@ -9071,6 +9071,55 @@
           "sha256": "f2d135c1ba4fdbac4154fa18abe8ba77dfca9ddc252364bc7aca1b31896c15df",
           "uncovered": 0
         }
+      },
+      "edge": {
+        "stage": "prepared",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/bench",
+          "--edge-only"
+        ],
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/bench",
+          "sha256": "5ed55ba84cb3dca94d62de318a37602f8f4b7b086201c5642622255d4573af77",
+          "bytes": 1239280
+        },
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/edge/api.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/edge/validation.log",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/edge/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-identity-rescale-v1/performance-v2/edge/cache",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+        },
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "budgets": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 16777216,
+          "file_cap": 33554432,
+          "total_cap": 268435456
+        },
+        "criteria": "Before any timing:new2SG16M8matrixkernels compiled/query,then exactly2traced WG16submissions;128finiteFP32states including80subnormal and0x8200 must preserve input and scaled/bypass bits exactly. Stop firstfailure,known immutableproviders/pre-mainvalidation,guards/inputimmutability/closedowner/no newfault. No model qualification."
       }
     }
   }
