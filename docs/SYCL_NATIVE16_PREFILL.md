@@ -312,8 +312,15 @@ inputs. All four normal/state properties,the traced tiny gate,and11cases at
 each Page4/Page16pass. All12real-head FP32states and complete BF16outputs
 match;guards,immutable inputs,providers,ownership and fault checks pass.
 Physical262144component addresses are covered,not a full-model context fill.
-The separately gated three-process performance comparison remains pending.
-No production or decode change has been adopted.
+The three-process72sample full-path timing screen **rejects this candidate**.
+Wall-time geometric means are1.062551,1.055563,1.056270and1.044660for
+32Kcontiguous/strided and117488contiguous/strided. Every process is slower
+in every case;attention and combined-service criteria also fail. Numerical,
+clock,provider,owner and fault checks pass. A lower compiled spill descriptor
+does not override actual timing. No model trial or adoption follows.
+Main moves to a separately planned exact-WG128native comparison:the earlier
+CPU-IR metadata-only result did not establish downstream IGC code or speed.
+Selected6e40and decode remain unchanged.
 FullQSA/task/performance and physical-context/handoff gates remain unqualified.
 Selected6e40and its twelve same-build fixtures remain.
 
