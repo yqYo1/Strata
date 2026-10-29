@@ -1524,7 +1524,8 @@ The time ratio is0.96646745,a3.35percent reduction. First use is867.3and880.2tok
 subsequent client TTFT medians are127.972and123.679s. All eight requests read
 117489fresh tokens,with117488engine rows and identical body hashes between arms.
 Both native processes exit normally,validation stays silent and no fresh fault
-occurs. Four independent processes remain;no adoption follows yet. This exact-count factory
+occurs. The plan requires four further independent processes before its final
+speed decision;no adoption follows from this first pair. This exact-count factory
 produces different request bodies from the previous minimum-count factory's
 approximately975tok/s cohort;that is not a matched regression comparison.
 Individual samples and the frozen stopping rule are in
