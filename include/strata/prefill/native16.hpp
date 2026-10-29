@@ -43,9 +43,9 @@ void moe_accumulate(const detail::MoeWindowRoutes& plan, size_t job_index,
                     const uint16_t* down, const int32_t* source,
                     const int32_t* original_slots, const float* job_weights,
                     float* accumulator, uint32_t* status, void* stream);
-// Separate long-prefill candidate: two disjoint FP32 accumulator allocations.
+// Separate long-prefill candidate: two disjoint FP32 accumulator spans.
 // Maps still name original window rows; bank selection precedes any address
-// arithmetic. Both owners and the immutable split plan survive checked drain.
+// arithmetic. All owners and the immutable split plan survive checked drain.
 void moe_accumulate_split(const detail::MoeWindowRoutes& plan, size_t job_index,
                     const uint16_t* down, const int32_t* source,
                     const int32_t* original_slots, const float* job_weights,

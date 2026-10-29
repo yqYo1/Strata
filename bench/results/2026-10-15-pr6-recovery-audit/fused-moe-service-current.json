@@ -12698,9 +12698,9 @@
     }
   },
   "moe_split_accumulator": {
-    "status": "host_controls_prepared",
+    "status": "host_controls_passed",
     "host": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "be574247d026a341c6abedf23a37bd6612d51430",
       "source_inputs": {
         "files": 43,
@@ -12831,12 +12831,56 @@
         "total_cap": 536870912
       },
       "active": false,
-      "passed": false,
-      "complete": false,
+      "passed": true,
+      "complete": true,
       "ownership_closed": true,
       "GPU_executed": false,
       "criteria": "Two fresh CPU-only ASan/UBSan fixtures. Preserve old planner and route admission checks. Six split capacity cases81921..117488 with complete logical mixed/FP32 bank coverage, one-byte-short/invalid/full262144 refusal and guarded531988736B tail arithmetic. Twelve split route cases2..117488 with ordinary/hot routing,complete route mass, unique source/inverse mappings and <=8192-row jobs,including15jobs/expert. Exact committed source/compiler/actual compiler and linker inputs,closed owners, zero sanitizer diagnostics. No actual GPU allocation,arithmetic,speed or fullcontext qualification.",
-      "retention": "Host controls for the imminent split-FP32 candidate;keep selected6e40+12fixtures. Extract outcomes/source identity and retire disposable test binaries after source recovery."
+      "retention": "Host controls for the imminent split-FP32 candidate;keep selected6e40+12fixtures. Extract outcomes/source identity and retire disposable test binaries after source recovery.",
+      "binaries": {
+        "moe_accum_plan": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/moe_accum_plan",
+          "sha256": "052014887ee33d2185a5028b29100796a7d8f99e7eef53354625e9964bc585cc",
+          "bytes": 3149848
+        },
+        "moe_accum_routes": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/moe_accum_routes",
+          "sha256": "ed9e3c800c11fdc768b36d4083c9efe895a602ed4aa343ee5507d6c4f68d9afe",
+          "bytes": 3170592
+        }
+      },
+      "outcomes": {
+        "moe_accum_plan": {
+          "passed": true,
+          "sanitizer_diagnostics": 0,
+          "result_lines": [
+            "split_cases=6 split_negative_checks=28 PASS",
+            "moe_accum_plan PASS GPU=UNRUN numeric=UNQUALIFIED lifetime=EXTERNAL_REQUIRED"
+          ]
+        },
+        "moe_accum_routes": {
+          "passed": true,
+          "sanitizer_diagnostics": 0,
+          "result_lines": [
+            "moe_accum_routes PASS GPU=UNRUN"
+          ]
+        }
+      },
+      "actual_compiler_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/compiler-inputs.json",
+        "files": 268,
+        "sha256": "d7fdcbb9e7f4332d48b36fe138c574fa52ace9c1e691af1a93b7467a81dac71d",
+        "uncovered": 0
+      },
+      "actual_link_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-split-accumulator-v1/host/link-inputs.json",
+        "sha256": "8a4871255c3ca5543ec7bff077343ee0ffcd3799c682b5fa4c899ff6ef4a9d3b",
+        "frozen_counts": {
+          "moe_accum_plan": 23,
+          "moe_accum_routes": 23
+        },
+        "uncovered": 0
+      }
     },
     "mechanism": "Process one117488-row expert-major window rather than81920+35568;preserve FP32 expert summation and16-bit tensor boundaries. Split accumulator makes capacity possible. Fewer expert dequants/submissions are a hypothesis;smaller bank may add PCIe traffic. Aggregate MoE minus GU/Down is NOT measured dequanttime or physical-resource saturation.",
     "inference_adopted": false,
