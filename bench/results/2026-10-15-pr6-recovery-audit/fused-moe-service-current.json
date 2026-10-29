@@ -8556,7 +8556,7 @@
       }
     },
     "component4": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "ef5c3351e53c4675199fb754b09a964d99e51ed0",
       "source_sha256": {
         "tools/sycl/qsa_head_native.py": "8d25f4b5e47b84a9c7e51d147257641a68b20c4b765f89c5f745ac8e542d4cec",
@@ -8650,7 +8650,30 @@
         "file_cap": 67108864,
         "total_cap": 536870912
       },
-      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context."
+      "criteria": "One fresh owned process,stop firstfailure,no retry. Properties only beforekernel;source-review before submissions. Tinytrace actual SG/WG/local/ABI,complete output and FP32state parity,independent host oracle/guards,all input immutable,pre-main validation,correct actualproviders,quiet validation and no newfault. Extended physical finaladdresses do not qualify full-model context.",
+      "outcome": {
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "properties": [],
+        "dispatch": null,
+        "numerical_passed": true,
+        "physical262144_component_addresses": true,
+        "model_context_fill_qualified": false,
+        "model_speed_qualified": false,
+        "parameter_validation": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
     }
   }
 }
