@@ -1535,6 +1535,15 @@ larger windows and a smaller expert bank do not establish a throughput gain
 or the limiting hardware unit. Decode/handoff,model quality and physical-context
 qualification remain separate pending gates.
 
+The source-only [`metric_capability.c`](../bench/sycl/metric_capability.c) prepares
+the next local counter-capability check;it has not been built or executed and is
+absent from both comparison binaries. After the frozen comparison closes,pin a
+bounded owned recipe,headers,loader and metric providers before execution.
+The probe selects PCI0000:05:00.0 and enumerates group/metric properties without
+creating application queues or activating metric groups. Preserve API errors,
+permission failures and successful zero-group enumeration as distinct outcomes.
+Enumeration alone does not qualify counter collection or measure utilization.
+
 A20261028 source-only check of selected`6e40afc1b` also rules out treating
 head release as a configuration-only way to fund the additional accumulator.
 `run_prompt_with_native_dense_phase` explicitly rejects
