@@ -32,6 +32,15 @@ ROOT = B / 'qsa-pair-model-validation-v1'
 TEMPLATE = RESULT.parent / 'phase-prefill-speed-current.json'
 REFERENCE = RESULT.parent / 'prefill-runtime-comparison-current.json'
 require, digest, write = m.require, m.digest, m.write
+REVIEW_INPUTS=['tools/sycl/qsa_pair_model_bench.py','tools/sycl/qsa_pair_model_qualify.py',
+    'tools/sycl/qsa_pair_model_link.py','tools/sycl/build_qsa_pair_model.py']
+
+
+def first_model_source_gate():
+    reviewed=m.runtime.validation.committed(RESULT.with_name('research-index.json'),
+        ('pair_model_first_request_contract_20261029','native_review'))
+    require(reviewed['accepted_for_first_model'] is True and reviewed['source_sha256']==
+        {name:digest(P/name) for name in REVIEW_INPUTS},'first-model controller source gate missing or changed')
 
 
 def fingerprint(value):
@@ -159,6 +168,7 @@ def run_python():
 
 
 def prepare_model():
+    first_model_source_gate()
     record, old, rt = native();host,_ = python_contract()
     scope = record[m.KEY]['model_validation'];require('model' not in scope,'fresh model qualification only')
     root = ROOT / 'model';root.mkdir(mode=0o700)
@@ -193,6 +203,7 @@ def prepare_model():
 
 
 def run_model():
+    first_model_source_gate()
     record,_,rt = native();python_host,manifest = python_contract();root = ROOT / 'model'
     row = json.loads((root / 'record.json').read_text())
     require(row['stage'] == 'prepared' and not (root / 'execution.json').exists() and
