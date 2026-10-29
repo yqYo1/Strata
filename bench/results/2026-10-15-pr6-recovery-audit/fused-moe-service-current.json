@@ -15454,11 +15454,11 @@
     }
   },
   "metric_capability": {
-    "stage": "failed",
-    "source_commit": "5f18ac05cd3e95b72d5a70a3f31f6f0da84e494e",
+    "stage": "prepared",
+    "source_commit": "3dc4f2181ad8a1b600205aa6c622a857fd9bd08f",
     "sources": {
       "bench/sycl/metric_capability.c": "492281c8d9eb7ab97b920f340bb811acdfe3a9f9ca8490412150af3f319089fc",
-      "tools/sycl/metric_capability.py": "1a6845a19df5bcbe590f6a52f775a34d804514068a638775860747aeedd26813",
+      "tools/sycl/metric_capability.py": "81bfcd92540106d885dfb6b07164df656f195f95d83927ba3439f2fc75d9a878",
       "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
       "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
       "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
@@ -15474,42 +15474,49 @@
         "-fPIE",
         "-MD",
         "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/actual.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/actual.d",
         "-MT",
         "probe",
         "-c",
         "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/metric_capability.c",
         "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/probe.o"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/probe.o"
       ],
       [
         "/usr/bin/x86_64-linux-gnu-gcc-13",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/probe.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/probe.o",
         "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
         "-pie",
         "-Wl,-z,relro,-z,now",
         "-Wl,-t",
         "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/metric_capability"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/metric_capability"
       ]
     ],
+    "previous_attempt": {
+      "commit": "899d5ee6d4116b4d01446e4db122d6a07104ee29",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "scope": "metric_capability",
+      "scope_sha256": "5e8e584e983d3374b8bea0a4c729f0cd8aa9a091d07043677a6bbe3aac4603dd",
+      "outcome": "Failed v1 remains incomplete;terminated before metric enumeration,not a GPU fault."
+    },
     "compiler": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
     "environments": [
       {
         "PATH": "/usr/bin:/bin",
         "LANG": "C.UTF-8",
         "LC_ALL": "C.UTF-8",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/tmp",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/tmp",
         "PYTHONDONTWRITEBYTECODE": "1"
       },
       {
         "PATH": "/usr/bin:/bin",
         "LANG": "C.UTF-8",
         "LC_ALL": "C.UTF-8",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/tmp",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/tmp",
         "PYTHONDONTWRITEBYTECODE": "1",
         "HOME": "/home/yayoi",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/cache",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/cache",
         "LD_LIBRARY_PATH": "/usr/lib/x86_64-linux-gnu:/usr/local/lib",
         "LD_DEBUG": "libs,files",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
@@ -15523,10 +15530,10 @@
       }
     ],
     "dependencies": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/dependencies.json",
-      "sha256": "3168a54e15874e844a9afa6d040d90d89431a2edaf4accab288ce2d7855d7bb5",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v2/dependencies.json",
+      "sha256": "b02995d7082b0409cebac6406b2a26eabf73fe38f924662c0ba0aac81f9afaf0",
       "files": 117,
-      "runtime_elfs": 25
+      "runtime_elfs": 24
     },
     "driver": {
       "pci": "/sys/bus/pci/devices/0000:05:00.0",
@@ -15568,63 +15575,10 @@
     },
     "retention": "One small tool build and bounded raw inventory for Main to choose the next source-documented tiny-workload metric. Review/retire after that choice and collection plan/result;no new model generation.",
     "active": false,
-    "ownership_closed": false,
+    "ownership_closed": true,
     "passed": false,
     "collection_qualified": false,
     "hardware_utilization_measured": false,
-    "physical_pcie_bytes_measured": false,
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-capability-c-v1/metric_capability",
-      "bytes": 17160,
-      "sha256": "822c8e53577603c4577ce950d903c1a85755e5d4ca28b2d60146ddf0c3f94354"
-    },
-    "build_passed": true,
-    "outcome": "inconclusive",
-    "error": "RuntimeError('native supervision/ownership did not close')",
-    "enumeration_complete": false,
-    "driver_after": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "fresh_faults": [],
-    "native_process": {
-      "pid": 4074146,
-      "exit_code": -15,
-      "elapsed_seconds": 0.6286415550857782,
-      "peak_session_rss_bytes": 27742208,
-      "observation_complete": false,
-      "direct_child_reaped": true,
-      "session_empty": true,
-      "error": "RuntimeError(\"unknown runtime provider: {'/usr/lib/x86_64-linux-gnu/libopencl-clang.so.22.1', '/usr/lib/x86_64-linux-gnu/libigc.so.2.41.15+0', '/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.41.15+0', '/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0'}\")"
-    },
-    "failure_mechanism": {
-      "kind": "unfrozen_system_provider_at_runtime_ready",
-      "before_metric_group_enumeration": true,
-      "accepted_gates": [
-        "before-runtime"
-      ],
-      "refused_gate": "runtime-ready",
-      "successful_native_API_calls": 7,
-      "providers": {
-        "/usr/lib/x86_64-linux-gnu/libigc.so.2.41.15+0": "0c3d344a2102d0c68d419898b3652b96777b5b6c2e8012ce9a95b96c602a7ef1",
-        "/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.41.15+0": "4e5790803114e087d4a3ddb71547e58fb945863890d74ffb1d3b5478dadfe864",
-        "/usr/lib/x86_64-linux-gnu/libopencl-clang.so.22.1": "1e70667edcd6f8b68c792bed3ffb60b828c1f2fac1adaead9507f5d24619f629",
-        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
-      },
-      "reason": "Native LD_LIBRARY_PATH selects system IGC2.41.15 and its OpenCL-Clang dependency;v1 pinned local IGC2.41.5. Loader also dynamically loads its tracing layer. Do not refresh the failed plan hashes."
-    },
-    "closure_reconciliation": {
-      "all_owned_processes_terminated": true,
-      "direct_child_reaped": true,
-      "session_empty": true,
-      "original_PID_absent": true,
-      "pid": 4074146,
-      "start_ticks": 165476961,
-      "limit": "Original observation_complete=false,ownership_closed=false and passed=false remain unchanged;termination is established,not successful enumeration."
-    }
+    "physical_pcie_bytes_measured": false
   }
 }
