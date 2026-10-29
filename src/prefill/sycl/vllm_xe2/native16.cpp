@@ -71,6 +71,18 @@ Geometry geometry(const Problem &p, Tile tile) {
   return {int(p.t), int(p.n), int(p.k), int(ld), xb, wb, yb, gm, gn, threads};
 }
 
+
+// Reuse the existing rectangle checks, then validate this distinct launch.
+Geometry geometry_down64(const Problem &p) {
+  auto g = geometry(p, Tile::wide_128x128);
+  g.groups_m = size_t(p.t - 1) / 64 + 1;
+  g.threads = 64;
+  if (mul(mul(g.groups_m, g.groups_n), g.threads) >
+      size_t(std::numeric_limits<int>::max()))
+    throw std::invalid_argument("Down64: int launch extent limit");
+  return g;
+}
+
 bool check_device(sycl_backend::Runtime &runtime, const sycl::queue &q) {
   if (!q.has_property<sycl::property::queue::in_order>() ||
       q.get_context() != runtime.context() || q.get_device() != runtime.device())
@@ -115,6 +127,20 @@ template <> struct ShapePolicy<Tile::wide_128x128> {
   static constexpr int threads = 128;
   static constexpr int rows = 128;
 };
+// Independent Down-only qualification policy. M64/N128 and four SG16s
+// keep128 logical accumulator cells/work-item; this is not an occupancy claim.
+struct Down64Policy {
+  using Shape = cute::Shape<Int<64>, Int<128>, Int<32>>;
+  using Subgroups = Layout<cute::Shape<Int<2>, Int<2>, Int<1>>,
+                          Stride<Int<2>, Int<1>, Int<0>>>;
+  static constexpr int threads = 64;
+  static constexpr int rows = 64;
+};
+using Down64MMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, cutlass::half_t>>,
+    Layout<typename Down64Policy::Shape>, typename Down64Policy::Subgroups>::TiledMMA;
+class DenseDown64Kernel;
+template <bool Capture> class SplitDown64Kernel;
+
 template <class Input, Tile Policy>
 using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
     Layout<typename ShapePolicy<Policy>::Shape>,
@@ -535,10 +561,115 @@ sycl::event enqueue_down_split_row_address(sycl::queue &q, DownScatterProblem p,
   });
 }
 
+// New component only;the qualified128-row producer/epilogue is unchanged.
+template <bool Capture>
+sycl::event enqueue_down_split_row64(sycl::queue &q, DownScatterProblem p, Geometry g,
+                               int token_rows, size_t routes, size_t offset,
+                               float *tail, size_t primary_rows) {
+  using P = Down64Policy;
+  using MMA = Down64MMA;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  static_assert(P::rows <= P::threads && int(get<0>(MMA{}.tile_mnk())) == P::rows);
+  p.plan = nullptr; // no host-only plan pointer may be dereferenced on device
+  const sycl::nd_range<3> range(sycl::range<3>(g.groups_m, g.groups_n, P::threads),
+                              sycl::range<3>(1, 1, P::threads));
+  return q.submit([&](sycl::handler &h) {
+    sycl::local_accessor<uintptr_t, 1> addresses(sycl::range<1>(P::rows), h);
+    sycl::local_accessor<float, 1> weights(sycl::range<1>(P::rows), h);
+    h.parallel_for<SplitDown64Kernel<Capture>>(range, props, [=](sycl::nd_item<3> item) {
+      const int base = int(item.get_group(0)) * P::rows;
+      const int local = int(item.get_local_linear_id());
+      if (local < P::rows) {
+        const int row = base + local;
+        uintptr_t address = 0;
+        float weight = 0.f;
+        if (row < g.t) {
+          const size_t routed = offset + size_t(row);
+          const int32_t slot = p.original[routed], source = p.source[routed];
+          uint32_t error = 0;
+          if (slot < 0 || size_t(slot) >= routes) error = 1;
+          else if (source < 0 || source >= token_rows || source != slot / 10) error = 2;
+          if (error) {
+            sycl::atomic_ref<uint32_t, sycl::memory_order::relaxed,
+                sycl::memory_scope::device, sycl::access::address_space::global_space>(
+                    *p.status).fetch_or(error);
+          } else {
+            const bool in_tail = size_t(source) >= primary_rows;
+            float *bank = in_tail ? tail : p.accumulator;
+            const size_t bank_row = size_t(source) - (in_tail ? primary_rows : 0);
+            address = reinterpret_cast<uintptr_t>(bank + bank_row * 2560);
+            weight = p.job_weights[routed];
+          }
+        }
+        addresses[local] = address;
+        weights[local] = weight;
+      }
+      item.barrier(sycl::access::fence_space::local_space);
+      auto a = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.x)),
+          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+      auto b = make_tensor(make_gmem_ptr(reinterpret_cast<const cutlass::half_t *>(p.w)),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      auto c = make_identity_tensor(make_shape(g.t, g.n));
+      const auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+      derived::xe_gemm_epilogue<void, void, void>(a, b, c, coord, MMA{},
+          SplitRowAddressDownEpilogue<Capture>{p, g.t, base, addresses, weights});
+    });
+  });
+}
+
 template <Tile Policy, ScatterLayout Mapping>
 DownOwnership inspect_ownership(int rows) {
   using P = ShapePolicy<Policy>;
   using MMA = TileMMA<cutlass::half_t, Policy>;
+  const MMA mma{};
+  const auto shape = mma.tile_mnk();
+  auto identity = make_identity_tensor(make_shape(rows, 2560));
+  std::vector<uint8_t> visits(size_t(rows) * 2560, 0);
+  DownOwnership result{visits.size(), 0, 0, 0};
+  for (int m = 0; m < (rows + int(get<0>(shape)) - 1) / int(get<0>(shape)); ++m)
+    for (int n = 0; n < (2560 + int(get<1>(shape)) - 1) / int(get<1>(shape)); ++n) {
+      auto tile = local_tile(identity, shape, make_coord(m, n, 0), Step<_1, _1, X>{});
+      if constexpr (Mapping == ScatterLayout::matrix_row_cache) {
+        std::vector<uint8_t> writes(P::rows, 0);
+        for (int lane = 0; lane < P::threads; ++lane)
+          if (lane < P::rows) ++writes[size_t(lane)];
+        result.metadata_slots += writes.size();
+        for (auto count : writes) {
+          result.metadata_missing += count == 0;
+          result.metadata_multiple += count > 1;
+        }
+      }
+      for (int lane = 0; lane < P::threads; ++lane) {
+        const auto coordinates = [&] {
+          if constexpr (Mapping == ScatterLayout::output_copy) {
+            auto copy = make_block_2d_copy_D<cutlass::bfloat16_t>(mma, make_stride(2560, _1{}));
+            return copy.get_slice(lane).partition_S(tile);
+          } else return mma.get_slice(lane).partition_C(tile);
+        }();
+        for (int i = 0; i < size(coordinates); ++i) {
+          const auto coordinate = coordinates(i);
+          const int row = get<0>(coordinate), col = get<1>(coordinate);
+          if constexpr (Mapping == ScatterLayout::matrix_row_cache)
+            result.metadata_outside_tile += row < m * P::rows || row >= (m + 1) * P::rows;
+          if (row < 0 || row >= rows || col < 0 || col >= 2560) { ++result.masked; continue; }
+          auto &count = visits[size_t(row) * 2560 + size_t(col)];
+          if (count < 2) ++count;
+        }
+      }
+    }
+  for (auto count : visits) {
+    result.missing += count == 0;
+    result.multiple += count > 1;
+  }
+  return result;
+}
+
+DownOwnership inspect_down64(int rows) {
+  constexpr auto Mapping = ScatterLayout::matrix_row_cache;
+  using P = Down64Policy;
+  using MMA = Down64MMA;
   const MMA mma{};
   const auto shape = mma.tile_mnk();
   auto identity = make_identity_tensor(make_shape(rows, 2560));
@@ -658,6 +789,47 @@ sycl::event enqueue(sycl::queue &q, const Problem &p, Geometry g) {
   const sycl::range<3> global(g.groups_m, g.groups_n, P::threads);
   return q.submit([&](sycl::handler &h) {
     h.parallel_for<DenseKernel<Input, Output, Policy>>(
+        sycl::nd_range<3>(global, local), props, [=](sycl::nd_item<3> item) {
+      // Pass full logical surfaces to TLA, never a padded-M allocation view.
+      // All tensors are coordinate views; OOB tile coordinates are suppressed
+      // by block2D surfaces, without divergent workgroup control flow.
+      auto a = make_tensor(make_gmem_ptr(x),
+          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+      auto b = make_tensor(make_gmem_ptr(w),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      auto d = make_tensor(make_gmem_ptr(y),
+          make_layout(make_shape(g.t, g.n), make_stride(g.ld, _1{})));
+      auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+      derived::xe_gemm_beta0<void, void, void>(a, b, d, coord, MMA{});
+    });
+  });
+}
+
+sycl::event enqueue_dense_down64(sycl::queue &q, const Problem &p, Geometry g) {
+  using Input = cutlass::half_t;
+  using Output = cutlass::bfloat16_t;
+  using P = Down64Policy;
+  using Atom = MMA_Atom<XE_DPAS_TT<8, float, Input>>;
+  using MMA = typename TiledMMAHelper<Atom, Layout<typename P::Shape>,
+                                     typename P::Subgroups>::TiledMMA;
+  static_assert(size(typename P::Subgroups{}) * 16 == P::threads);
+  static_assert(decltype(size(MMA{}))::value == P::threads);
+  static_assert(P::threads % 16 == 0);
+  static_assert(get<0>(MMA{}.tile_mnk()) == get<0>(typename P::Shape{}));
+  static_assert(get<1>(MMA{}.tile_mnk()) == get<1>(typename P::Shape{}));
+  static_assert(get<2>(MMA{}.tile_mnk()) == 32);
+  static_assert(std::is_same_v<typename MMA::ValTypeC, float>);
+  static_assert(std::is_same_v<typename MMA::ValTypeD, float>);
+  const auto x = reinterpret_cast<const Input *>(p.x);
+  const auto w = reinterpret_cast<const Input *>(p.w);
+  auto y = reinterpret_cast<Output *>(p.y);
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  const sycl::range<3> local(1, 1, P::threads);
+  const sycl::range<3> global(g.groups_m, g.groups_n, P::threads);
+  return q.submit([&](sycl::handler &h) {
+    h.parallel_for<DenseDown64Kernel>(
         sycl::nd_range<3>(global, local), props, [=](sycl::nd_item<3> item) {
       // Pass full logical surfaces to TLA, never a padded-M allocation view.
       // All tensors are coordinate views; OOB tile coordinates are suppressed
@@ -869,6 +1041,72 @@ sycl::event Gemm::down_scatter_split_row_address(const DownScatterProblem &p,
                                     tail, size_t(primary_rows));
   return enqueue_down_split_row_address<false>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
                                    tail, size_t(primary_rows));
+}
+
+sycl::event Gemm::down_scatter_split_row64(const DownScatterProblem &p,
+                                     float *tail, int64_t primary_rows) {
+  using Routes = strata::prefill::detail::MoeWindowRoutes;
+  if (!has_fp16_ || !p.plan || !p.plan->split_accumulator() || p.plan->rows() < 2 ||
+      p.plan->rows() > Routes::max_split_accum_rows || primary_rows < 1 || primary_rows >= p.plan->rows())
+    throw std::invalid_argument("Split Down scatter: native FP16 and two nonempty banks required");
+  const size_t rows = size_t(p.plan->rows()), routes = rows * Routes::top_k;
+  if (p.plan->source_rows().size() != routes || p.plan->original_slots().size() != routes)
+    throw std::invalid_argument("Split Down scatter: inverse plan required");
+  const auto &job = p.plan->jobs().at(p.job_index);
+  if (job.rows < 1 || job.rows > 8192 || job.global_row < 0 || size_t(job.rows) > routes ||
+      size_t(job.global_row) > routes - size_t(job.rows))
+    throw std::invalid_argument("Split Down scatter: invalid job interval");
+  Problem shape;
+  shape.t = job.rows; shape.n = 2560; shape.k = 640;
+  const auto g = geometry_down64(shape);
+  if (local_mem_bytes_ < 64 * (sizeof(uintptr_t) + sizeof(float)))
+    throw std::invalid_argument("Split Down scatter: insufficient row-cache local memory");
+  const size_t primary_bytes = mul(mul(size_t(primary_rows), 2560), 4);
+  const size_t tail_bytes = mul(mul(rows - size_t(primary_rows), 2560), 4), mb = mul(routes, 4);
+  const std::initializer_list<sycl_backend::Span> inputs{
+      {p.x, g.xb}, {p.w, g.wb}, {p.source, mb}, {p.original, mb}, {p.job_weights, mb}};
+  validate_spans({{p.accumulator, primary_bytes}, {tail, tail_bytes}, {p.status, 4}}, inputs);
+  if (p.rounded_diagnostic)
+    validate_spans({{p.accumulator, primary_bytes}, {tail, tail_bytes}, {p.status, 4},
+                    {p.rounded_diagnostic, g.yb}}, inputs);
+  for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue_);
+  validate_device_span(p.accumulator, primary_bytes, queue_);
+  validate_device_span(tail, tail_bytes, queue_);
+  validate_device_span(p.status, 4, queue_);
+  if (p.rounded_diagnostic) validate_device_span(p.rounded_diagnostic, g.yb, queue_);
+  if (reinterpret_cast<uintptr_t>(p.x) % 64 || reinterpret_cast<uintptr_t>(p.w) % 64)
+    throw std::invalid_argument("Split Down scatter: block2D inputs require 64B alignment");
+  if ((reinterpret_cast<uintptr_t>(p.source) | reinterpret_cast<uintptr_t>(p.original) |
+       reinterpret_cast<uintptr_t>(p.job_weights) | reinterpret_cast<uintptr_t>(p.accumulator) |
+       reinterpret_cast<uintptr_t>(tail) | reinterpret_cast<uintptr_t>(p.status)) % 4 ||
+      (p.rounded_diagnostic && reinterpret_cast<uintptr_t>(p.rounded_diagnostic) % 2))
+    throw std::invalid_argument("Split Down scatter: typed map/output alignment required");
+  runtime_.check();
+  if (p.rounded_diagnostic)
+    return enqueue_down_split_row64<true>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
+                                    tail, size_t(primary_rows));
+  return enqueue_down_split_row64<false>(queue_, p, g, p.plan->rows(), routes, size_t(job.global_row),
+                                   tail, size_t(primary_rows));
+}
+
+
+DownOwnership inspect_down64_ownership(int64_t rows) {
+  if (rows < 1 || rows > 8192)
+    throw std::invalid_argument("Down64 ownership: rows outside [1,8192]");
+  return inspect_down64(int(rows));
+}
+
+sycl::event Gemm::beta0_down64(const Problem &p) {
+  if (!has_fp16_ || p.t < 1 || p.t > 8192 || p.n != 2560 || p.k != 640 ||
+      p.input != Storage::fp16 || p.output != Storage::bf16)
+    throw std::invalid_argument("Down64 dense: FP16->BF16 and fixed Down shape required");
+  const auto g = geometry_down64(p);
+  validate_spans({{p.y, g.yb}}, {{p.x, g.xb}, {p.w, g.wb}}, 64);
+  validate_device_span(p.x, g.xb, queue_);
+  validate_device_span(p.w, g.wb, queue_);
+  validate_device_span(p.y, g.yb, queue_);
+  runtime_.check();
+  return enqueue_dense_down64(queue_, p, g);
 }
 
 sycl::event Gemm::beta0(const Problem &p, Tile tile) {

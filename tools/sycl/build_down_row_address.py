@@ -106,9 +106,12 @@ def admit(row):
     require(r.current(rt)['binary'] == row['selected_binary'], 'selected fallback changed')
     for asset in row['retained_split_binaries'].values():
         require(digest(asset['path']) == asset['sha256'], 'retained split candidate changed')
+    if 'parent_component' in row:
+        require(digest(row['parent_component']['path']) == row['parent_component']['sha256'],
+                'qualified row-address parent fixture changed')
 
 
-def dependencies(row, text):
+def dependencies(row, text, root=ROOT):
     expected = {}
     for group in [row['project'], *row['dependencies']]:
         expected.update({str((Path(group['root']) / n).resolve()): h
@@ -117,7 +120,7 @@ def dependencies(row, text):
                      for v in json.loads(lineage.SDK.read_text())})
     expected.update(row['external_inputs'])
     paths = {Path(line.strip()) for line in text.splitlines() if line.startswith('    ') and line.strip()}
-    paths = {(p if p.is_absolute() else ROOT / 'build' / p).resolve() for p in paths}
+    paths = {(p if p.is_absolute() else root / 'build' / p).resolve() for p in paths}
     required = {'src/sycl/command_profile.cpp', 'src/prefill/sycl/gemm16.cpp',
                 'src/prefill/sycl/vllm_xe2/native16.cpp', 'bench/sycl/moe_down_scatter.cpp'}
     require({P / n for n in required} <= paths and len(paths) >= 100, 'incomplete actual dependency closure')
@@ -131,26 +134,54 @@ def dependencies(row, text):
                     'unplanned generated/compiler input: ' + str(path))
             generated[str(path)] = sha
         observed[str(path)] = sha
-    manifest = ROOT / 'compiler-inputs.json'
+    manifest = root / 'compiler-inputs.json'
     write(manifest, observed)
     return dict(files=len(observed), manifest=dict(path=str(manifest), sha256=digest(manifest)),
                 generated_sha256=generated, uncovered_files=0,
                 used_updated_system_headers=sorted(set(observed) & set(SYSTEM_HEADER_UPDATES)))
 
 
-def prepare():
-    require(not ROOT.exists(), 'fresh component build only;inspect existing owner,do not retry')
+def prepare(root=ROOT, key=KEY):
+    require(not root.exists(), 'fresh component build only;inspect existing owner,do not retry')
     container = r.validation.committed(RESULT)
-    require(KEY not in container, 'single new row-address trial only')
+    require(key not in container, 'single new row-address trial only')
     previous = container['moe_split_accumulator']
     require(previous['build']['passed'] and previous['build']['ownership_closed'] and
             previous['clean_prefill_comparison']['complete'] and
             previous['clean_prefill_comparison']['ownership_closed'], 'closed current split comparison required')
     for asset in previous['build']['binaries'].values():
         require(digest(asset['path']) == asset['sha256'], 'retained split candidate changed')
-    scope = container[KEY] = dict(stage='source-prepared', adopted=False,
+    scope = container[key] = dict(stage='source-prepared', adopted=False,
         mechanism='Precompute split accumulator row pointers once per workgroup row; preserve BF16 rounding, FP32 FMA/expert order and all bounds. SLM128x(8+4)bytes versus original128x(4+4); compiler hoisting or added pointer-load cost may erase the gain.',
         scope='Independent component API only; no production dispatcher, decode or engine binary change. Compare actual original split kernel against row-address kernel and GEMM-only control before selecting an optimization.')
+    parent_component = None
+    baseline_parts = {}
+    if key == 'moe_down_row64':
+        parent = container['moe_down_row_address']
+        require(parent['device']['stage'] == 'closed' and
+                parent['device']['decision']['component_speed_gate_passed'] and
+                parent['raw_retirement']['post_retirement_admission_passed'],
+                'qualified row-address128 component required')
+        parent_component = parent['build']['fixtures'][TARGETS[0]]
+        require(digest(parent_component['path']) == parent_component['sha256'], 'parent fixture changed')
+        original = build.git(P,'show','fcca1e850:src/prefill/sycl/vllm_xe2/native16.cpp').decode()
+        current = (P/'src/prefill/sycl/vllm_xe2/native16.cpp').read_text()
+        for label,start,end in (
+            ('row128_device','template <bool Capture> struct SplitRowAddressDownEpilogue',
+             'template <Tile Policy, ScatterLayout Mapping>'),
+            ('row128_host','sycl::event Gemm::down_scatter_split_row_address(', 'sycl::event Gemm::beta0('),
+            ('dense_kernel','template <class Input, class Output, Tile Policy>\nsycl::event enqueue(',
+             'template <class I, class O>\nsycl::event select_tile')):
+            section = original[original.index(start):original.index(end,original.index(start))]
+            require(section in current, 'qualified control body changed: '+label)
+            baseline_parts[label] = hashlib.sha256(section.encode()).hexdigest()
+        scope.update(mechanism='Independent Down M64xN128,K32,SG16 with2x2 subgroups and64threads;'
+            'same128logical accumulator cells/workitem as the qualified128x128/128thread policy. '
+            'Cache64row addresses/weights(768B);preserve post-BF16 FP32 FMA,queue/order/bounds. '
+            'No claim of grid underfill,occupancy or physical-memory saturation.',
+            scope='Component only,four-way row128/row64 scatter and dense controls. Existing128row '
+            'bodies and public Tile/GU/production/decode selectors remain unchanged. '
+            'Host ownership and tiny invalid-map/boundary gates precede timing.')
     rt = r.validation.committed(r.RESULT)
     full = r.current(rt)
     project = build.pin(P, PREFIXES)
@@ -161,16 +192,16 @@ def prepare():
     paths['cc1'] = subprocess.check_output(['/usr/bin/cc','-print-prog-name=cc1'], text=True, timeout=10).strip()
     paths['sycl'] = full['compiler']['path']
     tools = {n: dict(path=p, sha256=digest(p)) for n, p in paths.items()}
-    argv = list(full['configure_argv']); argv[argv.index('-B') + 1] = str(ROOT / 'build')
+    argv = list(full['configure_argv']); argv[argv.index('-B') + 1] = str(root / 'build')
     require(argv[argv.index('-S') + 1] == str(P), 'unexpected source resolver')
-    env = dict(full['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    env = dict(full['environment'], TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'))
     row = dict(stage='prepared',source_commit=project['revision'],project=project,dependencies=deps,
         sdk=sdk_inputs(),external_inputs=external_inputs(rt),tools=tools,configure_argv=argv,environment=env,
         targets=TARGETS,selected_binary=full['binary'],retained_split_binaries=previous['build']['binaries'],
         runtime_sha256=digest(r.RESULT),boot=rt['boot'],driver=rt['driver'],
-        generated_expected={str(ROOT / 'build/ggml/src/ggml-version.h'): hashlib.sha256(HEADER.encode()).hexdigest()},
-        build_command=['/usr/bin/cmake','--build',str(ROOT / 'build'),'--target',*TARGETS,'-j','4'],
-        dependency_command=['/usr/bin/ninja','-C',str(ROOT / 'build'),'-t','deps'],
+        generated_expected={str(root / 'build/ggml/src/ggml-version.h'): hashlib.sha256(HEADER.encode()).hexdigest()},
+        build_command=['/usr/bin/cmake','--build',str(root / 'build'),'--target',*TARGETS,'-j','4'],
+        dependency_command=['/usr/bin/ninja','-C',str(root / 'build'),'-t','deps'],
         active=False,ownership_closed=True,passed=False,GPU_executed=False,engine_built=False,production_selected=False,
         budgets=dict(wall=1800,cpu=7200,rss_cap=12 << 30,text_cap=32 << 20,file_cap=256 << 20,total_cap=4 << 30),
         question='Build only Down fixture with independent row-address epilogue, tiny/full correctness and resident comparison modes. '
@@ -179,41 +210,48 @@ def prepare():
             'Zero uncovered compiler inputs;single fixture hash and imported link providers verified;selected13 artifacts preserved.',
         retention='One component generation for imminent tiny traced correctness and matched row-address/GEMM controls. '
             'Keep original6e40+12fixtures and split candidate3artifacts untouched;retire rejected experimental exports/builds and routine raw output after source recovery.')
-    ROOT.mkdir(mode=0o700)
+    if parent_component:
+        row.update(parent_component=parent_component, preserved_control_source=baseline_parts,
+            question='Build only Down64 component beside qualified128row parent;no engine or production hook. '
+                'M64/N128 dense/scatter ownership,numerics and prospective same-shape comparison.',
+            retention='Keep one qualified128row component fallback and this imminent64row comparison '
+                'generation only;selected6e40+12fixtures and split model3artifacts remain untouched. '
+                'Retire superseded component binaries and successful raw/intermediate output after decision.')
+    root.mkdir(mode=0o700)
     for name in ('tmp','cache'):
-        (ROOT / name).mkdir()
-    write(ROOT / 'record.json',row)
+        (root / name).mkdir()
+    write(root / 'record.json',row)
     scope['build'] = compact(row)
     write(RESULT,container)
     print('Prepared frozen row-address fixture build;commit recipe before build.',flush=True)
 
 
-def run():
+def run(root=ROOT, key=KEY):
     container = r.validation.committed(RESULT)
-    row = json.loads((ROOT / 'record.json').read_text())
-    scope = container[KEY]
-    require(scope['build'] == compact(row) and row['stage'] == 'prepared' and not (ROOT / 'owned-build').exists(),
+    row = json.loads((root / 'record.json').read_text())
+    scope = container[key]
+    require(scope['build'] == compact(row) and row['stage'] == 'prepared' and not (root / 'owned-build').exists(),
             'single-use committed build;no duplicate/retry')
     admit(row)
     original = copy.deepcopy(row)
     owner = None
     def persist():
         row['active'] = bool(owner and owner.active is not None)
-        write(ROOT / 'record.json',dict(row,commands=owner.commands if owner else []))
+        write(root / 'record.json',dict(row,commands=owner.commands if owner else []))
     def monitor(io, entry):
         next_size = 0
         while not io.exit_watch.poll(0) or not io.eof:
             io.poll()
             if time.monotonic() >= next_size:
-                require(r.supervision.artifact_bytes(ROOT) <= row['budgets']['total_cap'], 'whole component build size budget')
+                require(r.supervision.artifact_bytes(root) <= row['budgets']['total_cap'], 'whole component build size budget')
                 next_size = time.monotonic() + 1
             if select.select([io.proc.stdout],[],[],.02)[0]:
                 io.read();io.pending.clear()
         io.exit(1)
-        require(r.supervision.artifact_bytes(ROOT) <= row['budgets']['total_cap'], 'final component build size budget')
+        require(r.supervision.artifact_bytes(root) <= row['budgets']['total_cap'], 'final component build size budget')
     try:
         row['stage'] = 'building'
-        owner = r.supervision.Owner(ROOT / 'owned-build',persist);persist()
+        owner = r.supervision.Owner(root / 'owned-build',persist);persist()
         for label, command in [('configure',row['configure_argv']),('compile',row['build_command']),
                                ('dependencies',row['dependency_command'])]:
             entry,out,err = owner.run(label,command,row['environment'],P,interaction=monitor,**row['budgets'])
@@ -222,21 +260,21 @@ def run():
             if label == 'configure':
                 admit(original)
             if label == 'dependencies':
-                row['compiled_inputs'] = dependencies(row,out.read_text())
-        ninja = (ROOT / 'build/build.ninja').read_text()
+                row['compiled_inputs'] = dependencies(row,out.read_text(),root)
+        ninja = (root / 'build/build.ninja').read_text()
         origins = {str(Path(v['path']).resolve()): SYSTEM_HEADER_UPDATES.get(v['path'],(None,v['sha256']))[1]
                    for v in json.loads(lineage.SDK.read_text())}
         origins.update(row['external_inputs'])
         fixtures = {}
         for name in TARGETS:
-            binary = ROOT / 'build' / name
+            binary = root / 'build' / name
             fixtures[name] = dict(path=str(binary),sha256=digest(binary),bytes=binary.stat().st_size)
             stanza = ninja[ninja.index('build ' + name + ':'):].split('\n\n',1)[0]
             links = shlex.split(next(line.split(' = ',1)[1] for line in stanza.splitlines()
                                     if line.startswith('  LINK_LIBRARIES = ')))
             for path in (Path(p).resolve() for p in links if p.startswith('/')):
                 require(str(path) in origins and digest(path) == origins[str(path)], 'unplanned imported link input: ' + str(path))
-        require(not (ROOT / 'build/strata').exists(),'component build must not produce another engine')
+        require(not (root / 'build/strata').exists(),'component build must not produce another engine')
         admit(original)
         row.update(stage='built-not-executed',passed=True,fixtures=fixtures)
     except BaseException as error:
@@ -250,8 +288,11 @@ def run():
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'],['build']),'build_down_row_address.py prepare|build')
+    require(sys.argv[1:] in (['prepare'],['build'],['prepare-row64'],['build-row64']),
+            'build_down_row_address.py prepare|build|prepare-row64|build-row64')
+    row64 = sys.argv[1].endswith('-row64')
+    root, key = (B/'moe-down-row64-v1','moe_down_row64') if row64 else (ROOT,KEY)
     with (B / 'owned-v0141-measurement.lock').open('r+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
         r.guards.no_model_owners([])
-        sys.exit(prepare() if sys.argv[1] == 'prepare' else run())
+        sys.exit(prepare(root,key) if sys.argv[1].startswith('prepare') else run(root,key))

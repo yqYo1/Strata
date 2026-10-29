@@ -125,6 +125,7 @@ struct Case {
   bool edge_inputs;
   int split_rows;
   bool row_address = false;
+  bool row64 = false;
   Case(int tokens, bool irregular, bool edges, sycl::queue &queue, int target_rows = 0, int primary_rows = 0)
       : routes(plan(tokens, irregular, target_rows, primary_rows)), q(queue), gemm(*runtime, q),
         x(size_t(std::min(tokens, 8192)) * K, q), w(size_t(N) * K, q),
@@ -184,6 +185,8 @@ struct Case {
     if (split_rows) {
       need(tile == xe::Tile::wide_128x128 && mapping == xe::ScatterLayout::matrix_row_cache,
            "split fixture uses the production wide128 row-cache policy");
+      if (row64)
+        return gemm.down_scatter_split_row64(problem(job, observe), candidate_tail->data(), split_rows);
       if (row_address)
         return gemm.down_scatter_split_row_address(problem(job, observe), candidate_tail->data(), split_rows);
       return gemm.down_scatter_split(problem(job, observe), candidate_tail->data(), split_rows);
@@ -677,6 +680,57 @@ void benchmark(int process, sycl::queue &q, int public_arm = -1) {
 
 // Explicit component controls, not production dispatch or a hardware ceiling.
 // All arms retain the same X/W, map, reset, queue and ordinary FP32 update order.
+void row64_ownership() {
+  for (int rows : {1,3,17,63,64,65,127,128,129,2333,2334,5963,8191,8192}) {
+    const auto x = xe::inspect_down64_ownership(rows);
+    need(x.cells == size_t(rows) * N && !x.missing && !x.multiple &&
+         x.metadata_slots && !x.metadata_missing && !x.metadata_multiple &&
+         !x.metadata_outside_tile, "Down64 coordinate/row-metadata ownership");
+    std::cout << "{\"kind\":\"row64_ownership\",\"rows\":" << rows
+      << ",\"cells\":" << x.cells << ",\"metadata_slots\":" << x.metadata_slots
+      << ",\"masked\":" << x.masked << ",\"status\":\"PASS\"}\n";
+  }
+}
+
+void check_row64_dense(Case &c) {
+  const auto before = c.input_snapshot();
+  const auto &job = c.routes->jobs().front();
+  c.down.set(std::vector<uint16_t>(c.down.n, marker<uint16_t>()));
+  c.capture.set(std::vector<uint16_t>(c.capture.n, marker<uint16_t>()));
+  xe::Problem p;
+  p.x = c.x.data(); p.w = c.w.data(); p.y = c.down.data();
+  p.t = job.rows; p.n = N; p.k = K;
+  wait(c.q, c.gemm.beta0(p, xe::Tile::wide_128x128));
+  p.y = c.capture.data();
+  wait(c.q, c.gemm.beta0_down64(p));
+  equal(c.down, c.capture);
+  c.inputs_unchanged(before);
+  std::cout << "{\"kind\":\"row64_dense\",\"rows\":" << job.rows
+    << ",\"full_BF16_bits_equal\":true,\"guards\":true,\"status\":\"PASS\"}\n";
+}
+
+void row64_checks(bool tiny, sycl::queue &q) {
+  for (bool irregular : {false,true}) {
+    Case c(17, irregular, true, q, 3, 8);
+    c.row64 = true; c.check_split(0); check_row64_dense(c);
+    if (tiny) continue;
+    for (int rows : {63,64,65}) {
+      Case boundary(2 * rows + 17, irregular, false, q, rows, rows);
+      boundary.row64 = true; boundary.check_split(0); check_row64_dense(boundary);
+    }
+    Case tail(117488, irregular, false, q, 8192, 65536);
+    tail.row64 = true; tail.check_split(0);
+    tail.check_split(tail.routes->jobs().size() - 1); check_row64_dense(tail);
+  }
+  if (tiny) for (uint32_t mask : {1u,2u,3u}) {
+    Case bad(17, false, false, q, 3, 8); bad.row64 = true;
+    need(bad.routes->jobs().front().global_row == 0, "invalid-map test job offset");
+    if (mask & 1) { bad.host_original[0] = -1; bad.original.set(bad.host_original); }
+    if (mask & 2) { bad.host_source[1] = 17; bad.source.set(bad.host_source); }
+    bad.check_split(0, mask);
+  }
+}
+
 void row_address_benchmark(int process, sycl::queue &q) {
   namespace clock = sb::cpu_wait_profile;
   constexpr int repeat = 64;
@@ -741,6 +795,72 @@ void row_address_benchmark(int process, sycl::queue &q) {
          "\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
   }
 }
+void row64_benchmark(int process, sycl::queue &q) {
+  namespace clock = sb::cpu_wait_profile;
+  constexpr int repeat = 128;
+  for (int rows : {2334, 5963, 8192}) for (bool irregular : {false, true}) {
+    Case c(117488, irregular, false, q, rows, 65536);
+    need(c.routes->jobs().front().rows == rows, "row64 job shape");
+    c.row_address = true; c.check_split(0);
+    c.reset(); c.row64 = true; c.check_split(0);
+    check_row64_dense(c);
+    const auto before = c.input_snapshot();
+    std::vector<float> ordinary, address;
+    for (int round = -1; round < 4; ++round) for (int order = 0; order < 4; ++order) {
+      const int arm = (process + round + 4 + order) % 4;
+      c.reset(); c.row64 = arm == 1;
+      std::vector<sycl::event> events; events.reserve(repeat);
+      const auto first = mark(q);
+      const auto begin = clock::stamp();
+      for (int i = 0; i < repeat; ++i) {
+        if (arm < 2) events.push_back(c.fused(0, xe::Tile::wide_128x128, false, xe::ScatterLayout::matrix_row_cache));
+        else {
+          xe::Problem p;
+          p.x = c.x.data(); p.w = c.w.data(); p.y = c.down.data();
+          p.t = rows; p.n = N; p.k = K;
+          events.push_back(arm == 2 ? c.gemm.beta0(p, xe::Tile::wide_128x128) :
+                                      c.gemm.beta0_down64(p));
+        }
+      }
+      const auto submitted = clock::stamp();
+      const auto last = mark(q); wait(q, last);
+      const auto complete = clock::stamp();
+      const auto start_ns = first.get_profiling_info<sycl::info::event_profiling::command_end>();
+      const auto end_ns = last.get_profiling_info<sycl::info::event_profiling::command_start>();
+      need(begin.valid && submitted.valid && complete.valid && end_ns > start_ns,
+           "row64 timing clocks");
+      uint64_t previous = start_ns, service = 0;
+      for (const auto& event : events) {
+        const auto a = event.get_profiling_info<sycl::info::event_profiling::command_start>();
+        const auto b = event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        need(a >= previous && b > a && b <= end_ns, "row64 event order/coverage");
+        service += b - a; previous = b;
+      }
+      need(service <= end_ns - start_ns && events.size() == repeat &&
+           double(end_ns - start_ns) / 1e6 >= 5.0, "row64 batch eligibility");
+      if (round == 3 && arm < 2) {
+        auto output = c.split_output();
+        if (arm == 0) ordinary = std::move(output); else address = std::move(output);
+      }
+      need(c.candidate_status.get()[0] == 0 && c.reference_status.get()[0] == 0,
+           "row64 timed status");
+      std::cout << "{\"kind\":\"row64_sample\",\"process\":" << process
+        << ",\"rows\":" << rows << ",\"irregular\":" << irregular << ",\"round\":" << round
+        << ",\"order\":" << order << ",\"arm\":" << arm << ",\"repeat\":" << repeat
+        << ",\"kernel_service_ms\":" << double(service) / 1e6 / repeat
+        << ",\"queue_batch_ms\":" << double(end_ns - start_ns) / 1e6
+        << ",\"wall_ms\":" << (complete.wall - begin.wall) * 1000 / repeat
+        << ",\"submit_cpu_ms\":" << (submitted.cpu - begin.cpu) * 1000 / repeat
+        << ",\"complete_cpu_ms\":" << (complete.cpu - submitted.cpu) * 1000 / repeat
+        << ",\"status\":\"PASS\"}\n";
+    }
+    need(same_bytes(ordinary, address), "timed row64 complete FP32 bits differ");
+    c.inputs_unchanged(before);
+    std::cout << "{\"kind\":\"row64_case\",\"rows\":" << rows
+      << ",\"irregular\":" << irregular << ",\"final_bits_equal\":true,\"guards\":true,"
+         "\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+  }
+}
 } // namespace
 
 int main(int argc, char **argv) {
@@ -750,13 +870,19 @@ int main(int argc, char **argv) {
     need(argc >= 2, "use --ownership|--smoke|--validate|--bench PROCESS");
     const std::string mode = argv[1];
     if (mode == "--ownership") ownership();
+    else if (mode == "--row64-ownership") row64_ownership();
     else {
       const bool split_mode = mode.starts_with("--split-");
       if (split_mode) split_gate("before-runtime");
       runtime = sb::runtime_for();
       auto q = runtime->make_queue(true);
       if (split_mode) split_gate("runtime-ready");
-      if (mode == "--split-row-address-smoke" || mode == "--split-row-address-tiny") {
+      if (mode == "--split-row64-tiny" || mode == "--split-row64-smoke") {
+        row64_checks(mode == "--split-row64-tiny", q);
+      } else if (mode == "--split-row64-bench") {
+        need(argc == 3 && std::stoi(argv[2]) >= 0 && std::stoi(argv[2]) < 3, "row64 process");
+        row64_benchmark(std::stoi(argv[2]), q);
+      } else if (mode == "--split-row-address-smoke" || mode == "--split-row-address-tiny") {
         for (bool irregular : {false, true}) {
           Case small(17, irregular, true, q, 3, 8);
           small.row_address = true;
