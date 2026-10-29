@@ -15454,7 +15454,7 @@
     }
   },
   "metric_capability": {
-    "stage": "built",
+    "stage": "failed",
     "source_commit": "5f18ac05cd3e95b72d5a70a3f31f6f0da84e494e",
     "sources": {
       "bench/sycl/metric_capability.c": "492281c8d9eb7ab97b920f340bb811acdfe3a9f9ca8490412150af3f319089fc",
@@ -15568,7 +15568,7 @@
     },
     "retention": "One small tool build and bounded raw inventory for Main to choose the next source-documented tiny-workload metric. Review/retire after that choice and collection plan/result;no new model generation.",
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "passed": false,
     "collection_qualified": false,
     "hardware_utilization_measured": false,
@@ -15578,6 +15578,53 @@
       "bytes": 17160,
       "sha256": "822c8e53577603c4577ce950d903c1a85755e5d4ca28b2d60146ddf0c3f94354"
     },
-    "build_passed": true
+    "build_passed": true,
+    "outcome": "inconclusive",
+    "error": "RuntimeError('native supervision/ownership did not close')",
+    "enumeration_complete": false,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "fresh_faults": [],
+    "native_process": {
+      "pid": 4074146,
+      "exit_code": -15,
+      "elapsed_seconds": 0.6286415550857782,
+      "peak_session_rss_bytes": 27742208,
+      "observation_complete": false,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "error": "RuntimeError(\"unknown runtime provider: {'/usr/lib/x86_64-linux-gnu/libopencl-clang.so.22.1', '/usr/lib/x86_64-linux-gnu/libigc.so.2.41.15+0', '/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.41.15+0', '/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0'}\")"
+    },
+    "failure_mechanism": {
+      "kind": "unfrozen_system_provider_at_runtime_ready",
+      "before_metric_group_enumeration": true,
+      "accepted_gates": [
+        "before-runtime"
+      ],
+      "refused_gate": "runtime-ready",
+      "successful_native_API_calls": 7,
+      "providers": {
+        "/usr/lib/x86_64-linux-gnu/libigc.so.2.41.15+0": "0c3d344a2102d0c68d419898b3652b96777b5b6c2e8012ce9a95b96c602a7ef1",
+        "/usr/lib/x86_64-linux-gnu/libigdfcl.so.2.41.15+0": "4e5790803114e087d4a3ddb71547e58fb945863890d74ffb1d3b5478dadfe864",
+        "/usr/lib/x86_64-linux-gnu/libopencl-clang.so.22.1": "1e70667edcd6f8b68c792bed3ffb60b828c1f2fac1adaead9507f5d24619f629",
+        "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5"
+      },
+      "reason": "Native LD_LIBRARY_PATH selects system IGC2.41.15 and its OpenCL-Clang dependency;v1 pinned local IGC2.41.5. Loader also dynamically loads its tracing layer. Do not refresh the failed plan hashes."
+    },
+    "closure_reconciliation": {
+      "all_owned_processes_terminated": true,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "original_PID_absent": true,
+      "pid": 4074146,
+      "start_ticks": 165476961,
+      "limit": "Original observation_complete=false,ownership_closed=false and passed=false remain unchanged;termination is established,not successful enumeration."
+    }
   }
 }

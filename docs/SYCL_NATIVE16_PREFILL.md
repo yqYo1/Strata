@@ -1548,9 +1548,14 @@ larger windows and a smaller expert bank do not establish a throughput gain
 or the limiting hardware unit. Decode/handoff,model quality and physical-context
 qualification remain separate pending gates.
 
-The source-only [`metric_capability.c`](../bench/sycl/metric_capability.c) prepares
-the next local counter-capability check;it has not been built or executed and is
-absent from both comparison binaries. The independently authored
+The [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C check
+builds successfully,but its first execution stops at the runtime-ready gate
+before any metric-group enumeration. The plan omitted system IGC2.41.15,
+its OpenCL-Clang dependency and the loader's tracing layer;it had instead pinned
+the local IGC2.41.5. The owned process is terminated and reaped with no survivor
+or fresh GPU fault. Keep this run incomplete and unqualified;pin a new provider
+plan before another execution. Neither comparison engine includes this tool.
+The independently authored
 [`controller`](../tools/sycl/metric_capability.py) has separate prepare,build and
 run actions,with a commit required between them. It pins actual system headers,
 compiler/link inputs and the direct-C loader/provider closure independently of
