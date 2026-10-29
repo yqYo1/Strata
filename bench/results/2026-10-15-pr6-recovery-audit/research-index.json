@@ -15281,5 +15281,31 @@
       ],
       "next_gate": "Freeze exact native fixture/inputs/recipe/plan before serial build;bounded traced merge-oracle,guards,invalid-input and queue-dependency checks. No GPU or model qualification."
     }
+  },
+  "qsa_pair_attention_contract_20261029": {
+    "classification": "decision support",
+    "status": "eligible_not_dispatched",
+    "schedulable_now": true,
+    "source_revision": "75aa272bb",
+    "source_files": {
+      "include/strata/kernels/qsa_pair_attention.hpp": "88a810b0181992efba235a217bed7c396d5cced5f1ec37eb43a46b9fc4094dd4",
+      "src/kernels/sycl/qsa_pair_attention.cpp": "9b1221600dbd78fddee0052f980f5fdb91fcd42d9420b7a8cc24c6574b320bd2",
+      "include/strata/kernels/qsa_pair_union.hpp": "2cc8b6421a873dd6ba41a9135dff3d4608ccfd3263d5c33ab7850d36c69c8a2e",
+      "src/kernels/sycl/qsa_pair_union.cpp": "e9f3ca56a445067d8df817ceb554ea5dcff612e544e28b98ee6028daee1aff8c"
+    },
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "report": ".cache/research/2026-10-29/qsa_pair_attention_contract_20261029.md",
+    "report_budget_bytes": 18432,
+    "question": "Audit actual two-query BF16 attention:24head mapping,WG192/SG16joint matrices,local arena/barriers,cached Q lifetime,per-query membership before online softmax,nonmember NaN isolation,odd query/zero/invalid counts,262144KV extent and65535query admission,pack/page bounds,queue+span contract. Compare independently to the own selected6e40 numerical design,not exact output equality. Give concrete blockers/counterexamples and at most3essential corrections;no implementation or speed prediction.",
+    "actual_prerequisite_evidence": "Complete independently authored source committed75aa272bb,without target/caller/build/GPU execution. Producer reviewed conditionally with unchanged body;CPU exact-ID census5e581f6e8selected T2source proposal. New consumer code/matrix mapping did not exist in prior generic reviews.",
+    "prior_scopes": [
+      "qsa_pair_union_contract_20261029",
+      "qsa_union_tile_retrieval_20261029",
+      "adaptive_sparse_format_crossover_gpu_asic_20261028"
+    ],
+    "consumer": "Source-contract decision before Main-owned serial native fixture build/run;Main concurrently implements fixture/build controller.",
+    "retirement": "Keep essential source proof/corrections and pins;retire consumed transaction/report/review after source gate.",
+    "worker_closed": false,
+    "main_read_report_body": false
   }
 }
