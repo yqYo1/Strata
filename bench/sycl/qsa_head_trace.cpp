@@ -53,6 +53,28 @@ bool collect(TRACE_ARGS) {
   for(int i=0;i<16;++i)require(original_guarded[i]==output_mark &&
       original_guarded[original_guarded.size()-16+i]==output_mark,"serial calibration guards");
   original.assign(original_guarded.begin()+16,original_guarded.end()-16);
+  if(!call) {
+    state.put(initial_state);details.put(initial_details);
+    const QsaPrefixStateProbe probe{0,0,0,state.data()+16};
+    Buffer<uint32_t> short_details(1);Drain short_pending;
+    const std::vector<uint32_t *> invalid{
+      reinterpret_cast<uint32_t *>(temporary.data()+16),
+      reinterpret_cast<uint32_t *>(state.data()+16),
+      reinterpret_cast<uint32_t *>(reinterpret_cast<char *>(details.data()+16)+1),
+      details.upload.data(), // Host owner outlives both pending drains.
+      short_details.data(),reinterpret_cast<uint32_t *>(const_cast<uint16_t *>(query)),
+      reinterpret_cast<uint32_t *>(scratch.k)};
+    for(auto bad:invalid) {
+      bool refused=false;
+      try {(void)strata::kernels::qsa_head_candidate::capture(query,pools,ids,steps,cap,shape,
+          temporary.data()+16,queries,bounds,live_cells,scratch,stream,probe,nullptr,nullptr,bad);}
+      catch(const std::invalid_argument &) {refused=true;}
+      require(refused,"invalid lossless trace span accepted");
+      require(temporary.get()==original_guarded && state.get()==initial_state &&
+              details.get()==initial_details,"rejected trace changes writable spans");
+    }
+    std::cout<<"QSA_NORM_ADMISSION rejections=7 output_state_detail_unchanged=1\n";
+  }
   std::vector<int> heads=wide?std::vector<int>{0,1,2,3,4,5,6,7,8,9,10,11,15}:std::vector<int>{0,15};
   std::vector<int64_t> selected_queries{0};
   if(wide && queries>1)selected_queries.push_back(queries-1);
