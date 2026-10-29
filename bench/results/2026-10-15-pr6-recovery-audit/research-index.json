@@ -15549,7 +15549,7 @@
   },
   "pair_model_first_request_contract_20261029": {
     "classification": "decision support",
-    "status": "running",
+    "status": "curated_first_model_source_gate_passed",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "source_revision": "7c4878e4b",
@@ -15569,7 +15569,7 @@
     ],
     "consumer": "Source gate before committing/launching first bounded real-model diagnostic;Main continues native gates and later model evaluation.",
     "retirement": "Record essential interface/source corrections and reviewed pins;retire consumed report/spec/launch/review transaction after firstmodel gate closes. No speed or adoption from source review.",
-    "worker_closed": false,
+    "worker_closed": true,
     "main_read_report_body": false,
     "source_sha256": {
       "tools/sycl/qsa_pair_model_bench.py": "981f89094af538b56e2e66bb271f7f93b189187c9a26e75a8efe59d2f4127ff9",
@@ -15580,6 +15580,35 @@
     "task_id": "task_43fe6a884f73",
     "dispatch_id": "ctx_458503f96601",
     "terminal": "term_ef0ce9fa-d445-4b4f-a907-eb025e4acf09",
-    "startup": "Initial task did not run due update modal;actual modal read,ESCskip,same task/terminal official retry ready and turn observed. Original receipt confirms Luna-high. No steering."
+    "startup": "Initial task did not run due update modal;actual modal read,ESCskip,same task/terminal official retry ready and turn observed. Original receipt confirms Luna-high. No steering.",
+    "worker_outcome": "succeeded",
+    "release_state": "released",
+    "completion_acknowledged": true,
+    "completion_message": "msg_f8fde383e34e",
+    "completion_delivery": "delivery_594f6d651157",
+    "native_review": {
+      "report_sha256": "8a9c3d37c4524ca36969763d9fca4618f8f09e6f3006712f998e44c717fed936",
+      "report_bytes": 6752,
+      "source_revision": "7c4878e4b",
+      "source_sha256": {
+        "tools/sycl/qsa_pair_model_bench.py": "981f89094af538b56e2e66bb271f7f93b189187c9a26e75a8efe59d2f4127ff9",
+        "tools/sycl/qsa_pair_model_qualify.py": "ac061be348f8f561c5b92b3a2f7fe7dcb86c3f2275fd5404cc90556fa78b11ea",
+        "tools/sycl/qsa_pair_model_link.py": "3528c5ecd89a5174cc9d7872a9caec5966e873ee4e4f1a52d641d8b35fe64bfa",
+        "tools/sycl/build_qsa_pair_model.py": "f8804d073e10054e344789e05044dcdf8710ea9e25d377ce7e8d82a7ee80b822"
+      },
+      "accepted_for_first_model": true,
+      "verdict": "ACCEPTED_FOR_FIRST_MODEL_SOURCE_GATE",
+      "essential_corrections": [],
+      "optional_suggestions": [
+        "In prepare_model(), explicitly assert STRATA_SYCL_PREFILL_NATIVE16=bf16, STRATA_SYCL_PREFILL_NATIVE16_QSA=1, and STRATA_SYCL_PREFILL_NATIVE16_BACKEND=vllm. The pinned template currently supplies all three; this is fail-fast hardening for future template changes."
+      ],
+      "remaining_model_gates": [
+        "The bounded bench.sh diagnostic is still unrun: require the short warmup, one thinking-on fresh client request with at least 32768 read tokens and 24 generated tokens, the observed layer-major extent recorded separately, exact pair dispatch totals, clean owner closure, and no new runtime fault.",
+        "A pass qualifies only this diagnostic. It does not establish clean speed, repeated long-prefill gain, decode/state-handoff qualification, or full physical 262144-token and RESTORE correctness."
+      ],
+      "scope_quality": "Focused decision support. The report hashes match the four live assignment files. Source inspection confirms the pair selector is applied only through the long layer-major prefill path (n > T); the short warmup remains on run_impl and decode is outside this selector. The controller checks actual pair completion and preserves client read tokens separately from actual engine rows. This is source/interface review only; it does not qualify runtime behavior or model adoption."
+    },
+    "review_sha256": "55e0a2bbb79aea5648a053c60e3df899fe2aa192156a9878e4080bbfe51e50da",
+    "next": "First bounded diagnostic source eligibility passes;Main must finish all native gates and CPUfrontend definition checks before model launch. No speed/adoption from source review. Optional inherited-env assertion deferred while reviewed inputs are frozen."
   }
 }
