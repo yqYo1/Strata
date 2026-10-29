@@ -16,6 +16,7 @@ import sys
 import time
 sys.dont_write_bytecode=True
 import build_engine
+from build_fused_profile import SYSTEM_HEADER_UPDATES
 import measurement_guards as guards
 import measurement_owner as supervision
 import runtime_probe as runtime
@@ -125,6 +126,10 @@ def assets(plan):
         item=plan[key];require(digest(item['path'])==item['sha256'],'tool/header manifest changed')
     rows=json.loads(Path(plan['compiler_manifest']['path']).read_text())
     files={r['path']:r['sha256'] for r in rows}
+    require(plan['prospective_system_header_updates']=={k:list(v) for k,v in SYSTEM_HEADER_UPDATES.items()},
+        'prospective SDK/header policy changed')
+    for name,(before,after) in SYSTEM_HEADER_UPDATES.items():
+        require(files[name]==before,'original SDK header lineage changed');files[name]=after
     files.update(json.loads(Path(plan['external_manifest']['path']).read_text()))
     files.update(plan['additional_headers'])
     for name,sha in files.items():require(digest(name)==sha,'tool/runtime/header changed: '+name)
@@ -164,6 +169,7 @@ def prepare_build():
         project_inputs_sha256=fingerprint(encoded_pins(source)),project_input_count=len(source),
         generated_inputs=encoded_pins(gen),compiler={'path':str(compiler),'sha256':digest(compiler)},
         compiler_manifest={'path':str(compiler_manifest),'sha256':digest(compiler_manifest)},
+        prospective_system_header_updates={k:list(v) for k,v in SYSTEM_HEADER_UPDATES.items()},
         external_manifest={'path':str(external),'sha256':digest(external)},additional_headers=headers,
         environment=environment,commands=commands,
         budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=16<<20,total_cap=1<<30,file_cap=256<<20),
