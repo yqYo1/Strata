@@ -61,10 +61,10 @@ template<bool Multiply> void edge_submit(const float *input,const float *alpha,f
       namespace mi=sycl::ext::intel::experimental::matrix;
       auto sg=item.get_sub_group();
       mx::joint_matrix<sycl::sub_group,float,mx::use::accumulator,8,16> value;
-      mx::joint_matrix_load(sg,value,input,16,mx::layout::row_major);
+      mx::joint_matrix_load(sg,value,sycl::address_space_cast<sycl::access::address_space::global_space,sycl::access::decorated::no>(input),16,mx::layout::row_major);
       if constexpr(Multiply)
         mi::joint_matrix_apply(sg,value,[=](float &v,size_t row,size_t) {v*=alpha[row];});
-      mx::joint_matrix_store(sg,value,output,16,mx::layout::row_major);
+      mx::joint_matrix_store(sg,value,sycl::address_space_cast<sycl::access::address_space::global_space,sycl::access::decorated::no>(output),16,mx::layout::row_major);
     });
   });
 }

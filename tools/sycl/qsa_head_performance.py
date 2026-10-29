@@ -17,7 +17,8 @@ import sys
 sys.dont_write_bytecode=True
 import qsa_head_native as n
 q,r,P,B=n.q,n.r,n.P,n.B
-ROOT=n.ROOT/'performance'
+ROOT=n.ROOT/'performance-v2'
+PERF='performance_v2'
 RESULT=n.RESULT
 CPP='bench/sycl/qsa_head_bench.cpp'
 require,digest,write=n.require,n.digest,n.write
@@ -48,7 +49,7 @@ def admitted(row):
 
 
 def prepare():
-    record,native,allowed,rt=qualification();require(not ROOT.exists() and 'performance' not in record[n.KEY],'fresh performance build only')
+    record,native,allowed,rt=qualification();require(not ROOT.exists() and PERF not in record[n.KEY],'fresh performance build only')
     revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=P,text=True).strip();pins=sources(revision)
     ROOT.mkdir(mode=0o700);(ROOT/'tmp').mkdir();(ROOT/'cache').mkdir()
     compile_base=next(argv for label,argv in native['commands'] if label=='original');flags=compile_base[1:compile_base.index('-MD')]
@@ -59,11 +60,11 @@ def prepare():
         require(path.is_file() and path.is_relative_to(n.ROOT),'unexpected kernel/runtime object');allowed[str(path)]=digest(path)
     allowed.update({str(P/name):h for name,h in pins.items()});write(ROOT/'input-inventory.json',allowed)
     row=dict(stage='prepared',source_commit=revision,source_sha256=pins,native_build_source=native['source_commit'],native_geometry=native['geometry_proof'],runtime_sha256=digest(r.RESULT),boot=rt['boot'],commands=[['compile',compile_command],['link',link]],environment=dict(native['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),input_inventory=dict(path=str(ROOT/'input-inventory.json'),sha256=digest(ROOT/'input-inventory.json'),files=len(allowed)),budgets=dict(wall=600,cpu=1800,rss_cap=8<<30,text_cap=32<<20,file_cap=256<<20,total_cap=2<<30),passed=False,active=False,ownership_closed=True,criteria='CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.',retention='Same imminent v2comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure.')
-    admitted(row);write(ROOT/'record.json',row);record[n.KEY]['performance']=dict(build=compact(row));write(RESULT,record);print('Performance build prepared;commit before compile.',flush=True)
+    admitted(row);write(ROOT/'record.json',row);record[n.KEY][PERF]=dict(build=compact(row));write(RESULT,record);print('Performance build prepared;commit before compile.',flush=True)
 
 
 def build():
-    record=r.validation.committed(RESULT);row=json.loads((ROOT/'record.json').read_text());require(row['stage']=='prepared' and compact(row)==record[n.KEY]['performance']['build'],'fresh committed build plan');_,native,allowed,_=admitted(row);owner=None
+    record=r.validation.committed(RESULT);row=json.loads((ROOT/'record.json').read_text());require(row['stage']=='prepared' and compact(row)==record[n.KEY][PERF]['build'],'fresh committed build plan');_,native,allowed,_=admitted(row);owner=None
     def persist():write(ROOT/'record.json',dict(row,active=bool(owner and owner.active is not None),commands_executed=owner.commands if owner else []))
     owner=r.supervision.Owner(ROOT/'build-owned',persist)
     try:
@@ -77,19 +78,19 @@ def build():
         row.update(stage='built',passed=True,binary=dict(path=str(binary),sha256=digest(binary),bytes=binary.stat().st_size),actual_compiler_inputs=dict(files=len(observed),path=str(ROOT/'compiler-inputs.json'),sha256=digest(ROOT/'compiler-inputs.json'),uncovered=0),actual_link_inputs=dict(frozen=len(links['frozen_inputs']),path=str(ROOT/'link-inputs.json'),sha256=digest(ROOT/'link-inputs.json'),uncovered=0));admitted(row)
     except BaseException as error:row.update(stage='failed',passed=False,error=repr(error))
     finally:
-        row.update(active=False,ownership_closed=owner.active is None and all(r.supervision.closed(c) for c in owner.commands),commands_executed=owner.commands);row['passed']=bool(row['passed'] and row['ownership_closed']);write(ROOT/'record.json',row);record[n.KEY]['performance']['build']=compact(row);write(RESULT,record)
+        row.update(active=False,ownership_closed=owner.active is None and all(r.supervision.closed(c) for c in owner.commands),commands_executed=owner.commands);row['passed']=bool(row['passed'] and row['ownership_closed']);write(ROOT/'record.json',row);record[n.KEY][PERF]['build']=compact(row);write(RESULT,record)
     print(json.dumps({k:row.get(k) for k in ['stage','passed','ownership_closed','error']}),flush=True);require(row['passed'],'performance fixture build failed')
 
 
 def prepare_edge():
-    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY]['performance'];folder=ROOT/'edge';require('edge' not in scope and not folder.exists(),'fresh edge gate only');folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
+    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY][PERF];folder=ROOT/'edge';require('edge' not in scope and not folder.exists(),'fresh edge gate only');folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
     env=dict(rt['environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'),ZE_ENABLE_ALT_DRIVERS=next(p for p in rt['runtime_files'] if 'libze_intel_gpu' in p),UR_LOG_TRACING='level:info;flush:info;output:file,'+str(folder/'api.trace'),UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
     plan=dict(stage='prepared',command=[built['binary']['path'],'--edge-only'],binary=built['binary'],environment=env,boot=rt['boot'],budgets=dict(wall=180,cpu=360,rss_cap=4<<30,text_cap=16<<20,file_cap=32<<20,total_cap=256<<20),criteria='Before any timing:new2SG16M8matrixkernels compiled/query,then exactly2traced WG16submissions;128finiteFP32states including80subnormal and0x8200 must preserve input and scaled/bypass bits exactly. Stop firstfailure,known immutableproviders/pre-mainvalidation,guards/inputimmutability/closedowner/no newfault. No model qualification.')
     require('UR_LAYER_TRACING' in env['UR_ENABLE_LAYERS'],'firstedge must use qualified tracing');write(folder/'plan.json',plan);scope['edge']=plan;write(RESULT,record);print('Traced FP32edge prepared;commit before run.',flush=True)
 
 
 def run_edge():
-    record=r.validation.committed(RESULT);scope=record[n.KEY]['performance'];plan=scope['edge'];folder=ROOT/'edge';built=json.loads((ROOT/'record.json').read_text());require(plan['stage']=='prepared' and plan==json.loads((folder/'plan.json').read_text()) and not (folder/'owned').exists(),'fresh frozen edge');_,_,_,rt=admitted(built);require(plan['binary']==built['binary'],'edge ELF differs')
+    record=r.validation.committed(RESULT);scope=record[n.KEY][PERF];plan=scope['edge'];folder=ROOT/'edge';built=json.loads((ROOT/'record.json').read_text());require(plan['stage']=='prepared' and plan==json.loads((folder/'plan.json').read_text()) and not (folder/'owned').exists(),'fresh frozen edge');_,_,_,rt=admitted(built);require(plan['binary']==built['binary'],'edge ELF differs')
     text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15);cursor=next(v.split(': ',1)[1] for v in text.splitlines() if v.startswith('-- cursor: '));outcome=dict(host_probe_accepted=False,complete=False);owner=None
     def persist():write(folder/'record.json',dict(outcome,active=bool(owner and owner.active is not None),commands=owner.commands if owner else []))
     owner=r.supervision.Owner(folder/'owned',persist)
@@ -105,7 +106,7 @@ def run_edge():
 
 
 def prepare_run():
-    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['stage']=='built' and built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY]['performance'];require('comparison' not in scope,'no repeat/overwrite of prior comparison')
+    record=r.validation.committed(RESULT);built=json.loads((ROOT/'record.json').read_text());require(built['stage']=='built' and built['passed'] and built['ownership_closed'],'compiled fixture first');_,_,_,rt=admitted(built);scope=record[n.KEY][PERF];require('comparison' not in scope,'no repeat/overwrite of prior comparison')
     require(scope['edge']['outcome']['passed'] and scope['edge']['binary']==built['binary'],'traced exact FP32edge before timing');plans=[]
     for index in range(3):
         folder=ROOT/str(index);folder.mkdir();(folder/'tmp').mkdir();(folder/'cache').mkdir()
@@ -139,7 +140,7 @@ def parse(stdout,index):
 
 
 def run():
-    record=r.validation.committed(RESULT);scope=record[n.KEY]['performance'];built=json.loads((ROOT/'record.json').read_text());row=json.loads((ROOT/'comparison.json').read_text());require(compact(row)==scope['comparison'] and row['stage']=='prepared','frozen comparison required');_,_,_,rt=admitted(built)
+    record=r.validation.committed(RESULT);scope=record[n.KEY][PERF];built=json.loads((ROOT/'record.json').read_text());row=json.loads((ROOT/'comparison.json').read_text());require(compact(row)==scope['comparison'] and row['stage']=='prepared','frozen comparison required');_,_,_,rt=admitted(built)
     text=subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15);cursor=next(v.split(': ',1)[1] for v in text.splitlines() if v.startswith('-- cursor: '));owner=None
     def persist():write(ROOT/'comparison.json',dict(row,active=bool(owner and owner.active is not None),commands_executed=owner.commands if owner else []))
     owner=r.supervision.Owner(ROOT/'run-owned',persist)
