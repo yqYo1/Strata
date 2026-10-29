@@ -13,8 +13,8 @@ import sys
 sys.dont_write_bytecode=True
 import qsa_head_native as n
 q,r,P,B=n.q,n.r,n.P,n.B
-ROOT=n.ROOT/'numerics-v1'
-KEY='numerical_fixture'
+ROOT=n.ROOT/'numerics-v2'
+KEY='numerical_fixture_v2'
 CPP='bench/sycl/qsa_head_trace.cpp'
 RESULT=n.RESULT
 require,digest,write=n.require,n.digest,n.write
