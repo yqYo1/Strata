@@ -16152,7 +16152,7 @@
   },
   "qsa_id_range_int_source_contract_20261029": {
     "classification": "decision support",
-    "status": "source_review_running",
+    "status": "reviewed_CPU_IR_eligible_native_adoption_blocked",
     "schedulable_now": false,
     "source_revision": "5d99f028883f89292f03c3f6928ab733955fd35d",
     "question": "Exact installed LLVM504 SYCL ID-query range flag and legal bounds for selectedQSA-only translation unit: current size_t versus int. Check each pack/attention ID/range/offset domain,physical262144context and queries/tail admission,actual compiler option/lowering and stop criteria for a CPU-only IR comparison. No global engine/decode flag change or historical regression investigation.",
@@ -16168,6 +16168,49 @@
     "terminal": "term_417a034d-9f0a-4c59-931e-1f4e0ce7e1ca",
     "startup_attempt": "ctx_8dd5e24c7202",
     "startup_recovery": "Verified actual update modal,Escape,official same-task/same-terminal retry ready/input_accepted/turn_started;no steering.",
-    "ownership_closed": false
+    "ownership_closed": true,
+    "worker_released": true,
+    "delivery_acknowledged": true,
+    "report_sha256": "797eb5afa55160a2f3242aa0781f68f76e4af00341267a969cbcb2d8dd2633fb",
+    "native_review": {
+      "agent": "/root/curate_id_range_contract_20261029",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "38a0507644997c72b639080cb2449b6ae83ca1ab2c7b90385030b12ccaa85483",
+      "source_accepted_for_CPU_IR": true,
+      "native_adoption_blocked": true,
+      "production_bounds": {
+        "context_cells_max": 262144,
+        "chunk_queries_max": 8192,
+        "page_size": 4,
+        "pack": {
+          "active_pages_max": 65536,
+          "active_rows_max": 524288,
+          "global_range_max": 33554432,
+          "group_linear_id_max": 524287,
+          "local_linear_id_max": 63
+        },
+        "attention": {
+          "queries_max": 8192,
+          "workgroup": 128,
+          "global_range_max": 2097152,
+          "group_linear_id_max": 16383,
+          "local_id_max": 127,
+          "subgroups": 8,
+          "subgroup_lane_max": 15
+        },
+        "global_offset": 0,
+        "fits_signed_int_global_range": true
+      },
+      "guard_and_fallback": "Before dispatch to any int-compiled image, compute checked active_rows and require active_rows<=INT_MAX/64; also require queries<=INT_MAX/(2*128) for its attention launch and keep the current zero offset. On failure, dispatch the existing size_t-compiled implementation. Because the flag's contract applies to every kernel in its translation unit and the runtime throws for out-of-contract launches instead of selecting a size_t fallback, preserve the broad public API with a separately compiled int candidate/private entrypoint or equivalent split; a guard that only rejects larger public requests would change API behavior.",
+      "source_corrections": [
+        "The compiler option contract is translation-unit-wide: every kernel/SYCL_EXTERNAL entry in the flagged source must obey the global-range promise. Public wrappers in this source therefore need the same bound or a size_t fallback.",
+        "The QSA source directly queries group-linear and local-linear IDs plus subgroup IDs; it does not call get_global_id. State the calculated global range as the launch contract, not as a directly queried global ID.",
+        "At the cited LLVM base, sycl/source/detail/scheduler/commands.cpp does not itself show the INT_MAX check. The pinned UsersManual and first-party range_offset_fit_in_int test do support documented launch validation and exception behavior; verify that behavior on the exact installed 504+17-patch artifact before native qualification.",
+        "Runtime rejection is not automatic size_t fallback. A public over-bound call must be routed to the size_t image before int-image submission."
+      ],
+      "stop_rule": "Stop on source/option mismatch, metadata-only or unconsumed-assumption changes, no relevant optimized query-derived IR change, narrowed tensor/byte offsets, or a changed signed invalid-row path.",
+      "prerequisites": "Fresh size_t control and exact committed frozen source/compiler/plan before CPUcompile;no native or speed result from review."
+    }
   }
 }

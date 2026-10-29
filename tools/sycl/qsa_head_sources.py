@@ -1,8 +1,6 @@
-"""Own identity-rescale skipping component from selected QSA; repository LICENSE.
+"""Own selected-QSA exact-workgroup CPU discriminator;repository LICENSE.
 
-Same M8/WG128 geometry,storage,ordered softmax and matrix operations. Skip only
-an accumulator rescale whose eight per-head FP32 coefficients are exactly1.
-No production or decode caller is changed. Closed M4 code recovers at2148ad393.
+Only an exactWG128annotation changes. No production or decode caller changes.
 """
 import hashlib
 from pathlib import Path
@@ -13,17 +11,8 @@ BASE='6e40afc1beddd059ee518617f6c1efce1da14aca'
 PREFIX='src/kernels/sycl/qsa_bf16_prefix.cpp'
 BASE_SHA='4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192'
 EDITS=[
-    ('        const int head = (subgroup / 4) * 8, dim_base = (subgroup % 4) * 64;\n',
-     '        const int head = (subgroup / 4) * 8, dim_base = (subgroup % 4) * 64;\n'
-     '        const bool identity_scale = sycl::all_of_group(\n'
-     '            sg, lane >= 8 || alpha[head + lane] == 1.f);\n',1),
-    ('          mi::joint_matrix_apply(sg, accumulated[j], [=](float &v, size_t r, size_t) {\n'
-     '            v *= alpha[head + r];\n'
-     '          });',
-     '          if (!identity_scale)\n'
-     '            mi::joint_matrix_apply(sg, accumulated[j], [=](float &v, size_t r, size_t) {\n'
-     '              v *= alpha[head + r];\n'
-     '            });',1),
+    ('[[sycl::reqd_sub_group_size(16)]] {',
+     '[[sycl::reqd_sub_group_size(16)]] [[sycl::reqd_work_group_size(128)]] {',1),
 ]
 
 SIGNATURE = '''const uint16_t *query, const QsaAttnPools &pools,
@@ -88,12 +77,10 @@ def proof():
     rows=generated()
     return dict(original_source_commit=BASE,original_source_sha256=BASE_SHA,
         generated_sha256={n:hashlib.sha256(raw).hexdigest() for n,raw in rows.items()},
-        geometry='Unchanged M8,N16,K16,WG128,SG16,16padded/12real heads;QK4/PV8subgroups.',
-        change='Skip only FP32 accumulator-times-alpha when all8head coefficients in that subgroup equal1.f;all lanes execute subgroup all_of_group before a uniform conditional matrix collective.',
-        reversible_geometry_edits=0,reversible_identity_rescale_edits=len(EDITS),reversible_event_edits=3,
-        declared_local_bytes=20036,coordinate_matrix_apply_used=True,private_fragment_mapping_assumed=False,
-        preservation='Same cachedQ,K/V4staging,ordered FP32softmax/state,BF16stores,all whole-group barriers. Short-circuit alpha reads touch only valid8rows. No approximate equality,no first-tile specialcase. IEEE identity/denormal/nonfinite contract needs source review and actual oracle.',
-        production_or_decode_changed=False)
+        geometry='Same M8,N16,K16,WG128,SG16,16padded/12real heads;only exactWG128metadata added.',
+        reversible_geometry_edits=0,reversible_attribute_edits=len(EDITS),reversible_event_edits=3,
+        declared_local_bytes=20036,production_or_decode_changed=False,
+        preservation='All math/storage/control-flow/barriers unchanged. Rejected identity-rescale source recovers at032a3e15f;current candidate changes one exact-workgroup annotation only.')
 
 
 if __name__=='__main__':
