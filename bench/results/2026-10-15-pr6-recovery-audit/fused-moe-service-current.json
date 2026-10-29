@@ -9030,7 +9030,52 @@
       "file_cap": 67108864,
       "total_cap": 536870912
     },
-    "results": {},
+    "results": {
+      "control": {
+        "passed": true,
+        "GPU_executed": false,
+        "IR": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-compiler-ir-v1/control.ll",
+          "sha256": "03b2bcbbc572bae6fd4826ed2959a6900afa8f82ddbaf1dcdf7edffaa0b031a1",
+          "bytes": 135742
+        },
+        "actual_compiler_inputs": {
+          "files": 662,
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-compiler-ir-v1/control-inputs.json",
+          "sha256": "c431694a9830a3700d4a3fdaada75332f1d54bf7c8bfd928413b4b82ff7f9e1e",
+          "uncovered": 0
+        },
+        "functions": {
+          "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb0EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_": {
+            "normalized_body_sha256": "da889f505bfa7ecc8a2f6b55b78cba0945effaf6b58b70c899a6e3d6c57014eb",
+            "instruction_lines": 730,
+            "i64_arithmetic": 27,
+            "i64_casts": 52,
+            "FP32_ops": {
+              "fadd": 1,
+              "fsub": 3,
+              "fmul": 3,
+              "fdiv": 1
+            },
+            "required_WG_metadata": false
+          },
+          "_ZTSZZN6strata7kernels17qsa_head_originalL17prefix_batch_implILi33ELb0ELb0ELb1ELb1ELb1ELb1ELb1EEEbPKtRKNS0_12QsaAttnPoolsEPKiS9_lRKNS0_9QsaShapesEPtlRKNS0_19QsaPromptBf16BoundsElRKNS0_20QsaBf16PackedScratchEPvNS0_19QsaPrefixStateProbeEPN4sycl3_V15eventESP_ENKUlRNSN_7handlerEE_clESR_EUlNSN_7nd_itemILi1EEEE_": {
+            "normalized_body_sha256": "12dd670e1408bf23180ff83927f880e433bf938ffa4d199fe6de21ecd9586346",
+            "instruction_lines": 756,
+            "i64_arithmetic": 28,
+            "i64_casts": 53,
+            "FP32_ops": {
+              "fadd": 1,
+              "fsub": 3,
+              "fmul": 3,
+              "fdiv": 1
+            },
+            "required_WG_metadata": false
+          }
+        },
+        "ownership_closed": true
+      }
+    },
     "GPU_executed": false,
     "model_adopted": false,
     "criteria": "Three CPU-only emitted LLVM controls. Exact same selected math;WG adds only exact128attribute;ID-int changes only IDrange flag. Fresh control and allactual compiler dependencies frozen. No GPU/native trial from metadata alone. Attention-kernel integer/address simplification or verified loop movement required;record normalized bodies/counts for Main review. FP32operation counts must remain equal. IDint CPUcompile needs source-review acceptance;broader public admission still blocks native adoption until guarded/fallback dispatch is proved.",
