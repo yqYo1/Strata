@@ -1511,9 +1511,14 @@ Production selection is limited to90113..117488engine rows and default-off;
 other lengths retain the existing plan,including262144. Build exact selected6e40
 with only the reviewed split changes and the independent prefix maximum-allocation
 guard;the source/actual1400compiler-input closure and all3executables pass.
-Next qualify current-source frontend probes and an exact117489-read request,
-observing117488engine rows,128-slot admission and checked tail retirement
-before clean model comparison. Measure job/dequant/upload changes and critical-path service;
+Current-source frontend probes and the exact117489-read model diagnostic
+now pass:117488engine rows fully on GPU,128slots,48MoE windows,checked tail
+guard/drain and24thinking-enabled outputs. The observed diagnostic132774.1ms
+(884.9tok/s),TTFT132.992s has STRATA_TRACE enabled and is not clean speed or
+sustained decode evidence. The frozen clean A/B compares identical exact-count
+bodies,first-use and3subsequent requests/process,advancing after the first pair
+only with at least1percent warm-median improvement. Then repeat opposite orders.
+Measure job/dequant/upload changes and critical-path service;
 larger windows and a smaller expert bank do not establish a throughput gain
 or the limiting hardware unit. Decode/handoff,model quality and physical-context
 qualification remain separate pending gates.
