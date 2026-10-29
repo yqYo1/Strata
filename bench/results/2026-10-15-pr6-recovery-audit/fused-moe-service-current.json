@@ -10167,6 +10167,134 @@
           "devcoredump": false
         }
       }
+    },
+    "performance": {
+      "build": {
+        "stage": "prepared",
+        "source_commit": "5ef8fa327d41517161032cec6b73dbe5b22bcaf8",
+        "native_build_source": "16ad0e76e661014974fa3f2ac1b933be587a8c61",
+        "native_geometry": {
+          "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
+          "generated_sha256": {
+            "original.cpp": "f9e1aaa7c1f5d146da1ae097a47cade3630da758809c6f75c5c729e3e305e32c",
+            "candidate.cpp": "b62b8e484dd1ee3de0208ac6725825250046b2efb609328ee150b7d325b8f070",
+            "qsa-head.hpp": "47df25f8616d06e8886f66dba21e85368633585b73c2615db899ffad4166e23f"
+          },
+          "geometry": "Same M8,N16,K16,WG128,SG16,16padded/12real heads;candidate TU IDrange=int only.",
+          "reversible_geometry_edits": 0,
+          "reversible_math_edits": 0,
+          "reversible_event_edits": 3,
+          "declared_local_bytes": 20036,
+          "production_or_decode_changed": false,
+          "fallback": "After checked active_rows,before range multiplication/any enqueue,require active_rows<=INT_MAX/64 and queries<=INT_MAX/256;otherwise original size_t batch/capture. Signed rows,addresses and tensor offsets unchanged.",
+          "preservation": "All device math/storage/control-flow/barriers unchanged. Exact-WG attribute rejected at9ee50d68d;identity-rescale rejected at032a3e15f."
+        },
+        "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+        "commands": [
+          [
+            "compile",
+            [
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+              "-std=c++20",
+              "-O3",
+              "-DNDEBUG",
+              "-g0",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/source/include",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/source/include/strata/sycl/compat",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/source/bench/sycl",
+              "-MD",
+              "-MF",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/performance-v1/bench.d",
+              "-c",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_head_bench.cpp",
+              "-o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/performance-v1/bench.o"
+            ]
+          ],
+          [
+            "link",
+            [
+              "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+              "-std=c++20",
+              "-O3",
+              "-DNDEBUG",
+              "-g0",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/source/include",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/source/include/strata/sycl/compat",
+              "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/source/bench/sycl",
+              "-save-temps=obj",
+              "-v",
+              "-Wl,-t",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/runtime.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/compat.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/command_profile.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/prompt_attention.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/original.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/candidate.o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/performance-v1/bench.o",
+              "-pthread",
+              "-ldl",
+              "-o",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/performance-v1/bench"
+            ]
+          ]
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+          "OMP_NUM_THREADS": "1",
+          "GIT_TERMINAL_PROMPT": "0",
+          "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
+          "CPLUS_INCLUDE_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/include",
+          "PIP_CONFIG_FILE": "/dev/null",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/performance-v1/cache",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/performance-v1/tmp"
+        },
+        "input_inventory": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-id-int-native-v1/performance-v1/input-inventory.json",
+          "sha256": "e3d728e96fa3f0b976ef311cc214f43dc0de89b9c7f1762a4fcb92f21bdf8a8a",
+          "files": 9277
+        },
+        "budgets": {
+          "wall": 600,
+          "cpu": 1800,
+          "rss_cap": 8589934592,
+          "text_cap": 33554432,
+          "file_cap": 268435456,
+          "total_cap": 2147483648
+        },
+        "passed": false,
+        "active": false,
+        "ownership_closed": true,
+        "criteria": "CPU fixture build only from qualified exact native kernel objects. Actual compiler and linker inputs frozen;no GPU trial before this build closes. Synthetic fourcase Page4query8192/cap2051 performance is separate from model evidence.",
+        "retention": "Same imminent bounded-ID comparison generation. Keep only compact source/recipe,samples and decision;retire ELF/objects/normal raw output at comparisonclosure."
+      }
     }
   }
 }
