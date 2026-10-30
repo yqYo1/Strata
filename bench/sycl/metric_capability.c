@@ -4,6 +4,7 @@
  * Run only after the frozen model comparison closes, with immutable pre-exec
  * ZET_ENABLE_METRICS=1. APIs: Level Zero Tools Programming Guide and the
  * installed ze_api.h/zet_api.h; no external implementation was copied.
+ * --topology lists root/child groups only; the default retains metric details.
  * https://oneapi-src.github.io/level-zero-spec/level-zero/latest/tools/PROG.html
  */
 #include <level_zero/ze_api.h>
@@ -62,8 +63,89 @@ static int environment(const char *name, const char *expected) {
     return value && strcmp(value, expected) == 0;
 }
 
-int main(void) {
+/* Topology is evidence about returned handles, not about query support or
+ * implicit scaling. Inspect the root and its actual children without creating
+ * a context or activating any metric group. Sampling type is a bitmask.
+ */
+static int topology_node(ze_device_handle_t device, uint32_t node,
+                         uint32_t *total_groups, uint32_t *event_groups) {
+    ze_device_properties_t device_properties = {0};
+    device_properties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+    CALL(zeDeviceGetProperties(device, &device_properties));
+    if (device_properties.type != ZE_DEVICE_TYPE_GPU || device_properties.vendorId != 0x8086 ||
+        !!(device_properties.flags & ZE_DEVICE_PROPERTY_FLAG_SUBDEVICE) != (node != 0))
+        return refuse("unexpected root/child device properties");
+    printf("{\"kind\":\"topology_node\",\"node\":%u,\"parent_node\":", node);
+    if (node) printf("0"); else printf("null");
+    printf(",\"subdevice_id\":%u,\"flags\":%u,\"device_id\":%u,\"name\":",
+           device_properties.subdeviceId, (unsigned)device_properties.flags, device_properties.deviceId);
+    string(device_properties.name, sizeof(device_properties.name));
+    printf(",\"uuid_hex\":\"");
+    for (size_t i = 0; i < sizeof(device_properties.uuid.id); ++i)
+        printf("%02x", (unsigned)device_properties.uuid.id[i]);
+    puts("\"}");
+
+    uint32_t count = 0;
+    CALL(zetMetricGroupGet(device, &count, NULL));
+    if (count > MAX_GROUPS) return refuse("topology group count bound");
+    zet_metric_group_handle_t groups[MAX_GROUPS] = {0};
+    if (count) {
+        uint32_t capacity = count;
+        CALL(zetMetricGroupGet(device, &count, groups));
+        if (count != capacity) return refuse("topology group enumeration changed");
+    }
+    for (uint32_t i = 0; i < count; ++i) {
+        zet_metric_group_properties_t properties = {0};
+        properties.stype = ZET_STRUCTURE_TYPE_METRIC_GROUP_PROPERTIES;
+        CALL(zetMetricGroupGetProperties(groups[i], &properties));
+        uint32_t metrics = 0;
+        CALL(zetMetricGet(groups[i], &metrics, NULL));
+        if (metrics != properties.metricCount || metrics > MAX_GROUP_METRICS)
+            return refuse("topology metric count bound/mismatch");
+        const int event = (properties.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_EVENT_BASED) != 0;
+        const int time = (properties.samplingType & ZET_METRIC_GROUP_SAMPLING_TYPE_FLAG_TIME_BASED) != 0;
+        printf("{\"kind\":\"topology_group\",\"node\":%u,\"group\":%u,\"name\":", node, i);
+        string(properties.name, sizeof(properties.name));
+        printf(",\"sampling_flags\":%u,\"event_based\":%s,\"time_based\":%s,"
+               "\"domain\":%u,\"metric_count\":%u}\n", (unsigned)properties.samplingType,
+               event ? "true" : "false", time ? "true" : "false", properties.domain, metrics);
+        *event_groups += (unsigned)event;
+    }
+    *total_groups += count;
+    return 0;
+}
+
+static int topology_inventory(ze_device_handle_t root) {
+    uint32_t count = 0;
+    CALL(zeDeviceGetSubDevices(root, &count, NULL));
+    if (count > MAX_DEVICES) return refuse("subdevice count bound");
+    ze_device_handle_t children[MAX_DEVICES] = {0};
+    if (count) {
+        uint32_t capacity = count;
+        CALL(zeDeviceGetSubDevices(root, &count, children));
+        if (count != capacity) return refuse("subdevice enumeration changed");
+    }
+    uint32_t total_groups = 0, event_groups = 0;
+    int status = topology_node(root, 0, &total_groups, &event_groups);
+    if (status) return status;
+    for (uint32_t i = 0; i < count; ++i) {
+        if (!children[i] || children[i] == root) return refuse("invalid child handle");
+        for (uint32_t j = 0; j < i; ++j)
+            if (children[i] == children[j]) return refuse("duplicate child handle");
+        status = topology_node(children[i], i + 1, &total_groups, &event_groups);
+        if (status) return status;
+    }
+    printf("{\"kind\":\"complete\",\"scope\":\"topology_only\",\"root_nodes\":1,"
+           "\"child_nodes\":%u,\"groups\":%u,\"event_groups\":%u,"
+           "\"collection_qualified\":false,\"hardware_utilization_measured\":false}\n",
+           count, total_groups, event_groups);
+    return 0;
+}
+
+int main(int argc, char **argv) {
     setvbuf(stdout, NULL, _IOLBF, 0);
+    const int topology = argc == 2 && strcmp(argv[1], "--topology") == 0;
+    if (argc != 1 && !topology) return 2;
     if (!environment("STRATA_METRIC_CAPABILITY_GATES", "1") ||
         !environment("ZET_ENABLE_METRICS", "1") ||
         !environment("ZES_ENABLE_SYSMAN", "0") ||
@@ -121,6 +203,13 @@ int main(void) {
     }
     if (matches != 1 || !selected) return refuse("unique B570 PCI selection required");
     if (!gate("runtime-ready")) return refuse("runtime-ready acknowledgement");
+
+    if (topology) {
+        int status = topology_inventory(selected);
+        if (status) return status;
+        if (!gate("before-exit")) return refuse("before-exit acknowledgement");
+        return 0;
+    }
 
     uint32_t group_count = 0, total_metrics = 0;
     CALL(zetMetricGroupGet(selected, &group_count, NULL));
