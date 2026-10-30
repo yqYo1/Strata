@@ -18075,5 +18075,33 @@
       "evidence_commit": "6be4d5f33e40fb52660be5b1c2fa8e3d70d74d27",
       "all_consumers_closed": true
     }
+  },
+  "split_continuation_benchmark_contract_20261031": {
+    "classification": "decision support",
+    "status": "eligible_not_dispatched",
+    "schedulable_now": true,
+    "worker_model": "Orca gpt-6-luna/high",
+    "policy_commit": "b77ea8ae7a0578e1d3ae3a49f8f310476352b3a7",
+    "source_manifest": ".cache/research/2026-10-31/split_continuation_bench_contract.inputs.json",
+    "source_manifest_sha256": "01403383ae7ec38ec16a77af4d2e8a5641a62479c5af4afec3a90738a4ef4acb",
+    "report": ".cache/research/2026-10-31/split_continuation_bench_contract.md",
+    "report_budget_words": 2200,
+    "report_budget_bytes": 24000,
+    "question": "Specify the smallest official-bench long-generation extension that actually exercises the original split prefill route before continued decode,with unchanged131072context/1256decode slots/spec4 and enough thinking/output room. Trace current token construction,count admission,identities,eligibility and MTP counters;propose Main-owned validation,not code.",
+    "eligibility_evidence": [
+      "Current source long_generation_bench.py targets33792input with32768minimum;this is below the split admission domain.",
+      "Source-frozen current model checks already prove split117488engine rows,128slots,guard/drain and24outputs;continued long decode remains pending.",
+      "Current16384output+256reserve permits at most114432input in131072context;a98304target is a feasible source-bound question,with actual count and route gates still mandatory.",
+      "Main verified unchanged6e40generate.cpp against the9a source snapshot;all named benchmark/native inputs exist and are hashed in the capsule. No GPU/runtime/process access is needed."
+    ],
+    "prior_overlap_and_distinction": "Prior original_split_phase_handoff_audit_20261030 handles native bounds/lifetimes and reuse of existing8device gates. This question is the missing client-input geometry/identity/long-generation eligibility contract:the current33K cases do not exercise split. It does not repeat a native safety,regression,counter or general MTP survey.",
+    "prior_reports": [
+      "original_split_phase_handoff_audit_20261030",
+      "long_generation_benchmark_cost_methods_20261022",
+      "mtp_workload_calibration_methods_20261024"
+    ],
+    "constraints": "Report only,no Git/code/product edits,tests,GPU,runtime,profiler or process inspection. Main owns implementation and all serialized verification after the current source-frozen six-process comparison. No XeStrata implementation input.",
+    "consumer": "Next Main-owned split-to-decode benchmark implementation and frozen qualification plan.",
+    "next_review": "After native Luna-max review and the current six-process decision;retire capsule/spec/review paperwork after constraints are recorded."
   }
 }
