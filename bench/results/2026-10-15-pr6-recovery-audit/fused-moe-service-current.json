@@ -28506,7 +28506,7 @@
     }
   },
   "moe_down_model": {
-    "status": "row64-model-diagnostic-prepared",
+    "status": "all-three-model-diagnostics-passed",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -28517,7 +28517,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Run committed fresh row64 exact117489-read thinking-on model diagnostic;stop first failed gate without retry. Original and row128 passed. Only after row64 closure may the frozen nine-process clean comparison begin;no additional speed/adoption qualification.",
+    "next_gate": "Prepare and commit frozen nine-process original/row128/row64 Latin-order clean117489-read comparison,4requests/process. All three observed diagnostics close with full GPU BF16 residual,actual Down counters,quiet validation and no new fault. Observed times do not qualify clean speed,decode,task quality or physical262144.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -30116,7 +30116,7 @@
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
     },
     "model_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "kind": "diagnostic",
       "source_commit": "1fa351344e446f28a6c12ccbab8c80f3afb5869c",
       "basis_sha256": "e627045feba4ef63dfe96cd859394fb17ce7f2670d6d1135d285bfc924b20e4e",
@@ -30160,7 +30160,103 @@
           "environment_sha256": "61356e725200c29f304cda10b4e0baf2245ea4bb34556bc2437205e3be887ac6"
         }
       ],
-      "processes": [],
+      "processes": [
+        {
+          "index": 0,
+          "kernel": "row64",
+          "complete": true,
+          "passed": true,
+          "host_probe_accepted": true,
+          "model_executed": true,
+          "clean_speed": false,
+          "adoption_qualified": false,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "native_identity": {
+            "pid": 757029,
+            "start_ticks": 167829217,
+            "sid": 756983
+          },
+          "native_exit_code": 0,
+          "validation": {
+            "pid": 757029,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "routes": [
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18888,
+                "jobs": 23840,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18888",
+                "requested_H2D_bytes": "38561740800",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7432,
+              "down_fused_rows": 52218579,
+              "down_separate_jobs": 16408
+            }
+          ],
+          "samples": [
+            {
+              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 129354.4,
+              "prompt_tps": 908.3,
+              "prompt_tps_source": "engine",
+              "ttft_s": 129.505,
+              "total_s": 131.073,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": null,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      ],
       "plan": {
         "order": [
           "original",
@@ -30177,8 +30273,8 @@
         "file_cap": 134217728,
         "total_cap": 536870912
       },
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
       "ownership_closed": true
     },
@@ -30353,6 +30449,101 @@
             "prompt_tps_source": "engine",
             "ttft_s": 125.991,
             "total_s": 127.774,
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "ok": true,
+            "eligible": true,
+            "stream_complete": true
+          }
+        ],
+        "subsequent_median_ms": null,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "index": 0,
+        "kernel": "row64",
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "adoption_qualified": false,
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "native_identity": {
+          "pid": 757029,
+          "start_ticks": 167829217,
+          "sid": 756983
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 757029,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "engine_rows": 117488,
+            "chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 117488,
+            "residual_host_bytes": 0,
+            "slots": 128,
+            "staged": 1,
+            "maximum_window_rows": 117488,
+            "work": {
+              "windows": 48,
+              "dequants": 18888,
+              "jobs": 23840,
+              "source_H2D_bytes": 225576960
+            },
+            "requested_expert_upload": {
+              "uploads": "18888",
+              "requested_H2D_bytes": "38561740800",
+              "permanent_hits": "0",
+              "permanent_slots": "127",
+              "total_slots": "128",
+              "final_drain": "checked"
+            },
+            "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+            "down_fused_jobs": 7432,
+            "down_fused_rows": 52218579,
+            "down_separate_jobs": 16408
+          }
+        ],
+        "samples": [
+          {
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "actual_prompt_tokens": 117489,
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 129354.4,
+            "prompt_tps": 908.3,
+            "prompt_tps_source": "engine",
+            "ttft_s": 129.505,
+            "total_s": 131.073,
             "thinking_requested": true,
             "reasoning_observed": true,
             "ok": true,
