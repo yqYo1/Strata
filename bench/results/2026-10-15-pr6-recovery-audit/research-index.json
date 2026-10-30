@@ -12512,7 +12512,14 @@
     "retention": "Retrieve only for a selected Qwen4Exp framework/backend/dtype numerical-contract question; review when that route is identified. This is not a selected kernel contract.",
     "review_sha256": "c2f7367be572a5a7e2f36ad8f608821a0cec3b9bf2f8ad0330d56d2c9e2d50a1",
     "review_verdict": "accept_as_conditional_contract_map_not_a_selected_backend_contract",
-    "inference_adoption": false
+    "inference_adoption": false,
+    "pending_prefill_route_contract": {
+      "classification": "decision support",
+      "schedulable_now": false,
+      "question": "Once the exact deployed Qwen3.8-Flash-Next checkpoint/config and intended vLLM or SGLang reference route are pinned, trace that model's long-prefill expert path at immutable official revisions through GEMM output storage, gate-weight conversion, top-k reduction order, shared-expert/scalar-gate combination, final cast, and any fused finalize path. Compare those operations to Strata's run_moe_accum_window, try_down_scatter16_split, moe_accumulate_split and moe_finish. State whether current BF16 Down output plus expert-order FP32 sycl::fma matches a selected framework contract, and give a source-grounded numerical/task gate for the current default-off split route. Distinguish an exact selected backend from generic API capability, NVIDIA-only examples, decode-only paths, and unsupported quantization. No patch, test, performance claim or adoption recommendation from source inspection alone.",
+      "missing_prerequisite": "The maintained decision slice does not pin the actual checkpoint/config bytes or a matching selected vLLM/SGLang long-prefill backend/dtype route. Main must provide that identity in the dispatch manifest first; do not dispatch a worker merely to report this absence.",
+      "next_action": "Main pins the deployed checkpoint/config and a matching official vLLM/SGLang prefill route before another framework-reduction review. Existing geometry/scatter/metadata findings suffice for the current model hook;do not repeat a generic survey."
+    }
   },
   "partial_sum_compression_methods_collection_20261027": {
     "schedulable_now": false,
