@@ -28,8 +28,8 @@ KEY, FRONTEND = 'selected_fallback_comparison', 'selected_fallback_frontend_v2'
 ORDER = ('selected', 'split', 'split', 'selected', 'selected', 'split')
 EXACT, RUNS = down.EXACT, down.RUNS
 require, digest, write = down.require, down.digest, down.write
-CONT_ROOT = B/'split-continuation-v1'
-CONT_FRONTEND, CONT_KEY = 'split_continuation_frontend_v1', 'split_continuation_diagnostics_v1'
+CONT_ROOT = B/'split-continuation-v2'
+CONT_FRONTEND, CONT_KEY = 'split_continuation_frontend_v2', 'split_continuation_diagnostics_v2'
 
 
 def native():
@@ -311,6 +311,13 @@ def run(index):
     require(outcome['passed'], 'selected/split process did not qualify')
 
 
+def finish_continuation(outcome, owner, cursor, boot):
+    """Bridge completed model evidence to the shared fault/ownership finalizer."""
+    outcome['host_probe_accepted'] = bool(outcome.get('complete') is True and
+        outcome.get('same_request_continued_decode') is True and not outcome.get('error'))
+    d.runtime.validation.finish(outcome, owner, cursor, boot)
+
+
 def continuation_route(log, arm, read):
     """Source-bound dynamic extent; client counts alone never prove this route."""
     require(arm in ('selected', 'split') and type(read) is int and 90114 <= read <= 114432,
@@ -368,6 +375,7 @@ def prepare_continuation():
             scope[KEY]['decision']['performance_screen_passed'], 'closed passing policy comparison required')
     contract = scope['split_continuation_benchmark']
     require(contract['host_checks']['passed'] and contract['controller_checks']['passed'], 'host gates required')
+    require(all(digest(P/n)==sha for n,sha in contract['controller_check_plan']['sources'].items()), 'tested controller source differs')
     require(all(digest(P/n) == sha for n,sha in contract['source_sha256'].items()), 'tested benchmark source differs')
     host, _ = down.frontend(root=CONT_ROOT, key=CONT_FRONTEND)
     require(CONT_KEY not in scope and not (CONT_ROOT/'record.json').exists(), 'fresh continuation only')
@@ -378,8 +386,17 @@ def prepare_continuation():
     assets = d.models.model_pins(down.configuration(CONT_ROOT), previous['model_assets'])
     binaries = dict(selected=selected['binary'], split=built['binaries']['strata'])
     native_sources = dict(selected=selected['source_commit'], split=built['source_commit'])
+    prior_selected = scope['split_continuation_diagnostics_v1']['processes'][0]
+    require(prior_selected['arm']=='selected' and prior_selected['passed'] is False and
+            prior_selected['complete'] and prior_selected['ownership_closed'] and
+            prior_selected['native_exit_code']==0 and prior_selected['fresh_faults']==[] and
+            prior_selected['sample']['speed_eligible'], 'historical input identity reference missing')
+    reference = dict(source_scope='split_continuation_diagnostics_v1',
+        body_sha256=prior_selected['sample']['request_sha256'],
+        original_passed=False, qualification_reused=False,
+        scope='Input identity and descriptive history only;the failed baseline is not requalified or counted as a new paired comparison.')
     probe = down.native_probe(rt); plans = []
-    for arm in ('selected','split'):
+    for arm in ('split',):
         root = CONT_ROOT/arm; require(not root.exists(), 'fresh native diagnostic root required')
         root.mkdir(mode=0o700)
         for part in ('tmp','cache'):(root/part).mkdir()
@@ -400,10 +417,10 @@ def prepare_continuation():
     row = dict(stage='prepared', source_commit=host['source_commit'], sources=host['sources'],
         model_assets=assets, asset_basis=dict(path=str(asset_source),sha256=digest(asset_source)),
         runtime_sha256=digest(d.runtime.RESULT),boot=rt['boot'],native_validation_probe=probe,
-        binaries=binaries,native_sources=native_sources,plans=plans,processes=[],
+        binaries=binaries,native_sources=native_sources,plans=plans,processes=[],historical_input_reference=reference,
         profile=dict(path=str(profile),identity=d.models.file_identity(profile),sha256=digest(profile)),
         budgets=dict(wall=2400,cpu=7200,rss_cap=104<<30,text_cap=64<<20,file_cap=128<<20,total_cap=512<<20),
-        plan=dict(order=['selected','split'],requests_per_process=1,workload='regular-code',
+        plan=dict(order=['split'],requests_per_process=1,workload='regular-code',
             question='Does the actual split route continue into long decode in the same owned request?',
             constants='Same source-bound split-v1-96k body/nonce,thinking and16384output cap. Keep1256decode '
                 'slots,8192chunks,5workers,spec4,INT8 resident131072context and qualified immutable runtime safety settings.',
@@ -411,7 +428,7 @@ def prepare_continuation():
                 'complete SSE with>=1024actual completion tokens including thought and>=512answer characters,'
                 'positive engine clocks and valid MTP counters. Actual native extent=read-1;selected384slots/'
                 '81920maximum/96windows;split128slots/dynamic n maximum/48windows,65536primary plus checked dynamic '
-                'tail/guard/drain,decode_changed=0. Match input body hashes between arms;do not require equal generated text.',
+                'tail/guard/drain,decode_changed=0. Match the historical input hash only;do not require equal generated text or reuse its failed qualification.',
             observers='STRATA_TRACE=1 and quiet parameter validation;no command-service observer or hardware counters. '
                 'Diagnostic engine timings are not clean speed.',
             mtp='Prospective speed-only diagnostic:valid0/0 is allowed with undefined agreement. This single workload/'
@@ -420,10 +437,10 @@ def prepare_continuation():
                 'No retries,replacements,body repair,changed thresholds or late-failure session reuse.',
             retention='Keep compact per-arm sample,route,identities,fault/result and limits. Retire successful raw output '
                 'after closure. Native generations remain only for the imminent repeated/task/context qualification.',
-            limits='No adoption,clean speed comparison,task quality,agent session or physical262144 fill/tail/RESTORE qualification.'),
+            limits='Candidate-only diagnostic. Historical selected data are descriptive;the original failed scope stays failed. No paired comparison,adoption,clean speed,task,agent or physical262144 qualification.'),
         complete=False,passed=False,active=False,ownership_closed=True)
     write(CONT_ROOT/'record.json',row);scope[CONT_KEY]=compact(row);write(RESULT,record)
-    print('Prepared two owned continuation diagnostics;commit before native execution.',flush=True)
+    print('Prepared one fresh candidate continuation diagnostic;failed baseline remains historical only. Commit before execution.',flush=True)
 
 
 def continuation_basis():
@@ -445,7 +462,7 @@ def continuation_basis():
 def run_continuation(arm):
     record,scope,row,rt,manifest=continuation_basis()
     index=len(row['processes'])
-    require(row['stage'] in ('prepared','running') and index<2 and
+    require(row['stage'] in ('prepared','running') and index<len(row['plans']) and
             all(p['passed'] for p in row['processes']) and row['plans'][index]['arm']==arm, 'fresh ordered diagnostic required;no retry')
     plan=row['plans'][index];root=Path(plan['root']);env=environment(root,rt,arm);env['STRATA_TRACE']='1'
     require(not (root/'execution.json').exists() and down.fingerprint(env)==plan['environment_sha256'] and
@@ -514,8 +531,8 @@ def run_continuation(arm):
                 90114<=read<=114432 and sample['usage_generated_tokens']>=1024 and sample['output_chars']>=512 and
                 sample['reasoning_chars']>0 and sample['timing_frontend_state']=='post-count-preflight',
                 'generation/body/count/clock evidence differs')
-        require(not row['processes'] or sample['request_sha256']==row['processes'][0]['sample']['request_sha256'],
-                'per-arm input body differs;no repair/replacement')
+        require(sample['request_sha256']==row['historical_input_reference']['body_sha256'],
+                'historical input body differs;no repair/replacement')
         journal=d.client.verify_request_journal(files[0].parent)
         require(journal['valid'] and journal['complete'] and not journal['pending'],'incomplete request journal')
         continuation_basis()
@@ -534,12 +551,12 @@ def run_continuation(arm):
     except BaseException as error:
         outcome.update(error=repr(error),complete=False)
     finally:
-        if owner:d.runtime.validation.finish(outcome,owner,cursors[0],row['boot'])
+        if owner:finish_continuation(outcome,owner,cursors[0],row['boot'])
         outcome['passed']=bool(outcome.get('passed') and outcome['complete']);persist()
         row['processes'].append(outcome)
         row.update(stage='running' if outcome['passed'] else 'failed',active=bool(owner and owner.active),
                    ownership_closed=outcome.get('ownership_closed',False))
-        if len(row['processes'])==2 and outcome['passed']:row.update(stage='closed',complete=True,passed=True)
+        if len(row['processes'])==len(row['plans']) and outcome['passed']:row.update(stage='closed',complete=True,passed=True)
         write(CONT_ROOT/'record.json',row);scope[CONT_KEY]=compact(row);write(RESULT,record)
     print(json.dumps({k:outcome.get(k) for k in ('arm','passed','complete','ownership_closed','fresh_faults','error')}),flush=True)
     require(outcome['passed'],'continuation diagnostic did not qualify')

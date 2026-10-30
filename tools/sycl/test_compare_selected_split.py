@@ -5,6 +5,8 @@ import io
 import json
 import sys
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
 import compare_selected_split as comparison
 
@@ -128,6 +130,29 @@ class ComparisonGates(unittest.TestCase):
         log=self.continuation_log('selected')
         with self.assertRaises(RuntimeError):comparison.continuation_route(log+'\nstrata MoE split admission: active=1','selected',98304)
         with self.assertRaises(RuntimeError):comparison.continuation_route(log.replace('effective_slots=384','effective_slots=128'),'selected',98304)
+
+    def test_continuation_finalizer_accepts_only_completed_same_request_evidence(self):
+        validation=comparison.d.runtime.validation
+        boot=validation.Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        owner=SimpleNamespace(active=None,commands=[])
+        for changes,expected in (({},True),({'complete':False},False),
+                                 ({'same_request_continued_decode':False},False),
+                                 ({'error':'forced earlier failure'},False)):
+            outcome=dict(complete=True,same_request_continued_decode=True,passed=False,**{})
+            outcome.update(changes)
+            with patch.object(validation.subprocess,'check_output',return_value=''),patch.object(validation.guards,'driver_guard',return_value={}):
+                comparison.finish_continuation(outcome,owner,'fixture-only',boot)
+            self.assertIs(outcome['host_probe_accepted'],expected)
+            self.assertIs(outcome['passed'],expected)
+
+    def test_continuation_finalizer_cannot_override_faults_or_live_ownership(self):
+        validation=comparison.d.runtime.validation
+        boot=validation.Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        for active,text in ((None,'xe GPU fault'),(object(),'')):
+            outcome=dict(complete=True,same_request_continued_decode=True,passed=False)
+            with patch.object(validation.subprocess,'check_output',return_value=text),patch.object(validation.guards,'driver_guard',return_value={}):
+                comparison.finish_continuation(outcome,SimpleNamespace(active=active,commands=[]),'fixture-only',boot)
+            self.assertTrue(outcome['host_probe_accepted']);self.assertFalse(outcome['passed'])
 
 
 if __name__ == '__main__':
