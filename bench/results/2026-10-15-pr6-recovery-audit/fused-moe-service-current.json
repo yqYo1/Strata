@@ -27864,6 +27864,236 @@
             "kernel": "7.0.0-38-generic",
             "devcoredump": false
           }
+        },
+        {
+          "index": 2,
+          "arm": "split",
+          "complete": true,
+          "passed": true,
+          "host_probe_accepted": true,
+          "model_executed": true,
+          "clean_speed": true,
+          "adoption_qualified": false,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "native_identity": {
+            "pid": 1341402,
+            "start_ticks": 169364453,
+            "sid": 1341305
+          },
+          "native_exit_code": 0,
+          "validation": {
+            "pid": 1341402,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "routes": [
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18888,
+                "jobs": 23840,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18888",
+                "requested_H2D_bytes": "38561740800",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7432,
+              "down_fused_rows": 52218579,
+              "down_separate_jobs": 16408
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18899,
+                "jobs": 23832,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18899",
+                "requested_H2D_bytes": "38587673600",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7429,
+              "down_fused_rows": 52204016,
+              "down_separate_jobs": 16403
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18843,
+                "jobs": 23792,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18843",
+                "requested_H2D_bytes": "38468480000",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7423,
+              "down_fused_rows": 52168035,
+              "down_separate_jobs": 16369
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18868,
+                "jobs": 23817,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18868",
+                "requested_H2D_bytes": "38524006400",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7442,
+              "down_fused_rows": 52208491,
+              "down_separate_jobs": 16375
+            }
+          ],
+          "samples": [
+            {
+              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 126146.1,
+              "prompt_tps": 931.4,
+              "prompt_tps_source": "engine",
+              "ttft_s": 126.298,
+              "total_s": 127.987,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117429.1,
+              "prompt_tps": 1000.5,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.592,
+              "total_s": 119.311,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117245.9,
+              "prompt_tps": 1002.1,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.396,
+              "total_s": 118.994,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 116797.8,
+              "prompt_tps": 1005.9,
+              "prompt_tps_source": "engine",
+              "ttft_s": 116.949,
+              "total_s": 118.642,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 117245.9,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
         }
       ],
       "budgets": {
