@@ -31135,6 +31135,37 @@
         "timeline_bytes": 374052790,
         "budget_bytes": 1073741824,
         "next_review": "After this family/source/overlap analysis is committed;retire the successful timeline,normal logs and consumed prefix preparation."
+      },
+      "analysis_plan": {
+        "stage": "prepared",
+        "producer_result_commit": "58a117715",
+        "producer_source_commit": "43c16ead6b147fbba2c2cbeac393e1135d54f50f",
+        "sources": {
+          "tools/sycl/profile_split.py": "43c505b2061e76f8a8e3231cf8654efa99a59b66590b13fc2e98ee520e929fed",
+          "tools/sycl/test_profile_split.py": "380e8eb3d38a1121c38d6d1fdf597825ae721c1796d019722edf049e6eea8dae"
+        },
+        "timeline": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-resource-profile-v2/model/trace/strata.3002866.json",
+          "sha256": "7d641997c79a3dc06881b5b46b95dcecc8a9a888f1df1e3a2897641409eb7360",
+          "bytes": 374052790
+        },
+        "native_log": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-resource-profile-v2/model/engine.stderr",
+          "sha256": "ea5617de3fe6e8384378c3e4ed9a70c5daa86a27a4472272ae603b1eab0d85cf",
+          "bytes": 387895
+        },
+        "host_checks": {
+          "passed": false,
+          "expected_tests": 13,
+          "command": [
+            "/usr/bin/python3",
+            "-B",
+            "tools/sycl/test_profile_split.py"
+          ]
+        },
+        "question": "Group all shapes by source producer/family,join fused kernel counts to native dispatch counters,and inspect observed GPU gaps/host APIs and nested status regions. Preserve original profile outcome.",
+        "acceptance": "Reproduce the admitted trace reduction;conserve every GPU event and status partition. Source fused GU/Down event counts must match native counters. Service/API sums are nonexclusive;no physical saturation or new inference adoption.",
+        "retention": "Retain compact family/status/gap evidence and source/data hashes;then retire the complete temporary timelines and consumed prefix logs."
       }
     }
   },

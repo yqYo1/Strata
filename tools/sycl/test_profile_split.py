@@ -89,6 +89,53 @@ class TraceGates(unittest.TestCase):
             with self.subTest(identity=(native, begin, end)), self.assertRaises(RuntimeError):
                 profile.trace_summary(self.events, native, begin, end)
 
+    def test_shape_groups_and_observed_gaps_are_reduced_without_losing_work(self):
+        events = copy.deepcopy(self.events)
+        base = 'strata::experimental::vllm_xe2_native16::DenseKernel<half,bfloat16,Tile1>'
+        events[2]['name'] = base+'[SIMD16 {1;20;64} {128;1;1}]'
+        events[4]['name'] = base+'[SIMD16 {1;20;32} {128;1;1}]'
+        result = profile.family_summary(events, 10_000_000, 20_000_000)
+        families = {r['name']:r for r in result['families']}
+        self.assertEqual(sum(r['count'] for r in families.values()), 4)
+        self.assertEqual(families['native16_dense_gemm']['count'], 2)
+        self.assertAlmostEqual(families['native16_dense_gemm']['service_sum_s'], .004)
+        self.assertEqual(families['copy:H2D']['payload_bytes'], 4096)
+        self.assertEqual(result['largest_normalized_kernel_groups'][0]['name'], base)
+        self.assertEqual(result['largest_normalized_kernel_groups'][0]['count'], 2)
+        self.assertAlmostEqual(result['kernel_interval_union_s'], .003)
+        self.assertAlmostEqual(result['observed_gpu_gap_total_s'], .0069)
+        self.assertAlmostEqual(result['largest_internal_observed_gaps'][0]
+                               ['host_api_overlap_s']['API2'], .0004)
+
+    def test_fused_and_attention_symbols_have_explicit_source_families(self):
+        for symbol, family in [('x::SplitDownScatterKernel<false>', 'native16_down_fused'),
+            ('x::GuSwiGLUKernel<Tile1,false>', 'native16_gu_fused'),
+            ('prefix_batch_impl<33>', 'qsa_prefix'), ('unknown_symbol', 'other_kernel')]:
+            self.assertEqual(profile.kernel_family(symbol), family)
+
+
+class StatusGates(unittest.TestCase):
+    def test_status_partition_conserves_and_rejects_errors_or_missing_regions(self):
+        data = dict(version='1', available='1', complete='1', scopes='1', completed='1',
+            open_scopes='0', open_parts='0', cpu_s='1', wall_s='2',
+            unclassified_cpu_s='.1', unclassified_wall_s='.2')
+        for name in ('tag', 'precheck', 'queue_context', 'enqueue', 'observer', 'drain', 'postcheck', 'after_drain', 'branch'):
+            data.update({name+'_count':'1', name+'_throws':'0', name+'_cpu_s':'.1',
+                name+'_wall_s':'.2', name+'_wait_cpu_s':'.05', name+'_wait_wall_s':'.1'})
+        def text(value):
+            return 'strata prefill status: '+' '.join(k+'='+v for k,v in value.items())
+        result = profile.status_summary(text(data))
+        self.assertEqual(result['scopes'], 1)
+        self.assertAlmostEqual(result['parts'][0]['outside_known_wait_cpu_s'], .05)
+        for mutation in ('throw', 'sum', 'missing', 'open'):
+            other = dict(data)
+            if mutation == 'throw': other['enqueue_throws'] = '1'
+            elif mutation == 'sum': other['cpu_s'] = '1.1'
+            elif mutation == 'missing': del other['enqueue_throws']
+            else: other['open_scopes'] = '1'
+            with self.subTest(mutation=mutation), self.assertRaises(RuntimeError):
+                profile.status_summary(text(other))
+
 
 class StartupGates(unittest.TestCase):
     def test_missing_mutated_and_extra_startup_variables_are_refused(self):

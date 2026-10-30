@@ -118,6 +118,160 @@ def trace_summary(events, native, begin_ns, end_ns):
                'No exact native prefill endpoint,complete graph dependency,wire/DRAM byte or saturation claim.')
 
 
+def kernel_family(name):
+    for fragment, family in (
+        ('prefix_batch_impl<', 'qsa_prefix'), ('recurrence_columns<', 'gdn_recurrence'),
+        ('submit_topk<', 'qsa_topk'), ('::DenseKernel<', 'native16_dense_gemm'),
+        ('::SplitDownScatterKernel<', 'native16_down_fused'),
+        ('::GuSwiGLUKernel<', 'native16_gu_fused'),
+        ('native16::write(', 'native16_io_write'), ('native16::moe_gather', 'moe_gather'),
+        ('native16::moe_swiglu', 'moe_swiglu'), ('native16::moe_accum', 'moe_accumulate')):
+        if fragment in name:
+            return family
+    return 'library_gemm' if name.startswith('gemm_') else 'other_kernel'
+
+
+def family_summary(events, begin_ns, end_ns):
+    """Reduce admitted events; keep observed gaps distinct from hardware idle."""
+    gpu = [e for e in events if e.get('ph') == 'X' and e.get('cat') == 'gpu_op']
+    host = [e for e in events if e.get('ph') == 'X' and e.get('cat') == 'cpu_op']
+    families, names, apis = {}, {}, {}
+    for e in gpu:
+        name = e['name']
+        base = name.split('[SIMD', 1)[0]
+        if name.startswith('zeCommandListAppendMemoryCopy'):
+            family = 'copy:'+re.search(r'\(([^)]+)\)', name)[1]
+        elif name.startswith('zeCommandList'):
+            family = 'fill' if 'MemoryFill' in name else 'barrier_or_other_L0'
+        else:
+            family = kernel_family(base)
+            item = names.setdefault(base, dict(count=0, service_sum_s=0.))
+            item['count'] += 1; item['service_sum_s'] += e['dur']/1e6
+        row = families.setdefault(family, dict(count=0, service_sum_s=0., payload_bytes=0))
+        row['count'] += 1; row['service_sum_s'] += e['dur']/1e6
+        if family.startswith('copy:') or family == 'fill':
+            row['payload_bytes'] += int(re.search(r'\[(\d+)\]$', name)[1])
+    for e in host:
+        row = apis.setdefault(e['name'], dict(count=0, wall_sum_s=0.))
+        row['count'] += 1; row['wall_sum_s'] += e['dur']/1e6
+    require(sum(v['count'] for v in families.values()) == len(gpu), 'family reduction lost GPU work')
+    intervals = sorted(gpu, key=lambda e:e['ts'])
+    gaps = []
+    previous = None
+    for e in intervals:
+        if previous is not None and e['ts'] > previous['ts']+previous['dur']:
+            start, end = previous['ts']+previous['dur'], e['ts']
+            gaps.append(dict(start_us=start, end_us=end, duration_s=(end-start)/1e6,
+                before=previous['name'].split('[SIMD', 1)[0], after=e['name'].split('[SIMD', 1)[0]))
+        if previous is None or e['ts']+e['dur'] > previous['ts']+previous['dur']:
+            previous = e
+    largest = sorted(gaps, key=lambda g:g['duration_s'], reverse=True)[:8]
+    for gap in largest:
+        start, end = gap.pop('start_us'), gap.pop('end_us')
+        overlap = collections.Counter()
+        for e in host:
+            duration = min(end, e['ts']+e['dur'])-max(start, e['ts'])
+            if duration > 0:
+                overlap[e['name']] += duration/1e6
+        gap.update(start_relative_s=(start-begin_ns/1000)/1e6,
+            host_api_overlap_s=dict(overlap.most_common(3)))
+    kernels = [e for e in gpu if not e['name'].startswith('zeCommandList')]
+    return dict(families=[dict(name=k, **v) for k,v in sorted(families.items(),
+            key=lambda pair:pair[1]['service_sum_s'], reverse=True)],
+        largest_normalized_kernel_groups=[dict(name=k, **v) for k,v in sorted(names.items(),
+            key=lambda pair:pair[1]['service_sum_s'], reverse=True)[:16]],
+        largest_host_apis=[dict(name=k, **v) for k,v in sorted(apis.items(),
+            key=lambda pair:pair[1]['wall_sum_s'], reverse=True)[:12]],
+        kernel_interval_union_s=union_us(kernels)/1e6,
+        observed_gpu_gap_total_s=((end_ns-begin_ns)/1000-union_us(gpu))/1e6,
+        internal_gaps_at_least_1ms=sum(g['duration_s'] >= .001 for g in gaps),
+        largest_internal_observed_gaps=largest,
+        limits='Service/API sums can overlap. Gaps are between observed GPU events,not proof of hardware idle. '
+               'Normalized names identify producers,not arithmetic or bandwidth saturation.')
+
+
+def status_summary(log):
+    prefix = 'strata prefill status: '
+    lines = [x for x in log.splitlines() if x.startswith(prefix)]
+    require(len(lines) == 1, 'one source-bound prefill status partition required')
+    tokens = [x.split('=', 1) for x in lines[0][len(prefix):].split()]
+    data = dict(tokens)
+    require(len(data) == len(tokens) and data['version'] == data['available'] == data['complete'] == '1' and
+            data['scopes'] == data['completed'] and data['open_scopes'] == data['open_parts'] == '0',
+            'incomplete/ambiguous status partition')
+    require(all(math.isfinite(float(v)) and float(v) >= 0 for k,v in data.items()
+                if k.endswith('_s') or k.endswith('_count')) and
+            all(v == '0' for k,v in data.items() if k.endswith('_throws')), 'invalid status time/error')
+    parts = []
+    for name in ('tag', 'precheck', 'queue_context', 'enqueue', 'observer', 'drain', 'postcheck', 'after_drain', 'branch'):
+        require(all(name+s in data for s in ('_count', '_throws', '_cpu_s', '_wall_s',
+                '_wait_cpu_s', '_wait_wall_s')) and data[name+'_throws'] == '0',
+                'incomplete or thrown status region')
+        cpu, wall, wc, ww = [float(data[name+s]) for s in ('_cpu_s', '_wall_s', '_wait_cpu_s', '_wait_wall_s')]
+        require(cpu >= wc and wall >= ww, 'negative status outside-wait time')
+        parts.append(dict(name=name, calls=int(data[name+'_count']), cpu_s=cpu, wall_s=wall,
+            known_wait_cpu_s=wc, known_wait_wall_s=ww, outside_known_wait_cpu_s=cpu-wc,
+            outside_known_wait_wall_s=wall-ww))
+    require(all(abs(float(data[k+'_s'])-float(data['unclassified_'+k+'_s'])-
+                    sum(p[k+'_s'] for p in parts)) < 1e-7 for k in ('cpu', 'wall')),
+            'status partition does not conserve')
+    return dict(scopes=int(data['scopes']), complete=True, cpu_s=float(data['cpu_s']),
+        wall_s=float(data['wall_s']), unclassified_cpu_s=float(data['unclassified_cpu_s']),
+        unclassified_wall_s=float(data['unclassified_wall_s']), parts=parts,
+        limits='Enqueue includes the called wrapper/runtime and possible internal waits;outside known waits '
+               'does not prove CPU arithmetic. This partition is nested within the main CPU partition.')
+
+
+def analyze():
+    record = d.runtime.validation.committed(RESULT)
+    scope = record['moe_down_model']
+    row = json.loads((ROOT/'record.json').read_text())
+    require(comparison.compact(row) == scope[KEY] and row['stage'] == 'closed' and row['passed'] and
+            row['complete'] and row['ownership_closed'] and not row['active'], 'closed unchanged profile required')
+    plan = row['analysis_plan']
+    require(plan['host_checks']['passed'] and 'analysis' not in row and
+            all(digest(P/n) == v for n,v in plan['sources'].items()), 'fresh tested committed analysis required')
+    require(set(plan['sources']) <= set(row['sources']) and
+            all(digest(P/n) == plan['sources'].get(n, v) for n,v in row['sources'].items()),
+            'unreviewed change to a producer/analysis dependency')
+    native = row['observation']['native_identity']
+    live = d.runtime.supervision.identity(native['pid'])
+    require(live is None or live['start_ticks'] != native['start_ticks'], 'profile native still live')
+    for x in (plan['timeline'], plan['native_log']):
+        require(digest(x['path']) == x['sha256'] and Path(x['path']).stat().st_size == x['bytes'],
+                'closed analysis payload changed')
+    observed = row['observation']
+    events = json.loads(Path(plan['timeline']['path']).read_text())['traceEvents']
+    repeated = trace_summary(events, native['pid'], observed['request_raw_begin_ns'], observed['request_raw_end_ns'])
+    require(all(observed['capture'][k] == v for k,v in repeated.items()), 'original trace reduction differs')
+    result = family_summary(events, observed['request_raw_begin_ns'], observed['request_raw_end_ns'])
+    text = Path(plan['native_log']['path']).read_text()
+    status = status_summary(text)
+    require(status['scopes'] == observed['route']['work']['windows'] == 48, 'status/window counts differ')
+    gu = re.findall(r'^strata MoE GU fusion: fused_jobs=(\d+) fused_rows=\d+ separate_jobs=\d+ min_rows=2334$', text, re.M)
+    require(len(gu) == 1, 'one GU dispatch count required')
+    families = {r['name']:r for r in result['families']}
+    result['fused_dispatch_reconciliation'] = dict(gu_expected=int(gu[0]),
+        gu_observed=families.get('native16_gu_fused', {}).get('count', 0),
+        down_expected=observed['route']['down_fused_jobs'],
+        down_observed=families.get('native16_down_fused', {}).get('count', 0))
+    counts = result['fused_dispatch_reconciliation']
+    result['fused_dispatch_reconciliation']['matched'] = bool(
+        counts['gu_expected'] == counts['gu_observed'] and counts['down_expected'] == counts['down_observed'])
+    result.update(source_commit=d.gen.git('rev-parse', 'HEAD').decode().strip(),
+        native_source_commit=row['native_source_commit'], timeline_sha256=plan['timeline']['sha256'],
+        native_log_sha256=plan['native_log']['sha256'], status_partition=status,
+        inference_adopted=False, physical_saturation_qualified=False)
+    row['analysis'] = result
+    write(ROOT/'record.json', row)
+    scope[KEY] = comparison.compact(row)
+    write(RESULT, record)
+    print(json.dumps(dict(families=result['families'],
+        fused_dispatch=result['fused_dispatch_reconciliation'],
+        observed_gpu_gap_total_s=result['observed_gpu_gap_total_s'])), flush=True)
+    require(counts['matched'], 'observed fused kernels do not reconcile with source dispatch counters')
+
+
 def profile_environment(root, rt):
     env = comparison.environment(root, rt, 'split')
     env.update(STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1')
@@ -527,5 +681,7 @@ if __name__ == '__main__':
             prefix()
         elif args == ['run']:
             run()
+        elif args == ['analyze']:
+            analyze()
         else:
-            raise RuntimeError('prepare-frontend|frontend|prepare|prefix|run')
+            raise RuntimeError('prepare-frontend|frontend|prepare|prefix|run|analyze')
