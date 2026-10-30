@@ -28908,7 +28908,7 @@
       }
     },
     "split_continuation_benchmark": {
-      "stage": "finalizer-fix-host-tested-fresh-frontend-qualified",
+      "stage": "candidate-continuation-passed-attribution-next",
       "native_rebuilt": false,
       "model_executed": true,
       "adoption_qualified": false,
@@ -28942,7 +28942,7 @@
         "generation_path_matches_selected": true,
         "bounds": "81920+8192 exclusive lower engine bound;117488 inclusive upper. API read=engine rows+1. Named header bytes were verified against the retained candidate source snapshot before this plan."
       },
-      "next_gate": "Prepare and commit one fresh candidate-only continuation plan;historical selected input identity is descriptive and its failed qualification is not reused.",
+      "next_gate": "Commit a source-bound117489-read UnitTrace/CPU-wait attribution plan after exact observer/runtime/source reuse checks;then tune the measured limiting work. Repeated clean decode,task/agent and physical262144 qualification remain pending.",
       "limits": "No new native/runtime/device,task,agent,long-decode or physical262144 qualification. Existing8same-build device checks may be reused only after exact native/executable/fixture identity proof. Preserve1256decode slots,8192chunks,5workers,spec4,INT8 resident131072context and immutable safety environment.",
       "host_failures": [
         {
@@ -29065,7 +29065,7 @@
         "sha256": "34be71a45e002678dc8ebbd21e980b4c6221b99921a949d708a3e8d5c62b6679"
       },
       "frontend_key": "split_continuation_frontend_v1",
-      "model_observation_scope": "Historical failed-v1 baseline only;v2candidate and repeated model qualification remain pending."
+      "model_observation_scope": "Candidate-only v2 long continuation passed. Historical v1 stays failed and is not reused as formal paired qualification. No native rebuild,inference adoption or sustained-decode/physical262144 qualification."
     },
     "split_continuation_frontend_v1": {
       "stage": "closed",
@@ -29734,7 +29734,7 @@
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
     },
     "split_continuation_diagnostics_v2": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "08c5eeaadd493d7d6833de9d1cede9b1ea8915c6",
       "asset_basis": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/record.json",
@@ -29821,7 +29821,143 @@
           }
         }
       ],
-      "processes": [],
+      "processes": [
+        {
+          "arm": "split",
+          "complete": true,
+          "passed": true,
+          "model_executed": true,
+          "clean_speed": false,
+          "adoption_qualified": false,
+          "sustained_decode_qualified": false,
+          "physical262144_qualified": false,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "native_identity": {
+            "pid": 2870005,
+            "start_ticks": 174094814,
+            "sid": 2869955
+          },
+          "native_exit_code": 0,
+          "validation": {
+            "pid": 2870005,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "sample": {
+            "ok": true,
+            "err": null,
+            "ttft_s": 107.014,
+            "total_s": 355.778,
+            "prompt_tokens": 96204,
+            "reused_tokens": 0,
+            "read_tokens": 96204,
+            "generated_tokens": 3360,
+            "prompt_tps": 900.2,
+            "prompt_tps_source": "engine",
+            "decode_tps": 13.5,
+            "decode_tps_source": "engine",
+            "prompt_ms": 106866.7,
+            "decode_ms": 248857.9,
+            "drafts_offered": 2892,
+            "drafts_accepted": 2397,
+            "finish_reason": "stop",
+            "request_sha256": "061e8dbcbdcbb6952b8b5adf3fadf8d44e10ec98bc14808d6d4de98e79ac1bcd",
+            "stream_complete": true,
+            "truncated": false,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 1741062632135090,
+              "first_output_monotonic_ns": 1741169646408808,
+              "request_end_monotonic_ns": 1741418409991801
+            },
+            "eligible": true,
+            "agreement_eligible": true,
+            "speed_eligible": true,
+            "speed_ineligible_reasons": [],
+            "ineligible_reasons": [],
+            "acceptance_rate": 0.828838174273859,
+            "usage_generated_tokens": 3360,
+            "completion_includes_thinking": true,
+            "input_case": "split-v1-96k",
+            "target_input_tokens": 98304,
+            "counted_input_tokens": 96204,
+            "count_preflight_body_sha256": "061e8dbcbdcbb6952b8b5adf3fadf8d44e10ec98bc14808d6d4de98e79ac1bcd",
+            "native_route_qualified": false,
+            "timing_frontend_state": "post-count-preflight",
+            "run": 0,
+            "order": 0,
+            "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+            "reasoning_sha256": "24eb8e57a9fcd3f026b5b86796231aab6e5890ee3cf8983b7565c355ea5732ee",
+            "output_chars": 5496,
+            "reasoning_chars": 4340,
+            "reasoning_tokens": null
+          },
+          "route": {
+            "engine_rows": 96203,
+            "api_read_tokens": 96204,
+            "chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 96203,
+            "residual_host_bytes": 0,
+            "slots": 128,
+            "maximum_window_rows": 96203,
+            "split": {
+              "primary_rows": 65536,
+              "tail_rows": 30667,
+              "tail_payload_bytes": 314030080,
+              "extra_allocation_bytes": 314030336,
+              "guard": "checked",
+              "final_drain": "checked",
+              "decode_changed": 0
+            },
+            "work": {
+              "windows": 48,
+              "dequants": 20358,
+              "jobs": 24222,
+              "source_H2D_bytes": 184709760
+            },
+            "down_fused_jobs": 6113,
+            "down_fused_rows": 42161001,
+            "down_separate_jobs": 18109,
+            "requested_expert_upload": {
+              "uploads": "20358",
+              "requested_H2D_bytes": "41550745600",
+              "permanent_hits": "0",
+              "permanent_slots": "127",
+              "total_slots": "128",
+              "final_drain": "checked"
+            },
+            "limitation": "Actual source-bound route/work counters,not measured physical traffic or hardware saturation."
+          },
+          "same_request_continued_decode": true,
+          "configured_decode_slots": 1256,
+          "limitation": "One observed source-bound continuation with diagnostics;not clean speed,repeated decode preservation,MTP regime,task,agent or physical262144 qualification.",
+          "host_probe_accepted": true,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      ],
       "historical_input_reference": {
         "source_scope": "split_continuation_diagnostics_v1",
         "body_sha256": "061e8dbcbdcbb6952b8b5adf3fadf8d44e10ec98bc14808d6d4de98e79ac1bcd",
@@ -29864,10 +30000,29 @@
         "retention": "Keep compact per-arm sample,route,identities,fault/result and limits. Retire successful raw output after closure. Native generations remain only for the imminent repeated/task/context qualification.",
         "limits": "Candidate-only diagnostic. Historical selected data are descriptive;the original failed scope stays failed. No paired comparison,adoption,clean speed,task,agent or physical262144 qualification."
       },
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "candidate_decode_work_observation": {
+        "native_summary": "strata serve: prompt 96204 tokens = 0 reused + 96204 read in 106867 ms (900.2 tok/s), 3360 generated in 248858 ms (13.5 tok/s), drafts accepted 2397 of 2892, 0 checkpoints",
+        "copy": {
+          "submitted_blobs": 0,
+          "submitted_bytes": 0,
+          "completed_blobs": 0,
+          "completed_bytes": 0,
+          "host_view_groups": 0,
+          "gpu_miss_groups": 0,
+          "cpu_unique_misses": 1285620,
+          "cpu_entries": 1649430
+        },
+        "cache_hits": 201930,
+        "cache_lookups": 1851360,
+        "printed_cache_hit_percent": 10.9,
+        "source": "Last of5native request summaries;prompt/read96204 and3360outputs match the official long-generation request. Existing4warmups remain separate.",
+        "conservation": "cache_hits+cpu_entries==cache_lookups;cpu_unique_misses<=cpu_entries. Submitted/completed GPU expert-copy blobs/bytes are zero.",
+        "limitation": "Native logical counters,not CPU time,RAM bandwidth,GPU service or physical traffic. One diagnostic sample does not establish hardware saturation,an MTP regime or a clean speed comparison."
+      }
     }
   },
   "metric_topology": {

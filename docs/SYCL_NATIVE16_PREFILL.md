@@ -1700,25 +1700,24 @@ third split warmed-process median is997.7tok/s;the other two are1000.6 and
 all15model assets pass. All24Down dispatch records conserve fused+separate
 jobs;selected-arm fusion counters are retained for the next work-mix check.
 The reverse pair contains an overnight gap before process3;preserve that
-limitation rather than treating the samples as contiguous. Next qualify
-same-request split-prefill to long-decode continuation. Default v4 generation
-uses approximately33Kinput and does not exercise this route;a separately
-versioned96Kcase must preserve the existing v4 behavior and actual per-arm
-placement. Native/runtime evidence may be reused only after identity checks;
-this benchmark change itself adds no native,task,agent or physical262144 qualification. Successful
+limitation rather than treating the samples as contiguous. The separate96K
+case below now passes same-request split-prefill to long-decode continuation.
+Default v4 generation uses approximately33Kinput and does not exercise this
+route. Native/runtime evidence may be reused only after identity checks;
+the benchmark change itself adds no native,task,agent or physical262144 qualification. Successful
 raw output from all six comparison processes and consumed research dispatch
 transactions are retired after verification;individual samples,decisions and
 work counters remain. Both native generations stay only for the imminent
-continuation checks;older legacy provenance holds remain separate. The separate
+repeated decode/task/context qualification;older legacy provenance holds remain separate. The separate
 `split-v1-96k` official-client case is implemented. All35active client tests
 (including9new split cases) and9fail-fast integration tests pass;the optional
 real-tokenizer fixture is unrun. Against old175c1cb98,the default v4 matches
 36wire bodies and6full workload results across two output caps and three
-calibration settings. The12controller rejection checks and two fresh
+calibration settings. The14controller rejection/finalizer checks and two fresh
 current-source benchmark/server definition/mock-loopback probes pass,with
 exact Python/project/provider identities and normal owner closure. Actual
-per-arm long-generation checks remain pending;no native rebuild or GPU
-qualification follows from these host-only checks. The first owned selected-arm
+candidate long-generation checks now pass;no native rebuild or GPU
+qualification follows from the host-only checks. The first owned selected-arm
 diagnostic observes96204fresh input tokens and3360generated tokens,including
 thinking,5496answer characters,853.8PP and13.4decode tok/s under diagnostic
 tracing. Draft acceptance is2397/2892(82.884percent);one sample does not
@@ -1726,11 +1725,30 @@ qualify an MTP regime. Actual96203GPU-resident residual rows use384slots,
 81920maximum and96windows. Native exit0,quiet validation,ownership closure
 and no fresh fault are recorded. The diagnostic scope nevertheless fails:
 Main omitted the host_probe_accepted flag required by the shared finalizer.
-Preserve that failed status;the unrun candidate is not qualified. A separate
-controller fix/scope is required before further native work. The native long
+Preserve that failed status. The separately committed controller fix and
+candidate-only v2 scope close successfully,with normal native exit0,quiet
+validation,closed ownership and no fresh GPU fault. The exact historical body
+hash matches,without requalifying or counting the failed selected sample as a
+new pair. Actual96204read/zero-reuse input produces3360tokens including
+thinking,5496answer characters and4340reasoning characters. Diagnostic
+prefill is106866.7ms(900.2tok/s),decode248857.9ms(13.5tok/s),client TTFT107.014s
+and MTP2397/2892. These are one first-long-use traced observation,not clean
+speed or repeated decode preservation. All96203BF16 residual rows stay on
+the GPU;128slots and48windows use65536primary rows plus30667tail rows,
+314030336extra allocation bytes,checked guard/drain and decode_changed=0.
+Configured decode slots remain1256. Job counts conserve6113fused plus18109
+separate Down jobs=24222. The candidate and historical selected observations
+have the same output hashes and logical decode counts;equal generated text
+was not required and does not establish task quality. The native long
 request also reports201930cache hits/1851360lookups(10.9percent),1649430CPU
 entries and1285620unique CPU misses,with zero GPU expert-copy blobs/bytes.
 These are logical placement/work observations,not a physical bottleneck proof.
+Next commit a source-bound117489-read UnitTrace/CPU-wait attribution plan.
+Reuse exact collector/runtime assets after checks;older97cfa/6e40 coverage and
+observer cost do not qualify current9a79. Split mode refuses command-service
+profiling. Keep physical PCIe/DRAM bytes and arithmetic saturation unknown when
+their providers are unqualified. Repeated clean decode,task/agent checks and
+physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
@@ -3334,14 +3352,14 @@ stopped. No reset/unbind/recovery action is part of a benchmark.
 ## Upstream and history
 
 Niko1221/Strata is the only upstream. The last actual check was
-2026-10-27T21:28:33.036186Z at`5e8a4cca7` (`v0.2.7`). Two bounded
-non-inference reviews name270of534 interval paths;264 remain outside those
-manifests. Host-readiness and selected schema/Responses compatibility slices
-are ported,but the full required functional ledger and hardware-tuned
-unmodified-upstream measurements remain incomplete. Check again around
-2026-10-29T21:28Z using the project-only sync skill. These dates reconcile the
-existing committed upstream-status.json;this
-document edit is not another remote check.
+2026-10-29T21:31:36.563996Z at`46c152a1310f77cd2f0ce2c7cd213962df14fe83`.
+The committed upstream-status.json tracks the partial functional reviews and
+ports,including CPU-name/missing-x86-flags reporting and stream-parser scan
+slices from this interval. Required tracking/recovery/alias/API/CLI functions,
+earlier functional obligations and hardware-tuned unmodified-upstream
+measurements remain incomplete. Check again around2026-10-31T21:31Z using
+the project-only sync skill. These dates reconcile the existing committed
+status;this document edit is not another remote check or a completed import.
 
 Work is on`feature/sycl`. PR180 is mergeable but blocked by squash-only
 ruleset24638744; original measured commit identities require a merge commit.
