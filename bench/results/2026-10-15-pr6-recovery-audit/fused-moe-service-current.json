@@ -30238,7 +30238,7 @@
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
     },
     "split_resource_profile_v1": {
-      "stage": "prepared",
+      "stage": "failed",
       "source_commit": "5ad03608790c0926d5026a2bbfad69347e6086ed",
       "asset_basis": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/record.json",
@@ -30373,7 +30373,37 @@
       "complete": false,
       "passed": false,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "prefix": {
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "native_engine_executed": false,
+        "error": "RuntimeError('profile native startup environment differs')",
+        "session_removed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      "prefix_diagnosis": {
+        "mechanism": "Main-authored expected-environment list omitted two variables added by the pinned launcher. Prefix failed before native model execution;no GPU fault.",
+        "unexpected_names": [
+          "UNITRACE_VERSION",
+          "UNITRACE_LD_PRELOAD_OLD"
+        ],
+        "actual_version": "2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)",
+        "actual_old_preload": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "source": "Intel PTI4b6d742 unitrace.cc version setup and patched preload setup;unitrace_launch.py PATCHES replaces the preload input with STRATA_UNITRACE_TARGET_PRELOAD.",
+        "next_action": "Preserve failed v1;commit explicit version/preload expectations and a fresh v2 scope. Keep all safety and environment equality checks."
+      }
     }
   },
   "metric_topology": {
