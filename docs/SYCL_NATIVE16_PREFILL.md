@@ -1629,8 +1629,13 @@ invalid-map masks, and all 32 production dispatch/fallback cases. Actual UR
 create-to-launch identities confirm the chosen six split kernels in each
 production arm and zero split launches with fusion disabled. Numerical outputs,
 guards and immutable inputs pass; all owners close with no fresh GPU fault.
-The fresh model controller first qualifies the current frontend, then runs one
-exact 117489-read thinking-on diagnostic per policy. Clean speed follows only
+The current-runtime frontend and original-policy model diagnostic now pass:
+117489 fresh read tokens, 117488 GPU-resident BF16 residual rows, 48 windows,
+7432 fused Down jobs, checked tail/drain and 24 thinking-enabled output tokens.
+The owner closes normally, validation is quiet and no fresh GPU fault occurs.
+Its observed 126819.8ms (926.4tok/s), TTFT 126.971s is diagnostic timing,
+not clean speed. The row128 and row64 model diagnostics remain next.
+The fresh model controller requires one such diagnostic per policy. Clean speed follows only
 after those gates: nine independent processes in three Latin-order blocks,
 four requests each, first long use separate from subsequent-request medians.
 No additional model speedup or decode preservation is established. Matched
