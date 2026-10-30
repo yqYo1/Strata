@@ -33118,5 +33118,147 @@
         "next_admission": "Cohort closed;future independent qualification must check retained source,build and compact evidence."
       }
     ]
+  },
+  "metric_topology": {
+    "stage": "prepared",
+    "source_commit": "c377140cb81c556bd741c89548d01bed61540a17",
+    "sources": {
+      "bench/sycl/metric_capability.c": "21ed846dd94c175d77d1545e19a606488717b33bb54f044ee6db556b944e1f2c",
+      "tools/sycl/metric_capability.py": "22aa3fc2927d2a87a27a1c322f19f7542d4a7663998bf5fa5bc21f14daeef922",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/test_metric_capability.py": "8b71290ee3f97c4d53d6695a64fc3beccc4ad364b31d4cbbf57be51d22935e5b",
+      "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c"
+    },
+    "commands": [
+      [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fPIE",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/actual.d",
+        "-MT",
+        "probe",
+        "-c",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/metric_capability.c",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/probe.o"
+      ],
+      [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/probe.o",
+        "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+        "-pie",
+        "-Wl,-z,relro,-z,now",
+        "-Wl,-t",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/metric_capability"
+      ]
+    ],
+    "previous_attempt": {
+      "commit": "601822c966ba4fee30d5f6e9aabd712830e2cc59",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "scope": "metric_query",
+      "scope_sha256": "9e282bc35e25bef29a10315b31a18128bf149886606372efdadba18878235bb4",
+      "outcome": "Original query-pool INVALID_ARGUMENT remains unqualified;topology is a separate inventory."
+    },
+    "compiler": "x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "environments": [
+      {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/tmp",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      {
+        "PATH": "/usr/bin:/bin",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/tmp",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "HOME": "/home/yayoi",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/cache",
+        "LD_LIBRARY_PATH": "/usr/lib/x86_64-linux-gnu:/usr/local/lib",
+        "LD_DEBUG": "libs,files",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_METRIC_CAPABILITY_GATES": "1",
+        "ZET_ENABLE_METRICS": "1",
+        "ZES_ENABLE_SYSMAN": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1"
+      }
+    ],
+    "dependencies": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/metric-topology-c-v1/dependencies.json",
+      "sha256": "b548de81e5bde1652f96257fad6f779708f4a79edc9fac3ae16134e474e661d0",
+      "files": 117,
+      "runtime_elfs": 24
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "build_limits": {
+      "wall": 60,
+      "cpu": 45,
+      "rss_cap": 1073741824,
+      "text_cap": 2097152,
+      "total_cap": 33554432,
+      "file_cap": 8388608
+    },
+    "run_limits": {
+      "wall": 45,
+      "cpu": 20,
+      "rss_cap": 268435456,
+      "text_cap": 4194304,
+      "total_cap": 8388608,
+      "file_cap": 4194304
+    },
+    "scope": "Root and actual child device/group properties only;no context,queue,activation,query or streamer.",
+    "criteria": "Unique B570 PCI0000:05:00.0;three immutable provider gates;bounded node/group conservation and event/time bitmask semantics;all API success,exit0,closed ownership and no fresh fault. Zero children/groups are valid inventory,not collection qualification.",
+    "protocol": {
+      "gates": [
+        "before-runtime",
+        "runtime-ready",
+        "before-exit"
+      ],
+      "line_deadline_s": 15,
+      "exit_deadline_s": 10,
+      "maximum_records": 13000,
+      "strings": "Reconstruct API bytes via latin1;strict UTF8 or explicit raw_hex."
+    },
+    "retention": "Retain compact root/child and event-group identities for the next collection decision;retire successful raw inventory/tool build after source/recipe verification. No model engine generation.",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "collection_qualified": false,
+    "hardware_utilization_measured": false,
+    "physical_pcie_bytes_measured": false,
+    "native_arguments": [
+      "--topology"
+    ],
+    "host_controls": {
+      "cases": 9,
+      "failures": 0,
+      "errors": 0,
+      "passed": true
+    },
+    "sampling_type_constants": {
+      "EVENT_BASED": 1,
+      "TIME_BASED": 2
+    }
   }
 }
