@@ -29874,6 +29874,25 @@
         }
       }
     ],
-    "model_controller": "tools/sycl/compare_moe_down.py"
+    "model_controller": "tools/sycl/compare_moe_down.py",
+    "controller_host_tests": {
+      "source_commit": "61f677a0f3c539ebeb6fa0699aa7b269f0085f97",
+      "command": [
+        "/usr/bin/python3.12",
+        "-I",
+        "-S",
+        "-B",
+        "tests/core/test_moe_down_comparison.py",
+        "-v"
+      ],
+      "passed": true,
+      "ownership_closed": true,
+      "tests": 4,
+      "scope": "Host-only frozen advancement policy controls;reject partial,failed,observed,duplicate-process and invalid clocks. No GPU/model execution.",
+      "source_sha256": {
+        "tools/sycl/compare_moe_down.py": "9912be72c5f43243be9e57b5d09b59c57d4dc9d31b64fa7e561bef1a6f284137",
+        "tests/core/test_moe_down_comparison.py": "0e6f8cd8d312c283358974bc0b4df738152eae686090c316a7d002e7c26fa3be"
+      }
+    }
   }
 }

@@ -1620,17 +1620,22 @@ the prospective gate while preserving the three regular-map regressions.
 Dense64/128 service ratios are1.39..1.51;the scattered result is not a general
 GEMM improvement. Different output traffic still prevents subtracting these
 times into an additive epilogue cost or declaring a physical resource saturated.
-The prefill-only model selector is now built from source `9a79cd352`.
+The prefill-only model selector is built from source `9a79cd352`.
 It chooses original, row128 or row64 once before runtime initialization;
 original remains the default, and decode processing is unchanged in source.
-The selected 6e40 fallback is retained. Three of eight fresh same-build device
-checks pass: tiny row64, tiny row128 and large row64, including 63/64/65-row
-boundaries and a 117488-row split accumulator. Their traces identify 10 row64,
-4 row128 and 24 row64 launches respectively; all numerical/guard checks pass
-with no fresh fault. Large row128 and four production dispatch/fallback cases
-remain before matched model PP/TTFT measurement. No additional model speedup
-or decode preservation is established. Model PP/TG, decode/handoff, task quality
-and physical 262144 qualification remain pending. See
+The selected 6e40 fallback is retained. All eight fresh same-build device
+checks pass, including 63/64/65-row boundaries, split primary/tail/final rows,
+invalid-map masks, and all 32 production dispatch/fallback cases. Actual UR
+create-to-launch identities confirm the chosen six split kernels in each
+production arm and zero split launches with fusion disabled. Numerical outputs,
+guards and immutable inputs pass; all owners close with no fresh GPU fault.
+The fresh model controller first qualifies the current frontend, then runs one
+exact 117489-read thinking-on diagnostic per policy. Clean speed follows only
+after those gates: nine independent processes in three Latin-order blocks,
+four requests each, first long use separate from subsequent-request medians.
+No additional model speedup or decode preservation is established. Matched
+selected-fallback, decode/handoff, task quality and physical 262144 qualification
+remain pending. See
 [`moe_down_row64`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
