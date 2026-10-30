@@ -92,7 +92,8 @@ def runtime():
 
 def official_packages():
     return subprocess.check_output(['dpkg-query','-W','-f=${Package} ${Version}\n',
-        'intel-oneapi-*2026.2*','intel-oneapi-umf-1.2'], text=True,timeout=15).splitlines()
+        'intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2','intel-oneapi-dpcpp-cpp-2026.2',
+        'intel-oneapi-umf-1.2'], text=True,timeout=15).splitlines()
 
 
 def official_snapshot():
@@ -100,17 +101,25 @@ def official_snapshot():
     # header/runtime/compiler reuse. Freeze this NEW scope before compiling.
     packages = official_packages()
     require(packages and all(len(p.split()) == 2 for p in packages), 'official package identities missing')
-    checked = subprocess.run(['dpkg','--verify',*[p.split()[0] for p in packages]],
-                             capture_output=True,text=True,timeout=120)
-    require(checked.returncode == 0 and not checked.stdout and not checked.stderr,
-            'installed official SDK package bytes differ')
+    original_path = B / 'prefill-expert-staging-v3/sdk-inputs.json'
+    original_result = json.loads(git('show','e64229a83:bench/results/2026-10-15-pr6-recovery-audit/prefill-resources-current.json'))
+    original = original_result['event_reconciliation']['fused_command_profile']['prefill_upload_staging_v3']['sdk']
+    require(str(original_path) == original['path'] and digest(original_path) == original['sha256'] and
+            packages == original['packages'], 'original independent official SDK receipt differs')
+    prior = json.loads(original_path.read_text())
     roots = [OFFICIAL,UMF,Path('/usr/include')]
     roots += [p for p in Path('/usr/lib/gcc').glob('*/*/include*') if p.is_dir()]
     paths = {p.resolve() for root in roots for p in root.rglob('*') if p.is_file()}
     files = {str(p):digest(p) for p in sorted(paths)}
+    vendor = lambda rows: {p:h for p,h in rows.items() if
+        Path(p).is_relative_to(OFFICIAL) or Path(p).is_relative_to(UMF)}
+    require(vendor(files) == vendor(prior), 'official vendor files differ from independently qualified bytes')
     write(ROOT / 'sdk-inputs.json',files)
     return dict(path=str(ROOT / 'sdk-inputs.json'),sha256=digest(ROOT / 'sdk-inputs.json'),
-                files=len(files),packages=packages,origin='Official Intel apt packages;dpkg verification silent.')
+                files=len(files),packages=packages,origin='Official Intel apt packages;all3035vendor files exactly match original independently qualified snapshot.',
+                original_manifest=dict(commit='e64229a83',path=str(original_path),sha256=original['sha256'],
+                    vendor_files=len(vendor(files))),
+                verification_limit='Original broad44-package preparation failed on pkgconfig metadata,including unrelated MKL/IPP;that failure remains. This new scope checks exact compiler/UMF vendor bytes against original Git-bound proof and separately freezes current host headers. No legacy SDK reuse or hash refresh.')
 
 
 def official_admit(meta):
@@ -425,7 +434,7 @@ def main():
     action = sys.argv[1]
     if action.startswith('pipeline-'):
         action = action.removeprefix('pipeline-')
-        PIPELINE = True; KEY = 'prefill_copy_pipeline_v2'; ROOT = B / 'prefill-copy-pipeline-v2'
+        PIPELINE = True; KEY = 'prefill_copy_pipeline_v3'; ROOT = B / 'prefill-copy-pipeline-v3'
         BINARY = 'expert_pipeline_probe'
         NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_pipeline_probe.cpp']
         RUN_LIMITS = dict(RUN_LIMITS,wall=180,cpu=240,rss_cap=5 << 30)
