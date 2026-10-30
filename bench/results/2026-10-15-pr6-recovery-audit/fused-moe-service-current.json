@@ -22316,7 +22316,7 @@
     }
   },
   "moe_down_model": {
-    "status": "selected-fallback-v2-frontend-qualified",
+    "status": "selected-fallback-comparison-prepared",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -22327,7 +22327,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Freeze and commit all six selected/original-split model processes,then run the first process. Native builds/fixtures remain unchanged;decode1256slots and physical262144 gates remain separate.",
+    "next_gate": "Run the frozen six-process comparison.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -27133,6 +27133,324 @@
       "ownership_closed": true,
       "GPU_executed": false,
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
+    },
+    "selected_fallback_comparison": {
+      "stage": "prepared",
+      "source_commit": "33eae8a4e744fe1fc4b46505495070c0fb3bd74c",
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "native_validation_probe": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+        },
+        "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+        "component_original_plan": {
+          "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+          "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+        },
+        "current_runtime_qualification_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "binaries": {
+        "selected": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+          "bytes": 22190000,
+          "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+        },
+        "split": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+          "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+          "bytes": 22897880
+        }
+      },
+      "native_sources": {
+        "selected": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "split": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2"
+      },
+      "profile": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "identity": {
+          "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "dev": 40,
+          "ino": 1160754,
+          "bytes": 196632,
+          "mtime_ns": 1790912310870254601,
+          "ctime_ns": 1790912310870254601
+        },
+        "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "plans": [
+        {
+          "index": 0,
+          "arm": "selected",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/0",
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/0/config.json",
+            "--port",
+            "53107",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/0/bench"
+          ],
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+            "bytes": 22190000,
+            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+          },
+          "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "generated": {
+            "config.json": "1d1601afd0a7737d1f29663549767a5852a477b4224d172597449bf08654fd1e",
+            "plan.json": "ca50e6f7cbe78390af35f6ba1cbdcbd982d4edeb5bb7f3d22b54b9f41d92be63"
+          },
+          "environment_sha256": "dea2b83eee86538955e747b5602fb04ae75fe57695c2e6c40bedead36ed15461"
+        },
+        {
+          "index": 1,
+          "arm": "split",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/1",
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/1/config.json",
+            "--port",
+            "45443",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/1/bench"
+          ],
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+            "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+            "bytes": 22897880
+          },
+          "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+          "generated": {
+            "config.json": "e53a2b4e87afe9004698da910a9925969f14067de985061d77412a99b767028e",
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8"
+          },
+          "environment_sha256": "ca6a499e103bc2d735685783b17d9fce6fe924ed37694bc4f2d57eb5049aa93d"
+        },
+        {
+          "index": 2,
+          "arm": "split",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/2",
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/2/config.json",
+            "--port",
+            "49221",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/2/bench"
+          ],
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+            "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+            "bytes": 22897880
+          },
+          "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+          "generated": {
+            "config.json": "b3b1be2ccab415c06237bece243066dfd03c8db66a10c937c9ab7642bfeed878",
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8"
+          },
+          "environment_sha256": "169eecc1b6b80007cc62203eb4f75f980f9790d4d02fe7c215c2cae9bcc28d05"
+        },
+        {
+          "index": 3,
+          "arm": "selected",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/3",
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/3/config.json",
+            "--port",
+            "42261",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/3/bench"
+          ],
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+            "bytes": 22190000,
+            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+          },
+          "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "generated": {
+            "config.json": "0d79b409384354c4388d3a9d1c8a69c43e6bc55ec2a7dc4f632974f4f339cc71",
+            "plan.json": "ca50e6f7cbe78390af35f6ba1cbdcbd982d4edeb5bb7f3d22b54b9f41d92be63"
+          },
+          "environment_sha256": "27ec0bd1027aaea997774e99a8c03bc05448a25afe1b3ad093cdc4d06a1b26d8"
+        },
+        {
+          "index": 4,
+          "arm": "selected",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/4",
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/4/config.json",
+            "--port",
+            "46883",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/4/bench"
+          ],
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+            "bytes": 22190000,
+            "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+          },
+          "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+          "generated": {
+            "config.json": "2241765b710f42840c4d572c70fc2a4b0ff9a9b39ce31973bc10a1e9874c1874",
+            "plan.json": "ca50e6f7cbe78390af35f6ba1cbdcbd982d4edeb5bb7f3d22b54b9f41d92be63"
+          },
+          "environment_sha256": "e8f0d499f164a465e46f4b78501284c7c0d4ec0740e7ace2aba64059724e0470"
+        },
+        {
+          "index": 5,
+          "arm": "split",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/5",
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/5/config.json",
+            "--port",
+            "48319",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/5/bench"
+          ],
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+            "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+            "bytes": 22897880
+          },
+          "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+          "generated": {
+            "config.json": "609aa7481a16c01a061d6935d1e816f98839e0cd70faf55ed5ca6bfbf2091526",
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8"
+          },
+          "environment_sha256": "9c72d5d199fe4e8fb40a3aab323099bcb773302e089e2593fa3f3f904a652f5e"
+        }
+      ],
+      "request_sha256": [
+        "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+        "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+        "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+        "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2"
+      ],
+      "processes": [],
+      "budgets": {
+        "wall": 1800,
+        "cpu": 5400,
+        "rss_cap": 111669149696,
+        "text_cap": 67108864,
+        "file_cap": 134217728,
+        "total_cap": 536870912
+      },
+      "plan": {
+        "order": [
+          "selected",
+          "split",
+          "split",
+          "selected",
+          "selected",
+          "split"
+        ],
+        "runs_per_process": 4,
+        "input_tokens": 117489,
+        "output_cap": 24,
+        "question": "Does the original-split whole long-prefill policy improve on selected6e40 now?",
+        "mechanism": "A full117488-row split accumulator reduces48-layer MoE windows from96 to48, with128 versus384 effective prefill expert slots. This is a path/placement policy comparison,not an isolated accumulation or row-cache gain;hardware saturation is unknown.",
+        "constants": "Same exact117489-read/zero-reuse bodies,117488engine rows,131072 INT8 resident context,1256 decode slots,8192chunks,BF16/vLLM/mode10,5workers,spec4,model/profile,frontend,current runtime and immutable safety settings. Candidate uses original Down kernel only. Parameter validation and retained loader remain;heavy observers stay off.",
+        "samples": "Three adjacent opposite-order pairs,six fresh independent native processes,four requests each. Keep first long use separately and median of subsequent3 per process. Full hashes before/after cohort;count-only preflight warms tokenizer,not cold-disk TTFT.",
+        "acceptance": "Complete all6processes/24requests. All3 paired split/selected median-time ratios must be below1 and geometric mean<=0.995 to advance. Target1000 requires all3 split warmed medians>=1000tok/s. Neither screen adopts the route.",
+        "stopping": "Stop first source/runtime/owner/validation/fault/budget/route/sample failure. No speed-based stop,retry,replacement,exclusion or changed threshold. A late session failure discards that session;binding Restore is not tensor rollback.",
+        "routes": "Observe each expected route,not route equality: selected384slots/81920maximum/96windows;split128slots/117488maximum/48windows with65536primary+51952tail,checked guard/drain.Both must hold all residual rows on GPU and restore1256-slot decode configuration.",
+        "limits": "24 outputs are not sustained decode,agent session,task quality,long thinking or physical262144 fill/tail/RESTORE. Repeated decode preservation remains required. Requested bytes/service percentages do not prove physical traffic or saturation.",
+        "retention": "Keep individual compact samples,per-arm routes,identities/gates and decision. Retire successful raw logs and consumed research after verification;retain current two native generations only for this comparison and its concrete next qualification."
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true
     }
   },
   "metric_topology": {
