@@ -618,7 +618,7 @@ class SplitGenerationTest(unittest.TestCase):
             self.assertFalse(suite.out["long_generation"]["complete"])
             self.assertIn("terminal_failure", suite.out)
             rendered = bench.render_readme(dict(machine={}, results=suite.out,
-                params=dict(mode="suite", runs=1, think=True, command="split-case"),
+                params=dict(mode="suite", runs=1, think=True, command="split-case", started_server=False),
                 date="2026-10-31", elapsed_s=0, complete=False))
             self.assertIn("count-only preflight failed", rendered)
 
