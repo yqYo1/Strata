@@ -28517,7 +28517,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Run frozen process3(row128),then the remaining5processes in committedLatinorder. First-block warmed medians original1002.2,row1281006.8,row641007.3tok/s;all3independent process repetitions per policy remain required. No early speed stop,selection-rule change or adoption.",
+    "next_gate": "Run frozen process 4 (row64), then processes 5..8 in the committed Latin order. Four of nine processes passed; no selection or adoption yet.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -31567,6 +31567,236 @@
             "kernel": "7.0.0-38-generic",
             "devcoredump": false
           }
+        },
+        {
+          "index": 3,
+          "kernel": "row128",
+          "complete": true,
+          "passed": true,
+          "host_probe_accepted": true,
+          "model_executed": true,
+          "clean_speed": true,
+          "adoption_qualified": false,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "native_identity": {
+            "pid": 895216,
+            "start_ticks": 168186753,
+            "sid": 895128
+          },
+          "native_exit_code": 0,
+          "validation": {
+            "pid": 895216,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "routes": [
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18888,
+                "jobs": 23840,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18888",
+                "requested_H2D_bytes": "38561740800",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7432,
+              "down_fused_rows": 52218579,
+              "down_separate_jobs": 16408
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18899,
+                "jobs": 23832,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18899",
+                "requested_H2D_bytes": "38587673600",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7429,
+              "down_fused_rows": 52204016,
+              "down_separate_jobs": 16403
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18843,
+                "jobs": 23792,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18843",
+                "requested_H2D_bytes": "38468480000",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7423,
+              "down_fused_rows": 52168035,
+              "down_separate_jobs": 16369
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18868,
+                "jobs": 23817,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18868",
+                "requested_H2D_bytes": "38524006400",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7442,
+              "down_fused_rows": 52208491,
+              "down_separate_jobs": 16375
+            }
+          ],
+          "samples": [
+            {
+              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 125804.5,
+              "prompt_tps": 933.9,
+              "prompt_tps_source": "engine",
+              "ttft_s": 125.968,
+              "total_s": 127.737,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117119.9,
+              "prompt_tps": 1003.2,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.278,
+              "total_s": 118.953,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 116235.3,
+              "prompt_tps": 1010.8,
+              "prompt_tps_source": "engine",
+              "ttft_s": 116.392,
+              "total_s": 118.036,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117237.4,
+              "prompt_tps": 1002.1,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.418,
+              "total_s": 119.136,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 117119.9,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
         }
       ],
       "plan": {
@@ -31642,7 +31872,7 @@
         "manifest_sha256": "dbcd153868a1e8951ebb90b3cacbde15e2ce3dcdc656b7075f55e96d802f9742",
         "evidence_commit": "487af71dc",
         "consumer_closed": true,
-        "next_admission": "Frozen process3 must independently pass admission before native execution."
+        "next_admission": "Closed: process3 passed native/runtime/frontend/basis admission and all four model requests with process2 raw output absent; no new fault."
       }
     ]
   }
