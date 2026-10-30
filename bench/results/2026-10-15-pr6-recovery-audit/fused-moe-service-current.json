@@ -28506,7 +28506,7 @@
     }
   },
   "moe_down_model": {
-    "status": "clean-nine-process-comparison-prepared",
+    "status": "clean-nine-process-comparison-running",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -28517,7 +28517,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Run committed clean processes0..8 sequentially in frozen Latin order,4exact117489-read thinking-on requests each;commit each closed result before advancing. Preserve all speed samples and stop first correctness/source/runtime/owner/fault/budget failure. No speed-based early stop,adoption or target claim before complete cohort.",
+    "next_gate": "Commit closed process0 evidence,then run process1(row128) of the frozen9processes. Original control first929.3tok/s;subsequent1007.4/1002.2/1001.4,median1002.2;one process is not repeated target qualification or a candidate speedup. All paired comparisons,decode/task/handoff/full262144 remain open.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -30577,7 +30577,7 @@
       "admission_scope": "Fresh row64 diagnostic preparation passed qualified(),same-build native/runtime/frontend/basis/model pins after all221retired paths were absent. Host-only admission,not another GPU qualification."
     },
     "clean_down_comparison": {
-      "stage": "prepared",
+      "stage": "running",
       "kind": "clean",
       "source_commit": "1fa351344e446f28a6c12ccbab8c80f3afb5869c",
       "basis_sha256": "e627045feba4ef63dfe96cd859394fb17ce7f2670d6d1135d285bfc924b20e4e",
@@ -30877,7 +30877,238 @@
           "environment_sha256": "d5c64c39001410806f6f36fd3f0ee74f3890a0db65a20d483c9abc73f442c6fc"
         }
       ],
-      "processes": [],
+      "processes": [
+        {
+          "index": 0,
+          "kernel": "original",
+          "complete": true,
+          "passed": true,
+          "host_probe_accepted": true,
+          "model_executed": true,
+          "clean_speed": true,
+          "adoption_qualified": false,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "native_identity": {
+            "pid": 791031,
+            "start_ticks": 167907772,
+            "sid": 790987
+          },
+          "native_exit_code": 0,
+          "validation": {
+            "pid": 791031,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "routes": [
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18888,
+                "jobs": 23840,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18888",
+                "requested_H2D_bytes": "38561740800",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7432,
+              "down_fused_rows": 52218579,
+              "down_separate_jobs": 16408
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18899,
+                "jobs": 23832,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18899",
+                "requested_H2D_bytes": "38587673600",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7429,
+              "down_fused_rows": 52204016,
+              "down_separate_jobs": 16403
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18843,
+                "jobs": 23792,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18843",
+                "requested_H2D_bytes": "38468480000",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7423,
+              "down_fused_rows": 52168035,
+              "down_separate_jobs": 16369
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18868,
+                "jobs": 23817,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18868",
+                "requested_H2D_bytes": "38524006400",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7442,
+              "down_fused_rows": 52208491,
+              "down_separate_jobs": 16375
+            }
+          ],
+          "samples": [
+            {
+              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 126428.5,
+              "prompt_tps": 929.3,
+              "prompt_tps_source": "engine",
+              "ttft_s": 126.59,
+              "total_s": 128.334,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 116622.8,
+              "prompt_tps": 1007.4,
+              "prompt_tps_source": "engine",
+              "ttft_s": 116.777,
+              "total_s": 118.494,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117227.6,
+              "prompt_tps": 1002.2,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.387,
+              "total_s": 119.056,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117323.7,
+              "prompt_tps": 1001.4,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.486,
+              "total_s": 119.123,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 117227.6,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      ],
       "plan": {
         "order": [
           "original",
@@ -30920,7 +31151,7 @@
       "manifest_sha256": "21e07f2f438d53ce014455cb2d2f221456e650703d09adde014d4baecf953966",
       "evidence_commit": "2186f8903",
       "consumer_closed": true,
-      "post_retirement_admission": "Next clean process0 must independently pass the frozen native/runtime/frontend/basis admission before native execution;no hash refresh or retry."
+      "post_retirement_admission": "Fresh clean process0 passed full native/runtime/frontend/basis/model-asset admission after the retired Down64 diagnostic paths were absent;all4requests and owned native closure then passed without fresh fault. This does not change the original diagnostic outcomes."
     }
   }
 }
