@@ -28471,7 +28471,7 @@
     }
   },
   "moe_down_model": {
-    "status": "fresh-runtime-binding-and-frontend-v2-pending",
+    "status": "model-diagnostic-prepared",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -28482,7 +28482,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Current runtime.components/runtime_files binding with unchanged original refusal;fresh model-v2 frontend and three117K model diagnostics before nine-process clean Down comparison.",
+    "next_gate": "Run committed original-policy exact117489-read thinking-on model diagnostic,then fresh row128 and row64 diagnostics. Clean nine-process comparison remains gated;no model speed or adoption qualification yet.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -30079,6 +30079,73 @@
       "ownership_closed": true,
       "GPU_executed": false,
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
+    },
+    "model_plan": {
+      "stage": "prepared",
+      "kind": "diagnostic",
+      "source_commit": "1fa351344e446f28a6c12ccbab8c80f3afb5869c",
+      "basis_sha256": "e627045feba4ef63dfe96cd859394fb17ce7f2670d6d1135d285bfc924b20e4e",
+      "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+        "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+        "bytes": 22897880
+      },
+      "plans": [
+        {
+          "kernel": "original",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-original",
+          "runs": 1,
+          "observed": true,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-original/config.json",
+            "--port",
+            "50033",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "1",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-original/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "2e7921b62179c81bbabaaa68c869dfcca81237cbfb2f85a3ea3e0ab31d549a00"
+          },
+          "environment_sha256": "082ee70ad9c88c63651c6c93743454f944b67b729fb293e46b2451cd1318d932"
+        }
+      ],
+      "processes": [],
+      "plan": {
+        "order": [
+          "original",
+          "row128",
+          "row64"
+        ],
+        "criterion": "One exact117K thinking-on diagnostic per immutable policy;full GPU residual/split guard/drain,actual positive Down dispatch and matching startup policy.Observer-charged times are not clean speed;no model-quality or decode adoption."
+      },
+      "budgets": {
+        "wall": 1800,
+        "cpu": 5400,
+        "rss_cap": 111669149696,
+        "text_cap": 67108864,
+        "file_cap": 134217728,
+        "total_cap": 536870912
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true
     }
   }
 }

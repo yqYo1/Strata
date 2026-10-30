@@ -17550,5 +17550,46 @@
       "terminal_released": true,
       "delivery_acknowledged": true
     }
+  },
+  "down_slm_destination_representation_collection_20261030": {
+    "classification": "knowledge_collection",
+    "state": "completed_released_native_review_pending",
+    "schedulable_now": false,
+    "eligible_at_dispatch": true,
+    "prerequisites_met": [
+      "Immutable native source revision and current hashes supplied/checked for the target implementation and helper.",
+      "Exact problem shapes, job extent, split boundary, physical context maximum, current component results, and their limitations are supplied.",
+      "Indexed prior reports and relevant retrieval sections are available; the broad duplicate topics can be excluded explicitly.",
+      "The Intel compiler identity is pinned in the shared environment record."
+    ],
+    "question": "For the pinned SplitRowAddressDownEpilogue path, compare the current per-row uintptr_t absolute pointer plus FP32 weight in SLM with (1) a bank selector plus bounded element offset and (2) a source-row/token index plus bank selector, keeping typed full-width pointer formation at the point of use. What do primary CUDA/PTX, SYCL/Intel LLVM, Triton/AMD, and non-LLM GPU/ASIC gather-scatter methods say about pointer representation, offset width, scalarization/uniformity, precompute versus rematerialize, and counterexamples? Which parts are portable source/spec facts, and which require later local codegen or timing evidence? Limit this to address representation; do not repeat general row grouping, cache policy, tiling, or ownership surveys.",
+    "source_revision": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+    "source_files_sha256": {
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "a2e42a4095d5c3e13a473af3d81666090f8839136ee6d0fdc5652fabbc5b7357",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
+    },
+    "shared_prior_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "report_path": ".cache/research/2026-10-30/down_slm_destination_representation_20261030.md",
+    "report_bytes": 16178,
+    "report_sha256": "7726ef6f1780d56bb503b277fdd9e35a3e86fc0d5121f1de799954fc458010ef",
+    "report_budget": {
+      "substantive_words_min": 1600,
+      "substantive_words_target": 1900,
+      "substantive_words_max": 2200,
+      "max_bytes": 20480,
+      "depth_requirement": "Compare the three bounded representations, applicability, pointer/address-space semantics, arithmetic placement, SLM and live-range tradeoffs, and counterevidence. Do not pad with Down ownership, cache, or generic roofline context."
+    },
+    "main_reads_body_on_arrival": false,
+    "retention_consumer": "Main's next Down address-representation decision after its pending model PP/decode qualification: retain the absolute-pointer SLM candidate, close it, or select one separately gated compact-representation comparison. The report is reference material only and cannot advance a model route.",
+    "dispatch": "ctx_ed5eb253d1fa",
+    "task": "task_2b5da5b3ee0b",
+    "terminal": "term_6adf9da8-8a6b-4cec-bdf3-9f2f56b1d92e",
+    "worker_model": "gpt-6-luna",
+    "worker_effort": "high",
+    "terminal_released": true,
+    "delivery_acknowledged": true,
+    "review_task": "/root/curate_down_slm_representation_report_20261030",
+    "review_path": ".cache/research/2026-10-30/down_slm_destination_representation_20261030.review.json",
+    "next_review": "Await native Luna/max curation;Main reads short digest only. Retire settled transaction paperwork after useful metadata is recorded;no implementation adoption."
   }
 }
