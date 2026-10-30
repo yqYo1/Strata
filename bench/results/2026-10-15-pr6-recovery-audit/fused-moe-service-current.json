@@ -31137,7 +31137,7 @@
         "next_review": "After this family/source/overlap analysis is committed;retire the successful timeline,normal logs and consumed prefix preparation."
       },
       "analysis_plan": {
-        "stage": "prepared",
+        "stage": "host-checked",
         "producer_result_commit": "58a117715",
         "producer_source_commit": "43c16ead6b147fbba2c2cbeac393e1135d54f50f",
         "sources": {
@@ -31155,13 +31155,16 @@
           "bytes": 387895
         },
         "host_checks": {
-          "passed": false,
+          "passed": true,
           "expected_tests": 13,
           "command": [
             "/usr/bin/python3",
             "-B",
             "tools/sycl/test_profile_split.py"
-          ]
+          ],
+          "tests": 13,
+          "exit_code": 0,
+          "source_commit": "2b7905c00b9c0ad5c3100f99fbd5a151afa6bdad"
         },
         "question": "Group all shapes by source producer/family,join fused kernel counts to native dispatch counters,and inspect observed GPU gaps/host APIs and nested status regions. Preserve original profile outcome.",
         "acceptance": "Reproduce the admitted trace reduction;conserve every GPU event and status partition. Source fused GU/Down event counts must match native counters. Service/API sums are nonexclusive;no physical saturation or new inference adoption.",
