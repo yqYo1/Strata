@@ -1743,12 +1743,21 @@ was not required and does not establish task quality. The native long
 request also reports201930cache hits/1851360lookups(10.9percent),1649430CPU
 entries and1285620unique CPU misses,with zero GPU expert-copy blobs/bytes.
 These are logical placement/work observations,not a physical bottleneck proof.
-Next commit a source-bound117489-read UnitTrace/CPU-wait attribution plan.
-Reuse exact collector/runtime assets after checks;older97cfa/6e40 coverage and
-observer cost do not qualify current9a79. Split mode refuses command-service
-profiling. Keep physical PCIe/DRAM bytes and arithmetic saturation unknown when
-their providers are unqualified. Repeated clean decode,task/agent checks and
-physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
+The source-bound117489-read attribution plan now uses the maintained
+`tools/sycl/profile_split.py`:exact indexed UnitTrace assets plus the existing
+CPU-wait v4 partition,without command-service profiling. Ten host rejection
+controls and fresh frontend probes pass. The v2 prefix/environment check also
+passes with normal exit,closed ownership,removed session and no fresh fault.
+The v1 prefix remains failed:Main omitted the launcher's exact version and
+preload bookkeeping variables from the expected environment. The prospective
+fix checks all111fields without relaxing safety checks. No native model ran
+in either prefix probe. Next run the one committed117K profile. Its prompt-time
+ratio must be<=1.15against the median126359.5ms of three clean first-use samples;
+older97cfa/6e40 coverage or observer cost does not qualify9a79. The temporary
+complete timeline is capped at1GiB,with1.5GiB total job output,then reduced and
+retired after verification. Physical PCIe/DRAM bytes and arithmetic saturation
+remain unknown. Repeated clean decode,task/agent checks and physical262144
+fill/tails/RESTORE remain pending;no inference adoption follows.
 The successful v2 raw outputs and consumed phase-handoff report/review/source
 exports are retired after the compact result is pushed. The deletion manifest
 records91files/13363315bytes;12baseline exports match original Git blobs.
