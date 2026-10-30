@@ -32576,7 +32576,7 @@
     "build_diagnostic": "Probe lines35/36 used sycl::info::event::command_start/end;correct namespace is event_profiling. Three Runtime/compat/profile objects compiled;probe compilation failed before link or device execution. Preserve failure and use a new committed scope for the two-line fix."
   },
   "prefill_copy_pipeline_v4": {
-    "stage": "built",
+    "stage": "failed",
     "source_commit": "22f4777bdc84bdd884d5d05bc2d3281946fd0923",
     "inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/inputs.json",
@@ -32950,6 +32950,26 @@
       "sha256": "e24bf77b1344580c2628e5099bd0c831c05591a186e46482a37e48319b902f21",
       "files": 677,
       "uncovered": 0
+    },
+    "measurements": [],
+    "error": "RuntimeError('official host canary failed')",
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "host_failure": {
+      "pid": 3270616,
+      "start_ticks": 175233868,
+      "exit_code": 125,
+      "before_GPU": true,
+      "error": "strata UR validation failure: unexpected loader provider",
+      "cause": "Official loader libur_loader.so.0 and libur_loader.so.0.12.0 are identical-content distinct path aliases;diagnostic requires the actually resolved SONAME path. New controller-only scope must use resolve(libur_loader.so.0),preserving this failure and exact native build.",
+      "native_owner_closed": true
     }
   }
 }

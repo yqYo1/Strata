@@ -75,11 +75,12 @@ def public():
     return data
 
 
-def commands(compiler):
-    rows = [[compiler, *FLAGS, '-MD', '-MF', str(ROOT / (str(i) + '.d')),
-             '-c', str(P / source), '-o', str(ROOT / (str(i) + '.o'))] for i, source in enumerate(NATIVE)]
+def commands(compiler, output_root=None):
+    root = ROOT if output_root is None else output_root
+    rows = [[compiler, *FLAGS, '-MD', '-MF', str(root / (str(i) + '.d')),
+             '-c', str(P / source), '-o', str(root / (str(i) + '.o'))] for i, source in enumerate(NATIVE)]
     rows.append([compiler, '-fsycl', '-fsycl-id-queries-range=size_t', '-pthread',
-                 *[str(ROOT / (str(i) + '.o')) for i in range(len(NATIVE))], '-o', str(ROOT / BINARY)])
+                 *[str(root / (str(i) + '.o')) for i in range(len(NATIVE))], '-o', str(root / BINARY)])
     return rows
 
 
@@ -146,8 +147,75 @@ def verify(row):
     for name, sha in inputs['external'].items():
         require(digest(name) == sha, 'transfer external input changed: ' + name)
     compiler = str(OFFICIAL / 'bin/icpx') if PIPELINE else full['compiler']['path']
-    require(commands(compiler) == row['commands'], 'transfer build command changed')
+    require(commands(compiler,Path(row['build_root']) if row.get('build_reused') else None) == row['commands'],
+            'transfer build command changed')
+    if row.get('build_reused'):
+        require(digest(row['compiled_inputs']['path']) == row['compiled_inputs']['sha256'], 'reused compiled manifest differs')
+        require(all(digest(p) == h for p,h in json.loads(Path(row['compiled_inputs']['path']).read_text()).items()),
+                'reused native compiled inputs differ')
     return inputs, rt
+
+
+def reuse_pipeline(data):
+    require(PIPELINE and KEY not in data and not ROOT.exists(), 'fresh controller-only reuse scope required')
+    old = data['prefill_copy_pipeline_v4']
+    frozen = json.loads(git('show','a28e5a838:'+str(RESULT.relative_to(P))))['prefill_copy_pipeline_v4']
+    require(old['stage'] == 'failed' and not old['passed'] and old['ownership_closed'] and not old['active'] and
+            not old['fresh_faults'] and old['error'] == "RuntimeError('official host canary failed')",
+            'preserve the closed pre-GPU host failure')
+    for key in ('source_commit','binary','compiled_inputs','commands','sdk','runtime_sha256','selected_binary'):
+        require(old[key] == frozen[key], 'original component build identity differs: '+key)
+    native_root = Path(old['binary']['path']).parent
+    owners = json.loads((native_root/'native-owner.json').read_text())
+    require(len(owners) == 1 and supervision.closed(owners[0]) and owners[0]['exit_code'] == 125 and
+            owners[0]['argv'] == [old['preload']['canary']['path']] and
+            'unexpected loader provider' in (native_root/'native/case-0.stderr').read_text(),
+            'actual host failure/closure differs;no GPU reuse assumption')
+    live = supervision.identity(owners[0]['pid'])
+    require(live is None or live['start_ticks'] != owners[0]['owners'][0]['start_ticks'], 'old native process remains')
+    require(digest(old['binary']['path']) == old['binary']['sha256'] and
+            digest(old['compiled_inputs']['path']) == old['compiled_inputs']['sha256'], 'original artifacts differ')
+    sdk_files = official_admit(old['sdk'])
+    compiled = json.loads(Path(old['compiled_inputs']['path']).read_text())
+    require(len(compiled) == old['compiled_inputs']['files'] and all(digest(p) == h for p,h in compiled.items()),
+            'original actual native inputs differ')
+    recovered = 0
+    for p,h in compiled.items():
+        path = Path(p)
+        if path.is_relative_to(P):
+            require(hashlib.sha256(git('show',old['source_commit']+':'+str(path.relative_to(P)))).hexdigest() == h,
+                    'original native source unrecoverable')
+            recovered += 1
+    loader = str((OFFICIAL/'lib/libur_loader.so.0').resolve())
+    require(loader != old['preload']['loader'] and digest(loader) == digest(old['preload']['loader']),
+            'loader alias must have identical original bytes')
+    rt,full = runtime()
+    require(digest(r.RESULT) == old['runtime_sha256'] and full['binary'] == old['selected_binary'] and
+            guards.driver_guard() == old['driver'] and rt['boot'] == old['boot'], 'runtime/fallback/boot differs')
+    original_inputs = json.loads(Path(old['inputs']['path']).read_text())
+    require(all(digest(p) == h for p,h in original_inputs['external'].items()), 'original external inputs differ')
+    ROOT.mkdir(mode=0o700)
+    for name in ('tmp','cache'): (ROOT/name).mkdir(mode=0o700)
+    revision = git('rev-parse','HEAD').decode().strip()
+    project = pins(revision)
+    write(ROOT/'inputs.json',dict(project=project,external=original_inputs['external']))
+    row = copy.deepcopy(old)
+    for name in ('measurements','error','fresh_faults','driver_after','fault_evidence_error','decision','host_failure'):
+        row.pop(name,None)
+    row.update(stage='built',source_commit=revision,native_source_commit=old['source_commit'],
+        build_reused=True,build_root=str(native_root),
+        inputs=dict(path=str(ROOT/'inputs.json'),sha256=digest(ROOT/'inputs.json'),
+                    project_files=len(project),external_files=len(original_inputs['external'])),
+        passed=False,complete=False,active=False,ownership_closed=True,
+        reuse_proof=dict(original_build='a28e5a838',actual_compiler_inputs=len(compiled),
+            native_project_inputs_recovered=recovered,uncovered=0,original_ELF_verified=True,
+            only_uncompiled_controller_changed=True),
+        scope=old['scope']+' Controller-only alias correction;new prospective host/device scope,original V4 remains failed.')
+    row['preload']['loader'] = loader
+    row['native_environment'].update(STRATA_UR_PROBE_EXPECTED_LOADER=loader,TMPDIR=str(ROOT/'tmp'),
+                                     XDG_CACHE_HOME=str(ROOT/'cache'))
+    data[KEY] = row; write(RESULT,data)
+    print('Original677-input native build reused after source/recipe/ELF proof;commit new controller-only plan.',flush=True)
 
 
 def prepare(data):
@@ -434,14 +502,14 @@ def main():
     action = sys.argv[1]
     if action.startswith('pipeline-'):
         action = action.removeprefix('pipeline-')
-        PIPELINE = True; KEY = 'prefill_copy_pipeline_v4'; ROOT = B / 'prefill-copy-pipeline-v4'
+        PIPELINE = True; KEY = 'prefill_copy_pipeline_v5'; ROOT = B / 'prefill-copy-pipeline-v5'
         BINARY = 'expert_pipeline_probe'
         NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_pipeline_probe.cpp']
         RUN_LIMITS = dict(RUN_LIMITS,wall=180,cpu=240,rss_cap=5 << 30)
-    require(action in ('prepare','build','run'), 'choose prepare,build,run')
+    require(action in ('prepare','build','run','reuse'), 'choose prepare,build,run or pipeline-reuse')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); guards.no_model_owners([])
-        data = public(); {'prepare': prepare, 'build': build, 'run': run}[action](data)
+        data = public(); {'prepare': prepare, 'build': build, 'run': run,'reuse':reuse_pipeline}[action](data)
 
 
 if __name__ == '__main__':
