@@ -12517,9 +12517,9 @@
       "classification": "decision support",
       "schedulable_now": false,
       "question": "Once the exact deployed Qwen3.8-Flash-Next checkpoint/config and intended vLLM or SGLang reference route are pinned, trace that model's long-prefill expert path at immutable official revisions through GEMM output storage, gate-weight conversion, top-k reduction order, shared-expert/scalar-gate combination, final cast, and any fused finalize path. Compare those operations to Strata's run_moe_accum_window, try_down_scatter16_split, moe_accumulate_split and moe_finish. State whether current BF16 Down output plus expert-order FP32 sycl::fma matches a selected framework contract, and give a source-grounded numerical/task gate for the current default-off split route. Distinguish an exact selected backend from generic API capability, NVIDIA-only examples, decode-only paths, and unsupported quantization. No patch, test, performance claim or adoption recommendation from source inspection alone.",
-      "next_action": "Await authoritative Orca completion without steering;native Codex Luna/max reviews the one report before Main uses its relevant decision-support sections. Main continues frozen model comparison.",
+      "next_action": "After the frozen speed comparison closes,use the corrected pinned source boundaries for prospective numerical/task qualification. The immediate selected-route pin omission is now resolved by Main;do not dispatch another worker merely to repeat this branch distinction or dependency hunt. No adoption or runtime/performance claim.",
       "previous_missing_prerequisite": "The maintained decision slice does not pin the actual checkpoint/config bytes or a matching selected vLLM/SGLang long-prefill backend/dtype route. Main must provide that identity in the dispatch manifest first; do not dispatch a worker merely to report this absence.",
-      "status": "orca_running",
+      "status": "completed_released_reviewed_with_material_corrections",
       "source_revision": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
       "policy_revision": "6b523dfe1",
       "report_path": ".cache/research/2026-10-30/qwen4exp_long_prefill_reduction_contract_20261030.md",
@@ -12572,11 +12572,21 @@
           "python/sglang/srt/models/qwen2_moe.py": "f45979e7c0845e17c205ab5eb13edcc5b4f63fa74d8db2daba7220bf8499107e",
           "python/sglang/srt/layers/moe/fused_moe_triton/layer.py": "9f892344e2f24360a755e6027e3a0022fc954f3a6961ed9cc80f9fe32ed77931",
           "python/sglang/srt/layers/quantization/unquant.py": "4f1d09097eb17520cb3be6756cb452c1047914c092dbd269bc668dcd6d0f5fe4",
-          "python/sglang/srt/layers/moe/moe_runner/triton.py": "e45a86545e9140dbe31d85683396de57722f477ee5e0b2b0b42cbee42e8d2e1e"
+          "python/sglang/srt/layers/moe/moe_runner/triton.py": "e45a86545e9140dbe31d85683396de57722f477ee5e0b2b0b42cbee42e8d2e1e",
+          "python/sglang/srt/layers/moe/moe_runner/triton_utils/fused_moe.py": "0400a31563e55abdd872c0906009f0a754cda3072f51149ed630be120ea49467",
+          "python/sglang/kernels/ops/moe/fused_moe_triton_kernels.py": "6d1196007462bc0ffc432ee122798331cb4a0b052660a043f3f906c2a2a7a82a",
+          "python/sglang/kernels/aot/csrc/moe/moe_sum_reduce.cu": "bb54b9ac331e6ffc08eb3605a2b0a1b3b458d0e51b327302d064d5941ee00c76",
+          "python/sglang/kernels/ops/elementwise/elementwise.py": "9a55644da1dc89af7e5440b7e062e0ea7c5db49bed217f127cfb0e189b38d1c5",
+          "python/sglang/kernels/aot/csrc/elementwise/activation.cu": "dffb5a9cbbb4d26a75e7e8aea0c0acfa2e68c64158466854fd6d54262103a7d6",
+          "python/sglang/kernels/aot/CMakeLists.txt": "f0f4efeef7c42f4ffacca791fce196bb55f9f108178548d2068035cd7aceccb3",
+          "python/sglang/srt/layers/moe/topk.py": "2cb9e65373e712301639b27cd76a64edad1a805757d29d8272311d1b03569145",
+          "python/sglang/srt/layers/moe/moe_runner/triton_utils/fused_moe_triton_config.py": "022c8aa47972dd975ebf7be9c6d04ac4c60604cf705cf80c9b38e45973193d09",
+          "python/sglang/srt/arg_groups/fields/exec_.py": "3cfcfa6bf469a3f284c79582741d147a7bed54d18e72fd2cb7d32300643833e1"
         },
         "device": "CUDA SM80 BF16 reference,source-only;not a launch on this workstation",
         "settings": "text-only long prefill,M117488,H2560,FF640,E512,top10;dtypeBF16,quantizationNone,TP1/EP1/DP1/CP1,moe-runner-backend=triton,moe-a2a-backend=none,no CUDA graph/capture,no MTP;native shared-expert fusion disabled by this CUDA class/default selection.",
-        "route_evidence": "Qwen4ExpLayerExtensionMixin._run_ffn_stage skips its T=1 decode fastpath at M117488;Qwen3_5*DecoderLayer creates Qwen2MoeSparseMoeBlock(reduce_results=False);explicit triton/unquantized selects UnquantizedFusedMoEMethod->MoeRunner(TRITON),not triton_kernels,FlashInfer,Cutlass or AITER. Qwen4ExpTextConfig inherits norm_topk_prob=True from pinned Qwen3NextConfig. Trace the actual layer-boundary finalization eligibility and shared-gate path rather than assume generic FusedMoE behavior."
+        "route_evidence": "Qwen4ExpLayerExtensionMixin._run_ffn_stage skips its T=1 decode fastpath at M117488;Qwen3_5*DecoderLayer creates Qwen2MoeSparseMoeBlock(reduce_results=False);explicit triton/unquantized selects UnquantizedFusedMoEMethod->MoeRunner(TRITON),not triton_kernels,FlashInfer,Cutlass or AITER. Qwen4ExpTextConfig inherits norm_topk_prob=True from pinned Qwen3NextConfig. Trace the actual layer-boundary finalization eligibility and shared-gate path rather than assume generic FusedMoE behavior.",
+        "enable_fused_moe_sum_all_reduce": false
       },
       "prerequisites_met": [
         "Deployed model15asset identities and full hashes are pinned in model-v2/basis.json after successful original/row128 diagnostics.",
@@ -12591,7 +12601,20 @@
       "worker_model": "gpt-6-luna",
       "worker_effort": "high",
       "model_evidence": "Original launch receipt requested/effective gpt-6-luna/high;same positively identified terminal reused after skipped startup update prompt. No model/effort override on retry.",
-      "startup_recovery": "Initialctx_cb211a98d0f4 failed agent_readiness/agent-update-prompt and never ran Task;actual terminal confirmed prompt. Esc without Enter skipped update;retry of the same Task/terminal accepted input and observed turn_start. No research steering or duplicate Task."
+      "startup_recovery": "Initialctx_cb211a98d0f4 failed agent_readiness/agent-update-prompt and never ran Task;actual terminal confirmed prompt. Esc without Enter skipped update;retry of the same Task/terminal accepted input and observed turn_start. No research steering or duplicate Task.",
+      "report_bytes": 17592,
+      "report_sha256": "96641c2574deb84666387b62c55471f1bf15ac0c8a81a4e93b260ab2f4d65d97",
+      "terminal_released": true,
+      "delivery_acknowledged": true,
+      "delivery_id": "delivery_4003bb5be687",
+      "review_path": ".cache/research/2026-10-30/qwen4exp_long_prefill_reduction_contract_20261030.review.json",
+      "review_sha256": "24fd259a494598df7080f5668463967feda720cf0091237529d4f1b9cbaa8fc3",
+      "review_model": "gpt-6-luna",
+      "review_effort": "max",
+      "original_report_selected_framework_contract_accepted": false,
+      "essential_correction": "Original report conflates TRITON with TRITON_KERNELS and incorrectly delegates this selected route to unpinned triton_kernels.matmul. Preserve that source-claim refusal. Native Luna/max followed the actual TRITON path;Main independently recovered/hashed all9additional selected source files at877be2974. This is source-only evidence,not observed execution.",
+      "corrected_source_contract": "Explicit BF16/unquantized CUDA SM80 TRITON,TP/EP/DP/CP1,long-prefill route,enable_fused_moe_sum_all_reduce=false:Down uses FP32 GEMM accumulator and route weight before BF16 contribution storage;large-M top-k reduction accumulates stored contributions in FP32 then stores BF16;separate shared-gate/add uses FP32 arithmetic and stores BF16. Strata rounds unweighted Down to BF16 before FP32 expert-order FMA and combines shared output at its final BF16 store. Rounding locations/order differ;no bitwise or task-quality parity is inferred.",
+      "retention": "Original body only until the next serialized safe cleanup boundary:checkpoint and isolated-source facts already survive in this index;do not retain its incorrect selected-route claim as a reference. Keep the corrected review through the prospective post-comparison numerical/task plan,then review again. Settled spec/start/retry paperwork can retire at that safe boundary."
     }
   },
   "partial_sum_compression_methods_collection_20261027": {
@@ -17683,5 +17706,25 @@
       "manifest_sha256": "17f89d925f40008631563f599cf7facbe9c44037182c8b7ba5be3ba73431ecf9",
       "scope_review_sha256": "67b6376cdac94c8fbd80c05422b936208d392131d1efcc48d1dee199138037f4"
     }
+  },
+  "closed_fused_results_retention_review_20261030": {
+    "classification": "report curation",
+    "source_report_commit": "2186f8903",
+    "review_path": ".cache/research/2026-10-30/closed_fused_results_20261030.review.json",
+    "review_sha256": "718c3bcfdb1a790ca33fd35b0c10ad729a456ebd8477bbd6120947207f6c6b86",
+    "review_model": "gpt-6-luna",
+    "review_effort": "max",
+    "reviewed_scopes": [
+      "qsa_k_staging_v1_closed",
+      "qsa_packed_k_staging_preflight",
+      "qsa_query_union_cost",
+      "qsa_pair_proposal",
+      "qsa_head_geometry",
+      "qsa_identity_rescale"
+    ],
+    "summary": "After the frozen Down cohort closes,archive closed K-staging leaf;retain only compact packed-staging/union summaries through their named current decisions. Retire pair/head/identity raw arrays while preserving compact component-pass/model-unselected and head/identity performance failures plus API-build refusal. Check exact review readers and retarget document links before deletion.",
+    "consumer": "Main next serialized report-retention cleanup after this9processcomparison;no source/data edits during the active cohort.",
+    "next_review": "At nine-process comparison closure;apply exact scoped decisions or retain concrete missing reader/link proof,then retire this transaction review.",
+    "inference_adopted": false
   }
 }
