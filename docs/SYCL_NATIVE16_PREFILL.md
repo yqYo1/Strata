@@ -1588,9 +1588,42 @@ Resets and host oracles are outside timing;repeated resident inputs are not the
 whole-model cache/shape mix. Physical memory traffic,occupancy and integer/tensor
 saturation remain unmeasured. Keep individual samples in
 [`moe_down_row_address`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
-The epilogue has no production hook and remains unadopted. Its named next
-consumer is a matched Down geometry comparison,followed by a separately scoped
-long-prefill model candidate;this result adds no measured PP/TG gain.
+The epilogue has no production hook and remains unadopted. The following
+matched geometry comparison precedes a separately scoped long-prefill model
+candidate;these component results add no measured PP/TG gain.
+
+That geometry comparison now closes successfully at native source`bf330a8f9`,
+controller`6e43896a6`and frozen plan`df7900ed6`. The independent M64/N128
+policy has64threads and768bytes of requested row metadata,versus128threads
+and1536bytes for row128. Both request SG16/256GRF and retain128logical
+accumulator cells per work-item;this does not establish emitted register use
+or occupancy. Existing row128 bodies and shared GU/decode selectors are unchanged.
+Four rotating arms compare both scattered policies and their dense controls.
+All six owned processes close0 with no fresh fault:14host ownership cases,
+53full post-BF16 FP32 host oracles and30full dense-BF16 checks pass,including
+invalid-map masks1/2/3 and63/64/65row and split-tail boundaries.
+Three independent timing processes contain288measured and72warmup batches,
+128events each;all46080events pass order/interval checks and the smallest batch
+is15.064687ms. The paired process-median row64/row128 ratios are:
+
+| M | Mapping | GPU-service ratio | Wall ratio |
+| ---: | --- | ---: | ---: |
+| 2334 | Regular | 1.017055 | 1.017070 |
+| 2334 | Distributed | 0.974093 | 0.973497 |
+| 5963 | Regular | 1.002609 | 1.002235 |
+| 5963 | Distributed | 0.959994 | 0.960515 |
+| 8192 | Regular | 1.009199 | 1.009216 |
+| 8192 | Distributed | 0.963742 | 0.962626 |
+
+Overall GPU service decreases1.248percent and wall time1.274percent,passing
+the prospective gate while preserving the three regular-map regressions.
+Dense64/128 service ratios are1.39..1.51;the scattered result is not a general
+GEMM improvement. Different output traffic still prevents subtracting these
+times into an additive epilogue cost or declaring a physical resource saturated.
+One component executable contains both policies for the next prefill-only
+model hook;the older parent fixture is superseded. Model PP/TG,decode/handoff,
+task quality and physical262144qualification remain pending. See
+[`moe_down_row64`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.

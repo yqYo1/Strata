@@ -642,6 +642,26 @@
         "GPU_or_downloads": false
       }
     },
-    "coverage": "One bounded required host-reporting slice only;41-path reviewed scope is not the full132-path interval. Absent signed-feed/control/CLI consumers need an explicit port/interface map,not an irrelevant-feature label. Earlier required functions and unmodified tuned upstream performance remain pending. No inference changes imported."
+    "coverage": "Bounded host-reporting and parser-scan slices only;41-path reviewed scope is not the full132-path interval. The parser tracking/recovery/alias consumers and signed-feed/control/CLI consumers require further functional ports/interface mapping. Earlier required functions and unmodified hardware-tuned upstream performance remain pending. No upstream inference changes imported.",
+    "stream_parser_scan": {
+      "target": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+      "upstream_frontend_sha256": "2c7471e88eea202e42fa407fee759204d1226c260dd45d0077ba2cb760ebafa6",
+      "source_commit": "aa27c5571f26392cc354851d717e1015381ab47c",
+      "fork_before_sha256": "1eaedd0f69cb59366060bff7fb782b64bcbc1d3721705be4013249730c1644e9",
+      "fork_after_sha256": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
+      "ported": [
+        "OutputParser._hold suffix search",
+        "wrapped-call closing-tag negative precheck and append cursor"
+      ],
+      "preserved": "call_end structural disambiguation,streamed argument JSON and existing constructor/callers. Fork has no recover mode;its absent interface was not added. Broader tracking/recovery/alias/API functions remain required_pending.",
+      "validation": {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 -m unittest tools.test_frontend_stream_scan -v",
+        "tests": 5,
+        "passed": true,
+        "cases": "all two-chunk splits and character deltas,Unicode,two calls,partial openers,embedded closing tags,complete streamed JSON,long-body full-walk count"
+      },
+      "inference_changed": false,
+      "whole_feature_port_complete": false
+    }
   }
 }
