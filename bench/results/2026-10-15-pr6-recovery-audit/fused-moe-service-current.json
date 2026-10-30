@@ -22316,7 +22316,7 @@
     }
   },
   "moe_down_model": {
-    "status": "selected-fallback-v2-frontend-prepared",
+    "status": "selected-fallback-v2-frontend-qualified",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -22327,7 +22327,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Execute the committed v2 benchmark/server CPU-only probes,then freeze the six-process selected/original-split model comparison. Native builds and same-build fixtures are unchanged.",
+    "next_gate": "Freeze and commit all six selected/original-split model processes,then run the first process. Native builds/fixtures remain unchanged;decode1256slots and physical262144 gates remain separate.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -26970,11 +26970,17 @@
       "previous_GPU_executed": false,
       "reason": "Before any comparison GPU launch,source inspection found selected6e40 emits [native16-down] fusion=large min_rows=2334. Correct the new route parser,which had incorrectly refused all such markers. The native engine and fixtures are unchanged;use a fresh v2 frontend rather than refreshing the old frozen source hashes.",
       "previous_prepared_record_commit": "47fd5b3e8",
-      "previous_private_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v1",
-      "retention": "Retire previous closed CPU-only raw output after the corrected v2 frontend is qualified;no old frontend reuse."
+      "retention": "Closed superseded CPU-only raw output retired;previous source/outcome remains compact and reachable in Git.",
+      "retirement": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-v1-frontend-retired-20261030.jsonl",
+        "sha256": "99ceb6461bd4646203d34568ee9209d33cb0fa008bd04c82708d313f2f5a0bcf",
+        "files": 5,
+        "bytes": 65607,
+        "old_root_absent": true
+      }
     },
     "selected_fallback_frontend_v2": {
-      "stage": "prepared",
+      "stage": "closed",
       "source_commit": "33eae8a4e744fe1fc4b46505495070c0fb3bd74c",
       "selected": {
         "workspace_venv": false,
@@ -27122,7 +27128,7 @@
         "file_cap": 2097152,
         "total_cap": 8388608
       },
-      "passed": false,
+      "passed": true,
       "active": false,
       "ownership_closed": true,
       "GPU_executed": false,
