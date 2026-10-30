@@ -28859,9 +28859,9 @@
       "decision": "New model recipe consumes committed prototype source/performance evidence and fresh model-build qualification,not historical component/split executables. Same-executable original/row128/row64 controls replace the old split engine. Selected6e40 and12fixtures remain intact;current Down64 component stays only through fresh same-build route checks."
     },
     "device_plan": {
-      "stage": "closed",
-      "mode": "route-off",
-      "source_commit": "f3a8ab4b86016f9a8766090d0749451a1121510c",
+      "stage": "prepared",
+      "mode": "route-original",
+      "source_commit": "dc81e0c462f72f39d7fcbfdbe0860a299d73b2e8",
       "inputs": {
         "tools/sycl/check_moe_split.py": "ad70c9edf2a86ef2d25001cd705a347b738b6fd1e2e33c5fed5b8797f6dc1098",
         "tools/sycl/check_down_row_address.py": "f6a60d9428f929e0298aa3cb69bca68579e9bdf8e0a144ced8545878698d97d1",
@@ -28996,7 +28996,7 @@
       "command": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/sycl_moe_down_scatter_bench",
         "--split-route-smoke",
-        "0"
+        "1"
       ],
       "environment": {
         "PATH": "/usr/bin:/bin",
@@ -29015,12 +29015,12 @@
         "SYCL_CACHE_PERSISTENT": "0",
         "ZES_ENABLE_SYSMAN": "0",
         "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
-        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-off/api.trace",
-        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-off/validation.log",
+        "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-original/api.trace",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-original/validation.log",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-off/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-off/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-original/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/device/route-original/cache",
         "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
         "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
@@ -29031,7 +29031,7 @@
         "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
         "STRATA_SYCL_PREFILL_GU_SWIGLU": "0",
         "STRATA_TEST_MAIN_GATES": "1",
-        "STRATA_SYCL_PREFILL_DOWN_SCATTER": "0",
+        "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
         "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original"
       },
       "budgets": {
@@ -29048,7 +29048,7 @@
       "selected_split_kernel": "original",
       "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
       "expected_split_kernel_launches": {
-        "original": 0,
+        "original": 6,
         "row128": 0,
         "row64": 0
       }
