@@ -22316,7 +22316,7 @@
     }
   },
   "moe_down_model": {
-    "status": "selected-fallback-comparison-running",
+    "status": "selected-fallback-comparison-closed",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -22327,7 +22327,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Run the next frozen process;then independent decode/task/physical-context gates.",
+    "next_gate": "Qualify split-to-long-decode continuation against selected6e40 with a separately versioned96K official-bench case;preserve decode implementation and1256slots. Performance screen passes;all-three1000 target screen fails. No adoption.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -27135,7 +27135,7 @@
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
     },
     "selected_fallback_comparison": {
-      "stage": "running",
+      "stage": "closed",
       "source_commit": "33eae8a4e744fe1fc4b46505495070c0fb3bd74c",
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -28530,6 +28530,236 @@
             "kernel": "7.0.0-38-generic",
             "devcoredump": false
           }
+        },
+        {
+          "index": 5,
+          "arm": "split",
+          "complete": true,
+          "passed": true,
+          "host_probe_accepted": true,
+          "model_executed": true,
+          "clean_speed": true,
+          "adoption_qualified": false,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "native_identity": {
+            "pid": 2681110,
+            "start_ticks": 173574078,
+            "sid": 2681059
+          },
+          "native_exit_code": 0,
+          "validation": {
+            "pid": 2681110,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "routes": [
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18888,
+                "jobs": 23840,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18888",
+                "requested_H2D_bytes": "38561740800",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7432,
+              "down_fused_rows": 52218579,
+              "down_separate_jobs": 16408
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18899,
+                "jobs": 23832,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18899",
+                "requested_H2D_bytes": "38587673600",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7429,
+              "down_fused_rows": 52204016,
+              "down_separate_jobs": 16403
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18843,
+                "jobs": 23792,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18843",
+                "requested_H2D_bytes": "38468480000",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7423,
+              "down_fused_rows": 52168035,
+              "down_separate_jobs": 16369
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 128,
+              "staged": 1,
+              "maximum_window_rows": 117488,
+              "work": {
+                "windows": 48,
+                "dequants": 18868,
+                "jobs": 23817,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18868",
+                "requested_H2D_bytes": "38524006400",
+                "permanent_hits": "0",
+                "permanent_slots": "127",
+                "total_slots": "128",
+                "final_drain": "checked"
+              },
+              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
+              "down_fused_jobs": 7442,
+              "down_fused_rows": 52208491,
+              "down_separate_jobs": 16375
+            }
+          ],
+          "samples": [
+            {
+              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 126359.5,
+              "prompt_tps": 929.8,
+              "prompt_tps_source": "engine",
+              "ttft_s": 126.534,
+              "total_s": 128.427,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117673.4,
+              "prompt_tps": 998.4,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.837,
+              "total_s": 119.555,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117935.5,
+              "prompt_tps": 996.2,
+              "prompt_tps_source": "engine",
+              "ttft_s": 118.096,
+              "total_s": 119.766,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 117765.1,
+              "prompt_tps": 997.7,
+              "prompt_tps_source": "engine",
+              "ttft_s": 117.93,
+              "total_s": 120.958,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 117765.1,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
         }
       ],
       "budgets": {
@@ -28562,10 +28792,111 @@
         "limits": "24 outputs are not sustained decode,agent session,task quality,long thinking or physical262144 fill/tail/RESTORE. Repeated decode preservation remains required. Requested bytes/service percentages do not prove physical traffic or saturation.",
         "retention": "Keep individual compact samples,per-arm routes,identities/gates and decision. Retire successful raw logs and consumed research after verification;retain current two native generations only for this comparison and its concrete next qualification."
       },
-      "complete": false,
-      "passed": false,
+      "complete": true,
+      "passed": true,
       "active": false,
-      "ownership_closed": true
+      "ownership_closed": true,
+      "decision": {
+        "paired_time_ratios": [
+          0.9718706699753504,
+          0.9740733725136375,
+          0.9722456366009533
+        ],
+        "geometric_mean_time_ratio": 0.9727294172970794,
+        "performance_screen_passed": true,
+        "all_three_split_warm_medians_ge1000": false,
+        "inference_adopted": false,
+        "sustained_decode_qualified": false,
+        "physical262144_qualified": false
+      },
+      "work_counter_reconciliation": {
+        "source": "Clean native Down fusion records,using the line syntax already checked by tools/sycl/compare_moe_down.py at33eae8a4e744fe1fc4b46505495070c0fb3bd74c.",
+        "selected_columns": [
+          "fused_jobs",
+          "fused_rows",
+          "separate_jobs"
+        ],
+        "selected": [
+          {
+            "process": 0,
+            "requests": [
+              [
+                7493,
+                49269316,
+                29801
+              ],
+              [
+                7488,
+                49268715,
+                29871
+              ],
+              [
+                7466,
+                49196067,
+                29798
+              ],
+              [
+                7471,
+                49196352,
+                29840
+              ]
+            ]
+          },
+          {
+            "process": 3,
+            "requests": [
+              [
+                7493,
+                49269316,
+                29801
+              ],
+              [
+                7488,
+                49268715,
+                29871
+              ],
+              [
+                7466,
+                49196067,
+                29798
+              ],
+              [
+                7471,
+                49196352,
+                29840
+              ]
+            ]
+          },
+          {
+            "process": 4,
+            "requests": [
+              [
+                7493,
+                49269316,
+                29801
+              ],
+              [
+                7488,
+                49268715,
+                29871
+              ],
+              [
+                7466,
+                49196067,
+                29798
+              ],
+              [
+                7471,
+                49196352,
+                29840
+              ]
+            ]
+          }
+        ],
+        "checks": "Exactly4records perprocess;positive fused jobs;fused_rows>=2334*fused_jobs;fused+separate equals recorded MoE jobs in all24requests. Split values match the original result.",
+        "consumer": "MoE work-mix characterization after split continuation checks;permits retiring the full successful native logs.",
+        "limits": "Postprocessed work counters only;original samples,status,decision and thresholds unchanged. Rows/jobs are not arithmetic volume,physical traffic or saturation."
+      }
     }
   },
   "metric_topology": {

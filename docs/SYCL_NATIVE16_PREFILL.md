@@ -1674,7 +1674,7 @@ prefill policy comparison: selected384 versus split128 effective expert slots,
 in their respective actual routes. Decode remains1256 slots. A passing screen
 still needs repeated decode/handoff,agent,long-thinking,task and physical262144
 qualification before adoption. Nine host rejection controls and two fresh
-frontend probes pass without a native rebuild. Five processes now close:
+frontend probes pass without a native rebuild. All six processes now close:
 
 | Process/policy | First use,tok/s | Subsequent three,tok/s | Median prefill,s | Median TTFT,s |
 | --- | ---: | --- | ---: | ---: |
@@ -1683,19 +1683,29 @@ frontend probes pass without a native rebuild. Five processes now close:
 | 2/original split | 931.4 | 1000.5 / 1002.1 / 1005.9 | 117.2459 | 117.396 |
 | 3/selected6e40 | 906.5 | 976.7 / 976.1 / 972.8 | 120.3666 | 120.528 |
 | 4/selected6e40 | 901.2 | 969.5 / 970.0 / 972.4 | 121.1269 | 121.295 |
+| 5/original split | 929.8 | 998.4 / 996.2 / 997.7 | 117.7651 | 117.930 |
 
-The first pair's descriptive time ratio is0.97187067,a2.813percent reduction. All
-twenty exact117489-read requests have zero reuse and matched body hashes;
+All24 exact117489-read requests have zero reuse and matched body hashes;
 both hold all117488 residual rows on GPU. Actual selected/split placement is
 384/128slots,81920/117488maximum rows and96/48windows,with checked split guard
 and drain. Source/runtime/validation and owner gates pass with no fresh GPU
 fault. Recorded jobs decrease36.1..36.2percent and dequants about43.1percent,
 while requested expert H2D bytes differ by less than0.05percent. These are
 logical work/requested-byte counters,not physical traffic or resource-saturation
-measurements. The reverse pair's time ratio is0.97407337,a2.593percent reduction.
-The final split process remains;no comparison decision or adoption follows from these
-partial results. The reverse pair contains an overnight gap before process3;
-preserve that limitation rather than treating the samples as contiguous.
+measurements. The three paired time ratios are0.97187067,0.97407337 and0.97224564;their
+geometric mean is0.97272942,a2.727percent time reduction. The prospective
+performance screen passes. The separate1000tok/s screen fails because the
+third split warmed-process median is997.7tok/s;the other two are1000.6 and
+1002.1. Neither the target nor adoption is established. Final full hashes of
+all15model assets pass. All24Down dispatch records conserve fused+separate
+jobs;selected-arm fusion counters are retained for the next work-mix check.
+The reverse pair contains an overnight gap before process3;preserve that
+limitation rather than treating the samples as contiguous. Next qualify
+same-request split-prefill to long-decode continuation. Default v4 generation
+uses approximately33Kinput and does not exercise this route;a separately
+versioned96Kcase must preserve the existing v4 behavior and actual per-arm
+placement. Native/runtime evidence may be reused only after identity checks;
+this benchmark change itself adds no native,task,agent or physical262144 qualification.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
