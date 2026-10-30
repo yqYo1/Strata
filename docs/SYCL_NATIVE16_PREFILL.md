@@ -1637,11 +1637,26 @@ fault. These observed diagnostics do not establish a clean speed improvement.
 The superseded standalone Down64 component and closed diagnostic/device output
 are retired after original source/recipe recovery; fresh row64 model admission
 passes without them. The selected fallback and current same-build fixtures remain.
-Clean speed now requires nine independent processes in three Latin-order blocks,
-four requests each, first long use separate from subsequent-request medians.
-No additional model speedup or decode preservation is established. Matched
-selected-fallback, decode/handoff, task quality and physical 262144 qualification
-remain pending. See
+The clean comparison closes all nine independent processes in three Latin-order
+blocks, four fresh 117489-token requests each. First long use is separate from
+the median of the next three requests. All 36 requests and final full model-asset
+hashes pass; owners close normally with quiet validation and no fresh GPU fault.
+
+| Policy | Independent warmed-process median PP (tok/s) | Geometric-mean time / original |
+| --- | --- | ---: |
+| Same-build original split | 1002.2 / 1001.7 / 1001.9 | 1 |
+| Row128 | 1006.8 / 1003.2 / 1006.0 | 0.99661606 |
+| Row64 | 1007.3 / 1009.1 / 1003.5 | 0.99535906 |
+
+Neither candidate passes the original 0.995 time-ratio gate, so neither advances.
+All original-split warmed medians exceed 1000 tok/s, but this is not a matched
+comparison against selected 6e40 or an adoption. Individual first-use samples,
+all warmed samples and client TTFT remain in the committed result. Successful
+raw output from all nine processes is retired after verification; current native
+source/build, fixtures, basis and frontend records remain for the imminent
+original-split versus selected-fallback comparison. Decode/handoff, agent session,
+long thinking generation, task quality and physical 262144 qualification remain
+pending. See
 [`moe_down_row64`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
