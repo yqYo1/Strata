@@ -27,8 +27,11 @@ import engine_once
 d, down = comparison.d, comparison.down
 P, B, RESULT = comparison.P, comparison.B, comparison.RESULT
 require, digest, write = comparison.require, comparison.digest, comparison.write
-ROOT = B/'split-resource-profile-v1'
-KEY, FRONTEND = 'split_resource_profile_v1', 'split_resource_frontend_v1'
+ROOT = B/'split-resource-profile-v2'
+KEY, FRONTEND = 'split_resource_profile_v2', 'split_resource_frontend_v2'
+HOST_KEY = 'split_resource_host_checks_v2'
+# Exact launcher ELF/version, not a floating installed-tool preference.
+UNITRACE_VERSION = '2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)'
 
 
 def session_path(session):
@@ -132,6 +135,8 @@ def expected_target_environment(row, env, profiling):
     target = profile_target_environment(row, env, profiling)
     target.update(LD_PRELOAD=profiling['collector']['path']+':'+row['native_validation_probe']['library']['path'],
         ZE_ENABLE_TRACING_LAYER='1', INTEL_LIBITTNOTIFY64='libunitrace_tool.so',
+        UNITRACE_VERSION=UNITRACE_VERSION,
+        UNITRACE_LD_PRELOAD_OLD=row['native_validation_probe']['library']['path'],
         UNITRACE_StartPaused='1', UNITRACE_HostTiming='1', UNITRACE_DeviceTiming='1',
         UNITRACE_ChromeKernelLogging='1', UNITRACE_ChromeCallLogging='1',
         UNITRACE_ChromeEventBufferSize='128', UNITRACE_Session=profiling['session'])
@@ -201,7 +206,7 @@ def prepare():
     require(continuation['passed'] and continuation['complete'] and continuation['ownership_closed'] and
             not continuation['active'], 'candidate continuation must close first')
     host, _ = down.frontend(root=ROOT, key=FRONTEND)
-    checks = scope['split_resource_host_checks']
+    checks = scope[HOST_KEY]
     require(checks['passed'] and all(digest(P/n) == v for n, v in checks['sources'].items()),
             'current profile host controls required')
     require(KEY not in scope and not (ROOT/'record.json').exists(), 'fresh profile only')

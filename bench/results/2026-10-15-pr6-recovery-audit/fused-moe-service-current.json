@@ -30404,6 +30404,22 @@
         "source": "Intel PTI4b6d742 unitrace.cc version setup and patched preload setup;unitrace_launch.py PATCHES replaces the preload input with STRATA_UNITRACE_TARGET_PRELOAD.",
         "next_action": "Preserve failed v1;commit explicit version/preload expectations and a fresh v2 scope. Keep all safety and environment equality checks."
       }
+    },
+    "split_resource_host_checks_v2": {
+      "stage": "prepared",
+      "passed": false,
+      "sources": {
+        "tools/sycl/profile_split.py": "249ff6fb0cf3b5a903e299350dba90192ca6382f3d09619d0a3338ffeaf8cbf5",
+        "tools/sycl/test_profile_split.py": "a41e0a100284be48c455b2ff28035b7c95aa4ccfd1b4d39a7063dd55fb6393a0"
+      },
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/sycl/test_profile_split.py"
+      ],
+      "expected_tests": 10,
+      "scope": "Prospective v2 host-only rejection controls,including exact pinned version and patched target-preload bookkeeping. Failed v1 prefix remains failed;all safety checks retained.",
+      "next_gate": "Commit/test exact v2 source,then fresh frontend and prefix. No native rebuild or GPU execution follows from these host-only controls."
     }
   },
   "metric_topology": {

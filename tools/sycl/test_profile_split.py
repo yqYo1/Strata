@@ -113,6 +113,12 @@ class StartupGates(unittest.TestCase):
         self.assertEqual(actual['STRATA_UNITRACE_TARGET_PRELOAD'], '/probe.so')
         self.assertEqual(actual['UNITRACE_Session'], 'Owned123')
         self.assertEqual(actual['UNITRACE_ChromeEventBufferSize'], '128')
+        self.assertEqual(actual['UNITRACE_VERSION'],
+                         '2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)')
+        self.assertEqual(actual['UNITRACE_LD_PRELOAD_OLD'], '/probe.so')
+        for key, value in [('UNITRACE_VERSION', 'other'), ('UNITRACE_LD_PRELOAD_OLD', '')]:
+            with self.subTest(variable=key), self.assertRaises(RuntimeError):
+                profile.same_environment(dict(actual, **{key:value}), actual)
         self.assertEqual(env, dict(ZES_ENABLE_SYSMAN='0', EnableDirectSubmission='0'))
 
     def test_session_name_cannot_address_another_path(self):
