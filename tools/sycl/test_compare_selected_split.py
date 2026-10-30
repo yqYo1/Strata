@@ -16,6 +16,7 @@ class ComparisonGates(unittest.TestCase):
             subsequent_median_ms=120000 if arm == 'selected' else 117000)
             for i, arm in enumerate(comparison.ORDER)]
         self.log = '\n'.join([
+            '[native16-down] fusion=large min_rows=2334',
             'strata prefill: layer-major candidate, tokens=117488 chunk=8192 residual_dtype=bf16 '
                 'residual_gpu_rows=117488 residual_host=0',
             'strata MoE expert bank: effective_slots=384 staged=1',
@@ -77,6 +78,12 @@ class ComparisonGates(unittest.TestCase):
 
     def test_selected_split_marker_or_duplicate_route_is_refused(self):
         for log in (self.log+'\nstrata MoE split admission: active=1', self.log+'\n'+self.log):
+            with self.assertRaises(RuntimeError):
+                comparison.selected_routes(log, 1)
+
+    def test_selected_requires_its_source_accurate_startup_marker(self):
+        marker = '[native16-down] fusion=large min_rows=2334'
+        for log in (self.log.replace(marker, ''), self.log.replace(marker, marker+' split_kernel=original')):
             with self.assertRaises(RuntimeError):
                 comparison.selected_routes(log, 1)
 

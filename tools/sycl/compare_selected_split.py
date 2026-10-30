@@ -23,8 +23,8 @@ import engine_once
 
 d = down.diagnostic
 P, B, RESULT = down.P, down.B, down.RESULT
-ROOT = B/'selected-split-comparison-v1'
-KEY, FRONTEND = 'selected_fallback_comparison', 'selected_fallback_frontend'
+ROOT = B/'selected-split-comparison-v2'
+KEY, FRONTEND = 'selected_fallback_comparison', 'selected_fallback_frontend_v2'
 ORDER = ('selected', 'split', 'split', 'selected', 'selected', 'split')
 EXACT, RUNS = down.EXACT, down.RUNS
 require, digest, write = down.require, down.digest, down.write
@@ -151,7 +151,9 @@ def selected_routes(log, count):
         'strata MoE expert bank complete: ']
     groups = [[line for line in log.splitlines() if line.startswith(prefix)] for prefix in prefixes]
     require(all(len(rows) == count for rows in groups) and 'strata MoE split ' not in log and
-            '[native16-down]' not in log, 'selected route records missing/duplicated or unexpected split selector')
+            [s for s in log.splitlines() if s.startswith('[native16-down] ')] ==
+            ['[native16-down] fusion=large min_rows=2334'],
+            'selected route records missing/duplicated or unexpected Down selector')
     result = []
     for i in range(count):
         route = d.route('\n'.join(rows[i] for rows in groups), dict(rows=EXACT-1, read=EXACT, split=False))
