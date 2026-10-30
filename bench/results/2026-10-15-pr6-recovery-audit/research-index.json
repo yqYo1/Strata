@@ -18075,5 +18075,42 @@
     "review_sha256": "fc514bc9c22293cec0d6d90beba324d01503fb44ec3e6a6648f9228f5ea3bb70",
     "review_bytes": 10319,
     "operational_digest": "After candidate-only v2 closure,use source-qualified UnitTrace plus disjoint prefill CPU wait accounting. The old97cfa report does not qualify current9a79 coverage;split refuses command-service profiling. Decode entries are logical:worker CPU time,DRAM bandwidth and PCIe wire bytes remain unknown. No metric-pool retry."
+  },
+  "ple_initial_staging_design_20261031": {
+    "classification": "decision support",
+    "schedulable_now": true,
+    "prerequisites": [
+      {
+        "item": "same-request split continuation and source-bound resource attribution are closed",
+        "met": true,
+        "evidence": "fused-moe-service-current.json::moe_down_model.split_continuation_diagnostics_v2 and split_resource_profile_v2"
+      },
+      {
+        "item": "native source and PLE staging locator are pinned; GPU token embedding is distinguished from PLE preparation",
+        "met": true,
+        "evidence": "native input revision 9a79cd3520d8f39b7ad026cd64b51a32b505f2a2 and Main's source locator/correction above"
+      },
+      {
+        "item": "a current, finite decision consumer exists",
+        "met": true,
+        "evidence": "Main's next PLE preparation/staging choice after the observed pre-H2D gaps and 80 MiB PLE staging payload"
+      }
+    ],
+    "question": "For the pinned PLE path, compare at most three source-legal ways to reduce preparation-to-H2D latency while preserving its BF16/FP32 contract: current host staging, a more contiguous/batched host pack, or GPU preparation/pipelining only if ownership permits. Use primary recsys/embedding/SYCL references as relevant. Token embedding is excluded; one observed gap does not prove a bottleneck.",
+    "acceptance": "Map options to source/buffers; state precision, ownership, transfer/overlap tradeoffs and counterexamples; recommend one bounded measurement separating preparation, submit/wait and H2D, or none. Distinguish requested bytes from observed payload/service. Check provenance/licenses; exclude XeStrata code and derivatives.",
+    "novelty": "Existing staged-copy, copy-service and out-of-core references cover generic mechanisms. This question is specific to the current PLE preparation path and does not revisit GPU token embedding.",
+    "retrieval_refs": [
+      "staged_copy_resource_contract_scope",
+      "current_copy_service_resource_contract_20261030",
+      "out_of_core_sycl_hpc_scheduling_scope"
+    ],
+    "report_budget_bytes": 12288,
+    "state": "eligible_after_closed_source_bound_117K_attribution",
+    "review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "sha256": "e629ee4c4cce6da23d6c89a6de0e1be2bff72eb9bff380e71741eef752742e88",
+      "path": ".cache/research/2026-10-31/post_resource_scopes.review.json"
+    }
   }
 }
