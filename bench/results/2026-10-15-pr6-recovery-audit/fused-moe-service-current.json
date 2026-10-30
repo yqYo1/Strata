@@ -28501,12 +28501,12 @@
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/down-component-closed-output-retired-20261030.jsonl",
       "manifest_sha256": "17f89d925f40008631563f599cf7facbe9c44037182c8b7ba5be3ba73431ecf9",
       "consumer_closed": "Fresh same-build eight device gates and model original/row128 diagnostics pass;standalone component executable is no longer needed.",
-      "post_retirement_admission_passed": false,
+      "post_retirement_admission_passed": true,
       "retained_generations": "Selected6e40engine and12fixtures;new9a79cd352model and2same-build fixtures only in this current comparison. Legacy provenance holds elsewhere remain unresolved."
     }
   },
   "moe_down_model": {
-    "status": "row128-model-diagnostic-passed",
+    "status": "row64-model-diagnostic-prepared",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -28517,7 +28517,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Commit closed row128 model evidence,retire superseded component/raw outputs after source recovery,then prepare/commit/run fresh row64 exact117489-read diagnostic. Original and row128 pass with full GPU residual,actual Down counters and quiet validation. Clean nine-process comparison and inference adoption remain gated.",
+    "next_gate": "Run committed fresh row64 exact117489-read thinking-on model diagnostic;stop first failed gate without retry. Original and row128 passed. Only after row64 closure may the frozen nine-process clean comparison begin;no additional speed/adoption qualification.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -30116,7 +30116,7 @@
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
     },
     "model_plan": {
-      "stage": "closed",
+      "stage": "prepared",
       "kind": "diagnostic",
       "source_commit": "1fa351344e446f28a6c12ccbab8c80f3afb5869c",
       "basis_sha256": "e627045feba4ef63dfe96cd859394fb17ce7f2670d6d1135d285bfc924b20e4e",
@@ -30128,17 +30128,17 @@
       },
       "plans": [
         {
-          "kernel": "row128",
-          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-row128",
+          "kernel": "row64",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-row64",
           "runs": 1,
           "observed": true,
           "command": [
             "/bin/sh",
             "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
             "--config",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-row128/config.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-row64/config.json",
             "--port",
-            "44639",
+            "42471",
             "--prefill-exact-tokens",
             "117489",
             "--think",
@@ -30151,112 +30151,16 @@
             "--ready-timeout",
             "600",
             "--out",
-            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-row128/bench"
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/diagnostic-row64/bench"
           ],
           "generated": {
             "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
-            "config.json": "591aaa7d2210a167c51dad05a5df295bc9b1047ca4dd144ae54cb7c854d47146"
+            "config.json": "30d8c37a77370293d1c18df05827fbf78670bb7260a9dc028e4730c376d97886"
           },
-          "environment_sha256": "9f99e7b505c4ca65fedffb94d5f38fb912b78d09f2170c631afeee1c2d53dc9c"
+          "environment_sha256": "61356e725200c29f304cda10b4e0baf2245ea4bb34556bc2437205e3be887ac6"
         }
       ],
-      "processes": [
-        {
-          "index": 0,
-          "kernel": "row128",
-          "complete": true,
-          "passed": true,
-          "host_probe_accepted": true,
-          "model_executed": true,
-          "clean_speed": false,
-          "adoption_qualified": false,
-          "physical_device": {
-            "name": "Intel(R) Arc(TM) B570 Graphics",
-            "pci": "0000:05:00.0",
-            "driver": "xe",
-            "matching_DRM_descriptors": 1
-          },
-          "native_identity": {
-            "pid": 725967,
-            "start_ticks": 167751480,
-            "sid": 725890
-          },
-          "native_exit_code": 0,
-          "validation": {
-            "pid": 725967,
-            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
-            "threads_before": 1,
-            "preinit": 37,
-            "config_enabled": true,
-            "first_init": true,
-            "dispatch_result": 46,
-            "output_untouched": true,
-            "retained_reference_until_exit": true,
-            "runtime_teardown_qualified": false
-          },
-          "routes": [
-            {
-              "engine_rows": 117488,
-              "chunk": 8192,
-              "residual_dtype": "bf16",
-              "residual_gpu_rows": 117488,
-              "residual_host_bytes": 0,
-              "slots": 128,
-              "staged": 1,
-              "maximum_window_rows": 117488,
-              "work": {
-                "windows": 48,
-                "dequants": 18888,
-                "jobs": 23840,
-                "source_H2D_bytes": 225576960
-              },
-              "requested_expert_upload": {
-                "uploads": "18888",
-                "requested_H2D_bytes": "38561740800",
-                "permanent_hits": "0",
-                "permanent_slots": "127",
-                "total_slots": "128",
-                "final_drain": "checked"
-              },
-              "limitation": "Source-bound same-build policy plus actual success counters;not a per-kernel model trace. Requested work/bytes are not physical traffic,critical-path service or saturation.",
-              "down_fused_jobs": 7432,
-              "down_fused_rows": 52218579,
-              "down_separate_jobs": 16408
-            }
-          ],
-          "samples": [
-            {
-              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
-              "actual_prompt_tokens": 117489,
-              "actual_read_tokens": 117489,
-              "actual_reused_tokens": 0,
-              "generated_tokens": 24,
-              "prompt_ms": 125829.5,
-              "prompt_tps": 933.7,
-              "prompt_tps_source": "engine",
-              "ttft_s": 125.991,
-              "total_s": 127.774,
-              "thinking_requested": true,
-              "reasoning_observed": true,
-              "ok": true,
-              "eligible": true,
-              "stream_complete": true
-            }
-          ],
-          "subsequent_median_ms": null,
-          "ownership_closed": true,
-          "fresh_faults": [],
-          "boot_unchanged": true,
-          "driver_after": {
-            "pci": "/sys/bus/pci/devices/0000:05:00.0",
-            "driver": "xe",
-            "vendor": "0x8086",
-            "device": "0xe20c",
-            "kernel": "7.0.0-38-generic",
-            "devcoredump": false
-          }
-        }
-      ],
+      "processes": [],
       "plan": {
         "order": [
           "original",
@@ -30273,8 +30177,8 @@
         "file_cap": 134217728,
         "total_cap": 536870912
       },
-      "complete": true,
-      "passed": true,
+      "complete": false,
+      "passed": false,
       "active": false,
       "ownership_closed": true
     },
@@ -30477,8 +30381,9 @@
       "manifest_sha256": "17f89d925f40008631563f599cf7facbe9c44037182c8b7ba5be3ba73431ecf9",
       "evidence_commit": "70e131ae0",
       "source_recovery_verified": true,
-      "post_retirement_admission_passed": false,
-      "preserved": "Current native source/build/three executables/actual1400compiler closure,model-v2 basis and current frontend record,selected6e40 fallback. Original speed/status/fault/numerical outcomes unchanged."
+      "post_retirement_admission_passed": true,
+      "preserved": "Current native source/build/three executables/actual1400compiler closure,model-v2 basis and current frontend record,selected6e40 fallback. Original speed/status/fault/numerical outcomes unchanged.",
+      "admission_scope": "Fresh row64 diagnostic preparation passed qualified(),same-build native/runtime/frontend/basis/model pins after all221retired paths were absent. Host-only admission,not another GPU qualification."
     }
   }
 }
