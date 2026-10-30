@@ -11,6 +11,7 @@ import json
 import math
 from pathlib import Path
 import re
+import statistics
 import subprocess
 import sys
 
@@ -23,6 +24,8 @@ r, P, B = closure.r, closure.P, closure.B
 ROOT = B / 'transfer-refresh-39758-v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'transfer_refresh'
+PIPELINE = False
+BINARY = 'host_transfer_probe'
 NATIVE = ['src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
           'tools/sycl/host_transfer_probe.cpp']
 FLAGS = ['-O3', '-DNDEBUG', '-std=c++17', '-fsycl', '-fsycl-id-queries-range=size_t',
@@ -73,7 +76,7 @@ def commands(compiler):
     rows = [[compiler, *FLAGS, '-MD', '-MF', str(ROOT / (str(i) + '.d')),
              '-c', str(P / source), '-o', str(ROOT / (str(i) + '.o'))] for i, source in enumerate(NATIVE)]
     rows.append([compiler, '-fsycl', '-fsycl-id-queries-range=size_t', '-pthread',
-                 *[str(ROOT / (str(i) + '.o')) for i in range(len(NATIVE))], '-o', str(ROOT / 'host_transfer_probe')])
+                 *[str(ROOT / (str(i) + '.o')) for i in range(len(NATIVE))], '-o', str(ROOT / BINARY)])
     return rows
 
 
@@ -115,6 +118,9 @@ def prepare(data):
     cases = [dict(host=host, size=2 << 20, repeats=1, diagnostic=True) for host in ('ordinary', 'usm')]
     cases += [dict(host=host, size=size, repeats=3, diagnostic=False) for size in (2 << 20, 320 << 20)
               for host in ('ordinary', 'usm', 'usm', 'ordinary', 'ordinary', 'usm')]
+    if PIPELINE:
+        cases = [dict(diagnostic=True, argv=['--smoke'])]
+        cases += [dict(diagnostic=False, argv=['--compare', str(i)]) for i in range(3)]
     row = dict(stage='prepared', source_commit=revision, inputs=dict(path=str(ROOT / 'inputs.json'),
                sha256=digest(ROOT / 'inputs.json'), project_files=len(project), external_files=len(external)),
                sdk=sdk, runtime_sha256=digest(r.RESULT), selected_binary=full['binary'],
@@ -127,6 +133,12 @@ def prepare(data):
                provenance='Existing independent Main transfer tool with owned gates;unchanged production runtime/compat/profile implementation. SDK/compiler only,not XeStrata source.',
                retention='One tiny helper for imminent resource budgeting. Retire objects/normal logs after source recovery and compact individual samples;engine fallback/candidate untouched.',
                active=False, ownership_closed=True, passed=False)
+    if PIPELINE:
+        row.update(
+            scope='Two in-order queues in the qualified Runtime: same-context event dependencies,ordinary immutable CPU source,two borrowed device slots,no extra host/device staging and no overfetch. Synthetic full-byte GPU readers plus dependent integer work16/256;not XMX,MoE arithmetic,PCIe wire or LLM throughput.',
+            criteria='One4KiB traced smoke before3fresh comparison processes. Source/destination/slot guards,all integer outputs,source immutability,11pre-enqueue/order refusals,and in-flight cancellation must pass. Normal exit,preinit/executable/provider/environment gates and no new fault. First batches separate;five subsequent alternating pairs per1971200/2662400-byte and16/256-loop shape. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty-control<=5percent of smallest batch. Feasibility advancement requires all six256-loop process/shape median ratios<=0.98 and median observed copy/reader overlap>=10percent of copy service;every16-loop ratio<=1.05. A passing mechanism probe permits only a newly planned production consumer check,not model adoption.',
+            reference='fused-moe-service-current.json::moe_down_model.split_resource_profile_v2:117.215264736s summed observed GPU service versus117.192532093s union;22.733ms total overlap. Original in-order expert copy/compute sequence exposes transfer service;physical engine overlap remains unproven.',
+            retention='One mechanism fixture for imminent prefill-only scheduling decision;no third engine generation. Keep original6e40 and9a79 engines/required fixtures. Retire normal output and this component build at decision closure after exact source/recipe recovery;retain compact paired samples and ownership/fault outcome.')
     data[KEY] = row; write(RESULT, data)
     print('Transfer source/recipe prepared;commit before build.', flush=True)
 
@@ -155,7 +167,7 @@ def build(data):
         require(all(str(P / name) in observed for name in NATIVE), 'incomplete transfer compiled source coverage')
         write(ROOT / 'compiled-inputs.json', observed)
         verify(row)
-        binary = ROOT / 'host_transfer_probe'
+        binary = ROOT / BINARY
         row.update(stage='built', build_passed=True, binary=dict(path=str(binary), sha256=digest(binary), bytes=binary.stat().st_size),
                    compiled_inputs=dict(path=str(ROOT / 'compiled-inputs.json'), sha256=digest(ROOT / 'compiled-inputs.json'),
                                         files=len(observed), uncovered=0))
@@ -187,7 +199,8 @@ def run(data):
             if case['diagnostic']:
                 env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                            UR_LOG_TRACING='level:info;flush:info;output:file,' + str(trace))
-            argv = [row['binary']['path'], '--host', case['host'], '--bytes', str(case['size']), '--repeats', str(case['repeats'])]
+            argv = [row['binary']['path'], *case['argv']] if PIPELINE else \
+                [row['binary']['path'], '--host', case['host'], '--bytes', str(case['size']), '--repeats', str(case['repeats'])]
             gates, lines, code_maps = [], [], []
 
             def observe(io, entry):
@@ -216,11 +229,19 @@ def run(data):
                         io.exit(10); break
 
             entry, out, err = supervisor.run('case-' + str(i), argv, env, P, interaction=observe, **RUN_LIMITS)
-            rows = [{part.split('=', 1)[0]: part.split('=', 1)[1] for part in line.split()[1:]} for line in lines if line.startswith('COPY ')]
+            prefix = 'PIPELINE ' if PIPELINE else 'COPY '
+            rows = [{part.split('=', 1)[0]: part.split('=', 1)[1] for part in line.split()[1:]} for line in lines if line.startswith(prefix)]
             checks = [line for line in lines if line.startswith('CHECK ')]
             passed = supervision.closed(entry) and entry['exit_code'] == 0 and gates == ['before-runtime', 'runtime-ready', 'before-exit']
-            passed = passed and len(rows) == len(checks) == 2 * (case['repeats'] + 1) and all(
-                'full=PASS guards=PASS source=PASS' in line for line in checks)
+            if PIPELINE:
+                passed = passed and len(rows) == (4 if case['diagnostic'] else 48) and all(
+                    all(sample.get(k) == 'PASS' for k in ('source','guards','output','drain')) for sample in rows)
+                if case['diagnostic']:
+                    passed = passed and sum(int(s['admission_rejections']) for s in rows) == 11 and \
+                        sum(int(s['cancelled']) for s in rows) == 1
+            else:
+                passed = passed and len(rows) == len(checks) == 2 * (case['repeats'] + 1) and all(
+                    'full=PASS guards=PASS source=PASS' in line for line in checks)
             require(any(line.startswith('DEVICE name=') and 'B570' in line for line in lines), 'actual transfer GPU differs')
             require(any(line.startswith('DONE ') for line in lines) and not any('FAIL' in line for line in lines), 'transfer completion failed')
             preload = r.validation.preload_evidence(err.read_text(), entry['pid'])
@@ -228,19 +249,31 @@ def run(data):
             require(not warnings.exists() or not warnings.stat().st_size, 'transfer parameter validation warning')
             if case['diagnostic']:
                 require(trace.exists() and 'urEnqueue' in trace.read_text(), 'transfer enqueue trace absent')
-            for sample in rows:
-                require(sample['host'] == case['host'] and int(sample['bytes']) == case['size'] and
-                        all(math.isfinite(float(sample[k])) and float(sample[k]) > 0 for k in ('total_GBps', 'total_wall_s')),
-                        'transfer sample configuration/clock mismatch')
+            if PIPELINE:
+                for sample in rows:
+                    require(all(math.isfinite(float(sample[k])) and float(sample[k]) > 0
+                                for k in ('wall_s','copy_s','reader_s','device_span_s')) and
+                            0 <= float(sample['overlap_s']) <= min(float(sample['copy_s']), float(sample['reader_s'])),
+                            'pipeline clock/overlap mismatch')
+                controls = [{part.split('=',1)[0]:part.split('=',1)[1] for part in line.split()[1:]}
+                            for line in lines if line.startswith(('CONTROL ', 'TIMER '))]
+            else:
+                for sample in rows:
+                    require(sample['host'] == case['host'] and int(sample['bytes']) == case['size'] and
+                            all(math.isfinite(float(sample[k])) and float(sample[k]) > 0 for k in ('total_GBps', 'total_wall_s')),
+                            'transfer sample configuration/clock mismatch')
             cases.append(dict(case=case, passed=bool(passed), samples=rows, gates=code_maps,
                               process={k: entry.get(k) for k in ('pid', 'exit_code', 'elapsed_seconds', 'peak_session_rss_bytes',
                               'observation_complete', 'direct_child_reaped', 'session_empty', 'error')}))
+            if PIPELINE: cases[-1]['controls'] = controls
             write(RESULT, data)
             require(passed, 'transfer case failed')
             guards.driver_guard()
         verify(row)
         require(digest(row['binary']['path']) == row['binary']['sha256'], 'transfer binary changed')
         row.update(stage='closed', passed=True)
+        if PIPELINE:
+            row['decision'] = pipeline_decision(cases)
     except BaseException as error:
         row.update(stage='failed', passed=False, error=repr(error))
     finally:
@@ -259,11 +292,54 @@ def run(data):
     print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'ownership_closed', 'error')}), flush=True)
 
 
+def pipeline_decision(cases):
+    require(len(cases) == 4 and all(p['passed'] for p in cases), 'four completed pipeline processes required')
+    summaries, eligibility = [], []
+    for process in cases[1:]:
+        samples = process['samples']
+        require(all(int(s['experts']) == int(s['completed']) == int(s['requested_uploads']) ==
+                    int(s['observed_uploads']) == 32 and int(s['readers']) == 64 and
+                    int(s['cancelled']) == 0 for s in samples), 'pipeline actual workload differs')
+        timer = [c for c in process['controls'] if 'p99_ns' in c]
+        empty = [float(c['wall_s']) for c in process['controls'] if 'wall_s' in c and int(c['repetition']) >= 0]
+        subsequent = [s for s in samples if int(s['repetition']) >= 0]
+        valid = len(timer) == 1 and int(timer[0]['samples']) == 1000 and int(timer[0]['p99_ns']) <= 10000 and \
+            len(empty) == 5 and statistics.median(empty) <= 0.05 * min(float(s['wall_s']) for s in subsequent) and \
+            all(float(s['wall_s']) >= 0.01 and float(s['device_span_s']) >= 0.01 for s in subsequent)
+        eligibility.append(valid)
+        for size in (1971200,2662400):
+            for loops in (16,256):
+                selected = [s for s in subsequent if int(s['bytes']) == size and int(s['loops']) == loops]
+                arms = {arm:[s for s in selected if s['arm'] == arm] for arm in ('serial','pipeline')}
+                require(all(len(v) == 5 for v in arms.values()), 'pipeline repetition coverage')
+                ratios = [float(next(s for s in arms['pipeline'] if s['repetition'] == str(i))['wall_s']) /
+                          float(next(s for s in arms['serial'] if s['repetition'] == str(i))['wall_s']) for i in range(5)]
+                overlap = statistics.median(float(s['overlap_s'])/float(s['copy_s']) for s in arms['pipeline'])
+                ratio = statistics.median(ratios)
+                summaries.append(dict(process=process['case']['argv'][-1], bytes=size,loops=loops,
+                                      paired_wall_ratios=ratios,median_ratio=ratio,copy_overlap_fraction=overlap,
+                                      performance_passed=valid and ratio <= (0.98 if loops == 256 else 1.05) and
+                                          (loops != 256 or overlap >= 0.10)))
+    return dict(timing_eligible=all(eligibility),shapes=summaries,
+                mechanism_screen_passed=all(s['performance_passed'] for s in summaries),
+                inference_adopted=False,physical_saturation_qualified=False,
+                next_action='Only a successful mechanism screen permits a new source-bound production consumer plan;otherwise reject this schedule without a model run.')
+
+
 def main():
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'run'), 'choose prepare,build,run')
+    global KEY, ROOT, NATIVE, PIPELINE, BINARY, RUN_LIMITS
+    require(len(sys.argv) == 2, 'choose prepare,build,run or pipeline-prepare,pipeline-build,pipeline-run')
+    action = sys.argv[1]
+    if action.startswith('pipeline-'):
+        action = action.removeprefix('pipeline-')
+        PIPELINE = True; KEY = 'prefill_copy_pipeline_v1'; ROOT = B / 'prefill-copy-pipeline-v1'
+        BINARY = 'expert_pipeline_probe'
+        NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_pipeline_probe.cpp']
+        RUN_LIMITS = dict(RUN_LIMITS,wall=180,cpu=240,rss_cap=5 << 30)
+    require(action in ('prepare','build','run'), 'choose prepare,build,run')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); guards.no_model_owners([])
-        data = public(); {'prepare': prepare, 'build': build, 'run': run}[sys.argv[1]](data)
+        data = public(); {'prepare': prepare, 'build': build, 'run': run}[action](data)
 
 
 if __name__ == '__main__':
