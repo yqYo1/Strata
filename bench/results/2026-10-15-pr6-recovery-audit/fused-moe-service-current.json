@@ -28484,7 +28484,7 @@
     },
     "next_gate": "Fresh same-build small traced production-route checks for all three selections;then matched long-prefill PP/TTFT,independent decode/handoff,task quality and physical262144.",
     "build": {
-      "stage": "prepared",
+      "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
       "overlay": {
         "base": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -28739,7 +28739,7 @@
       "total_wall_seconds": 3600,
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "GPU_executed": false,
       "model_selected": false,
       "criteria": "Build only:selected6e40 plus the twelve split-overlay paths,with only four additional Down changes. Immutable original/row128/row64 selection defaults to original;selected observer refusal guards and max-allocation fix stay intact. Zero uncovered compiler or imported linker inputs;three executables from one build. No model qualification inherited.",
@@ -28762,6 +28762,36 @@
           "bytes": 2567904
         }
       },
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+          "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+          "bytes": 22897880
+        },
+        "sycl_moe_down_scatter_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/sycl_moe_down_scatter_bench",
+          "sha256": "09b59b25226ea21f7fcfac90a08424484944c3f1a65de8ef041fc07cd78f2937",
+          "bytes": 13948216
+        },
+        "sycl_moe_accum_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/sycl_moe_accum_test",
+          "sha256": "5af98dca3ece5f5276f759bcdea0e03d1a4220e85185ef800708ef5251c95187",
+          "bytes": 2996752
+        }
+      },
+      "actual_compiler_inputs": {
+        "files": 1400,
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/compiler-inputs.json",
+        "sha256": "5e40aebd610bb7c7ece7634e4bec7432a96f90f5732f96310b5e21387f915ba8",
+        "uncovered": 0
+      },
+      "imported_link_inputs": {
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b"
+      },
+      "compile_database_sha256": "a3ddc5209957141496808a2024cd476e900540a87ae00052adb70e584d9bde22",
       "controller_inputs": {
         "files": 53,
         "aggregate_sha256": "e16358478702c2757438120175e1bcd44955d844b150dc33927c348712b076cc"

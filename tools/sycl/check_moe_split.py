@@ -14,10 +14,13 @@ import time
 sys.dont_write_bytecode = True
 import build_moe_split as build
 import check_qsa_k_loop as device
+import check_down_row_address as row_control
 
 r, q, P, B, RESULT, KEY = build.r, build.q, build.P, build.B, build.RESULT, build.KEY
 ROOT = build.ROOT.parent / 'device'
 ORDER = ['smoke', 'validate', 'route-off', 'route-on']
+DOWN_ORDER = ['tiny-row64', 'tiny-row128', 'large-row64', 'large-row128',
+              'route-off', 'route-original', 'route-row128', 'route-row64']
 require, digest, write = build.require, build.digest, build.write
 
 
@@ -26,27 +29,33 @@ def pins(revision):
                      [*build.model.DIRECT, *build.model.ORCHESTRATION, build.model.GEMM, build.model.FIXTURE])
 
 
-def native(scope):
-    row = json.loads((build.ROOT / 'record.json').read_text())
+def context(variant):
+    native_root, key = build.context(variant)
+    return native_root, ROOT if variant == 'split' else native_root/'device', key, ORDER if variant == 'split' else DOWN_ORDER
+
+
+def native(scope, native_root=build.ROOT):
+    row = json.loads((native_root / 'record.json').read_text())
     commands = row.pop('commands_executed')
     require(row['stage'] == 'built-not-executed' and row['passed'] and row['ownership_closed'] and
             not row['active'] and build.compact(row) == scope['build'] and
             len(commands) == len(row['commands']) and all(r.supervision.closed(v) for v in commands),
             'closed exact-source build required')
-    build.admit(row)
+    build.admit(row, native_root)
     actual = row['actual_compiler_inputs']
     require(actual['uncovered'] == 0 and digest(actual['path']) == actual['sha256'],
             'actual compiler manifest changed')
     values = json.loads(Path(actual['path']).read_text())
     require(len(values) == actual['files'] and all(digest(p) == sha for p,sha in values.items()),
             'actual compiled inputs changed')
-    require(digest(build.ROOT/'build/compile_commands.json') == row['compile_database_sha256'],
+    require(digest(native_root/'build/compile_commands.json') == row['compile_database_sha256'],
             'effective compile database changed')
     return row
 
 
 def admit(scope, plan):
-    row = native(scope)
+    native_root, _, _, _ = context(plan.get('variant', 'split'))
+    row = native(scope, native_root)
     require(pins(plan['source_commit']) == plan['inputs'], 'component gate source changed')
     require(row['binaries']['sycl_moe_down_scatter_bench'] == plan['binary'], 'component executable changed')
     rt = r.validation.committed(r.RESULT)
@@ -56,20 +65,23 @@ def admit(scope, plan):
     return rt
 
 
-def prepare(mode):
-    require(mode in ORDER, 'unknown split device gate')
+def prepare(mode, variant='split'):
+    native_root, root, key, order = context(variant)
+    require(mode in order, 'unknown split device gate')
     record = r.validation.committed(RESULT)
-    scope = record[KEY]
+    scope = record[key]
     history = scope.get('device_checks', [])
-    require([v['mode'] for v in history] == ORDER[:ORDER.index(mode)] and
+    require([v['mode'] for v in history] == order[:order.index(mode)] and
             all(v['passed'] and v['complete'] and v['ownership_closed'] and not v['fresh_faults'] for v in history),
             'ordered successful split device gates required; do not retry a failed gate')
     require('device_plan' not in scope or scope['device_plan']['stage'] == 'closed', 'prior device gate open/failed')
-    row = native(scope)
+    row = native(scope, native_root)
     rt = r.validation.committed(r.RESULT)
     revision = r.build.git(P, 'rev-parse', 'HEAD').decode().strip()
-    folder = ROOT / mode
+    folder = root / mode
     require(not folder.exists(), 'fresh owned device output directory required')
+    enabled = mode in ('route-on', 'route-original', 'route-row128', 'route-row64')
+    kernel = mode[6:] if mode in ('route-original', 'route-row128', 'route-row64') else 'original'
     env = dict(r.validation.committed(r.SETTINGS)['environment'],
         TMPDIR=str(folder/'tmp'), XDG_CACHE_HOME=str(folder/'cache'),
         LD_PRELOAD=rt['preload']['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=rt['preload']['loader'],
@@ -77,14 +89,19 @@ def prepare(mode):
         STRATA_SYCL_PREFILL_COMMAND_PROFILE='0', STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE='0',
         STRATA_SYCL_PREFILL_NATIVE16='bf16', STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm',
         STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE='auto', STRATA_SYCL_PREFILL_GU_SWIGLU='0',
-        STRATA_TEST_MAIN_GATES='1', STRATA_SYCL_PREFILL_DOWN_SCATTER='large' if mode == 'route-on' else '0',
+        STRATA_TEST_MAIN_GATES='1', STRATA_SYCL_PREFILL_DOWN_SCATTER='large' if enabled else '0',
         UR_LOG_TRACING='level:info;flush:info;output:file,'+str(folder/'api.trace'),
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(folder/'validation.log'))
     require(env['UR_ENABLE_LAYERS'] == 'UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION' and
             env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and env['EnableDirectSubmission'] == '0',
             'mandatory tracing/validation/safety environment required')
     binary = row['binaries']['sycl_moe_down_scatter_bench']
-    args = ['--split-'+mode] if mode in ('smoke','validate') else ['--split-route-smoke',str(int(mode == 'route-on'))]
+    args = ['--split-'+mode] if mode in ('smoke','validate') else ['--split-route-smoke',str(int(enabled))]
+    if variant == 'down':
+        env['STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL'] = kernel
+        if mode.startswith(('tiny-', 'large-')):
+            name = 'row64' if mode.endswith('row64') else 'row-address'
+            args = ['--split-' + name + ('-tiny' if mode.startswith('tiny-') else '-smoke')]
     plan = dict(stage='prepared',mode=mode,source_commit=revision,inputs=pins(revision),binary=binary,
         runtime_files=rt['runtime_files'],preload=rt['preload'],physical_device=device.device_inventory(rt),
         command=[binary['path'],*args],environment=env,
@@ -98,6 +115,25 @@ def prepare(mode):
             'or physical262144qualification.',
         retention='Keep compact coverage/counts and fault/ownership outcome;retire successful trace/poll logs '
             'after verification. Candidate generation remains only for imminent model comparison.')
+    if variant == 'down':
+        expected_launches = dict(original=0, row128=0, row64=0)
+        if mode.startswith('route-'):
+            if enabled:
+                expected_launches[kernel] = 6
+        else:
+            direct = 'row64' if mode.endswith('row64') else 'row128'
+            expected_launches[direct] = {'tiny-row64':10, 'tiny-row128':4,
+                                        'large-row64':24, 'large-row128':12}[mode]
+        plan.update(variant='down', selected_split_kernel=kernel, native_source_commit=row['source_commit'],
+            expected_split_kernel_launches=expected_launches,
+            criteria='Fresh same-build numerical and production-route gates only;not model/performance adoption. '
+                'Tiny row64 includes edge values,invalid-map masks1/2/3 and dense64 bits;tiny row128 preserves '
+                'the existing address contract. Large modes exercise63/64/65 and split primary/tail/final rows. '
+                'Each production arm checks2333/2334/2335/8192 in regular/distributed maps,all FP32 output bits, '
+                'immutable inputs,false-return no-write and fallback. Immutable startup choice plus actual '
+                'UR create-to-launch identities must give exactly six chosen split kernels and no other '
+                'split policy;route-off launches none. Qualified providers/pre-main validation,source/owner '
+                'closure,no fresh fault and stop-first-failure remain mandatory.')
     admit(scope,plan)
     folder.mkdir(parents=True,mode=0o700)
     for name in ('tmp','cache'):(folder/name).mkdir()
@@ -122,6 +158,8 @@ def live(io, plan, rt, stage):
 
 
 def parse(stdout, mode):
+    if mode in ('tiny-row64', 'tiny-row128', 'large-row64', 'large-row128'):
+        return row_control.parse(stdout, 'tiny' if mode.startswith('tiny-') else 'smoke', mode.endswith('row64'))
     rows = [json.loads(s) for s in stdout.splitlines() if s.startswith('{')]
     require(rows and all(v['status'] == 'PASS' for v in rows), 'incomplete/failed component result')
     kinds = {k:[v for v in rows if v['kind'] == k] for k in {v['kind'] for v in rows}}
@@ -142,7 +180,8 @@ def parse(stdout, mode):
                 all(v['primary_rows'] == 65536 and v['physical_final_row'] for v in cases), 'extended coverage missing')
         require(oracles and all(v['expected_mask'] == 0 for v in oracles), 'extended oracle status failure')
     else:
-        routes = kinds.get('selected_route',[]); enabled = mode == 'route-on'
+        routes = kinds.get('selected_route',[])
+        enabled = mode in ('route-on', 'route-original', 'route-row128', 'route-row64')
         require([(v['rows'],v['enabled'],v['selected']) for v in routes] ==
                 [(n,int(enabled),int(enabled and n>=2334)) for n in (2333,2334,2335,8192) for _ in range(2)] and
                 all(v['inputs_immutable'] and v['false_route_no_write'] and v['expected_mask'] == 0 for v in routes),
@@ -158,9 +197,30 @@ def parse(stdout, mode):
         limitation='Fixture post-BF16 consumer contract only;selected-job gathers,not everyjob. No model/performance qualification.')
 
 
-def run(mode):
-    record = r.validation.committed(RESULT);scope = record[KEY];plan = scope['device_plan'];folder = ROOT/mode
-    require(mode in ORDER and plan['mode'] == mode and plan['stage'] == 'prepared' and
+def split_kernel_launches(trace):
+    """Associate successful UR launches with their created C++ kernel names."""
+    created = {}
+    counts = dict(original=0, row128=0, row64=0)
+    stems = dict(original='SplitDownScatterKernel', row128='SplitRowAddressDownKernel', row64='SplitDown64Kernel')
+    for line in trace.splitlines():
+        if '<--- urKernelCreate(' in line and 'UR_RESULT_SUCCESS' in line:
+            match = re.search(r'\((_ZTS\S+)\).*?\.phKernel = .*?\((0x[0-9a-f]+)\)', line)
+            if match:
+                created[match[2]] = match[1]
+        if '<--- urEnqueueKernelLaunch' in line and 'UR_RESULT_SUCCESS' in line:
+            handle = re.search(r'\.hKernel = (0x[0-9a-f]+)', line)
+            if handle:
+                name = created.get(handle[1], '')
+                for policy, stem in stems.items():
+                    if stem in name:
+                        counts[policy] += 1
+    return counts
+
+
+def run(mode, variant='split'):
+    _, root, key, order = context(variant)
+    record = r.validation.committed(RESULT);scope = record[key];plan = scope['device_plan'];folder = root/mode
+    require(mode in order and plan['mode'] == mode and plan['stage'] == 'prepared' and
             json.loads((folder/'plan.json').read_text()) == plan and not (folder/'owned.json').exists(),
             'fresh committed split component plan required')
     rt = admit(scope,plan);r.guards.no_model_owners([])
@@ -203,7 +263,18 @@ def run(mode):
         require(not warnings.exists() or warnings.stat().st_size==0,'parameter validation warning/error')
         trace = folder/'api.trace'
         require(trace.is_file() and 'urEnqueueKernelLaunch' in trace.read_text(),'missing actual kernel trace')
-        outcome.update(coverage=parse(out.read_text(),mode),passed=True,complete=True,
+        coverage = parse(out.read_text(),mode)
+        if variant == 'down':
+            kernel = plan['selected_split_kernel']
+            enabled = mode in ('route-original','route-row128','route-row64')
+            if mode.startswith('route-'):
+                message = '[native16-down] fusion=' + ('large' if enabled else '0') + ' min_rows=2334 split_kernel=' + kernel
+                require(text.count(message) == 1, 'actual native startup selection differs')
+            launches = split_kernel_launches(trace.read_text())
+            require(launches == plan['expected_split_kernel_launches'], 'actual split kernel launches differ')
+            coverage.update(actual_split_kernel_launches=launches,
+                            production_selector_exercised=mode.startswith('route-'))
+        outcome.update(coverage=coverage,passed=True,complete=True,
             GPU_kernels_executed=True,validation=proof,exit_code=0)
         admit(scope,plan)
     except BaseException as error:
@@ -221,4 +292,7 @@ def run(mode):
 if __name__ == '__main__':
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        {'prepare':prepare,'run':run}[sys.argv[1]](sys.argv[2])
+        require(len(sys.argv) == 3 and sys.argv[1] in ('prepare','run','prepare-down','run-down'),
+                'check_moe_split.py prepare|run|prepare-down|run-down MODE')
+        variant = 'down' if sys.argv[1].endswith('-down') else 'split'
+        (prepare if sys.argv[1].startswith('prepare') else run)(sys.argv[2], variant)
