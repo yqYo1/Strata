@@ -32,8 +32,8 @@ struct Drain {
 };
 struct Interval { uint64_t begin, end; };
 Interval interval(const sycl::event& e) {
-    return {e.get_profiling_info<sycl::info::event::command_start>(),
-            e.get_profiling_info<sycl::info::event::command_end>()};
+    return {e.get_profiling_info<sycl::info::event_profiling::command_start>(),
+            e.get_profiling_info<sycl::info::event_profiling::command_end>()};
 }
 uint64_t overlap(std::vector<Interval> a, std::vector<Interval> b) {
     auto merge = [](std::vector<Interval> rows) {

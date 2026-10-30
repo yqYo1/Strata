@@ -434,7 +434,7 @@ def main():
     action = sys.argv[1]
     if action.startswith('pipeline-'):
         action = action.removeprefix('pipeline-')
-        PIPELINE = True; KEY = 'prefill_copy_pipeline_v3'; ROOT = B / 'prefill-copy-pipeline-v3'
+        PIPELINE = True; KEY = 'prefill_copy_pipeline_v4'; ROOT = B / 'prefill-copy-pipeline-v4'
         BINARY = 'expert_pipeline_probe'
         NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_pipeline_probe.cpp']
         RUN_LIMITS = dict(RUN_LIMITS,wall=180,cpu=240,rss_cap=5 << 30)

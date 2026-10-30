@@ -32206,7 +32206,7 @@
     "retention": "Only empty tmp/cache preparation directories remain;retire with the superseded unexecuted V1 plan after replacement proof."
   },
   "prefill_copy_pipeline_v3": {
-    "stage": "prepared",
+    "stage": "build-failed",
     "source_commit": "d54c96272678ec9ff7c879127dff1da8613ae269",
     "inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v3/inputs.json",
@@ -32568,6 +32568,11 @@
       "tests": 5,
       "passed": true,
       "limits": "Decision method and tests unchanged by SDK-only source updates;new official SDK proposal separately qualified before GPU comparisons."
-    }
+    },
+    "build_passed": false,
+    "error": "RuntimeError('transfer compiler/link failed')",
+    "build_executed": true,
+    "GPU_executed": false,
+    "build_diagnostic": "Probe lines35/36 used sycl::info::event::command_start/end;correct namespace is event_profiling. Three Runtime/compat/profile objects compiled;probe compilation failed before link or device execution. Preserve failure and use a new committed scope for the two-line fix."
   }
 }
