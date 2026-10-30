@@ -26,7 +26,7 @@ import engine_once
 
 P, B, RESULT = diagnostic.P, diagnostic.B, diagnostic.RESULT
 NATIVE, KEY = device.build.context('down')
-ROOT = NATIVE / 'model'
+ROOT = NATIVE / 'model-v2'
 HOST = ROOT / 'frontend'
 POLICIES = ('original', 'row128', 'row64')
 ORDER = ('original', 'row128', 'row64', 'row128', 'row64', 'original',
@@ -86,6 +86,26 @@ def configuration(root):
             'selected borrowed/static placement required')
     config.update(log=str(root/'engine.stderr'), env={})
     return config
+
+
+def native_probe(rt):
+    """Bind unchanged preload code to the separately requalified runtime.
+
+    The original full-runtime preload gate is historical evidence, not this
+    workstation's current provider set. Keep its refused plan unchanged.
+    runtime.current(), called by qualified(), checks this whole current closure.
+    """
+    preload = diagnostic.runtime.components()
+    require(preload == rt['preload'] and rt['passed'] and rt['ownership_closed'] and
+            not rt['active'] and not rt['fresh_faults'], 'current preload/runtime qualification differs')
+    loader = preload['loader']
+    require(digest(loader) == rt['runtime_files'][loader] and
+            digest(preload['library']['path']) == preload['library']['sha256'],
+            'current preload/provider bytes changed')
+    return dict(library=preload['library'], loader=dict(path=loader, sha256=rt['runtime_files'][loader]),
+        component_source_commit=preload['source_commit'], component_original_plan=preload['original_plan'],
+        current_runtime_qualification_sha256=digest(diagnostic.runtime.RESULT),
+        retained_reference_until_exit=True, runtime_teardown_qualified=False)
 
 
 def prepare_frontend():
@@ -181,7 +201,7 @@ def basis():
     require(row['source_commit'] == host['source_commit'] and row['sources'] == host['sources'] and
             row['binary'] == built['binaries']['strata'] and row['native_source_commit'] == built['source_commit'] and
             row['runtime_sha256'] == digest(diagnostic.runtime.RESULT) and row['boot'] == rt['boot'] and
-            row['native_validation_probe'] == diagnostic.runtime.validation.preload_qualification(),
+            row['native_validation_probe'] == native_probe(rt),
             'model basis changed')
     require(diagnostic.models.file_identity(row['profile']['path']) == row['profile']['identity'] and
             digest(row['profile']['path']) == row['profile']['sha256'], 'profile changed')
@@ -248,7 +268,7 @@ def prepare(kind, kernel=None):
             shared = dict(source_commit=host['source_commit'], sources=host['sources'],
                 binary=built['binaries']['strata'], native_source_commit=built['source_commit'],
                 runtime_sha256=digest(diagnostic.runtime.RESULT), boot=rt['boot'],
-                native_validation_probe=diagnostic.runtime.validation.preload_qualification(),
+                native_validation_probe=native_probe(rt),
                 profile=dict(path=str(profile), identity=diagnostic.models.file_identity(profile), sha256=digest(profile)),
                 model_assets=diagnostic.models.model_pins(config, full=True))
             write(ROOT/'basis.json', shared)
