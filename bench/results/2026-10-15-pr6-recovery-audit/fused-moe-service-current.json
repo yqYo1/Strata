@@ -28482,7 +28482,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Ordered route-off,route-original,route-row128,route-row64 production dispatch/fallback checks;then current-source frontend and model diagnostic gates,matched long-prefill PP/TTFT and independent decode/handoff/task/fullcontext qualification. All four same-build direct numerical gates pass;production selector and model remain unqualified.",
+    "next_gate": "Ordered route-original,route-row128,route-row64 production dispatch checks;then current-source frontend/model diagnostic and matched long-prefill comparisons. Disabled production route passes all eight fallback cases with zero split kernels.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -28859,7 +28859,7 @@
       "decision": "New model recipe consumes committed prototype source/performance evidence and fresh model-build qualification,not historical component/split executables. Same-executable original/row128/row64 controls replace the old split engine. Selected6e40 and12fixtures remain intact;current Down64 component stays only through fresh same-build route checks."
     },
     "device_plan": {
-      "stage": "prepared",
+      "stage": "closed",
       "mode": "route-off",
       "source_commit": "f3a8ab4b86016f9a8766090d0749451a1121510c",
       "inputs": {
@@ -29421,6 +29421,113 @@
         },
         "validation": {
           "pid": 587755,
+          "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "exit_code": 0,
+        "postchecks_complete": true,
+        "postcheck_errors": [],
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "route-off",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "GPU_kernels_executed": true,
+        "model_executed": false,
+        "model_qualified": false,
+        "controller_commit": "f3a8ab4b86016f9a8766090d0749451a1121510c",
+        "plan_commit": "afbadf087ffe3e7b767d9190195fe7ca15881745",
+        "physical_device": {
+          "name": "Intel(R) Arc(TM) B570 Graphics",
+          "pci": "0000:05:00.0",
+          "driver": "xe",
+          "matching_DRM_descriptors": 1
+        },
+        "coverage": {
+          "result_counts": {
+            "selected_route": 8
+          },
+          "cases": [],
+          "post_BF16_FP32_oracles": 0,
+          "production_routes": [
+            {
+              "rows": 2333,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2333,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2334,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2334,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2335,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2335
+            },
+            {
+              "rows": 2335,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 2335
+            },
+            {
+              "rows": 8192,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 8192
+            },
+            {
+              "rows": 8192,
+              "enabled": 0,
+              "selected": 0,
+              "split_rows": 8192
+            }
+          ],
+          "limitation": "Fixture post-BF16 consumer contract only;selected-job gathers,not everyjob. No model/performance qualification.",
+          "actual_split_kernel_launches": {
+            "original": 0,
+            "row128": 0,
+            "row64": 0
+          },
+          "production_selector_exercised": true
+        },
+        "validation": {
+          "pid": 604298,
           "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
           "threads_before": 1,
           "preinit": 37,
