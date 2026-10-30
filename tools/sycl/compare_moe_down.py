@@ -108,22 +108,23 @@ def native_probe(rt):
         retained_reference_until_exit=True, runtime_teardown_qualified=False)
 
 
-def prepare_frontend():
+def prepare_frontend(root=ROOT, key='model_frontend'):
     record, scope, _, rt = qualified()
-    require('model_frontend' not in scope and not ROOT.exists(), 'fresh frontend root required')
+    host = root/'frontend'
+    require(key not in scope and not root.exists(), 'fresh frontend root required')
     previous = diagnostic.runtime.validation.committed(diagnostic.REFERENCE,
         ('historical_regression_audit', 'benchmark_python_runtime_v4'))
     manifest = diagnostic.python_runtime.read_manifest(previous['plan']['manifest'])
     diagnostic.python_runtime.validate_manifest(manifest)
     revision = diagnostic.gen.git('rev-parse', 'HEAD').decode().strip()
     pins = diagnostic.pins(revision)
-    env = environment(HOST, rt, 'original')
+    env = environment(host, rt, 'original')
     require(diagnostic.python_runtime.selection(env) == manifest['selected'], 'Python provider changed')
-    config = configuration(HOST)
+    config = configuration(host)
     template = Path(config['tokenizer'])/'chat_template.jinja'
-    ROOT.mkdir(mode=0o700); HOST.mkdir(mode=0o700)
+    root.mkdir(mode=0o700); host.mkdir(mode=0o700)
     for part in ('tmp', 'cache'):
-        (HOST/part).mkdir()
+        (host/part).mkdir()
     row = dict(stage='prepared', source_commit=revision, sources=pins,
         selected=manifest['selected'], manifest=previous['plan']['manifest'],
         template=dict(path=str(template), sha256=digest(template)), environment=env,
@@ -135,13 +136,13 @@ def prepare_frontend():
         passed=False, active=False, ownership_closed=True, GPU_executed=False,
         criterion='Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry '
                   'and exact Python/project/provider identity. No native engine or GPU initialization.')
-    write(HOST/'record.json', row); scope['model_frontend'] = compact(row); write(RESULT, record)
+    write(host/'record.json', row); scope[key] = compact(row); write(RESULT, record)
     print('Prepared fresh frontend;commit before host probes.', flush=True)
 
 
-def frontend(admitted=True):
-    public = diagnostic.runtime.validation.committed(RESULT, (KEY, 'model_frontend'))
-    row = json.loads((HOST/'record.json').read_text())
+def frontend(admitted=True, root=ROOT, key='model_frontend'):
+    public = diagnostic.runtime.validation.committed(RESULT, (KEY, key))
+    row = json.loads((root/'frontend/record.json').read_text())
     require(compact(row) == public, 'frontend receipt differs')
     if admitted:
         require(row['stage'] == 'closed' and row['passed'] and row['ownership_closed'] and not row['active'],
@@ -153,14 +154,15 @@ def frontend(admitted=True):
     return row, manifest
 
 
-def run_frontend():
+def run_frontend(root=ROOT, key='model_frontend'):
     record, scope, _, _ = qualified()
-    row, manifest = frontend(False)
+    host = root/'frontend'
+    row, manifest = frontend(False, root, key)
     require(row['stage'] == 'prepared' and 'commands_executed' not in row, 'fresh committed frontend only')
     owner = None
     try:
         allowed = {v['realpath'] for v in manifest['inventory']['files'].values()}
-        owner = diagnostic.runtime.supervision.Owner(HOST/'owned')
+        owner = diagnostic.runtime.supervision.Owner(host/'owned')
         for role, argv in row['commands']:
             require(diagnostic.python_runtime.selection(row['environment']) == row['selected'], 'Python changed')
             entry, out, err = owner.run(role, argv, row['environment'], P, **row['budgets'])
@@ -189,7 +191,7 @@ def run_frontend():
             all(diagnostic.runtime.supervision.closed(c) for c in owner.commands)),
             commands_executed=owner.commands if owner else [])
         row['passed'] = bool(row['passed'] and row['ownership_closed'])
-        write(HOST/'record.json', row); scope['model_frontend'] = compact(row); write(RESULT, record)
+        write(host/'record.json', row); scope[key] = compact(row); write(RESULT, record)
     print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'ownership_closed', 'error')}), flush=True)
     require(row['passed'], 'frontend did not qualify')
 

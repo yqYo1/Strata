@@ -1659,6 +1659,23 @@ long thinking generation, task quality and physical 262144 qualification remain
 pending. See
 [`moe_down_row64`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
+The next comparison uses the retained selected6e40 and the same-build original
+split policy, without either rejected row-cache epilogue. The independently
+authored [`controller`](../tools/sycl/compare_selected_split.py) prepares a fresh
+frontend scope rather than refreshing the old frontend's source hashes. Reuse
+the admitted native/fixture packages after exact identity checks. Freeze six
+fresh processes in selected/split/split/selected/selected/split order, four exact
+117489-read requests each, thinking on and zero reuse. Keep first use separate;
+compare subsequent-three medians in the three adjacent pairs. All paired time
+ratios must be below1 and their geometric mean at most0.995 to advance. Finish
+all processes without speed-based retries or exclusions. This is a whole
+prefill policy comparison: selected384 versus split128 effective expert slots,
+81920 versus117488 maximum rows and96 versus48 MoE windows must be observed
+in their respective actual routes. Decode remains1256 slots. A passing screen
+still needs repeated decode/handoff,agent,long-thinking,task and physical262144
+qualification before adoption. No new native build or GPU result follows from
+the controller's preparation.
+
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
 All API calls succeed,the three environment/identity gates pass,17observed
