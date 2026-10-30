@@ -469,8 +469,7 @@ class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
                  want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False,
                  generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False,
-                 generation_input_case=long_generation.STANDARD_INPUT_CASE,
-                 prefill_exact_tokens=None):
+                 prefill_exact_tokens=None, generation_input_case=long_generation.STANDARD_INPUT_CASE):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
         self.prefill_exact_tokens = prefill_exact_tokens

@@ -509,7 +509,6 @@ class BenchmarkTest(unittest.TestCase):
         self.assertIn("not comparable", table)
 
 
-@unittest.skipUnless(os.environ.get('STRATA_BENCH_REAL_PACK'), 'optional pinned real tokenizer fixture')
 class SplitGenerationTest(unittest.TestCase):
     def suite(self, **kwargs):
         return bench.Suite("http://localhost", "", 131072, 1, True, log=lambda _: None,
@@ -674,6 +673,7 @@ class SplitGenerationTest(unittest.TestCase):
             bench.Suite("", "", 131072, 1, True, generation_input_case=lg.SPLIT_INPUT_CASE)
 
 
+@unittest.skipUnless(os.environ.get('STRATA_BENCH_REAL_PACK'), 'optional pinned real tokenizer fixture')
 class RealPackExactCounts(unittest.TestCase):
     def test_boundary_bodies_with_real_tokenizer_without_inference(self):
         import threading
