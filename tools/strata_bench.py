@@ -223,8 +223,12 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
 
 
 def count_chat_tokens(base, key, messages, timeout):
-    """The fork's count-only extension, using the exact timed request body."""
-    body = chat_body(messages, LONG_MAX_TOKENS, True)
+    """Count the exact prefill-only body through the fork's count-only extension."""
+    return count_chat_body_tokens(base, key, chat_body(messages, LONG_MAX_TOKENS, True), timeout)
+
+
+def count_chat_body_tokens(base, key, body, timeout):
+    """Count a final wire body without dropping its template overrides or output cap."""
     req = urllib.request.Request(base+'/v1/chat/completions/count_tokens',
         data=json.dumps(body).encode(), headers={'Content-Type': 'application/json',
             **({'Authorization': 'Bearer '+key} if key else {})})
@@ -465,6 +469,7 @@ class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
                  want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False,
                  generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False,
+                 generation_input_case=long_generation.STANDARD_INPUT_CASE,
                  prefill_exact_tokens=None):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
@@ -502,8 +507,15 @@ class Suite:
         if generation_max_tokens != long_generation.MAX_OUTPUT_TOKENS and not want_long_generation:
             raise ValueError('custom output budget requires a long-generation scope')
         self.generation_max_tokens = generation_max_tokens
+        if generation_input_case not in long_generation.INPUT_CASES:
+            raise ValueError("unsupported long-generation input case")
+        if generation_input_case != long_generation.STANDARD_INPUT_CASE and not (want_long_generation and long_generation_only):
+            raise ValueError("split long-generation input requires --long-generation-only")
+        self.generation_input_case = generation_input_case
+        self.frozen_generation_inputs = {}
         self.journal = journal
-        self.fail_fast_engine_error = fail_fast_engine_error or prefill_only
+        self.fail_fast_engine_error = (fail_fast_engine_error or prefill_only or
+                                       generation_input_case == long_generation.SPLIT_INPUT_CASE)
         self.workload_id = validate_workload_id(workload_id) if workload_id is not None else None
         self.nonce = self.workload_id if self.workload_id is not None else str(int(time.time()))
         self.tokens_per_word, self.overhead = 1.1, 40
@@ -518,7 +530,10 @@ class Suite:
             payload = json.dumps(chat_body(messages, max_tokens, think, kwargs.get("tools"),
                                            kwargs.get("request_overrides"))).encode()
             request_index = self.journal.append("start", phase, run, turn,
-                request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think)
+                request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think,
+                **({"input_case": self.generation_input_case,
+                    "target_input_tokens": long_generation.SPLIT_TARGET_INPUT_TOKENS}
+                   if phase.startswith("long-generation/") and self.generation_case_metadata() else {}))
         try:
             gated=self.request_gate is not None and (phase=='prefill-only' or phase.startswith(('prefill-scaling/', 'long-generation/')))
             if gated:self.request_gate('begin',phase,run)
@@ -548,11 +563,11 @@ class Suite:
             if not row["eligible"]:
                 row.update(ok=False, err="; ".join(row["eligibility_errors"]))
         if phase.startswith("long-generation/"):
-            row.update(long_generation.sample_eligibility(raw, row, maximum=max_tokens, context=self.ctx))
+            row.update(self.generation_eligibility(raw, row, max_tokens, phase, run))
         if self.journal:
             self.journal.append("result", phase, run, turn, request_index=request_index, sample=row)
         if raw.get("_interrupted") is not None:
-            if self.prefill_only:
+            if self.prefill_only or self.generation_case_metadata():
                 self.out.setdefault("request_samples", []).append({"phase":phase,"run":run,"turn":turn,"sample":row})
             raise raw["_interrupted"]
         if self.fail_fast_engine_error:
@@ -644,12 +659,42 @@ class Suite:
                           reused_tokens=stat(r["actual_reused_tokens"] for r in good))
         return self.out
 
+    def generation_case_metadata(self):
+        lg = long_generation
+        if self.generation_input_case == lg.STANDARD_INPUT_CASE:
+            return {}
+        selected = [self.generation_workload] if self.generation_workload else list(lg.WORKLOADS)
+        return {"long_generation_input": dict(case=lg.SPLIT_INPUT_CASE, version="split-v1",
+            target_input_tokens=lg.SPLIT_TARGET_INPUT_TOKENS,
+            minimum_input_tokens=lg.SPLIT_MIN_INPUT_TOKENS,
+            maximum_selector_input_tokens=lg.SPLIT_MAX_INPUT_TOKENS,
+            context_reserve=lg.CONTEXT_RESERVE, max_tokens=self.generation_max_tokens,
+            workload=self.workload_identity(), selected_workloads=selected,
+            instructions_sha256={name: hashlib.sha256(lg.WORKLOADS[name]["instruction"].encode()).hexdigest()
+                                 for name in selected},
+            count_preflight="One bounded count-only request of the final nonce-tagged wire body per generation;outside TTFT.",
+            construction="Approximate target from the standard word-list calibration;no body repair after counting or timing.",
+            native_evidence="Actual per-arm route/placement and same-request continued decode require the owned native log;client counts alone do not qualify split admission.")}
+
+    def generation_version(self):
+        return "split-v1" if self.generation_case_metadata() else long_generation.WORKLOAD_VERSION
+
+    def generation_eligibility(self, raw, sample, maximum, phase, run):
+        lg = long_generation
+        if self.generation_case_metadata():
+            return lg.split_sample_eligibility(raw, sample,
+                self.frozen_generation_inputs.get((phase, run)), maximum, self.ctx)
+        return lg.sample_eligibility(raw, sample, maximum=maximum, context=self.ctx)
+
     def run_long_generation(self):
         lg = long_generation
+        split = bool(self.generation_case_metadata())
+        target = lg.SPLIT_TARGET_INPUT_TOKENS if split else lg.TARGET_INPUT_TOKENS
+        minimum = lg.SPLIT_MIN_INPUT_TOKENS if split else lg.MIN_INPUT_TOKENS
         maximum = self.generation_max_tokens
-        required = lg.TARGET_INPUT_TOKENS + maximum + 512
+        required = target + maximum + 512
         known_context = type(self.ctx) is int and self.ctx > 0
-        if (known_context and self.ctx < required) or (maximum != lg.MAX_OUTPUT_TOKENS and not known_context):
+        if (known_context and self.ctx < required) or ((split or maximum != lg.MAX_OUTPUT_TOKENS) and not known_context):
             self.out["skipped"]["long-generation"] = f"context {self.ctx} is below {required}"
             return
         selected = [self.generation_workload] if self.generation_workload else list(lg.WORKLOADS)
@@ -658,10 +703,19 @@ class Suite:
         cases = {name: {"expected_mtp": spec["expected_mtp"], "requests": []}
                  for name, spec in lg.WORKLOADS.items()}
         order = []
+        if split:
+            self.out["long_generation"] = dict(workload_version=self.generation_version(),
+                **self.generation_case_metadata(), complete=False, workloads=cases, order=order,
+                minimum_input_tokens=minimum, target_input_tokens=target,
+                minimum_generated_tokens=lg.MIN_OUTPUT_TOKENS, max_tokens=maximum,
+                minimum_body_chars=lg.MIN_BODY_CHARS, thinking=lg.THINKING,
+                reasoning_budget_tokens=0, temperature=0, speed_only=self.generation_speed_only,
+                selected_workloads=selected, diagnostic_subset=self.generation_workload is not None,
+                classification=lg.classify_pair(cases, self.runs), quality_qualified=False)
         for run in range(self.runs):
             names = selected if run % 2 == 0 else list(reversed(selected))
             for name in names:
-                words = max(50, int((lg.TARGET_INPUT_TOKENS - self.overhead) / self.tokens_per_word))
+                words = max(50, int((target - self.overhead) / self.tokens_per_word))
                 filler = long_prompt(words)
                 # Remove the unrelated five-sentence instruction, retaining the upstream word-list generator.
                 filler = filler.split("\n", 1)[1].rsplit("\n\n", 1)[0]
@@ -669,11 +723,35 @@ class Suite:
                              "irrelevant reference data. Do not summarize it. Complete the task in detail."},
                             {"role": "user", "content": f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]\n"
                              f"<background>\n{filler}\n</background>\n\nTask:\n{lg.WORKLOADS[name]['instruction']}"}]
-                raw = self.request("long-generation/" + name, run, None, messages, maximum, lg.THINKING,
-                           request_overrides={"chat_template_kwargs": {"enable_thinking": lg.THINKING},
-                                              "reasoning_budget_tokens": 0})
+                overrides = {"chat_template_kwargs": {"enable_thinking": lg.THINKING}, "reasoning_budget_tokens": 0}
+                phase = "long-generation/" + name
+                if split:
+                    old = f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]"
+                    tag = f"[long-generation-split-v1 {name} run {run} {self.nonce}]"
+                    assert messages[-1]["content"].startswith(old)
+                    messages[-1]["content"] = tag + messages[-1]["content"][len(old):]
+                    body = chat_body(messages, maximum, lg.THINKING, request_overrides=overrides)
+                    proof = dict(input_case=self.generation_input_case,
+                        body_sha256=hashlib.sha256(json.dumps(body).encode()).hexdigest())
+                    try:
+                        proof["counted_input_tokens"] = count_chat_body_tokens(self.base, self.key, body, 30)
+                        counted = proof["counted_input_tokens"]
+                        if not (minimum <= counted <= lg.SPLIT_MAX_INPUT_TOKENS and
+                                counted + maximum + lg.CONTEXT_RESERVE <= self.ctx):
+                            raise ValueError("counted split input is outside selector/context bounds;no timed request or repair")
+                    except Exception as error:
+                        reason = "split count-only preflight failed: " + str(error)
+                        if self.journal:
+                            self.journal.append("count-preflight-failed", phase, run, proof=proof, error=reason)
+                        self.out["terminal_failure"] = dict(phase=phase, run=run, error=reason)
+                        self.fail(phase, dict(err=reason))
+                        raise EngineRequestError(reason) from error
+                    self.frozen_generation_inputs[(phase, run)] = proof
+                    if self.journal:
+                        self.journal.append("count-preflight", phase, run, proof=proof)
+                raw = self.request(phase, run, None, messages, maximum, lg.THINKING, request_overrides=overrides)
                 d = digest(raw)
-                d.update(lg.sample_eligibility(raw, d, maximum=maximum, context=self.ctx), run=run, order=len(order),
+                d.update(self.generation_eligibility(raw, d, maximum, phase, run), run=run, order=len(order),
                          output_sha256=hashlib.sha256(raw["text"].encode()).hexdigest(),
                          reasoning_sha256=hashlib.sha256(raw["reasoning_text"].encode()).hexdigest(),
                          output_chars=len(raw["text"]), reasoning_chars=len(raw["reasoning_text"]),
@@ -688,6 +766,9 @@ class Suite:
                     if self.generation_speed_only and not reason:
                         reason = "MTP counters are missing or invalid"
                     self.out["failures"].append({"where": f"long-generation/{name}/{run}", "error": reason})
+                    if split:
+                        self.out["terminal_failure"] = dict(phase=phase, run=run, error=reason)
+                        raise EngineRequestError(reason)
         for case in cases.values():
             good = [r for r in case["requests"] if r["eligible"]]
             speed = [r for r in case["requests"] if r["speed_eligible"]]
@@ -699,12 +780,13 @@ class Suite:
                         acceptance_rate=stat(r["acceptance_rate"] for r in good),
                         pooled_drafts_offered=offered, pooled_drafts_accepted=accepted,
                         pooled_acceptance_rate=accepted / offered if offered else None)
-        self.out["long_generation"] = {"workload_version": lg.WORKLOAD_VERSION,
+        self.out["long_generation"] = {"workload_version": self.generation_version(),
+            **self.generation_case_metadata(), **({"complete": True} if split else {}),
             "speed_only": self.generation_speed_only,
             "selected_workloads": selected, "diagnostic_subset": self.generation_workload is not None,
             "minimum_generated_tokens": lg.MIN_OUTPUT_TOKENS, "max_tokens": maximum,
             "minimum_body_chars": lg.MIN_BODY_CHARS,
-            "minimum_input_tokens": lg.MIN_INPUT_TOKENS, "target_input_tokens": lg.TARGET_INPUT_TOKENS,
+            "minimum_input_tokens": minimum, "target_input_tokens": target,
             "thinking": lg.THINKING, "reasoning_budget_tokens": 0, "temperature": 0,
             "lifecycle": "warm server; alternating workload order; fresh request prefixes",
             "order": order, "workloads": cases, "classification": lg.classify_pair(cases, self.runs),
@@ -1496,6 +1578,9 @@ def main(argv=None) -> int:
     ap.add_argument("--long-generation-speed-only", action="store_true", help="allow valid zero-draft throughput baselines; keep agreement eligibility separate (requires --long-generation-only)")
     ap.add_argument("--long-generation-workload", choices=tuple(long_generation.WORKLOADS),
                     help="select one diagnostic workload with --long-generation-only; does not qualify the MTP pair")
+    ap.add_argument("--long-generation-input-case", choices=long_generation.INPUT_CASES,
+                    default=long_generation.STANDARD_INPUT_CASE,
+                    help="input geometry: standard-v4-33k (default), or split-v1-96k with --long-generation-only")
     ap.add_argument("--long-generation-max-tokens", type=int, choices=long_generation.OUTPUT_TOKEN_CHOICES,
                     help="finite output budget including thinking (default 16384); use the same budget in both arms")
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
@@ -1529,6 +1614,8 @@ def main(argv=None) -> int:
         ap.error("--long-generation-workload requires --long-generation-only")
     if a.long_generation_speed_only and not a.long_generation_only:
         ap.error("--long-generation-speed-only requires --long-generation-only")
+    if a.long_generation_input_case != long_generation.STANDARD_INPUT_CASE and not a.long_generation_only:
+        ap.error("--long-generation-input-case split-v1-96k requires --long-generation-only")
     if a.long_generation_max_tokens is not None and not (a.long_generation or a.long_generation_only):
         ap.error("--long-generation-max-tokens requires --long-generation or --long-generation-only")
     a.long_generation_max_tokens = a.long_generation_max_tokens or long_generation.MAX_OUTPUT_TOKENS
@@ -1610,14 +1697,15 @@ def main(argv=None) -> int:
                       generation_workload=a.long_generation_workload,
                       generation_speed_only=a.long_generation_speed_only,
                       generation_max_tokens=a.long_generation_max_tokens,
+                      generation_input_case=a.long_generation_input_case,
                       characterize_prefill=a.prefill_scaling, prefill_exact_tokens=a.prefill_exact_tokens,
                       request_gate=profile_request_gate if a.profile_request_gates else None)
-        journal.append("identity", "suite", source=client_fingerprint(),
+        journal.append("identity", "suite", source=client_fingerprint(), **suite.generation_case_metadata(),
                        long_generation_speed_only=a.long_generation_speed_only,
                        long_generation_max_tokens=a.long_generation_max_tokens,
                        model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
                        thinking=a.think, long_generation_thinking=long_generation.THINKING,
-                       workload_version=long_generation.WORKLOAD_VERSION, requested_runs=max(1, a.runs),
+                       workload_version=suite.generation_version(), requested_runs=max(1, a.runs),
                        fail_fast_engine_error=suite.fail_fast_engine_error, workload=suite.workload_identity(),
                        mode=a.mode,
                        prefill_plan=suite.prefill_plan() if a.prefill_only else None)
@@ -1638,7 +1726,7 @@ def main(argv=None) -> int:
             if not machine.get("gpu"):
                 machine["gpu"] = pre.get("gpu")
             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
-                   "params": {"mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                   "params": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
                               "long_generation_speed_only": a.long_generation_speed_only,
                               "long_generation_max_tokens": a.long_generation_max_tokens,
@@ -1647,18 +1735,20 @@ def main(argv=None) -> int:
                                                     "--think" if a.think else "",
                                                     "--long-generation-speed-only" if a.long_generation_speed_only else "",
                                                     f"--long-generation-max-tokens {a.long_generation_max_tokens}" if suite.want_long_generation else "",
+                                                    f"--long-generation-input-case {a.long_generation_input_case}" if suite.generation_case_metadata() else "",
+                                                    f"--long-generation-workload {a.long_generation_workload}" if a.long_generation_workload else "",
                                                     '--prefill-scaling' if a.prefill_scaling else f"--prefill-exact-tokens {a.prefill_exact_tokens}" if a.prefill_exact_tokens is not None else f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
                                                     f"--workload-id {a.workload_id}" if a.workload_id is not None else "",
                                                     "--fail-fast-engine-error" if a.fail_fast_engine_error else "", f"--runs {a.runs}" if a.runs != 3 else "",
                                                     "--long-generation-only" if a.long_generation_only else
                                                     "--long-generation" if a.long_generation else "") if x)},
                    "elapsed_s": time.time() - t0, "machine": machine, "results": out,
-                   "comparison_identity": {"mode":a.mode, "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
+                   "comparison_identity": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
                        "long_generation_speed_only": a.long_generation_speed_only,
                        "long_generation_max_tokens": a.long_generation_max_tokens,
                        "reasoning_budget_tokens": 0, "temperature": 0, "model": machine.get("model"),
                        "quant": machine.get("quant"), "context": machine.get("context"),
-                       "long_generation_version": long_generation.WORKLOAD_VERSION,
+                       "long_generation_version": suite.generation_version(),
                        "long_generation_thinking": long_generation.THINKING,
                        "long_generation_instructions": long_generation.WORKLOADS,
                        "calibration": [suite.tokens_per_word, suite.overhead],
@@ -1702,6 +1792,23 @@ def main(argv=None) -> int:
                     handle.flush();os.fsync(handle.fileno())
                 os.replace(target,directory/"results.json")
                 (directory/"README.md").write_text(red(render_readme(partial)),encoding="utf-8")
+            elif suite.generation_case_metadata():
+                partial = dict(schema=SCHEMA, tool="tools/strata_bench.py",
+                    date=datetime.date.today().isoformat(), complete=False, qualified=False,
+                    terminal="interrupted" if isinstance(error, (KeyboardInterrupt, SystemExit)) else "failed",
+                    terminal_failure=repr(error)[:300], elapsed_s=time.time()-t0, machine=pre, results=suite.out,
+                    params=dict(**suite.generation_case_metadata(), mode=a.mode, runs=suite.runs,
+                        workload=suite.workload_identity(), long_generation=True, long_generation_only=True,
+                        long_generation_max_tokens=a.long_generation_max_tokens,
+                        long_generation_speed_only=a.long_generation_speed_only, started_server=started),
+                    comparison_identity=dict(**suite.generation_case_metadata(), mode=a.mode,
+                        workload=suite.workload_identity(), client=client_fingerprint(),
+                        long_generation_version=suite.generation_version()))
+                target = directory / "results.tmp"
+                with target.open("w", encoding="utf-8") as handle:
+                    json.dump(redact_obj(partial, red), handle, indent=1, ensure_ascii=False)
+                    handle.flush(); os.fsync(handle.fileno())
+                os.replace(target, directory / "results.json")
             raise
         say("\nResults (median, range over the runs):")
         say(red(short_table(res)))

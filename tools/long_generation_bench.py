@@ -13,6 +13,12 @@ TARGET_INPUT_TOKENS = 33792  # calibration is approximate; check actual usage af
 MIN_DRAFTS = 256
 WORKLOAD_VERSION = 4
 THINKING = True
+STANDARD_INPUT_CASE = "standard-v4-33k"
+SPLIT_INPUT_CASE = "split-v1-96k"
+INPUT_CASES = (STANDARD_INPUT_CASE, SPLIT_INPUT_CASE)
+SPLIT_TARGET_INPUT_TOKENS = 98304
+SPLIT_MIN_INPUT_TOKENS = 90114
+SPLIT_MAX_INPUT_TOKENS = 117489
 
 WORKLOADS = {
     "regular-code": {
@@ -104,3 +110,40 @@ def run_eligible(sample, speed_only=False):
     offered, accepted = sample.get("drafts_offered"), sample.get("drafts_accepted")
     valid = type(offered) is int and type(accepted) is int and 0 <= accepted <= offered
     return bool(valid and sample.get("speed_eligible" if speed_only else "eligible") is True)
+
+
+def split_sample_eligibility(raw, sample, proof, maximum=MAX_OUTPUT_TOKENS, context=None):
+    """Qualify client counts/body only; native split admission remains a separate gate."""
+    result = sample_eligibility(raw, sample, maximum=maximum, context=context)
+    errors = []
+    prompt = (raw.get("usage") or {}).get("prompt_tokens")
+    read = (raw.get("timings") or {}).get("prompt_n")
+    if (type(prompt) is not int or type(read) is not int or prompt != read or
+            not SPLIT_MIN_INPUT_TOKENS <= prompt <= SPLIT_MAX_INPUT_TOKENS):
+        errors.append("split input needs matching actual prompt/read counts in 90114..117489")
+    if type(context) is not int or context <= 0:
+        errors.append("split input needs known context and output room")
+    for field in ("prompt_ms", "prompt_tps", "decode_ms", "decode_tps"):
+        value = sample.get(field)
+        if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+            errors.append(f"{field} is absent or invalid for split continuation")
+    if sample.get("prompt_tps_source") != "engine":
+        errors.append("engine prefill clock is missing")
+    proof = proof if isinstance(proof, dict) else {}
+    sha = proof.get("body_sha256")
+    if (not isinstance(sha, str) or len(sha) != 64 or
+            any(c not in "0123456789abcdef" for c in sha) or
+            raw.get("request_sha256") != sha or sample.get("request_sha256") != sha or
+            proof.get("input_case") != SPLIT_INPUT_CASE or
+            type(proof.get("counted_input_tokens")) is not int or
+            proof.get("counted_input_tokens") != prompt):
+        errors.append("timed body/count differs from the split count-only preflight")
+    result["speed_ineligible_reasons"].extend(errors)
+    result["ineligible_reasons"].extend(errors)
+    result.update(eligible=not result["ineligible_reasons"],
+        agreement_eligible=not result["ineligible_reasons"],
+        speed_eligible=not result["speed_ineligible_reasons"],
+        input_case=SPLIT_INPUT_CASE, target_input_tokens=SPLIT_TARGET_INPUT_TOKENS,
+        counted_input_tokens=proof.get("counted_input_tokens"), count_preflight_body_sha256=sha,
+        native_route_qualified=False, timing_frontend_state="post-count-preflight")
+    return result

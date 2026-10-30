@@ -89,6 +89,40 @@ the same warmup, prompt, thinking and output budget, records the selected subset
 and leaves the other case unrun. Even three subset runs do not qualify the MTP
 pair. The default still executes both workloads.
 
+For split-prefill continuation checks, select the separate input case:
+
+```sh
+./bench.sh --url http://127.0.0.1:18096 --long-generation-only --think \
+  --long-generation-input-case split-v1-96k --workload-id split-continuation-v1
+```
+
+This leaves the standard v4 33K case unchanged. The new case targets approximately
+98,304 input tokens using the same word-list calibration and generation tasks.
+It requires the fork's count-only endpoint. Before each timed request, it counts
+that exact final JSON body, including the task/run nonce, thinking-template
+overrides and selected output cap. It does not repair the body after counting
+or timing. The count preflight is outside TTFT and may warm tokenizer caches.
+The count/body hash, selected case/version, target, task hashes and nonce policy
+are recorded in results, parameters, the request journal and comparison identity.
+
+Actual API prompt and engine read counts must match, with zero reuse, and lie
+in 90,114..117,489. Requested output plus 256 reserved slots must also fit the
+known context; at 131,072 context with the default 16,384 output cap, the upper
+input bound is 114,432. Count/body changes, bad clocks or an ineligible response
+stop this case before the next generation. Thinking, answer-body and MTP gates
+remain in force. Use the existing workload selector and one run for a bounded
+diagnostic; three eligible observations per workload are still needed for the
+strong/weak agreement pair.
+
+These client checks do not prove native split admission. Capture the actual
+per-request candidate admission, engine extent, placement, guard/drain and
+continued decode from the owned native process, and the selected arm's own
+route separately. For the current 8,192-chunk split implementation, the source
+selector covers 90,113..117,488 engine rows, with the audited mapping of one
+fewer engine row than API read tokens. Do not compare this 96K case with v4's
+33K case as an engine speedup. It does not qualify an agent session, task quality
+or the physical 262,144-token fill/tail/RESTORE path.
+
 Use the same pinned unmodified Niko client on both engines for existing standard
 results, and the same pinned extended client for added decode tests. Distinguish
 warm-server requests from independent fresh-server repetitions, and prefill

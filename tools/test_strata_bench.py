@@ -510,6 +510,170 @@ class BenchmarkTest(unittest.TestCase):
 
 
 @unittest.skipUnless(os.environ.get('STRATA_BENCH_REAL_PACK'), 'optional pinned real tokenizer fixture')
+class SplitGenerationTest(unittest.TestCase):
+    def suite(self, **kwargs):
+        return bench.Suite("http://localhost", "", 131072, 1, True, log=lambda _: None,
+            want_long_generation=True, long_generation_only=True,
+            generation_input_case=lg.SPLIT_INPUT_CASE, workload_id="split-continuation", **kwargs)
+
+    def raw_and_proof(self, count=98304):
+        raw = response()
+        raw["usage"]["prompt_tokens"] = raw["timings"]["prompt_n"] = count
+        raw["request_sha256"] = "a" * 64
+        proof = dict(input_case=lg.SPLIT_INPUT_CASE, body_sha256=raw["request_sha256"], counted_input_tokens=count)
+        return raw, proof
+
+    def test_split_actual_bounds_and_direct_engine_read_count_are_required(self):
+        for n in (90114, 98304, 114432):
+            raw, proof = self.raw_and_proof(n)
+            self.assertTrue(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["eligible"])
+        for n in (90113, 114433, 117490):
+            raw, proof = self.raw_and_proof(n)
+            self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["speed_eligible"])
+        for read in (None, True, 98303):
+            raw, proof = self.raw_and_proof()
+            raw["timings"]["prompt_n"] = read
+            self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["speed_eligible"])
+        for context in (None, True, "131072", 114943):
+            raw, proof = self.raw_and_proof()
+            self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=context)["speed_eligible"])
+
+    def test_split_rejects_changed_count_body_reuse_and_clocks(self):
+        for field, bad in (("body_sha256", "b" * 64), ("body_sha256", "fixture"),
+                           ("counted_input_tokens", 98305), ("input_case", lg.STANDARD_INPUT_CASE)):
+            raw, proof = self.raw_and_proof(); proof[field] = bad
+            self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["eligible"])
+        for field in ("prompt_ms", "prompt_per_second", "predicted_ms", "predicted_per_second"):
+            for bad in (True, None, 0, float("nan"), float("inf")):
+                raw, proof = self.raw_and_proof(); raw["timings"][field] = bad
+                self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["speed_eligible"])
+        for cached in (None, 1):
+            raw, proof = self.raw_and_proof();raw["usage"]["prompt_tokens_details"]["cached_tokens"] = cached
+            self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["speed_eligible"])
+
+    def test_split_keeps_answer_thinking_usage_and_mtp_eligibility(self):
+        for field, bad in (("text", ""), ("reasoning_text", ""), ("done_received", False), ("finish_reason", "tool_calls")):
+            raw, proof = self.raw_and_proof(); raw[field] = bad
+            self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["speed_eligible"])
+        raw, proof = self.raw_and_proof();raw["usage"]["completion_tokens"] = 1023
+        self.assertFalse(lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)["eligible"])
+        raw, proof = self.raw_and_proof();raw["timings"].update(draft_n=0, draft_n_accepted=0)
+        result = lg.split_sample_eligibility(raw, bench.digest(raw), proof, context=131072)
+        self.assertTrue(lg.run_eligible(result | bench.digest(raw), True))
+        self.assertFalse(result["agreement_eligible"]);self.assertIsNone(result["acceptance_rate"])
+        self.assertFalse(result["native_route_qualified"])
+
+    def test_split_count_and_timed_http_bodies_and_journal_match(self):
+        events = []
+        def open_request(request, timeout):
+            body = json.loads(request.data)
+            counting = request.full_url.endswith("/count_tokens")
+            events.append(("count" if counting else "timed", request.data))
+            self.assertEqual(body["max_tokens"], 16384)
+            self.assertEqual(body["chat_template_kwargs"], {"enable_thinking": True})
+            self.assertEqual(body["reasoning_effort"], "xhigh")
+            self.assertEqual(body["reasoning_budget_tokens"], 0)
+            self.assertIn("split-continuation]", body["messages"][-1]["content"])
+            if counting:
+                self.assertEqual(timeout, 30)
+                return io.BytesIO(json.dumps({"input_tokens": 98304}).encode())
+            raw, _ = self.raw_and_proof()
+            if "varied-prose" in body["messages"][-1]["content"]:
+                raw["timings"]["draft_n_accepted"] = 320
+            result = dict(choices=[dict(delta=dict(content=raw["text"], reasoning_content=raw["reasoning_text"]), finish_reason="stop")],
+                usage=raw["usage"], timings=raw["timings"])
+            return io.BytesIO(("data: " + json.dumps(result) + "\n\ndata: [DONE]\n").encode())
+        with tempfile.TemporaryDirectory() as tmp:
+            journal = bench.RequestJournal(Path(tmp), lambda s: s)
+            suite = self.suite(journal=journal);suite.runs = 3
+            with patch.object(bench.urllib.request, "urlopen", side_effect=open_request):
+                suite.run_long_generation()
+            result = suite.out["long_generation"]
+            self.assertEqual(result["workload_version"], "split-v1")
+            self.assertEqual(result["minimum_input_tokens"], 90114)
+            self.assertEqual(result["target_input_tokens"], 98304)
+            self.assertTrue(result["complete"]);self.assertTrue(result["classification"]["qualified"])
+            self.assertEqual([kind for kind, _ in events], ["count", "timed"] * 6)
+            bodies = []
+            for counted, timed in zip(events[::2], events[1::2]):
+                self.assertEqual(counted[1], timed[1]);bodies.append(timed[1])
+            self.assertEqual(len(set(bodies)), 6)
+            journal.state(complete=True, terminal="complete")
+            self.assertTrue(bench.verify_request_journal(tmp)["complete"])
+            rows = [json.loads(line) for line in (Path(tmp) / "requests.jsonl").read_text().splitlines()]
+            starts = [r for r in rows if r["kind"] == "start"]
+            ends = [r for r in rows if r["kind"] == "result"]
+            for begin, end in zip(starts, ends):
+                self.assertEqual(begin["input_case"], lg.SPLIT_INPUT_CASE)
+                sample = end["sample"]
+                self.assertEqual(begin["request_sha256"], sample["count_preflight_body_sha256"])
+                self.assertEqual(sample["request_sha256"], begin["request_sha256"])
+                self.assertTrue(sample["eligible"])
+
+    def test_split_count_failure_stops_before_inference_without_repair(self):
+        for value in (90000, 114433):
+            suite = self.suite()
+            with patch.object(bench, "count_chat_body_tokens", return_value=value) as count, patch.object(bench, "chat") as chat:
+                with self.assertRaises(bench.EngineRequestError):suite.run_long_generation()
+            self.assertEqual(count.call_count, 1);chat.assert_not_called()
+            self.assertFalse(suite.out["long_generation"]["complete"])
+            self.assertIn("terminal_failure", suite.out)
+            rendered = bench.render_readme(dict(machine={}, results=suite.out,
+                params=dict(mode="suite", runs=1, think=True, command="split-case"),
+                date="2026-10-31", elapsed_s=0, complete=False))
+            self.assertIn("count-only preflight failed", rendered)
+
+    def test_split_actual_mismatch_stops_before_the_next_request(self):
+        suite = self.suite();suite.runs = 3
+        raw, _ = self.raw_and_proof();raw["request_sha256"] = "b" * 64
+        with patch.object(bench, "count_chat_body_tokens", return_value=98304) as count, patch.object(bench, "chat", return_value=raw) as chat:
+            with self.assertRaises(bench.EngineRequestError):suite.run_long_generation()
+        self.assertEqual(count.call_count, 1);self.assertEqual(chat.call_count, 1)
+        self.assertFalse(suite.out["long_generation"]["complete"])
+        self.assertEqual(len(suite.out["long_generation"]["workloads"]["regular-code"]["requests"]), 1)
+
+    def test_split_interrupt_keeps_request_identity_and_partial_sample(self):
+        suite = self.suite();raw, _ = self.raw_and_proof()
+        raw.update(_interrupted=KeyboardInterrupt(), done_received=False)
+        def interrupted(_base, _key, messages, cap, think, **kwargs):
+            body = bench.chat_body(messages, cap, think, request_overrides=kwargs["request_overrides"])
+            raw["request_sha256"] = hashlib.sha256(json.dumps(body).encode()).hexdigest()
+            return raw
+        with patch.object(bench, "count_chat_body_tokens", return_value=98304), patch.object(bench, "chat", side_effect=interrupted):
+            with self.assertRaises(KeyboardInterrupt):suite.run_long_generation()
+        self.assertFalse(suite.out["long_generation"]["complete"])
+        rows = suite.out["request_samples"];self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["sample"]["input_case"], lg.SPLIT_INPUT_CASE)
+        self.assertFalse(rows[0]["sample"]["speed_eligible"])
+
+    def test_default_v4_keeps_its_body_and_eligibility_without_count_preflight(self):
+        suite = bench.Suite("", "", 131072, 1, True, log=lambda _: None, workload_id="not-in-v4-prompt")
+        with patch.object(bench, "count_chat_body_tokens") as count, patch.object(bench, "chat", return_value=response()) as chat:
+            suite.run_long_generation()
+        count.assert_not_called()
+        self.assertEqual(suite.generation_case_metadata(), {})
+        self.assertEqual(suite.out["long_generation"]["workload_version"], 4)
+        self.assertEqual(suite.out["long_generation"]["target_input_tokens"], 33792)
+        for call in chat.call_args_list:
+            self.assertIn("[long-generation-v4 ", call.args[2][-1]["content"])
+            self.assertNotIn("not-in-v4-prompt", call.args[2][-1]["content"])
+
+    def test_split_identity_distinguishes_geometry_and_fixed_nonce(self):
+        suite = self.suite();identity = suite.generation_case_metadata()
+        contract = identity["long_generation_input"]
+        self.assertEqual(contract["workload"]["nonce"], "split-continuation")
+        self.assertEqual(contract["selected_workloads"], list(lg.WORKLOADS))
+        self.assertEqual(set(contract["instructions_sha256"]), set(lg.WORKLOADS))
+        metric = {"median": 10, "min": 10, "max": 10, "n": 3}
+        a = dict(machine={}, complete=True, comparison_identity=dict(workload=suite.workload_identity(), **identity),
+            results={"long_generation": {"workloads": {"regular-code": {"decode_tps": metric, "eligible_runs": 3}}}})
+        for key, value in (("target_input_tokens", 33792), ("version", 4), ("case", lg.STANDARD_INPUT_CASE)):
+            b = json.loads(json.dumps(a));b["comparison_identity"]["long_generation_input"][key] = value
+            self.assertIn("not comparable", bench.compare_table(a, b))
+        with self.assertRaises(ValueError):
+            bench.Suite("", "", 131072, 1, True, generation_input_case=lg.SPLIT_INPUT_CASE)
+
+
 class RealPackExactCounts(unittest.TestCase):
     def test_boundary_bodies_with_real_tokenizer_without_inference(self):
         import threading
