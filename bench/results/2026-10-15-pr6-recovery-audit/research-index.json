@@ -12522,7 +12522,6 @@
       "status": "completed_released_reviewed_with_material_corrections",
       "source_revision": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
       "policy_revision": "6b523dfe1",
-      "report_path": ".cache/research/2026-10-30/qwen4exp_long_prefill_reduction_contract_20261030.md",
       "report_budget": {
         "max_bytes": 24576,
         "substantive_words_min": 1600,
@@ -12602,8 +12601,6 @@
       "worker_effort": "high",
       "model_evidence": "Original launch receipt requested/effective gpt-6-luna/high;same positively identified terminal reused after skipped startup update prompt. No model/effort override on retry.",
       "startup_recovery": "Initialctx_cb211a98d0f4 failed agent_readiness/agent-update-prompt and never ran Task;actual terminal confirmed prompt. Esc without Enter skipped update;retry of the same Task/terminal accepted input and observed turn_start. No research steering or duplicate Task.",
-      "report_bytes": 17592,
-      "report_sha256": "96641c2574deb84666387b62c55471f1bf15ac0c8a81a4e93b260ab2f4d65d97",
       "terminal_released": true,
       "delivery_acknowledged": true,
       "delivery_id": "delivery_4003bb5be687",
@@ -12614,7 +12611,21 @@
       "original_report_selected_framework_contract_accepted": false,
       "essential_correction": "Original report conflates TRITON with TRITON_KERNELS and incorrectly delegates this selected route to unpinned triton_kernels.matmul. Preserve that source-claim refusal. Native Luna/max followed the actual TRITON path;Main independently recovered/hashed all9additional selected source files at877be2974. This is source-only evidence,not observed execution.",
       "corrected_source_contract": "Explicit BF16/unquantized CUDA SM80 TRITON,TP/EP/DP/CP1,long-prefill route,enable_fused_moe_sum_all_reduce=false:Down uses FP32 GEMM accumulator and route weight before BF16 contribution storage;large-M top-k reduction accumulates stored contributions in FP32 then stores BF16;separate shared-gate/add uses FP32 arithmetic and stores BF16. Strata rounds unweighted Down to BF16 before FP32 expert-order FMA and combines shared output at its final BF16 store. Rounding locations/order differ;no bitwise or task-quality parity is inferred.",
-      "retention": "Original body only until the next serialized safe cleanup boundary:checkpoint and isolated-source facts already survive in this index;do not retain its incorrect selected-route claim as a reference. Keep the corrected review through the prospective post-comparison numerical/task plan,then review again. Settled spec/start/retry paperwork can retire at that safe boundary."
+      "retention": "Original report body and settled spec/start/retry removed after indexing independent selected-route correction. Corrected native review remains only through post-comparison numerical/task-plan decision;review again then.",
+      "retired_original_report": {
+        "path": ".cache/research/2026-10-30/qwen4exp_long_prefill_reduction_contract_20261030.md",
+        "bytes": 17592,
+        "sha256": "96641c2574deb84666387b62c55471f1bf15ac0c8a81a4e93b260ab2f4d65d97",
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/down-clean-process1-and-research-retired-20261030.jsonl",
+        "manifest_sha256": "ff8baa1c5b39c7a87162390b8ac5b9bcc781377c6be424ed5af59e9ce8a742be",
+        "reason": "Material selected-route claim refusal preserved;nonduplicate useful identity/source facts and corrected review remain in current decision metadata. No original runtime/quality/performance execution was claimed."
+      },
+      "transaction_retirement": {
+        "files": 4,
+        "bytes": 32740,
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/down-clean-process1-and-research-retired-20261030.jsonl",
+        "manifest_sha256": "ff8baa1c5b39c7a87162390b8ac5b9bcc781377c6be424ed5af59e9ce8a742be"
+      }
     }
   },
   "partial_sum_compression_methods_collection_20261027": {
