@@ -30578,6 +30578,144 @@
       "ownership_closed": true,
       "GPU_executed": false,
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
+    },
+    "split_resource_profile_v2": {
+      "stage": "prepared",
+      "source_commit": "43c16ead6b147fbba2c2cbeac393e1135d54f50f",
+      "asset_basis": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/record.json",
+        "sha256": "9d591989fe2da1c53f67e683a5d70eb51b6e03ddbf61ff2f9a8f2324e4091467"
+      },
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+        "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+        "bytes": 22897880
+      },
+      "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+      "native_validation_probe": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+        },
+        "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+        "component_original_plan": {
+          "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+          "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+        },
+        "current_runtime_qualification_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "native_profile": {
+        "mode": "trace",
+        "launcher": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "bytes": 513168,
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+        },
+        "collector": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+          "bytes": 2329704,
+          "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+        },
+        "session": "StrataSplit60dc7e2c38a7ea424f6b64fe",
+        "environment": {
+          "UNITRACE_SystemTime": "1",
+          "UNITRACE_FollowChildProcess": "1",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-resource-profile-v2/model/trace",
+          "LD_DEBUG": "libs"
+        }
+      },
+      "prefix_profile": {
+        "mode": "trace",
+        "launcher": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "bytes": 513168,
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+        },
+        "collector": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+          "bytes": 2329704,
+          "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+        },
+        "session": "StrataSplitac2ebc5118ca112c0146a21d",
+        "environment": {
+          "UNITRACE_SystemTime": "1",
+          "UNITRACE_FollowChildProcess": "1",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-resource-profile-v2/prefix/trace",
+          "LD_DEBUG": "libs"
+        }
+      },
+      "prefix_binary": {
+        "path": "/usr/bin/env",
+        "sha256": "886e5fa8be716b03eeda48856e0f04493f2969fc148fb7812594ffac647fa050",
+        "bytes": 48072
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-resource-profile-v2/model/config.json",
+        "--port",
+        "52255",
+        "--prefill-exact-tokens",
+        "117489",
+        "--think",
+        "--runs",
+        "1",
+        "--profile-request-gates",
+        "--workload-id",
+        "native_gdn_20261018",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-resource-profile-v2/model/bench"
+      ],
+      "profile": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "generated": {
+        "config.json": "0db07526e99999e56d1acdca75210e7a979174995f01d69198f4c4b5c6c11354",
+        "plan.json": "bab2fb6224f354ef4aee2ee59451c333c431197b7e13f9f66cf164bb6996e957"
+      },
+      "environment_sha256": "87c71da23e1ccac6a73e11b94484efdd78b8504b1cf4e19f2771fe53608bb6ff",
+      "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+      "clean_first_use_ms": [
+        126663.3,
+        126146.1,
+        126359.5
+      ],
+      "maximum_observer_ratio": 1.15,
+      "budgets": {
+        "wall": 1800,
+        "cpu": 7200,
+        "rss_cap": 111669149696,
+        "text_cap": 67108864,
+        "file_cap": 1073741824,
+        "total_cap": 1610612736
+      },
+      "plan": {
+        "question": "Which GPU kernels/copies and disjoint main-thread CPU/wait regions dominate the current117K split request?",
+        "constants": "One117489-read/zero-reuse request,117488BF16GPU rows,128prefill slots/48windows,8192chunks,1256decode slots,5workers,spec4,INT8 resident131072context and original Down. Same body as the clean cohort request0;thinking and<=24outputs.",
+        "observers": "Exact indexed UnitTrace assets,non-counter trace;quiet parameter validation,STRATA_TRACE1 and existing CPU_WAIT_PROFILE1. Command-service profiling stays off. CPU-only prefix/environment probe must pass and be committed before the single model process.",
+        "acceptance": "Exact source/runtime/assets/owner/device/env/route/body/count/clock checks,valid CPUv4 partition,unique GPU/host-source IDs and contained raw-clock services,normal closure,quiet validation and no fresh fault. Report first-use prompt-time ratio against median of3clean first-use samples;ratio<=1.15 is required to use this observation for tuning selection.",
+        "raw_budget_reason": "Whole-request host/device identity and service joins require the complete temporary timeline. Prior32K trace used266967750bytes;117K may exceed512MiB. Bound timeline at1GiB and job total1.5GiB;Main extracts aggregates and retires raw output at attribution closure.",
+        "limits": "Attribution only. No exact native prefill endpoint,complete graph dependency,physical PCIe/DRAM bytes,hardware saturation,clean speed,decode/task/agent/full262144 or adoption claim.",
+        "stopping": "First admission/owner/source/validation/fault/budget/body/route/count/clock/overhead failure stops;no retry,hash refresh,replacement or changed threshold. Discard a failed session."
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true
     }
   },
   "metric_topology": {
