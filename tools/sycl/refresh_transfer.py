@@ -5,6 +5,7 @@ Repository LICENSE. One tiny standalone tool, no new engine generation. Own all
 builds and copies; prepare -> commit -> build -> commit -> run. No automatic retry.
 """
 import ast
+import copy
 import fcntl
 import hashlib
 import json
@@ -35,6 +36,8 @@ BUILD_LIMITS = dict(wall=240, cpu=600, rss_cap=4 << 30, text_cap=8 << 20,
                     file_cap=128 << 20, total_cap=256 << 20)
 RUN_LIMITS = dict(wall=90, cpu=90, rss_cap=3 << 30, text_cap=8 << 20,
                   file_cap=16 << 20, total_cap=64 << 20)
+OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
+UMF = Path('/opt/intel/oneapi/umf/1.2')
 require, digest, write = guards.require, supervision.sha, closure.write
 
 
@@ -87,17 +90,54 @@ def runtime():
     return rt, full
 
 
+def official_packages():
+    return subprocess.check_output(['dpkg-query','-W','-f=${Package} ${Version}\n',
+        'intel-oneapi-*2026.2*','intel-oneapi-umf-1.2'], text=True,timeout=15).splitlines()
+
+
+def official_snapshot():
+    # Independent Main SDK recipe recovered from617e1845a; no legacy SDK
+    # header/runtime/compiler reuse. Freeze this NEW scope before compiling.
+    packages = official_packages()
+    require(packages and all(len(p.split()) == 2 for p in packages), 'official package identities missing')
+    checked = subprocess.run(['dpkg','--verify',*[p.split()[0] for p in packages]],
+                             capture_output=True,text=True,timeout=120)
+    require(checked.returncode == 0 and not checked.stdout and not checked.stderr,
+            'installed official SDK package bytes differ')
+    roots = [OFFICIAL,UMF,Path('/usr/include')]
+    roots += [p for p in Path('/usr/lib/gcc').glob('*/*/include*') if p.is_dir()]
+    paths = {p.resolve() for root in roots for p in root.rglob('*') if p.is_file()}
+    files = {str(p):digest(p) for p in sorted(paths)}
+    write(ROOT / 'sdk-inputs.json',files)
+    return dict(path=str(ROOT / 'sdk-inputs.json'),sha256=digest(ROOT / 'sdk-inputs.json'),
+                files=len(files),packages=packages,origin='Official Intel apt packages;dpkg verification silent.')
+
+
+def official_admit(meta):
+    require(digest(meta['path']) == meta['sha256'] and official_packages() == meta['packages'],
+            'official SDK manifest/packages differ')
+    files = json.loads(Path(meta['path']).read_text())
+    require(len(files) == meta['files'] and all(digest(p) == h for p,h in files.items()),
+            'official SDK/host input changed')
+    return files
+
+
 def verify(row):
     rt, full = runtime()
     require(digest(r.RESULT) == row['runtime_sha256'] and full['binary'] == row['selected_binary'], 'runtime/selected engine changed')
     require(guards.driver_guard() == row['driver'] and rt['boot'] == row['boot'], 'transfer boot/driver')
-    require(closure.sdk_inputs() == row['sdk'], 'transfer compiler SDK changed')
+    if PIPELINE:
+        official_admit(row['sdk'])
+        require(all(digest(p) == h for p,h in row['runtime_files'].items()), 'proposed official runtime changed')
+    else:
+        require(closure.sdk_inputs() == row['sdk'], 'transfer compiler SDK changed')
     require(digest(row['inputs']['path']) == row['inputs']['sha256'], 'transfer input manifest changed')
     inputs = json.loads(Path(row['inputs']['path']).read_text())
     require(inputs['project'] == pins(row['source_commit']), 'transfer source closure changed')
     for name, sha in inputs['external'].items():
         require(digest(name) == sha, 'transfer external input changed: ' + name)
-    require(commands(full['compiler']['path']) == row['commands'], 'transfer build command changed')
+    compiler = str(OFFICIAL / 'bin/icpx') if PIPELINE else full['compiler']['path']
+    require(commands(compiler) == row['commands'], 'transfer build command changed')
     return inputs, rt
 
 
@@ -105,10 +145,15 @@ def prepare(data):
     require(KEY not in data and not ROOT.exists(), 'fresh transfer plan only')
     rt, full = runtime()
     revision = git('rev-parse', 'HEAD').decode().strip(); project = pins(revision)
-    sdk = closure.sdk_inputs(); external = closure.external_inputs(rt)
+    sdk = None if PIPELINE else closure.sdk_inputs()
+    external = closure.external_inputs(rt)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir(mode=0o700)
+    if PIPELINE:
+        sdk = official_snapshot()
+        old_lib = Path(next(p for p in rt['runtime_files'] if '/libsycl.so.' in p)).parent
+        external = {p:h for p,h in external.items() if not Path(p).is_relative_to(old_lib)}
     write(ROOT / 'inputs.json', dict(project=project, external=external))
     build_env = dict(full['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     native_env = dict(rt['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
@@ -119,7 +164,7 @@ def prepare(data):
     cases += [dict(host=host, size=size, repeats=3, diagnostic=False) for size in (2 << 20, 320 << 20)
               for host in ('ordinary', 'usm', 'usm', 'ordinary', 'ordinary', 'usm')]
     if PIPELINE:
-        cases = [dict(diagnostic=True, argv=['--smoke'])]
+        cases = [dict(diagnostic=False,host_canary=True,argv=[]),dict(diagnostic=True, argv=['--smoke'])]
         cases += [dict(diagnostic=False, argv=['--compare', str(i)]) for i in range(3)]
     row = dict(stage='prepared', source_commit=revision, inputs=dict(path=str(ROOT / 'inputs.json'),
                sha256=digest(ROOT / 'inputs.json'), project_files=len(project), external_files=len(external)),
@@ -134,9 +179,40 @@ def prepare(data):
                retention='One tiny helper for imminent resource budgeting. Retire objects/normal logs after source recovery and compact individual samples;engine fallback/candidate untouched.',
                active=False, ownership_closed=True, passed=False)
     if PIPELINE:
+        sdk_files = json.loads(Path(sdk['path']).read_text())
+        runtime_files = {p:h for p,h in rt['runtime_files'].items() if not Path(p).is_relative_to(old_lib)}
+        for p,h in sdk_files.items():
+            path = Path(p)
+            if (path.is_relative_to(OFFICIAL) or path.is_relative_to(UMF)) and '.so' in path.name:
+                with path.open('rb') as stream: elf = stream.read(4) == b'\x7fELF'
+                if elf: runtime_files[p] = h
+        preload = copy.deepcopy(rt['preload'])
+        preload['loader'] = str(OFFICIAL / 'lib/libur_loader.so.0.12.0')
+        for env in (build_env,native_env):
+            env.update(PATH=str(OFFICIAL / 'bin')+':/usr/bin:/bin',
+                CPLUS_INCLUDE_PATH=str(OFFICIAL / 'include'),
+                LD_LIBRARY_PATH=':'.join([str(OFFICIAL / 'lib'),str(UMF / 'lib'),
+                    *[p for p in env['LD_LIBRARY_PATH'].split(':') if p != str(old_lib)]]),
+                UR_ADAPTERS_FORCE_LOAD=str(OFFICIAL / 'lib/libur_adapter_level_zero_v2.so.0.12.0'))
+        native_env['STRATA_UR_PROBE_EXPECTED_LOADER'] = preload['loader']
+        # Resolve the actual official core libraries' DT_NEEDED closure before
+        # launch (including host libraries absent from the legacy runtime).
+        needed = [OFFICIAL / 'lib' / n for n in ('libsycl.so.9.0.0','libur_loader.so.0.12.0',
+                                                'libur_adapter_level_zero_v2.so.0.12.0')]
+        needed += [UMF / 'lib/libumf.so']
+        for library in needed:
+            raw = subprocess.check_output(['/usr/bin/ldd',str(library)],text=True,timeout=15,
+                env=dict(PATH='/usr/bin:/bin',LD_LIBRARY_PATH=native_env['LD_LIBRARY_PATH']))
+            require('not found' not in raw, 'official runtime dependency unresolved')
+            for name in re.findall(r'(?:=>\s+|^\s*)(/\S+)\s+\(',raw,re.M):
+                path = str(Path(name).resolve()); runtime_files[path] = digest(path)
+        require(b'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD' in Path(native_env['UR_ADAPTERS_FORCE_LOAD']).read_bytes(),
+                'official adapter lacks mandatory safety key')
+        row.update(commands=commands(str(OFFICIAL / 'bin/icpx')),runtime_files=runtime_files,preload=preload,
+            runtime_scope='NEW official Intel2026.2/UMF1.2 component proposal;host loader canary and traced smoke required. No prior native/model/runtime qualification inherited;selected original engines unchanged.')
         row.update(
             scope='Two in-order queues in the qualified Runtime: same-context event dependencies,ordinary immutable CPU source,two borrowed device slots,no extra host/device staging and no overfetch. Synthetic full-byte GPU readers plus dependent integer work16/256;not XMX,MoE arithmetic,PCIe wire or LLM throughput.',
-            criteria='One4KiB traced smoke before3fresh comparison processes. Source/destination/slot guards,all integer outputs,source immutability,11pre-enqueue/order refusals,and in-flight cancellation must pass. Normal exit,preinit/executable/provider/environment gates and no new fault. First batches separate;five subsequent alternating pairs per1971200/2662400-byte and16/256-loop shape. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty-control<=5percent of smallest batch. Feasibility advancement requires all six256-loop process/shape median ratios<=0.98 and median observed copy/reader overlap>=10percent of copy service;every16-loop ratio<=1.05. A passing mechanism probe permits only a newly planned production consumer check,not model adoption.',
+            criteria='Official-loader host canary before any GPU;then one4KiB traced smoke before3fresh comparison processes. Source/destination/slot guards,all integer outputs,source immutability,11pre-enqueue/order refusals,and in-flight cancellation must pass. Normal exit,preinit/executable/provider/environment gates and no new fault. First batches separate;five subsequent alternating pairs per1971200/2662400-byte and16/256-loop shape. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty-control<=5percent of smallest batch. Feasibility advancement requires all six256-loop process/shape median ratios<=0.98 and median observed copy/reader overlap>=10percent of copy service;every16-loop ratio<=1.05. A passing mechanism probe permits only a newly planned production consumer check,not model adoption.',
             reference='fused-moe-service-current.json::moe_down_model.split_resource_profile_v2:117.215264736s summed observed GPU service versus117.192532093s union;22.733ms total overlap. Original in-order expert copy/compute sequence exposes transfer service;physical engine overlap remains unproven.',
             retention='One mechanism fixture for imminent prefill-only scheduling decision;no third engine generation. Keep original6e40 and9a79 engines/required fixtures. Retire normal output and this component build at decision closure after exact source/recipe recovery;retain compact paired samples and ownership/fault outcome.')
     data[KEY] = row; write(RESULT, data)
@@ -154,8 +230,9 @@ def build(data):
             require(supervision.closed(entry) and entry['exit_code'] == 0, 'transfer compiler/link failed')
         allowed = {str((P / name).resolve()): sha for name, sha in inputs['project'].items()}
         allowed.update(inputs['external'])
-        allowed.update({str(Path(x['path']).resolve()): closure.SYSTEM_HEADER_UPDATES.get(x['path'], (None, x['sha256']))[1]
-                        for x in json.loads(closure.lineage.SDK.read_text())})
+        allowed.update(official_admit(row['sdk']) if PIPELINE else
+            {str(Path(x['path']).resolve()): closure.SYSTEM_HEADER_UPDATES.get(x['path'], (None, x['sha256']))[1]
+             for x in json.loads(closure.lineage.SDK.read_text())})
         observed = {}
         for i in range(len(NATIVE)):
             body = (ROOT / (str(i) + '.d')).read_text().replace('\\\n', ' ').split(':', 1)[1]
@@ -199,6 +276,19 @@ def run(data):
             if case['diagnostic']:
                 env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                            UR_LOG_TRACING='level:info;flush:info;output:file,' + str(trace))
+            if PIPELINE and case.get('host_canary'):
+                asset = row['preload']['canary']
+                require(digest(asset['path']) == asset['sha256'], 'host canary changed')
+                entry,out,err = supervisor.run('case-'+str(i),[asset['path']],env,P,**RUN_LIMITS)
+                require(supervision.closed(entry) and entry['exit_code'] == 0 and
+                    json.loads(out.read_text()) == dict(pid=entry['pid'],initialized=0,checked=46,expected=46,
+                        version=(1 << 32)-1,closed=0), 'official host canary failed')
+                require(r.validation.preload_evidence(err.read_text(),entry['pid'])['loader'] == row['preload']['loader'],
+                        'official host loader differs')
+                require(not warnings.exists() or not warnings.stat().st_size, 'official host validation warning')
+                cases.append(dict(case=case,passed=True,host_only=True,ownership_closed=True))
+                write(RESULT,data)
+                continue
             argv = [row['binary']['path'], *case['argv']] if PIPELINE else \
                 [row['binary']['path'], '--host', case['host'], '--bytes', str(case['size']), '--repeats', str(case['repeats'])]
             gates, lines, code_maps = [], [], []
@@ -215,12 +305,15 @@ def run(data):
                     actual_env = dict(v.split(b'=', 1) for v in (proc / 'environ').read_bytes().split(b'\0') if v)
                     require(actual_env == {k.encode(): v.encode() for k, v in env.items()}, 'transfer immutable child env')
                     mapped = r.executable_mappings((proc / 'maps').read_text())
-                    allowed = set(rt['runtime_files']) | {row['binary']['path']}
+                    providers = row['runtime_files'] if PIPELINE else rt['runtime_files']
+                    allowed = set(providers) | {row['binary']['path']}
                     require(mapped <= allowed, 'unfrozen transfer provider: ' + repr(mapped - allowed))
                     for name in mapped:
-                        require(digest(name) == (row['binary']['sha256'] if name == row['binary']['path'] else rt['runtime_files'][name]),
+                        require(digest(name) == (row['binary']['sha256'] if name == row['binary']['path'] else providers[name]),
                                 'transfer provider changed: ' + name)
                     if stage != 'before-runtime':
+                        require(any(line.startswith('DEVICE name=') and 'B570' in line for line in lines),
+                                'actual transfer GPU differs before work')
                         require(any('libze_intel_gpu.so.1.17.39758' in name for name in mapped) and
                                 any('libur_adapter_level_zero_v2.so' in name for name in mapped), 'expected transfer providers absent')
                     gates.append(stage); code_maps.append(dict(stage=stage, maps=len(mapped)))
@@ -245,7 +338,7 @@ def run(data):
             require(any(line.startswith('DEVICE name=') and 'B570' in line for line in lines), 'actual transfer GPU differs')
             require(any(line.startswith('DONE ') for line in lines) and not any('FAIL' in line for line in lines), 'transfer completion failed')
             preload = r.validation.preload_evidence(err.read_text(), entry['pid'])
-            require(preload['loader'] == rt['preload']['loader'], 'transfer actual UR loader differs')
+            require(preload['loader'] == (row['preload']['loader'] if PIPELINE else rt['preload']['loader']), 'transfer actual UR loader differs')
             require(not warnings.exists() or not warnings.stat().st_size, 'transfer parameter validation warning')
             if case['diagnostic']:
                 require(trace.exists() and 'urEnqueue' in trace.read_text(), 'transfer enqueue trace absent')
@@ -273,7 +366,7 @@ def run(data):
         require(digest(row['binary']['path']) == row['binary']['sha256'], 'transfer binary changed')
         row.update(stage='closed', passed=True)
         if PIPELINE:
-            row['decision'] = pipeline_decision(cases)
+            row['decision'] = pipeline_decision(cases[1:])
     except BaseException as error:
         row.update(stage='failed', passed=False, error=repr(error))
     finally:
@@ -332,7 +425,7 @@ def main():
     action = sys.argv[1]
     if action.startswith('pipeline-'):
         action = action.removeprefix('pipeline-')
-        PIPELINE = True; KEY = 'prefill_copy_pipeline_v1'; ROOT = B / 'prefill-copy-pipeline-v1'
+        PIPELINE = True; KEY = 'prefill_copy_pipeline_v2'; ROOT = B / 'prefill-copy-pipeline-v2'
         BINARY = 'expert_pipeline_probe'
         NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_pipeline_probe.cpp']
         RUN_LIMITS = dict(RUN_LIMITS,wall=180,cpu=240,rss_cap=5 << 30)
