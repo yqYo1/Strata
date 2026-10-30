@@ -1673,8 +1673,14 @@ prefill policy comparison: selected384 versus split128 effective expert slots,
 81920 versus117488 maximum rows and96 versus48 MoE windows must be observed
 in their respective actual routes. Decode remains1256 slots. A passing screen
 still needs repeated decode/handoff,agent,long-thinking,task and physical262144
-qualification before adoption. No new native build or GPU result follows from
-the controller's preparation.
+qualification before adoption. Nine host rejection controls and two fresh
+frontend probes pass without a native rebuild. The first selected6e40 process
+now closes normally: first use876.5tok/s, subsequent972.5/977.0/971.9tok/s,
+median120.8134s and client TTFT median121.042s. All four exact117489-read
+requests have zero reuse; actual placement is384slots,81920maximum rows and
+96windows, with all117488 residual rows on GPU. Source/runtime/validation and
+owner gates pass with no fresh GPU fault. Five processes remain; no comparison
+decision or adoption follows from this first control.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.

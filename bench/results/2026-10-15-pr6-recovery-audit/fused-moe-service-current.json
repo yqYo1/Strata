@@ -22316,7 +22316,7 @@
     }
   },
   "moe_down_model": {
-    "status": "selected-fallback-comparison-prepared",
+    "status": "selected-fallback-comparison-running",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -22327,7 +22327,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Run the frozen six-process comparison.",
+    "next_gate": "Run the next frozen process;then independent decode/task/physical-context gates.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -27135,7 +27135,7 @@
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
     },
     "selected_fallback_comparison": {
-      "stage": "prepared",
+      "stage": "running",
       "source_commit": "33eae8a4e744fe1fc4b46505495070c0fb3bd74c",
       "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -27416,7 +27416,226 @@
         "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
         "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2"
       ],
-      "processes": [],
+      "processes": [
+        {
+          "index": 0,
+          "arm": "selected",
+          "complete": true,
+          "passed": true,
+          "host_probe_accepted": true,
+          "model_executed": true,
+          "clean_speed": true,
+          "adoption_qualified": false,
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "native_identity": {
+            "pid": 1271759,
+            "start_ticks": 169162462,
+            "sid": 1271708
+          },
+          "native_exit_code": 0,
+          "validation": {
+            "pid": 1271759,
+            "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "routes": [
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 384,
+              "staged": 1,
+              "maximum_window_rows": 81920,
+              "work": {
+                "windows": 96,
+                "dequants": 33174,
+                "jobs": 37294,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18895",
+                "requested_H2D_bytes": "38578048000",
+                "permanent_hits": "14279",
+                "permanent_slots": "264",
+                "total_slots": "384",
+                "final_drain": "checked"
+              },
+              "limitation": "Requested work/bytes,not measured PCIe or VRAM traffic. Diagnostic STRATA_TRACE timings are not clean speed."
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 384,
+              "staged": 1,
+              "maximum_window_rows": 81920,
+              "work": {
+                "windows": 96,
+                "dequants": 33224,
+                "jobs": 37359,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18904",
+                "requested_H2D_bytes": "38599321600",
+                "permanent_hits": "14320",
+                "permanent_slots": "262",
+                "total_slots": "384",
+                "final_drain": "checked"
+              },
+              "limitation": "Requested work/bytes,not measured PCIe or VRAM traffic. Diagnostic STRATA_TRACE timings are not clean speed."
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 384,
+              "staged": 1,
+              "maximum_window_rows": 81920,
+              "work": {
+                "windows": 96,
+                "dequants": 33131,
+                "jobs": 37264,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18850",
+                "requested_H2D_bytes": "38484787200",
+                "permanent_hits": "14281",
+                "permanent_slots": "262",
+                "total_slots": "384",
+                "final_drain": "checked"
+              },
+              "limitation": "Requested work/bytes,not measured PCIe or VRAM traffic. Diagnostic STRATA_TRACE timings are not clean speed."
+            },
+            {
+              "engine_rows": 117488,
+              "chunk": 8192,
+              "residual_dtype": "bf16",
+              "residual_gpu_rows": 117488,
+              "residual_host_bytes": 0,
+              "slots": 384,
+              "staged": 1,
+              "maximum_window_rows": 81920,
+              "work": {
+                "windows": 96,
+                "dequants": 33175,
+                "jobs": 37311,
+                "source_H2D_bytes": 225576960
+              },
+              "requested_expert_upload": {
+                "uploads": "18872",
+                "requested_H2D_bytes": "38533324800",
+                "permanent_hits": "14303",
+                "permanent_slots": "260",
+                "total_slots": "384",
+                "final_drain": "checked"
+              },
+              "limitation": "Requested work/bytes,not measured PCIe or VRAM traffic. Diagnostic STRATA_TRACE timings are not clean speed."
+            }
+          ],
+          "samples": [
+            {
+              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 134050.5,
+              "prompt_tps": 876.5,
+              "prompt_tps_source": "engine",
+              "ttft_s": 134.211,
+              "total_s": 136.049,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120813.4,
+              "prompt_tps": 972.5,
+              "prompt_tps_source": "engine",
+              "ttft_s": 121.042,
+              "total_s": 122.585,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120257.7,
+              "prompt_tps": 977.0,
+              "prompt_tps_source": "engine",
+              "ttft_s": 120.468,
+              "total_s": 122.069,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            },
+            {
+              "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+              "actual_prompt_tokens": 117489,
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "generated_tokens": 24,
+              "prompt_ms": 120885.3,
+              "prompt_tps": 971.9,
+              "prompt_tps_source": "engine",
+              "ttft_s": 121.044,
+              "total_s": 122.574,
+              "thinking_requested": true,
+              "reasoning_observed": true,
+              "ok": true,
+              "eligible": true,
+              "stream_complete": true
+            }
+          ],
+          "subsequent_median_ms": 120813.4,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "driver_after": {
+            "pci": "/sys/bus/pci/devices/0000:05:00.0",
+            "driver": "xe",
+            "vendor": "0x8086",
+            "device": "0xe20c",
+            "kernel": "7.0.0-38-generic",
+            "devcoredump": false
+          }
+        }
+      ],
       "budgets": {
         "wall": 1800,
         "cpu": 5400,
