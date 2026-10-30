@@ -1751,13 +1751,26 @@ passes with normal exit,closed ownership,removed session and no fresh fault.
 The v1 prefix remains failed:Main omitted the launcher's exact version and
 preload bookkeeping variables from the expected environment. The prospective
 fix checks all111fields without relaxing safety checks. No native model ran
-in either prefix probe. Next run the one committed117K profile. Its prompt-time
-ratio must be<=1.15against the median126359.5ms of three clean first-use samples;
-older97cfa/6e40 coverage or observer cost does not qualify9a79. The temporary
-complete timeline is capped at1GiB,with1.5GiB total job output,then reduced and
-retired after verification. Physical PCIe/DRAM bytes and arithmetic saturation
-remain unknown. Repeated clean decode,task/agent checks and physical262144
-fill/tails/RESTORE remain pending;no inference adoption follows.
+in either prefix probe. The one committed117K profile now closes normally:
+117489read/zero reuse,24outputs with thinking,quiet validation,removed session and
+no fresh GPU fault. Prompt time131729.7ms is1.042499times the median126359.5ms
+of three clean first-use samples,passing the frozen1.15observer screen.
+The374052790-byte timeline has280298GPU operations and703250host API events,
+with unique native-source joins and checked raw-clock bounds. Observed GPU
+interval union is117.193s inside134.659s of controlled request time;this is
+neither arithmetic utilization nor a full critical path. The main prefill
+scope records129.983s wall,123.440s main-thread CPU,79.641s known wait wall
+and44.202s CPU outside those waits. The latter includes submission/runtime
+work and12.583s unclassified CPU;it is not proof of CPU inference arithmetic
+or CPU saturation. The largest single full-shape QSA prefix kernel group
+takes26.262s and the GDN recurrence-columns4 group8.541s of nonexclusive
+service. Next reconcile all shape groups into source families and distinguish
+host launch/wait overlap before choosing a matched hardware/kernel comparison.
+Retain the complete temporary timeline only for that named analysis,then
+retire it after the useful evidence is recorded. Older97cfa/6e40 coverage or
+observer cost does not qualify9a79. Physical PCIe/DRAM bytes and arithmetic
+saturation remain unknown. Repeated clean decode,task/agent checks and
+physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
 The successful v2 raw outputs and consumed phase-handoff report/review/source
 exports are retired after the compact result is pushed. The deletion manifest
 records91files/13363315bytes;12baseline exports match original Git blobs.
