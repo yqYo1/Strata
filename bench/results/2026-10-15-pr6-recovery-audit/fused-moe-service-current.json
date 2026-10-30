@@ -28908,9 +28908,9 @@
       }
     },
     "split_continuation_benchmark": {
-      "stage": "controller-finalization-fix-prepared",
+      "stage": "finalizer-fix-host-tested-new-frontend-pending",
       "native_rebuilt": false,
-      "model_executed": false,
+      "model_executed": true,
       "adoption_qualified": false,
       "provenance": "Main-authored extension of this fork official bench client;no XeStrata implementation input. Default v4 tasks/body/eligibility remain unchanged.",
       "case": "split-v1-96k",
@@ -29045,8 +29045,16 @@
         "GPU_executed": false
       },
       "controller_checks": {
-        "passed": false,
-        "stage": "new-fix-tests-pending",
+        "source_commit": "347c611c572aa7b6f3ff93c03a617c030f0e17b5",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "tools/sycl/test_compare_selected_split.py"
+        ],
+        "cases": 14,
+        "failures": 0,
+        "errors": 0,
+        "passed": true,
         "GPU_executed": false
       },
       "preparation_retirement": {
@@ -29056,7 +29064,8 @@
         "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-generation-preparation-retired-20261031.jsonl",
         "sha256": "34be71a45e002678dc8ebbd21e980b4c6221b99921a949d708a3e8d5c62b6679"
       },
-      "frontend_key": "split_continuation_frontend_v1"
+      "frontend_key": "split_continuation_frontend_v1",
+      "model_observation_scope": "Historical failed-v1 baseline only;v2candidate and repeated model qualification remain pending."
     },
     "split_continuation_frontend_v1": {
       "stage": "closed",
@@ -29537,6 +29546,36 @@
         "source": "Last of5native request summaries;prompt/read96204 and3360outputs match the official long-generation request. Existing4warmups remain separate.",
         "conservation": "cache_hits+cpu_entries==cache_lookups;cpu_unique_misses<=cpu_entries. Submitted/completed GPU expert-copy blobs/bytes are zero.",
         "limitation": "Native logical counters,not CPU time,RAM bandwidth,GPU service or physical traffic. One diagnostic sample does not establish hardware saturation,an MTP regime or a clean speed comparison."
+      },
+      "historical_input_identity": {
+        "source_commit": "fd181742a9bdecf7699c9806732152102acd6d6c",
+        "workload": {
+          "workload_id": "split_continuation_v1",
+          "nonce": "split_continuation_v1",
+          "nonce_policy": "fixed-id"
+        },
+        "calibration": [
+          1.0766666666666667,
+          38.66666666666666
+        ],
+        "input_case": "split-v1-96k",
+        "version": "split-v1",
+        "target_input_tokens": 98304,
+        "instructions_sha256": {
+          "regular-code": "38c9074dadbf045ff082bc08de02aacfaca2ec1723f48b9f6011079fa2f0085f"
+        },
+        "body_sha256": "061e8dbcbdcbb6952b8b5adf3fadf8d44e10ec98bc14808d6d4de98e79ac1bcd",
+        "actual_read_tokens": 96204,
+        "qualification_reused": false
+      },
+      "raw_retirement": {
+        "complete": true,
+        "files": 78,
+        "bytes": 12867969,
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-continuation-v1-raw-retired-20261031.jsonl",
+        "sha256": "4f03bdccaf325930389ebac9d99674df90a547991a8c564cd7dfc09bf03becc8",
+        "original_passed": false,
+        "native_generations_untouched": true
       }
     }
   },
