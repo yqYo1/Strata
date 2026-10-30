@@ -61,7 +61,36 @@
     "original_launcher_source": "8fba6f3aaa22578bf0b7a3ae0cc945b6d3de89c9",
     "host_source": "8553a40bba7a68ce42a6aaa2a5314cb0d109d77f",
     "graph_source": "baa1032ce46e740e5c8d13f86aeee54fd7c83fad",
-    "reuse": "Historical native inputs recovered; unchanged generators/generated dependencies/recipe/ELFs. No rebuild or new GPU qualification."
+    "reuse": "Historical native inputs recovered; unchanged generators/generated dependencies/recipe/ELFs. No rebuild or new GPU qualification.",
+    "current_source_audit": {
+      "checked_from_commit": "295a6e108f0249dc578f2fbe058a1068ec030d9f",
+      "scope": "Read-only native source/recipe/asset audit for the next model profile;no GPU initialization,fixture run or new target/profile qualification.",
+      "legacy_admission": {
+        "passed": false,
+        "error": "RuntimeError: commit exact host input: tools/sycl/bench_engine.py",
+        "interpretation": "Historical admission fingerprints current Python helpers as well as collector native inputs. Preserve the refusal;do not refresh its original hashes."
+      },
+      "original_source_inputs_recovered": 31,
+      "compiler_dependency_files": 460,
+      "compiler_dependency_manifest_sha256": "e7d01b2a1a6fe76886e79062f6c25f71afd213cd8f26d88321876cb26db38e20",
+      "all_actual_compiler_inputs_unchanged": true,
+      "all_generated_native_inputs_unchanged": true,
+      "collector_and_launcher_ELFs_unchanged": true,
+      "host_only_changes": [
+        {
+          "path": "tools/sycl/bench_engine.py",
+          "original_sha256": "e5f588605ebc7799b54f8bf7df9ad2e363391375e50b788b9704a6b80887ca6b",
+          "current_sha256": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063"
+        },
+        {
+          "path": "tools/sycl/generation_engine.py",
+          "original_sha256": "5986d8bda1e4d71ef64d8dd25a7f2e3781fd684466096b863b3fdb4a54cc689e",
+          "current_sha256": "eb5bd20c70dbeca6dad253675c76735f9e058507f54668a44074760ae7a5d5d9"
+        }
+      ],
+      "method": "Recover all31original input blobs with build_engine.blobs;compare460manifest path hashes and its pinned SHA;compare build_indexed_collector.generated() with original generated hashes/files and collector_reuse asset hashes. Both changed paths are Python and absent from actual compiler inputs.",
+      "next_action": "Commit a new source-bound profile controller/plan that separates unchanged collector native identity from its current Python/workload inputs. Current9a79 trace coverage and observer cost remain unqualified;no collector rebuild is indicated by these two host-only differences."
+    }
   },
   "host_profile_environment": {
     "passed": true,

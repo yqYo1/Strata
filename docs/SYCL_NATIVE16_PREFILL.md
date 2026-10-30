@@ -1752,7 +1752,7 @@ physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
 The successful v2 raw outputs and consumed phase-handoff report/review/source
 exports are retired after the compact result is pushed. The deletion manifest
 records91files/13363315bytes;12baseline exports match original Git blobs.
-Both qualified model generations and their fixtures remain for the named
+Both retained native build generations and their fixtures remain for the named
 repeated comparison/qualification;independent legacy provenance holds remain.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
