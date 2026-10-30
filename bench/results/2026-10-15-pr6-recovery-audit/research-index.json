@@ -12515,11 +12515,11 @@
     "inference_adoption": false,
     "pending_prefill_route_contract": {
       "classification": "decision support",
-      "schedulable_now": true,
+      "schedulable_now": false,
       "question": "Once the exact deployed Qwen3.8-Flash-Next checkpoint/config and intended vLLM or SGLang reference route are pinned, trace that model's long-prefill expert path at immutable official revisions through GEMM output storage, gate-weight conversion, top-k reduction order, shared-expert/scalar-gate combination, final cast, and any fused finalize path. Compare those operations to Strata's run_moe_accum_window, try_down_scatter16_split, moe_accumulate_split and moe_finish. State whether current BF16 Down output plus expert-order FP32 sycl::fma matches a selected framework contract, and give a source-grounded numerical/task gate for the current default-off split route. Distinguish an exact selected backend from generic API capability, NVIDIA-only examples, decode-only paths, and unsupported quantization. No patch, test, performance claim or adoption recommendation from source inspection alone.",
-      "next_action": "Dispatch one bounded Orca Luna decision-support task for this now-pinned route;no implementation or model adoption from research.",
+      "next_action": "Await authoritative Orca completion without steering;native Codex Luna/max reviews the one report before Main uses its relevant decision-support sections. Main continues frozen model comparison.",
       "previous_missing_prerequisite": "The maintained decision slice does not pin the actual checkpoint/config bytes or a matching selected vLLM/SGLang long-prefill backend/dtype route. Main must provide that identity in the dispatch manifest first; do not dispatch a worker merely to report this absence.",
-      "status": "prerequisites_pinned_ready_for_dispatch",
+      "status": "orca_running",
       "source_revision": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
       "policy_revision": "6b523dfe1",
       "report_path": ".cache/research/2026-10-30/qwen4exp_long_prefill_reduction_contract_20261030.md",
@@ -12583,7 +12583,15 @@
         "The actual selected isolated native source bytes are pinned,avoiding unselected current-tree upload/observer code.",
         "Official immutable config and actual GGUF metadata agree on all supplied MoE/hyperconnection dimensions;weight-quantization difference is explicit.",
         "One intended source-selected long-prefill SGLang CUDA BF16/unquantized Triton route and its immutable source files are pinned;this is source comparison,not a CUDA execution request."
-      ]
+      ],
+      "eligible_at_dispatch": true,
+      "task": "task_cef9952d995f",
+      "dispatch": "ctx_f1b748866c39",
+      "terminal": "term_66701889-d69e-45c3-8176-e95febdb1e22",
+      "worker_model": "gpt-6-luna",
+      "worker_effort": "high",
+      "model_evidence": "Original launch receipt requested/effective gpt-6-luna/high;same positively identified terminal reused after skipped startup update prompt. No model/effort override on retry.",
+      "startup_recovery": "Initialctx_cb211a98d0f4 failed agent_readiness/agent-update-prompt and never ran Task;actual terminal confirmed prompt. Esc without Enter skipped update;retry of the same Task/terminal accepted input and observed turn_start. No research steering or duplicate Task."
     }
   },
   "partial_sum_compression_methods_collection_20261027": {

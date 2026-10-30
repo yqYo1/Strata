@@ -28506,7 +28506,7 @@
     }
   },
   "moe_down_model": {
-    "status": "all-three-model-diagnostics-passed",
+    "status": "clean-nine-process-comparison-prepared",
     "inference_adopted": false,
     "decode_changed": false,
     "mechanism": "Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split or decode math/placement change.",
@@ -28517,7 +28517,7 @@
       "model_qualification_inherited": false,
       "executable_reused": false
     },
-    "next_gate": "Prepare and commit frozen nine-process original/row128/row64 Latin-order clean117489-read comparison,4requests/process. All three observed diagnostics close with full GPU BF16 residual,actual Down counters,quiet validation and no new fault. Observed times do not qualify clean speed,decode,task quality or physical262144.",
+    "next_gate": "Run committed clean processes0..8 sequentially in frozen Latin order,4exact117489-read thinking-on requests each;commit each closed result before advancing. Preserve all speed samples and stop first correctness/source/runtime/owner/fault/budget failure. No speed-based early stop,adoption or target claim before complete cohort.",
     "build": {
       "stage": "built-not-executed",
       "source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
@@ -30575,6 +30575,352 @@
       "post_retirement_admission_passed": true,
       "preserved": "Current native source/build/three executables/actual1400compiler closure,model-v2 basis and current frontend record,selected6e40 fallback. Original speed/status/fault/numerical outcomes unchanged.",
       "admission_scope": "Fresh row64 diagnostic preparation passed qualified(),same-build native/runtime/frontend/basis/model pins after all221retired paths were absent. Host-only admission,not another GPU qualification."
+    },
+    "clean_down_comparison": {
+      "stage": "prepared",
+      "kind": "clean",
+      "source_commit": "1fa351344e446f28a6c12ccbab8c80f3afb5869c",
+      "basis_sha256": "e627045feba4ef63dfe96cd859394fb17ce7f2670d6d1135d285bfc924b20e4e",
+      "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+        "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+        "bytes": 22897880
+      },
+      "plans": [
+        {
+          "kernel": "original",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/0",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/0/config.json",
+            "--port",
+            "56599",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/0/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "dc13f1ba69d0cf2a285a9e99ebdb69aae4a120a11bc6c1344e2db4f2a15b3f4f"
+          },
+          "environment_sha256": "493603582982bf68c6f400606b67d9ec107e8f0ee2e97ffeefe65567fd93e2a5"
+        },
+        {
+          "kernel": "row128",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/1",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/1/config.json",
+            "--port",
+            "60347",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/1/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "deff0bba950f007afbc6372a8acb233529a05a6d06c39a6bad63524fb906c65f"
+          },
+          "environment_sha256": "46180a94f74804a7ad7b6708f2d09c4ea8873061c0c9ff80561e043dbe588d8a"
+        },
+        {
+          "kernel": "row64",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/2",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/2/config.json",
+            "--port",
+            "39571",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/2/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "623460b717316266b53cd36da732e6887886f6e4df17a4a2a35181c0c5b50327"
+          },
+          "environment_sha256": "8ef8ea205302569d878179b28ba4092f54e89f5c8ab7f99a3da4a269b6491881"
+        },
+        {
+          "kernel": "row128",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/3",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/3/config.json",
+            "--port",
+            "34649",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/3/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "6909c9c5a9f81d07f5d9d8f06007eabaaa51ab4608ddac2486aed09b72be5652"
+          },
+          "environment_sha256": "f3a19ea28052295797e882956d3854c869a6668c01800b1f3ca30f7a6343f3a6"
+        },
+        {
+          "kernel": "row64",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/4",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/4/config.json",
+            "--port",
+            "58775",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/4/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "7db02730811930c06cbd63b487c9df034211bee6900d4e660847c99d651cca26"
+          },
+          "environment_sha256": "57c10b4bcecde527ce3e6064709a846a292cf5973f28c859281ac3a8d0821265"
+        },
+        {
+          "kernel": "original",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/5",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/5/config.json",
+            "--port",
+            "35249",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/5/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "b0c23d31b3aeab178ffe2d07eed501eab559fea7ec47c15547c4c47434b9beca"
+          },
+          "environment_sha256": "0448311a59ed62f9fbe3ca54e660a36c50044e2677069beb952e9f140d4f9a0e"
+        },
+        {
+          "kernel": "row64",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/6",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/6/config.json",
+            "--port",
+            "49369",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/6/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "5304aa3c7f2c8c0175862fc27f3e24e4fc1561c05df98c7246ace61827399722"
+          },
+          "environment_sha256": "f10f0671c55dc8fe05b4617dba1f50c5e1c0155d3d382cfe3e27778cab5462e4"
+        },
+        {
+          "kernel": "original",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/7",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/7/config.json",
+            "--port",
+            "53735",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/7/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "d61025566c86d0a5292241a5df63cf0c70cb9fb54f67a82c1aa8a11fbc3e0abb"
+          },
+          "environment_sha256": "5d082e042a6162f97db7ae2630361f82eaec397a56907d37603177040e499836"
+        },
+        {
+          "kernel": "row128",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/8",
+          "runs": 4,
+          "observed": false,
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/8/config.json",
+            "--port",
+            "53259",
+            "--prefill-exact-tokens",
+            "117489",
+            "--think",
+            "--runs",
+            "4",
+            "--profile-request-gates",
+            "--workload-id",
+            "native_gdn_20261018",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/clean/8/bench"
+          ],
+          "generated": {
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8",
+            "config.json": "0474d65c1a89667939ad2e94f254223965434bb70663643d46174fd2d31bd82d"
+          },
+          "environment_sha256": "d5c64c39001410806f6f36fd3f0ee74f3890a0db65a20d483c9abc73f442c6fc"
+        }
+      ],
+      "processes": [],
+      "plan": {
+        "order": [
+          "original",
+          "row128",
+          "row64",
+          "row128",
+          "row64",
+          "original",
+          "row64",
+          "original",
+          "row128"
+        ],
+        "runs_per_process": 4,
+        "input_tokens": 117489,
+        "output_cap": 24,
+        "question": "Do row-cached Down epilogues improve whole117K prefill over the same binary original split policy?",
+        "constants": "Same9a79cd352 model binary,split117488-row accumulator,128effective prefill bank slots,1256unchanged decode slots,BF16/vLLM/mode10,8192chunks,5workers,spec4,INT8 resident131072context.Only immutable pre-exec Down kernel choice differs.",
+        "samples": "Three Latin-order blocks,three independent fresh processes per policy,four exact-count requests/process. First long use separate;median of subsequent three is the process unit. Count-only preflight warms tokenizer caches;not cold-disk latency. Retain all PP/time/TTFT samples.",
+        "acceptance": "Complete all9processes,no speed-based early stop. For each candidate versus original, all3within-block median-time ratios<1 and their geometric mean<=0.995 permit broader qualification. Select row64 over qualifying row128 only if all3paired ratios<1 and geomean<=0.9975;otherwise keep row128. No adoption from this screen. Target1000 requires all3selected-policy warmed process medians>=1000tok/s.",
+        "stopping": "Stop first source,runtime,ownership,validation,fault,budget,route or sample failure. Never retry/replace/exclude a process or change criteria after readings.",
+        "limits": "No sustained decode/task/agent/full262144/RESTORE qualification. The original split policy is a same-build control,not the selected6e40fallback;matched fallback and independent decode preservation remain necessary before adoption. Placement/window/actual positive Down counters must match policy;record dynamic jobs and requested bytes rather than assume identical routing."
+      },
+      "budgets": {
+        "wall": 1800,
+        "cpu": 5400,
+        "rss_cap": 111669149696,
+        "text_cap": 67108864,
+        "file_cap": 134217728,
+        "total_cap": 536870912
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true
+    },
+    "final_diagnostic_retirement": {
+      "files": 70,
+      "bytes": 12703515,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/down-row64-diagnostic-retired-20261030.jsonl",
+      "manifest_sha256": "21e07f2f438d53ce014455cb2d2f221456e650703d09adde014d4baecf953966",
+      "evidence_commit": "2186f8903",
+      "consumer_closed": true,
+      "post_retirement_admission": "Next clean process0 must independently pass the frozen native/runtime/frontend/basis admission before native execution;no hash refresh or retry."
     }
   }
 }
