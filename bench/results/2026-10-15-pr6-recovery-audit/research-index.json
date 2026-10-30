@@ -17889,101 +17889,26 @@
     }
   },
   "original_split_phase_handoff_audit_20261030": {
-    "classification": "decision_support",
-    "status": "reviewed_with_source_and_qualification_limits",
+    "classification": "consumed decision-support/source audit",
+    "status": "consumed-retired",
     "schedulable_now": false,
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "report_budget_bytes": 24576,
-    "report_budget_words": "1600-2200",
-    "policy_commit": "f640576b3f50af4ea3fdb5a871d0f0093458f13c",
-    "constraints": "Read-only research;write only named report. No Git,build,test,GPU,profiler,process inspection,product edits,reset or service changes. No XeStrata-derived implementation. No intervention after worker starts;Main owns implementation/testing.",
-    "question": "Audit actual compiled 9a79cd352 original-split long-prefill versus selected6e40 for split-buffer bounds/ownership and prefill-to-decode cache/dense/publication/state invariants;identify specific qualification cases before the matched comparison. Do not repeat the earlier canonical-bank design audit or infer speed/correctness adoption from source.",
-    "source_manifest": ".cache/research/2026-10-30/original-split-phase-inputs/manifest.json",
-    "source_manifest_sha256": "b60568e705318c4b7cf8a12a6cde7f56783037495708473939d58e7019f1e16f",
-    "report": ".cache/research/2026-10-30/original_split_phase_handoff_audit_20261030.md",
-    "consumer": "Named current original-split versus selected6e40 qualification;retire exported baseline source after reviewed implications are recorded.",
-    "next_review": "At worker completion/native Luna-max review before any implementation or new GPU test.",
-    "prerequisites": {
-      "actual_compiled_overlay_verified": true,
-      "source_paths": 13,
-      "base_exports_bytes": 468521,
-      "all9processes_closed": true,
-      "new_source_not_covered_by_old_canonical_audit": true
-    },
-    "task": "task_ed185b66968b",
-    "initial_dispatch": "ctx_208fa831ac23",
-    "dispatch": "ctx_b8d52ac1e141",
-    "terminal": "term_069724d2-6418-41f9-9a6c-383785f90b0b",
-    "worker_start_accepted": true,
-    "turn_started": true,
-    "startup_model_evidence": "Actual terminal banner GPT-6-Luna high;working turn observed. Reused exact same task/terminal after skipping a pre-task update prompt with Escape;no running worker steering.",
-    "startup_failure": {
-      "dispatch": "ctx_208fa831ac23",
-      "stage": "agent_readiness",
-      "reason": "agent-update-prompt",
-      "task_began": false
-    },
-    "worker_dispatch_state": "completed",
-    "worker_outcome": "succeeded",
-    "worker_released": true,
-    "release_state": "released",
-    "delivery_acknowledged": "delivery_c1188e2aafce",
-    "report_bytes": 16661,
-    "report_sha256": "eeed92a7ef88653020a0e3231e1f1781922fb918c8995865b7723d7cdc1006d4",
-    "native_review_task": "/root/curate_original_split_phase_handoff_20261030",
-    "native_review_model": "gpt-6-luna max",
-    "native_review": {
-      "path": ".cache/research/2026-10-30/original_split_phase_handoff_audit_20261030.review.json",
-      "bytes": 9099,
-      "sha256": "b3fb621d998cb059247c1bc3e6a916b4ed203398ca8b67a6abf27aeddf3b91fe",
-      "closed": true
-    },
-    "digest": "Split admission is source-limited to requested mode 10 with native16, mixed scratch, BF16 residuals, engine rows 90113..117488, full GPU residency, and successful single-allocation and cumulative-budget checks. It keeps 65536 FP32 primary rows and a separate FP32 tail; admission misses retain the ordinary route. Queue leases, spans, a tail guard, callback ordering, and drains are explicit source invariants. Runtime dispatch, allocations, guard contents, persistent session state, decode behavior, and teardown remain unproved.",
-    "necessary_corrections": [
-      {
-        "severity": "material",
-        "report_claim": "Qualification cases 1 and the closing decision require the same route in both comparison arms.",
-        "correction": "The named question is original split versus selected6e40, so the intended implementations may dispatch differently. Require identical workload and matched declared configuration, then prove the candidate actually admitted split and the selected arm actually took its expected selected6e40 path. Record each arm's route; do not gate on route equality. Reconcile prefill slot/cache placement as well: the earlier frozen plan states candidate128 versus selected6e40 384 slots. If that remains intentional, call the result a path-policy comparison and do not attribute a delta to split accumulation alone."
-      },
-      {
-        "severity": "material",
-        "report_claim": "n=117488 has a final 3600-row piece.",
-        "correction": "With chunk=8192, 117488 = 14*8192 + 2800. The final piece is 2800 rows; the split tail is 51952 rows. Express these as engine rows; the maintained comparison uses 117489 read tokens and 117488 engine rows."
-      },
-      {
-        "severity": "clarification",
-        "report_claim": "Selection changes only four paths from the split candidate.",
-        "correction": "Distinguish the four-file Down-policy/selector/same-build-fixture delta from the candidate9a79-to-selected6e40 source comparison, which the manifest pins across twelve native overlay paths. As written, readers could mistake the four-file statement for the baseline source delta."
-      },
-      {
-        "severity": "qualification",
-        "report_claim": "A checked Restore/queue drain and owner closure protect handoff.",
-        "correction": "Make the failure consequence explicit: preflight capacity misses occur before model work and can take the ordinary fallback, but a late route/device/callback failure can leave tensors partially changed even when C++ bindings are restored. Discard/reset that session before retrying; do not treat Restore as transaction rollback. Keep ordinary runtime/provider teardown as a separate unresolved gate, as the maintained decision records it."
-      },
-      {
-        "severity": "redundancy",
-        "report_claim": "The report proposes fresh bank-boundary, invalid-map, and 32 dispatch/fallback cases.",
-        "correction": "The maintained decision already records same-build checks for 63/64/65 boundaries, split primary/tail/final rows, invalid-map masks, and 32 production dispatch/fallback cases. Reuse those results only if the exact build and fixture identities match; do not repeat them automatically. The unresolved model-level evidence is actual per-arm admission/placement and successful prefill-to-decode state handoff."
-      }
+    "evidence_commit": "480adecf7",
+    "base_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "candidate_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+    "essential_constraints": [
+      "Compare declared per-arm routes/placement;the384-versus128slot result is a whole-policy comparison.",
+      "117488engine rows=14*8192+2800;source delta covers12native overlay paths.",
+      "Binding Restore is not tensor rollback:discard/reset a late-failed session. Reuse8same-build device gates only after exact source/fixture checks.",
+      "Candidate-only96K-to3360token continuation now passes;repeated clean decode,task/agent,physical262144 and ordinary teardown remain separate."
     ],
-    "next_scope": {
-      "scope": "No new research scope is eligible now. Main-owned qualification should resolve the pending comparison. Reopen a bounded report only if it produces a concrete unresolved failure concerning partial-session recovery or ordinary SYCL/Level Zero provider teardown.",
-      "schedulable_now": false,
-      "prerequisite_evidence": [
-        "The original-split versus selected6e40 comparison and all owned processes are closed with per-arm route/configuration outcomes recorded.",
-        "The exact same-build fixture identity is reconciled and existing boundary/dispatch evidence is either reused or its specific remaining gap is named.",
-        "The continued-decode handoff and ordinary runtime/provider teardown outcomes identify a finite question not answered by the existing canonical-phase report."
-      ]
+    "retired_input_hashes": {
+      "report": "eeed92a7ef88653020a0e3231e1f1781922fb918c8995865b7723d7cdc1006d4",
+      "review": "b3fb621d998cb059247c1bc3e6a916b4ed203398ca8b67a6abf27aeddf3b91fe",
+      "source_manifest": "b60568e705318c4b7cf8a12a6cde7f56783037495708473939d58e7019f1e16f"
     },
-    "evidence_scope": "This review establishes no new runtime fact. Existing same-build8device gates,3model diagnostics and9clean processes remain passed and reusable after exact source/fixture identity checks. Sustained decode,task/agent/full262144 and ordinary teardown remain separate;do not discard completed gates from a source-only unknown.",
-    "transaction_retirement": {
-      "files": 18,
-      "bytes": 419359,
-      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/post-cohort-research-retired-20261030.jsonl",
-      "manifest_sha256": "19d5c1269374a44e5ba3f7a097b53793b4f2ce7e4d4c64f76390acf7f8f33f30",
-      "evidence_commit": "6be4d5f33e40fb52660be5b1c2fa8e3d70d74d27",
-      "all_consumers_closed": true
-    }
+    "retirement_manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-continuation-v2-raw-retired-20261031.jsonl",
+    "retirement_manifest_sha256": "8fcee6738c3fa6d3addd1f9ef28f6a501dffb2bedfd4373ad0a72f12d1b1406b",
+    "next_review": "Retrieve original source/current compact outcomes for a concrete changed phase contract;do not repeat this consumed survey."
   },
   "metric_provider_observability_design_20261030": {
     "classification": "decision_support",

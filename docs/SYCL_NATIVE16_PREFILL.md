@@ -1749,6 +1749,11 @@ observer cost do not qualify current9a79. Split mode refuses command-service
 profiling. Keep physical PCIe/DRAM bytes and arithmetic saturation unknown when
 their providers are unqualified. Repeated clean decode,task/agent checks and
 physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
+The successful v2 raw outputs and consumed phase-handoff report/review/source
+exports are retired after the compact result is pushed. The deletion manifest
+records91files/13363315bytes;12baseline exports match original Git blobs.
+Both qualified model generations and their fixtures remain for the named
+repeated comparison/qualification;independent legacy provenance holds remain.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
