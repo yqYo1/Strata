@@ -30064,8 +30064,8 @@
       }
     },
     "split_resource_host_checks": {
-      "stage": "prepared",
-      "passed": false,
+      "stage": "closed",
+      "passed": true,
       "sources": {
         "tools/sycl/profile_split.py": "343afacc3def80300774c98599e48d90c981ab7215ed44f5dfad2991243dbb9a",
         "tools/sycl/test_profile_split.py": "fa9d739982dd1230a1c5e3febb4c0dab1a041841a20a4c8a3a79a90f99099a51"
@@ -30077,7 +30077,10 @@
       ],
       "expected_tests": 10,
       "scope": "Host-only trace identity/time/overlap/payload and immutable startup/session rejection controls. No native engine,profiler load or GPU work.",
-      "next_gate": "Commit exact source/plan,run the10host controls under the shared lock;then fresh frontend,prefix environment probe and one source-bound117K profile."
+      "next_gate": "Fresh frontend admission,commit a prefix-first model profile plan,then CPU prefix validation before one117K model profile. These host-only checks do not qualify native/runtime/profile coverage.",
+      "source_commit": "c73aca1cde01de72933f48c1ac644af65aa6288b",
+      "tests": 10,
+      "exit_code": 0
     }
   },
   "metric_topology": {
