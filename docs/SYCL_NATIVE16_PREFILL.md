@@ -1705,7 +1705,11 @@ same-request split-prefill to long-decode continuation. Default v4 generation
 uses approximately33Kinput and does not exercise this route;a separately
 versioned96Kcase must preserve the existing v4 behavior and actual per-arm
 placement. Native/runtime evidence may be reused only after identity checks;
-this benchmark change itself adds no native,task,agent or physical262144 qualification.
+this benchmark change itself adds no native,task,agent or physical262144 qualification. Successful
+raw output from all six comparison processes and consumed research dispatch
+transactions are retired after verification;individual samples,decisions and
+work counters remain. Both native generations stay only for the imminent
+continuation checks;older legacy provenance holds remain separate.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
