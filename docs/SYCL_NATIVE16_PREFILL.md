@@ -1764,10 +1764,20 @@ and44.202s CPU outside those waits. The latter includes submission/runtime
 work and12.583s unclassified CPU;it is not proof of CPU inference arithmetic
 or CPU saturation. The largest single full-shape QSA prefix kernel group
 takes26.262s and the GDN recurrence-columns4 group8.541s of nonexclusive
-service. Next reconcile all shape groups into source families and distinguish
-host launch/wait overlap before choosing a matched hardware/kernel comparison.
-Retain the complete temporary timeline only for that named analysis,then
-retire it after the useful evidence is recorded. Older97cfa/6e40 coverage or
+service. The closed shape/family analysis now reproduces the original trace
+reduction and matches all7432fused GU and7432fused Down launches to native
+dispatch counters. QSA prefix totals27.081s;its main normalized compute
+kernel has180calls/26.950s. Observed kernel union is103.908s. M2D copy payloads
+total49.443GB/11.557s of summed service;this includes the controlled request's
+copies,not exclusively expert transfers or measured PCIe wire bytes. Observed
+GPU gaps total17.467s. One3.132s gap overlaps3.131s of`zeModuleCreate`;other
+large initial gaps precede the PLE-row H2D stage and require source attribution.
+The status wrapper's6.656CPU seconds split mainly into4.438s inside enqueue
+and2.216s in its known drain;the enqueue includes called runtime work,not
+proved CPU inference math. Next compare native-source transfer granularity and
+QSA matched resource ceilings before selecting a prefill-only change. Retain
+the complete temporary timeline only until these source/priority decisions are
+recorded,then retire it. Older97cfa/6e40 coverage or
 observer cost does not qualify9a79. Physical PCIe/DRAM bytes and arithmetic
 saturation remain unknown. Repeated clean decode,task/agent checks and
 physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
