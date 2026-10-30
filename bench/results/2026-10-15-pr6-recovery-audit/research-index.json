@@ -17912,7 +17912,7 @@
   },
   "original_split_phase_handoff_audit_20261030": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_with_source_and_qualification_limits",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report_budget_bytes": 24576,
@@ -17945,11 +17945,63 @@
       "reason": "agent-update-prompt",
       "task_began": false
     },
-    "worker_dispatch_state": "dispatched"
+    "worker_dispatch_state": "completed",
+    "worker_outcome": "succeeded",
+    "worker_released": true,
+    "release_state": "released",
+    "delivery_acknowledged": "delivery_c1188e2aafce",
+    "report_bytes": 16661,
+    "report_sha256": "eeed92a7ef88653020a0e3231e1f1781922fb918c8995865b7723d7cdc1006d4",
+    "native_review_task": "/root/curate_original_split_phase_handoff_20261030",
+    "native_review_model": "gpt-6-luna max",
+    "native_review": {
+      "path": ".cache/research/2026-10-30/original_split_phase_handoff_audit_20261030.review.json",
+      "bytes": 9099,
+      "sha256": "b3fb621d998cb059247c1bc3e6a916b4ed203398ca8b67a6abf27aeddf3b91fe",
+      "closed": true
+    },
+    "digest": "Split admission is source-limited to requested mode 10 with native16, mixed scratch, BF16 residuals, engine rows 90113..117488, full GPU residency, and successful single-allocation and cumulative-budget checks. It keeps 65536 FP32 primary rows and a separate FP32 tail; admission misses retain the ordinary route. Queue leases, spans, a tail guard, callback ordering, and drains are explicit source invariants. Runtime dispatch, allocations, guard contents, persistent session state, decode behavior, and teardown remain unproved.",
+    "necessary_corrections": [
+      {
+        "severity": "material",
+        "report_claim": "Qualification cases 1 and the closing decision require the same route in both comparison arms.",
+        "correction": "The named question is original split versus selected6e40, so the intended implementations may dispatch differently. Require identical workload and matched declared configuration, then prove the candidate actually admitted split and the selected arm actually took its expected selected6e40 path. Record each arm's route; do not gate on route equality. Reconcile prefill slot/cache placement as well: the earlier frozen plan states candidate128 versus selected6e40 384 slots. If that remains intentional, call the result a path-policy comparison and do not attribute a delta to split accumulation alone."
+      },
+      {
+        "severity": "material",
+        "report_claim": "n=117488 has a final 3600-row piece.",
+        "correction": "With chunk=8192, 117488 = 14*8192 + 2800. The final piece is 2800 rows; the split tail is 51952 rows. Express these as engine rows; the maintained comparison uses 117489 read tokens and 117488 engine rows."
+      },
+      {
+        "severity": "clarification",
+        "report_claim": "Selection changes only four paths from the split candidate.",
+        "correction": "Distinguish the four-file Down-policy/selector/same-build-fixture delta from the candidate9a79-to-selected6e40 source comparison, which the manifest pins across twelve native overlay paths. As written, readers could mistake the four-file statement for the baseline source delta."
+      },
+      {
+        "severity": "qualification",
+        "report_claim": "A checked Restore/queue drain and owner closure protect handoff.",
+        "correction": "Make the failure consequence explicit: preflight capacity misses occur before model work and can take the ordinary fallback, but a late route/device/callback failure can leave tensors partially changed even when C++ bindings are restored. Discard/reset that session before retrying; do not treat Restore as transaction rollback. Keep ordinary runtime/provider teardown as a separate unresolved gate, as the maintained decision records it."
+      },
+      {
+        "severity": "redundancy",
+        "report_claim": "The report proposes fresh bank-boundary, invalid-map, and 32 dispatch/fallback cases.",
+        "correction": "The maintained decision already records same-build checks for 63/64/65 boundaries, split primary/tail/final rows, invalid-map masks, and 32 production dispatch/fallback cases. Reuse those results only if the exact build and fixture identities match; do not repeat them automatically. The unresolved model-level evidence is actual per-arm admission/placement and successful prefill-to-decode state handoff."
+      }
+    ],
+    "next_scope": {
+      "scope": "No new research scope is eligible now. Main-owned qualification should resolve the pending comparison. Reopen a bounded report only if it produces a concrete unresolved failure concerning partial-session recovery or ordinary SYCL/Level Zero provider teardown.",
+      "schedulable_now": false,
+      "prerequisite_evidence": [
+        "The original-split versus selected6e40 comparison and all owned processes are closed with per-arm route/configuration outcomes recorded.",
+        "The exact same-build fixture identity is reconciled and existing boundary/dispatch evidence is either reused or its specific remaining gap is named.",
+        "The continued-decode handoff and ordinary runtime/provider teardown outcomes identify a finite question not answered by the existing canonical-phase report."
+      ]
+    },
+    "evidence_scope": "This review establishes no new runtime fact. Existing same-build8device gates,3model diagnostics and9clean processes remain passed and reusable after exact source/fixture identity checks. Sustained decode,task/agent/full262144 and ordinary teardown remain separate;do not discard completed gates from a source-only unknown."
   },
   "metric_provider_observability_design_20261030": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_with_source_and_qualification_limits",
     "schedulable_now": false,
     "worker_model": "Orca Codex gpt-6-luna high",
     "report_budget_bytes": 24576,
@@ -17961,7 +18013,7 @@
     "source_manifest_sha256": "8ae4569fe2256258ade5356f22e756f9bcb3bac329674db5b7233c58724085f5",
     "report": ".cache/research/2026-10-30/metric_provider_observability_design_20261030.md",
     "consumer": "Named next provider-status diagnostic design;retire capsule after reviewed plan choice. Original causal/collection questions remain conditional on unobserved runtime statuses.",
-    "next_review": "At worker completion/native Luna-max review before any implementation or new GPU test.",
+    "next_review": "Compact source corrections and missing provenance retained here. Retire the now-consumed one-use report/capsule/review after this decision is committed;reopen only if the exact missing prerequisite is obtained and private status is decision-critical.",
     "prerequisites": {
       "topology_closed_passed": true,
       "root_nodes": 1,
@@ -17985,6 +18037,50 @@
       "reason": "agent-update-prompt",
       "task_began": false
     },
-    "worker_dispatch_state": "dispatched"
+    "worker_dispatch_state": "completed",
+    "worker_outcome": "succeeded",
+    "worker_released": true,
+    "release_state": "released",
+    "delivery_acknowledged": "delivery_c1188e2aafce",
+    "report_bytes": 14743,
+    "report_sha256": "5aed62f3084f11f7518da1a94e6dc4ef33acccce0b3e0328441df6607ab15d9d",
+    "native_review_task": "/root/curate_metric_provider_observability_20261030",
+    "native_review_model": "gpt-6-luna max",
+    "native_review": {
+      "path": ".cache/research/2026-10-30/metric_provider_observability_design_20261030.review.json",
+      "bytes": 5147,
+      "sha256": "b213c7c69b275d2631a15faf03acccabe13d4eb5cffd88312a3e5d54581de385",
+      "closed": true
+    },
+    "digest": "The closed evidence remains root1/child0, 24 groups, providers mapped, and the original ComputeBasic pool call returning INVALID_ARGUMENT before GPU work. Pinned NEO source supports two pool-create failures collapsing to that result: ML QueryCreate failure, or a later zero/error GPU-report-size lookup. Caller/loader logs cannot expose those private values. Do not infer permission failure, provider initialization success, or counter collection. Keep the original failure and continue throughput qualification independently.",
+    "corrections": [
+      {
+        "topic": "Report-size API identity",
+        "finding": "At pool creation, successful QueryCreate is followed by getQueryReportGpuSize(), which calls GetParameter(QueryHwCountersReportGpuSize); provider error and literal zero both become 0, then allocateGpuMemory() returns false and the public wrapper returns INVALID_ARGUMENT. QueryHwCountersReportApiSize is a separate later get-data size-only path and cannot explain this pool-create refusal. Capture the GPU-size parameter's raw status, value type, and ValueUInt32 separately from QueryCreate.",
+        "source": "https://raw.githubusercontent.com/intel/compute-runtime/c9fe9ecbe5c137657c34f2ae0bea35123afe35ac/level_zero/tools/source/metrics/metric_oa_query_imp.cpp"
+      },
+      {
+        "topic": "Logging variables and visibility",
+        "finding": "The harness is a native Level Zero caller linked to libze_loader, so UR_ENABLE_LAYERS/UR_LOG_TRACING do not instrument this call path. Level Zero v1.32.0 documents ZEL_ENABLE_LOADER_LOGGING=1, ZEL_LOADER_LOGGING_LEVEL=trace, ZE_ENABLE_VALIDATION_LAYER=1, and ZEL_LOADER_LOG_CONSOLE=1 for console API tracing; ZEL_LOADER_LOGGING_ENABLE_SUCCESS_PRINT=1 includes successful results. These report public API arguments/results only, not ML internals. ZE_ENABLE_LOADER_DEBUG_TRACE=1 is deprecated and covers loader-internal warnings/errors, not API tracing. Confirm the installed loader package matches this documented source before use.",
+        "source": "https://github.com/oneapi-src/level-zero/blob/v1.32.0/README.md#logging-api-calls"
+      },
+      {
+        "topic": "NEO debug-output limitation",
+        "finding": "The pinned QueryCreate and GPU-report-size failure sites use DEBUG_BREAK_IF, not a status-print call. NEO defines DEBUG_BREAK_IF as a no-op unless _DEBUG; the installed NEO ELF build flags are not established. NEOReadDebugKeys=1 only permits debug-key reading and cannot promise a message or raw status from these sites.",
+        "source": "https://raw.githubusercontent.com/intel/compute-runtime/c9fe9ecbe5c137657c34f2ae0bea35123afe35ac/shared/source/helpers/debug_helpers.h"
+      }
+    ],
+    "next_scope": {
+      "external_log_probe": {
+        "schedulable_now": false,
+        "reason": "It would repeat the known public failure and provider mapping; no source-backed reason says loader or release NEO logging will distinguish the private branches. If later used only to inspect runtime descriptor values, label it an external log-discovery probe, not a provider-status discriminator."
+      },
+      "provider_status_diagnostic": {
+        "schedulable_now": false,
+        "prerequisite_evidence": "First pin authoritative build/source provenance for the installed NEO ELF and exact loaded Metrics Library and Metrics Discovery ELF identities, versions, and matching source/build recipes. Then prepare an isolated version-consistent diagnostic that records ML initialization state, raw QueryCreate status, and GetParameter(QueryHwCountersReportGpuSize) status/type/value without changing return behavior. Do not rebuild or mix providers until that evidence and a separate committed plan exist."
+      }
+    },
+    "review_scope_exception": "I inadvertently ran read-only git status and rev-parse once at startup despite the task's no-Git restriction; no Git mutation, build, test, GPU job, profiler, process inspection, or product edit was performed.",
+    "decision": "No external-log or provider-instrumentation probe now. Preserve the public query failure;continue independent matched throughput qualification. Loaded MD/ML identities are already in the retained dependency manifest;remaining gap is matching NEO/ML/MD source/build provenance,not another file-hash census."
   }
 }
