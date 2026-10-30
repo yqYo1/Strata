@@ -1674,7 +1674,7 @@ prefill policy comparison: selected384 versus split128 effective expert slots,
 in their respective actual routes. Decode remains1256 slots. A passing screen
 still needs repeated decode/handoff,agent,long-thinking,task and physical262144
 qualification before adoption. Nine host rejection controls and two fresh
-frontend probes pass without a native rebuild. Four processes now close:
+frontend probes pass without a native rebuild. Five processes now close:
 
 | Process/policy | First use,tok/s | Subsequent three,tok/s | Median prefill,s | Median TTFT,s |
 | --- | ---: | --- | ---: | ---: |
@@ -1682,9 +1682,10 @@ frontend probes pass without a native rebuild. Four processes now close:
 | 1/original split | 927.6 | 1000.3 / 1000.6 / 1007.1 | 117.4150 | 117.576 |
 | 2/original split | 931.4 | 1000.5 / 1002.1 / 1005.9 | 117.2459 | 117.396 |
 | 3/selected6e40 | 906.5 | 976.7 / 976.1 / 972.8 | 120.3666 | 120.528 |
+| 4/selected6e40 | 901.2 | 969.5 / 970.0 / 972.4 | 121.1269 | 121.295 |
 
 The first pair's descriptive time ratio is0.97187067,a2.813percent reduction. All
-sixteen exact117489-read requests have zero reuse and matched body hashes;
+twenty exact117489-read requests have zero reuse and matched body hashes;
 both hold all117488 residual rows on GPU. Actual selected/split placement is
 384/128slots,81920/117488maximum rows and96/48windows,with checked split guard
 and drain. Source/runtime/validation and owner gates pass with no fresh GPU
@@ -1692,7 +1693,7 @@ fault. Recorded jobs decrease36.1..36.2percent and dequants about43.1percent,
 while requested expert H2D bytes differ by less than0.05percent. These are
 logical work/requested-byte counters,not physical traffic or resource-saturation
 measurements. The reverse pair's time ratio is0.97407337,a2.593percent reduction.
-Two processes remain;no comparison decision or adoption follows from these
+The final split process remains;no comparison decision or adoption follows from these
 partial results. The reverse pair contains an overnight gap before process3;
 preserve that limitation rather than treating the samples as contiguous.
 
