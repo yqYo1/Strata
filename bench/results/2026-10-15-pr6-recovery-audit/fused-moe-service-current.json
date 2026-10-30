@@ -30062,6 +30062,22 @@
         "scope": "Successful v2 raw outputs/frontend and consumed original-split phase report/review/12base exports only. No engine,fixture,model,profiler or independent provenance hold removed.",
         "source_exports_recovered_from_git": 12
       }
+    },
+    "split_resource_host_checks": {
+      "stage": "prepared",
+      "passed": false,
+      "sources": {
+        "tools/sycl/profile_split.py": "343afacc3def80300774c98599e48d90c981ab7215ed44f5dfad2991243dbb9a",
+        "tools/sycl/test_profile_split.py": "fa9d739982dd1230a1c5e3febb4c0dab1a041841a20a4c8a3a79a90f99099a51"
+      },
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "tools/sycl/test_profile_split.py"
+      ],
+      "expected_tests": 10,
+      "scope": "Host-only trace identity/time/overlap/payload and immutable startup/session rejection controls. No native engine,profiler load or GPU work.",
+      "next_gate": "Commit exact source/plan,run the10host controls under the shared lock;then fresh frontend,prefix environment probe and one source-bound117K profile."
     }
   },
   "metric_topology": {
