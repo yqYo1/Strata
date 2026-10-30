@@ -29732,6 +29732,142 @@
       "ownership_closed": true,
       "GPU_executed": false,
       "criterion": "Two fresh current-source definition/mock-loopback probes;late tokenizer/telemetry and exact Python/project/provider identity. No native engine or GPU initialization."
+    },
+    "split_continuation_diagnostics_v2": {
+      "stage": "prepared",
+      "source_commit": "08c5eeaadd493d7d6833de9d1cede9b1ea8915c6",
+      "asset_basis": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-split-comparison-v2/record.json",
+        "sha256": "9d591989fe2da1c53f67e683a5d70eb51b6e03ddbf61ff2f9a8f2324e4091467"
+      },
+      "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "native_validation_probe": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+          "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+        },
+        "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+        "component_original_plan": {
+          "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+          "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+        },
+        "current_runtime_qualification_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "binaries": {
+        "selected": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+          "bytes": 22190000,
+          "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+        },
+        "split": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+          "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+          "bytes": 22897880
+        }
+      },
+      "native_sources": {
+        "selected": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+        "split": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2"
+      },
+      "plans": [
+        {
+          "arm": "split",
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-continuation-v2/split",
+          "command": [
+            "/bin/sh",
+            "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+            "--config",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-continuation-v2/split/config.json",
+            "--port",
+            "57385",
+            "--long-generation-only",
+            "--long-generation-input-case",
+            "split-v1-96k",
+            "--long-generation-workload",
+            "regular-code",
+            "--long-generation-speed-only",
+            "--long-generation-max-tokens",
+            "16384",
+            "--think",
+            "--runs",
+            "1",
+            "--profile-request-gates",
+            "--workload-id",
+            "split_continuation_v1",
+            "--fail-fast-engine-error",
+            "--ready-timeout",
+            "600",
+            "--out",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/split-continuation-v2/split/bench"
+          ],
+          "binary": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/build/strata",
+            "sha256": "07f1261c17ea1ccde4734f2ffef4e291508ed10449a9e7b6334f75712461b8a6",
+            "bytes": 22897880
+          },
+          "native_source_commit": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+          "environment_sha256": "e3f2cc80148cf3b733a75f97cbc1878cf9d6bb44586e78ae76f51eea1c3d1476",
+          "generated": {
+            "config.json": "5c8d32af77ca78ca1750eb965650d061bc74d06d77ec4843a2ae2053c7cd7aab",
+            "plan.json": "328536d0395211efd72eeda1ff229393df3fbf5744abe74d8f9590e6e4c59ae8"
+          }
+        }
+      ],
+      "processes": [],
+      "historical_input_reference": {
+        "source_scope": "split_continuation_diagnostics_v1",
+        "body_sha256": "061e8dbcbdcbb6952b8b5adf3fadf8d44e10ec98bc14808d6d4de98e79ac1bcd",
+        "original_passed": false,
+        "qualification_reused": false,
+        "scope": "Input identity and descriptive history only;the failed baseline is not requalified or counted as a new paired comparison."
+      },
+      "profile": {
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "identity": {
+          "realpath": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+          "dev": 40,
+          "ino": 1160754,
+          "bytes": 196632,
+          "mtime_ns": 1790912310870254601,
+          "ctime_ns": 1790912310870254601
+        },
+        "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "budgets": {
+        "wall": 2400,
+        "cpu": 7200,
+        "rss_cap": 111669149696,
+        "text_cap": 67108864,
+        "file_cap": 134217728,
+        "total_cap": 536870912
+      },
+      "plan": {
+        "order": [
+          "split"
+        ],
+        "requests_per_process": 1,
+        "workload": "regular-code",
+        "question": "Does the actual split route continue into long decode in the same owned request?",
+        "constants": "Same source-bound split-v1-96k body/nonce,thinking and16384output cap. Keep1256decode slots,8192chunks,5workers,spec4,INT8 resident131072context and qualified immutable runtime safety settings.",
+        "acceptance": "Each arm must count the exact final body,report matching prompt/read90114..114432 and zero reuse,complete SSE with>=1024actual completion tokens including thought and>=512answer characters,positive engine clocks and valid MTP counters. Actual native extent=read-1;selected384slots/81920maximum/96windows;split128slots/dynamic n maximum/48windows,65536primary plus checked dynamic tail/guard/drain,decode_changed=0. Match the historical input hash only;do not require equal generated text or reuse its failed qualification.",
+        "observers": "STRATA_TRACE=1 and quiet parameter validation;no command-service observer or hardware counters. Diagnostic engine timings are not clean speed.",
+        "mtp": "Prospective speed-only diagnostic:valid0/0 is allowed with undefined agreement. This single workload/single process does not classify strong/weak MTP or qualify repeated decode preservation.",
+        "stopping": "Stop first source/runtime/owner/validation/fault/budget/count/body/route/generation failure. No retries,replacements,body repair,changed thresholds or late-failure session reuse.",
+        "retention": "Keep compact per-arm sample,route,identities,fault/result and limits. Retire successful raw output after closure. Native generations remain only for the imminent repeated/task/context qualification.",
+        "limits": "Candidate-only diagnostic. Historical selected data are descriptive;the original failed scope stays failed. No paired comparison,adoption,clean speed,task,agent or physical262144 qualification."
+      },
+      "complete": false,
+      "passed": false,
+      "active": false,
+      "ownership_closed": true
     }
   },
   "metric_topology": {
