@@ -12515,10 +12515,75 @@
     "inference_adoption": false,
     "pending_prefill_route_contract": {
       "classification": "decision support",
-      "schedulable_now": false,
+      "schedulable_now": true,
       "question": "Once the exact deployed Qwen3.8-Flash-Next checkpoint/config and intended vLLM or SGLang reference route are pinned, trace that model's long-prefill expert path at immutable official revisions through GEMM output storage, gate-weight conversion, top-k reduction order, shared-expert/scalar-gate combination, final cast, and any fused finalize path. Compare those operations to Strata's run_moe_accum_window, try_down_scatter16_split, moe_accumulate_split and moe_finish. State whether current BF16 Down output plus expert-order FP32 sycl::fma matches a selected framework contract, and give a source-grounded numerical/task gate for the current default-off split route. Distinguish an exact selected backend from generic API capability, NVIDIA-only examples, decode-only paths, and unsupported quantization. No patch, test, performance claim or adoption recommendation from source inspection alone.",
-      "missing_prerequisite": "The maintained decision slice does not pin the actual checkpoint/config bytes or a matching selected vLLM/SGLang long-prefill backend/dtype route. Main must provide that identity in the dispatch manifest first; do not dispatch a worker merely to report this absence.",
-      "next_action": "Main pins the deployed checkpoint/config and a matching official vLLM/SGLang prefill route before another framework-reduction review. Existing geometry/scatter/metadata findings suffice for the current model hook;do not repeat a generic survey."
+      "next_action": "Dispatch one bounded Orca Luna decision-support task for this now-pinned route;no implementation or model adoption from research.",
+      "previous_missing_prerequisite": "The maintained decision slice does not pin the actual checkpoint/config bytes or a matching selected vLLM/SGLang long-prefill backend/dtype route. Main must provide that identity in the dispatch manifest first; do not dispatch a worker merely to report this absence.",
+      "status": "prerequisites_pinned_ready_for_dispatch",
+      "source_revision": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+      "policy_revision": "6b523dfe1",
+      "report_path": ".cache/research/2026-10-30/qwen4exp_long_prefill_reduction_contract_20261030.md",
+      "report_budget": {
+        "max_bytes": 24576,
+        "substantive_words_min": 1600,
+        "substantive_words_max": 2200
+      },
+      "checkpoint": {
+        "repo": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+        "revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+        "variant": "IQ3_S",
+        "basis_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/model-v2/basis.json",
+        "basis_sha256": "e627045feba4ef63dfe96cd859394fb17ce7f2670d6d1135d285bfc924b20e4e",
+        "GGUF_header_bytes": 11024384,
+        "GGUF_header_sha256": "d6932b90e1b001f706ee5c8a1aebbab3a8a6ae35892df2fb09af459add1140ef",
+        "official_config_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/resolve/de4b8e4d43b917e7706784d8bb445c9af86a3540/config.json",
+        "official_config_sha256": "889658f2508e8c61d409b02e70e0d78d8d4452ec65aaafbe129805d213d2e74b",
+        "shared_MoE_topology": {
+          "hidden_size": 2560,
+          "num_hidden_layers": 48,
+          "num_experts": 512,
+          "num_experts_per_tok": 10,
+          "moe_intermediate_size": 640,
+          "shared_expert_intermediate_size": 640,
+          "hc_count": 4,
+          "hc_lowrank": 320,
+          "max_position_embeddings": 262144,
+          "dtype": "bfloat16"
+        },
+        "limitation": "Same base model/topology,not byte-identical BF16 versus GGUF weights. Exact deployed weight identities and config remain in the hashed basis. The question compares activation/reduction contracts with weight-conversion differences explicit;no framework output or quality parity is presumed."
+      },
+      "local_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/source",
+      "local_source_sha256": {
+        "src/prefill/moe_window.inc": "ffd4d244a075eb6eaf2dec7cef36e005dd082a906139179f887881fd8d404221",
+        "src/prefill/sycl/gemm16.cpp": "8a4885b80ed75edb21a651243a250a53dc5cd31cc07fbfc7e90c98a5ffa6fd1a",
+        "src/prefill/sycl/native16.cpp": "71a487d8e4f386cb12373490542d4446fef5abaea832b1819df4fc0aed49fafa",
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "a2e42a4095d5c3e13a473af3d81666090f8839136ee6d0fdc5652fabbc5b7357",
+        "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
+      },
+      "intended_reference": {
+        "repo": "sgl-project/sglang",
+        "root": "/home/yayoi/ghq/github.com/sgl-project/sglang",
+        "revision": "877be2974aa151a984e52822c028276c2b1e9303",
+        "source_sha256": {
+          "python/sglang/srt/configs/qwen4_exp.py": "dc575dc836041b42f6a747f9edc46f3b3067bf6a779d47908320d0d187e0f803",
+          "python/sglang/srt/configs/qwen3_next.py": "d55b9516ab517b04180f3a0c6de650d98c5a7408235e52736a9132b101479ca0",
+          "python/sglang/srt/models/qwen4_exp.py": "9b8c9bc511800bbb53603b37bc3198597f778ba1a2b32a8b40fb5ea0212471e7",
+          "python/sglang/srt/models/qwen3_5.py": "ea8d9aa210d4a3f746e247f2d6e877fe312c3bb31b26c68cd560dfb3a74a0786",
+          "python/sglang/srt/models/qwen2_moe.py": "f45979e7c0845e17c205ab5eb13edcc5b4f63fa74d8db2daba7220bf8499107e",
+          "python/sglang/srt/layers/moe/fused_moe_triton/layer.py": "9f892344e2f24360a755e6027e3a0022fc954f3a6961ed9cc80f9fe32ed77931",
+          "python/sglang/srt/layers/quantization/unquant.py": "4f1d09097eb17520cb3be6756cb452c1047914c092dbd269bc668dcd6d0f5fe4",
+          "python/sglang/srt/layers/moe/moe_runner/triton.py": "e45a86545e9140dbe31d85683396de57722f477ee5e0b2b0b42cbee42e8d2e1e"
+        },
+        "device": "CUDA SM80 BF16 reference,source-only;not a launch on this workstation",
+        "settings": "text-only long prefill,M117488,H2560,FF640,E512,top10;dtypeBF16,quantizationNone,TP1/EP1/DP1/CP1,moe-runner-backend=triton,moe-a2a-backend=none,no CUDA graph/capture,no MTP;native shared-expert fusion disabled by this CUDA class/default selection.",
+        "route_evidence": "Qwen4ExpLayerExtensionMixin._run_ffn_stage skips its T=1 decode fastpath at M117488;Qwen3_5*DecoderLayer creates Qwen2MoeSparseMoeBlock(reduce_results=False);explicit triton/unquantized selects UnquantizedFusedMoEMethod->MoeRunner(TRITON),not triton_kernels,FlashInfer,Cutlass or AITER. Qwen4ExpTextConfig inherits norm_topk_prob=True from pinned Qwen3NextConfig. Trace the actual layer-boundary finalization eligibility and shared-gate path rather than assume generic FusedMoE behavior."
+      },
+      "prerequisites_met": [
+        "Deployed model15asset identities and full hashes are pinned in model-v2/basis.json after successful original/row128 diagnostics.",
+        "The actual selected isolated native source bytes are pinned,avoiding unselected current-tree upload/observer code.",
+        "Official immutable config and actual GGUF metadata agree on all supplied MoE/hyperconnection dimensions;weight-quantization difference is explicit.",
+        "One intended source-selected long-prefill SGLang CUDA BF16/unquantized Triton route and its immutable source files are pinned;this is source comparison,not a CUDA execution request."
+      ]
     }
   },
   "partial_sum_compression_methods_collection_20261027": {
