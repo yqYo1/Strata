@@ -18078,7 +18078,7 @@
   },
   "ple_initial_staging_design_20261031": {
     "classification": "decision support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "prerequisites": [
       {
         "item": "same-request split continuation and source-bound resource attribution are closed",
@@ -18105,12 +18105,24 @@
       "out_of_core_sycl_hpc_scheduling_scope"
     ],
     "report_budget_bytes": 12288,
-    "state": "eligible_after_closed_source_bound_117K_attribution",
+    "state": "running",
     "review": {
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "sha256": "e629ee4c4cce6da23d6c89a6de0e1be2bff72eb9bff380e71741eef752742e88",
       "path": ".cache/research/2026-10-31/post_resource_scopes.review.json"
+    },
+    "report_path": ".cache/research/2026-10-31/ple_initial_staging_design_20261031.md",
+    "active_dispatch": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_7f0bb869cbe8",
+      "dispatch": "ctx_f78e168f8fe8",
+      "terminal": "term_33799bbf-17f3-4e8f-ae73-f979f14dbb6f",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "proof": "Initial launch effective model/effort and same retained terminal ready-screen;retry turn_started observed. Update prompt skipped without installing updates.",
+      "prior_failed_dispatch": "ctx_4d928fe0d5c6",
+      "prior_failure": "agent_readiness:agent-update-prompt;Task never ran. Same terminal reused after dismissing prompt."
     }
   }
 }

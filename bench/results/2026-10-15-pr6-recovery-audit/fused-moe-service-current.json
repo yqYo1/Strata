@@ -32150,5 +32150,46 @@
       "uncovered_compiler_inputs": 0,
       "retained": "Only dependencies.json for the named next provider-status diagnostic;no executable,object,raw inventory,trace or owner transcript."
     }
+  },
+  "prefill_copy_pipeline_v1": {
+    "source_commit": "cfe338858c0bf722222ee10ae787268ab24e05fd",
+    "inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v1/inputs.json",
+      "sha256": "c7471c095ca8edfe2a41daadd71017e54d6d121ae00d1ff50ce328015e41f8ef",
+      "project_files": 195,
+      "external_files": 281
+    },
+    "host_controls": {
+      "source_commit": "cfe338858c0bf722222ee10ae787268ab24e05fd",
+      "path": "tools/sycl/test_copy_pipeline.py",
+      "sha256": "7381030eb4b13cbe32815ee5a017bcaf865834534644d41cbabc89d225b49a12",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/sycl",
+        "-p",
+        "test_copy_pipeline.py",
+        "-v"
+      ],
+      "tests": 5,
+      "passed": true
+    },
+    "active": false,
+    "ownership_closed": true,
+    "stage": "refused-before-build",
+    "passed": false,
+    "complete": true,
+    "build_executed": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "decision": "Main refused the unexecuted plan:the reused builder selected the legacy SDK with unresolved dirty-source provenance. Existing measurements retain their outcomes. New component requires official Intel2026.2 SDK/runtime in a separate prospectively qualified scope.",
+    "retention": "Only unexecuted input manifest/cache/tmp remain;retire after the official replacement plan closes source recovery. No binary or GPU trace exists for this scope."
   }
 }
