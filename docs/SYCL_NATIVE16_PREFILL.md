@@ -1714,9 +1714,11 @@ continuation checks;older legacy provenance holds remain separate. The separate
 (including9new split cases) and9fail-fast integration tests pass;the optional
 real-tokenizer fixture is unrun. Against old175c1cb98,the default v4 matches
 36wire bodies and6full workload results across two output caps and three
-calibration settings. Fresh current-source frontend and actual per-arm
-long-generation checks remain pending;no native rebuild or GPU qualification
-follows from these host-only checks.
+calibration settings. The12controller rejection checks and two fresh
+current-source benchmark/server definition/mock-loopback probes pass,with
+exact Python/project/provider identities and normal owner closure. Actual
+per-arm long-generation checks remain pending;no native rebuild or GPU
+qualification follows from these host-only checks.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
