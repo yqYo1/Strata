@@ -478,12 +478,25 @@ class OutputParser:
         self._reset_scan()
 
     def _reset_scan(self):
+        self._call_end_checked = 0   # closing-tag search progress for the current wrapped call
         self.sp = 0                  # how much of self.buf (the call body) the scanner has consumed
         self.ss = "name"             # name -> between -> str|raw -> ... -> done
         self.scall = None            # the ToolCall being streamed (its id is reused by the final event)
         self.sfirst = True
         self.sval_started = False
         self.sdeclared = {}
+
+    def _wrapped_call_end(self) -> int:
+        # Niko1221/Strata 46c152a: inspect only new text plus a split-tag overlap
+        # until the first possible closing tag. A tag inside a parameter still
+        # needs the unchanged structural walk, for the rest of this call.
+        if self._call_end_checked >= 0:
+            start = max(0, self._call_end_checked - len(CALL_END) + 1)
+            if self.buf.find(CALL_END, start) < 0:
+                self._call_end_checked = len(self.buf)
+                return -1
+            self._call_end_checked = -1
+        return call_end(self.buf)
 
     def _scan(self) -> list[Event]:
         """Advance the streaming view of the call body in self.buf (see stream_tools)."""
@@ -591,10 +604,19 @@ class OutputParser:
     def _hold(self, text: str, tags: tuple[str, ...]) -> int:
         """Length of the longest suffix of `text` that is a proper prefix of one of `tags`."""
         best = 0
+        size = len(text)
         for tag in tags:
-            for n in range(1, len(tag)):
-                if text.endswith(tag[:n]):
-                    best = max(best, n)
+            if len(tag) <= 1:
+                continue
+            # Only a suffix beginning with the tag's first character can match.
+            # Ordinary token deltas contain no '<': one C-level search replaces
+            # checking every possible prefix. Earliest candidate is the longest.
+            start = text.find(tag[0], max(0, size - len(tag) + 1))
+            while start >= 0 and size - start > best:
+                if tag.startswith(text[start:]):
+                    best = size - start
+                    break
+                start = text.find(tag[0], start + 1)
         return best
 
     def feed(self, delta: str) -> list[Event]:
@@ -636,7 +658,7 @@ class OutputParser:
                 self.buf = self.buf[i + len(CALL_START):]
                 self.state = "call"
             else:
-                i = call_end(self.buf)
+                i = self._wrapped_call_end()
                 if self.stream_tools:
                     if i >= 0:
                         whole, self.buf = self.buf, self.buf[:i]     # scan only the body
