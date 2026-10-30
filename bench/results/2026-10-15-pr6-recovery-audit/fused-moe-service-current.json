@@ -21898,7 +21898,7 @@
     "mechanism": "Independent Down M64xN128,K32,SG16 with2x2 subgroups and64threads;same128logical accumulator cells/workitem as the qualified128x128/128thread policy. Cache64row addresses/weights(768B);preserve post-BF16 FP32 FMA,queue/order/bounds. No claim of grid underfill,occupancy or physical-memory saturation.",
     "scope": "Component only,four-way row128/row64 scatter and dense controls. Existing128row bodies and public Tile/GU/production/decode selectors remain unchanged. Host ownership and tiny invalid-map/boundary gates precede timing.",
     "build": {
-      "stage": "prepared",
+      "stage": "built-not-executed",
       "source_commit": "bf330a8f9741f392cd83b71eac6e6628a7460a18",
       "sdk": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-warmed-graph-window-v1/compiler-inputs.json",
@@ -22076,7 +22076,7 @@
       ],
       "active": false,
       "ownership_closed": true,
-      "passed": false,
+      "passed": true,
       "GPU_executed": false,
       "engine_built": false,
       "production_selected": false,
@@ -22100,6 +22100,25 @@
         "row128_device": "032de2de36ac3fa961885b20e05fe5e391f7bb7285645708d59336ed66b795b6",
         "row128_host": "7c9b7889bfae46585a13e03d3e706012b66d1d34aba884d99842ca3018bc55b6",
         "dense_kernel": "6a4d15d906fc2c987822832637c91421f1aaa0df8de5cb838c088c4276d0e3c1"
+      },
+      "compiled_inputs": {
+        "files": 1384,
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-row64-v1/compiler-inputs.json",
+          "sha256": "1d926333265cd0bba86ab54315c8c2ef3097f3e23a6396e54e39f0790919976d"
+        },
+        "generated_sha256": {
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-row64-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+        },
+        "uncovered_files": 0,
+        "used_updated_system_headers": []
+      },
+      "fixtures": {
+        "sycl_moe_down_scatter_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-row64-v1/build/sycl_moe_down_scatter_bench",
+          "sha256": "fb079aad9867159747dd57df47b23a6cbed6e2996fa1b219c63e8ecf9f9b5247",
+          "bytes": 13951968
+        }
       },
       "source_groups": [
         {

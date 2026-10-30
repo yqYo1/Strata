@@ -50,8 +50,8 @@ def pins(revision):
     return result
 
 
-def native(scope):
-    row = json.loads((n.ROOT / 'record.json').read_text())
+def native(scope, build_root=n.ROOT):
+    row = json.loads((build_root / 'record.json').read_text())
     commands = row.pop('commands')
     require(n.compact(row) == scope['build'] and row['stage'] == 'built-not-executed' and
             row['passed'] and row['ownership_closed'] and not row['active'] and
@@ -72,7 +72,7 @@ def native(scope):
 
 
 def admit(scope, plan):
-    row = native(scope)
+    row = native(scope, Path(plan.get('build_root', n.ROOT)))
     require(pins(plan['source_commit']) == plan['controller_inputs'] and
             row['fixtures'][n.TARGETS[0]] == plan['binary'], 'controller/executable changed')
     for path, sha in plan['generated_build_inputs'].items():
@@ -85,18 +85,26 @@ def admit(scope, plan):
 
 
 def environment(plan, case):
-    folder = ROOT / case['name']
+    folder = Path(plan.get('output_root', ROOT)) / case['name']
+    if case.get('host'):
+        return dict(plan['host_environment'],TMPDIR=str(folder/'tmp'),XDG_CACHE_HOME=str(folder/'cache'))
     return dict(plan['environment'], TMPDIR=str(folder / 'tmp'), XDG_CACHE_HOME=str(folder / 'cache'),
         UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION' if case['trace'] else 'UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_TRACING='level:info;flush:info;output:file,' + str(folder / 'api.trace'),
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(folder / 'validation.log'))
 
 
-def prepare():
+
+def context(row64):
+    build_root = B/'moe-down-row64-v1' if row64 else n.ROOT
+    return build_root, build_root/'device-v1', 'moe_down_row64' if row64 else KEY
+
+def prepare(row64=False):
+    build_root, root, key = context(row64)
     record = r.validation.committed(RESULT)
-    scope = record[KEY]
-    require('device' not in scope and not ROOT.exists(), 'fresh finite comparison only; no retry')
-    built = native(scope)
+    scope = record[key]
+    require('device' not in scope and not root.exists(), 'fresh finite comparison only; no retry')
+    built = native(scope,build_root)
     rt = r.validation.committed(r.RESULT)
     source = n.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     env = dict(r.validation.committed(r.SETTINGS)['environment'],
@@ -110,13 +118,15 @@ def prepare():
             env['NEOReadDebugKeys'] == '1' and env['EnableDirectSubmission'] == '0' and
             env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1', 'qualified immutable safety required')
     cases = []
-    for name, args, trace in [('tiny', ['--split-row-address-tiny'], True),
-                              ('smoke', ['--split-row-address-smoke'], False)] + [
-            ('timing-' + str(p), ['--split-row-address-bench', str(p)], False) for p in range(3)]:
+    for name, args, trace in [('tiny', ['--split-row64-tiny' if row64 else '--split-row-address-tiny'], True),
+                              ('smoke', ['--split-row64-smoke' if row64 else '--split-row-address-smoke'], False)] + [
+            ('timing-' + str(p), ['--split-row64-bench' if row64 else '--split-row-address-bench', str(p)], False) for p in range(3)]:
         cases.append(dict(name=name, command=[built['fixtures'][n.TARGETS[0]]['path'], *args], trace=trace))
+    if row64:
+        cases.insert(0,dict(name='ownership',command=[built['fixtures'][n.TARGETS[0]]['path'],'--row64-ownership'],trace=False,host=True))
     plan = dict(stage='prepared', source_commit=source, controller_inputs=pins(source),
         native_source_commit=built['source_commit'], binary=built['fixtures'][n.TARGETS[0]],
-        generated_build_inputs={str(n.ROOT / 'build' / p): digest(n.ROOT / 'build' / p)
+        generated_build_inputs={str(build_root / 'build' / p): digest(build_root / 'build' / p)
                                 for p in ('compile_commands.json', 'build.ninja')},
         runtime_sha256=digest(r.RESULT), environment=env,
         physical_device=device.device_inventory(rt), cases=cases,
@@ -145,16 +155,31 @@ def prepare():
         retention='Retain compact independent samples,coverage,decision and source/runtime identity. '
             'Retire successful traces,logs,JIT and intermediates after verified committed evidence. '
             'Keep one component executable only until this decision;retained model generations unchanged.')
+    if row64:
+        plan.update(variant='row64',build_root=str(build_root),output_root=str(root),
+            host_environment={k:v for k,v in built['environment'].items() if k not in
+                ('LD_PRELOAD','STRATA_UR_PROBE_EXPECTED_LOADER','UR_ENABLE_LAYERS')},
+            correctness='First host coordinate/row-metadata ownership at14 M sizes;no runtime/device request '
+                'in that explicit source branch. Then traced tiny M3 including BF16 edge values and '
+                'invalid-map masks1/2/3. Extended M63/64/65 and117488split-window first/final jobs '
+                'in regular/distributed maps. Compare full BF16 dense64 output and split FP32 '
+                'host-FMA/capture/no-capture outputs,guards,inputs,status and actual event order.',
+            timing='Three fresh processes0,1,2;M2334/5963/8192,regular/distributed,window117488,primary65536,'
+                'N2560,K640. Four rotating arms:qualified row-address128,independent row64 scatter,'
+                'dense128,dense64. One warmup plus four measured rounds balances every arm/order '
+                'within each process.128events/batch,>=5ms floor;no adaptive repeat,retry or exclusion.',
+            limits=plan['limits']+' Both scatter arms cache row addresses;dense arms differ only '
+                'in the explicit Down geometry. No shared Tile/GU/decode selector is changed.')
     admit(scope, plan)
-    ROOT.mkdir(mode=0o700)
+    root.mkdir(mode=0o700)
     for case in cases:
-        folder = ROOT / case['name']; folder.mkdir()
+        folder = root / case['name']; folder.mkdir()
         for name in ('tmp', 'cache'):
             (folder / name).mkdir()
-    write(ROOT / 'plan.json', plan)
+    write(root / 'plan.json', plan)
     scope['device'] = plan
     write(RESULT, record)
-    print('Prepared five ordered Down component processes;commit before GPU execution.', flush=True)
+    print(f'Prepared {len(cases)} ordered Down component processes;commit before native execution.', flush=True)
 
 
 def live(io, case, plan, rt, stage):
@@ -171,39 +196,60 @@ def live(io, case, plan, rt, stage):
         return device.live_device(io.proc.pid, plan['physical_device']['name'], plan['physical_device'], rt)
 
 
-def parse(text, name):
+def parse(text, name, row64=False):
     rows = [json.loads(line) for line in text.splitlines() if line.startswith('{')]
     require(rows and all(v['status'] == 'PASS' for v in rows), 'native component result failed')
+    if row64 and name == 'ownership':
+        require([v['rows'] for v in rows] == [1,3,17,63,64,65,127,128,129,2333,2334,5963,8191,8192] and
+                all(v['kind']=='row64_ownership' and v['cells']==v['rows']*2560 and v['metadata_slots']>0
+                    for v in rows), 'incomplete host coordinate ownership proof')
+        return dict(host_coordinate_cases=rows,model_qualified=False)
+    dense = [v for v in rows if v['kind']=='row64_dense']
+    require(all(v['full_BF16_bits_equal'] and v['guards'] for v in dense), 'dense64 output/guard failure')
     oracles = [v for v in rows if v['kind'] == 'split_correctness']
-    require(all(v['expected_mask'] == 0 and v['full_FP32_host_oracle'] and
+    require(all((row64 and name=='tiny' or v['expected_mask'] == 0) and v['full_FP32_host_oracle'] and
                 v['full_BF16_capture'] and v['guards'] for v in oracles), 'incomplete numerical/guard proof')
     if name in ('tiny', 'smoke'):
+        if row64:
+            expected = [17]*5 if name=='tiny' else [17,143,145,147,117488,117488]*2
+            masks = [0,0,1,2,3] if name=='tiny' else [0]*12
+            require([v['tokens'] for v in oracles]==expected and [v['expected_mask'] for v in oracles]==masks and
+                    len(dense)==(2 if name=='tiny' else 10) and len(rows)==len(oracles)+len(dense),
+                    'incomplete row64 boundary/negative/dense checks')
+            return dict(oracle_cases=[{k:v[k] for k in ('tokens','primary_rows','job','job_rows','expected_mask')}
+                                      for v in oracles],full_FP32_host_oracles=len(oracles),
+                        dense_BF16_oracles=len(dense),guards=True)
         expected = [17, 17] if name == 'tiny' else [17, 81921, 81921, 17, 81921, 81921]
         require(len(rows) == len(oracles) and [v['tokens'] for v in oracles] == expected and
                 all(v['primary_rows'] == (8 if v['tokens'] == 17 else 65536) for v in oracles), 'wrong boundary cases')
         return dict(oracle_cases=[{k:v[k] for k in ('tokens', 'primary_rows', 'job', 'job_rows')} for v in oracles],
                     full_FP32_host_oracles=len(oracles), full_BF16_capture=True, guards=True)
     process = int(name.rsplit('-', 1)[1])
-    samples = [v for v in rows if v['kind'] == 'row_address_sample']
-    cases = [v for v in rows if v['kind'] == 'row_address_case']
-    expected = [(m, i, round_, order) for m, i in SHAPES for round_ in (-1, 0, 1, 2) for order in range(3)]
+    arms, rounds, repeat = (4,4,128) if row64 else (3,3,64)
+    prefix = 'row64_' if row64 else 'row_address_'
+    samples = [v for v in rows if v['kind'] == prefix+'sample']
+    cases = [v for v in rows if v['kind'] == prefix+'case']
+    expected = [(m, i, round_, order) for m, i in SHAPES for round_ in range(-1,rounds) for order in range(arms)]
     require([(v['rows'],v['irregular'],v['round'],v['order']) for v in samples] == expected and
             [(v['rows'],v['irregular']) for v in cases] == SHAPES and len(oracles) == 12 and
-            len(rows) == 90 and all(v['final_bits_equal'] and v['guards'] and v['inputs_immutable'] for v in cases),
+            len(rows) == (144 if row64 else 90) and (not row64 or len(dense)==6) and all(v['final_bits_equal'] and v['guards'] and v['inputs_immutable'] for v in cases),
             'incomplete timing/correctness population')
     for v in samples:
-        require(v['process'] == process and v['arm'] == (process + v['round'] + 3 + v['order']) % 3 and
-                v['repeat'] == 64 and v['queue_batch_ms'] >= 5 and
+        require(v['process'] == process and v['arm'] == (process + v['round'] + arms + v['order']) % arms and
+                v['repeat'] == repeat and v['queue_batch_ms'] >= 5 and
                 all(math.isfinite(v[k]) and v[k] >= 0 for k in COLUMNS[7:]) and
                 v['kernel_service_ms'] > 0 and v['wall_ms'] > 0 and
-                v['kernel_service_ms'] * 64 <= v['queue_batch_ms'] + 1e-6, 'ineligible timing sample')
-    return dict(process=process, full_FP32_host_oracles=12, final_full_bits_equal=True,
+                v['kernel_service_ms'] * repeat <= v['queue_batch_ms'] + 1e-6, 'ineligible timing sample')
+    result = dict(process=process, full_FP32_host_oracles=12, final_full_bits_equal=True,
                 guards=True, inputs_immutable=True,
                 samples=[[v[k] for k in COLUMNS] for v in samples if v['round'] >= 0],
                 warmups=[[v[k] for k in COLUMNS] for v in samples if v['round'] == -1])
+    if row64:
+        result['dense_BF16_oracles'] = len(dense)
+    return result
 
 
-def decision(results):
+def decision(results, row64=False):
     timing = [x for x in results if x['name'].startswith('timing-')]
     require(len(timing) == 3 and [v['coverage']['process'] for v in timing] == [0,1,2], 'three fresh timing processes required')
     rows = [dict(zip(COLUMNS, v)) for x in timing for v in x['coverage']['samples']]
@@ -213,7 +259,7 @@ def decision(results):
         for process in range(3):
             values = [v for v in rows if (v['rows'],v['irregular'],v['process']) == (m,irregular,process)]
             medians = [{k:statistics.median(v[k] for v in values if v['arm'] == arm)
-                        for k in ('kernel_service_ms','wall_ms')} for arm in range(3)]
+                        for k in ('kernel_service_ms','wall_ms')} for arm in range(4 if row64 else 3)]
             service.append(medians[1]['kernel_service_ms'] / medians[0]['kernel_service_ms'])
             wall.append(medians[1]['wall_ms'] / medians[0]['wall_ms'])
             processes.append(dict(process=process, arm_medians=medians))
@@ -227,16 +273,17 @@ def decision(results):
                 component_speed_gate_passed=passed, model_qualified=False, inference_adopted=False)
 
 
-def run():
-    record = r.validation.committed(RESULT); scope = record[KEY]; plan = scope['device']
-    require(plan['stage'] == 'prepared' and plan == json.loads((ROOT / 'plan.json').read_text()) and
-            not (ROOT / 'results.json').exists(), 'fresh committed component plan only;no retry')
+def run(row64=False):
+    build_root, root, key = context(row64)
+    record = r.validation.committed(RESULT); scope = record[key]; plan = scope['device']
+    require(plan['stage'] == 'prepared' and plan == json.loads((root / 'plan.json').read_text()) and
+            not (root / 'results.json').exists(), 'fresh committed component plan only;no retry')
     rt = admit(scope, plan); r.guards.no_model_owners([])
     results = []
-    write(ROOT / 'results.json', dict(stage='running', cases=results))
+    write(root / 'results.json', dict(stage='running', cases=results))
     try:
         for case in plan['cases']:
-            folder = ROOT / case['name']
+            folder = root / case['name']
             require(not (folder / 'owned.json').exists(), 'existing owner;do not duplicate')
             admit(scope, plan)
             cursor = re.findall(r'^-- cursor: (.+)$', subprocess.check_output(
@@ -263,25 +310,30 @@ def run():
                         identity = live(io,case,plan,rt,stage)
                         if identity:
                             outcome['physical_device'] = identity
-                        require(r.supervision.artifact_bytes(ROOT) <= plan['whole_output_cap'], 'whole comparison size budget')
+                        require(r.supervision.artifact_bytes(root) <= plan['whole_output_cap'], 'whole comparison size budget')
                         io.send(b'X')
                     require(io.line(20) == 'fixture_status=PASS', 'missing native completion marker')
                     io.proc.stdin.close(); io.exit(30)
-                print('Running Down row-address ' + case['name'], flush=True)
+                print('Running Down ' + ('row64 ' if row64 else 'row-address ') + case['name'], flush=True)
                 entry,out,err = owner.run(case['name'],case['command'],environment(plan,case),P,
-                                           interaction=interact,**plan['budgets'])
+                                           interaction=None if case.get('host') else interact,**plan['budgets'])
                 require(r.supervision.closed(entry) and entry['exit_code'] == 0, 'native exit/ownership failed')
-                text = err.read_text(); proof = r.validation.preload_evidence(text,entry['pid'])
-                require(proof['loader'] == rt['preload']['loader'], 'wrong UR loader')
-                body = text.split(f'strata UR validation: pid={entry["pid"]} phase=before-main',1)[1]
-                require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|strata UR validation failure:',body), 'native runtime error')
-                warning = folder / 'validation.log'
-                require(not warning.exists() or warning.stat().st_size == 0, 'parameter validation warning/error')
-                if case['trace']:
-                    trace = folder / 'api.trace'
-                    require(trace.is_file() and 'urEnqueueKernelLaunch' in trace.read_text(), 'missing small kernel trace')
-                outcome.update(coverage=parse(out.read_text(),case['name']), validation=proof,
-                               passed=True,complete=True,exit_code=0,native_pid=entry['pid'])
+                if case.get('host'):
+                    require('fixture_status=PASS' in out.read_text(), 'host ownership completion missing')
+                    outcome.update(coverage=parse(out.read_text(),case['name'],True),passed=True,
+                                   complete=True,exit_code=0,native_pid=entry['pid'],host_only=True)
+                else:
+                    text = err.read_text(); proof = r.validation.preload_evidence(text,entry['pid'])
+                    require(proof['loader'] == rt['preload']['loader'], 'wrong UR loader')
+                    body = text.split(f'strata UR validation: pid={entry["pid"]} phase=before-main',1)[1]
+                    require(not re.search('UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|cleanup failed|strata UR validation failure:',body), 'native runtime error')
+                    warning = folder / 'validation.log'
+                    require(not warning.exists() or warning.stat().st_size == 0, 'parameter validation warning/error')
+                    if case['trace']:
+                        trace = folder / 'api.trace'
+                        require(trace.is_file() and 'urEnqueueKernelLaunch' in trace.read_text(), 'missing small kernel trace')
+                    outcome.update(coverage=parse(out.read_text(),case['name'],row64), validation=proof,
+                                   passed=True,complete=True,exit_code=0,native_pid=entry['pid'])
                 admit(scope,plan)
             except BaseException as error:
                 outcome.update(passed=False,complete=False,error=repr(error))
@@ -290,23 +342,25 @@ def run():
                 if not outcome['ownership_closed']:
                     outcome.update(passed=False,complete=False,error='native owner remains open')
                 device.postchecks(outcome,boot,cursor[0]); persist(); results.append(outcome)
-                write(ROOT / 'results.json',dict(stage='running',cases=results))
+                write(root / 'results.json',dict(stage='running',cases=results))
             print(json.dumps({k:outcome.get(k) for k in ('name','passed','complete','ownership_closed','fresh_faults','error')}),flush=True)
             require(outcome['passed'], 'component gate failed;no later process')
-        plan['decision'] = decision(results)
+        plan['decision'] = decision(results,row64)
         plan['stage'] = 'closed'
     except BaseException as error:
         plan.update(stage='failed',error=repr(error))
     finally:
         plan.update(results=results,sample_columns=COLUMNS,model_qualified=False,inference_adopted=False)
-        write(ROOT / 'results.json',dict(stage=plan['stage'],cases=results,decision=plan.get('decision'),error=plan.get('error')))
+        write(root / 'results.json',dict(stage=plan['stage'],cases=results,decision=plan.get('decision'),error=plan.get('error')))
         write(RESULT,record)
     print(json.dumps(dict(stage=plan['stage'],decision=plan.get('decision'),error=plan.get('error'))),flush=True)
     return int(plan['stage'] != 'closed')
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'],['run']), 'check_down_row_address.py prepare|run')
+    require(sys.argv[1:] in (['prepare'],['run'],['prepare-row64'],['run-row64']),
+            'check_down_row_address.py prepare|run|prepare-row64|run-row64')
+    row64 = sys.argv[1].endswith('-row64')
     with (B / 'owned-v0141-measurement.lock').open('r+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX | fcntl.LOCK_NB)
-        sys.exit(prepare() if sys.argv[1] == 'prepare' else run())
+        sys.exit(prepare(row64) if sys.argv[1].startswith('prepare') else run(row64))
