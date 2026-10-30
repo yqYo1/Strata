@@ -17553,7 +17553,7 @@
   },
   "down_slm_destination_representation_collection_20261030": {
     "classification": "knowledge_collection",
-    "state": "completed_released_native_review_pending",
+    "state": "reviewed_temporary_retrieval_only",
     "schedulable_now": false,
     "eligible_at_dispatch": true,
     "prerequisites_met": [
@@ -17590,6 +17590,25 @@
     "delivery_acknowledged": true,
     "review_task": "/root/curate_down_slm_representation_report_20261030",
     "review_path": ".cache/research/2026-10-30/down_slm_destination_representation_20261030.review.json",
-    "next_review": "Await native Luna/max curation;Main reads short digest only. Retire settled transaction paperwork after useful metadata is recorded;no implementation adoption."
+    "next_review": "After the current three-policy Down model comparison closes,or before choosing a separate destination-representation candidate,whichever comes first;retire the body if no concrete retrieval question remains.",
+    "review_sha256": "4dec2084401b320a5315b64a80fffcba3d76ea74e872423125c092e3fc625774",
+    "review_model": "gpt-6-luna",
+    "review_effort": "max",
+    "review_source_revision": "1fa351344e446f28a6c12ccbab8c80f3afb5869c",
+    "review_decision": "retain_temporary_reference",
+    "essential_corrections": [
+      "State explicitly that every encoding must preserve the exact (expert job, token row, column) destination and the existing unique-writer/serialized-job ordering assumptions for FP32 RMW. A compact key must not collapse distinct rows, change bank identity, or introduce collisions; if route/job ownership changes, the old alias proof no longer applies. Reuse the indexed Down writer proof rather than repeating its full ownership survey.",
+      "Make the alignment precondition explicit at pointer formation: each selected bank base is valid and aligned for float, and the checked element offset plus col identifies an in-bounds float element. Typed float-pointer arithmetic alone does not prove the base allocation's bounds or alignment.",
+      "The scope file's policy_revision_supplied_by_parent is b774d0be4 while this review task pins 1fa351344e446f28a6c12ccbab8c80f3afb5869c. The current AGENTS.md and retention-policy hashes match the scope pins; preserve the revision discrepancy for Main to reconcile in the index metadata."
+    ],
+    "policy_pin_reconciliation": "Original scope metadata named b774d0be4 while parent/review pinned1fa351344;both original commits recover identical AGENTS.md and retention-policy SHA256 values,verified before indexing. Original scope is not relabeled.",
+    "inference_adopted": false,
+    "transaction_retirement": {
+      "files": 4,
+      "bytes": 29547,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/down-component-closed-output-retired-20261030.jsonl",
+      "manifest_sha256": "17f89d925f40008631563f599cf7facbe9c44037182c8b7ba5be3ba73431ecf9",
+      "scope_review_sha256": "67b6376cdac94c8fbd80c05422b936208d392131d1efcc48d1dee199138037f4"
+    }
   }
 }
