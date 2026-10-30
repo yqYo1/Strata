@@ -1716,12 +1716,17 @@ process successfully activates ComputeBasic EVENT/domain3/83,but
 deactivates the group,destroys its owners and exits10 in2.629s;the frozen rule
 omits the empty-query arm after this refusal. Both processes are reaped,with
 empty sessions and no fresh GPU fault. Preserve this original refusal;it does
-not prove a permissions problem or qualify collection. The report review also
-finds no positive local child-device/group inventory,so a root-versus-child
-pool comparison is conditional on that evidence,not an immediately runnable
-gate. See `metric_query` in the compact result. Hardware utilization and
-physical bus traffic remain unknown;independent tuning and transfer measurements
-continue while counter qualification is pending.
+not prove a permissions problem or qualify collection. The separately committed
+root/child inventory now closes normally in 1.945s with 45.1MB peak RSS. It
+returns one root, zero children and 24 groups, including 12 event groups. All
+three immutable provider gates pass; MD and ML are mapped after initialization,
+all API calls succeed and no fresh GPU fault occurs. Nine host rejection controls
+and the Werror build pass. This rules out a root-versus-child trial with the
+returned handles; it does not expose ML's internal status or qualify collection.
+The topology mode has separate 45s wall,20s CPU,256MiB RSS and4MiB text bounds.
+See `metric_query` and `metric_topology` in the compact result. Hardware utilization
+and physical bus traffic remain unknown; independent tuning and transfer
+measurements continue while counter qualification is pending.
 
 The current-runtime transfer refresh now passes14fresh processes:two traced
 2MiB controls,then three processes per allocation/size with one first copy and
