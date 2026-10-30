@@ -18,6 +18,7 @@ import time
 sys.dont_write_bytecode = True
 import matrix_shapes as q
 import moe_split_sources as model
+import moe_down_sources as down
 
 r, P, B = q.r, q.P, q.B
 ROOT = B / 'moe-split-accumulator-v1/native-v2'
@@ -30,6 +31,11 @@ CONFIGURATION_SOURCES = ['tools/sycl/' + name + '.cpp' for name in (
     'gemm_orientation_bench', 'projection_bench', 'moe_bench', 'gr_bench',
     'expert_contract', 'gemm_device_probe')]
 require, digest, write = q.require, q.digest, q.write
+
+
+def context(variant):
+    require(variant in ('split', 'down'), 'unknown model build variant')
+    return (ROOT, KEY) if variant == 'split' else (B / 'moe-down-model-v1', 'moe_down_model')
 
 
 def origin():
@@ -45,8 +51,8 @@ def sources(revision):
                      [*model.DIRECT, *model.ORCHESTRATION, model.GEMM, model.FIXTURE])
 
 
-def native_sources(full):
-    overlay = model.overlays()
+def native_sources(full, variant='split', revision=None):
+    overlay = down.overlays(revision) if variant == 'down' else model.overlays()
     expected = full['project']['source_sha256']
     require(set(overlay) <= set(expected), 'overlay input absent from original build')
     for name, raw in r.build.blobs(P, model.BASE, [*expected, *CONFIGURATION_SOURCES]):
@@ -63,10 +69,12 @@ def compact(row):
     return out
 
 
-def admit(row):
+def admit(row, root=ROOT):
     full = origin()
     require(sources(row['source_commit']) == row['input_sha256'], 'controller/native proposal changed')
-    require(model.proof() == row['overlay'], 'overlay constructor output changed')
+    variant = row.get('variant', 'split')
+    proof = down.proof(row['source_commit']) if variant == 'down' else model.proof()
+    require(proof == row['overlay'], 'overlay constructor output changed')
     require(q.closure.sdk_inputs() == row['sdk'], 'compiler SDK changed')
     for group in full['dependencies']:
         require(r.build.pin(Path(group['root']), ['.']) == group, 'independent dependency changed')
@@ -82,8 +90,8 @@ def admit(row):
     for item in json.loads(q.closure.lineage.SDK.read_text()):
         allowed[str(Path(item['path']).resolve())] = q.closure.SYSTEM_HEADER_UPDATES.get(
             item['path'], (None, item['sha256']))[1]
-    for name, raw in native_sources(full):
-        path = ROOT / 'source' / name
+    for name, raw in native_sources(full, variant, row['source_commit']):
+        path = root / 'source' / name
         require(path.is_file() and not path.is_symlink() and path.read_bytes() == raw,
                 'isolated native source changed:' + name)
         allowed[str(path.resolve())] = hashlib.sha256(raw).hexdigest()
@@ -97,22 +105,44 @@ def admit(row):
     return allowed
 
 
-def prepare():
-    require(not ROOT.exists(), 'fresh native generation only; inspect existing owner/record')
+def prepare(variant='split'):
+    root, key = context(variant)
+    require(not root.exists(), 'fresh native generation only; inspect existing owner/record')
     record = r.validation.committed(RESULT)
-    scope = record[KEY]
-    require(scope['host']['passed'] and scope['host']['ownership_closed'] and
-            scope['source_review']['accepted_for_bounded_component_validation_only'] and
-            not scope.get('build'), 'closed host/source gates and new native plan required')
+    if variant == 'split':
+        scope = record[key]
+        require(scope['host']['passed'] and scope['host']['ownership_closed'] and
+                scope['source_review']['accepted_for_bounded_component_validation_only'] and
+                not scope.get('build'), 'closed host/source gates and new native plan required')
+    else:
+        require(key not in record, 'fresh Down model candidate only')
+        for component in ('moe_down_row_address', 'moe_down_row64'):
+            gate = record[component]['device']
+            require(gate['stage'] == 'closed' and gate['decision']['component_speed_gate_passed'] and
+                    all(c['passed'] and c['complete'] and c['ownership_closed'] and not c['active'] and
+                        not c['fresh_faults'] for c in gate['results']), 'closed component gates required')
+        require(record['moe_down_row64']['build']['source_commit'] == down.PROTOTYPE and
+                record['moe_down_row64']['raw_retirement']['post_retirement_admission_passed'],
+                'exact qualified Down prototype required')
+        scope = record[key] = dict(status='source-prepared', inference_adopted=False, decode_changed=False,
+            mechanism='Immutable prefill-only original/row128/row64 split-Down selection;same BF16 rounding '
+                'and FP32 expert-order FMA. One executable supplies matched process arms. No GU,non-split '
+                'or decode math/placement change.',
+            component_selection=dict(source_commit=down.PROTOTYPE,
+                row128_service_ratio=record['moe_down_row_address']['device']['decision']['service_geomean'],
+                row64_vs_row128_service_ratio=record['moe_down_row64']['device']['decision']['service_geomean'],
+                model_qualification_inherited=False, executable_reused=False),
+            next_gate='Fresh same-build small traced production-route checks for all three selections;'
+                'then matched long-prefill PP/TTFT,independent decode/handoff,task quality and physical262144.')
     full = origin()
     rt = r.validation.committed(r.RESULT)
     require(r.current(rt)['binary'] == full['binary'], 'selected original executable differs')
     revision = r.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     pins = sources(revision)
-    overlay = model.proof()
+    overlay = down.proof(revision) if variant == 'down' else model.proof()
     external = q.closure.external_inputs(rt)
-    for root in (Path('/usr/share/cmake-3.28/Modules'), Path('/usr/share/cmake-3.28/Templates')):
-        external.update({str(p.resolve()): digest(p) for p in root.rglob('*') if p.is_file()})
+    for cmake_root in (Path('/usr/share/cmake-3.28/Modules'), Path('/usr/share/cmake-3.28/Templates')):
+        external.update({str(p.resolve()): digest(p) for p in cmake_root.rglob('*') if p.is_file()})
     tools = {n: str(Path('/usr/bin/' + n).resolve()) for n in ('cmake','ninja','cc','ar','ranlib','as','ld','git')}
     tools['cc1'] = subprocess.check_output(['/usr/bin/cc','-print-prog-name=cc1'], text=True, timeout=10).strip()
     tools['sycl'] = full['compiler']['path']
@@ -124,18 +154,18 @@ def prepare():
     external.update(old['direct_K_loop_invariant']['native_build']['link_inputs'])
     require(all(digest(path) == sha for path, sha in external.items()), 'prospective external input changed')
     sdk = q.closure.sdk_inputs()
-    ROOT.mkdir(mode=0o700)
+    native = dict(native_sources(full, variant, revision))
+    root.mkdir(mode=0o700)
     for name in ('source','tmp','cache'):
-        (ROOT / name).mkdir()
-    native = dict(native_sources(full))
+        (root / name).mkdir()
     for name, raw in native.items():
-        path = ROOT / 'source' / name
+        path = root / 'source' / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
-    write(ROOT / 'external-inputs.json', external)
+    write(root / 'external-inputs.json', external)
     argv = list(full['configure_argv'])
-    argv[argv.index('-S') + 1] = str(ROOT / 'source')
-    argv[argv.index('-B') + 1] = str(ROOT / 'build')
+    argv[argv.index('-S') + 1] = str(root / 'source')
+    argv[argv.index('-B') + 1] = str(root / 'build')
     row = dict(stage='prepared', source_commit=revision, input_sha256=pins, overlay=overlay,
         original_build=dict(path=str(ORIGIN), sha256=ORIGIN_SHA, source_commit=model.BASE,
             source_groups=[{k:g[k] for k in ('root','revision','count','aggregate_sha256')}
@@ -144,14 +174,14 @@ def prepare():
             {n:hashlib.sha256(v).hexdigest() for n,v in native.items()}, sort_keys=True).encode()).hexdigest()),
         configuration_sources=CONFIGURATION_SOURCES, selected_binary=full['binary'],
         compiler=full['compiler'], sdk=sdk,
-        external_manifest=dict(path=str(ROOT / 'external-inputs.json'),
-            sha256=digest(ROOT / 'external-inputs.json'), files=len(external)),
+        external_manifest=dict(path=str(root / 'external-inputs.json'),
+            sha256=digest(root / 'external-inputs.json'), files=len(external)),
         runtime_sha256=digest(r.RESULT), boot=rt['boot'], driver=rt['driver'],
-        environment=dict(full['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache')),
+        environment=dict(full['environment'], TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache')),
         targets=TARGETS, commands=[('configure',argv), ('engine', ['/usr/bin/cmake','--build',
-            str(ROOT / 'build'),'--target',*TARGETS,'-j','4']),
-            ('dependencies', ['/usr/bin/ninja','-C',str(ROOT / 'build'),'-t','deps'])],
-        generated_expected={str(ROOT / 'build/ggml/src/ggml-version.h'):hashlib.sha256(q.closure.HEADER.encode()).hexdigest()},
+            str(root / 'build'),'--target',*TARGETS,'-j','4']),
+            ('dependencies', ['/usr/bin/ninja','-C',str(root / 'build'),'-t','deps'])],
+        generated_expected={str(root / 'build/ggml/src/ggml-version.h'):hashlib.sha256(q.closure.HEADER.encode()).hexdigest()},
         budgets=dict(wall=1800,cpu=7200,rss_cap=12 << 30,text_cap=32 << 20,file_cap=512 << 20,total_cap=4 << 30),
         total_wall_seconds=3600, active=False, ownership_closed=True, passed=False,
         GPU_executed=False, model_selected=False,
@@ -162,60 +192,77 @@ def prepare():
         retention='One additional candidate engine/component generation for imminent bounded device and '
             'whole-model comparison. Keep selected6e40/12fixtures untouched. Retire disposable host/build '
             'objects/logs and rejected generation after original source/recipe recovery.')
-    admit(row)
-    write(ROOT / 'record.json', row)
+    if variant == 'down':
+        row.update(variant='down',
+            retire_before_build=record['moe_split_accumulator']['build']['binaries'],
+            criteria='Build only:selected6e40 plus the twelve split-overlay paths,with only four additional '
+                'Down changes. Immutable original/row128/row64 selection defaults to original;selected '
+                'observer refusal guards and max-allocation fix stay intact. Zero uncovered compiler '
+                'or imported linker inputs;three executables from one build. No model qualification inherited.',
+            retention='Keep selected6e40+12fixtures untouched. Retire the completed split engine after '
+                'exact source/recipe recovery before compiling this additional generation;the new executable '
+                'contains its own original-policy control. Retain the current Down component only through '
+                'same-build route validation;then retire superseded component artifacts.')
+    admit(row, root)
+    write(root / 'record.json', row)
     scope['build'] = compact(row)
     scope['source_preparation'] = dict(source_commit=revision, passed=True, paths=len(overlay['paths']),
                                      original_failure_preserved=True, GPU_executed=False)
     write(RESULT, record)
-    print('Prepared exact selected-source split engine/components; commit plan before build.', flush=True)
+    print('Prepared exact selected-source ' + variant + ' engine/components;commit plan before build.', flush=True)
 
 
-def run():
+def run(variant='split'):
+    root, key = context(variant)
     record = r.validation.committed(RESULT)
-    scope = record[KEY]
-    row = json.loads((ROOT / 'record.json').read_text())
+    scope = record[key]
+    row = json.loads((root / 'record.json').read_text())
     require(row['stage'] == 'prepared' and compact(row) == scope['build'] and
-            not (ROOT / 'owned-build').exists(), 'fresh committed native build required')
-    allowed = admit(row)
+            not (root / 'owned-build').exists(), 'fresh committed native build required')
+    if variant == 'down':
+        retirement = scope.get('prior_generation_retirement', {})
+        require(retirement.get('stage') == 'retired' and retirement.get('original_inputs_recovered') and
+                all(not Path(asset['path']).exists() for asset in row['retire_before_build'].values()),
+                'retire the superseded split engine after original input recovery before building')
+    allowed = admit(row, root)
     original, owner = copy.deepcopy(row), None
     deadline = time.monotonic() + row['total_wall_seconds']
     def persist():
         row['active'] = bool(owner and owner.active is not None)
-        write(ROOT / 'record.json', dict(row, commands_executed=owner.commands if owner else []))
+        write(root / 'record.json', dict(row, commands_executed=owner.commands if owner else []))
     def monitor(io, entry):
         next_size = 0
         while not io.exit_watch.poll(0) or not io.eof:
             io.poll()
             if time.monotonic() >= next_size:
-                require(r.supervision.artifact_bytes(ROOT) <= row['budgets']['total_cap'], 'whole build size budget')
+                require(r.supervision.artifact_bytes(root) <= row['budgets']['total_cap'], 'whole build size budget')
                 next_size = time.monotonic() + 1
             if select.select([io.proc.stdout], [], [], .02)[0]:
                 io.read(); io.pending.clear()
         io.exit(1)
     try:
         row['stage'] = 'building'
-        owner = r.supervision.Owner(ROOT / 'owned-build', persist)
+        owner = r.supervision.Owner(root / 'owned-build', persist)
         for label, command in row['commands']:
             remaining = deadline - time.monotonic()
             require(remaining > 1, 'whole build deadline')
             print('CPU build:', label, flush=True)
-            entry, out, err = owner.run(label,command,row['environment'],ROOT,interaction=monitor,
+            entry, out, err = owner.run(label,command,row['environment'],root,interaction=monitor,
                 **dict(row['budgets'], wall=min(remaining,row['budgets']['wall'])))
             require(r.supervision.closed(entry) and entry['exit_code'] == 0,
                     label + ' failed:' + (out.read_text(errors='replace') + err.read_text(errors='replace'))[-5000:])
-        admit(original)
+        admit(original, root)
         paths = {Path(line.strip()) for line in out.read_text().splitlines() if line.startswith('    ') and line.strip()}
-        paths = {(p if p.is_absolute() else ROOT / 'build' / p).resolve() for p in paths}
-        require(len(paths) > 700 and {ROOT/'source'/n for n in [model.GEMM,model.FIXTURE,*model.DIRECT]}
+        paths = {(p if p.is_absolute() else root / 'build' / p).resolve() for p in paths}
+        require(len(paths) > 700 and {root/'source'/n for n in [model.GEMM,model.FIXTURE,*model.DIRECT]}
                 <= paths, 'incomplete actual compiler closure')
         observed = {}
         for path in sorted(paths):
             sha = digest(path)
             require(allowed.get(str(path)) == sha, 'unfrozen actual compiler input:' + str(path))
             observed[str(path)] = sha
-        write(ROOT / 'compiler-inputs.json', observed)
-        ninja = (ROOT / 'build/build.ninja').read_text()
+        write(root / 'compiler-inputs.json', observed)
+        ninja = (root / 'build/build.ninja').read_text()
         imported = {}
         for name in TARGETS:
             stanza = ninja[ninja.index('build ' + name + ':'):].split('\n\n',1)[0]
@@ -225,11 +272,11 @@ def run():
                 require(allowed.get(str(path)) == digest(path), 'unfrozen imported linker input:' + str(path))
                 imported[str(path)] = digest(path)
         row.update(stage='built-not-executed',passed=True,
-            binaries={name:dict(path=str(ROOT/'build'/name),sha256=digest(ROOT/'build'/name),
-                bytes=(ROOT/'build'/name).stat().st_size) for name in TARGETS},
-            actual_compiler_inputs=dict(files=len(observed), path=str(ROOT/'compiler-inputs.json'),
-                sha256=digest(ROOT/'compiler-inputs.json'), uncovered=0),
-            imported_link_inputs=imported, compile_database_sha256=digest(ROOT/'build/compile_commands.json'))
+            binaries={name:dict(path=str(root/'build'/name),sha256=digest(root/'build'/name),
+                bytes=(root/'build'/name).stat().st_size) for name in TARGETS},
+            actual_compiler_inputs=dict(files=len(observed), path=str(root/'compiler-inputs.json'),
+                sha256=digest(root/'compiler-inputs.json'), uncovered=0),
+            imported_link_inputs=imported, compile_database_sha256=digest(root/'build/compile_commands.json'))
     except BaseException as error:
         row.update(stage='failed',passed=False,error=repr(error))
     finally:
@@ -244,4 +291,7 @@ def run():
 if __name__ == '__main__':
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        {'prepare':prepare,'build':run}[sys.argv[1]]()
+        require(sys.argv[1:] in (['prepare'], ['build'], ['prepare-down'], ['build-down']),
+                'build_moe_split.py prepare|build|prepare-down|build-down')
+        variant = 'down' if sys.argv[1].endswith('-down') else 'split'
+        (prepare if sys.argv[1].startswith('prepare') else run)(variant)

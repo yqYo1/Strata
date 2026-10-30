@@ -35,7 +35,13 @@ struct Native16BackendState {
 namespace {
 enum class Backend { own, vllm };
 enum class VllmTile { automatic, compact, wide };
-struct BackendConfig { Backend backend; VllmTile tile; bool gu_fusion, down_fusion; };
+enum class SplitDownKernel { original, row128, row64 };
+struct BackendConfig {
+  Backend backend;
+  VllmTile tile;
+  bool gu_fusion, down_fusion;
+  SplitDownKernel split_down;
+};
 const BackendConfig &backend_config() {
   static const BackendConfig config = [] {
     const char *name = std::getenv("STRATA_SYCL_PREFILL_NATIVE16_BACKEND");
@@ -69,6 +75,15 @@ const BackendConfig &backend_config() {
       throw std::invalid_argument("STRATA_SYCL_PREFILL_DOWN_SCATTER must be 0 or large");
     if (down_fusion && (!active || !use_vllm || chosen == VllmTile::compact))
       throw std::invalid_argument("DOWN_SCATTER=large requires native16 bf16, vllm and auto/wide tile");
+    const char *split = std::getenv("STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL");
+    SplitDownKernel split_down = SplitDownKernel::original;
+    if (split && std::strcmp(split, "original") != 0) {
+      if (std::strcmp(split, "row128") == 0) split_down = SplitDownKernel::row128;
+      else if (std::strcmp(split, "row64") == 0) split_down = SplitDownKernel::row64;
+      else throw std::invalid_argument("STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL must be original, row128 or row64");
+    }
+    if (split_down != SplitDownKernel::original && !down_fusion)
+      throw std::invalid_argument("DOWN_SPLIT_KERNEL=row128/row64 requires DOWN_SCATTER=large");
     const char *command_profile = std::getenv("STRATA_SYCL_PREFILL_COMMAND_PROFILE");
     if ((gu_fusion || down_fusion) && command_profile && std::strcmp(command_profile, "0") != 0) {
       const char *admit = std::getenv("STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE");
@@ -81,8 +96,9 @@ const BackendConfig &backend_config() {
                     chosen == VllmTile::compact ? "compact" : "wide") : "own",
         use_vllm ? " aot=bmg-g21-a0 isolated=1 experimental" : "");
     std::fprintf(stderr, "[native16-gu] fusion=%s min_rows=2334\n", gu_fusion ? "large" : "0");
-    std::fprintf(stderr, "[native16-down] fusion=%s min_rows=2334\n", down_fusion ? "large" : "0");
-    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen, gu_fusion, down_fusion};
+    std::fprintf(stderr, "[native16-down] fusion=%s min_rows=2334 split_kernel=%s\n",
+        down_fusion ? "large" : "0", split ? split : "original");
+    return BackendConfig{use_vllm ? Backend::vllm : Backend::own, chosen, gu_fusion, down_fusion, split_down};
   }();
   return config;
 }
@@ -394,8 +410,19 @@ bool Gemm::try_down_scatter16_split(const detail::MoeWindowRoutes &plan, size_t 
   namespace vx = experimental::vllm_xe2_native16;
   auto &bound = vllm_state(out16_backend_, x, stream_);
   sycl_backend::cpu_wait_profile::Host submission(sycl_backend::cpu_wait_profile::gemm_submit);
-  const auto event = bound.adapter.down_scatter_split(
-      {&plan, index, x, w, source, original, weights, primary, status, nullptr}, tail, primary_rows);
+  const vx::DownScatterProblem problem{
+      &plan, index, x, w, source, original, weights, primary, status, nullptr};
+  const auto event = [&]() -> sycl::event {
+    switch (backend_config().split_down) {
+      case SplitDownKernel::original:
+        return bound.adapter.down_scatter_split(problem, tail, primary_rows);
+      case SplitDownKernel::row128:
+        return bound.adapter.down_scatter_split_row_address(problem, tail, primary_rows);
+      case SplitDownKernel::row64:
+        return bound.adapter.down_scatter_split_row64(problem, tail, primary_rows);
+    }
+    throw std::logic_error("invalid prefill split-Down kernel");
+  }();
   submission.finish();
   auto profile_tag = sycl_backend::command_profile::fused_tag(
       sycl_backend::command_profile::Kind::down, sycl_backend::command_profile::Kind::down_scatter);
