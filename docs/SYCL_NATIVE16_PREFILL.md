@@ -1718,7 +1718,19 @@ calibration settings. The12controller rejection checks and two fresh
 current-source benchmark/server definition/mock-loopback probes pass,with
 exact Python/project/provider identities and normal owner closure. Actual
 per-arm long-generation checks remain pending;no native rebuild or GPU
-qualification follows from these host-only checks.
+qualification follows from these host-only checks. The first owned selected-arm
+diagnostic observes96204fresh input tokens and3360generated tokens,including
+thinking,5496answer characters,853.8PP and13.4decode tok/s under diagnostic
+tracing. Draft acceptance is2397/2892(82.884percent);one sample does not
+qualify an MTP regime. Actual96203GPU-resident residual rows use384slots,
+81920maximum and96windows. Native exit0,quiet validation,ownership closure
+and no fresh fault are recorded. The diagnostic scope nevertheless fails:
+Main omitted the host_probe_accepted flag required by the shared finalizer.
+Preserve that failed status;the unrun candidate is not qualified. A separate
+controller fix/scope is required before further native work. The native long
+request also reports201930cache hits/1851360lookups(10.9percent),1649430CPU
+entries and1285620unique CPU misses,with zero GPU expert-copy blobs/bytes.
+These are logical placement/work observations,not a physical bottleneck proof.
 
 The bounded [`metric_capability.c`](../bench/sycl/metric_capability.c) direct-C
 check now enumerates24groups and1414metric entries on PCI0000:05:00.0.
