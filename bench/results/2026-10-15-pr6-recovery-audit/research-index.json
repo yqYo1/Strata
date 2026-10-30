@@ -18105,24 +18105,23 @@
       "out_of_core_sycl_hpc_scheduling_scope"
     ],
     "report_budget_bytes": 12288,
-    "state": "running",
+    "state": "reviewed_current_decision_reference",
     "review": {
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "sha256": "e629ee4c4cce6da23d6c89a6de0e1be2bff72eb9bff380e71741eef752742e88",
-      "path": ".cache/research/2026-10-31/post_resource_scopes.review.json"
+      "path": ".cache/research/2026-10-31/ple_initial_staging_design_20261031.review.json",
+      "sha256": "372d0230fea899915c2027f7d959bcc0520f92e44a944c4eb06386086cd0948f"
     },
     "report_path": ".cache/research/2026-10-31/ple_initial_staging_design_20261031.md",
-    "active_dispatch": {
-      "run": "run_80ea8ebc9a8c",
-      "task": "task_7f0bb869cbe8",
+    "report_sha256": "71cbf3f880a3e37de69200f5e279e4656d5365df7107cdc4cd44021d6dd138f9",
+    "report_bytes": 10882,
+    "lifecycle": {
+      "outcome": "succeeded",
       "dispatch": "ctx_f78e168f8fe8",
-      "terminal": "term_33799bbf-17f3-4e8f-ae73-f979f14dbb6f",
-      "model": "gpt-6-luna",
-      "effort": "high",
-      "proof": "Initial launch effective model/effort and same retained terminal ready-screen;retry turn_started observed. Update prompt skipped without installing updates.",
-      "prior_failed_dispatch": "ctx_4d928fe0d5c6",
-      "prior_failure": "agent_readiness:agent-update-prompt;Task never ran. Same terminal reused after dismissing prompt."
-    }
+      "terminal_released": true,
+      "completion_acknowledged": true
+    },
+    "operational_digest": "Keep Direct PLE baseline:already contiguous16x160FP32 batched rows,double-buffered host staging. Initial gaps do not prove a PLE/disk/CPU/PCIe bottleneck. A future PLE comparison must separate cold/warm requests,account for both host workers and observe H2D completion without a new blocking wait. Direct mode default-on prefetch flag is inactive because mapping is null. No new research scope is eligible.",
+    "retention": "Main next PLE attribution/selection after expert-copy scheduling decision;keep source-specific report until that committed selection closes,then retire transaction reviews and redundant report content."
   }
 }
