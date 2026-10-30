@@ -23,6 +23,7 @@ B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 ROOT = B / 'metric-capability-c-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'metric_capability'
+TOPOLOGY = False
 SOURCE = P / 'bench/sycl/metric_capability.c'
 CC = Path('/usr/bin/gcc').resolve()
 LOADER = Path('/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0')
@@ -32,6 +33,7 @@ ML = Path('/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240')
 ELF_LOADER = Path('/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2')
 INPUTS = ('bench/sycl/metric_capability.c', 'tools/sycl/metric_capability.py',
           'tools/sycl/measurement_owner.py', 'tools/sycl/measurement_guards.py',
+          'tools/sycl/test_metric_capability.py',
           'tools/sycl/measurement_environment.json')
 FLAGS = ['-std=c11', '-O2', '-Wall', '-Wextra', '-Werror', '-fPIE']
 BUILD_LIMITS = dict(wall=60, cpu=45, rss_cap=1 << 30, text_cap=2 << 20,
@@ -125,19 +127,32 @@ def verify(row):
 
 
 def prepare(record):
-    previous = record.get(KEY, {})
-    require(not ROOT.exists() and previous.get('stage') == 'failed' and not previous.get('passed') and
-            not previous.get('active') and not previous.get('fresh_faults') and
-            previous.get('failure_mechanism', {}).get('kind') == 'unfrozen_system_provider_at_runtime_ready' and
-            previous.get('closure_reconciliation', {}).get('all_owned_processes_terminated') is True,
-            'only the closed v1 provider-mismatch result permits this new v2 plan')
-    old = previous['closure_reconciliation']
-    identity = supervision.identity(old['pid'])
-    require(identity is None or identity['start_ticks'] != old['start_ticks'], 'original v1 process still exists')
+    previous_key = 'metric_query' if TOPOLOGY else KEY
+    previous = record.get(previous_key, {})
+    if TOPOLOGY:
+        comparison = record['moe_down_model']['clean_down_comparison']
+        require(not ROOT.exists() and KEY not in record and previous.get('stage') == 'closed' and
+                previous.get('ownership_closed') and previous.get('observation_complete') and
+                not previous.get('active') and not previous.get('fresh_faults') and
+                previous.get('outcome') == 'known_integer_work_passed_query_pool_invalid_argument' and
+                not previous.get('collection_qualified') and comparison['complete'] and
+                comparison['ownership_closed'] and not comparison['active'] and
+                len(comparison['processes']) == 9 and all(p['passed'] for p in comparison['processes']),
+                'close the nine-process comparison and original query attempt first;no topology retry')
+    else:
+        require(not ROOT.exists() and previous.get('stage') == 'failed' and not previous.get('passed') and
+                not previous.get('active') and not previous.get('fresh_faults') and
+                previous.get('failure_mechanism', {}).get('kind') == 'unfrozen_system_provider_at_runtime_ready' and
+                previous.get('closure_reconciliation', {}).get('all_owned_processes_terminated') is True,
+                'only the closed v1 provider-mismatch result permits this new v2 plan')
+        old = previous['closure_reconciliation']
+        identity = supervision.identity(old['pid'])
+        require(identity is None or identity['start_ticks'] != old['start_ticks'], 'original v1 process still exists')
     previous_ref = dict(commit=git('log', '-1', '--format=%H', '--', str(RESULT.relative_to(P))).decode().strip(),
-                        path=str(RESULT.relative_to(P)), scope=KEY,
+                        path=str(RESULT.relative_to(P)), scope=previous_key,
                         scope_sha256=hashlib.sha256(json.dumps(previous, sort_keys=True).encode()).hexdigest(),
-                        outcome='Failed v1 remains incomplete;terminated before metric enumeration,not a GPU fault.')
+                        outcome=('Original query-pool INVALID_ARGUMENT remains unqualified;topology is a separate inventory.'
+                                 if TOPOLOGY else 'Failed v1 remains incomplete;terminated before metric enumeration,not a GPU fault.'))
     comparison = record['moe_split_accumulator']['clean_prefill_comparison']
     require(comparison['complete'] and comparison['ownership_closed'] and not comparison['active'],
             'close frozen model comparison first')
@@ -158,6 +173,12 @@ def prepare(record):
         require(supervision.closed(entry) and entry['exit_code'] == 0 and not err.stat().st_size,
                 'preparation utility failed: ' + label)
         return out.read_text()
+
+    controls = None
+    if TOPOLOGY:
+        controls = json.loads(utility('host-controls', [sys.executable,
+            str(P / 'tools/sycl/test_metric_capability.py')]))
+        require(controls == dict(cases=9, failures=0, errors=0, passed=True), 'topology host controls failed')
 
     # Preprocess only. Native compilation requires the generated plan's commit.
     utility('headers', [str(CC), *FLAGS, '-M', '-MF', str(ROOT / 'headers.d'),
@@ -217,6 +238,12 @@ def prepare(record):
                retention='One small tool build and bounded raw inventory for Main to choose the next source-documented tiny-workload metric. Review/retire after that choice and collection plan/result;no new model generation.',
                active=False, ownership_closed=True, passed=False, collection_qualified=False,
                hardware_utilization_measured=False, physical_pcie_bytes_measured=False)
+    if TOPOLOGY:
+        row.update(native_arguments=['--topology'], host_controls=controls,
+                   scope='Root and actual child device/group properties only;no context,queue,activation,query or streamer.',
+                   criteria='Unique B570 PCI0000:05:00.0;three immutable provider gates;bounded node/group conservation and event/time bitmask semantics;all API success,exit0,closed ownership and no fresh fault. Zero children/groups are valid inventory,not collection qualification.',
+                   sampling_type_constants=dict(EVENT_BASED=1, TIME_BASED=2),
+                   retention='Retain compact root/child and event-group identities for the next collection decision;retire successful raw inventory/tool build after source/recipe verification. No model engine generation.')
     write(ROOT / 'plan.json', row)
     record[KEY] = row
     write(RESULT, record)
@@ -260,7 +287,7 @@ def build(record):
 
 def api_strings(item):
     result = copy.deepcopy(item)
-    if item['kind'] in ('device', 'group', 'metric'):
+    if item['kind'] in ('device', 'group', 'metric', 'topology_node', 'topology_group'):
         for key in ('name', 'description', 'component', 'units'):
             if key not in item:
                 continue
@@ -270,6 +297,42 @@ def api_strings(item):
             except UnicodeDecodeError:
                 result[key] = dict(raw_hex=raw.hex(), utf8=None)
     return result
+
+
+def topology_inventory(items, device, complete):
+    """Validate observed root/child scope without inferring query support."""
+    nodes = [v for v in items if v['kind'] == 'topology_node']
+    groups = [v for v in items if v['kind'] == 'topology_group']
+    require(not any(v['kind'] in ('group', 'metric') for v in items), 'wrong inventory mode')
+    require(complete.get('scope') == 'topology_only' and complete.get('root_nodes') == 1 and
+            complete.get('collection_qualified') is False and
+            complete.get('hardware_utilization_measured') is False, 'wrong completion scope')
+    require(1 <= len(nodes) <= 17 and [n['node'] for n in nodes] == list(range(len(nodes))) and
+            complete['child_nodes'] == len(nodes)-1, 'missing/duplicate topology node')
+    require(device['pci'] == '0000:05:00.0' and device['vendor_id'] == 0x8086 and
+            device['device_id'] == 0xe20c and nodes[0]['parent_node'] is None and
+            all(nodes[0][k] == device[k] for k in ('name', 'device_id', 'uuid_hex')) and
+            all(n['parent_node'] == 0 for n in nodes[1:]), 'root/child identity differs')
+    require(all(re.fullmatch('[0-9a-f]{32}', n['uuid_hex']) for n in nodes), 'invalid UUID bytes')
+    require(all(type(g['node']) is int and 0 <= g['node'] < len(nodes) for g in groups),
+            'unknown topology group owner')
+    for node in nodes:
+        members = [g for g in groups if g['node'] == node['node']]
+        require(len(members) <= 128 and [g['group'] for g in members] == list(range(len(members))),
+                'missing/duplicate scoped group')
+    for group in groups:
+        flags = group['sampling_flags']
+        require(type(flags) is int and 0 <= flags <= 0xffffffff and
+                type(group['event_based']) is bool and type(group['time_based']) is bool and
+                group['event_based'] == bool(flags & 1) and group['time_based'] == bool(flags & 2) and
+                type(group['metric_count']) is int and 0 <= group['metric_count'] <= 1024,
+                'invalid group counts/sampling bitmask')
+    require(len(groups) == complete['groups'] and
+            sum(g['event_based'] for g in groups) == complete['event_groups'], 'topology totals differ')
+    return dict(outcome='topology-enumerated', enumeration_complete=True, device=device,
+                topology_nodes=nodes, groups=groups, metrics=None,
+                root_nodes=1, child_nodes=len(nodes)-1, event_groups=complete['event_groups'],
+                child_event_groups=sum(g['event_based'] for g in groups if g['node'] != 0))
 
 
 def run(record):
@@ -298,7 +361,8 @@ def run(record):
                     raise
                 item = json.loads(line)
                 require(len(items) < row['protocol']['maximum_records'], 'record count cap')
-                require(item['kind'] in ('schema', 'api', 'device', 'group', 'metric', 'complete', 'refusal', 'gate'),
+                require(item['kind'] in ('schema', 'api', 'device', 'group', 'metric', 'complete', 'refusal', 'gate',
+                                        'topology_node', 'topology_group'),
                         'unexpected record type')
                 items.append(api_strings(item))
                 if item['kind'] != 'gate':
@@ -325,7 +389,7 @@ def run(record):
                     io.exit(row['protocol']['exit_deadline_s'])
                     break
 
-        entry, out, err = owner.run('inventory', [row['binary']['path']], row['environments'][1], P,
+        entry, out, err = owner.run('inventory', [row['binary']['path'], *row.get('native_arguments', [])], row['environments'][1], P,
                                     interaction=observe, **RUN_LIMITS)
         require(supervision.closed(entry), 'native supervision/ownership did not close')
         # Include dynamically initialized-and-unloaded providers, not just maps at gates.
@@ -358,16 +422,21 @@ def run(record):
         else:
             require(gates == row['protocol']['gates'] and entry['exit_code'] == 0 and len(complete) == len(devices) == 1,
                     'incomplete successful enumeration protocol')
-            require(len(groups) == complete[0]['groups'] and len(metrics) == complete[0]['metrics'], 'inventory totals differ')
-            require([g['group'] for g in groups] == list(range(len(groups))), 'missing or duplicate group')
-            for group in groups:
-                members = [v['index'] for v in metrics if v['group'] == group['group']]
-                require(members == list(range(group['metric_count'])), 'missing/duplicate metric member')
-            require(all(v['group'] in range(len(groups)) for v in metrics), 'unrecognized metric group')
-            row.update(stage='closed', outcome='enumerated' if groups else 'enumerated-empty',
-                       enumeration_complete=True, groups=groups, metrics=len(metrics), device=devices[0])
+            if TOPOLOGY:
+                row.update(stage='closed', **topology_inventory(items, devices[0], complete[0]))
+            else:
+                require(not any(v['kind'] in ('topology_node', 'topology_group') for v in items), 'wrong inventory mode')
+                require(len(groups) == complete[0]['groups'] and len(metrics) == complete[0]['metrics'], 'inventory totals differ')
+                require([g['group'] for g in groups] == list(range(len(groups))), 'missing or duplicate group')
+                for group in groups:
+                    members = [v['index'] for v in metrics if v['group'] == group['group']]
+                    require(members == list(range(group['metric_count'])), 'missing/duplicate metric member')
+                require(all(v['group'] in range(len(groups)) for v in metrics), 'unrecognized metric group')
+                row.update(stage='closed', outcome='enumerated' if groups else 'enumerated-empty',
+                           enumeration_complete=True, groups=groups, metrics=len(metrics), device=devices[0])
         inventory = ROOT / 'inventory.json'
-        write(inventory, [v for v in items if v['kind'] in ('device', 'group', 'metric', 'complete')])
+        write(inventory, [v for v in items if v['kind'] in ('device', 'group', 'metric', 'complete',
+                                                        'topology_node', 'topology_group')])
         row['inventory'] = dict(path=str(inventory), sha256=digest(inventory), bytes=inventory.stat().st_size,
                                 consumer='Choose one source-documented tiny-workload counter;retire full inventory after plan/result closes.')
         row['provider_gates'] = [dict(stage=a['stage'], pid=a['pid'], code_maps=len(a['code_maps']),
@@ -405,16 +474,25 @@ def run(record):
 
 
 def main():
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'run'), 'choose prepare,build,run')
+    global ROOT, KEY, TOPOLOGY, RUN_LIMITS
+    args = sys.argv[1:]
+    if args[:1] == ['topology']:
+        # A fresh CLI process selects its scope before preparation or native exec.
+        # Imports used by the existing query controller retain the default scope.
+        ROOT, KEY, TOPOLOGY = B / 'metric-topology-c-v1', 'metric_topology', True
+        RUN_LIMITS = dict(wall=45, cpu=20, rss_cap=256 << 20, text_cap=4 << 20,
+                          total_cap=8 << 20, file_cap=4 << 20)
+        args = args[1:]
+    require(len(args) == 1 and args[0] in ('prepare', 'build', 'run'), 'choose [topology] prepare,build,run')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
         record = public()
         fresh = not ROOT.exists()
         try:
-            {'prepare': prepare, 'build': build, 'run': run}[sys.argv[1]](record)
+            {'prepare': prepare, 'build': build, 'run': run}[args[0]](record)
         except BaseException as error:
-            if sys.argv[1] == 'prepare' and fresh and (ROOT / 'preparation.json').exists():
+            if args[0] == 'prepare' and fresh and (ROOT / 'preparation.json').exists():
                 row = json.loads((ROOT / 'preparation.json').read_text())
                 path = ROOT / 'preparation-execution.json'
                 entries = json.loads(path.read_text()) if path.exists() else []
