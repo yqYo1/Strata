@@ -266,6 +266,19 @@ void benchmark(int process) {
 void subgroup_benchmark(int process) {
   constexpr std::array<const char *, 3> names{"fused", "columns4", "subgroup4"};
   Case c(8192, 3); auto &queue = rt->compute();
+  const auto resolution = queue.get_device().get_info<sycl::info::device::profiling_timer_resolution>();
+  need(resolution > 0, "unknown device profiling timer resolution");
+  for (int control = 0; control < 8; ++control) {
+    auto begin = queue.ext_oneapi_submit_barrier();
+    auto end = queue.ext_oneapi_submit_barrier();
+    rt->wait(end);
+    const auto a = begin.get_profiling_info<sycl::info::event_profiling::command_end>();
+    const auto b = end.get_profiling_info<sycl::info::event_profiling::command_start>();
+    need(b >= a, "invalid empty marker clock");
+    std::cout << "{\"kind\":\"timer_control\",\"process\":" << process << ",\"control\":" << control
+              << ",\"resolution_ns\":" << resolution << ",\"empty_marker_gap_ns\":" << b - a
+              << ",\"status\":\"PASS\"}\n";
+  }
   struct Sample { int round, arm; sycl::event begin, end; double submit_ms; };
   std::vector<Sample> samples;
   for (int round = -1; round < 6; ++round)
@@ -286,7 +299,8 @@ void subgroup_benchmark(int process) {
          "incomplete subgroup marker");
     const auto start = s.begin.get_profiling_info<sycl::info::event_profiling::command_end>();
     const auto end = s.end.get_profiling_info<sycl::info::event_profiling::command_start>();
-    need(end > start && std::isfinite(s.submit_ms) && s.submit_ms >= 0, "invalid subgroup interval");
+    need(end > start && end - start >= 1000000 && double(end - start) / double(resolution) >= 1000 &&
+         std::isfinite(s.submit_ms) && s.submit_ms >= 0, "invalid/sub-millisecond/coarse subgroup interval");
     std::cout << "{\"kind\":\"sample\",\"process\":" << process << ",\"round\":" << s.round
               << ",\"schedule\":\"" << names[s.arm] << "\",\"queue_interval_ms\":" << double(end - start) / 1e6
               << ",\"host_submit_ms\":" << s.submit_ms << ",\"exact_output_state_fp16\":true,\"status\":\"PASS\"}\n";

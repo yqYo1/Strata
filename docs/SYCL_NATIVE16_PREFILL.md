@@ -321,7 +321,10 @@ compiling:traced17-token whole/split and invalid/no-write cases,1/33/65/129/8191
 8192tails,262144component carry/restore/unchanged-decode-tail checks,and three
 fresh rotated comparisons of fused/columns4/subgroup4. The current best columns4
 path is the performance control;the fused arm is an additional arithmetic
-reference. Freeze clock eligibility and acceptance before timing. Queue-marker
+reference. Each process records eight empty-marker controls and the device's
+profiling timer resolution. Every sample must span at least1ms and1000timer
+ticks;no subtraction of marker cost or claim of isolated device service follows.
+Freeze comparison acceptance before timing. Queue-marker
 spans include host gaps,so do not label them isolated kernel service. A component
 pass cannot qualify model quality,sustained decode or physical-context behavior.
 Integrate completed work into `feature/sycl` and retire the temporary branch;
