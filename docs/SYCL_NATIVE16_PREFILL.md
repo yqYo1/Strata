@@ -1905,6 +1905,11 @@ from the compact cohorts gives an exact match. Next is a prefill-only production
 entry bridge and fresh official whole-engine progression,with unchanged decode,
 handoff/RESTORE and full physical context gates. No model-wide speed/adoption or
 hardware-saturation claim follows from this private component screen.
+The closed V2root now retires94files/2344132bytes,including its ELF,objects,
+JIT cache and successful traces. Source204/generated3/compiler719/link25input
+recovery and all seven build/seven native command/environment owners match.
+Keep the144timing samples and source fixtures for the imminent production bridge;
+neither selected6e40 nor split9a79engine/required fixtures changed.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665

@@ -45070,8 +45070,9 @@
     "stage": "closed",
     "source_commit": "44636e26cd45820d3c4714a7cf91f5646670db1b",
     "inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/inputs.json",
-      "sha256": "87aab3f2e65c4f528eee83537b21a40d2659934f63d21ca1ff6c9f0b23a136fa"
+      "sha256": "87aab3f2e65c4f528eee83537b21a40d2659934f63d21ca1ff6c9f0b23a136fa",
+      "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/inputs.json",
+      "retired": true
     },
     "generator_proof": {
       "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
@@ -45118,21 +45119,24 @@
     },
     "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/selector_probe",
       "bytes": 381128,
-      "sha256": "6aaa7c188f82f1b5317441a637baf8c35abd62af2c0b7524ea855cec877a5876"
+      "sha256": "6aaa7c188f82f1b5317441a637baf8c35abd62af2c0b7524ea855cec877a5876",
+      "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/selector_probe",
+      "retired": true
     },
     "compiled_inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/compiled-inputs.json",
       "sha256": "ca39cb9be166616619f13b6a56c8cb87c0f666c66f09e38987c2a7b5e40d97c1",
       "files": 719,
-      "uncovered": 0
+      "uncovered": 0,
+      "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/compiled-inputs.json",
+      "retired": true
     },
     "link_inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/link-inputs.json",
       "sha256": "1f767f1654494d587060c0f712cc9d7f32d111519412b3b056ca4e26d8a4f5de",
       "frozen": 25,
-      "uncovered": 0
+      "uncovered": 0,
+      "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-early-component-v2/link-inputs.json",
+      "retired": true
     },
     "build_passed": true,
     "build_scope": "Fresh official2026.2V2 compile/link:all7commands closed,719observed compiler inputs and25frozen link inputs covered. Identical ELF hash to retired V1 reflects unchanged native bytes;no binary or device qualification was reused.",
@@ -45958,6 +45962,28 @@
       "statistics_source": "44636e26c:tools/sycl/topk_early.py::decision",
       "all_raw_sample_values_and_order_preserved": true
     },
-    "retention": "Keep144individual timing vectors,18branch-savings records,compact numerical/fault/input/source decision. Retire this closed component ELF,objects,generated snapshots and successful raw logs after exact Git input recovery. Source fixture/constructor/controller serve the imminent prefill-only production-entry bridge;no model/decode adoption yet."
+    "retention": "Closed private component ELF,objects,JIT cache,generated snapshots and successful raw logs are retired after exact source/recipe recovery. Keep144individual wall/service pairs,18savings records and compact numerical/fault/decision. The maintained source fixture/constructor/controller serve the imminent prefill-only production-entry bridge. No model/decode adoption.",
+    "retirement": {
+      "complete": true,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261031-topk-v2.json",
+      "sha256": "83f69eee5748f3b849e40ed328e0e18bb6887077a4948d7a35567c61beae6cdf",
+      "files": 94,
+      "bytes": 2344132,
+      "source_recovery": {
+        "original_source": "44636e26cd45820d3c4714a7cf91f5646670db1b",
+        "original_build_record": "519cd056a",
+        "original_plan_record": "ccfd29440",
+        "result_record": "1a752d9a3",
+        "retained_remote": "1a752d9a3fadfaa7d0eaed8ad7c94681c7b5a1c5",
+        "project_sources_recovered": 204,
+        "generated_sources_reconstructed": 3,
+        "compiled_inputs_matched": 719,
+        "frozen_link_inputs_matched": 25,
+        "build_owners_closed": 7,
+        "native_owners_closed": 7,
+        "exact_build_and_case_command_environments_matched": true,
+        "ELF_sha256": "6aaa7c188f82f1b5317441a637baf8c35abd62af2c0b7524ea855cec877a5876"
+      }
+    }
   }
 }
