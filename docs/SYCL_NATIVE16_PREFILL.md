@@ -2,22 +2,25 @@
 
 ## Selected implementation and independent phases
 
-The selected engine is the original source
-`6e40afc1beddd059ee518617f6c1efce1da14aca`, SHA-256
-`22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4`.
-Its engine and twelve same-build fixtures match their original hashes. All9853
-original project/dependency inputs and the build recipe recover from Git.
-Restoring that exact package required no recompilation and supplied no new GPU
-validation. See [the selected build proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
+The current measurement reference is the official2026.2source
+`032f4f8a535d857aaa2b5e8123e6662c26554571`,engine SHA-256
+`05c489eab7254417eb0e76a6f5c4c44a14fc837d83dd4056457d0138f522b29e`.
+Its seven executables remain for the next matched comparison. The13component
+and six fresh117Kmodel processes below qualify their stated scopes;they do not
+establish full model/task/decode/physical-context adoption.
 
-The split9a79generation is retired after recovery of551native/configuration,
-9311GGML/TLA and53controller inputs,1400actual compiler inputs and all three
-original command/environment owners. Its historical results and failures remain;
-735files/130689718bytes,including consumed source audits,are removed. Selected6e40
-and its twelve fixtures remain unchanged. Fourteen older provenance holds remain
-independent. Legacy compiler provenance is unresolved;no new legacy build runs.
+Historical6e40source and9853project/dependency inputs plus the final recipe are
+recovered and verified. Its engine and12fixtures are now retired;the unchanged
+external build receipt remains a consumed input to the official-source
+constructor. Its speed evidence remains in Git and the performance CSV;it is no
+longer a runnable fallback. Retirement removes13executables plus three closed
+research transactions:16files/91471606B. Current official admission passes after
+removal. See [the historical build proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
+The prepared555-file two-strategy/GDN3 candidate will become the second engine
+generation;compilation and fresh qualification are pending. Fourteen older
+provenance holds remain independent. No new legacy-compiler build runs.
 
-The prospective official2026.2replacement uses
+The first official2026.2replacement used
 [a pinned constructor](../tools/sycl/official_model_sources.py),not the whole
 working tree: selected6e40,qualified split/Down overlays,the independent Top-k
 route,official bundler discovery and a prefill-only eight-job checkpoint.
