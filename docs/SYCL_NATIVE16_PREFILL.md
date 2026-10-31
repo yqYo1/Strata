@@ -194,10 +194,47 @@ native/provider/model proof. Both fresh117Kplans and all four frontend probes
 are committed. Clean process0 now passes four thinking-on requests,quiet
 validation,native exit0,no fresh fault and checked117488-row all-GPU split
 placement. PP826.6/907.1/904.9/906.9,subsequent median129554.2ms and client TTFT
-median129.786s are the current observer-cost reference;not a new speedup or
-adoption result. The finalization bridge accepts this complete evidence while
-the original V2failure remains unchanged. Next preserve/retire clean raw output
-and execute observed process1. See `official_joint_resources_v3`.
+median129.786s form the observer-cost reference. Observed process1 also closes
+normally,with four valid CPU/window/GDN/transition aggregates,quiet validation,
+matching final model hashes and no fresh fault. PP844.3/905.3/906.0/912.7,
+subsequent median129672.9ms and client TTFT median129.882s give an observed/clean
+time ratio1.00091622. This passes the prospective1.15observer-cost screen;one
+pair does not establish a statistical0.09%overhead or a throughput gain. The
+finalization bridge accepts both processes while the original V2failure remains
+failed. See `official_joint_resources_v3`.
+
+The following are medians of the three subsequent observed requests,not first
+use. CPU categories are nested where stated;do not sum separate medians or add
+GPU subregions to their parent. Queue intervals include host-submission gaps
+and are not hardware utilization or additive kernel service.
+
+| Observation | Seconds | Scope |
+| --- | ---: | --- |
+| Main-thread CPU | 125.542 | During126.929s layer-major scope |
+| CPU inside explicit completion APIs | 98.183 | Included in main-thread CPU |
+| CPU outside those waits | 27.337 | Submission,validation,other host work |
+| CPU row grouping | 0.236 | Included in outside-wait CPU |
+| GEMM adapter host CPU | 5.349 | Included in outside-wait CPU |
+| Upload submission host CPU | 5.285 | Included in outside-wait CPU |
+| Unclassified host CPU | 9.576 | Included in outside-wait CPU |
+| MoE queue interval | 44.315 | Whole MoE region,not pure GPU compute |
+| QSA queue interval | 40.417 | Whole QSA region |
+| GDN queue interval | 25.173 | Whole GDN region |
+| Dense/head entry wall time | 0.521 | Separate transition clock |
+| Dense/head restore wall time | 1.395 | Separate transition clock |
+| Final cache refill wall time | 0.527 | Outside native-dense wrapper |
+
+The high CPU use mostly occurs inside completion APIs;it does not establish
+CPU arithmetic as the limiting resource. Nor do these intervals establish
+PCIe,VRAM or arithmetic saturation. Source-emitted QSA aggregate subintervals
+report27.079s attention and7.566s selection;individual QSA row detail remains
+unqualified. In MoE,46.88..46.98%of jobs have1..127rows but carry only
+0.414..0.419%of routed rows. These counts motivate a bounded current-generation
+kernel-service/copy attribution by job geometry,not a claim that small jobs
+already dominate44.315s. Preserve eight compact16-row geometry counts per request
+for that named collector-coverage consumer;full histograms are unnecessary.
+Do not prioritize the0.236s CPU grouping in isolation. No inference optimization
+is selected from these counts before service and overlap are distinguished.
 Source attribution note:the actual `Gemm::f16_out16`/GU/Down wrappers call
 `sycl_backend::finish` with the production's nonnull in-order stream.
 `include/strata/sycl/launch.hpp` waits there only for a null stream;the command
