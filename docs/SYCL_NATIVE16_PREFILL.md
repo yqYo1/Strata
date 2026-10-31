@@ -31,8 +31,20 @@ and does not prove avoidance of the older2048call stall. The official build now
 passes configure,compile and dependency extraction with1447compiler inputs,
 29observed external linker inputs and seven executables;all owners close.
 Engine SHA-256 is152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354.
-No GPU/model execution follows from this build. Fresh same-build provider/progress checks precede a small model
-entrypoint and32K+timing;the earlier64call GUand22GEMM passes are separate facts.
+The fresh same-build V3component cohort now passes13owned processes with quiet
+validation,no new driver fault and normal closure:host canary,compiled Top-k
+properties,traced off/on smoke,submission,32dyadic matrix cases,26guards,
+64public fallback GUcalls,public GUthreshold routes,original split-Down routes,
+and145Top-k numeric cases in each off/on process. GUhas308balanced stage pairs,
+135kernel launches and0ULP;each Top-k smoke has six launches. Actual official
+providers and immutable environments are checked. Native source remains
+e4617c85c;cohort source83590826a. The initial wrong-UR-loader property lookup
+failed before a kernel launch;V2was closed before execution to correct nested
+stage analysis. Their original failed/unexecuted outcomes remain in the compact
+result. No model runs yet:the eight-job production loop,speed,decode handoff and
+physical262144/RESTORE still require their own checks. The next entry uses
+bench.sh with32Kinput,stage progress and parameter validation;clean64K/117K
+measurements follow separately. The earlier22GEMM ABI checks remain separate.
 
 The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
 exact-completion Top-k kernel only in layer-major prefill. It defaults off,
