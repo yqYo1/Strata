@@ -22,8 +22,13 @@ The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
 exact-completion Top-k kernel only in layer-major prefill. It defaults off,
 requires `STRATA_SYCL_SELECT_RADIX4=1` and excludes the cyclic selection arm.
 Its body specializes the private component qualified in `1a752d9a3` without
-counter instrumentation; public-entry, whole-engine and decode-handoff
-qualification remain pending. Neither retained engine contains this new route.
+counter instrumentation. The fresh official-SDK public-entry V2 passes all16
+processes:9startup policies,3traced smoke cases and145numeric cases in each
+off/on process,including the262144selector endpoint and unchanged decode/ref
+APIs. No new fault or validation warning appears. This qualifies direct selector
+APIs;production model routing,whole-engine speed and decode handoff remain pending.
+See `fused-moe-service-current.json::qsa_topk_prefill_entry_v2`. Neither retained
+engine contains this new route.
 The original selector source and small-input/decode calls remain unchanged.
 
 Prefill and decode have independently selected kernels, scheduling and placement.
