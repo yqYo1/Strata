@@ -113,7 +113,10 @@ subsequent-three medians are869.9/878.8tok/s and75335.8/74577.3ms.
 Warmed client TTFT is75.480/74.722s.
 The64K on/off time ratio1.01017066 shows no gain and prevents this candidate
 passing that length's predeclared all-three-pairs screen. Both lengths' first
-on-process medians are below1000,so neither target screen can pass. Eight further
+on-process medians are below1000,so neither target screen can pass. The second
+117K head-off process also closes normally without fresh faults:its subsequent
+median is733.4tok/s,160192.2ms and client TTFT160.366s,again with81920GPU rows
+first and73728later. Its matched head-on process is pending. Seven further
 processes still run under the frozen no-speed-based-stop plan;the117K mechanism
 decision remains open. The candidate is unadopted. This does not identify
 physical PCIe/VRAM/arithmetic saturation or attribute the64K difference solely
