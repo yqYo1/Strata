@@ -1862,8 +1862,12 @@ Source4c99e4198passes four host tests:4752small rank cases,16physical-endpoint
 rank cases and uniform-tie controls match independent per-cell numerical sorting.
 4140small cases stop before eight passes. This is CPU model/constructor evidence,
 not a compiled-kernel speed or correctness result. Production/decode stay unchanged.
-The next gate is an official-SDK normal/counter fixture,source review,compiled
-properties and traced tiny qualification before numerical and timing cohorts.
+The official-SDK normal/counter fixture and controller are now committed at
+21c39e7c3. Seven host tests pass in3.995seconds,including paired-sample decision
+controls. The frozen component plan covers145numerical cases and144timing
+batches across32K/64K/117488contexts in three processes. It remains unbuilt and
+unexecuted on the GPU. Source review and official2026.2build precede compiled
+properties,traced tiny qualification,numerics and the prospective speed screen.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
