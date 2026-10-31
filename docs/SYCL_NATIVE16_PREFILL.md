@@ -258,22 +258,25 @@ entry falls back at2333rows and selects row64 at2334/2335/8192on both maps.
 See `official_row64_device_v1` in the compact result,controllerbe06c07b2.
 This qualifies the component and dispatch,not current model speed,TTFT,quality,
 decode preservation or physical262144. A same-ELF original/row64 matched model
-comparison is prepared as `official_row64_model_v1`,controller75d4132c2:
-six fresh processes in row64/original,original/row64,row64/original order,
-four matched117489-read thinking-on requests each. All seven original ELFs,
-249current benchmark/controller inputs,84providers and15full model-asset hashes
-pass preparation. First use stays separate from each subsequent-three median.
-All three paired time ratios below1 assess reproducibility without a minimum
-percentage;the1000tok/s screen and client TTFT are separate. Both current-source
-frontend probes pass with normal owned closure. The first row64 process is now
-active;inspect its existing `official-row64-model-v1/0/execution.json` and owned
-handle before any retry or source edit. Independent Orca source audit and native
-Luna-max review require two controller corrections:check validation after full
-native teardown and validate every individual TTFT before reducing samples.
-Finish this bounded process as diagnostic evidence,then close V1without launching
-its other five processes. Commit the corrected gates and a new prospective plan
-before further model execution. These findings concern measurement admission,
-not a demonstrated numerical or GPU-kernel fault. Decode stays independent. See
+comparison V1,controller75d4132c2,closes after one normal row64 process.
+Its four117489-read thinking-on diagnostics report PP848.2/905.0/901.1/913.7;
+subsequent median905.0tok/s and client TTFT130.056s. Full-GPU split placement,
+normal exit and no fresh fault pass. Independent Orca source audit and native
+Luna-max review find missing final validation-log and individual-TTFT checks.
+Main's post-exit review finds an empty final log and four valid TTFT values,but
+does not turn V1into a matched comparison;its other five processes stay unrun.
+Original source/plan/samples/outcomes recover at27bfd3fd9;82files/12395718B of
+raw output and unused plans retire after249source inputs are recovered,with
+model assets/native ELF still held by the current reference. No build retires.
+Controller56319217e adds both guards;CPU controls reject a warning after the
+last request gate and28invalid TTFT cases across all four sample positions.
+The fresh `official_row64_model_v2` plan is next:row64/original,original/row64,
+row64/original,four matched requests in each new process. First use stays
+separate. All three paired time ratios below1 assess reproducibility without
+a minimum percentage;the1000tok/s screen and client TTFT stay separate.
+V2does not inherit V1samples or historical1007.3. These corrections concern
+measurement admission,not a demonstrated numerical or GPU-kernel fault.
+Decode stays independently selected. See
 [the cumulative performance CSV](../bench/performance-records.csv).
 Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
 oriented,in the same binary. The planned user selector is
