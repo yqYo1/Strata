@@ -1872,9 +1872,14 @@ lifetimes,but blocks GPU admission until the controller rejects comparison
 processes with no saved radix passes in any timed scenario. Mixed positive/zero
 scenarios must remain eligible;keep tie cases and all144samples. Commit this
 prospective correction and its all-zero/mixed host controls before execution.
-There is no GPU execution or inference adoption. Preserve native21c39e7c3 and
-the actual ELF separately from later controller/admission commits;do not refresh
-the original source/build hashes.
+V1remains unexecuted;its original build/source/review hashes stay intact.
+The prospective V2controller44636e26c implements the per-process savings gate
+and passes10host tests in4.013seconds,including all-zero refusal and mixed
+positive/zero acceptance retaining all18groups/144samples. Only the controller
+and its host tests change;all other project/native/generated inputs match V1.
+Commit the V2plan and make a fresh official build before reviewed admission,
+properties,traced tiny,numerics and timing. No GPU execution or adoption follows
+from the host tests or inherited source proof.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
