@@ -39,11 +39,22 @@ sustained decode,quality or physical262144model qualification. The same-ELF
 windows and eight-job checkpoints,restores all48dense layers and both heads,
 then resumes decode. Both requests exit normally with quiet validation and no
 fresh fault. Both strategy names select actual independently checked routes in
-one ELF;neither is a universal latency/performance winner. Next compare the
-GDN3 throughput route against the retained official reference at64K/117K with
-first-use and repeated warmed samples separated,then verify sustained decode,
-agent/task and physical262144model/RESTORE behavior. Keep both explicit
-strategies;automatic length selection and additional profiles remain deferred. Fourteen older provenance holds remain independent.
+one ELF;neither is a universal latency/performance winner.
+
+The clean `official_prefill_strategy_speed_v1` plan is committed and its frontend
+probes pass. Controller49db9f866 freezes12fresh processes and48thinking-on
+requests:three reversed-order candidate/reference pairs per65537/117489read
+length,first use separate from each process's subsequent-three median. Both
+arms use head retention at64K and retirement at117K,from prior per-length
+measurements;this is manual benchmark configuration,not an automatic threshold.
+The first64Kcandidate process is running;no paired speed decision is available.
+Each request must pass its actual route check before the next request proceeds.
+Reference admission directly recovers its554native source and1447compiler
+inputs plus seven ELFs;the retired ancestor executable is not required. The
+initial obsolete-helper refusal remains recorded in the research index.
+After speed selection,verify sustained decode,agent/task and physical262144
+model/RESTORE behavior. Keep both explicit strategies;automatic length selection
+and additional profiles remain deferred. Fourteen older provenance holds remain independent.
 No new legacy-compiler build runs.
 
 The first official2026.2replacement used
