@@ -335,8 +335,11 @@ columns4 before the physical262144component check. Numerical,owner,fault and
 runtime validation gates remain mandatory. The two same-build fixtures pass
 submission,17-token whole/split,seven refusal/no-write and
 1/33/65/129/8191/8192token exact comparisons,quiet validation,normal owner closure
-and no fresh fault. Three fresh performance processes are next;model
-qualification remains pending. See `official_gdn_barriers3_v1`.
+and no fresh fault. All three fresh performance processes beat columns4,with
+individual medians and ratios in `official_gdn_barriers3_v1`. The prospective
+component performance gate passes;the physical262144component carry/restore/
+existing-decode-tail check is next. Model PP,TTFT and decode preservation remain
+unqualified;these component queue intervals are not model throughput.
 Current original GDN/decode selections and both engine binaries remain unchanged.
 The finished GDN and resource-profile child branches are removed with original
 commits reachable from pushed `feature/sycl`;PR180to default remains blocked.

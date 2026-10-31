@@ -59345,6 +59345,323 @@
           "devcoredump": false
         },
         "final_driver_matches": true
+      },
+      {
+        "mode": "perf2",
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "environment_delta": {
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/perf2/validation.log",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/perf2/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/perf2/cache",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "STRATA_TEST_MAIN_GATES": "1",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+        },
+        "native_identity": {
+          "pid": 1881930,
+          "start_ticks": 182633430,
+          "sid": 1881930
+        },
+        "pre_main_validation": {
+          "pid": 1881930,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "events": [
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 0,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 30521,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 1,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 28334,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 2,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 28958,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 3,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 29375,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 4,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 34792,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 5,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 29063,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 6,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 28125,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 2,
+            "control": 7,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 29063,
+            "status": "PASS"
+          },
+          {
+            "kind": "train_validation",
+            "process": 2,
+            "tokens_per_call": 8192,
+            "updates_per_arm": 7,
+            "final_state_output_fp16_exact": true,
+            "guards": true,
+            "inputs_immutable": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": -1,
+            "schedule": "barriers3",
+            "queue_interval_ms": 373.93875,
+            "host_submit_ms": 353.272555,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": -1,
+            "schedule": "fused",
+            "queue_interval_ms": 26.931459,
+            "host_submit_ms": 0.592445,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": -1,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.521667,
+            "host_submit_ms": 0.116579,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 0,
+            "schedule": "fused",
+            "queue_interval_ms": 23.619583,
+            "host_submit_ms": 0.055404,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 0,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.681875,
+            "host_submit_ms": 0.082044,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 0,
+            "schedule": "barriers3",
+            "queue_interval_ms": 15.885937,
+            "host_submit_ms": 0.081714,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 1,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.671041,
+            "host_submit_ms": 0.081463,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 1,
+            "schedule": "barriers3",
+            "queue_interval_ms": 15.913854,
+            "host_submit_ms": 0.079851,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 1,
+            "schedule": "fused",
+            "queue_interval_ms": 23.625521,
+            "host_submit_ms": 0.044804,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 2,
+            "schedule": "barriers3",
+            "queue_interval_ms": 15.853125,
+            "host_submit_ms": 0.080391,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 2,
+            "schedule": "fused",
+            "queue_interval_ms": 23.627396,
+            "host_submit_ms": 0.041738,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 2,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.675417,
+            "host_submit_ms": 0.073469,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 3,
+            "schedule": "fused",
+            "queue_interval_ms": 23.633229,
+            "host_submit_ms": 0.038232,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 3,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.591459,
+            "host_submit_ms": 0.076023,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 3,
+            "schedule": "barriers3",
+            "queue_interval_ms": 15.888854,
+            "host_submit_ms": 0.073007,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 4,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.657292,
+            "host_submit_ms": 0.088126,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 4,
+            "schedule": "barriers3",
+            "queue_interval_ms": 15.889271,
+            "host_submit_ms": 0.076364,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 4,
+            "schedule": "fused",
+            "queue_interval_ms": 23.631563,
+            "host_submit_ms": 0.038443,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 5,
+            "schedule": "barriers3",
+            "queue_interval_ms": 15.846771,
+            "host_submit_ms": 0.080662,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 5,
+            "schedule": "fused",
+            "queue_interval_ms": 23.62875,
+            "host_submit_ms": 0.038552,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 2,
+            "round": 5,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.611041,
+            "host_submit_ms": 0.074801,
+            "status": "PASS"
+          }
+        ],
+        "native_exit_code": 0,
+        "official_providers_observed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "final_driver_matches": true
       }
     ],
     "active": false,
@@ -59521,6 +59838,32 @@
         "sha256": "de50feddb8bd17c628a1518ad0d2392c1185802fc366d9b80d9ab2f1aa2e47f3",
         "bytes": 372504
       }
+    },
+    "performance": {
+      "process_medians_ms": {
+        "fused": [
+          23.632969000000003,
+          23.6296355,
+          23.628073
+        ],
+        "columns4": [
+          17.6268745,
+          17.630364,
+          17.6641665
+        ],
+        "barriers3": [
+          15.8866665,
+          15.884427500000001,
+          15.8873955
+        ]
+      },
+      "barriers3_over_columns_ratios": [
+        0.9012752941538218,
+        0.9009699119087956,
+        0.8994138217617005
+      ],
+      "geometric_mean_ratio": 0.9005526402396592,
+      "advance": true
     },
     "source_inputs": {
       "files": 483,
