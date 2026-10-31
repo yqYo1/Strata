@@ -18452,7 +18452,17 @@
       "M128uses the current automatic wide tile. A future mechanism test must either restrict matched compact cases to1..127or compare an explicit matched128baseline;do not confuse tile changes with batching.",
       "Public f16_out16 includes an event completion wait;future timing must include actual production wrapper/synchronization. Slot1has other callers;its exclusive ownership in this window is still unproved."
     ],
-    "next_gate": "Main must prove actual mode10slot1exclusive lifetime before a native fixture or candidate. No further generic grouping research."
+    "next_gate": "Main must prove actual mode10slot1exclusive lifetime before a native fixture or candidate. No further generic grouping research.",
+    "current_generation_source_correction": {
+      "native_source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
+      "files": {
+        "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+        "src/prefill/sycl/gemm16.cpp": "8a4885b80ed75edb21a651243a250a53dc5cd31cc07fbfc7e90c98a5ffa6fd1a",
+        "src/prefill/moe_window.inc": "de24314e42495b0e0c1cb4f0724a1504fd287eeb9a95998affc7d54c94e84aef"
+      },
+      "finding": "Current f16_out16 vllm path calls finish(stream_,event),whose explicit event wait is conditional on a null stream.Mode10 uses nonnull m.cs;do not assume an unconditional public-GEMM wait.Possible internal provider blocking and production-wrapper timing remain separate.",
+      "original_review_status_preserved": true
+    }
   },
   "joint_prefill_dense_head_fixed_20261031": {
     "classification": "decision support",
@@ -19797,5 +19807,81 @@
       "files": 7,
       "bytes": 13687
     }
+  },
+  "moe_two_job_operand_lifetime_20261101": {
+    "classification": "decision_support",
+    "status": "prepared_eligible",
+    "schedulable_now": true,
+    "question": "Audit the current mode10 second-dequant-slot and two-small-job plane/queue/retirement proof,including the actual asynchronous wrapper and unchanged eight-job checkpoints.",
+    "prerequisites": {
+      "immutable_current_native_source_verified": true,
+      "old_conditional_findings_and_new_source_observations_supplied": true,
+      "no_build_test_GPU_or_missing_counter_required": true,
+      "report_root_writable": true,
+      "no_unsettled_current_Orca_dispatch": true
+    },
+    "source": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source",
+      "native_source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
+      "build_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/record.json",
+      "build_record_sha256": "b6f814eb4add620ec95e5aac13802bce4ec255c645f218da47861e9ee3520cb3",
+      "native_sources": 555,
+      "all_native_files_verified_before_dispatch": true
+    },
+    "spec": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/moe_two_job_operand_lifetime_20261101.task.txt",
+      "sha256": "ff65741a17c1ec3e0f36a2610bd2e9a15cb03ae4391467a01f27409d58d1f738"
+    },
+    "report": ".cache/research/2026-11-01/moe_two_job_operand_lifetime_20261101.md",
+    "report_budget_bytes": 16384,
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "previous_scopes": [
+      "moe_two_job_native16_contract_20261031",
+      "ragged_grouped_gemm_schedulers_20261031",
+      "moe_grouped_decision"
+    ],
+    "consumer": "One future bounded two-small-job GU fixture decision after the frozen comparison.",
+    "review_point": "Native Luna-max source/depth/redundancy review;then the named post-cohort implementation/capacity decision. Retire dispatch paperwork after accepted closure.",
+    "main_reads_body_on_arrival": false
+  },
+  "layer_scoped_kv_residency_collection_20261101": {
+    "classification": "knowledge_collection",
+    "status": "prepared_eligible",
+    "schedulable_now": true,
+    "question": "Compare layer-scoped QSA KV residency and RAM reconstruction for dedicated long prefill,with actual cache/state and full-context limits;distinct from KV format,expert-cache loans and activation aliasing.",
+    "prerequisites": {
+      "immutable_current_native_source_verified": true,
+      "old_conditional_findings_and_new_source_observations_supplied": true,
+      "no_build_test_GPU_or_missing_counter_required": true,
+      "report_root_writable": true,
+      "no_unsettled_current_Orca_dispatch": true
+    },
+    "source": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source",
+      "native_source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
+      "build_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/record.json",
+      "build_record_sha256": "b6f814eb4add620ec95e5aac13802bce4ec255c645f218da47861e9ee3520cb3",
+      "native_sources": 555,
+      "all_native_files_verified_before_dispatch": true
+    },
+    "spec": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/layer_scoped_kv_residency_collection_20261101.task.txt",
+      "sha256": "c81fe446569f06d5b9f09f27ab3507466b25d07ddee2ee47d3280085955aa475"
+    },
+    "report": ".cache/research/2026-11-01/layer_scoped_kv_residency_collection_20261101.md",
+    "report_budget_bytes": 18432,
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "previous_scopes": [
+      "decode_vram_rebuild_scope",
+      "activation_vram_lifetime_scope",
+      "qsa_kv_cache_representation_long_context_scope",
+      "vmm_graph_lifetime_scope",
+      "current_expert_cache_loan_contract_20261031"
+    ],
+    "consumer": "Retrieve only for a concrete156K..262144capacity/placement decision;Main does not read the body on arrival.",
+    "review_point": "Native Luna-max source/depth/redundancy review;then the named post-cohort implementation/capacity decision. Retire dispatch paperwork after accepted closure.",
+    "main_reads_body_on_arrival": false
   }
 }
