@@ -18295,5 +18295,39 @@
       "complete": true,
       "report_bytes_retired": 22921
     }
+  },
+  "moe_production_bounded_progress_20261031": {
+    "classification": "decision support",
+    "status": "eligible-current-production-source-audit",
+    "schedulable_now": true,
+    "question": "Audit the frozen selected6e40+qualified split/Down production MoE job loop and its exact actual queues for a minimal prefill-only bounded-progress checkpoint plan. Count outstanding ordinary/fused GU and associated upload/dequant/gather/Down work,prove scratch/expert-slot reuse dependencies and error/cancellation drains,identify where a same-queue checkpoint can bound pending work without changing decode or numerical ordering. Distinguish source facts from an unproved explanation of the old2048call stall. Compare a finite job-count or enqueue-count window and terminal-event/whole-queue drain;state practical overhead tradeoffs and a small first production-route check. No new broad runtime survey.",
+    "prerequisite_evidence": {
+      "native_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-down-model-v1/source",
+      "aggregate_sha256": "ae8b2082ab2f7284221f7805de10afceb7e6291e9bceb91272ac3b227d740f83",
+      "native_files": 551,
+      "source_and9311dependency_inputs_recovered_from_Git": true,
+      "original_failure": "official_gu_repeated_batch_stall_20261026",
+      "bounded_existing_smoke": "source3af1c47d9/planb776d7179/resultde8b41e19:64calls,16call checkpoints,308entry/returns,ULP0;does not qualify original2048batch",
+      "transition_decision": "official_selected_model_transition_20261031:one chosen source,production-GU bounded progress before model"
+    },
+    "source_files": {
+      "src/prefill/moe_window.inc": "ffd4d244a075eb6eaf2dec7cef36e005dd082a906139179f887881fd8d404221",
+      "src/prefill/layer_major.inc": "8e4ee9373c82ec30a129dec94d56a814aa5f7d3fae9cc903b26fcb86122bb1ad",
+      "src/prefill/prefill.cpp": "09b9477db38d3cb19f902d27c35ab59c3f819b4428761cdc34fb86d1a9f13610",
+      "src/prefill/sycl/gemm16.cpp": "8a4885b80ed75edb21a651243a250a53dc5cd31cc07fbfc7e90c98a5ffa6fd1a",
+      "src/prefill/sycl/vllm_xe2/native16.cpp": "a2e42a4095d5c3e13a473af3d81666090f8839136ee6d0fdc5652fabbc5b7357",
+      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6",
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "src/sycl/compat.cpp": "214c721c5be036e4410b4eca4051e8df6157effb8e2e0f575a9d6915b2700bad",
+      "include/strata/sycl/launch.hpp": "4eb1888057ef6ae34f2bbb9d2545321061ee116659e54907047732544d589d95",
+      "include/strata/sycl/runtime.hpp": "a0e0687886e09c50922d01f7023ba3b51e8ac2dbe43f461a798ba82438b2a074"
+    },
+    "report_path": ".cache/research/2026-10-31/moe_production_bounded_progress_20261031.md",
+    "report_budget_bytes": 16384,
+    "report_budget_words": 2000,
+    "scope_limits": "Report only. No Git/build/test/GPU/profiler/process inspection/product edits/install/reset or child agents. No XeStrata inputs. Main preserves frozen source root until settlement/review. Read earlier short correction/digest instead of repeating completed runtime survey.",
+    "review": "Native Codex gpt-6-luna/max;Main reads short digest only.",
+    "consumer": "Imminent official2026.2 whole-engine source and small production-MoE qualification plan.",
+    "next_review": "At returned report and worker settlement,before production-GU source/progression selection."
   }
 }
