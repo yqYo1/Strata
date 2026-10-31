@@ -55752,7 +55752,7 @@
     "next_action": "Commit a bounded same-build row64 tiny/smoke/public-route qualification before model execution;then matched PP/TTFT comparison and current-generation multi-length curve. Preserve decode and physical262144 correctness gates."
   },
   "official_row64_device_v1": {
-    "stage": "prepared",
+    "stage": "running",
     "source_commit": "be06c07b27360b9005dccbc6ee10cc042d49ac0c",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binaries": {
@@ -55978,7 +55978,98 @@
         }
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "mode": "tiny-row64",
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": false,
+        "inference_adopted": false,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "native_identity": {
+          "pid": 1360717,
+          "start_ticks": 181385763,
+          "sid": 1360717
+        },
+        "native_exit_code": 0,
+        "details": {
+          "oracle_cases": [
+            {
+              "tokens": 17,
+              "primary_rows": 8,
+              "job": 0,
+              "job_rows": 3,
+              "expected_mask": 0
+            },
+            {
+              "tokens": 17,
+              "primary_rows": 8,
+              "job": 0,
+              "job_rows": 3,
+              "expected_mask": 0
+            },
+            {
+              "tokens": 17,
+              "primary_rows": 8,
+              "job": 0,
+              "job_rows": 3,
+              "expected_mask": 1
+            },
+            {
+              "tokens": 17,
+              "primary_rows": 8,
+              "job": 0,
+              "job_rows": 3,
+              "expected_mask": 2
+            },
+            {
+              "tokens": 17,
+              "primary_rows": 8,
+              "job": 0,
+              "job_rows": 3,
+              "expected_mask": 3
+            }
+          ],
+          "full_FP32_host_oracles": 5,
+          "dense_BF16_oracles": 2,
+          "guards": true
+        },
+        "actual_split_kernel_launches": {
+          "original": 0,
+          "row128": 0,
+          "row64": 10
+        },
+        "pre_main_validation": {
+          "pid": 1360717,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "official_providers_observed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
