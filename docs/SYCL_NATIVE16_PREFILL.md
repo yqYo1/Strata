@@ -318,18 +318,22 @@ source-level blocker to a bounded smoke,while flagging four times the logical
 Q/K vector loads of columns4and104subgroup selections per lane/token. These
 counts are neither physical traffic nor emitted instruction counts. The fixture
 compiles the production GDN source with the existing runtime target,without
-depending on the rest of the engine's kernel archive;this wiring is not yet built.
+depending on the rest of the engine's kernel archive. Source/recipeb66a73731
+builds both fixtures with the official2026.2SDK:721actual compiler inputs,six
+attested target commands and24external linker inputs. Neither engine binary is
+overwritten.
 The new `gdn_recurrence_subgroup` entrypoint is prefill-only and not wired into
 model dispatch. Main authored it from this fork's existing recurrence and the
 indexed subgroup feasibility reference,with the
 [Khronos collective contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html)
 and [selection API](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html#select).
-No XeStrata source is involved. Source editing is isolated while the original/
-row64 comparison is frozen;there is no new build or test result yet.
-After that cohort closes,commit a bounded exact-build component plan before
-compiling:traced17-token whole/split and invalid/no-write cases,1/33/65/129/8191/
-8192tails,262144component carry/restore/unchanged-decode-tail checks,and three
-fresh rotated comparisons of fused/columns4/subgroup4. The current best columns4
+No XeStrata source is involved. The same-build submission/lifecycle check,
+traced17-token whole/split cases and seven invalid/no-write cases pass with
+normal closure,quiet validation and no fresh fault. All1/33/65/129/8191/8192
+cases also match fused and columns4state/FP32output/FP16capture exactly,with
+guards and immutable inputs. Three fresh rotated resident comparisons of
+fused/columns4/subgroup4are next;262144component carry/restore/unchanged-decode-
+tail follows only if their advancement rule passes. The current best columns4
 path is the performance control;the fused arm is an additional arithmetic
 reference. Each process records eight empty-marker controls and the device's
 profiling timer resolution. Every sample must span at least1ms and1000timer
@@ -341,8 +345,8 @@ The new Main controller `tools/sycl/measure_gdn_subgroup.py` prepares an exact
 two-target build with the official2026.2SDK,then serializes submission,smoke,
 tail validation and three rotated resident processes. All three subgroup4/
 columns4process-median ratios below1and their geometric mean below1permit the
-262144component continuity check;there is no minimum percentage. This plan is
-unexecuted. Native gates outside timed regions check the startup environment
+262144component continuity check;there is no minimum percentage. Native gates
+outside timed regions check the startup environment
 and actual provider maps before initialization,after initialization and before
 exit. Final validation is checked after normal process closure. Pin actual
 compiler/linker inputs and both executable hashes before any GPU execution.
@@ -354,10 +358,12 @@ final driver identity,attests all six actual target compiler commands and their
 FP options,and emits one explicit numerical validation result for the complete
 seven-update train. Timed samples claim clock eligibility,not individual numerical
 comparison. Dedicated correctness/context modes remain separate. The original
-CPU parser controls pass1valid/15invalid and2selection cases. Corrected source
-51f4e34a6passes1valid/18invalid parser,2selection and3final-driver CPU controls;
-prepare reruns them from the frozen recipe. The CPU build and GPU checks remain
-pending.
+corrected CPU controls pass1valid/18invalid parser,2selection and3final-driver
+cases at source51f4e34a6and again in the frozenb66a73731prepare. That prepare
+also corrects an old qualification reader's historical-libz refusal;the current
+official providers and unchanged probe are checked against the closed13-process
+component and six-process model evidence. Original hashes are preserved.
+Clean resident speed,component262144and every model-adoption gate remain pending.
 Source proposal and controls are integrated atdc8c0b0a5for bounded component
 qualification;this is not inference adoption. The finished GDN and resource-
 profile child branches/worktrees are removed after their original commits are
