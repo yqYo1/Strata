@@ -27,8 +27,11 @@ fully submitted jobs on their actual in-order stream. A split window has at most
 655jobs,81interval waits and seven tail jobs covered by the existing status drain.
 A failed wait does not prove retirement;the outer checked lease retains owners
 or fail-stops. This bounds submissions,not elapsed time or native command count,
-and does not prove avoidance of the older2048call stall. Build and model tests
-remain pending. Fresh same-build provider/progress checks precede a small model
+and does not prove avoidance of the older2048call stall. The official build now
+passes configure,compile and dependency extraction with1447compiler inputs,
+29observed external linker inputs and seven executables;all owners close.
+Engine SHA-256 is152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354.
+No GPU/model execution follows from this build. Fresh same-build provider/progress checks precede a small model
 entrypoint and32K+timing;the earlier64call GUand22GEMM passes are separate facts.
 
 The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
