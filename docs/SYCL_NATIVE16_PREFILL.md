@@ -358,8 +358,11 @@ CPU parser controls pass1valid/15invalid and2selection cases. Corrected source
 51f4e34a6passes1valid/18invalid parser,2selection and3final-driver CPU controls;
 prepare reruns them from the frozen recipe. The CPU build and GPU checks remain
 pending.
-Integrate completed work into `feature/sycl` and retire the temporary branch;
-remove the unused proposal if its measured result does not justify continuation.
+Source proposal and controls are integrated atdc8c0b0a5for bounded component
+qualification;this is not inference adoption. The finished GDN and resource-
+profile child branches/worktrees are removed after their original commits are
+verified reachable from pushed `feature/sycl`. PR180to default remains blocked.
+Remove the unused proposal if its measured result does not justify continuation.
 Collector preparation is deferred in favor of this faster-candidate qualification.
 The unexecuted controller froma76babf18 is retired to Git;no coverage plan/root,
 native process or GPU result was produced by it. The13existing reader rejection
