@@ -47,23 +47,26 @@ requests:three reversed-order candidate/reference pairs per65537/117489read
 length,first use separate from each process's subsequent-three median. Both
 arms use head retention at64K and retirement at117K,from prior per-length
 measurements;this is manual benchmark configuration,not an automatic threshold.
-The first seven processes close normally with all28actual-route checks,quiet
+The first eight processes close normally with all32actual-route checks,quiet
 final validation and no fresh fault. All residual rows remain on GPU;64Kuses
 384expert slots and ordinary accumulation,117Kuses128slots and checked split.
 The following PP/TTFT medians use each process's three subsequent requests;
 first use is separate. All individual samples remain in the compact result.
 
-| Read tokens | First PP,candidate/reference | Subsequent PP,candidate/reference | Candidate/reference prompt time | Client TTFT,candidate/reference,s |
-| --- | ---: | ---: | ---: | ---: |
-| 65537 | 741.3 / 723.2 | 846.8 / 817.4 | 0.96526577 | 77.561 / 80.358 |
-| 117489 | 853.7 / 843.4 | 922.8 / 901.3 | 0.97662486 | 127.516 / 130.577 |
+| Read tokens | Pair | First PP,candidate/reference | Subsequent PP,candidate/reference | Candidate/reference prompt time | Client TTFT,candidate/reference,s |
+| --- | --- | ---: | ---: | ---: | ---: |
+| 65537 | 1,candidate first | 741.3 / 723.2 | 846.8 / 817.4 | 0.96526577 | 77.561 / 80.358 |
+| 117489 | 1,candidate first | 853.7 / 843.4 | 922.8 / 901.3 | 0.97662486 | 127.516 / 130.577 |
+| 65537 | 2,reference first | 698.1 / 703.1 | 805.8 / 791.9 | 0.98269377 | 81.504 / 82.960 |
+| 117489 | 2,reference first | 847.4 / 849.8 | 920.3 / 900.3 | 0.97822562 | 127.879 / 130.705 |
 
-PPunits are tok/s. These first pairs favor the candidate by3.5984%/2.3935%.
-The second,reversed-order64Kpair has reference/candidate subsequent medians
-791.9/805.8tok/s,time ratio0.98269377,and client TTFT82.960/81.504s.
-Its first-use PP703.1/698.1and TTFT93.413/94.096s are slower in the candidate;
-both first-use and subsequent samples remain in the result. Seven
-of12processes are complete. Remaining reversed-order pairs are pending,so no
+PPunits are tok/s. Throughput gains derived from the unrounded prompt times
+are3.5984%/2.3935%in the first pairs and1.7611%/2.2259%in the second pairs.
+Both second pairs' first-use
+PP is slower in the candidate. First-use client TTFT is94.096/93.413s at64K
+and138.850/138.459s at117K,candidate/reference. Both first-use and subsequent
+samples remain in the result. Eight of12processes are complete;the third pair
+at each length remains pending,so no
 reproducible gain,adoption or1000target is established yet.
 Each request must pass its actual route check before the next request proceeds.
 Reference admission directly recovers its554native source and1447compiler
