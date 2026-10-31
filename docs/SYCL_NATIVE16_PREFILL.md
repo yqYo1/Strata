@@ -47,7 +47,7 @@ requests:three reversed-order candidate/reference pairs per65537/117489read
 length,first use separate from each process's subsequent-three median. Both
 arms use head retention at64K and retirement at117K,from prior per-length
 measurements;this is manual benchmark configuration,not an automatic threshold.
-The first four processes close normally with all16actual-route checks,quiet
+The first five processes close normally with all20actual-route checks,quiet
 final validation and no fresh fault. All residual rows remain on GPU;64Kuses
 384expert slots and ordinary accumulation,117Kuses128slots and checked split.
 The following PP/TTFT medians use each process's three subsequent requests;
@@ -58,7 +58,7 @@ first use is separate. All individual samples remain in the compact result.
 | 65537 | 741.3 / 723.2 | 846.8 / 817.4 | 0.96526577 | 77.561 / 80.358 |
 | 117489 | 853.7 / 843.4 | 922.8 / 901.3 | 0.97662486 | 127.516 / 130.577 |
 
-PPunits are tok/s. These first pairs favor the candidate by3.5984%/2.3935%;four
+PPunits are tok/s. These first pairs favor the candidate by3.5984%/2.3935%;five
 of12processes are complete. Remaining reversed-order pairs are pending,so no
 reproducible gain,adoption or1000target is established yet.
 Each request must pass its actual route check before the next request proceeds.
