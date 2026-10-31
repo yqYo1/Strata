@@ -10,6 +10,14 @@ original project/dependency inputs and the build recipe recover from Git.
 Restoring that exact package required no recompilation and supplied no new GPU
 validation. See [the selected build proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
 
+The retained split9a79candidate and selected6e40already occupy the normal
+two-engine comparison allowance. The official2026.2transition must preserve
+one known-good fallback and close/recover the other generation before building
+a replacement;do not add two full engines. Legacy compiler provenance remains
+unresolved. Pin one chosen source and bounded public-GU progress/provider gate
+before a small model entrypoint,then long-input measurements. Existing64call
+GUand22GEMM passes do not establish avoidance of the older2048call stall.
+
 Prefill and decode have independently selected kernels, scheduling and placement.
 Keep the existing decode implementation, configuration and1256 expert slots
 while changing prefill. Any decode impact from a prefill change is a separation
@@ -1847,6 +1855,15 @@ The rejected official component and consumed normalizer audit/reviews retire
 after exact203project/726compiler/25link input recovery and pushed results:
 125files/7669913bytes. Keep the96individual timing vectors and compact
 numerical/fault/source decision;no normalizer build or raw trace remains.
+The next independent candidate shortens Mapping1Top-k radix scans after the
+selected set is fixed. A whole selected bucket permits a prefix stop;one
+positive-weight block requires its exact key to preserve partial cell budgets.
+Source4c99e4198passes four host tests:4752small rank cases,16physical-endpoint
+rank cases and uniform-tie controls match independent per-cell numerical sorting.
+4140small cases stop before eight passes. This is CPU model/constructor evidence,
+not a compiled-kernel speed or correctness result. Production/decode stay unchanged.
+The next gate is an official-SDK normal/counter fixture,source review,compiled
+properties and traced tiny qualification before numerical and timing cohorts.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665

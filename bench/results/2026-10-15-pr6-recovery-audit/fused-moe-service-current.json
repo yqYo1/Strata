@@ -44945,5 +44945,60 @@
       "bytes": 63632,
       "reason": "Unused rejected one-fold generator,fixture,controller and host gate tests;restore exact tested source from Git if a concrete consumer returns. Shared34line host-link inventory is retained for the imminent Top-k component build."
     }
+  },
+  "qsa_topk_early_completion": {
+    "stage": "host-model-only",
+    "source_commit": "4c99e4198cc137d22685d49a96f05b5074c3b6ea",
+    "provenance": "Main-authored from exact selected6e40 QSA selector;repository LICENSE,no external or XeStrata implementation input.",
+    "source_pins": {
+      "tools/sycl/topk_early_sources.py": "538c097b0f6f4ca6e04a7564271436df4b6b8303a8c30c8dc02bd0b907115715",
+      "tools/sycl/test_topk_early.py": "3cd735adcfd52e7c709113a3c3c4ffef922a7273929e7ce05992f2d26e5d4300"
+    },
+    "generator_proof": {
+      "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "original_source": "src/kernels/sycl/qsa_select.cpp",
+      "original_source_sha256": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1",
+      "reversible_selection_edits": 1,
+      "reversible_common_counter_edits": 6,
+      "production_or_decode_changed": false,
+      "component_scope": "Actual Mapping1 body and validation;private wrappers isolate the kernel mechanism,not production startup dispatch. Same WG256,scores,weighted rank,ties and ascending emission.",
+      "mechanism": "Stop at complete selected bucket,or recover the full unique positive-weight block key when bucket weight<=4. The latter preserves partial-cell budgets. Both branches are WG-uniform.",
+      "counter_scope": "Capture=true records0for uniform early returns,otherwise actual1..8passes. Normal instantiations have no counter stores;capture/normal exact outputs need device checks.",
+      "generated_sha256": {
+        "original.cpp": "58d00cf093978fbdded316104c357a1b8f5f08c01115c6373c12ae06fb3ca9fa",
+        "candidate.cpp": "d876dc0c6653883ae540db03139cba07f35bb2239eca463ddfa8f28ee20d0529",
+        "topk-early.hpp": "8b4b300fa605ffd1f4842a3e298648b7776a75f5b31bd01c10c6483bbdb8dbc2"
+      }
+    },
+    "resource_hypothesis": "The source-bound split model profile attributes4.428919159s to Top-k. Skip unnecessary radix scans and their workgroup reductions while keeping the same launch,input/output bytes and exact selected IDs. Physical saturation and gain remain unknown.",
+    "partial_budget_constraint": "Full-bucket completion alone cannot generally terminate width2051 against4-cell blocks. A bucket weighing<=4 contains one positive-weight block;recover its exact full key before emitting a partial cell budget. Ignore zero-weight spare.",
+    "host_controls": {
+      "command": [
+        "timeout",
+        "60s",
+        "flock",
+        "-n",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+        "python3",
+        "-B",
+        "tools/sycl/test_topk_early.py"
+      ],
+      "tests": 4,
+      "passed": true,
+      "exit_code": 0,
+      "small_rank_cases": 4752,
+      "small_early_terminations": 4140,
+      "small_full8_passes": 420,
+      "zero_or_all_selected_cases": 192,
+      "full_extent_rank_cases": 16,
+      "coverage": "Independent numeric per-cell sort versus original/candidate weighted-radix CPU models;NaNs,infinities,signed zeros,subnormals,ties,partial block budgets;262141/2/3/4 endpoints;reversible source constructor.",
+      "limitation": "CPU model/constructor evidence only;not compiled-device convergence,actual round counts,runtime,performance or model qualification.",
+      "unittest_elapsed_s": 3.878
+    },
+    "GPU_executed": false,
+    "production_or_decode_changed": false,
+    "inference_adopted": false,
+    "next_gate": "Implement and commit a bounded official-SDK device fixture/controller. Check private normal/counter correspondence,full independent per-cell oracle,input/output/round guards,uniform collective participation and preinit/provider ownership. Then properties,traced tiny,numerics before a separately frozen component speed screen.",
+    "retention": "Current two source files serve that imminent component build. Keep the compact host result;no generated C++ snapshot or host-test log is retained."
   }
 }
