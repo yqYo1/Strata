@@ -75,10 +75,20 @@ pins554native sources,aggregatec3b781a2378a0d208c6ac7852bff505ce36f8c4955ae29568
 Seven executables now compile with1447matched actual compiler inputs and29
 observed external link inputs;engine SHA-256 is05c489eab7254417eb0e76a6f5c4c44a14fc837d83dd4056457d0138f522b29e.
 The fresh same-build13-process device cohort also passes,with quiet parameter
-validation,no new driver fault and normal ownership closure. Joint-model
-qualification remains pending;these checks do not inherit the seed's model
-results. See `fused-moe-service-current.json::official_prefill_joint_build_v1`
-and `official_prefill_joint_device_v1`.
+validation,no new driver fault and normal ownership closure. A fresh same-process
+model check now completes two32769-read thinking-on requests,each with32768
+GPU-resident BF16 rows and24generated tokens. Each request detaches the521472000B
+target head and223227900B draft subset,restores all48dense layers and resumes
+short decode. The second request also exercises retirement of the first request's
+lazy graphs. Both request windows conserve jobs/checkpoints,parameter validation
+is quiet,the native process exits0,model hashes match and no fresh driver fault
+appears. Logged PP578.9/687.2and client TTFT56.763/47.807s are first/subsequent
+diagnostics,not clean speed or sustained decode evidence. Bytewise head payload
+and captured-pointer verification,matched64K/117K speed,decode preservation,
+task and physical262144/RESTORE remain open;the candidate is not adopted. These
+checks do not inherit the seed's model results. See
+`fused-moe-service-current.json::official_prefill_joint_build_v1`,
+`official_prefill_joint_device_v1` and `official_joint_model_entry_v1`.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found

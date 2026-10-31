@@ -50655,7 +50655,7 @@
     "error": null
   },
   "official_joint_model_entry_v1": {
-    "stage": "frontend-qualified",
+    "stage": "closed",
     "source_commit": "bccfed593bf0be0110f95cf6a937f23027df6858",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binary": {
@@ -50936,11 +50936,11 @@
       "head_payload_bytes_verified": false
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "First two fresh definition/mock-loopback Python probes,then two bench.sh exact32769read/32768engine-row thinking-on requests with1..24output tokens each,zero reuse,normal stream/native exit,immutable source/assets/environment/providers and no warning/fault. Observe actual GPU-resident mode10accumulator and every8fully submitted-job wait,including complete before/after pairs and conservation with final window/job counters. Observe actual target521472000B and optional draft head detach inside retired/bank/restored dense phases in each request,then short decode. Second request exercises retirement of first-request lazy graphs. At this length split storage must remain inactive;decode placement1256/spec4/chunk8192 unchanged. Diagnostic progress,not bytewise head payload/graph-binding correctness,clean speed,sustained decode preservation,task quality or full physical262144/RESTORE.",
     "retention": "Compact host/progress/route/latency and failure evidence only;successful full journals,API/polling and debug output retire after verification. Runtime manifest replaces the consumed component inventory for this named model entry;the two engine generations remain for imminent matched comparison.",
@@ -50958,6 +50958,104 @@
         "passed": true
       }
     ],
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "model_executed": true,
+      "native_identity": {
+        "pid": 461351,
+        "start_ticks": 178922362,
+        "sid": 461304
+      },
+      "native_exit_code": 0,
+      "routes": [
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18293,
+          "checkpoint_pairs": 2264,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 428,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false
+        },
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18281,
+          "checkpoint_pairs": 2267,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 429,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false
+        }
+      ],
+      "validation": {
+        "pid": 461351,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "samples": [
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 56603.5,
+          "prompt_tps": 578.9,
+          "ttft_s": 56.763,
+          "generated_tokens": 24,
+          "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+          "timing_frontend_state": "post-count-preflight"
+        },
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 47682.4,
+          "prompt_tps": 687.2,
+          "ttft_s": 47.807,
+          "generated_tokens": 24,
+          "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+          "timing_frontend_state": "post-count-preflight"
+        }
+      ],
+      "clean_speed_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
     "source_inputs": {
       "files": 247,
       "aggregate_sha256": "e0834b950f1e39dbe1d80f6ebec62bfd12477273e6ce78c2fd14f6c2967e1623"
