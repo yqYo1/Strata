@@ -254,13 +254,19 @@ new native build is implied. Qualify its actual route/numerics before the model
 comparison;decode processing remains independently selected. See
 [the cumulative performance CSV](../bench/performance-records.csv).
 Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
-oriented,with one explicit selector in the same binary. These are development
-requirements,not two already-qualified implemented profiles. Compare both PP and
-client TTFT at matched lengths/first-use states;preserve a useful route when
-another wins a different regime. Keep decode independent and pass strategy
-explicitly rather than changing the process environment after runtime init.
-Automatic input-length dispatch and any further levels wait until long-prefill
-and decode tuning;measured curves will determine their thresholds later.
+oriented,in the same binary. The planned user selector is
+`--prefill-strategy ttft|throughput`;this argument and the two qualified profiles
+are not implemented yet. Resolve that choice into an explicit request policy
+passed to the prefill scheduler and its kernel/placement choices. Backend setup
+may prepare both implementations,but request selection must not change process
+environment or decode configuration. Keep one selection boundary that can later
+resolve request length to a policy;do not scatter token-count tests among kernels.
+Compare both PP and client TTFT at matched lengths/first-use states,including
+prefill-to-decode restoration in the measured path;preserve a useful route when
+another wins a different regime. A faster kernel alone does not establish which
+profile minimizes TTFT. Automatic input-length dispatch and any further levels
+wait until long-prefill and decode tuning;measured curves will determine their
+thresholds later.
 Collector preparation is deferred in favor of this faster-candidate qualification.
 The unexecuted controller froma76babf18 is retired to Git;no coverage plan/root,
 native process or GPU result was produced by it. The13existing reader rejection
