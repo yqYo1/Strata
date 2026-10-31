@@ -465,6 +465,11 @@ if(STRATA_SYCL_TESTS)
   add_executable(sycl_qsa_select_radix_test EXCLUDE_FROM_ALL tests/sycl/qsa_select_radix.cpp)
   target_link_libraries(sycl_qsa_select_radix_test PRIVATE strata_kernels)
   target_compile_options(sycl_qsa_select_radix_test PRIVATE -fno-fast-math -ffp-contract=off)
+  # Supervised manual fixture: immutable pre-exec policy and three owner gates.
+  add_executable(sycl_qsa_topk_prefill_entry_test EXCLUDE_FROM_ALL tests/sycl/qsa_topk_prefill_entry.cpp)
+  target_link_libraries(sycl_qsa_topk_prefill_entry_test PRIVATE strata_kernels ${CMAKE_DL_LIBS})
+  target_compile_features(sycl_qsa_topk_prefill_entry_test PRIVATE cxx_std_20)
+  target_compile_options(sycl_qsa_topk_prefill_entry_test PRIVATE -fno-fast-math -ffp-contract=off)
 
   add_executable(sycl_qsa_score_prefill_test EXCLUDE_FROM_ALL tests/sycl/qsa_score_prefill.cpp)
   target_link_libraries(sycl_qsa_score_prefill_test PRIVATE strata_kernels)
