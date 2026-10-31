@@ -1888,10 +1888,23 @@ and25frozen link inputs,and checking all seven command/environment owners closed
 Original build success and blocked device admission remain in the compact result;
 the pushed source/recipe commits stay reachable. V2has not inherited its ELF or
 any device qualification.
-The fresh official V2build now passes all seven commands with719compiler and
-25frozen link inputs covered. Its ELF matches V1because the native inputs are
-unchanged;all V2commands actually ran and no executable/qualification was reused.
-Commit this build record before the predeclared staged device sequence.
+The fresh official V2build passes all seven commands with719compiler and25frozen
+link inputs covered. Source44636e26c,planccfd29440 and build record519cd056a now
+complete the bounded device sequence:host canary,four properties,traced tiny,
+145numerical cases and three comparison processes,all closing normally without
+new validation warnings or driver faults. Numeric selected IDs and actual round
+counts match;the physical262144selector endpoint passes,not full-model context.
+All144timing batches remain eligible;minimum wall/service are0.399063/0.395548s.
+Wall/service geometric-mean ratios are0.960609/0.961596 and all18median ratios
+are below1,so the prospective component screen passes. Positive-varied scores
+save535/482/436radix rounds per256queries at32K/64K/117488;the117488tie case
+saves zero and remains in all three process cohorts. Counts exclude final and
+unique-key-recovery scans;they do not establish physical memory traffic.
+Keep every individual timing vector;reconstructing the original full decision
+from the compact cohorts gives an exact match. Next is a prefill-only production
+entry bridge and fresh official whole-engine progression,with unchanged decode,
+handoff/RESTORE and full physical context gates. No model-wide speed/adoption or
+hardware-saturation claim follows from this private component screen.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
