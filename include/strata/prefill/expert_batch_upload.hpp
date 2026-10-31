@@ -17,8 +17,10 @@ namespace strata::prefill::detail {
 // host tensor packing, additional queue, cache publication or host wait occurs
 // here. The source must be private, not an externally mutable shared mapping.
 //
-// Each group uses slots[0..capacity). All group uploads precede its readers.
-// The next group's overwrites follow EVERY preceding reader in the SAME
+// Ordinal i uses slot i%capacity, identically for every group size. At most
+// 2/4/8 experts are uploaded before their readers (1 is the serial control).
+// Groups stop at bank wrap and source gaps are never copied. Overwrites follow
+// EVERY preceding reader in the SAME
 // in-order queue. consumed() must follow the expert's final submitted reader.
 // Multiple windows needing permanent-cache hits keep their existing scheduler.
 class ExpertUploadBatch {
@@ -29,15 +31,16 @@ public:
     ExpertUploadBatch(void* bank, size_t bank_bytes, size_t destination_stride,
             const void* source, size_t source_bytes, size_t source_stride,
             size_t blob_bytes, const std::vector<int32_t>& order, void* stream,
-            bool coalesce)
+            size_t group_experts)
         : bank_(static_cast<uint8_t*>(bank)), source_(static_cast<const uint8_t*>(source)),
-          bytes_(blob_bytes), count_(order.size()), stream_(stream), coalesce_(coalesce) {
+          bytes_(blob_bytes), count_(order.size()), stream_(stream), group_(group_experts) {
         // Validate all geometry/order before the first enqueue. Reject padded
         // layouts rather than copying gaps or packing bytes on the CPU.
         if (!stream || !bank || !source || !bytes_ || bytes_ % 256 ||
             destination_stride != bytes_ || source_stride != bytes_ ||
             bytes_ > SIZE_MAX / experts || source_bytes != experts * bytes_ ||
-            bank_bytes < bytes_ || !count_ || count_ > experts)
+            bank_bytes < bytes_ || !count_ || count_ > experts ||
+            (group_ != 1 && group_ != 2 && group_ != 4 && group_ != 8))
             throw std::invalid_argument("expert upload batch source/bank extent");
         capacity_ = std::min(experts, bank_bytes / bytes_);
         int32_t previous = -1;
@@ -66,12 +69,12 @@ public:
         if (acquired_ || ordinal != next_ || ordinal >= count_)
             throw std::invalid_argument("expert upload batch acquire order");
         try {
-            if (!coalesce_ || ordinal % capacity_ == 0) {
-                const size_t end = coalesce_ ? std::min(count_, ordinal + capacity_) : ordinal + 1;
+            if (ordinal == uploaded_) {
+                const size_t end = std::min({count_, ordinal + group_,
+                                             ordinal + capacity_ - ordinal % capacity_});
                 for (size_t first = ordinal; first < end;) {
                     size_t last = first + 1;
-                    if (coalesce_)
-                        while (last < end && order_[last] == order_[last - 1] + 1) ++last;
+                    while (last < end && order_[last] == order_[last - 1] + 1) ++last;
                     const size_t length = last - first;
                     if (!enqueue(bank_ + (first % capacity_) * bytes_,
                                  source_ + size_t(order_[first]) * bytes_, length * bytes_, stream_))
@@ -105,6 +108,7 @@ public:
         finished_ = true;
     }
     size_t capacity() const { return capacity_; }
+    size_t group_size() const { return group_; }
     size_t copy_calls() const { return copy_calls_; }
     size_t uploaded_experts() const { return uploaded_; }
     uint64_t uploaded_bytes() const { return uint64_t(uploaded_) * bytes_; }
@@ -118,7 +122,8 @@ private:
     const uint8_t* source_;
     size_t bytes_, count_, capacity_ = 0, next_ = 0, copy_calls_ = 0, uploaded_ = 0;
     void* stream_;
-    bool coalesce_, acquired_ = false, finished_ = false, poisoned_ = false;
+    size_t group_;
+    bool acquired_ = false, finished_ = false, poisoned_ = false;
     std::array<int32_t, experts> order_{};
 };
 } // namespace strata::prefill::detail

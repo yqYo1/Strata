@@ -221,9 +221,9 @@ def prepare(data):
         row.update(commands=commands(str(OFFICIAL / 'bin/icpx')),runtime_files=runtime_files,preload=preload,
             runtime_scope='NEW official Intel2026.2/UMF1.2 component proposal;host loader canary and traced smoke required. No prior native/model/runtime qualification inherited;selected original engines unchanged.')
         row.update(
-            scope='One in-order queue and a128-slot borrowed private bank;packed ordinary CPU source,160ascending active experts,contiguous/four-adjacent/gapped patterns. Exact active bytes,no CPU packing,overfetch,extra VRAM or decode changes. Isolate batching scheduler using event-recording queue.memcpy callbacks in both arms;default production cudaMemcpyAsync separately checked in smoke. Integer readers1/64iterations are not XMX or LLM throughput.',
-            criteria='Official-loader host canary before GPU;one4KiB traced9-case smoke with20pre-enqueue/order refusals,cancellation,bank/group tails,expert511 and default compat-copy check. Then3fresh processes,each144batches:2payloads(1971200/2662400),3patterns(contiguous/runs4/gapped),2integer workloads(1/64),one first pair plus5subsequent balanced pairs. Every full batch160experts/320readers,128slots,exact active payload and prescribed copy-call counts(serial160,batch2/40/160),full source/output/bank guards,normal owner/exit/provider/preinit/environment/no-fault gates. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty control<=5percent smallest batch. Advancement requires every process/shape median batch/serial wall ratio<=0.98 for contiguous/runs4,and<=1.03 for gapped. All criteria frozen before execution;component success permits only a separately committed production-consumer plan,never inference adoption.',
-            reference='Original9a79 source:PrivateExpertBank packed stride equals blob;ordinary private PinnedArena source views,one expert scan in one in-order queue;18888uploads request38561740800B. Prior two-queue screen rejected at180be494c. This new granularity screen claims neither physical PCIe saturation nor whole-model speed.',
+            scope='Bounded1/2/4/8-expert groups in one persistent in-order queue and128-slot private bank. Same destinations,packed ordinary CPU source and160active experts for every arm. Persistent workspace per payload/pattern;no host packing,overfetch,extra model VRAM or decode change. GPU full output/bank/guard affine oracle plus two timed input readers;small CPU cross-checks and corruption controls,final full CPU source check. Synthetic1/64-loop integer readers,not XMX or LLM throughput;event-recording queue.memcpy callbacks isolate scheduling,default compat path separately checked.',
+            criteria='Official loader canary first,then4KiB traced10-case smoke with22admission/order refusals,3verifier corruption controls,CPU cross-checks at1/64loops,all1/2/4/8groups,bank/group tails,expert511,cancellation and default compat copy. Then3fresh processes,each288batches:2payloads(1971200/2662400),3patterns(contiguous/runs4/gapped),2integer workloads(1/64),one first rotating quartet plus5subsequent rotating quartets. Four arms group1/2/4/8;all160experts/320readers,128slots,identical slot=i%128,exact active bytes. Copy calls contiguous160/group,runs4160/min(group,4),gapped160. GPU output/bank/guards pass every batch;full immutable CPU source closure6cohorts/process. All normal provider/preinit/env/owner/exit/fault checks. Subsequent wall/device spans>=10ms,timerp99<=10us,median empty<=5percent smallest batch. A group qualifies only if every one of its36process/shape medians has candidate/group1 ratio<=0.98 for contiguous/runs4 and<=1.03 for gapped. Among fully qualifying groups choose lowest geometric mean of36medians,tie smaller group. No qualifying group means no model run. Passing permits only a new production-consumer plan;not inference adoption.',
+            reference='Prior8db22cee7 V1 failed its original performance gate with432valid batches;that result stays failed. New source replaces128-expert bursts with bounded groups and prospectively changes both arms to persistent queue/workspace plus GPU verification. No physical bus,cache,staging-threshold or whole-model claim. Existing indexed reports do not rank2/4/8;native Luna review only informed this bounded comparison.',
             retention='One mechanism fixture for imminent prefill-only scheduling decision;no third engine generation. Keep original6e40 and9a79 engines/required fixtures. Retire normal output and this component build at decision closure after exact source/recipe recovery;retain compact paired samples and ownership/fault outcome.')
     data[KEY] = row; write(RESULT, data)
     print('Transfer source/recipe prepared;commit before build.', flush=True)
@@ -235,6 +235,7 @@ def build(data):
     supervisor = None
     supervisor = supervision.Owner(ROOT / 'build', lambda: write(ROOT / 'build-owner.json', supervisor.commands))
     try:
+        row.update(stage='building',active=True,ownership_closed=False);write(RESULT,data)
         for i, command in enumerate(row['commands']):
             entry, out, err = supervisor.run('compile-' + str(i), command, row['build_environment'], P, **BUILD_LIMITS)
             require(supervision.closed(entry) and entry['exit_code'] == 0, 'transfer compiler/link failed')
@@ -278,6 +279,7 @@ def run(data):
     supervisor = supervision.Owner(ROOT / 'native', lambda: write(ROOT / 'native-owner.json', supervisor.commands))
     cases = row['measurements'] = []
     try:
+        row.update(stage='running',active=True,ownership_closed=False,complete=False);write(RESULT,data)
         for i, case in enumerate(row['cases']):
             env = dict(row['native_environment'])
             warnings = ROOT / 'native' / ('case-' + str(i) + '-validation.log')
@@ -335,14 +337,19 @@ def run(data):
             prefix = 'BATCH ' if BATCH else 'COPY '
             rows = [{part.split('=', 1)[0]: part.split('=', 1)[1] for part in line.split()[1:]} for line in lines if line.startswith(prefix)]
             checks = [line for line in lines if line.startswith('CHECK ')]
+            source_checks = [{part.split('=',1)[0]:part.split('=',1)[1] for part in line.split()[1:]}
+                             for line in lines if line.startswith('SOURCE ')]
             passed = supervision.closed(entry) and entry['exit_code'] == 0 and gates == ['before-runtime', 'runtime-ready', 'before-exit']
             if BATCH:
-                passed = passed and len(rows) == (9 if case['diagnostic'] else 144) and all(
-                    all(sample.get(k) == 'PASS' for k in ('source','guards','output','drain')) for sample in rows)
+                passed = passed and len(rows) == (10 if case['diagnostic'] else 288) and all(
+                    all(sample.get(k) == 'PASS' for k in ('source','guards','output','drain','gpu_verify')) for sample in rows)
                 if case['diagnostic']:
-                    passed = passed and sum(int(s['admission_rejections']) for s in rows) == 20 and \
+                    passed = passed and sum(int(s['admission_rejections']) for s in rows) == 22 and \
                         sum(int(s['cancelled']) for s in rows) == 1 and \
                         sum(int(s['compat']) for s in rows) == 1 and \
+                        sum(int(s['verifier_negative_controls']) for s in rows) == 3 and \
+                        sum(int(s['cpu_reference']) for s in rows) == 10 and \
+                        {s['loops'] for s in rows} == {'1','64'} and \
                         {s['pattern'] for s in rows} == {'contiguous','runs4','gapped','edge'} and \
                         any(s['capacity'] == '1' and s['copy_calls'] == '8' for s in rows) and \
                         any(s['cancelled'] == '1' and s['completed'] == '5' and
@@ -359,6 +366,8 @@ def run(data):
             if case['diagnostic']:
                 require(trace.exists() and 'urEnqueue' in trace.read_text(), 'transfer enqueue trace absent')
             if BATCH:
+                require(len(source_checks) == (10 if case['diagnostic'] else 6) and
+                        all(c.get('full') == 'PASS' for c in source_checks), 'full immutable source closure missing')
                 for sample in rows:
                     require(all(math.isfinite(float(sample[k])) and float(sample[k]) > 0
                                 for k in ('wall_s','reader_s','device_span_s')) and
@@ -376,15 +385,15 @@ def run(data):
             cases.append(dict(case=case, passed=bool(passed), samples=rows, gates=code_maps,
                               process={k: entry.get(k) for k in ('pid', 'exit_code', 'elapsed_seconds', 'peak_session_rss_bytes',
                               'observation_complete', 'direct_child_reaped', 'session_empty', 'error')}))
-            if BATCH: cases[-1]['controls'] = controls
+            if BATCH: cases[-1].update(controls=controls,source_checks=source_checks)
             write(RESULT, data)
             require(passed, 'transfer case failed')
             guards.driver_guard()
         verify(row)
         require(digest(row['binary']['path']) == row['binary']['sha256'], 'transfer binary changed')
-        row.update(stage='closed', passed=True, complete=True)
         if BATCH:
             row['decision'] = batch_decision(cases[1:])
+        row.update(stage='closed', passed=True, complete=True)
     except BaseException as error:
         row.update(stage='failed', passed=False, error=repr(error))
     finally:
@@ -409,20 +418,25 @@ def batch_decision(cases):
             'three distinct batch comparison processes required')
     summaries, eligibility = [], []
     for process in comparisons:
-        samples = process['samples']; require(process['passed'] and len(samples) == 144, 'batch sample coverage')
-        keys = {(s['arm'],s['bytes'],s['pattern'],s['loops'],s['repetition']) for s in samples}
-        expected = {(arm,str(size),pattern,str(loops),str(repetition)) for arm in ('serial','batch')
+        samples = process['samples']; require(process['passed'] and len(samples) == 288, 'batch sample coverage')
+        keys = {(s['group'],s['bytes'],s['pattern'],s['loops'],s['repetition']) for s in samples}
+        expected = {(str(group),str(size),pattern,str(loops),str(repetition)) for group in (1,2,4,8)
                     for size in (1971200,2662400) for pattern in ('contiguous','runs4','gapped')
                     for loops in (1,64) for repetition in range(-1,5)}
         require(keys == expected, 'batch configuration/repetition coverage differs')
+        sources = process['source_checks']
+        require(len(sources) == 6 and {(int(s['bytes']),s['pattern']) for s in sources} ==
+                {(size,pattern) for size in (1971200,2662400) for pattern in ('contiguous','runs4','gapped')} and
+                all(s['full'] == 'PASS' for s in sources), 'immutable source closure differs')
         for s in samples:
-            expected_calls = 160 if s['arm'] == 'serial' else {'contiguous':2,'runs4':40,'gapped':160}[s['pattern']]
+            group = int(s['group'])
+            expected_calls = {'contiguous':160//group,'runs4':160//min(group,4),'gapped':160}[s['pattern']]
             require(all(int(s[k]) == 160 for k in ('experts','completed','uploaded_experts')) and
                     int(s['readers']) == 320 and int(s['capacity']) == 128 and
                     int(s['copy_calls']) == int(s['copy_events']) == expected_calls and
                     int(s['requested_upload_bytes']) == 160 * int(s['bytes']) and
-                    int(s['cancelled']) == int(s['compat']) == int(s['admission_rejections']) == 0 and
-                    s['source_usm'] == 'unknown', 'batch payload/call/consumer conservation differs')
+                    all(int(s[k]) == 0 for k in ('cancelled','compat','admission_rejections','cpu_reference','verifier_negative_controls')) and
+                    s['source_usm'] == 'unknown' and s['gpu_verify'] == 'PASS', 'batch payload/call/consumer conservation differs')
         timer = [c for c in process['controls'] if 'p99_ns' in c]
         empty = [float(c['wall_s']) for c in process['controls'] if int(c.get('repetition',-1)) >= 0]
         subsequent = [s for s in samples if int(s['repetition']) >= 0]
@@ -434,16 +448,24 @@ def batch_decision(cases):
             for pattern in ('contiguous','runs4','gapped'):
                 for loops in (1,64):
                     selected = [s for s in subsequent if int(s['bytes']) == size and s['pattern'] == pattern and int(s['loops']) == loops]
-                    ratios = [float(next(s for s in selected if s['arm'] == 'batch' and int(s['repetition']) == i)['wall_s']) /
-                              float(next(s for s in selected if s['arm'] == 'serial' and int(s['repetition']) == i)['wall_s']) for i in range(5)]
-                    ratio = statistics.median(ratios)
-                    summaries.append(dict(process=process['case']['argv'][-1],bytes=size,pattern=pattern,loops=loops,
-                                          paired_wall_ratios=ratios,median_ratio=ratio,
-                                          performance_passed=valid and ratio <= (1.03 if pattern == 'gapped' else .98)))
-    return dict(timing_eligible=all(eligibility),shapes=summaries,
-                mechanism_screen_passed=all(s['performance_passed'] for s in summaries),
-                inference_adopted=False,physical_saturation_qualified=False,
-                next_action='Only all matched-shape mechanism gates permit a new production-consumer plan;otherwise reject without model run.')
+                    for group in (2,4,8):
+                        ratios = [float(next(s for s in selected if s['group'] == str(group) and int(s['repetition']) == i)['wall_s']) /
+                                  float(next(s for s in selected if s['group'] == '1' and int(s['repetition']) == i)['wall_s']) for i in range(5)]
+                        ratio = statistics.median(ratios)
+                        summaries.append(dict(process=process['case']['argv'][-1],group=group,bytes=size,pattern=pattern,loops=loops,
+                                              paired_wall_ratios=ratios,median_ratio=ratio,
+                                              performance_passed=valid and ratio <= (1.03 if pattern == 'gapped' else .98)))
+    groups = []
+    for group in (2,4,8):
+        rows = [s for s in summaries if s['group'] == group]
+        require(len(rows) == 36, 'bounded-group comparison coverage')
+        groups.append(dict(group=group,performance_passed=all(s['performance_passed'] for s in rows),
+                           geometric_mean_ratio=math.exp(statistics.mean(math.log(s['median_ratio']) for s in rows))))
+    eligible = [g for g in groups if g['performance_passed']]
+    selected = min(eligible,key=lambda g:(g['geometric_mean_ratio'],g['group']))['group'] if eligible else None
+    return dict(timing_eligible=all(eligibility),shapes=summaries,groups=groups,selected_group=selected,
+                mechanism_screen_passed=selected is not None,inference_adopted=False,physical_saturation_qualified=False,
+                next_action='Only a group passing all36matched process/shape gates permits a new production-consumer plan;otherwise reject without model run.')
 
 
 def main():
@@ -452,7 +474,7 @@ def main():
     action = sys.argv[1]
     if action.startswith('batch-'):
         action = action.removeprefix('batch-')
-        BATCH = True; KEY = 'prefill_copy_batch_v1'; ROOT = B / 'prefill-copy-batch-v1'
+        BATCH = True; KEY = 'prefill_copy_batch_v2'; ROOT = B / 'prefill-copy-batch-v2'
         BINARY = 'expert_batch_probe'
         NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_batch_probe.cpp']
         RUN_LIMITS = dict(RUN_LIMITS,wall=240,cpu=360,rss_cap=5 << 30)
