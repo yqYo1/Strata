@@ -58269,5 +58269,409 @@
       "complete": true,
       "verified_absent": true
     }
+  },
+  "official_prefill_strategies_build_v1": {
+    "stage": "prepared",
+    "source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
+    "implementation_commit": "271333f64af10e088897753e142dd600c1aad3d4",
+    "source_basis": {
+      "official_native": "032f4f8a535d857aaa2b5e8123e6662c26554571",
+      "official_aggregate": "c3b781a2378a0d208c6ac7852bff505ce36f8c4955ae2956877c0db44dfd7dbc",
+      "implementation": "271333f64af10e088897753e142dd600c1aad3d4",
+      "component_evidence": "c170d64631a262c8bfdac59f982a52882c736fac",
+      "unrelated_decode_sources_unchanged": true,
+      "fully_submitted_MoE_jobs_per_checkpoint": 8
+    },
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+      "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+      "files": 10945
+    },
+    "external_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/external-inputs.json",
+      "sha256": "dbe84857b1896fda5b386e2741094cf142b1c2130f84c6eb919d1c560bfcfead",
+      "files": 1564
+    },
+    "host_link_inputs": {
+      "files": {
+        "/usr/bin/x86_64-linux-gnu-ld.bfd": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5"
+      },
+      "compiler_queries": [
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-prog-name=ld"
+          ],
+          "reported": "/usr/bin/ld",
+          "resolved": "/usr/bin/x86_64-linux-gnu-ld.bfd"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtbeginS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtendS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc.a"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc_s.so"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=Scrt1.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/Scrt1.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/Scrt1.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crti.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crti.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crti.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtn.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crtn.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crtn.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc_nonshared.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc_nonshared.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc_nonshared.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libdl.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libdl.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libdl.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libm.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libm.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libmvec.so.1"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libmvec.so.1",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libmvec.so.1"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libpthread.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libpthread.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libpthread.a"
+        }
+      ],
+      "packages": [
+        "binutils-x86-64-linux-gnu 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1"
+      ],
+      "scope": "Exact host linker,CRT,archive/linker-script and math-library bytes from official driver queries. No GPU runtime,safety key or old failure status is changed."
+    },
+    "packages": [
+      "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2 2026.2.0-863",
+      "intel-oneapi-dpcpp-cpp-2026.2 2026.2.0-863",
+      "intel-oneapi-umf-1.2 1.2.0-116"
+    ],
+    "dependencies": [
+      {
+        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "count": 3608,
+        "aggregate_sha256": "322862d213ed722d6500da0b58a1b7fffff53aa0de77d7f2e8ba685c653a0d9f"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "count": 5703,
+        "aggregate_sha256": "5768eaea650c06eb022c9068784590a27400c2a577974c56750519edde859fe5"
+      }
+    ],
+    "runtime_basis": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/runtime-basis.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84,
+      "original_component_source": "83590826a6f77b686ae9ea1b0fbc085ba089ec19",
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+        "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+        "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+        "STRATA_SYCL_SELECT_RADIX4": "1",
+        "STRATA_SYCL_SELECT_CYCLIC": "0",
+        "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original"
+      },
+      "canary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+      }
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/cache"
+    },
+    "configure_argv": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+      "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+      "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+      "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+      "-DSTRATA_CPU_ARCH:STRING=znver3",
+      "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+      "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+      "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+      "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+      "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+      "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+      "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+      "-DSTRATA_PORTABLE:BOOL=OFF",
+      "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+      "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+      "-DSTRATA_SYCL_TESTS:BOOL=ON",
+      "-DSTRATA_WERROR:BOOL=ON",
+      "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+      "-DSTRATA_SYCL_DEVICE_ARCH=",
+      "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+      "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations",
+      "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t"
+    ],
+    "targets": [
+      "strata",
+      "sycl_qsa_topk_prefill_entry_test",
+      "sycl_submission_test",
+      "sycl_vllm_native16_test",
+      "sycl_moe_gu_swiglu_bench",
+      "sycl_moe_down_scatter_bench",
+      "sycl_moe_accum_test",
+      "sycl_gdn_columns_bench"
+    ],
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "retained_current_binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/strata",
+        "sha256": "05c489eab7254417eb0e76a6f5c4c44a14fc837d83dd4056457d0138f522b29e",
+        "bytes": 23981920
+      },
+      "sycl_qsa_topk_prefill_entry_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_qsa_topk_prefill_entry_test",
+        "sha256": "4ba024ef4386be7192ffd78624c4f6aeee9d7ccd43f16f37b5ff893d0a60fbe0",
+        "bytes": 316784
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_submission_test",
+        "sha256": "f91b841c8191c94d37f7066a46d5b212a9e35055e77878cbc91c83136f5ebacd",
+        "bytes": 343000
+      },
+      "sycl_vllm_native16_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_vllm_native16_test",
+        "sha256": "d1b28549a77c8ed457130477a8d6ec2a99957d8e6ebc1a55e797c4718d4ef4db",
+        "bytes": 2452528
+      },
+      "sycl_moe_gu_swiglu_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_gu_swiglu_bench",
+        "sha256": "789e987d711ea2580bc8e480ea056c0724f8f6ef24119bfd9575ddc116d0d076",
+        "bytes": 13836784
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "e5d7be2953ba68c6e3ddc55c02d39f5653d38d2cc9354fa43cf6ab0544755145",
+        "bytes": 13857592
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_accum_test",
+        "sha256": "e93b9b0d50e357acc928c01b8dd7e6bcd0d38655b5d4f5994b04bf26ff762839",
+        "bytes": 3055560
+      }
+    },
+    "selected_fallback_retirement": {
+      "complete": false,
+      "next_action": "Recover exact selected6e40 source/recipe,verify no live binary/fixture consumer,retain only consumed provenance receipt,then retire older executable generation before compile."
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 7200,
+      "rss_cap": 12884901888,
+      "text_cap": 16777216,
+      "file_cap": 536870912,
+      "total_cap": 4294967296
+    },
+    "whole_wall_seconds": 3600,
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "GPU_executed": false,
+    "inference_adopted": false,
+    "model_qualified": false,
+    "retention": "Current official seven-ELF reference plus this imminent eight-ELF candidate. Retire selected6e40 executable/fixtures before compile after exact source and consumer review;keep its consumed provenance receipt. Retire rejected/new extra after comparison. Legacy14holds remain separate.",
+    "plan": {
+      "scope": "CPU build only;typed startup strategy plus prefill-only GDN3 on exact official source.",
+      "next": "After source review: CPU CLI parser/default/override checks,then fresh same-build traced submission/GDN17,exact tails and context. Audit long TTFT public-GU progression before any such model run. Fresh bounded small model before32K+ PP/TTFT/agent/thinking/decode/handoff/physical262144/RESTORE evidence.",
+      "performance": "No speed samples or adoption from compilation. Model A/B and input-length/TTFT plans must be committed before those runs;both explicit profiles share one ELF and preserve decode settings."
+    },
+    "controller_inputs": {
+      "files": 37,
+      "aggregate_sha256": "79c57baa45b23d984d85eb798588cca64bdefcbe00e2a2ae5ee99b865769e5b9"
+    },
+    "native_sources": {
+      "files": 555,
+      "aggregate_sha256": "914293c5a2e48dd78a899ff2453d83cff8b26468ff6aa8b6a899608a8a78fa99"
+    }
   }
 }

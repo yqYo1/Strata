@@ -297,7 +297,10 @@ oriented,in the same binary. The startup selector
 model qualification are pending. It resolves once to `prefill::Strategy`,passed
 through prompt orchestration to `Prefill::run`. Omission maps the legacy
 `STRATA_PREFILL_LAYER_MAJOR` value once before runtime initialization;an explicit
-argument overrides it. TTFT selects the existing chunked path and retains dense/
+argument overrides it. Direct four-argument C++ `Prefill::run` calls now default
+toTTFT and do not read the legacy environment;C++ callers choosing throughput
+must pass the enum explicitly. CLI compatibility remains as described.
+TTFT selects the existing chunked path and retains dense/
 head/MTP weights;throughput selects the guarded layer-major path when the prompt
 exceeds the initialized chunk. Cache borrowing still uses its checked retirement/
 refill transaction in either strategy. Actual chunked/layer-major/cache-window
@@ -358,7 +361,14 @@ performance or full-model physical context. The new model source wires
 requires four partitions and preserves the0/old-columns reference. The
 production dispatch records actual schedule/partitions/token count under
 STRATA_TRACE. New model build,same-build fixtures and model PP/TTFT/handoff/
-decode/physical-context checks remain pending.
+decode/physical-context checks remain pending. The model projection contains
+555files,aggregate914293c5a2e48dd78a899ff2453d83cff8b26468ff6aa8b6a899608a8a78fa99.
+Independent Orca source audit and native Luna-max review find no source blocker
+for the CPU build. The build plan keeps the current official seven-ELF reference
+and requires retirement of superseded6e40executables/fixtures after exact source/
+recipe and live-consumer checks. Its provenance receipt remains a source-
+constructor input;this does not justify keeping its old binaries. Fresh public-GU
+progression,partial-lease fail-stop/model and physical-context gates remain open.
 Current original GDN/decode selections and both engine binaries remain unchanged.
 The finished GDN and resource-profile child branches are removed with original
 commits reachable from pushed `feature/sycl`;PR180to default remains blocked.
