@@ -61171,7 +61171,7 @@
     }
   },
   "official_prefill_strategy_ttft_model_v1": {
-    "stage": "frontend-qualified",
+    "stage": "closed",
     "source_commit": "b52b53a0f45f7dacfdae861c4198473ecd197df7",
     "native_source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
     "binary": {
@@ -61460,11 +61460,11 @@
       "original_throughput_progress_controls": null
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "Two current-source Python frontend probes,then two fresh bench.sh exact-input thinking-on requests at the pinned read_tokens with1..24outputs,zero reuse,normal stream/native exit,quiet final validation, immutable sources/assets/environment/providers and no new fault. Observe requested strategy/actual route and dense/head/MTP owner behavior. The existing short thinking warmup must finish before the first long-request gate;throughput requires actual GDN3 dispatch and every8-fully-submitted-MoE-job checkpoint;TTFT retains dense/head/MTP owners. Both preserve1256decode slots/spec4/chunk8192. No clean-speed,quality,sustained TG,physical262144 or full RESTORE adoption from this diagnostic.",
     "retention": "Compact host/progress/route/latency and failure evidence only;successful full journals,API/polling and debug output retire after verification. Runtime manifest replaces the consumed component inventory for this named model entry;current official reference and this same-ELF strategy candidate remain for imminent comparisons.",
@@ -61482,6 +61482,94 @@
         "passed": true
       }
     ],
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "model_executed": true,
+      "native_identity": {
+        "pid": 2023271,
+        "start_ticks": 182985942,
+        "sid": 2023230
+      },
+      "warmup_route": {
+        "requested": "ttft",
+        "route": "chunked",
+        "tokens": "73",
+        "chunk": "256"
+      },
+      "native_exit_code": 0,
+      "routes": [
+        {
+          "strategy": "ttft",
+          "actual_route": "chunked",
+          "rows": 32768,
+          "dense_activations": 0,
+          "dense_head_MTP_weights_retained": true,
+          "cache_loan_retired_and_restored": true
+        },
+        {
+          "strategy": "ttft",
+          "actual_route": "chunked",
+          "rows": 32768,
+          "dense_activations": 0,
+          "dense_head_MTP_weights_retained": true,
+          "cache_loan_retired_and_restored": true
+        }
+      ],
+      "validation": {
+        "pid": 2023271,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "samples": [
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 101958.7,
+          "prompt_tps": 321.4,
+          "ttft_s": 102.119,
+          "total_s": 104.165,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+          "timing_frontend_state": "post-count-preflight"
+        },
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 99797.0,
+          "prompt_tps": 328.4,
+          "ttft_s": 99.94,
+          "total_s": 101.793,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+          "timing_frontend_state": "post-count-preflight"
+        }
+      ],
+      "clean_speed_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
     "source_inputs": {
       "files": 254,
       "aggregate_sha256": "0eb41f9f4078f7470deef16cd84918c99a77543b0185fb21d58296d1bcfd6379"

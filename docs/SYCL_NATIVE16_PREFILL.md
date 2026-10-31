@@ -16,30 +16,28 @@ constructor. Its speed evidence remains in Git and the performance CSV;it is no
 longer a runnable fallback. Retirement removes13executables plus three closed
 research transactions:16files/91471606B. Current official admission passes after
 removal. See [the historical build proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
-The prepared555-file two-strategy/GDN3 candidate will become the second engine
-generation. Its configure,compile/link and dependency commands exit0,but build
-attestation fails before qualification:the new controller attempts to relativize
-an external GGML source path against the project root. This is a controller
-metadata defect;no candidate GPU execution occurred. Preserve the failed
-`official_prefill_strategies_build_v1` receipt,then pin a controller-only
-attestation-recovery plan with unchanged native sources,recipe and ELF bytes.
-The separate `official_prefill_strategies_build_v2` attestation now passes with
-unchanged555native source files,recipe and eight ELF hashes. Its controller-only
-admission revision is55a2fd578;native build source remainsf6cea2f63 and the
-original V1failure remains failed. No recompilation or GPU validation is implied.
-V1CLI/device execution reaches21normal individual case exits,including GDN
-context,but its overall post-run gate fails:the controller compares its mutated
-result row with the committed initial plan. This bookkeeping failure remains
-failed;no GPU/numerical fault is observed. Freeze the initial plan separately
-in the V2controller. The new `official_prefill_strategies_device_v2` cohort
-passes all21fresh processes,including its final frozen-plan/source/ELF/provider
-and driver checks. CLIttft/throughput/help,invalid/case/missing-value refusal,
-fresh public-GU progression and GDN tails/context all pass. No new fault or
-validation warning occurs. Model qualification remains pending;next use the
-same ELF for each explicit strategy,with the existing short thinking warmup
-checked before admitting its first32Krequest. Input-length automatic selection
-and additional strategy levels remain deferred. Fourteen older
-provenance holds remain independent. No new legacy-compiler build runs.
+The second retained generation is the555-file two-strategy/GDN3 candidate,
+native sourcef6cea2f63315e2598d63cb04d5d0b6443dc21a24,engine SHA-256
+2bcad061b8e7eaae8a15d0775a4d03f3c2c33fcdd76631399764e08bbe4d170f.
+Its controller-only V2attestation passes with unchanged native inputs,recipe
+and eight ELFs. The original external-GGML-path bookkeeping failure remains
+failed in `official_prefill_strategies_build_v1`;there was no recompilation.
+The21-case V2CLI/device cohort passes,including actual CLI selections/refusals,
+fresh public-GU progression,GDN tails,262144carry/restore and the final frozen
+plan/provider/driver check. V1's mutable-plan bookkeeping failure remains failed.
+
+Same-binary model qualification now passes the explicit `ttft` route in two
+32769-read thinking-on requests,each followed by24generated tokens. The short
+warmup and both long requests use chunked prefill through the full dense/head/
+MTP placement;checked cache borrowing retires readers and restores residency.
+The CLI overrides the legacy layer-major startup default. Both requests and
+native teardown complete with quiet validation,unchanged assets/providers and
+no fresh GPU fault. These are diagnostic route/handoff checks,not clean speed,
+sustained decode,quality or physical262144model qualification. The same-ELF
+`throughput` model route is next;then matched long-input speed and decode checks.
+Keep both explicit strategies. Defer automatic input-length selection and extra
+profiles. Fourteen older provenance holds remain independent.
+No new legacy-compiler build runs.
 
 The first official2026.2replacement used
 [a pinned constructor](../tools/sycl/official_model_sources.py),not the whole

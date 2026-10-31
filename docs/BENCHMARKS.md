@@ -6,6 +6,19 @@ does not import or qualify that engine version. `tools/ab_engine.py`,
 `tools/agent_turns_bench.py` and `tools/serve_load.py` are unchanged dependencies.
 This fork extends `tools/strata_bench.py` and `bench.sh`.
 
+The native engine accepts `--prefill-strategy ttft` or
+`--prefill-strategy throughput` in the same binary. Append the pair to the
+engine's existing command,or its configuration's `args` array,before starting
+that server. The first keeps chunked prefill through the decode-oriented
+placement;the second permits the dedicated layer-major path when the input
+exceeds the configured chunk. These are tuning intentions,not a claim that
+one is faster at every length. Record the explicit strategy alongside the
+actual route and workload. Decode settings remain independently selected.
+An explicit argument overrides the legacy `STRATA_PREFILL_LAYER_MAJOR`
+startup default;do not change process environment after runtime initialization.
+Automatic selection by input length and additional profiles are deferred.
+The benchmark's `--prefill-*` options choose workloads,not this engine policy.
+
 With a server already running on localhost:
 
 ```sh
