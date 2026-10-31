@@ -243,8 +243,8 @@ The `gemm_submit` host region encloses adapter validation/submission,but exclude
 the earlier `vllm_state` queue lookup and the later `finish` call. CPU and queue
 intervals still require measured attribution,not an assumption that wrapper
 time is GPU math or entirely CPU arithmetic.
-The next development base is the faster owned split/row64 path,with the current
-safety fixes and official runtime retained. The historical matched row64 trial
+The historical split/row64 path is revalidated below with the current safety
+fixes and official runtime retained. The historical matched row64 trial
 shortens time in all three pairs;its0.464094%geometric-mean gain missed Main's
 old0.5%screen. That original decision stays failed;the screen is not a user
 requirement or a reason to discard a reproducible smaller improvement. A new
@@ -274,20 +274,20 @@ The fresh `official_row64_model_v2` plan is prepared:row64/original,original/row
 row64/original,four matched requests in each new process. All249 source inputs,
 seven original ELFs,84providers and15full model-asset hashes pass admission.
 Both current-source frontend probes pass with normal ownership closure.
-Process0(row64) closes normally with quiet final validation and no fresh fault:
-PP842.5/910.2/908.2/916.2,subsequent median910.2tok/s and TTFT129.327s.
-Process1(original) also closes normally:PP819.9/918.7/941.4/931.1,subsequent
-median931.1tok/s and TTFT126.377s,no fresh fault. The first row64/original prompt
-time ratio1.02302406is slower;it does not establish a gain. Process2(original)
-closes normally atPP877.8/925.5/919.0/900.7,subsequent median919.0tok/s and
-TTFT128.138s,without a fresh fault. Process3(row64) closes normally at
-PP856.7/909.6/910.2/916.9,subsequent median910.2tok/s and TTFT129.298s,
-with quiet final validation and no fresh fault. The reverse-pair prompt-time
-ratio1.00963576also favors original. Processes4and5are still required by the
-frozen plan;neither completed pair establishes a row64 gain.
+All six processes and24thinking-on requests close normally with quiet final
+validation,no fresh fault and unchanged final model-asset hashes. Row64's three
+subsequent-request process medians are910.190/910.213/910.842tok/s;original's
+are931.147/918.983/914.434tok/s. Row64/original prompt-time ratios are
+1.02302406/1.00963576/1.00394372,geometric mean1.01216965:row64 is slower in
+every pair and fails the prospective advancement rule. Client TTFT also favors
+original in all three pairs. Keep original Down for the next current-generation
+model candidate;row64 is not adopted. All individual first-use/warmed samples
+remain in `official_row64_model_v2`;the current row64 target screen also fails.
 First use stays separate. All three paired time ratios below1 assess reproducibility without
 a minimum percentage;the1000tok/s screen and client TTFT stay separate.
-V2does not inherit V1samples or historical1007.3. These corrections concern
+V2does not inherit V1samples or historical1007.3. The next optimization is the
+independently proposed GDN recurrence,not an extended Main regression inquiry.
+The earlier controller corrections concern
 measurement admission,not a demonstrated numerical or GPU-kernel fault.
 Decode stays independently selected. See
 [the cumulative performance CSV](../bench/performance-records.csv).
