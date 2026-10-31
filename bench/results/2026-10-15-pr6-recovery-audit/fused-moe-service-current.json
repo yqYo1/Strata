@@ -55706,7 +55706,7 @@
     }
   },
   "prefill_candidate_selection": {
-    "stage": "model_comparison_ready",
+    "stage": "measurement_guard_correction_required",
     "development_candidate": "split117K Down-row64",
     "historical_evidence": {
       "commit": "e45c24afec2ccc42928d97b39352f8b0c1590029",
@@ -55763,7 +55763,7 @@
       "existing_trace_reader_CPU_tests": 13,
       "retired_to_Git": true
     },
-    "next_action": "Run official_row64_model_v1 index0(row64),then the committed reversed six-process order. Frontend probes passed;no new model speed yet. Commit and retire each closed process. Independent decode and physical262144 gates remain."
+    "next_action": "Correct final validation-log and individual-TTFT checks,commit fresh V2 six-process plan. V1 has one closed diagnostic row64 process and five unexecuted cases;it is not a matched speed result. Independent decode and physical262144 qualification remain."
   },
   "official_row64_device_v1": {
     "stage": "qualified",
@@ -56385,7 +56385,7 @@
     }
   },
   "official_row64_model_v1": {
-    "stage": "running",
+    "stage": "closed_for_controller_guard_correction",
     "source_commit": "75d4132c2f594cbfeb5481eb0f54bf5207c2e1c8",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binary": {
@@ -57064,6 +57064,26 @@
       "bytes": 19447,
       "complete": true,
       "verified_absent": true
+    },
+    "closure": {
+      "reason": "Independent source audit/native Luna-max review requires final validation-log and individual-TTFT guards before further execution. First native was already active at reviewed disposition;no subsequent process was started. Original per-process automatic pass remains unchanged.",
+      "unexecuted_indices": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "GPU_or_numerical_fault_demonstrated": false,
+      "comparison_qualified": false,
+      "next_action": "Commit corrected controller guards and a fresh prospectively planned six-process V2;do not continue V1 or reuse its diagnostic sample as blinded comparison evidence."
+    },
+    "supplemental_post_exit_review": {
+      "final_validation_log_quiet": true,
+      "each_TTFT_finite_positive_within_total_s": true,
+      "scope": "Main post-exit inspection after original controller closure;not an automated75d gate or a completed matched comparison.",
+      "checked_samples": 4,
+      "source_samples": "official_row64_model_v1.processes[0].samples"
     },
     "source_inputs": {
       "files": 249,
