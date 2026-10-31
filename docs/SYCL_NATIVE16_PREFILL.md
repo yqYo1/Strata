@@ -338,7 +338,10 @@ submission,17-token whole/split,seven refusal/no-write and
 and no fresh fault. All three fresh performance processes beat columns4:15.8867/15.8844/15.8874ms
 versus17.6269/17.6304/17.6642ms per8192tokens. The geometric-mean time ratio is
 0.90055264,about9.94%shorter. Individual first-use/warmed samples and timer
-controls remain in `official_gdn_barriers3_v1`. All seven processes close
+controls recover from `official_gdn_barriers3_v1` at commitc170d6463. After
+483original source inputs and721actual compiler inputs were recovered and
+verified,the closed two-fixture build/raw output and consumed research bodies
+retired:80files/5367627B. Both current engine generations remain. All seven processes close
 normally with quiet validation and no fresh fault. The262144component carry,
 midstream state restore,final prefill position and existing decode-tail comparison
 also pass. This qualifies a component/model proposal,not model PP,TTFT,decode
