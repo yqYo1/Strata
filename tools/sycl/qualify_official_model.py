@@ -21,8 +21,8 @@ import qualify_native16_control as prior
 import runtime_probe as runtime
 
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT = model.ROOT / 'component-checks-v1'
-KEY = 'official_prefill_device_v1'
+ROOT = model.ROOT / 'component-checks-v2'
+KEY = 'official_prefill_device_v2'
 require, digest, write = model.require, model.digest, model.write
 
 
@@ -54,6 +54,7 @@ def native():
 
 
 def cases(loader):
+    require(Path(loader).name.startswith('libze_loader.so.'), 'properties require the Level Zero loader,not the UR loader')
     topk = 'sycl_qsa_topk_prefill_entry_test'
     return [dict(name='host-canary', target=None, args=[], trace=True),
         dict(name='Topk-properties', target=topk, args=['--properties', loader], trace=True),
@@ -78,6 +79,7 @@ def prepare():
     files = prior.runtime_inputs(dict(built, fixtures=built['binaries']), sdk, rt)
     require(sdk.get(loader) == digest(loader), 'original official loader snapshot changed')
     files[loader] = sdk[loader]
+    property_loader = next(p for p in files if Path(p).name.startswith('libze_loader.so.'))
     env = dict(built['environment'], LD_PRELOAD=rt['preload']['library']['path'],
         STRATA_UR_PROBE_EXPECTED_LOADER=loader,
         ZE_ENABLE_ALT_DRIVERS=next(p for p in files if 'libze_intel_gpu.so.' in p),
@@ -95,7 +97,8 @@ def prepare():
         runtime_files=files, runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'),
             sha256=digest(ROOT / 'runtime-inputs.json'), files=len(files)),
         runtime_basis_sha256=digest(runtime.RESULT), boot=built['boot'], driver=built['driver'],
-        cases=cases(loader), processes=[], active=False, ownership_closed=True, complete=False, passed=False,
+        property_loader=dict(path=property_loader, sha256=files[property_loader]),
+        cases=cases(property_loader), processes=[], active=False, ownership_closed=True, complete=False, passed=False,
         GPU_executed=False, model_executed=False, inference_adopted=False,
         ordinary_runtime_teardown_qualified=False, physical262144_model_qualified=False,
         budgets=dict(wall=180, cpu=600, rss_cap=4 << 30, text_cap=8 << 20, file_cap=8 << 20, total_cap=64 << 20),
@@ -119,7 +122,9 @@ def current(row):
     require(built['binaries'] == row['binaries'] and built['source_commit'] == row['native_source_commit'],
             'official native generation changed')
     require(inputs.sources(row['source_commit'], Path(__file__).resolve()) == row['inputs'], 'component controller changed')
-    require(row['cases'] == cases(row['environment']['STRATA_UR_PROBE_EXPECTED_LOADER']), 'component case plan changed')
+    require(row['runtime_files'].get(row['property_loader']['path']) == row['property_loader']['sha256'] and
+            digest(row['property_loader']['path']) == row['property_loader']['sha256'], 'Level Zero property loader changed')
+    require(row['cases'] == cases(row['property_loader']['path']), 'component case plan changed')
     require(digest(runtime.RESULT) == row['runtime_basis_sha256'], 'runtime proof changed')
     require(digest(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
             json.loads(Path(row['runtime_manifest']['path']).read_text()) == row['runtime_files'] and

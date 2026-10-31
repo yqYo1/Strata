@@ -47171,7 +47171,7 @@
     }
   },
   "official_prefill_device_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "e51ba47381da0604e1df3eb46bb82c5ab29f357c",
     "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
     "native_build_commit": "fcad66e1a",
@@ -47388,12 +47388,23 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "host_only": true
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "complete": false,
     "passed": false,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "ordinary_runtime_teardown_qualified": false,
@@ -47409,6 +47420,21 @@
     "whole_bytes": 67108864,
     "whole_wall_seconds": 900,
     "criteria": "13ordered fresh owned processes,stop first failure. Exact source/ELF/providers and immutable environment,pre-main parameter validation,quiet warnings,no new fault. Traced tiny Top-k off/on, 32dyadic matrix cases,26admission guards,64ordinary public GU calls in16call groups,public GU threshold cases and original split-Down route;then145Top-k numerical cases per off/on process with warning-only logging. Never2048call batch. Same-build component checks only;MoE8job production-loop progress,model speed,decode/handoff,task and physical full context remain separate.",
-    "retention": "Retain compact individual outcomes/case counts and source/native identity. Successful full API traces,JIT and polling output retire after verification. Seven candidate binaries remain only for imminent production/model comparison;selected6e40+12fixtures remain untouched."
+    "retention": "Retain compact individual outcomes/case counts and source/native identity. Successful full API traces,JIT and polling output retire after verification. Seven candidate binaries remain only for imminent production/model comparison;selected6e40+12fixtures remain untouched.",
+    "fresh_faults": [],
+    "observed_provider_count": 0,
+    "error": "RuntimeError('native process failed: Topk-properties')",
+    "failure_analysis": {
+      "stage": "fixture_property_API_lookup_before_kernel_submission",
+      "cause": "Main passed official UR loader to the fixture Level Zero zeKernelGetProperties dlsym argument. Expected libze_loader.so.*,not libur_loader.so.0.",
+      "stdout": "COMPARATOR refusals=3 identity=PASS;before-runtime and runtime-ready gates passed;B570 enumerated.",
+      "stderr": "FAIL topk=kernel property API absent",
+      "UR_kernel_enqueue_calls": 0,
+      "UR_validation_warning_bytes": 0,
+      "owners": "hostcanary exit0;property process exit1;both reaped with empty sessions,no cleanup error.",
+      "fresh_driver_faults": [],
+      "native_build_changed": false,
+      "next": "New V2cohort uses separately pinned Level Zero property loader and host refusal of UR-loader substitution. Preserve original V1failure,no retry under V1identity."
+    }
   }
 }
