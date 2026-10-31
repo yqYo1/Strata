@@ -50,6 +50,7 @@
 #include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
+#include "strata/kernels/qsa_topk_prefill_early.hpp"
 #include "strata/kernels/mrope.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
@@ -2900,9 +2901,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                                               m.max_blocks, s, m.sel_scores, m.cs, active);
                         }
 #if defined(STRATA_ENABLE_SYCL)
-                        if (m.layer_major_active)
-                            strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
-                                                            m.sel_ids + t0 * m.cap, m.cs, active);
+                        if (m.layer_major_active) {
+                            const auto topk = strata::kernels::qsa_prefill_topk_early_enabled()
+                                ? strata::kernels::qsa_block_topk_prefill_early
+                                : strata::kernels::qsa_block_topk_prefill;
+                            topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                 m.sel_ids + t0 * m.cap, m.cs, active);
+                        }
                         else
 #endif
                         strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
@@ -2953,9 +2958,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             strata::kernels::qsa_block_scores(pooled16, dead16, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs);
 #if defined(STRATA_ENABLE_SYCL)
-                            if (m.layer_major_active)
-                                strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
-                                                                ids16 + t0 * m.cap, m.cs);
+                            if (m.layer_major_active) {
+                                const auto topk = strata::kernels::qsa_prefill_topk_early_enabled()
+                                    ? strata::kernels::qsa_block_topk_prefill_early
+                                    : strata::kernels::qsa_block_topk_prefill;
+                                topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                     ids16 + t0 * m.cap, m.cs, -1);
+                            }
                             else
 #endif
                             strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,

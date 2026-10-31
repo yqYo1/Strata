@@ -141,3 +141,42 @@ def proof():
         mechanism='Stop at complete selected bucket,or recover the full unique positive-weight block key when bucket weight<=4. The latter preserves partial-cell budgets. Both branches are WG-uniform.',
         counter_scope='Capture=true records0for uniform early returns,otherwise actual1..8passes. Normal instantiations have no counter stores;capture/normal exact outputs need device checks.',
         generated_sha256={k: hashlib.sha256(v).hexdigest() for k, v in generated().items()})
+
+
+def prefill_proof():
+    """Match the new route to the qualified normal Mapping1 body,not its policy.
+
+    Reversing the six diagnostic edits recovers the selected original;only
+    STOP is kept. Specialization drops Mapping0/2 dead code and renames the
+    helper. Source equivalence does not qualify a different public entry/ELF.
+    """
+    validate, order, original, spans = parts()
+    qualified = generated()['candidate.cpp']
+    if hashlib.sha256(qualified).hexdigest() != 'd876dc0c6653883ae540db03139cba07f35bb2239eca463ddfa8f28ee20d0529':
+        raise ValueError('qualified candidate source changed')
+    restored = once(body(True), STOP, '')
+    for old, new in reversed(COMMON):
+        restored = once(restored, new, old)
+    if restored != original:
+        raise ValueError('qualified normal/counter reversal differs')
+    candidate = once(restored, '            mask |= 15u << shift;\n',
+                     '            mask |= 15u << shift;\n' + STOP)
+    first = candidate.index('        if constexpr (Mapping == 1) {')
+    last = candidate.index('        int gt = 0, eq = 0;', first)
+    selection = candidate[first:last]
+    specialization = once(selection[:selection.index('        } else {')] + '        }\n',
+                          '        if constexpr (Mapping == 1) {', '        {')
+    expected = candidate[:first] + specialization + candidate[last:]
+    expected = once(expected, 'template <int Mapping>\nsycl::event submit_topk(',
+                    'sycl::event submit_topk_prefill_early(')
+    path = P / 'src/kernels/sycl/qsa_topk_prefill_early.cpp'
+    actual = path.read_text()
+    kernel = section(actual, 'sycl::event submit_topk_prefill_early(', '\nint64_t validate_topk(')
+    if kernel != expected or any(actual.count(part) != 1 for part in (validate, order, spans)):
+        raise ValueError('prefill kernel/validation differs from qualified source')
+    return dict(qualified_source_commit='44636e26cd45820d3c4714a7cf91f5646670db1b',
+        qualified_generated_candidate_sha256=hashlib.sha256(qualified).hexdigest(),
+        production_kernel_body_sha256=hashlib.sha256(kernel.encode()).hexdigest(),
+        original_decode_source_unchanged=True, instrumented_counter_edits_removed=len(COMMON),
+        scope='Kernel body/validation specialization only;policy,routing,public entry,ELF and model/decode gates remain unqualified.',
+        production_entry_GPU_qualified=False)

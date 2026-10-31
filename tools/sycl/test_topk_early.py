@@ -69,6 +69,15 @@ def radix_model(scores, n, width, early):
 
 
 class EarlyCompletion(unittest.TestCase):
+    def test_prefill_body_matches_qualified_candidate(self):
+        proof = source.prefill_proof()
+        self.assertEqual(proof['qualified_generated_candidate_sha256'],
+                         'd876dc0c6653883ae540db03139cba07f35bb2239eca463ddfa8f28ee20d0529')
+        self.assertEqual(proof['production_kernel_body_sha256'],
+                         '6099f622994c9da2a4f42dba7d4f4ccbcf711eec4d70d23e93a5dd091eafec61')
+        self.assertTrue(proof['original_decode_source_unchanged'])
+        self.assertFalse(proof['production_entry_GPU_qualified'])
+
     def test_constructor_reverses(self):
         proof = source.proof()
         self.assertEqual(proof['reversible_selection_edits'], 1)

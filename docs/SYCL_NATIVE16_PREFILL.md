@@ -18,6 +18,14 @@ unresolved. Pin one chosen source and bounded public-GU progress/provider gate
 before a small model entrypoint,then long-input measurements. Existing64call
 GUand22GEMM passes do not establish avoidance of the older2048call stall.
 
+The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
+exact-completion Top-k kernel only in layer-major prefill. It defaults off,
+requires `STRATA_SYCL_SELECT_RADIX4=1` and excludes the cyclic selection arm.
+Its body specializes the private component qualified in `1a752d9a3` without
+counter instrumentation; public-entry, whole-engine and decode-handoff
+qualification remain pending. Neither retained engine contains this new route.
+The original selector source and small-input/decode calls remain unchanged.
+
 Prefill and decode have independently selected kernels, scheduling and placement.
 Keep the existing decode implementation, configuration and1256 expert slots
 while changing prefill. Any decode impact from a prefill change is a separation
