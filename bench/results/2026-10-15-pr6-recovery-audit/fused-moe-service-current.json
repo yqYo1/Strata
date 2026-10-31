@@ -58686,7 +58686,7 @@
     }
   },
   "official_prefill_strategies_build_v2": {
-    "stage": "pending-attestation",
+    "stage": "built-not-executed",
     "source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
     "implementation_commit": "271333f64af10e088897753e142dd600c1aad3d4",
     "source_basis": {
@@ -59080,7 +59080,7 @@
     "whole_wall_seconds": 3600,
     "active": false,
     "ownership_closed": true,
-    "passed": false,
+    "passed": true,
     "GPU_executed": false,
     "inference_adopted": false,
     "model_qualified": false,
@@ -59160,6 +59160,221 @@
       }
     },
     "attestation_plan": "CPU-only replay of complete actual compiler/link input and five production/fixture option attestations. Filter external dependency commands before project-relative path conversion. Frozen555native inputs,recipe,eight ELFs,dependency output and database must match;no recompilation or GPU execution. Original V1failure receipt stays unchanged. Stop on first mismatch;no hash refresh.",
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/compiler-inputs.json",
+      "sha256": "f762fef3573df881575b248325416dca803353cc52189f501aa858725996a883",
+      "files": 1449
+    },
+    "compile_command_attestation": {
+      "database_sha256": "d3f7ecfaa4eae9319111de9fbbe83faa91e72ee8a87bfc55be9d11e7a2bb723a",
+      "units": [
+        {
+          "source": "src/kernels/sycl/fused_gdn.cpp",
+          "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/fused_gdn.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fno-fast-math",
+            "-ffp-contract=off"
+          ],
+          "argv_sha256": "90a749ae2702b5f7b986eb309b9f1aebc15fbba0adfe3620100c3712944fcd60"
+        },
+        {
+          "source": "bench/sycl/gdn_columns.cpp",
+          "output": "CMakeFiles/sycl_gdn_columns_bench.dir/bench/sycl/gdn_columns.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fno-fast-math",
+            "-ffp-contract=off"
+          ],
+          "argv_sha256": "8142429682d2a9b1430a92087ac430931a508b8907e81b3daf94f8cdf2b9e8f0"
+        },
+        {
+          "source": "src/kernels/sycl/fused_gdn.cpp",
+          "output": "CMakeFiles/sycl_gdn_columns_bench.dir/src/kernels/sycl/fused_gdn.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fno-fast-math",
+            "-ffp-contract=off"
+          ],
+          "argv_sha256": "51d6a978eb9ac6b90c079276109236ecd95ad99b690c4a4a1036d1152fa6c914"
+        },
+        {
+          "source": "src/prefill/prefill.cpp",
+          "output": "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fno-fast-math",
+            "-ffp-contract=off"
+          ],
+          "argv_sha256": "fcaa48c1baf80a62059d87b0c76dfa5055c1e0bc569b5ff9d0b33cef3f2fbfad"
+        },
+        {
+          "source": "src/program/generate.cpp",
+          "output": "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "argv_sha256": "297b171ae0aa3cca0007ed6de0e1bc06d564efc9e181cc99556133f6ea70bd72"
+        }
+      ]
+    },
+    "actual_link_inputs": {
+      "frozen_inputs": {
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-devicelib-host.a": "770b0944b181690a21d78a0cb2e1d091d38b3caa209e185e276a943dea7bd8e9",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5"
+      },
+      "owned_build_or_compiler_products": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/ggml/src/libggml-base.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/ggml/src/libggml-cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/libstrata_core.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/libstrata_kernels.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/libstrata_kernels_cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/libstrata_spec.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/libstrata_sycl_runtime.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-1c0b3b6d75/strata_vllm_xe2_host-31e549.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-1c0b3b6d75/strata_vllm_xe2_host-d18ea3.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-1c0b3b6d75/strata_vllm_xe2_image-45bbc9.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-1c0b3b6d75/strata_vllm_xe2_image-6e1ecb.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-1c0b3b6d75/sycl_vllm_native16_test-wrapper-065b1c.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-1c0b3b6d75/vllm_native16-0c5918.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-1c0b3b6d75/vllm_native16-3839bc.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2c79f65064/moe_down_scatter-65c0b4.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2c79f65064/moe_down_scatter-961061.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2c79f65064/strata_vllm_xe2_host-28554c.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2c79f65064/strata_vllm_xe2_host-60e44b.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2c79f65064/strata_vllm_xe2_image-037e8b.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2c79f65064/strata_vllm_xe2_image-4fa7f4.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2c79f65064/sycl_moe_down_scatter_bench-wrapper-8fdbdf.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2e0d74c947/qsa_topk_prefill_entry-6d78a6.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2e0d74c947/qsa_topk_prefill_entry-c47a84.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-2e0d74c947/sycl_qsa_topk_prefill_entry_test-wrapper-94e7b1.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-3911edb5d6/moe_accum-146129.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-3911edb5d6/moe_accum-e226c7.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-3911edb5d6/strata_vllm_xe2_host-a928c5.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-3911edb5d6/strata_vllm_xe2_host-c6dd6f.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-3911edb5d6/strata_vllm_xe2_image-7df95b.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-3911edb5d6/strata_vllm_xe2_image-a97cf3.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-3911edb5d6/sycl_moe_accum_test-wrapper-e8dc36.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/dense_prefill_nll-4c9eea.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/dense_prefill_nll-dcb011.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/generate-597eb0.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/generate-795869.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/strata-wrapper-d5c603.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/strata_vllm_xe2_host-3e356a.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/strata_vllm_xe2_host-73a34c.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/strata_vllm_xe2_image-27c3c6.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-74d25c9159/strata_vllm_xe2_image-34d338.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-bd7b6057ea/fused_gdn-1172a3.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-bd7b6057ea/fused_gdn-1c08fb.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-bd7b6057ea/gdn_columns-811d47.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-bd7b6057ea/gdn_columns-889673.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-bd7b6057ea/sycl_gdn_columns_bench-wrapper-508bc6.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-d0ee462309/moe_gu_swiglu-4e4477.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-d0ee462309/moe_gu_swiglu-d0efa2.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-d0ee462309/strata_vllm_xe2_host-8628fa.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-d0ee462309/strata_vllm_xe2_host-be299c.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-d0ee462309/strata_vllm_xe2_image-805a84.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-d0ee462309/strata_vllm_xe2_image-fb9190.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-d0ee462309/sycl_moe_gu_swiglu_bench-wrapper-76ff1e.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-f95fe14fc6/compat-827a9f.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-f95fe14fc6/compat-bac607.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/tmp/icpx-f95fe14fc6/sycl_submission_test-wrapper-433b41.o"
+      ],
+      "uncovered_external_inputs": 0,
+      "scope": "Observed GNU ld -t input paths;private generated objects are owned outputs,not external source evidence."
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/strata",
+        "sha256": "2bcad061b8e7eaae8a15d0775a4d03f3c2c33fcdd76631399764e08bbe4d170f",
+        "bytes": 23994384
+      },
+      "sycl_qsa_topk_prefill_entry_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/sycl_qsa_topk_prefill_entry_test",
+        "sha256": "4ba024ef4386be7192ffd78624c4f6aeee9d7ccd43f16f37b5ff893d0a60fbe0",
+        "bytes": 316784
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/sycl_submission_test",
+        "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+        "bytes": 343384
+      },
+      "sycl_vllm_native16_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/sycl_vllm_native16_test",
+        "sha256": "d1b28549a77c8ed457130477a8d6ec2a99957d8e6ebc1a55e797c4718d4ef4db",
+        "bytes": 2452528
+      },
+      "sycl_moe_gu_swiglu_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/sycl_moe_gu_swiglu_bench",
+        "sha256": "789e987d711ea2580bc8e480ea056c0724f8f6ef24119bfd9575ddc116d0d076",
+        "bytes": 13836784
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "e5d7be2953ba68c6e3ddc55c02d39f5653d38d2cc9354fa43cf6ab0544755145",
+        "bytes": 13857592
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/sycl_moe_accum_test",
+        "sha256": "e93b9b0d50e357acc928c01b8dd7e6bcd0d38655b5d4f5994b04bf26ff762839",
+        "bytes": 3055560
+      },
+      "sycl_gdn_columns_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/sycl_gdn_columns_bench",
+        "sha256": "027ff68ce07e78c084ea615f8e94fe16e04438013fed74bf5c73bd2be7693f7b",
+        "bytes": 368320
+      }
+    },
+    "attestation_replayed_without_recompile": true,
     "controller_inputs": {
       "files": 37,
       "aggregate_sha256": "79c57baa45b23d984d85eb798588cca64bdefcbe00e2a2ae5ee99b865769e5b9"

@@ -23,7 +23,11 @@ an external GGML source path against the project root. This is a controller
 metadata defect;no candidate GPU execution occurred. Preserve the failed
 `official_prefill_strategies_build_v1` receipt,then pin a controller-only
 attestation-recovery plan with unchanged native sources,recipe and ELF bytes.
-Fresh qualification remains pending. Fourteen older
+The separate `official_prefill_strategies_build_v2` attestation now passes with
+unchanged555native source files,recipe and eight ELF hashes. Its controller-only
+admission revision is55a2fd578;native build source remainsf6cea2f63 and the
+original V1failure remains failed. No recompilation or GPU validation is implied.
+Fresh CLI/device and model qualification remain pending. Fourteen older
 provenance holds remain independent. No new legacy-compiler build runs.
 
 The first official2026.2replacement used
