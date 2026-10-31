@@ -18693,53 +18693,38 @@
   "bmg_sysfs_execution_context_20261031": {
     "classification": "decision_support",
     "question": "Interpret readable B570 Xe sysfs clocks,temperature and energy domains and propose a bounded load-time context protocol without extra LevelZero clients.",
-    "status": "source_report_received_native_review_pending",
+    "status": "reviewed_actionable_conditional_sampler",
     "schedulable_now": false,
-    "prerequisites": {
-      "actual_readable_nodes": true,
-      "observed_after_closed_process": 8,
-      "sysfs_name": "xe",
-      "frequency_domains": [
-        "gt0",
-        "gt1"
-      ],
-      "energy_labels": [
-        "card",
-        "pkg"
-      ],
-      "temperature_labels": [
-        "pkg",
-        "vram"
-      ],
-      "xpu_smi_matching_domains_unavailable": true,
-      "load_time_measurement": false,
-      "source_semantics_unresolved": true
-    },
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-10-31/bmg_sysfs_execution_context_20261031.md",
-    "report_budget_bytes": 24576,
-    "rules_commit": "3b24ce754ae831e2af5408c8b5df20540e072bdc",
-    "prior_scope_exclusions": [
-      "b570_pcie_hierarchy_capability_scope",
-      "bmg_metric_collection_contract_20261030",
-      "bmg_metric_pool_refusal_20261030",
-      "native16_physical_scratch_20261031"
-    ],
-    "main_reads_original_on_arrival": false,
-    "next_review": "Native Luna max review;Main reads only short digest and retires dispatch/spec paperwork at the next serialized closure.",
-    "orca_run": "run_4096847f7211",
-    "orca_task": "task_cf2fe1a4cd10",
-    "orca_dispatch": "ctx_a2a980b18483",
-    "orca_terminal": "term_01c973e0-b7a8-4eff-8437-a98df3ff33b3",
-    "model_verified_before_task": "GPT-6-Luna high",
-    "startup_failed_dispatch": "ctx_b3a282fca04d",
-    "startup_failure": "agent-update-prompt before Task delivery;visible escape-skip cleared;retry uses same Task and verified terminal",
-    "spec_sha256": "39cd108f3c958de4a5a8af98fd85ba7bb92fa6353b2c0ac8b53e3a48f14c03bf",
     "report_bytes": 16053,
     "report_sha256": "f13ef3c0659a28cce19dcb4a20dadf0b61d31f0f2ba51fc09930c0aee7b58842",
-    "worker_done_identity_verified": true,
+    "review_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-10-31/review_bmg_sysfs_execution_context_20261031.md",
+    "review_bytes": 5868,
+    "review_sha256": "29af96f7a779fb2ba4b3ac5a9ca7ee04f1870e915d737f3025a48c55b8c0178b",
+    "source_report_origin": "Orca gpt-6-luna high;source-only decision support",
+    "review_model": "native gpt-6-luna max",
     "worker_closed": true,
-    "orca_release_state": "released",
-    "orca_delivery_acknowledged": "delivery_cb4d355ab424",
-    "native_review_task": "/root/review_bmg_sysfs_execution_context_20261031"
+    "main_reads_original_on_arrival": false,
+    "main_retrieval": {
+      "question": "Assess whether the proposed sampler belongs in the imminent117K resource pair.",
+      "sections": [
+        "Read side effects and observer limits",
+        "Bounded future protocol",
+        "Primary versioned references"
+      ]
+    },
+    "digest": [
+      "1Hz points support unweighted sample distribution and zero-sample count/fraction,not time at zero or a time-weighted distribution. Temperature update cadence is unknown.",
+      "Upstream Linux6.18supports cited semantics;the installed Ubuntu7.0build remains unmatched. cur_freq has force-wake in that source;do not add it to a polling loop.",
+      "Readable sensor nodes are context clues,not utilization,saturation or causal evidence;no busy-load sensor data or sampler qualification exists."
+    ],
+    "implementation_decision": "Keep the imminent native CPU/coarse-phase observer pair unchanged. Consider an extra sampler only for an unresolved concrete variation question under its own committed bounded observer comparison.",
+    "next_prerequisites": [
+      "frozen cohort closed",
+      "concrete unresolved variation question",
+      "committed bounded sampler and observer comparison"
+    ],
+    "retention_consumer": "Potential one bounded load-context comparison;review after the first CPU/coarse-resource pair decision and retire report/review if superseded.",
+    "paperwork_next_action": "Retire closed spec/start/retry/completion files with process9raw at this serialized boundary;history already preserves the compact dispatch receipt."
   }
 }

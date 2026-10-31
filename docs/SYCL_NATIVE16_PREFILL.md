@@ -98,7 +98,7 @@ screen separately requires all three candidate process medians at that length.
 The117K control may retain its legitimate512-slot/RAM-tail fallback;the candidate
 must admit all117488GPU rows and checked split storage. This is a new capacity
 question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
-the compact result. Nine processes close normally without fresh faults. Each
+the compact result. Ten processes close normally without fresh faults. Each
 table cell uses its process's subsequent-three median;first-use and all
 individual samples remain in the compact result.
 
@@ -106,14 +106,16 @@ individual samples remain in the compact result.
 | --- | --- | --- | --- | --- | --- |
 | 117489 | 1 | 967.4 | 728.2 | 0.75280023 | 121.630 / 161.518 |
 | 117489 | 2,reverse order | 968.2 | 733.4 | 0.75754313 | 121.523 / 160.366 |
-| 117489 | 3,control pending | 908.2 | pending | pending | 129.664 / pending |
+| 117489 | 3 | 908.2 | 673.9 | 0.74198251 | 129.664 / 174.580 |
 | 65537 | 1 | 869.9 | 878.8 | 1.01017066 | 75.480 / 74.722 |
 | 65537 | 2,reverse order | 795.0 | 880.4 | 1.10739703 | 82.677 / 74.591 |
 
 All three117K head-on processes admit117488GPU rows,128staged slots and checked split
-storage in all requests. The two completed control processes use81920GPU rows first,73728
+storage in all requests. All three control processes use81920GPU rows first,73728
 later,512ordinary slots and728432640/896204800RAM residual bytes. The paired
-throughput improvements are32.84%and32.01%. At64K both arms have65536GPU rows,
+throughput improvements are32.84%,32.01%and34.77%;the geometric-mean prompt-time
+ratio is0.75074698. All three117K ratios meet that length's prospective mechanism
+screen,but the complete twelve-process decision remains pending. At64K both arms have65536GPU rows,
 384staged slots,no RAM residual and matching job counts and requested expert-bank/
 routing-index transfer bytes. Request hashes match at both lengths.
 The engine prompt clock encloses joint head retirement/restore and the final
@@ -125,8 +127,10 @@ second64K head-on process has median82438.4ms,10.74%longer than its control;
 its slower samples remain eligible original outcomes,without a noise exemption.
 The third117K candidate median is129367.1ms;its jobs and requested transfer
 counts match the earlier candidate requests. Its lower throughput is retained
-without an attribution to noise or clock/thermal behavior. Three further processes still run under
-the frozen no-speed-based-stop plan;the117K mechanism decision remains open.
+without an attribution to noise or clock/thermal behavior. Its control median
+is174353.3ms. Both arms are slower than their earlier processes;the paired gain
+does not resolve that absolute variation. Two further64K processes still run
+under the frozen no-speed-based-stop plan.
 The candidate is unadopted. This does not
 identify physical PCIe/VRAM/arithmetic saturation or attribute the64K difference
 solely to head-copy cost.
@@ -156,9 +160,13 @@ A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
 temperature and energy counters,while xpu-smi reports some corresponding
 domains unavailable. These are capability/idle observations,not load-time
 evidence or a cause of the speed spread. The prospective source-only
-`bmg_sysfs_execution_context_20261031` scope compares counter semantics and a
-bounded sampling protocol;it does not repeat the PCIe-hierarchy or metric-pool
-surveys,change system settings or qualify hardware saturation.
+`bmg_sysfs_execution_context_20261031` report and independent Luna max review
+are complete. The review accepts it with corrections:1Hz points give an
+unweighted sample distribution,not time at zero or a time-weighted distribution;
+temperature update cadence is unknown. Linux6.18source semantics do not prove
+the installed Ubuntu7.0implementation. Keep the first CPU/coarse-resource pair
+unchanged;an extra sampler needs its own committed observer comparison if a
+concrete variation question remains. No load-time sensor data is qualified.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found
