@@ -59,7 +59,7 @@ def save(row):
 
 
 def proof():
-    gate=build.committed(RESULT)[component.KEY]
+    gate=json.loads((component.ROOT/'record.json').read_text())
     built,_,files=component.current(gate)
     require(gate['passed'] and gate['complete'] and gate['ownership_closed'] and not gate['active']
             and gate['fresh_faults']==[] and len(gate['processes'])==21
