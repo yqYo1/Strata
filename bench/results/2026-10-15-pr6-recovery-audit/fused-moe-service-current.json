@@ -47436,5 +47436,256 @@
       "native_build_changed": false,
       "next": "New V2cohort uses separately pinned Level Zero property loader and host refusal of UR-loader substitution. Preserve original V1failure,no retry under V1identity."
     }
+  },
+  "official_prefill_device_v2": {
+    "stage": "closed-unexecuted-controller-correction",
+    "source_commit": "d259f0f503dc7f5e815705ae35c3cb0519982fe0",
+    "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
+    "native_build_commit": "fcad66e1a",
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/strata",
+        "sha256": "152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354",
+        "bytes": 23981736
+      },
+      "sycl_qsa_topk_prefill_entry_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/sycl_qsa_topk_prefill_entry_test",
+        "sha256": "4ba024ef4386be7192ffd78624c4f6aeee9d7ccd43f16f37b5ff893d0a60fbe0",
+        "bytes": 316784
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/sycl_submission_test",
+        "sha256": "f91b841c8191c94d37f7066a46d5b212a9e35055e77878cbc91c83136f5ebacd",
+        "bytes": 343000
+      },
+      "sycl_vllm_native16_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/sycl_vllm_native16_test",
+        "sha256": "d1b28549a77c8ed457130477a8d6ec2a99957d8e6ebc1a55e797c4718d4ef4db",
+        "bytes": 2452528
+      },
+      "sycl_moe_gu_swiglu_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/sycl_moe_gu_swiglu_bench",
+        "sha256": "789e987d711ea2580bc8e480ea056c0724f8f6ef24119bfd9575ddc116d0d076",
+        "bytes": 13836784
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "e5d7be2953ba68c6e3ddc55c02d39f5653d38d2cc9354fa43cf6ab0544755145",
+        "bytes": 13857592
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/sycl_moe_accum_test",
+        "sha256": "e93b9b0d50e357acc928c01b8dd7e6bcd0d38655b5d4f5994b04bf26ff762839",
+        "bytes": 3055560
+      }
+    },
+    "canary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+      "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/component-checks-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "runtime_basis_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "property_loader": {
+      "path": "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0",
+      "sha256": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363"
+    },
+    "cases": [
+      {
+        "name": "host-canary",
+        "target": null,
+        "args": [],
+        "trace": true
+      },
+      {
+        "name": "Topk-properties",
+        "target": "sycl_qsa_topk_prefill_entry_test",
+        "args": [
+          "--properties",
+          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
+        ],
+        "trace": true
+      },
+      {
+        "name": "Topk-smoke0",
+        "target": "sycl_qsa_topk_prefill_entry_test",
+        "args": [
+          "--smoke"
+        ],
+        "topk": 0,
+        "trace": true
+      },
+      {
+        "name": "Topk-smoke1",
+        "target": "sycl_qsa_topk_prefill_entry_test",
+        "args": [
+          "--smoke"
+        ],
+        "topk": 1,
+        "trace": true
+      },
+      {
+        "name": "submission",
+        "target": "sycl_submission_test",
+        "args": [
+          "--submission"
+        ],
+        "trace": true
+      },
+      {
+        "name": "native16-smoke",
+        "target": "sycl_vllm_native16_test",
+        "args": [
+          "--device",
+          "0",
+          "--suite",
+          "smoke"
+        ],
+        "trace": true
+      },
+      {
+        "name": "native16-guards",
+        "target": "sycl_vllm_native16_test",
+        "args": [
+          "--device",
+          "0",
+          "--suite",
+          "guards"
+        ],
+        "trace": true
+      },
+      {
+        "name": "GU-progress",
+        "target": "sycl_moe_gu_swiglu_bench",
+        "args": [
+          "--progress-public",
+          "0"
+        ],
+        "gu_arm": 0,
+        "trace": true
+      },
+      {
+        "name": "GU-public0",
+        "target": "sycl_moe_gu_swiglu_bench",
+        "args": [
+          "--smoke-public",
+          "0"
+        ],
+        "gu_arm": 0,
+        "trace": true
+      },
+      {
+        "name": "GU-public1",
+        "target": "sycl_moe_gu_swiglu_bench",
+        "args": [
+          "--smoke-public",
+          "1"
+        ],
+        "gu_arm": 1,
+        "trace": true
+      },
+      {
+        "name": "Down-split-original",
+        "target": "sycl_moe_down_scatter_bench",
+        "args": [
+          "--split-route-smoke",
+          "1"
+        ],
+        "trace": true
+      },
+      {
+        "name": "Topk-numerics0",
+        "target": "sycl_qsa_topk_prefill_entry_test",
+        "args": [
+          "--numerics"
+        ],
+        "topk": 0,
+        "trace": false
+      },
+      {
+        "name": "Topk-numerics1",
+        "target": "sycl_qsa_topk_prefill_entry_test",
+        "args": [
+          "--numerics"
+        ],
+        "topk": 1,
+        "trace": false
+      }
+    ],
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "complete": false,
+    "passed": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "physical262144_model_qualified": false,
+    "budgets": {
+      "wall": 180,
+      "cpu": 600,
+      "rss_cap": 4294967296,
+      "text_cap": 8388608,
+      "file_cap": 8388608,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 67108864,
+    "whole_wall_seconds": 900,
+    "criteria": "13ordered fresh owned processes,stop first failure. Exact source/ELF/providers and immutable environment,pre-main parameter validation,quiet warnings,no new fault. Traced tiny Top-k off/on, 32dyadic matrix cases,26admission guards,64ordinary public GU calls in16call groups,public GU threshold cases and original split-Down route;then145Top-k numerical cases per off/on process with warning-only logging. Never2048call batch. Same-build component checks only;MoE8job production-loop progress,model speed,decode/handoff,task and physical full context remain separate.",
+    "retention": "Retain compact individual outcomes/case counts and source/native identity. Successful full API traces,JIT and polling output retire after verification. Seven candidate binaries remain only for imminent production/model comparison;selected6e40+12fixtures remain untouched.",
+    "closure": {
+      "original_stage": "prepared",
+      "no_native_process_launched": true,
+      "reason": "Before execution Main found GU stage analyzer incorrectly required flat enter/return order despite nested reference.prepare/queue.drain stages. Replace with unique sequence IDs,balanced stack and per-pair metadata/time checks in prospective V3. Cases,64call bound,numerical/fault thresholds and seven native ELFs unchanged.",
+      "original_prepared_record_sha256": "bcb24881668b35b279ebcce8e7dc9bce1b74159ad0fe8d68e6350b6cce903150"
+    }
   }
 }
