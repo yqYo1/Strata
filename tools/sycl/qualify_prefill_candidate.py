@@ -22,7 +22,7 @@ import measure_gdn_scheduling as gdn
 import runtime_probe as runtime
 
 P,B,RESULT=build.P,build.B,build.RESULT
-ROOT,KEY=build.ROOT/'device-checks-v1','official_prefill_strategies_device_v1'
+ROOT,KEY=build.ROOT/'device-checks-v2','official_prefill_strategies_device_v2'
 require,digest,write=build.require,build.digest,build.write
 
 
@@ -98,6 +98,7 @@ def current(row):
 
 def run():
     row=json.loads((ROOT/'record.json').read_text());native,allowed,providers=current(row)
+    frozen_plan=copy.deepcopy(row)
     require(row['stage']=='prepared' and not (ROOT/'owned').exists(),'one fresh cohort only')
     cursor=next(s.split(': ',1)[1] for s in subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if s.startswith('-- cursor: '))
     deadline=time.monotonic()+row['whole_wall_seconds'];owner=None;active_case=None
@@ -166,7 +167,7 @@ def run():
             row['processes'].append(dict(name=case['name'],passed=True,ownership_closed=True,native_exit_code=entry['exit_code'],
                 pre_main_parameter_validation=True,quiet_final_validation=True,gates=gates,details=details))
             persist();print('Passed '+case['name'],flush=True)
-        current(row)
+        current(frozen_plan)
         row.update(stage='closed',complete=True,host_probe_accepted=True,GPU_executed=True)
     except BaseException as error:row.update(stage='failed',complete=False,error=repr(error),failed_case=active_case,host_probe_accepted=False)
     finally:
