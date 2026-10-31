@@ -46074,7 +46074,7 @@
     }
   },
   "qsa_topk_prefill_entry_v1": {
-    "stage": "built",
+    "stage": "source-admission-refused-before-device",
     "source_commit": "b1b69dba923d71f58d88d0aba0d64df205fa23b6",
     "inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/topk-prefill-entry-v1/inputs.json",
@@ -46799,11 +46799,17 @@
       "scope": "Five exact-rank/source-bridge controls and five public-entry negative controls:missing/duplicate/wrong extent or absent API/guard checks,invalid-policy-as-disabled,wrong actual dispatch/kernel,pre-exec environment isolation and timing-data refusal. No native compilation/GPU execution."
     },
     "source_review": {
-      "stage": "awaiting-native-report-and-fixture-review",
+      "stage": "bounded-execution-refused",
       "bounded_execution_accepted": false,
       "report_sha256": "ce273fd0a1864f4170eedc7a73abcd0e61ee00ba2beaa2714a9da37bf7fd0cd1",
       "report_bytes": 7386,
-      "scope": "Orca source audit covers frozen production integration atc3c36ec58. Native Luna/max must also review the new public-entry fixture/controller and committed plan atb1b69dba9 before GPU execution."
+      "scope": "Orca source audit covers frozen production integration atc3c36ec58. Native Luna/max must also review the new public-entry fixture/controller and committed plan atb1b69dba9 before GPU execution.",
+      "review_sha256": "98efaa588af385374892b5b579c999207417b6c88a322afc2eaffac1dc236cc0",
+      "review_bytes": 8967,
+      "reviewer": "native Codex gpt-6-luna/max",
+      "source_verdict": "accepted",
+      "blocker": "stdout/stderr16MiB cap did not cover UR trace/validation files;old total ROOT artifact ceiling256MiB was too broad for the default raw-text budget. No GPU process launched.",
+      "disputed_finding": "The report also conflated r.RESULT with this controller RESULT. Actual aliases resolve r via build_fused_profile.runtime_probe;runtime_probe.py:26 points to runtime-requalification-current.json. Original V1prepare and all7build commands/post-build verification succeeded. Native follow-up must correct that finding;do not treat it as a runtime or build failure."
     },
     "build_passed": true,
     "binary": {
@@ -46824,6 +46830,13 @@
       "uncovered": 0
     },
     "build_scope": "Fresh official2026.2 build:all7compile/link commands closed;all6actual native sources compiled with strict FP flags and observed dependency/link closure. No generated private kernel,legacy SDK,ELF reuse or GPU qualification.",
-    "GPU_executed": false
+    "GPU_executed": false,
+    "complete": false,
+    "inference_adopted": false,
+    "next_action": "Recover exact original inputs fromb1b69dba9/planbf5388049/build2dd2bd151;retire this closed unexecuted fixture before fresh official V2 with8MiBper-file and32MiB whole-root cap. Native source/recipe changes and new GPU execution are not inferred.",
+    "retirement": {
+      "complete": false,
+      "consumer": "Exact original source/recipe recovery and deletion;no future execution consumer."
+    }
   }
 }

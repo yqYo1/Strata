@@ -26,9 +26,12 @@ import host_link_inventory as host_link
 import relink_qsa_k_model as linking
 
 r,P,B=closure.r,closure.P,closure.B
+# runtime_probe.RESULT is the separate runtime-requalification-current.json,
+# not this controller's mutable fused-moe-service-current.json result.
+RUNTIME_RESULT=r.RESULT
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY='qsa_topk_prefill_entry_v1'
-ROOT=B/'topk-prefill-entry-v1'
+KEY='qsa_topk_prefill_entry_v2'
+ROOT=B/'topk-prefill-entry-v2'
 OFFICIAL=Path('/opt/intel/oneapi/compiler/2026.2')
 NATIVE=['src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','bench/sycl/topk_early.cpp',
     'src/kernels/sycl/qsa_select.cpp','src/kernels/sycl/qsa_topk_prefill_early.cpp']
@@ -36,7 +39,7 @@ FLAGS=['-std=c++20','-O3','-DNDEBUG','-g0','-fsycl','-fsycl-id-queries-range=siz
     '-fno-fast-math','-ffp-contract=off','-DSTRATA_ENABLE_SYCL=1','-pthread',
     '-I'+str(P/'include'),'-I'+str(P/'include/strata/sycl/compat')]
 BUILD_LIMITS=dict(wall=300,cpu=900,rss_cap=6<<30,text_cap=16<<20,file_cap=256<<20,total_cap=512<<20)
-RUN_LIMITS=dict(wall=180,cpu=300,rss_cap=4<<30,text_cap=16<<20,file_cap=64<<20,total_cap=256<<20)
+RUN_LIMITS=dict(wall=180,cpu=300,rss_cap=4<<30,text_cap=8<<20,file_cap=8<<20,total_cap=32<<20)
 require,digest,write=guards.require,supervision.sha,closure.write
 
 
@@ -82,7 +85,7 @@ def packages():
 
 
 def runtime():
-    rt=r.validation.committed(r.RESULT)
+    rt=r.validation.committed(RUNTIME_RESULT)
     require(rt['passed'] and rt['ownership_closed'] and not rt['active'] and not rt['fresh_faults'],
             'closed qualified runtime required')
     return rt,r.current(rt)
@@ -100,7 +103,7 @@ def commands():
 
 def verify(row):
     rt,full=runtime()
-    require(digest(r.RESULT)==row['runtime_sha256'] and full['binary']==row['selected_binary'],
+    require(digest(RUNTIME_RESULT)==row['runtime_sha256'] and full['binary']==row['selected_binary'],
             'Top-k runtime/fallback changed')
     require(guards.driver_guard()==row['driver'] and rt['boot']==row['boot'],'Top-k driver/boot changed')
     require(packages()==row['sdk']['packages'] and digest(row['sdk']['path'])==row['sdk']['sha256'],
@@ -194,6 +197,10 @@ def planned_cases(loader):
 
 def prepare(data):
     require(KEY not in data and not ROOT.exists(),'fresh public-entry scope only')
+    previous=data['qsa_topk_prefill_entry_v1']
+    require(previous['stage']=='source-admission-refused-before-device' and previous['ownership_closed'] and
+        not previous['active'] and not previous['GPU_executed'] and previous['retirement']['complete'],
+        'close and retire unexecuted first public-entry build before fresh V2')
     proposal=data['qsa_topk_prefill_route'];component=data['qsa_topk_early_component_v2']
     require(proposal['stage']=='source-bridge-passed' and proposal['host_attempts'][-1]['passed'] and
         generator.prefill_proof()==proposal['source_proof'],'closed exact production source bridge required')
@@ -225,7 +232,7 @@ def prepare(data):
         require(native_env.get(name)==value,'mandatory runtime safety key differs:'+name)
     loader=next(p for p in runtime_files if Path(p).name.startswith('libze_loader.so.'))
     row=dict(stage='prepared',source_commit=revision,inputs=dict(path=str(ROOT/'inputs.json'),sha256=digest(ROOT/'inputs.json')),
-        prefill_proof=generator.prefill_proof(),sdk=sdk,runtime_sha256=digest(r.RESULT),selected_binary=full['binary'],
+        prefill_proof=generator.prefill_proof(),sdk=sdk,runtime_sha256=digest(RUNTIME_RESULT),selected_binary=full['binary'],
         driver=guards.driver_guard(),boot=rt['boot'],runtime_files=runtime_files,preload=prior['preload'],
         host_link_inventory=inventory,commands=commands(),build_workdir=str(ROOT),build_environment=build_env,
         native_environment=native_env,cases=planned_cases(loader),build_limits=BUILD_LIMITS,run_limits=RUN_LIMITS,
@@ -233,6 +240,7 @@ def prepare(data):
         contract='Exact numeric per-cell oracle and ascending IDs;public prefill selection,unchanged decode/short API and ref API,twice each with explicit/default active capacity. Persistent host DMA owners and last-member fail-stop drain.',
         numerical_plan='One compiled dedicated-kernel property;9startup-policy cases in separate pre-exec environments;traced17cell/3query/cap5smoke for unset/off/on;145cases in EACH off/on process over18context endpoints x8patterns plus14mixed-invalid/zero rows.60host admission refusals across3public APIs per numerical process. Full262144extent is selector-only,not physical model qualification.',
         acceptance='Complete all16ordered cases with zero exit/no new fault/no validation warning and exact expected environment/provider/ELF at3gates per native process. Require actual tiny-trace kernel creation to match early on/off and numerical output/guards/inputs for all3APIs. No retries or omission. This is public-entry correctness/source admission only;no timing or whole-model/decode throughput claim.',
+        output_budget='8MiB combined stdout/stderr and8MiB per file;32MiB aggregate across the entire ROOT,including UR traces,validation logs,all16processes,objects and JIT cache. Owner polls artifact_bytes(self.output.parent) and rechecks at exit. Budget stop is incomplete. No64MiB-default override.',
         provenance='Main-authored from this fork\'s qualified44636e26c private controller/fixture and independent public APIs;repository LICENSE. Original build/environment basis519cd056a with immutable official SDK snapshot. No external implementation.',
         retention='One imminent small public-entry fixture executable,not a third engine. Preserve selected6e40/candidate9a79 for their named qualification. Keep compact per-process outcomes,case census/source/binary/faults;retire successful raw traces,objects and private fixture build after exact Git recovery at bridge closure. Ordinary UR/provider destruction remains unqualified under the retained-reference preload.')
     verify(row);data[KEY]=row;write(RESULT,data)
