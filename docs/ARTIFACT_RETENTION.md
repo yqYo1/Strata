@@ -101,7 +101,9 @@ spread, prefill time, client TTFT, sustained TG and MTP behavior when measured,
 plus configuration including the explicit prefill strategy when present,and
 qualification/decision. The CSV header defines the
 units. Leave an unavailable metric blank; a24-token prefill check does not
-qualify sustained TG. Separate first use, individual peaks, warmed-request
+qualify sustained TG. Component-only milestones use the explicitly named
+component interval/reference/geometric-mean-ratio columns; leave model PP,
+TTFT and TG blank rather than converting a partial kernel time into model speed. Separate first use, individual peaks, warmed-request
 medians and independent-process aggregates. Keep different models, workloads,
 runtime/observer envelopes and execution routes distinguishable. A rejected
 candidate can hold the highest measured speed without being adopted or proving
