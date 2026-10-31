@@ -49270,5 +49270,75 @@
     "inference_adopted": false,
     "next_gate": "Main-owned official compiler host tests and independent actual-source audit;then construct exact selected+joint snapshot/recipe and qualify properties/traced small model/handoff before117Kcomparison. No unchecked guard removal.",
     "retention": "Current implementation/fixture decision. Keep selected fallback and official candidate only for the imminent source/budget comparison;retire the unselected official generation before a new replacement engine build after source recovery. No third engine generation."
+  },
+  "joint_prefill_heads_host_v1": {
+    "stage": "prepared",
+    "source_commit": "8d0177ae0a937463c6a07a008a47b107b61fc968",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+      "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+      "files": 10945
+    },
+    "official_build_source": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
+    "environment_overrides": {
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v1/cache",
+      "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+    },
+    "environment_sha256": "7e0da669474b226711d307a83485914aa18a1d82621dfeef400221d429724b9a",
+    "commands": [
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O1",
+          "-g0",
+          "-fno-omit-frame-pointer",
+          "-fsanitize=address,undefined",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v1/policy.d",
+          "-save-temps=obj",
+          "-v",
+          "-Wl,-t",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_head_scope.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v1/prefill_head_scope"
+        ]
+      ],
+      [
+        "policy",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v1/prefill_head_scope"
+        ]
+      ]
+    ],
+    "budgets": {
+      "wall": 90,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 1048576,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "criteria": "Seven host-only cases:joint prepare refusal/throw,complete ordered joint begin/restore,standalone prompt success/false/throw and invalid state edges. Exact committed inputs,actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "source_inputs": {
+      "files": 31,
+      "aggregate_sha256": "4025c28250e009c5b0bf6004955813b10280c660d171602c847da3c0273d79fb"
+    }
   }
 }
