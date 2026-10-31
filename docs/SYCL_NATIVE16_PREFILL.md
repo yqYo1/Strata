@@ -55,8 +55,9 @@ processes:9startup policies,3traced smoke cases and145numeric cases in each
 off/on process,including the262144selector endpoint and unchanged decode/ref
 APIs. No new fault or validation warning appears. This qualifies direct selector
 APIs;production model routing,whole-engine speed and decode handoff remain pending.
-See `fused-moe-service-current.json::qsa_topk_prefill_entry_v2`. Neither retained
-engine contains this new route.
+See `fused-moe-service-current.json::qsa_topk_prefill_entry_v2`. Selected6e40
+does not contain the route;the official candidate contains it with model
+qualification still pending.
 The original selector source and small-input/decode calls remain unchanged.
 
 Prefill and decode have independently selected kernels, scheduling and placement.
