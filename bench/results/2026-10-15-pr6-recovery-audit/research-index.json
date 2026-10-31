@@ -18613,5 +18613,44 @@
       },
       "complete": true
     }
+  },
+  "native16_physical_scratch_20261031": {
+    "classification": "decision_support",
+    "status": "eligible_source_only_research",
+    "schedulable_now": true,
+    "question": "For the pinned BF16 long-prefill path,derive the live scratch minimum versus inherited FP32-sized reservations. Which reductions can release physical VRAM,and which only change offsets within an allocated parent? Compare bounded alternatives without implementation.",
+    "prerequisites": {
+      "native_composed_aggregate": "c3b781a2378a0d208c6ac7852bff505ce36f8c4955ae2956877c0db44dfd7dbc",
+      "native_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/source",
+      "source_files": {
+        "src/prefill/prefill.cpp": "91a3b91584784bcc1047cc1d0fa3d44e6b3f5b05897def249a190d07eb6d97ec",
+        "src/prefill/moe_window.inc": "de24314e42495b0e0c1cb4f0724a1504fd287eeb9a95998affc7d54c94e84aef",
+        "include/strata/prefill/moe_accum_plan.hpp": "4f9d10a25a0d14ffe34ddceed064c2b60119c8bb8b5f2780818de77f4e71b3d7"
+      },
+      "closed_same_build_model_result": "fused-moe-service-current.json::official_joint_model_entry_v1",
+      "closed_clean_comparison_processes": 4,
+      "measured_capacity_question": "117K head-off RAM residual versus head-on all-GPU;first matched clean pair recorded in e75b582f6",
+      "source_facts": "carve retains FP32-sized region union and two9830400B dequant pairs;Mode10 uses only pair0. These are source facts,not proof of actual free VRAM or ownership.",
+      "no_GPU_build_test_process_inspection_required": true,
+      "report_directory_inside_workspace_verified": true
+    },
+    "previous_topics": [
+      "native16_scratch_two_bank_scope",
+      "implemented_mixed_scratch_lifetime_scope",
+      "moe_native16_traffic_scope",
+      "phase_exclusive_usm_arena_methods_scope",
+      "current_expert_cache_loan_contract_20261031"
+    ],
+    "report": ".cache/research/2026-10-31/native16_physical_scratch_20261031.md",
+    "report_budget": {
+      "bytes": 16384,
+      "words": 2400
+    },
+    "worker_model": "gpt-6-luna",
+    "policy_commit": "ca9bda028",
+    "constraints": "Read-only product/source research;write only the named report. No Git,build,test,GPU,profiler or process commands. No XeStrata source. Do not modify or steer Main's frozen comparison.",
+    "consumer": "Main's next VRAM/placement decision after the current12-process cohort;this scope is allocator/liveness arithmetic,not repeat cache-loan protocol or generic16-bit survey.",
+    "acceptance": "Symbolic allocation table and selected8192-chunk/64K/117K examples,actual called producers/consumers and alias/lifetime counterexamples,physical-parent distinction,and at most3ranked source-grounded alternatives with missing runtime gates. Do not claim measured gains or capacity.",
+    "retention": "Keep only substantive source findings through the next compact-scratch selection;native Luna-max review first. Retire task/dispatch paperwork after settlement and review. Review again at current cohort closure."
   }
 }
