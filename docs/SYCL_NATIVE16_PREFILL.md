@@ -1882,6 +1882,12 @@ admission. Retire unexecuted V1after original-source recovery and make a fresh
 official V2build;commit its actual input/ELF record before properties,traced
 tiny,numerics and timing. No GPU execution or adoption follows from host tests
 or the inherited source proof.
+V1and its consumed source-audit/reviews now retire:74files/2059966bytes after
+recovering204project sources and three generated sources,matching719compiler
+and25frozen link inputs,and checking all seven command/environment owners closed.
+Original build success and blocked device admission remain in the compact result;
+the pushed source/recipe commits stay reachable. V2has not inherited its ELF or
+any device qualification.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
