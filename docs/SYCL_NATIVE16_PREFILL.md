@@ -265,8 +265,15 @@ four matched117489-read thinking-on requests each. All seven original ELFs,
 pass preparation. First use stays separate from each subsequent-three median.
 All three paired time ratios below1 assess reproducibility without a minimum
 percentage;the1000tok/s screen and client TTFT are separate. Both current-source
-frontend probes now pass with normal owned closure;all six model processes remain
-unexecuted. Decode stays independently selected. See
+frontend probes pass with normal owned closure. The first row64 process is now
+active;inspect its existing `official-row64-model-v1/0/execution.json` and owned
+handle before any retry or source edit. Independent Orca source audit and native
+Luna-max review require two controller corrections:check validation after full
+native teardown and validate every individual TTFT before reducing samples.
+Finish this bounded process as diagnostic evidence,then close V1without launching
+its other five processes. Commit the corrected gates and a new prospective plan
+before further model execution. These findings concern measurement admission,
+not a demonstrated numerical or GPU-kernel fault. Decode stays independent. See
 [the cumulative performance CSV](../bench/performance-records.csv).
 Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
 oriented,in the same binary. The planned user selector is
