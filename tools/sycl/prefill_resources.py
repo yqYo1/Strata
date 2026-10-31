@@ -24,7 +24,7 @@ import bench_engine as reader
 
 entry, shared, build = comparison.entry, comparison.shared, comparison.build
 P, B, RESULT = comparison.P, comparison.B, comparison.RESULT
-ROOT, KEY = B / 'official-joint-resources-v2', 'official_joint_resources_v2'
+ROOT, KEY = B / 'official-joint-resources-v3', 'official_joint_resources_v3'
 READ, ROWS, RUNS = 117489, 117488, 4
 GROUPS = ((1, 15), (16, 31), (32, 63), (64, 127), (128, 255),
           (256, 511), (512, 1023), (1024, 2333), (2334, 8192))
@@ -128,6 +128,7 @@ def environment(row, plan):
 
 def prepare():
     controls = selfcheck()
+    controls['model_finalization'] = finalization_controls()
     revision = shared.gen.git('rev-parse', 'HEAD').decode().strip()
     controls['native_controller_reuse'] = reuse_control_checks(revision)
     cohort, providers = qualification(revision)
@@ -166,7 +167,8 @@ def prepare():
                 'spec4,8192chunks,BF16/vLLM,split/original Down,Top-k0,head retirement1.',
             acceptance='Both processes close normally;all samples eligible,all117488rows GPU-resident,128staged slots,'
                 'checked split/lease restoration,quiet parameter validation,no fresh fault. Observed requests each '
-                'pass all48window/work,CPU partition,GDN/QSA and transition gates. '
+                'pass all48window/work,CPU partition,GDN/QSA and transition gates,including15chunks '
+                'per GDN layer and540total GDN chunks. '
                 'Observed/clean warmed-time ratio<=1.15 is an observer-cost screen,not a statistical cost claim.',
             stopping='Stop first input,owner,clock,budget,warning,fault,route,observer or sample failure. '
                 'No retry,exclusion,hash refresh or speed-based replacement. Commit each closed process before next.',
@@ -175,6 +177,7 @@ def prepare():
                 'its immutable gemm16.cpp startup guards reject that combination. Keep fusion and the native '
                 'generation fixed;do not measure a different unfused path as its proxy. '
                 'Logical/requested bytes are not physical bus/VRAM traffic. '
+                'QSA per-row detail and the nested CPU status subprofile are not qualified attribution. '
                 'Hardware ceilings and saturation remain unmeasured. No clean speed gain,quality,decode,'
                 'physical262144/RESTORE or adoption qualification.',
             retention='Keep individual latency samples,compact aggregate host/phase/shape evidence and limits. '
@@ -281,6 +284,11 @@ def observed(text, route):
     record = reader.extract_resource_profile(text, True, False,
         'Nonexclusive queue spans;not additive wall time or hardware saturation.',
         cpu_version=4, expected_window_pairs=[(0, ROWS)], maximum_window_rows=ROWS)
+    gdn = record['gdn_phase_queue_intervals']
+    chunks = (ROWS + 8191) // 8192
+    require(all(v['expected_chunks'] in (0, chunks) for v in gdn['layers'])
+            and gdn['aggregate']['expected_chunks'] == 36 * chunks,
+            'GDN chunks do not match actual request and frozen8192row operator extent')
     result = reader.compact_host_resource_profile(record, GROUPS)
     require(result['window_census']['jobs'] == route['jobs']
             and result['window_census']['routed_rows'] == ROWS * 10 * 48
@@ -292,7 +300,17 @@ def observed(text, route):
         reason='This exact native generation rejects command profiling together with GU/Down fusion. '
             'The measured production fusion settings remain unchanged;no per-kernel service claim.')
     result['transition'] = transition(text)
+    result['coverage_limits'] = dict(GDN_request_chunks_verified=True,
+        QSA_per_row_detail_qualified=False, nested_CPU_status_subprofile_qualified=False)
     return result
+
+
+def finish_process(outcome, owner, cursor, boot):
+    """Connect completed request checks to the shared fault/ownership gate."""
+    outcome['host_probe_accepted'] = bool(outcome.get('complete') is True
+        and outcome.get('model_executed') is True and outcome.get('native_exit_code') == 0
+        and not outcome.get('error'))
+    shared.runtime.validation.finish(outcome, owner, cursor, boot)
 
 
 def run(index):
@@ -310,7 +328,8 @@ def run(index):
     cursor = next(v.split(': ', 1)[1] for v in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'],
         text=True, timeout=15).splitlines() if v.startswith('-- cursor: '))
-    outcome, owner = dict(index=index, observed=plan['observed'], complete=False, model_executed=False), None
+    outcome, owner = dict(index=index, observed=plan['observed'], complete=False,
+        host_probe_accepted=False, model_executed=False), None
     initial = (time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns())
     log_windows = []
 
@@ -438,7 +457,7 @@ def run(index):
         outcome.update(error=repr(error), complete=False)
     finally:
         if owner:
-            shared.runtime.validation.finish(outcome, owner, cursor, row['boot'])
+            finish_process(outcome, owner, cursor, row['boot'])
         outcome['passed'] = bool(outcome.get('passed') and outcome['complete'])
         persist()
         row['processes'].append(outcome)
@@ -459,6 +478,49 @@ def run(index):
     print(json.dumps({k: outcome.get(k) for k in
         ('index', 'observed', 'passed', 'complete', 'fresh_faults', 'error')}), flush=True)
     require(outcome['passed'], 'resource process did not qualify')
+
+
+def finalization_controls():
+    """Replay real failed V2 evidence through the actual shared finalizer on CPU.
+
+    Mocks isolate kernel-log/driver I/O only; no historical outcome is rewritten.
+    """
+    from types import SimpleNamespace
+    from unittest.mock import patch
+    original = build.committed(RESULT)['official_joint_resources_v2']['processes'][0]
+    require(original['complete'] is True and original['passed'] is False
+            and 'host_probe_accepted' not in original and original['native_exit_code'] == 0,
+            'preserve the original V2 finalization refusal fixture')
+    validation = shared.runtime.validation
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    cases = 0
+    for changes, expected in (({}, True), ({'complete': False}, False),
+            ({'complete': 1}, False), ({'model_executed': False}, False),
+            ({'native_exit_code': 1}, False), ({'native_exit_code': None}, False),
+            ({'error': 'forced request/parser failure'}, False)):
+        outcome = copy.deepcopy(original)
+        outcome.update(changes)
+        with patch.object(validation.subprocess, 'check_output', return_value=''), \
+                patch.object(validation.guards, 'driver_guard', return_value={}):
+            finish_process(outcome, SimpleNamespace(active=None, commands=[]), 'CPU-fixture', boot)
+        require(outcome['host_probe_accepted'] is expected and outcome['passed'] is expected,
+                'completed-evidence finalization mismatch')
+        cases += 1
+    for active, journal, test_boot, probe_error in (
+            (object(), '', boot, False), (None, 'xe GPU fault', boot, False),
+            (None, '', 'different-boot', False), (None, '', boot, True)):
+        outcome = copy.deepcopy(original)
+        with patch.object(validation.subprocess, 'check_output', return_value=journal,
+                side_effect=RuntimeError('forced probe failure') if probe_error else None), \
+                patch.object(validation.guards, 'driver_guard', return_value={}):
+            finish_process(outcome, SimpleNamespace(active=active, commands=[]), 'CPU-fixture', test_boot)
+        require(outcome['host_probe_accepted'] is True and outcome['passed'] is False,
+                'model completion bypassed runtime fault/ownership gate')
+        cases += 1
+    require(original == build.committed(RESULT)['official_joint_resources_v2']['processes'][0],
+            'historical V2 evidence changed')
+    return dict(cases=cases, actual_shared_finalizer=True, original_V2_status_preserved=True,
+        hardware_I_O_mocked=True, GPU_executed=False)
 
 
 def reuse_control_checks(revision):

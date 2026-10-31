@@ -179,10 +179,16 @@ requests with quiet validation,native exit0,no fresh fault and checked all-GPU
 split placement. PP851.8/908.4/909.0/917.5and subsequent median129254.3ms remain
 diagnostic samples:the controller omits `host_probe_accepted`,which the shared
 finalizer requires,so the process and V2cohort are failed. Preserve that status;
-do not execute V2observed process1. Next commit a V3finalization bridge and CPU
-failure-path checks before new prospective resource evidence. The independent
-Orca emitter-contract report is complete and released;native Luna max review
-is pending. Main has not read its body. See `official_joint_resources_v2`.
+do not execute V2observed process1. Its full record is archived atb82d528ee;
+the active result keeps the failed CPU-regression fixture and useful individual
+samples. V3adds a finalization bridge and11CPU controls through the actual
+shared finalizer,including incomplete/error/exit,fault,live-owner,boot and
+probe-error cases. These controls must pass before its new prospective pair.
+The independent Orca report and native Luna max review find no fatal emitter/
+reader mismatch within that source-only scope. V3also checks15chunks per GDN
+layer and540total;QSA per-row detail and nested CPU status attribution remain
+explicitly unqualified. Main has read only the short review digest. See
+`official_joint_resources_v2` for the preserved failure;V3is not executed.
 Retire the temporary branch after its original
 commits are also verified reachable from the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
