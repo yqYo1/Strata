@@ -58218,7 +58218,7 @@
     }
   },
   "official_gdn_barriers3_v1": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "3dbf73b3928ce2c617d8b4bd94d3f93044704015",
     "sdk": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
@@ -58470,7 +58470,7 @@
     "processes": [],
     "active": false,
     "ownership_closed": true,
-    "build_passed": false,
+    "build_passed": true,
     "passed": false,
     "complete": false,
     "inference_adopted": false,
@@ -58491,6 +58491,157 @@
       "timing": "8192tokens/call;fused,columns4,barriers3 rotated by process and round. One first-use round separate,six subsequent rounds per arm. Eight empty-marker controls;require each sample>=1ms and>=1000profiling timer ticks. Queue interval includes host gaps and both kernels. Numerical comparisons follow each complete seven-update train,not every timed sample.",
       "acceptance": "Bit-exact state,FP32output and FP16capture against both owned references;guards, immutable inputs and rejected-call no-write. All3process barriers3/columns4 median ratios<1 and geometric mean<1 permit context/next model proposal;no minimum gain. Normal owner closure,three native provider/environment gates,pre-main validation,quiet final validation and no fresh fault required. No model quality,RESTORE,TTFT,TG or1000tok/s follows.",
       "source": "Main-authored from owned GDN;no XeStrata derivation. Distinct scratch with uniform KQ/KV/output publication barriers preserves32state values/lane and FP32order. Independent source dependency review at79b996c4c;local storage1536->2048bytes. Retain old columns4 and fused references;decode and model dispatch unchanged."
+    },
+    "compile_command_attestation": {
+      "database_sha256": "1e77777f71ffb7a3a2ba6a1d98567407c6cec27c84483cf38d3920a49641ca97",
+      "units": [
+        {
+          "source": "src/sycl/runtime.cpp",
+          "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "argv_sha256": "71ecd5e0db937ee458efe9cc1e4a3a988d19fda764069c44e55737a89f62ce76"
+        },
+        {
+          "source": "src/sycl/compat.cpp",
+          "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/compat.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "argv_sha256": "781a398f685f276911aaf28f36e72f4a709be0b1478a20c37503b9aabb2bffae"
+        },
+        {
+          "source": "src/sycl/command_profile.cpp",
+          "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/command_profile.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "argv_sha256": "de1b20a623c1663b2de7f205624beca90244f6fb45af400f2d5d53e79eeed16f"
+        },
+        {
+          "source": "tests/sycl/compat.cpp",
+          "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "output": "CMakeFiles/sycl_submission_test.dir/tests/sycl/compat.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20"
+          ],
+          "argv_sha256": "7e6ad62995d77e0fefe532a72a1acfdf5f3382b3285944a716f4bf3893871c8f"
+        },
+        {
+          "source": "bench/sycl/gdn_columns.cpp",
+          "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "output": "CMakeFiles/sycl_gdn_columns_bench.dir/bench/sycl/gdn_columns.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fno-fast-math",
+            "-ffp-contract=off"
+          ],
+          "argv_sha256": "665aa9279fdab3b0aea5ec649dc7ccea32f6104544e7e20e277e967df7ee3c81"
+        },
+        {
+          "source": "src/kernels/sycl/fused_gdn.cpp",
+          "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "output": "CMakeFiles/sycl_gdn_columns_bench.dir/src/kernels/sycl/fused_gdn.cpp.o",
+          "required_options": [
+            "-fsycl",
+            "-fsycl-id-queries-range=size_t",
+            "-DSTRATA_ENABLE_SYCL=1",
+            "-O3",
+            "-DNDEBUG",
+            "-std=c++20",
+            "-fno-fast-math",
+            "-ffp-contract=off"
+          ],
+          "argv_sha256": "073cb02c7e7561dbb15c204e7b2b8b092c3f0ccd0a529ee33dc0988c7d45f797"
+        }
+      ]
+    },
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/compiler-inputs.json",
+      "sha256": "1bd5e5ed5d405c478181be8a5212d752a059396612c9267c647f9a4522d1f01a",
+      "files": 721
+    },
+    "actual_link_inputs": {
+      "frozen_inputs": {
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-devicelib-host.a": "770b0944b181690a21d78a0cb2e1d091d38b3caa209e185e276a943dea7bd8e9",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f"
+      },
+      "owned_build_or_compiler_products": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/build/libstrata_sycl_runtime.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-99e36a0a39/fused_gdn-45e90a.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-99e36a0a39/fused_gdn-b95bbb.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-99e36a0a39/gdn_columns-60fbdd.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-99e36a0a39/gdn_columns-7cdbea.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-99e36a0a39/sycl_gdn_columns_bench-wrapper-7dcef3.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-f9be8e9f53/compat-36099d.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-f9be8e9f53/compat-8530bd.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/tmp/icpx-f9be8e9f53/sycl_submission_test-wrapper-3db788.o"
+      ],
+      "uncovered_external_inputs": 0,
+      "scope": "Observed GNU ld -t input paths;private generated objects are owned outputs,not external source evidence."
+    },
+    "binaries": {
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/build/sycl_submission_test",
+        "sha256": "5f0dd960ddb4b7fdae2175b88e29d65279183378505ddee9f05e26a364162978",
+        "bytes": 347584
+      },
+      "sycl_gdn_columns_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/build/sycl_gdn_columns_bench",
+        "sha256": "de50feddb8bd17c628a1518ad0d2392c1185802fc366d9b80d9ab2f1aa2e47f3",
+        "bytes": 372504
+      }
     },
     "source_inputs": {
       "files": 483,
