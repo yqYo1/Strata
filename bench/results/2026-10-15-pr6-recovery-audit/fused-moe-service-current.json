@@ -32973,13 +32973,24 @@
     }
   },
   "prefill_copy_pipeline_v5": {
-    "stage": "built",
+    "stage": "closed",
+    "passed": true,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "fresh_faults": [],
     "source_commit": "f68a65c8f9219970f872236bcda757962682cd53",
-    "inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v5/inputs.json",
-      "sha256": "4dd35f41923e588e2483c04c9a2530ba9a1d10c3dd8369e7b68036e826e05d62",
-      "project_files": 195,
-      "external_files": 277
+    "native_source_commit": "22f4777bdc84bdd884d5d05bc2d3281946fd0923",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/expert_pipeline_probe",
+      "sha256": "d70d7b828296468e30ddb25e216fa20bf856000cac4381017ab1eeea414d379f",
+      "bytes": 337296
+    },
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/compiled-inputs.json",
+      "sha256": "e24bf77b1344580c2628e5099bd0c831c05591a186e46482a37e48319b902f21",
+      "files": 677,
+      "uncovered": 0
     },
     "sdk": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/sdk-inputs.json",
@@ -32999,359 +33010,7 @@
       },
       "verification_limit": "Original broad44-package preparation failed on pkgconfig metadata,including unrelated MKL/IPP;that failure remains. This new scope checks exact compiler/UMF vendor bytes against original Git-bound proof and separately freezes current host headers. No legacy SDK reuse or hash refresh."
     },
-    "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-    "selected_binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22190000,
-      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-    },
-    "commands": [
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-O3",
-        "-DNDEBUG",
-        "-std=c++17",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/0.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/0.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-O3",
-        "-DNDEBUG",
-        "-std=c++17",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/1.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/1.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-O3",
-        "-DNDEBUG",
-        "-std=c++17",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/2.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/2.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-O3",
-        "-DNDEBUG",
-        "-std=c++17",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I",
-        "/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/3.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/expert_pipeline_probe.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/3.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-pthread",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/0.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/1.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/2.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/3.o",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/expert_pipeline_probe"
-      ]
-    ],
-    "build_environment": {
-      "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-      "OMP_NUM_THREADS": "1",
-      "GIT_TERMINAL_PROMPT": "0",
-      "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-      "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/compiler/2026.2/include",
-      "PIP_CONFIG_FILE": "/dev/null",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/cache",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/tmp"
-    },
-    "native_environment": {
-      "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "ZES_ENABLE_SYSMAN": "0",
-      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v5/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v5/cache",
-      "STRATA_TRANSFER_PROBE_GATES": "1",
-      "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/compiler/2026.2/include"
-    },
-    "runtime_files": {
-      "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
-      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
-      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
-      "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
-      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
-      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
-      "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
-      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
-      "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782",
-      "/usr/local/lib/libigc.so.2.41.5+1788943183": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
-      "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
-      "/usr/local/lib/libopencl-clang2.so.22.1": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
-      "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
-      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
-      "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957",
-      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
-      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
-      "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
-      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269",
-      "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
-      "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
-      "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
-      "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
-      "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.5.0": "b6c51aa06b74e545fada790ccef7eb33256f67087ea8e1dfbea6466b1c20b2bf",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.so": "b3beb0aaa614cfcd1f1f6245516911764614fb2c6cfe6290109790f011967a59",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.memprof.so": "f02df5740bb784748bfaa5076c917eae2340234d0e3706005412aadf51565b1a",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.nsan.so": "6ded41376e0ede0b315633db038e90f560e93bf03808a39b0c1cdfaed0f57f54",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.tsan.so": "13b9f31f73198d0062067cecdf2d42fd5eecde62087b8bce5e37d1439e80dabe",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone.so": "b84b84e5ebabac47b6fa2fb233ea59a3be764215af87513656707b67052ebfed",
-      "/opt/intel/oneapi/compiler/2026.2/lib/icx-lto.so": "9da0cef9864a5c974983459bb05138eb2019cac81ad4b1b9c337c179213db34f",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libOpenCL.so.1.0.0": "cc04e15b3cddd6f62af2503b9b03c592dc32de3450e387da6b6965d49a9eda28",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libarcher.so": "f8f4332ed8d895beebf898eb07458b93bc75ed208705bcb29813652c043d8e1c",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libcommon_clang.so.2026.22.10.0": "50dc16df5c663ab7a74e2c5ad07546f0a5d8d88213fc14214157080014cdd627",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libicaf.so": "daa0eef98686b550bc81bf4ef43ba9529864fea1e7a4e57aedfd0b7be4a3a6a5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libifcore.so.5": "18394e8f53b4ed2062dde321a2689e5a60c3ccb91fda9f10607fdfe6c9ffbc9a",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libifcoremt.so.5": "2fde204ac7a2473ae6b59ac042c0318bd5ba93ffc2e24c8a0169b98609d8f61e",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libifport.so.5": "5084a00c25146d9c10d0796f432936157d8f44260d2c239a74205ae385a607d7",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libimf.so": "352cc8d53ceca3a9d50a14479297aff23af0f3d773f073dfe6597e66de8f0b9b",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libintelocl.so.2026.22.10.0": "af51ca856b48bbd073f4f555ff4f15cbfc209aaf14c58448be9de22cf915f28c",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libintlc.so.5": "f16c5e1cad3b3363903afca39def3bfa42dd4f41e8c892fea019103767f1a089",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libiomp5.so": "7d4777c0bf44310fdbd85db70e5e8a7b1e048b0c7bb20f03b54279223a3fb728",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libiomp5_db.so": "00008b59df8dbac125f8838fdea29675c6f93b0e77a917c46609e183c89915b5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libiompstubs5.so": "2d268b7aba183694fc3517f51254e31deb0f30ddba8b55fc5599f981dabdc0ca",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libirc.so": "b5abad56eade71b1a65e841d646ba192ff625ff7d82b28bea74c38d81d66cbb6",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libirng.so": "8e014b69e3c1ea2235c1f98bd70eb1083d35bd39a793f521230c96e865b38db6",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libistrconv.so": "3030f5b4fa47b554b80e9e304c2b1ad2b38e707e486912a122601fc976deead5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_e9.so": "a73a5954135e73e1e60b0e99d1a0347808915a6ab9ed6d23a4271a01045d53aa",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_h8.so": "00c8c20e9d41f70a24913c08a60782109df7a5e084caa37befa4bb4b8c6d0705",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_l9.so": "6972aee87af6f45bcbcd56e4136943c573b953bba393928ecdce4057734a15c3",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_z0.so": "776c7200988b029125d955b52abdcd2e9a0dc83802f2b42c0251ee5ed0ac24f8",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_z1.so": "00720225aa4889c22b35d1d861c9f314870d9b7c32baaf3f1e2b86e5c23db660",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libomptarget.so": "aa3b313ce947a2a8845dcf90c52f4318d49611c035a7ead207a8ab12ec2b1bfd",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libomptarget.sycl.wrap.so": "86bd45b500e14b4418836c4415e1b500bd95dbf819c88a6ea9de978fc8a12380",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libpstloffload.so.1.0.0": "e4bd266de083541a29260fb2e799e2c25fb9d67ec0b9d4e2155f7c28de2708a0",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libqkmalloc.so": "ae9cab245ad593ebc22324b5f25c8621e6153fa2dcfa9259b2cba9047bcbb31f",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.so": "b2cf661fb044dc02d5901113841a294c3a95ce62a38270a396ed8b52680f9ba8",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-jit.so": "ba6e03d3322f8ede884ea6a1c2787d85ac7f40d26e6701bdad0009c2c5ad39f0",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-jit.so.23.1": "ba6e03d3322f8ede884ea6a1c2787d85ac7f40d26e6701bdad0009c2c5ad39f0",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-preview.so.9": "bdf6a93da8211fd733fc5e724a7c56509895ffe61d7a875acf4b63aeae202b63",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-preview.so.9.0.0": "bdf6a93da8211fd733fc5e724a7c56509895ffe61d7a875acf4b63aeae202b63",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl_ur_trace_collector.so": "7feaa99a139d2782acd77b3d01965c8b7652bc423e44601f943826a2829e8718",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero.so.0.12.0": "5e00b2a2fbab5a04d4896a91cdf1ee7d1c38a43ef29262f74401cafa3091b9c5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0": "ee33dae4d85948ad72f053f3e9c7e2cf0c30cc6339a35bfd92f6be0caac6364e",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0.12.0": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_sanitizer_layer.so": "f169190ff779c6be2b0aac2931473d2c16856ab5492ea224005884ea55aa3b89",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_sanitizer_layer.so.0": "f169190ff779c6be2b0aac2931473d2c16856ab5492ea224005884ea55aa3b89",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_sanitizer_layer.so.0.12.0": "f169190ff779c6be2b0aac2931473d2c16856ab5492ea224005884ea55aa3b89",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1": "e86145b0ca073c019b791d59ad877d49df7165c9190b1ec300f0b073914e9ddd",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libze_trace_collector.so": "a00f737a911f1bf1cb177daca5d41d15442d2a8da3cec396d33ce8548ace91a7",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++.so.1": "4b134a710cea74aac1bcf1d37a1e0d4117e0896c317a91e0c207cf0226aaf985",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++.so.1.0": "4b134a710cea74aac1bcf1d37a1e0d4117e0896c317a91e0c207cf0226aaf985",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++abi.so": "59d8d82dddf187b058f9c6561cbcb8a6170534bdc6491ee1469557dbc996e61f",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++abi.so.1": "59d8d82dddf187b058f9c6561cbcb8a6170534bdc6491ee1469557dbc996e61f",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++abi.so.1.0": "59d8d82dddf187b058f9c6561cbcb8a6170534bdc6491ee1469557dbc996e61f",
-      "/opt/intel/oneapi/umf/1.2/lib/libumf.so.1.2.0": "122651d7860e67d17f01ac0b44f12d4532fb341fa85f6e8837e562da1aa0c038",
-      "/usr/lib/x86_64-linux-gnu/librt.so.1": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82"
-    },
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "cases": [
-      {
-        "diagnostic": false,
-        "host_canary": true,
-        "argv": []
-      },
-      {
-        "diagnostic": true,
-        "argv": [
-          "--smoke"
-        ]
-      },
-      {
-        "diagnostic": false,
-        "argv": [
-          "--compare",
-          "0"
-        ]
-      },
-      {
-        "diagnostic": false,
-        "argv": [
-          "--compare",
-          "1"
-        ]
-      },
-      {
-        "diagnostic": false,
-        "argv": [
-          "--compare",
-          "2"
-        ]
-      }
-    ],
-    "build_limits": {
-      "wall": 240,
-      "cpu": 600,
-      "rss_cap": 4294967296,
-      "text_cap": 8388608,
-      "file_cap": 134217728,
-      "total_cap": 268435456
-    },
-    "run_limits": {
-      "wall": 180,
-      "cpu": 240,
-      "rss_cap": 5368709120,
-      "text_cap": 8388608,
-      "file_cap": 16777216,
-      "total_cap": 67108864
-    },
-    "criteria": "Official-loader host canary before any GPU;then one4KiB traced smoke before3fresh comparison processes. Source/destination/slot guards,all integer outputs,source immutability,11pre-enqueue/order refusals,and in-flight cancellation must pass. Normal exit,preinit/executable/provider/environment gates and no new fault. First batches separate;five subsequent alternating pairs per1971200/2662400-byte and16/256-loop shape. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty-control<=5percent of smallest batch. Feasibility advancement requires all six256-loop process/shape median ratios<=0.98 and median observed copy/reader overlap>=10percent of copy service;every16-loop ratio<=1.05. A passing mechanism probe permits only a newly planned production consumer check,not model adoption.",
-    "scope": "Two in-order queues in the qualified Runtime: same-context event dependencies,ordinary immutable CPU source,two borrowed device slots,no extra host/device staging and no overfetch. Synthetic full-byte GPU readers plus dependent integer work16/256;not XMX,MoE arithmetic,PCIe wire or LLM throughput. Controller-only alias correction;new prospective host/device scope,original V4 remains failed.",
-    "provenance": "Existing independent Main transfer tool with owned gates;unchanged production runtime/compat/profile implementation. SDK/compiler only,not XeStrata source.",
-    "retention": "One mechanism fixture for imminent prefill-only scheduling decision;no third engine generation. Keep original6e40 and9a79 engines/required fixtures. Retire normal output and this component build at decision closure after exact source/recipe recovery;retain compact paired samples and ownership/fault outcome.",
-    "active": false,
-    "ownership_closed": true,
-    "passed": false,
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "canary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-      },
-      "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-      "original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "retained_reference_until_exit": true,
-      "ordinary_runtime_teardown_qualified": false
-    },
-    "runtime_scope": "NEW official Intel2026.2/UMF1.2 component proposal;host loader canary and traced smoke required. No prior native/model/runtime qualification inherited;selected original engines unchanged.",
-    "reference": "fused-moe-service-current.json::moe_down_model.split_resource_profile_v2:117.215264736s summed observed GPU service versus117.192532093s union;22.733ms total overlap. Original in-order expert copy/compute sequence exposes transfer service;physical engine overlap remains unproven.",
-    "host_controls": {
-      "source_commit": "e023ae577",
-      "path": "tools/sycl/test_copy_pipeline.py",
-      "sha256": "7381030eb4b13cbe32815ee5a017bcaf865834534644d41cbabc89d225b49a12",
-      "tests": 5,
-      "passed": true,
-      "limits": "Decision method and tests unchanged by SDK-only source updates;new official SDK proposal separately qualified before GPU comparisons."
-    },
-    "build_passed": true,
-    "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/expert_pipeline_probe",
-      "sha256": "d70d7b828296468e30ddb25e216fa20bf856000cac4381017ab1eeea414d379f",
-      "bytes": 337296
-    },
-    "compiled_inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4/compiled-inputs.json",
-      "sha256": "e24bf77b1344580c2628e5099bd0c831c05591a186e46482a37e48319b902f21",
-      "files": 677,
-      "uncovered": 0
-    },
-    "native_source_commit": "22f4777bdc84bdd884d5d05bc2d3281946fd0923",
     "build_reused": true,
-    "build_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-copy-pipeline-v4",
-    "complete": false,
     "reuse_proof": {
       "original_build": "a28e5a838",
       "actual_compiler_inputs": 677,
@@ -33359,6 +33018,869 @@
       "uncovered": 0,
       "original_ELF_verified": true,
       "only_uncompiled_controller_changed": true
+    },
+    "criteria": "Official-loader host canary before any GPU;then one4KiB traced smoke before3fresh comparison processes. Source/destination/slot guards,all integer outputs,source immutability,11pre-enqueue/order refusals,and in-flight cancellation must pass. Normal exit,preinit/executable/provider/environment gates and no new fault. First batches separate;five subsequent alternating pairs per1971200/2662400-byte and16/256-loop shape. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty-control<=5percent of smallest batch. Feasibility advancement requires all six256-loop process/shape median ratios<=0.98 and median observed copy/reader overlap>=10percent of copy service;every16-loop ratio<=1.05. A passing mechanism probe permits only a newly planned production consumer check,not model adoption.",
+    "scope": "Two in-order queues in the qualified Runtime: same-context event dependencies,ordinary immutable CPU source,two borrowed device slots,no extra host/device staging and no overfetch. Synthetic full-byte GPU readers plus dependent integer work16/256;not XMX,MoE arithmetic,PCIe wire or LLM throughput. Controller-only alias correction;new prospective host/device scope,original V4 remains failed.",
+    "provenance": "Existing independent Main transfer tool with owned gates;unchanged production runtime/compat/profile implementation. SDK/compiler only,not XeStrata source.",
+    "frozen_plan": "7f37c7d03",
+    "original_build_record": "a28e5a838",
+    "runtime_plan_reference": "7f37c7d03:bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json::prefill_copy_pipeline_v5",
+    "host_controls": {
+      "tests": 5,
+      "passed": true,
+      "source_commit": "e023ae577"
+    },
+    "correctness": {
+      "host_canary_passed": true,
+      "smoke_owner": {
+        "pid": 3288437,
+        "exit_code": 0,
+        "elapsed_seconds": 3.4276342559605837,
+        "peak_session_rss_bytes": 98803712,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "error": null
+      },
+      "smoke_cases": [
+        {
+          "arm": "serial",
+          "experts": "8",
+          "completed": "8",
+          "requested_uploads": "8",
+          "observed_uploads": "8",
+          "readers": "16",
+          "cancelled": "0",
+          "admission_rejections": "0",
+          "source": "PASS",
+          "guards": "PASS",
+          "output": "PASS",
+          "drain": "PASS"
+        },
+        {
+          "arm": "pipeline",
+          "experts": "8",
+          "completed": "8",
+          "requested_uploads": "8",
+          "observed_uploads": "8",
+          "readers": "16",
+          "cancelled": "0",
+          "admission_rejections": "11",
+          "source": "PASS",
+          "guards": "PASS",
+          "output": "PASS",
+          "drain": "PASS"
+        },
+        {
+          "arm": "pipeline",
+          "experts": "8",
+          "completed": "5",
+          "requested_uploads": "7",
+          "observed_uploads": "5",
+          "readers": "10",
+          "cancelled": "1",
+          "admission_rejections": "0",
+          "source": "PASS",
+          "guards": "PASS",
+          "output": "PASS",
+          "drain": "PASS"
+        },
+        {
+          "arm": "pipeline",
+          "experts": "1",
+          "completed": "1",
+          "requested_uploads": "1",
+          "observed_uploads": "1",
+          "readers": "2",
+          "cancelled": "0",
+          "admission_rejections": "0",
+          "source": "PASS",
+          "guards": "PASS",
+          "output": "PASS",
+          "drain": "PASS"
+        }
+      ],
+      "comparison_batches": 144,
+      "experts_per_batch": 32,
+      "readers_per_expert": 2,
+      "all_source_guards_outputs_drains_passed": true,
+      "all_requested_expert_counts_conserved": true
+    },
+    "measurements": [
+      {
+        "process": 0,
+        "owner": {
+          "pid": 3288552,
+          "exit_code": 0,
+          "elapsed_seconds": 43.306186134926975,
+          "peak_session_rss_bytes": 1519976448,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "error": null
+        },
+        "provider_gate_stages": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "timer_and_empty_controls": [
+          {
+            "samples": "1000",
+            "p99_ns": "150",
+            "max_ns": "5801"
+          },
+          {
+            "repetition": "-1",
+            "wall_s": "0.001249232"
+          },
+          {
+            "repetition": "0",
+            "wall_s": "9.9057e-05"
+          },
+          {
+            "repetition": "1",
+            "wall_s": "9.1763e-05"
+          },
+          {
+            "repetition": "2",
+            "wall_s": "0.000133632"
+          },
+          {
+            "repetition": "3",
+            "wall_s": "0.000108474"
+          },
+          {
+            "repetition": "4",
+            "wall_s": "9.2784e-05"
+          }
+        ],
+        "shapes": [
+          {
+            "payload_bytes": 1971200,
+            "integer_loops": 16,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.014621986",
+                "subsequent_wall_s": [
+                  "0.011148437",
+                  "0.011329027",
+                  "0.011784785",
+                  "0.012000441",
+                  "0.011316574"
+                ],
+                "subsequent_median_copy_s": 0.010235104,
+                "subsequent_median_reader_s": 0.000615419,
+                "subsequent_device_span_range_s": [
+                  0.010908855,
+                  0.011746979
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.025815789",
+                "subsequent_wall_s": [
+                  "0.051255249",
+                  "0.022786597",
+                  "0.025085264",
+                  "0.055785879",
+                  "0.022266117"
+                ],
+                "subsequent_median_copy_s": 0.015632188,
+                "subsequent_median_reader_s": 0.00076666,
+                "subsequent_device_span_range_s": [
+                  0.016481145,
+                  0.039261667
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 2.128614480450852,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 1971200,
+            "integer_loops": 256,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.016293523",
+                "subsequent_wall_s": [
+                  "0.01430531",
+                  "0.036342537",
+                  "0.015715616",
+                  "0.016708695",
+                  "0.035187191"
+                ],
+                "subsequent_median_copy_s": 0.010173126,
+                "subsequent_median_reader_s": 0.004568641,
+                "subsequent_device_span_range_s": [
+                  0.014059792,
+                  0.035327813
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.028501716",
+                "subsequent_wall_s": [
+                  "0.026806094",
+                  "0.02619865",
+                  "0.02686237",
+                  "0.028857035",
+                  "0.026727496"
+                ],
+                "subsequent_median_copy_s": 0.015475209,
+                "subsequent_median_reader_s": 0.004910204,
+                "subsequent_device_span_range_s": [
+                  0.020411146,
+                  0.023259896
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.709278847230678,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 2662400,
+            "integer_loops": 16,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.015348284",
+                "subsequent_wall_s": [
+                  "0.015400242",
+                  "0.01569199",
+                  "0.035628162",
+                  "0.015358393",
+                  "0.015512413"
+                ],
+                "subsequent_median_copy_s": 0.014097607,
+                "subsequent_median_reader_s": 0.000873751,
+                "subsequent_device_span_range_s": [
+                  0.015109479,
+                  0.034553542
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.028251364",
+                "subsequent_wall_s": [
+                  "0.049729529",
+                  "0.028593118",
+                  "0.028083489",
+                  "0.028346934",
+                  "0.028361653"
+                ],
+                "subsequent_median_copy_s": 0.020820732,
+                "subsequent_median_reader_s": 0.000919379,
+                "subsequent_device_span_range_s": [
+                  0.022265938,
+                  0.042996042
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.8283198751864074,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 2662400,
+            "integer_loops": 256,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.022042947",
+                "subsequent_wall_s": [
+                  "0.045789682",
+                  "0.021199269",
+                  "0.020634106",
+                  "0.048936086",
+                  "0.02079591"
+                ],
+                "subsequent_median_copy_s": 0.013954376,
+                "subsequent_median_reader_s": 0.006296144,
+                "subsequent_device_span_range_s": [
+                  0.020395417,
+                  0.048654688
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.032022525",
+                "subsequent_wall_s": [
+                  "0.033264492",
+                  "0.034233827",
+                  "0.033148394",
+                  "0.033497792",
+                  "0.03300267"
+                ],
+                "subsequent_median_copy_s": 0.020820734,
+                "subsequent_median_reader_s": 0.006276876,
+                "subsequent_device_span_range_s": [
+                  0.027505417,
+                  0.028586771
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.5869788819051436,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          }
+        ]
+      },
+      {
+        "process": 1,
+        "owner": {
+          "pid": 3289985,
+          "exit_code": 0,
+          "elapsed_seconds": 43.34674767497927,
+          "peak_session_rss_bytes": 1519480832,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "error": null
+        },
+        "provider_gate_stages": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "timer_and_empty_controls": [
+          {
+            "samples": "1000",
+            "p99_ns": "160",
+            "max_ns": "5681"
+          },
+          {
+            "repetition": "-1",
+            "wall_s": "0.001087097"
+          },
+          {
+            "repetition": "0",
+            "wall_s": "8.7745e-05"
+          },
+          {
+            "repetition": "1",
+            "wall_s": "8.7624e-05"
+          },
+          {
+            "repetition": "2",
+            "wall_s": "8.2145e-05"
+          },
+          {
+            "repetition": "3",
+            "wall_s": "8.0832e-05"
+          },
+          {
+            "repetition": "4",
+            "wall_s": "8.0011e-05"
+          }
+        ],
+        "shapes": [
+          {
+            "payload_bytes": 1971200,
+            "integer_loops": 16,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.02247963",
+                "subsequent_wall_s": [
+                  "0.011361419",
+                  "0.011627791",
+                  "0.011880807",
+                  "0.011295605",
+                  "0.011456648"
+                ],
+                "subsequent_median_copy_s": 0.010231769,
+                "subsequent_median_reader_s": 0.000700003,
+                "subsequent_device_span_range_s": [
+                  0.011054583,
+                  0.011633021
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.061935588",
+                "subsequent_wall_s": [
+                  "0.023077646",
+                  "0.038799313",
+                  "0.025152081",
+                  "0.053978469",
+                  "0.025341658"
+                ],
+                "subsequent_median_copy_s": 0.015536253,
+                "subsequent_median_reader_s": 0.000935102,
+                "subsequent_device_span_range_s": [
+                  0.016964688,
+                  0.036520104
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 2.211960950532826,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 1971200,
+            "integer_loops": 256,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.018678904",
+                "subsequent_wall_s": [
+                  "0.019026569",
+                  "0.015684828",
+                  "0.016720007",
+                  "0.014255266",
+                  "0.039793285"
+                ],
+                "subsequent_median_copy_s": 0.010153229,
+                "subsequent_median_reader_s": 0.005058858,
+                "subsequent_device_span_range_s": [
+                  0.014016145,
+                  0.038761562
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.038958162",
+                "subsequent_wall_s": [
+                  "0.067281103",
+                  "0.027024045",
+                  "0.028953177",
+                  "0.026639411",
+                  "0.026094695"
+                ],
+                "subsequent_median_copy_s": 0.015493644,
+                "subsequent_median_reader_s": 0.005002183,
+                "subsequent_device_span_range_s": [
+                  0.020309271,
+                  0.0515175
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.731648617132756,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 2662400,
+            "integer_loops": 16,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.034662154",
+                "subsequent_wall_s": [
+                  "0.015337785",
+                  "0.015386867",
+                  "0.034879013",
+                  "0.015463541",
+                  "0.015739541"
+                ],
+                "subsequent_median_copy_s": 0.014032918,
+                "subsequent_median_reader_s": 0.000893855,
+                "subsequent_device_span_range_s": [
+                  0.0150825,
+                  0.03462448
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.028398362",
+                "subsequent_wall_s": [
+                  "0.028391399",
+                  "0.028396079",
+                  "0.028278667",
+                  "0.028318863",
+                  "0.028819045"
+                ],
+                "subsequent_median_copy_s": 0.020856247,
+                "subsequent_median_reader_s": 0.000898231,
+                "subsequent_device_span_range_s": [
+                  0.022288437,
+                  0.022877813
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.831331064469645,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 2662400,
+            "integer_loops": 256,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.020693809",
+                "subsequent_wall_s": [
+                  "0.049292087",
+                  "0.020712073",
+                  "0.021553006",
+                  "0.020666968",
+                  "0.040357778"
+                ],
+                "subsequent_median_copy_s": 0.013916042,
+                "subsequent_median_reader_s": 0.006291872,
+                "subsequent_device_span_range_s": [
+                  0.020410729,
+                  0.048968021
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.03351704",
+                "subsequent_wall_s": [
+                  "0.041186729",
+                  "0.0326306",
+                  "0.071680737",
+                  "0.032461252",
+                  "0.033897115"
+                ],
+                "subsequent_median_copy_s": 0.020833541,
+                "subsequent_median_reader_s": 0.006272285,
+                "subsequent_device_span_range_s": [
+                  0.026573646,
+                  0.056198958
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.5706828403663275,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          }
+        ]
+      },
+      {
+        "process": 2,
+        "owner": {
+          "pid": 3291328,
+          "exit_code": 0,
+          "elapsed_seconds": 43.384102455107495,
+          "peak_session_rss_bytes": 1520156672,
+          "observation_complete": true,
+          "direct_child_reaped": true,
+          "session_empty": true,
+          "error": null
+        },
+        "provider_gate_stages": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "timer_and_empty_controls": [
+          {
+            "samples": "1000",
+            "p99_ns": "150",
+            "max_ns": "5130"
+          },
+          {
+            "repetition": "-1",
+            "wall_s": "0.001151809"
+          },
+          {
+            "repetition": "0",
+            "wall_s": "7.967e-05"
+          },
+          {
+            "repetition": "1",
+            "wall_s": "7.6474e-05"
+          },
+          {
+            "repetition": "2",
+            "wall_s": "7.419e-05"
+          },
+          {
+            "repetition": "3",
+            "wall_s": "8.8567e-05"
+          },
+          {
+            "repetition": "4",
+            "wall_s": "7.4961e-05"
+          }
+        ],
+        "shapes": [
+          {
+            "payload_bytes": 1971200,
+            "integer_loops": 16,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.01348643",
+                "subsequent_wall_s": [
+                  "0.017711013",
+                  "0.01132506",
+                  "0.011323999",
+                  "0.011597353",
+                  "0.011371619"
+                ],
+                "subsequent_median_copy_s": 0.010208333,
+                "subsequent_median_reader_s": 0.000645204,
+                "subsequent_device_span_range_s": [
+                  0.011083542,
+                  0.016700521
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.026123861",
+                "subsequent_wall_s": [
+                  "0.022356719",
+                  "0.023855731",
+                  "0.025261097",
+                  "0.025135441",
+                  "0.054618817"
+                ],
+                "subsequent_median_copy_s": 0.015598855,
+                "subsequent_median_reader_s": 0.000903542,
+                "subsequent_device_span_range_s": [
+                  0.016444166,
+                  0.045825625
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 2.1673429273041878,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 1971200,
+            "integer_loops": 256,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.015664411",
+                "subsequent_wall_s": [
+                  "0.015692573",
+                  "0.016699198",
+                  "0.014367699",
+                  "0.01545708",
+                  "0.014278071"
+                ],
+                "subsequent_median_copy_s": 0.010177709,
+                "subsequent_median_reader_s": 0.004696771,
+                "subsequent_device_span_range_s": [
+                  0.014039896,
+                  0.016439167
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.02811995",
+                "subsequent_wall_s": [
+                  "0.026884644",
+                  "0.059256668",
+                  "0.026142096",
+                  "0.036663714",
+                  "0.026371448"
+                ],
+                "subsequent_median_copy_s": 0.01550021,
+                "subsequent_median_reader_s": 0.005002502,
+                "subsequent_device_span_range_s": [
+                  0.020417708,
+                  0.050496042
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.846989554821516,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 2662400,
+            "integer_loops": 16,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.034724654",
+                "subsequent_wall_s": [
+                  "0.015408208",
+                  "0.015714725",
+                  "0.015515811",
+                  "0.015677205",
+                  "0.015513507"
+                ],
+                "subsequent_median_copy_s": 0.014099788,
+                "subsequent_median_reader_s": 0.00091323,
+                "subsequent_device_span_range_s": [
+                  0.015158438,
+                  0.015460312
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.028388876",
+                "subsequent_wall_s": [
+                  "0.028309116",
+                  "0.071808029",
+                  "0.02792375",
+                  "0.028565168",
+                  "0.028282787"
+                ],
+                "subsequent_median_copy_s": 0.020813232,
+                "subsequent_median_reader_s": 0.000916664,
+                "subsequent_device_span_range_s": [
+                  0.022058854,
+                  0.055163542
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.8231072445450278,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          },
+          {
+            "payload_bytes": 2662400,
+            "integer_loops": 256,
+            "arms": {
+              "serial": {
+                "first_wall_s": "0.022107982",
+                "subsequent_wall_s": [
+                  "0.020783498",
+                  "0.02135821",
+                  "0.02085911",
+                  "0.02150658",
+                  "0.020953719"
+                ],
+                "subsequent_median_copy_s": 0.013915104,
+                "subsequent_median_reader_s": 0.006431773,
+                "subsequent_device_span_range_s": [
+                  0.020531667,
+                  0.021253334
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              },
+              "pipeline": {
+                "first_wall_s": "0.07101734",
+                "subsequent_wall_s": [
+                  "0.033186749",
+                  "0.034443134",
+                  "0.033107981",
+                  "0.075023894",
+                  "0.032035863"
+                ],
+                "subsequent_median_copy_s": 0.020794581,
+                "subsequent_median_reader_s": 0.006181563,
+                "subsequent_device_span_range_s": [
+                  0.026364271,
+                  0.058631146
+                ],
+                "observed_overlap_range_s": [
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "median_paired_wall_ratio": 1.5967836116903902,
+            "median_copy_overlap_fraction": 0.0,
+            "performance_passed": false
+          }
+        ]
+      }
+    ],
+    "post_closure_audit": {
+      "all_five_cases_returned": true,
+      "all_native_owners_closed": true,
+      "comparison_samples_reconstructed_exactly": 144,
+      "original_complete_field_retained": false,
+      "complete_field_limit": "The reused-plan controller initialized complete=false and did not update it on closure. Original flag is preserved;case/process receipts prove execution closure,not performance acceptance."
+    },
+    "decision": {
+      "timing_eligible": true,
+      "mechanism_screen_passed": false,
+      "inference_adopted": false,
+      "physical_saturation_qualified": false,
+      "median_ratio_range": [
+        1.5706828403663275,
+        2.211960950532826
+      ],
+      "observed_copy_reader_overlap_max_s": 0.0,
+      "subsequent_wall_min_s": 0.011148437,
+      "subsequent_device_span_min_s": 0.010908855,
+      "next_action": "Reject this two-queue schedule;no model run. Next test exact contiguous active-expert transfer batching in the existing in-order queue,without RAM packing,overfetch,extra VRAM or decode changes."
+    },
+    "limitations": [
+      "Synthetic integer readers are not XMX/MoE math or LLM speed.",
+      "Ordinary host source and official2026.2 component runtime do not establish source-exact9a79 inference gains.",
+      "The extra copy queue is constructed inside each measured pipeline batch;32-expert fixture and per-window production amortization differ.",
+      "No measured overlap in this fixture does not prove that all hardware concurrency is impossible."
+    ],
+    "retention": {
+      "owner": "Main",
+      "consumer": "Reject the two-queue model trial and select the immediate coalesced-upload component comparison.",
+      "review_point": "Before the coalesced-upload build;retire rejected exports/modes and closed component outputs after original source/recipe recovery.",
+      "raw_retirement": "pending source/recipe recovery and pushed compact result;no live run"
     }
   }
 }

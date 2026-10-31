@@ -1774,13 +1774,30 @@ GPU gaps total17.467s. One3.132s gap overlaps3.131s of`zeModuleCreate`;other
 large initial gaps precede the PLE-row H2D stage and require source attribution.
 The status wrapper's6.656CPU seconds split mainly into4.438s inside enqueue
 and2.216s in its known drain;the enqueue includes called runtime work,not
-proved CPU inference math. Next compare native-source transfer granularity and
-QSA matched resource ceilings before selecting a prefill-only change. Retain
-the complete temporary timeline only until these source/priority decisions are
-recorded,then retire it. Older97cfa/6e40 coverage or
+proved CPU inference math. The native expert path requests38.562GB in18888
+uploads,usually1.9712MB or2.6624MB each,in the same in-order queue as its
+consumers. This motivates a transfer-granularity screen,not a PCIe-saturation
+claim. QSA matched arithmetic/VRAM ceilings remain unknown. The source/family
+and next-priority questions are now recorded;retire the complete temporary
+timeline after retaining any still-required PLE configuration fixture. Older97cfa/6e40 coverage or
 observer cost does not qualify9a79. Physical PCIe/DRAM bytes and arithmetic
 saturation remain unknown. Repeated clean decode,task/agent checks and
 physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
+
+The separate two-queue upload/read prototype is rejected on performance. Five
+host controls,a traced4KiB device check with11 admission refusals and in-flight
+cancellation,and three independent comparison processes close without a fresh
+fault. All144 comparison batches pass source/output/guard/drain checks. Across
+the twelve process/shape groups,the median pipeline/serial wall ratios are
+1.571..2.212;observed copy/reader overlap is zero. These are synthetic integer
+readers using the separately qualified official2026.2 component runtime,not
+model speed. The copy queue is created inside each32-expert timed batch,so
+production-window amortization is not matched. Do not advance this schedule
+to model inference. See `prefill_copy_pipeline_v5` in the linked result for
+individual first/subsequent samples and original source/build identities.
+Next test batching exact contiguous active-expert runs in the existing in-order
+queue,only when source/destination strides match the packed blob size. Preserve
+expert/math order and decode;add no RAM packing,overfetch or extra VRAM.
 The successful v2 raw outputs and consumed phase-handoff report/review/source
 exports are retired after the compact result is pushed. The deletion manifest
 records91files/13363315bytes;12baseline exports match original Git blobs.
