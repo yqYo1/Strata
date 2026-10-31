@@ -124,8 +124,11 @@ target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_
 add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_bench.cpp)
 target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_kernels)
 target_compile_options(sycl_kv_copy_groups_bench PRIVATE -fno-fast-math -ffp-contract=off)
-add_executable(sycl_gdn_columns_bench EXCLUDE_FROM_ALL bench/sycl/gdn_columns.cpp)
-target_link_libraries(sycl_gdn_columns_bench PRIVATE strata_kernels)
+# Compile the production GDN source directly for this bounded component fixture;
+# other engine kernels are not dependencies of this target.
+add_executable(sycl_gdn_columns_bench EXCLUDE_FROM_ALL
+  bench/sycl/gdn_columns.cpp src/kernels/sycl/fused_gdn.cpp)
+target_link_libraries(sycl_gdn_columns_bench PRIVATE strata_sycl_runtime)
 target_compile_options(sycl_gdn_columns_bench PRIVATE -fno-fast-math -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q3_esimd.cpp src/kernels/sycl/native_q4_esimd.cpp src/kernels/sycl/native_q2_esimd.cpp src/kernels/sycl/native_iq4xs_esimd.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp src/kernels/sycl/s2_experts.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 

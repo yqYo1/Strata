@@ -303,6 +303,12 @@ barriers per token. It keeps explicit ordered FMAs,left-associated partial sums
 and the separate RMS/gating consumer. This removes source-level workgroup
 barriers;emitted shuffles,register use,spills,physical traffic and speed are not
 measured. Duplicate Q/K loads and exchanges may offset any saving.
+The source audit ofa1cb5de85and independent Luna-max review find no defined
+source-level blocker to a bounded smoke,while flagging four times the logical
+Q/K vector loads of columns4and104subgroup selections per lane/token. These
+counts are neither physical traffic nor emitted instruction counts. The fixture
+compiles the production GDN source with the existing runtime target,without
+depending on the rest of the engine's kernel archive;this wiring is not yet built.
 The new `gdn_recurrence_subgroup` entrypoint is prefill-only and not wired into
 model dispatch. Main authored it from this fork's existing recurrence and the
 indexed subgroup feasibility reference,with the
