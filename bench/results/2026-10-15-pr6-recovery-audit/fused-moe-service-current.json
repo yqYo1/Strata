@@ -55706,7 +55706,7 @@
     }
   },
   "prefill_candidate_selection": {
-    "stage": "corrected_V2_frontend_ready",
+    "stage": "corrected_V2_comparison_1_of_6_closed",
     "development_candidate": "split117K Down-row64",
     "historical_evidence": {
       "commit": "e45c24afec2ccc42928d97b39352f8b0c1590029",
@@ -55763,8 +55763,16 @@
       "existing_trace_reader_CPU_tests": 13,
       "retired_to_Git": true
     },
-    "next_action": "Run frozen V2process0(row64) after committed frontend closure and retiring its successful probe output;then serialize remaining original/row64 cases with per-process closure commits. No V1reuse or broader adoption.",
-    "controller_correction_commit": "56319217e0ffb2b20d02be0813e56fdbb156f3d3"
+    "next_action": "Commit process0and retire successful raw output,then frozen original process1;complete all6processes before comparing. Separate decode/task/physical262144requirements remain.",
+    "controller_correction_commit": "56319217e0ffb2b20d02be0813e56fdbb156f3d3",
+    "parallel_source_work": {
+      "branch": "work/prefill-gdn-subgroup",
+      "scope": "Main-authored prefill-only subgroup recurrence;source editing isolated from frozen model comparison",
+      "built": false,
+      "GPU_tested": false,
+      "integrated": false,
+      "consumer": "Next bounded GDN component comparison after current six-process cohort;Main serializes tests and integrates/retire branch after closure."
+    }
   },
   "official_row64_device_v1": {
     "stage": "qualified",
@@ -56462,7 +56470,7 @@
     }
   },
   "official_row64_model_v2": {
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "6e05ba9f007cbd4ba59f4cf834627c8f9ec6a533",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binary": {
@@ -56896,7 +56904,189 @@
         "environment_sha256": "656ac744ee703d89e0b8234cb5b56295e2af8dcb045919444f2b4ce3310ce558"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 117489,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "row64",
+        "native_identity": {
+          "pid": 1538749,
+          "start_ticks": 181815251,
+          "sid": 1538704
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1538749,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23840,
+            "fused_down_jobs": 7432,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38561740800,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          },
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23832,
+            "fused_down_jobs": 7429,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38587673600,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          },
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23792,
+            "fused_down_jobs": 7423,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38468480000,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          },
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23817,
+            "fused_down_jobs": 7442,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38524006400,
+            "requested_dequant_H2D_bytes": 225576960,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 139445.1,
+            "prompt_tps": 842.5,
+            "ttft_s": 139.677,
+            "total_s": 141.88,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 129081.8,
+            "prompt_tps": 910.2,
+            "ttft_s": 129.327,
+            "total_s": 131.524,
+            "generated_tokens": 24,
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 129363.9,
+            "prompt_tps": 908.2,
+            "ttft_s": 129.573,
+            "total_s": 131.615,
+            "generated_tokens": 24,
+            "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 128242.0,
+            "prompt_tps": 916.2,
+            "ttft_s": 128.454,
+            "total_s": 130.55,
+            "generated_tokens": 24,
+            "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 129081.8,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "controls": {
       "route": {
         "passed": true,

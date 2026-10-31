@@ -273,8 +273,11 @@ last request gate and28invalid TTFT cases across all four sample positions.
 The fresh `official_row64_model_v2` plan is prepared:row64/original,original/row64,
 row64/original,four matched requests in each new process. All249 source inputs,
 seven original ELFs,84providers and15full model-asset hashes pass admission.
-Both current-source frontend probes pass with normal ownership closure;
-the first native process is next after committing this result. First use stays
+Both current-source frontend probes pass with normal ownership closure.
+Process0(row64) closes normally with quiet final validation and no fresh fault:
+PP842.5/910.2/908.2/916.2,subsequent median910.2tok/s and TTFT129.327s.
+The original-kernel process1is next;the remaining five cases stay required.
+First use stays
 separate. All three paired time ratios below1 assess reproducibility without
 a minimum percentage;the1000tok/s screen and client TTFT stay separate.
 V2does not inherit V1samples or historical1007.3. These corrections concern
