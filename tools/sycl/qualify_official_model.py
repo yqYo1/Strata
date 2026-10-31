@@ -8,7 +8,6 @@ import copy
 import fcntl
 import json
 from pathlib import Path
-import re
 import select
 import subprocess
 import sys
@@ -21,8 +20,8 @@ import qualify_native16_control as prior
 import runtime_probe as runtime
 
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT = model.ROOT / 'component-checks-v2'
-KEY = 'official_prefill_device_v2'
+ROOT = model.ROOT / 'component-checks-v3'
+KEY = 'official_prefill_device_v3'
 require, digest, write = model.require, model.digest, model.write
 
 
@@ -132,6 +131,28 @@ def current(row):
     require(model.guards.driver_guard() == row['driver'], 'driver/fault state changed')
 
 
+def stage_pairs(stages, expected=308):
+    entered, returned, stack = {}, set(), []
+    for item in stages:
+        sequence = item['sequence']
+        if item['phase'] == 'enter':
+            require(sequence == len(entered) + 1 and sequence not in entered,
+                    'duplicate or missing GU stage sequence')
+            entered[sequence] = item
+            stack.append(sequence)
+        else:
+            require(item['phase'] == 'return' and stack and stack[-1] == sequence and
+                    sequence not in returned, 'unbalanced or failed GU stage')
+            first = entered[sequence]
+            require(all(item[k] == first[k] for k in ('stage', 'group', 'call')) and
+                    item['monotonic_ns'] >= first['monotonic_ns'] and item['elapsed_ns'] >= 0,
+                    'GU stage identity/time differs')
+            returned.add(stack.pop())
+    require(len(entered) == expected and len(returned) == expected and not stack,
+            'public GU stage entry/return census differs')
+    return len(returned)
+
+
 def analyze(case, stdout, pid):
     name = case['name']
     if name.startswith('Topk-'):
@@ -155,10 +176,8 @@ def analyze(case, stdout, pid):
                 v['groups'] == 4 and v['calls_per_group'] == 16 and v['max_pending_ordinary_kernels'] == 32 and
                 v['max_half_ulp'] == 0 and v['guards'] and v['inputs_immutable'], 'public GU bounded progress failed')
         stages = [v for v in rows if v.get('kind') == 'gu_stage']
-        enters = [(v['sequence'], v['stage']) for v in stages if v['phase'] == 'enter']
-        returns = [(v['sequence'], v['stage']) for v in stages if v['phase'] == 'return']
-        require(len(enters) == 308 and enters == returns, 'public GU stage entry/return census differs')
-        return dict(calls=64, groups=4, stage_pairs=len(enters), maximum_pending_ordinary_kernels=32,
+        paired = stage_pairs(stages)
+        return dict(calls=64, groups=4, stage_pairs=paired, maximum_pending_ordinary_kernels=32,
                     max_half_ulp=0, guards=True, inputs_immutable=True)
     if name == 'Down-split-original':
         values = [json.loads(s) for s in stdout.splitlines() if s.startswith('{')]
