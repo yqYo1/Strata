@@ -18416,5 +18416,34 @@
       "schedulable_now": false,
       "prerequisite": "A concrete image/property mismatch or reproducible route-specific runtime refusal;no generic repeated runtime survey."
     }
+  },
+  "official_model_jit_property_mapping_20261031": {
+    "classification": "decision support",
+    "status": "eligible-closed-run-artifact-mapping",
+    "schedulable_now": true,
+    "question": "Map relevant kernels in the actual closed official64K baseline NEO cache to immutable source/device-image properties: QSA attention/index/Top-k and native IQ decode where identifiable. Extract only proven subgroup/GRF/scratch/local-storage facts and distinguish cached compilation from actual kernel execution. Compare with the prior static ESIMD audit and historical GRF experiments;identify a concrete minimal correction or next performance decision,not another generic runtime survey.",
+    "prerequisite_evidence": {
+      "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
+      "native_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/source",
+      "engine_sha256": "152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354",
+      "closed_process": "fused-moe-service-current.json::official_prefill_speed_v1.processes[0] at b16576eee;65537read,Top-k0,four requests,normal native exit,empty owned session,quiet validation,no fresh fault.",
+      "cache_manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-speed-v1/0/jit-inputs.json",
+      "cache_manifest_sha256": "67da976598f0ee73f32a46196e8684467b53e12072e46310c9f7f3a602892cab",
+      "cache_files": 54,
+      "cache_bytes": 12211128,
+      "elf_files": 53
+    },
+    "report_path": ".cache/research/2026-10-31/official_model_jit_property_mapping_20261031.md",
+    "report_budget_bytes": 16384,
+    "report_budget_words": 2200,
+    "constraints": "Read only manifest-listed closed process0cache,immutable build/source and primary documentation. Write only named report;stdout-only static ELF/property parsing allowed. No Git,build,compilation,tests,GPU/LevelZero/runtime initialization,profiler,process inspection,install,reset,other output files or product edits. Main continues process1and owns tests. No XeStrata code/helpers/tests/compiler. No active-run cache inspection.",
+    "previous_report_refs": [
+      "official_model_esimd_image_contract_20261031",
+      "qsa_exact_compiler_arithmetic_lowering_20261029",
+      "qsa_realhead_softmax_contract_20261030"
+    ],
+    "review": "Native Codex gpt-6-luna/max;Main reads short operational digest.",
+    "retention": "Closed process0cache and7173-byte initial ESIMD report remain only through this exact artifact mapping and review. Retire raw cache/review transaction records when useful properties and decision are verified.",
+    "next_review": "Returned mapping,then Main source/performance decision. No model performance,physical traffic,spill traffic,occupancy or hang-cause inference from static metadata."
   }
 }
