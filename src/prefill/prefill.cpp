@@ -119,6 +119,15 @@ constexpr float EPS = 1e-6f;
 constexpr int64_t N = 2560, HC = 4, D = N * HC, LR = 320, K = 10, NE = 512;
 constexpr int64_t C = 10240, ZV = 6144, HV = 48;
 #if defined(STRATA_ENABLE_SYCL)
+bool gdn_three_barriers() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_BARRIERS3");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_BARRIERS3 must be0 or1");
+    }();
+    return enabled;
+}
 int gdn_column_partitions() {
     static const int partitions = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_COLUMNS");
@@ -2715,11 +2724,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
                     pt.mark(kPfGdnRec, cs);
 #if defined(STRATA_ENABLE_SYCL)
-                    if (m.layer_major_active && gdn_column_partitions())
-                        gdn_recurrence_partitioned(state, m.hbuf, m.gate, m.beta, m.z,
-                            static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T,
-                            gdn_column_partitions(), m.cs);
-                    else
+                    if (m.layer_major_active && gdn_column_partitions()) {
+                        if (gdn_three_barriers())
+                            gdn_recurrence_barriers3(state, m.hbuf, m.gate, m.beta, m.z,
+                                static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T, m.cs);
+                        else
+                            gdn_recurrence_partitioned(state, m.hbuf, m.gate, m.beta, m.z,
+                                static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T,
+                                gdn_column_partitions(), m.cs);
+                    } else
 #endif
                         gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }

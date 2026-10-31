@@ -292,13 +292,21 @@ measurement admission,not a demonstrated numerical or GPU-kernel fault.
 Decode stays independently selected. See
 [the cumulative performance CSV](../bench/performance-records.csv).
 Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
-oriented,in the same binary. The planned user selector is
-`--prefill-strategy ttft|throughput`;this argument and the two qualified profiles
-are not implemented yet. Resolve that choice into an explicit request policy
-passed to the prefill scheduler and its kernel/placement choices. Backend setup
-may prepare both implementations,but request selection must not change process
-environment or decode configuration. Keep one selection boundary that can later
-resolve request length to a policy;do not scatter token-count tests among kernels.
+oriented,in the same binary. The startup selector
+`--prefill-strategy ttft|throughput` is now implemented in source;new-binary and
+model qualification are pending. It resolves once to `prefill::Strategy`,passed
+through prompt orchestration to `Prefill::run`. Omission maps the legacy
+`STRATA_PREFILL_LAYER_MAJOR` value once before runtime initialization;an explicit
+argument overrides it. TTFT selects the existing chunked path and retains dense/
+head/MTP weights;throughput selects the guarded layer-major path when the prompt
+exceeds the initialized chunk. Cache borrowing still uses its checked retirement/
+refill transaction in either strategy. Actual chunked/layer-major/cache-window
+routes are labeled separately;cached-window work does not pass `Prefill::run`.
+These names state tuning intent,not evidence of minimum TTFT or qualified
+profiles. Placement/kernel feature settings remain pre-exec controls. Selection
+changes neither process environment nor decode configuration. Keep a later
+request-length resolver before this typed prompt boundary;do not scatter
+strategy thresholds among kernels.
 Compare both PP and client TTFT at matched lengths/first-use states,including
 prefill-to-decode restoration in the measured path;preserve a useful route when
 another wins a different regime. A faster kernel alone does not establish which
@@ -345,8 +353,12 @@ retired:80files/5367627B. Both current engine generations remain. All seven proc
 normally with quiet validation and no fresh fault. The262144component carry,
 midstream state restore,final prefill position and existing decode-tail comparison
 also pass. This qualifies a component/model proposal,not model PP,TTFT,decode
-performance or full-model physical context. Next:typed two-strategy startup
-selection plus prefill-only model integration and fresh qualification.
+performance or full-model physical context. The new model source wires
+`STRATA_SYCL_PREFILL_GDN_BARRIERS3=1` only within active layer-major prefill,
+requires four partitions and preserves the0/old-columns reference. The
+production dispatch records actual schedule/partitions/token count under
+STRATA_TRACE. New model build,same-build fixtures and model PP/TTFT/handoff/
+decode/physical-context checks remain pending.
 Current original GDN/decode selections and both engine binaries remain unchanged.
 The finished GDN and resource-profile child branches are removed with original
 commits reachable from pushed `feature/sycl`;PR180to default remains blocked.

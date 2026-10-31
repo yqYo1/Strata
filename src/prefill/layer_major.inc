@@ -1,25 +1,26 @@
 // Included inside strata::prefill after the current chunk implementation's
 // helpers. This is orchestration only; run_impl owns GDN/QSA/PLE/expert math.
-bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err) {
+bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err, Strategy strategy) {
+    if (!valid_strategy(strategy)) { err = "prefill: invalid strategy"; return false; }
     if (!impl_ || !impl_->scratch_layout.ready()) {
         err = "prefill: scratch layout unavailable; reset and initialize again"; return false;
     }
 #ifdef STRATA_ENABLE_SYCL
     if (!impl_->cache_scratch_entry(err)) return false;
 #endif
-    const char* requested = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    const bool requested = uses_layer_major(strategy, n, chunk());
     const char* phase_switch = std::getenv("STRATA_PREFILL_PHASE_AUDIT");
     if (phase_switch && std::strcmp(phase_switch, "1") == 0 &&
-        (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
+        !requested) {
         err = "prefill phase audit: requires the long-prompt layer-major path"; return false;
     }
     if (activate_native_dense_layer &&
-        (!requested || std::strcmp(requested, "1") || !impl_ || n <= impl_->T)) {
+        !requested) {
         err = "prefill dense bank: hook requires long layer-major request"; return false;
     }
     // Reuse only pays across chunks. Keep short chat/agent turns on the
     // original path even when long-prompt layer reuse is requested.
-    if (requested && std::strcmp(requested, "1") == 0 && impl_ && n > impl_->T) {
+    if (requested) {
 #if defined(STRATA_ENABLE_SYCL)
         // Read on the calling thread before publishing the thread-local scope.
         const char* cpu_wait_switch = std::getenv("STRATA_PREFILL_CPU_WAIT_PROFILE");
@@ -51,12 +52,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const bool native16_on = native16::requested();
     const bool gdn_chunk_on=strata::gdn_chunk64::requested();
     const int gdn_columns = gdn_column_partitions();
+    if (gdn_three_barriers() && gdn_columns != 4) {
+        err="prefill GDN three barriers requires four column partitions"; return false;
+    }
     if (gdn_columns && (gdn_chunk_on || m.T > 8192)) {
         err="prefill GDN columns requires chunk<=8192 and existing GDN (chunk64 off)"; return false;
     }
     if (gdn_columns)
-        std::fprintf(stderr, "strata prefill: GDN columns=%d workgroups=%d lanes=%d epilogue=GPU_FP32_same_order scratch=existing_y\n",
-                     gdn_columns, 48 * gdn_columns, 512 / gdn_columns);
+        std::fprintf(stderr, "strata prefill: GDN columns=%d workgroups=%d lanes=%d barriers=%d epilogue=GPU_FP32_same_order scratch=existing_y\n",
+                     gdn_columns, 48 * gdn_columns, 512 / gdn_columns, gdn_three_barriers() ? 3 : 5);
     if(gdn_chunk_on && !native16_on) {
         err="prefill chunk64 GDN requires native16 BF16";return false;
     }

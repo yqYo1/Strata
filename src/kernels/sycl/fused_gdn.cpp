@@ -7,6 +7,8 @@
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
 namespace strata::kernels {
 namespace {
 using namespace sycl_backend;
@@ -387,6 +389,9 @@ void gdn_recurrence_separate(float *state, const float *h, const float *gate,
   strata::kernels::dims(std::find(subgroups.begin(), subgroups.end(), size_t(32)) != subgroups.end());
   for (auto span : outputs) validate_device_span(span.pointer, span.bytes, queue);
   for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue);
+  if (std::getenv("STRATA_TRACE"))
+    std::fprintf(stderr, "strata GDN dispatch: schedule=%s partitions=%d tokens=%lld\n",
+                 split_reductions ? "barriers3" : "columns", partitions, (long long)T);
   if (split_reductions) {
     strata::kernels::dims(partitions == 4);
     strata::kernels::recurrence_columns<4, true>(state, h, gate, beta, y, int(T), stream);

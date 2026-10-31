@@ -132,15 +132,12 @@ namespace {
 // detach. No feature-specific allocation, scan, kernel or wait when default off.
 bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::core::MtpDrafter& mtp,
                                  bool supported, const int64_t* tokens, int64_t n, int64_t pos0,
-                                 std::string& err) {
+                                 std::string& err, strata::prefill::Strategy strategy) {
+    if (!strata::prefill::uses_layer_major(strategy,n,prompt.chunk()))
+        return prompt.run(tokens,n,pos0,err,strategy);
     const char* release = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
     if (!release || std::strcmp(release, "1") != 0)
-        return prompt.run(tokens, n, pos0, err);
-    const char* layer_major = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
-    if (!layer_major || std::strcmp(layer_major, "1") != 0) {
-        err = "MTP expert release requires exact STRATA_PREFILL_LAYER_MAJOR=1"; return false;
-    }
-    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return prompt.run(tokens, n, pos0, err);
+        return prompt.run(tokens, n, pos0, err, strategy);
 #if !defined(STRATA_ENABLE_SYCL)
     (void) mtp; (void) supported;
     err = "MTP expert release requires the SYCL engine"; return false;
@@ -176,7 +173,7 @@ bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::
     };
     bool ok = false;
     try {
-        ok = prompt.run(tokens, n, pos0, err);
+        ok = prompt.run(tokens, n, pos0, err, strategy);
     } catch (...) {
         restore(); // the callee's checked lifetime guards have already run
         throw;
@@ -201,10 +198,9 @@ struct NativeDensePhase {
 };
 
 #ifdef STRATA_ENABLE_SYCL
-bool prefill_head_release_supported(bool supported,std::string& err) {
-    const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+bool prefill_head_release_supported(bool supported,std::string& err,strata::prefill::Strategy strategy) {
     const char* cp=std::getenv("STRATA_SPEC_COUPLED");
-    if(!supported || !lm || std::strcmp(lm,"1")!=0 || (cp && std::strcmp(cp,"1")==0) ||
+    if(!supported || strategy!=strata::prefill::Strategy::throughput || (cp && std::strcmp(cp,"1")==0) ||
        std::getenv("STRATA_PREFILL_LOGITS") || std::getenv("STRATA_PREFILL_LOGITS_POSITIONS") ||
        std::getenv("STRATA_PREFILL_NLL") || std::getenv("STRATA_LOGPOS")) {
         err="head release requires long layer-major single-GPU native MTP4 without split/peer/remote/coupled or logits/NLL diagnostics";
@@ -290,15 +286,16 @@ struct PrefillHeadBoundary {
 // Default off and short segments take exactly the existing prompt/expert path.
 bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
         bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
-        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
-    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err);};
+        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err,strata::prefill::Strategy strategy) {
+    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err,strategy);};
     const char* requested=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
-    if(!requested || std::strcmp(requested,"1")!=0 || prompt.chunk()<=0 || n<=prompt.chunk())return run();
+    if(!requested || std::strcmp(requested,"1")!=0 ||
+       !strata::prefill::uses_layer_major(strategy,n,prompt.chunk()))return run();
 #ifndef STRATA_ENABLE_SYCL
     (void)head;(void)verifier;(void)main_cs;
     err="head release requires SYCL";return false;
 #else
-    if(!prefill_head_release_supported(supported,err))return false;
+    if(!prefill_head_release_supported(supported,err,strategy))return false;
     PrefillHeadBoundary boundary{head,mtp,verifier,main_cs,{}};
     return strata::core::detail::with_prefill_head_release(boundary,run,err);
 #endif
@@ -307,9 +304,14 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
 bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
         bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
-        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
-    auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err);};
-    const bool release_dense = prompt.chunk()>0 && n>prompt.chunk();
+        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err,strata::prefill::Strategy strategy) {
+    auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err,strategy);};
+    if (!strata::prefill::valid_strategy(strategy)) {err="prefill: invalid strategy";return false;}
+    const bool release_dense = strata::prefill::uses_layer_major(strategy,n,prompt.chunk());
+    if (std::getenv("STRATA_TRACE"))
+        std::fprintf(stderr,"strata prefill policy: requested=%s route=%s tokens=%lld chunk=%lld\n",
+            strata::prefill::strategy_name(strategy),release_dense?"layer-major":"chunked",
+            (long long)n,(long long)prompt.chunk());
 #ifdef STRATA_ENABLE_SYCL
     const bool cache_loan = prompt.has_cache_scratch_lease();
 #else
@@ -359,12 +361,11 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         if(cache_loan) strata::sycl_backend::cleanup_fail_stop(why);
         std::fflush(stderr); std::abort();
     };
-    const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* heads=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
     const bool joint_heads=release_dense && heads && !std::strcmp(heads,"1");
     if(!phase.supported || !phase.no_token_graph || !phase.token || phase.token->captured || phase.token->exec ||
        !phase.dense || !phase.table || !phase.session || !phase.graphs || !phase.recapture ||
-       phase.graphs->split_captured || !main_cs || !lm || std::strcmp(lm,"1") ||
+       phase.graphs->split_captured || !main_cs ||
        prompt.activate_native_dense_layer ||
        phase.dense->residency()!=strata::core::NativeDense::Residency::Full ||
        phase.dense->packed_sources().empty()) {
@@ -374,7 +375,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
        phase.canonical->state()!=strata::core::CanonicalDenseBank::State::Full)) {
         err="canonical bank requires intact Full owner and independent NativeEmbed";return false;
     }
-    if(joint_heads && !prefill_head_release_supported(supported,err))return false;
+    if(joint_heads && !prefill_head_release_supported(supported,err,strategy))return false;
     if(verifier && !verifier->can_retire_prefill_dense(err)) return false;
     if(joint_heads && verifier && !verifier->can_release_prefill_head(head,err))return false;
     if(phase.occupied.test_and_set()) {err="prefill dense bank: request already owns transaction";return false;}
@@ -526,7 +527,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         host_profile.run_begin();
         // The joint transaction already owns head release; do not enter the
         // standalone head wrapper a second time while its verifier is retired.
-        const bool ok=joint_heads ? run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err) : run();
+        const bool ok=joint_heads ? run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err,strategy) : run();
         host_profile.run_end(ok);
         restore();
         return ok;
@@ -789,6 +790,7 @@ struct Options {
     bool vram_reserve_given = false;   ///< --vram-reserve-mib on the command line (#496: no smaller automatic reserve)
     /// Plan v0.3 P5: batched prompt processing in chunks of this many tokens (0 = the token path).
     int64_t prefill_chunk = 0;
+    strata::prefill::Strategy prefill_strategy = strata::prefill::Strategy::ttft;
     /// `--prefill auto`: the largest chunk (up to 8192) whose buffers the expert cache can lend.  Every expert a chunk
     /// routes to is streamed once per chunk, so a bigger chunk streams fewer bytes per token (the "ubatch" effect).
     bool prefill_auto = false;
@@ -986,6 +988,7 @@ void usage() {
                  "  --prefill CHUNK      batched prompt processing in chunks of CHUNK tokens (needs --native); auto =\n"
                  "                       the largest chunk up to 8192 whose buffers the expert cache can lend;\n"
                  "                       auto:16384 / auto:32768 (or STRATA_PREFILL_AUTO_MAX) allow bigger ones\n"
+                 "  --prefill-strategy ttft|throughput  select the prefill route; decode settings stay independent\n"
                  "  --no-pool            skip the CPU expert pool (the GPU-only floor)\n"
                  "  --sync-every-layer   debug: synchronise after every layer\n"
                  "  --ple-gguf PATH      the n-gram/PLE shard.  WITHOUT IT LAYER 1's PLE IS SILENTLY SKIPPED,\n"
@@ -1558,6 +1561,10 @@ int main(int argc, char** argv) {
 #endif
     }
     Options o;
+    // Compatibility default is resolved once, before native runtime setup.
+    const char* legacy_prefill = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    if (legacy_prefill && std::strcmp(legacy_prefill,"1")==0)
+        o.prefill_strategy = strata::prefill::Strategy::throughput;
     bool have_tokens = false;
     bool have_logits_stride = false;
     for (int i = 1; i < argc; ++i) {
@@ -1696,6 +1703,13 @@ int main(int argc, char** argv) {
                                      : (o.prefill_auto && env_max != nullptr ? std::atoll(env_max) : 8192);
             o.prefill_auto_max = want_max >= 32768 ? 32768 : want_max >= 16384 ? 16384 : 8192;
             o.prefill_chunk = o.prefill_auto ? o.prefill_auto_max : std::atoll(v.c_str());
+        }
+        else if (a == "--prefill-strategy") {
+            const char* value = next("--prefill-strategy");
+            if (!strata::prefill::parse_strategy(value,o.prefill_strategy)) {
+                std::fprintf(stderr,"strata generate: --prefill-strategy requires ttft or throughput\n");
+                return 1;
+            }
         }
         else if (a == "--no-split-rows") o.no_split_rows = true;
         else if (a == "--no-prefill-borrow") o.no_prefill_borrow = true;
@@ -6558,7 +6572,8 @@ int main(int argc, char** argv) {
                 if (to <= at) continue;
                 err.clear();
                 const bool win = windows_ok(at, to);
-                if(native_dense_bank_enabled && win && to-at>sp.chunk()) {
+                if(native_dense_bank_enabled && win &&
+                   strata::prefill::uses_layer_major(o.prefill_strategy,to-at,sp.chunk())) {
                     std::printf("ERR prefill dense bank excludes window prompts\n"); return 1;
                 }
                 if (win && !refill(err)) {
@@ -6574,8 +6589,10 @@ int main(int argc, char** argv) {
                     sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                     o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                     std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
-                    native_head, &ver, main_stream, ids.data() + at, to - at, at, err);
+                    native_head, &ver, main_stream, ids.data() + at, to - at, at, err, o.prefill_strategy);
                 if (trace) {
+                    if (win) std::fprintf(stderr,"strata prefill policy: requested=%s route=cache-window tokens=%lld chunk=%lld\n",
+                        strata::prefill::strategy_name(o.prefill_strategy),(long long)(to-at),(long long)sp.chunk());
                     std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (to - at),
                                  win ? "windows" : "batched",
                                  std::chrono::duration<double, std::milli>(Clock::now() - tsp).count());
@@ -7302,7 +7319,7 @@ int main(int argc, char** argv) {
                 native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                 o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                 std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
-                native_head, nullptr, main_stream, o.tokens.data(), n_batched, 0, err)) {
+                native_head, nullptr, main_stream, o.tokens.data(), n_batched, 0, err, o.prefill_strategy)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }
