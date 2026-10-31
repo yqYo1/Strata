@@ -314,15 +314,20 @@ pass,with quiet validation,normal closure and no fresh fault. The three rotated
 129.9163/129.9072/129.8402ms for subgroup4;the geometric-mean time ratio is
 7.37716315. Thus all three pairs reject the subgroup proposal. The planned
 262144component and model checks are unrun;no inference route is adopted.
-See `official_gdn_subgroup_v1` for individual first-use/warmed samples,empty-marker
-controls and exact source/ELF identities. Intervals include host submission gaps;
+Individual first-use/warmed samples,empty-marker controls and exact source/ELF
+identities recover from `official_gdn_subgroup_v1` at commitc80b654d8. The two
+component executables and closed build outputs are retired after483source inputs
+and721actual compiler inputs are recovered and checked;39files/3116717B removed.
+The active result keeps the rejection and archive reference. Intervals include host submission gaps;
 they do not establish emitted-shuffle cost,register spills or hardware saturation.
 The source's104subgroup selections/lane/token and4xlogical Q/K vector loads
 are mechanism hypotheses,not measured instruction or bus counts.
-The next source-only decision compares separate KV/output reduction scratch,
-which could reduce five workgroup barriers per token to three,against higher-
-register variants. Preserve the existing four32-row partials and their FP32order.
-That dependency proof is under independent review;the new kernel is unimplemented.
+The next candidate uses separate KV/output reduction scratch to reduce five
+workgroup barriers per token to three. Independent source review finds no
+dependency blocker with uniform barriers and distinct,fully written arrays;
+local storage increases from1536to2048B per four-partition workgroup. Preserve
+the existing four32-row partials and their FP32order. The new kernel remains
+unimplemented and unqualified;its speed must be measured.
 Current original GDN/decode selections and both engine binaries remain unchanged.
 The finished GDN and resource-profile child branches are removed with original
 commits reachable from pushed `feature/sycl`;PR180to default remains blocked.

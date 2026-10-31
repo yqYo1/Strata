@@ -18936,7 +18936,6 @@
       "include/strata/prefill/kernels.hpp": "286ce7f39f3ce0aed13ba87eca3dff679e6190ffc230c5540ac108ee32a33111",
       "bench/sycl/gdn_columns.cpp": "cad666d564013f7707e2187744baefb6031c3e1870ac2e943f96e21c5cd8db67"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/gdn_subgroup_implementation_contract_20261101.md",
     "report_budget_bytes": 16384,
     "run": "run_4096847f7211",
     "task": "task_1ada3d3ca4b5",
@@ -18973,7 +18972,6 @@
       "model": "gpt-6-luna",
       "effort": "max",
       "status": "completed",
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/review_gdn_subgroup_implementation_contract_20261101.md",
       "sha256": "0eb9e48115d89c32e1dd9f8fbfc05b71068848e54aab0f11bafee67006aa9067",
       "bytes": 7405,
       "disposition": "No source-level blocker to bounded correctness smoke after active original/row64 cohort closes;no build or performance qualification.",
@@ -18981,7 +18979,8 @@
         "4xlogical Q/K vector loads vs columns4 and104source-level selections per lane/token;not physical traffic or emitted instructions.",
         "Markers include host submission gaps;component timing does not establish clean model speed.",
         "Component262144carry/restore does not qualify production RESTORE."
-      ]
+      ],
+      "body_retired": true
     },
     "main_read_short_native_digest_only": true,
     "post_review_changes": {
@@ -19021,6 +19020,15 @@
       "physical262144_unrun": true,
       "model_qualified": false,
       "inference_adopted": false
+    },
+    "report_body_retired": true,
+    "consumed_body_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-gdn-subgroup-generation.json",
+      "sha256": "74cdb44ce12b03e219a1ad7d70f97513323db4582ffbedea3a9c4523cf6005dc",
+      "files": 39,
+      "bytes": 3116717,
+      "complete": true,
+      "verified_absent": true
     }
   },
   "prefill_two_strategy_policy_seam_20261101": {
@@ -19218,7 +19226,7 @@
   },
   "gdn_barrier_storage_alternatives_20261101": {
     "classification": "decision_support",
-    "status": "worker_closed_native_review_pending",
+    "status": "reviewed_three_barrier_implementation_eligible",
     "schedulable_now": false,
     "source_commit": "b66a737317866f72ff838a0303fd4c588515b59a",
     "source_sha256": {
@@ -19236,7 +19244,6 @@
     },
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/gdn_barrier_storage_alternatives_20261101.md",
     "report_budget_bytes": 16384,
-    "scope_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/gdn_barrier_storage_alternatives_20261101.scope.txt",
     "retention": "One concrete next GDN implementation decision;native review first,retire consumed transaction/body detail after the decision.",
     "main_read_report_body": false,
     "run": "run_4096847f7211",
@@ -19266,7 +19273,21 @@
       "task": "/root/review_gdn_barrier_storage_alternatives_20261101",
       "model": "gpt-6-luna",
       "effort": "max",
-      "status": "running"
-    }
+      "status": "completed",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/review_gdn_barrier_storage_alternatives_20261101.md",
+      "sha256": "b6f0f73803ca44e113bd1cd84244d3032bea872bc831102f4e8329e1f0564333",
+      "bytes": 4382,
+      "disposition": "No dependency blocker with distinct scratch arrays,full writes,uniform barriers and unchanged FP32order;local-memory admission4part1536->2048B. Runtime and speed remain unverified.",
+      "main_read_short_digest_only": true
+    },
+    "transaction_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-gdn-subgroup-generation.json",
+      "sha256": "74cdb44ce12b03e219a1ad7d70f97513323db4582ffbedea3a9c4523cf6005dc",
+      "files": 3,
+      "bytes": 3116717,
+      "complete": true,
+      "verified_absent": true
+    },
+    "next_action": "Main implementation plus new committed source/plan;no broad repeat survey eligible."
   }
 }
