@@ -52,6 +52,13 @@ physical262144/RESTORE gates remain pending. See
 `fused-moe-service-current.json::official_model_entry_v1`,native sourcee4617c85c,
 controller source7493d0487. The earlier22GEMM ABI checks remain separate.
 
+The clean official comparison,controller578f8435f,freezes12fresh processes and
+four requests each across65537/117489read tokens. Its first64K off/on pair closes
+normally without fresh faults:subsequent-three medians880.8/877.9tok/s and
+on/off time ratio1.00330227. This pair does not support a speedup;the remaining
+repetitions and117K measurements are pending. No policy is adopted. See
+`fused-moe-service-current.json::official_prefill_speed_v1`.
+
 The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
 exact-completion Top-k kernel only in layer-major prefill. It defaults off,
 requires `STRATA_SYCL_SELECT_RADIX4=1` and excludes the cyclic selection arm.
