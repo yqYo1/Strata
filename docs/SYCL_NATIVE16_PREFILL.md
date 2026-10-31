@@ -327,6 +327,16 @@ ticks;no subtraction of marker cost or claim of isolated device service follows.
 Freeze comparison acceptance before timing. Queue-marker
 spans include host gaps,so do not label them isolated kernel service. A component
 pass cannot qualify model quality,sustained decode or physical-context behavior.
+The new Main controller `tools/sycl/measure_gdn_subgroup.py` prepares an exact
+two-target build with the official2026.2SDK,then serializes submission,smoke,
+tail validation and three rotated resident processes. All three subgroup4/
+columns4process-median ratios below1and their geometric mean below1permit the
+262144component continuity check;there is no minimum percentage. This plan is
+unexecuted. Native gates outside timed regions check the startup environment
+and actual provider maps before initialization,after initialization and before
+exit. Final validation is checked after normal process closure. Pin actual
+compiler/linker inputs and both executable hashes before any GPU execution.
+No current engine binary is overwritten and no subgroup model route is selected.
 Integrate completed work into `feature/sycl` and retire the temporary branch;
 remove the unused proposal if its measured result does not justify continuation.
 Collector preparation is deferred in favor of this faster-candidate qualification.

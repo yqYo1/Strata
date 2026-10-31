@@ -8,6 +8,7 @@
 #include <chrono>
 #include <cmath>
 #include <cstring>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -25,6 +26,13 @@ using Clock = std::chrono::steady_clock;
 std::shared_ptr<sb::Runtime> rt;
 void need(bool value, const char *message) {
   if (!value) throw std::runtime_error(message);
+}
+void admission(const char *phase) {
+  const char *setting = std::getenv("STRATA_TEST_MAIN_GATES");
+  if (setting && std::string(setting) == "1") {
+    std::cout << "COMPONENT_READY " << phase << '\n' << std::flush;
+    need(std::cin.get() == 'X', "Main component admission gate");
+  }
 }
 template <class T> T sentinel();
 template <> float sentinel<float>() { return -731.25f; }
@@ -312,7 +320,9 @@ int main(int argc, char **argv) {
     std::cout << std::setprecision(12);
     need(argc >= 2, "use --smoke|--validate|--bench PROCESS|--context PARTITIONS|"
                     "--subgroup-smoke|--subgroup-validate|--subgroup-context|--subgroup-bench PROCESS");
+    admission("before-runtime");
     rt = sb::runtime_for();
+    admission("runtime-ready");
     const std::string mode = argv[1];
     if (mode == "--smoke" && argc == 2) { correctness(17, false); correctness(17, true); rejection(); }
     else if (mode == "--subgroup-smoke" && argc == 2) {
@@ -333,6 +343,8 @@ int main(int argc, char **argv) {
       need(partitions == 1 || partitions == 2 || partitions == 4 || partitions == 8, "context partitions");
       context(partitions);
     } else throw std::invalid_argument("invalid fixture arguments");
-    rt->wait(); std::cout << "fixture_status=PASS\n";
+    rt->wait();
+    admission("before-exit");
+    std::cout << "fixture_status=PASS\n";
   } catch (const std::exception &e) { std::cerr << e.what() << '\n'; return 1; }
 }
