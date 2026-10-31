@@ -18927,7 +18927,7 @@
   },
   "gdn_subgroup_implementation_contract_20261101": {
     "classification": "decision_support",
-    "status": "Orca_closed_native_review_pending",
+    "status": "reviewed_component_smoke_eligible_after_frozen_cohort",
     "schedulable_now": false,
     "question": "Audit the implemented subgroup GDN ownership/converged collectives/ordered FP32 arithmetic,in-order dependencies and new component fixture;no repeated generic survey.",
     "source_commit": "a1cb5de859616dd3b36629507febf5925f248510",
@@ -18974,7 +18974,25 @@
       "task": "/root/review_gdn_subgroup_implementation_contract_20261101",
       "model": "gpt-6-luna",
       "effort": "max",
-      "status": "pending"
+      "status": "completed",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/review_gdn_subgroup_implementation_contract_20261101.md",
+      "sha256": "0eb9e48115d89c32e1dd9f8fbfc05b71068848e54aab0f11bafee67006aa9067",
+      "bytes": 7405,
+      "disposition": "No source-level blocker to bounded correctness smoke after active original/row64 cohort closes;no build or performance qualification.",
+      "essential_limits": [
+        "4xlogical Q/K vector loads vs columns4 and104source-level selections per lane/token;not physical traffic or emitted instructions.",
+        "Markers include host submission gaps;component timing does not establish clean model speed.",
+        "Component262144carry/restore does not qualify production RESTORE."
+      ]
+    },
+    "main_read_short_native_digest_only": true,
+    "post_review_changes": {
+      "source_core_and_public_entrypoint_unchanged": true,
+      "changes": [
+        "Component fixture links production GDN plus runtime directly rather than full engine kernel archive.",
+        "Fixture adds8empty-marker controls,device timer resolution and1ms/1000tick minimum per sample."
+      ],
+      "unbuilt_untested": true
     }
   }
 }
