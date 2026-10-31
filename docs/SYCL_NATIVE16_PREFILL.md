@@ -105,9 +105,14 @@ and median121453.1ms. Head-off first use is708.9tok/s;subsequent727.8/732.0/728.
 have median728.2and161335.1ms. The control has81920GPU rows first,73728later,
 512ordinary slots and728432640/896204800RAM residual bytes. Request hashes match.
 This first on/off time ratio is0.75280023(24.72%less time,32.84%more throughput);
-warmed client TTFT medians are121.630/161.518s. Ten further processes are
-pending;three-pair mechanism and target decisions remain open,and the candidate
-is unadopted. This does not identify physical PCIe/VRAM/arithmetic saturation.
+warmed client TTFT medians are121.630/161.518s. The first64K head-on process
+also closes normally without fresh faults,with65536GPU rows,384staged slots and
+no RAM residual in every request. First use is779.5tok/s;subsequent869.1/875.1/
+869.9have median869.9,median75335.8ms and warmed client TTFT75.480s. Its matched
+head-off control is pending;this sample alone shows no64K strategy gain. Nine
+further processes remain;three-pair mechanism and target decisions remain open,
+and the candidate is unadopted. This does not identify physical PCIe/VRAM/
+arithmetic saturation.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found
