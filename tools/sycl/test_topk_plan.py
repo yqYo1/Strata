@@ -21,12 +21,42 @@ def cohort():
                         queries='256',capacity='131072',cap='2051',batch='1024',checkpoint='64',
                         wall_s=str(1.1*(ratio if arm else 1)),service_s=str(ratio if arm else 1),output='PASS'))
         result.append(dict(kind='compare',argv=['--compare',str(process)],process=dict(pid=100+process),
-            samples=samples,timers=[dict(samples='1000',p99_ns='100',resolution_ns='1')],
+            samples=samples,cases=[dict(cells=str(n),pattern=str(p),capacity='131072',queries='256',
+                cap='2051',invalid='0',saved_passes='256',stopped_queries='64',
+                oracle='PASS',counters='PASS',inputs='PASS',guards='PASS',repeatability='PASS')
+                for n in (32768,65536,117488) for p in (0,1)],
+            timers=[dict(samples='1000',p99_ns='100',resolution_ns='1')],
             controls=[dict(repetition=str(i),wall_s='.00001') for i in [-1,0,1,2,3,4]]))
     return result
 
 
 class PlanControls(unittest.TestCase):
+    def test_all_zero_process_is_rejected(self):
+        for process in range(3):
+            records=cohort()
+            for case in records[process]['cases']:case.update(saved_passes='0',stopped_queries='0')
+            with self.assertRaisesRegex(RuntimeError,'saved no radix passes'):probe.decision(records)
+
+    def test_mixed_positive_zero_keeps_all_timing_samples(self):
+        records=cohort()
+        for record in records:
+            for case in record['cases'][1:]:case.update(saved_passes='0',stopped_queries='0')
+        result=probe.decision(records)
+        self.assertTrue(result['mechanism_screen_passed'])
+        self.assertEqual(len(result['process_scenario']),18)
+        self.assertEqual(sum(len(r['samples']) for r in records),144)
+        self.assertEqual(sum(g['radix_savings']['saved_passes']==0 for g in result['process_scenario']),15)
+
+    def test_mechanism_census_refuses_missing_duplicate_and_bad_counts(self):
+        for mutation in range(5):
+            records=cohort();cases=records[0]['cases']
+            if mutation==0:cases.pop()
+            if mutation==1:cases[-1]=copy.deepcopy(cases[0])
+            if mutation==2:cases[0]['capacity']='32768'
+            if mutation==3:cases[0]['saved_passes']='0'
+            if mutation==4:cases[0]['saved_passes']='1793'
+            with self.assertRaises(RuntimeError):probe.decision(records)
+
     def test_first_pair_and_all_metrics(self):
         result=probe.decision(cohort())
         self.assertTrue(result['mechanism_screen_passed'])

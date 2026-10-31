@@ -27,8 +27,8 @@ import relink_qsa_k_model as linking
 
 r,P,B=closure.r,closure.P,closure.B
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY='qsa_topk_early_component_v1'
-ROOT=B/'topk-early-component-v1'
+KEY='qsa_topk_early_component_v2'
+ROOT=B/'topk-early-component-v2'
 OFFICIAL=Path('/opt/intel/oneapi/compiler/2026.2')
 NATIVE=['src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','bench/sycl/topk_early.cpp']
 FLAGS=['-std=c++20','-O3','-DNDEBUG','-g0','-fsycl','-fsycl-id-queries-range=size_t',
@@ -174,6 +174,20 @@ def prepare(data):
     require(closed['passed'] and closed['ownership_closed'] and not closed['active'] and
         not closed['fresh_faults'] and closed['retirement']['complete'],'closed official component basis required')
     rt,full=runtime();revision=git('rev-parse','HEAD').decode().strip();pins=source_pins(revision)
+    predecessor=data['qsa_topk_early_component_v1']
+    require(predecessor['build_passed'] and predecessor['ownership_closed'] and not predecessor['active'] and
+        predecessor['source_review']['source_mechanism_supported'] and
+        not predecessor['source_review']['bounded_execution_accepted'],
+        'preserve unexecuted V1 source-review condition')
+    require(digest(predecessor['inputs']['path'])==predecessor['inputs']['sha256'],'original V1 input manifest changed')
+    previous=json.loads(Path(predecessor['inputs']['path']).read_text())
+    require(set(pins)==set(previous['project']),'V2 project input set differs')
+    changed=sorted(n for n,h in pins.items() if h!=previous['project'][n])
+    require(changed==['tools/sycl/test_topk_plan.py','tools/sycl/topk_early.py'],
+        'V2 may change only controller and host plan tests')
+    require(generator.proof()==predecessor['generator_proof'],'V2 GPU constructor differs')
+    require({n:hashlib.sha256(v).hexdigest() for n,v in generator.generated().items()}==previous['generated'],
+        'V2 generated native inputs differ')
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','generated'):(ROOT/name).mkdir(mode=0o700)
     generated=generator.generated()
@@ -204,10 +218,15 @@ def prepare(data):
         host_link_inventory=inventory,commands=commands(),build_workdir=str(ROOT),build_environment=build_env,
         native_environment=native_env,cases=cases,build_limits=BUILD_LIMITS,run_limits=RUN_LIMITS,
         active=False,ownership_closed=True,passed=False,
+        predecessor=dict(scope='qsa_topk_early_component_v1',source_commit=predecessor['source_commit'],
+            source_build_record='ed5f7680f',original_inputs=copy.deepcopy(predecessor['inputs']),
+            original_binary=copy.deepcopy(predecessor['binary']),changed_project_inputs=changed,
+            unchanged_project_inputs=len(pins)-len(changed),generated_inputs_unchanged=True,
+            scope_limit='Same native fixture/headers/GPU constructor bytes for source-audit applicability only. New official build required;no native execution qualification is inherited.'),
         contract='Exact selected integer IDs,including ascending ties,NaNs,zeros,partial4-cell budgets and zero-weight spare. Independent numeric per-cell ranking;capture/normal output correspondence and exact pass counts. No floating arithmetic change or production/decode hook.',
         numerical_plan='Host canary;four normal/counter compiled properties;traced17cell/3query/cap5smoke;26host admission refusals and145device cases over18context endpoints x8patterns plus mixed invalid/zero steps. Actual final262144addresses are selector component coverage,not full-model context qualification.',
         performance_plan='Three fresh processes;6scenarios(context32768/65536/117488 x positive varied/quantized-tie scores),256causal queries,capacity131072,cap2051,1024calls/batch,checked drain every64calls. Qualification warms each normal arm twice plus one capture. Retain first timing pair(-1) separately,then3rotating matched pairs(0..2).144batches total. AllCPU references,uploads,allocations and output checks outside timing. Direct actual kernel events and enclosing wall;both>=20ms,1000-clock p99<=10us,subsequent5empty-control median<=5percent minimum wall.',
-        acceptance='For EACH enclosing wall and direct GPU service:all18process/scenario paired-median ratios<=1.01 AND geometric mean<=0.99. This is a prospectively bounded component screen,not model adoption. Complete all144batches unless a source/runtime/review/owner/fault/budget/correctness/timer gate fails. No retry,replacement,exclusion or speed-based stop. Performance miss prohibits model trial.',
+        acceptance='Each comparison process must show positive actual saved radix passes in at least one of its six complete timed scenarios. Mixed positive/zero cases stay eligible;keep tie cases and all144samples. For EACH enclosing wall and direct GPU service:all18process/scenario paired-median ratios<=1.01 AND geometric mean<=0.99. This is a prospectively bounded component screen,not model adoption. Complete all144batches unless a source/runtime/review/owner/fault/budget/correctness/mechanism/timer gate fails. No retry,replacement,exclusion or speed-based stop. Performance miss prohibits model trial.',
         resource_hypothesis='Top-k accounts4.428919159s in the source-bound9a79profile. Early completion removes global score scans and WG reductions;singleton-key recovery adds one scan/reduction only when needed for partial budgets. This tests GPU service/issue cost,not physical VRAM/PCIe saturation. No H2D within timing.',
         provenance='Main-authored fixture/controller;build/owner/environment checks derive from e10997bdd. Private Mapping1source constructor derives from selected6e40,repository LICENSE;no XeStrata implementation input.',
         retention='One imminent integer-selector component executable;no third engine. Selected6e40/candidate9a79 and their required fixtures remain for current qualification;legacy provenance holds unchanged. Keep compact correctness/fault/branch counts and all144individual timing samples. Retire component objects,traces,generated snapshots and consumed audit at decision after exact Git recovery.')
@@ -224,12 +243,29 @@ def case_checks(parsed,expected):
                 'invalid actual pass counters')
 
 
+def timed_mechanism(cases):
+    case_checks({'CASE':cases},6)
+    observed={}
+    for c in cases:
+        pair=(int(c['cells']),int(c['pattern']))
+        require(pair not in observed and int(c['queries'])==256 and int(c['capacity'])==131072 and
+            int(c['cap'])==2051 and c['invalid']=='0','timed mechanism shape/count differs')
+        saved,stopped=int(c['saved_passes']),int(c['stopped_queries'])
+        require(0<=saved<=7*256 and (saved>0)==(stopped>0),'inconsistent radix savings')
+        observed[pair]=dict(saved_passes=saved,stopped_queries=stopped)
+    require(set(observed)=={(n,p) for n in (32768,65536,117488) for p in (0,1)},
+        'incomplete timed mechanism census')
+    require(any(v['saved_passes']>0 for v in observed.values()),'comparison process saved no radix passes')
+    return observed
+
+
 def decision(measurements):
     cases=[m for m in measurements if m['kind']=='compare']
     require(len(cases)==3 and [m['argv'][-1] for m in cases]==['0','1','2'] and
         len({m['process']['pid'] for m in cases})==3,'three distinct ordered processes required')
     ratios={k:[] for k in ('wall_s','service_s')};groups=[]
     for process,m in enumerate(cases):
+        savings=timed_mechanism(m['cases'])
         samples=m['samples'];require(len(samples)==48,'48timing samples per process required')
         observed=set()
         for s in samples:
@@ -252,7 +288,8 @@ def decision(measurements):
             statistics.median(controls)<=.05*min(float(s['wall_s']) for s in samples),'empty-control overhead')
         for scenario in range(6):
             by={(int(s['repetition']),int(s['arm'])):s for s in samples if int(s['scenario'])==scenario}
-            group=dict(process=process,scenario=scenario,metrics={})
+            group=dict(process=process,scenario=scenario,
+                radix_savings=savings[((32768,65536,117488)[scenario//2],scenario%2)],metrics={})
             for key in ratios:
                 paired=[float(by[(rep,1)][key])/float(by[(rep,0)][key]) for rep in range(3)]
                 median=statistics.median(paired);ratios[key].append(median)
@@ -345,6 +382,7 @@ def run(data):
             if kind=='compare':
                 case_checks(parsed,6);require(len(parsed['SCENARIO'])==6 and all(s['inputs']==s['guards']=='PASS'
                     for s in parsed['SCENARIO']),'scenario closure failed')
+                timed_mechanism(parsed['CASE'])
             measurements.append(dict(kind=kind,argv=case['argv'],passed=True,
                 process={k:entry.get(k) for k in ('pid','exit_code','elapsed_seconds','peak_session_rss_bytes',
                     'observation_complete','direct_child_reaped','session_empty')},
