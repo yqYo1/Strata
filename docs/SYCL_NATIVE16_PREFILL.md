@@ -98,7 +98,7 @@ screen separately requires all three candidate process medians at that length.
 The117K control may retain its legitimate512-slot/RAM-tail fallback;the candidate
 must admit all117488GPU rows and checked split storage. This is a new capacity
 question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
-the compact result. Ten processes close normally without fresh faults. Each
+the compact result. Eleven processes close normally without fresh faults. Each
 table cell uses its process's subsequent-three median;first-use and all
 individual samples remain in the compact result.
 
@@ -109,6 +109,7 @@ individual samples remain in the compact result.
 | 117489 | 3 | 908.2 | 673.9 | 0.74198251 | 129.664 / 174.580 |
 | 65537 | 1 | 869.9 | 878.8 | 1.01017066 | 75.480 / 74.722 |
 | 65537 | 2,reverse order | 795.0 | 880.4 | 1.10739703 | 82.677 / 74.591 |
+| 65537 | 3,control pending | 775.2 | pending | pending | 84.824 / pending |
 
 All three117K head-on processes admit117488GPU rows,128staged slots and checked split
 storage in all requests. All three control processes use81920GPU rows first,73728
@@ -129,8 +130,10 @@ The third117K candidate median is129367.1ms;its jobs and requested transfer
 counts match the earlier candidate requests. Its lower throughput is retained
 without an attribution to noise or clock/thermal behavior. Its control median
 is174353.3ms. Both arms are slower than their earlier processes;the paired gain
-does not resolve that absolute variation. Two further64K processes still run
-under the frozen no-speed-based-stop plan.
+does not resolve that absolute variation. The third64K candidate median is
+84544.8ms,with the same jobs and requested transfer counts as the earlier64K
+candidate requests. Its slower samples remain original eligible outcomes. The
+last64K control process is pending under the frozen no-speed-based-stop plan.
 The candidate is unadopted. This does not
 identify physical PCIe/VRAM/arithmetic saturation or attribute the64K difference
 solely to head-copy cost.
