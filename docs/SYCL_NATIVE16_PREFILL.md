@@ -1795,10 +1795,22 @@ These are synthetic integer-reader screens under the official2026.2 component
 runtime,not model speed or a PCIe/cache/staging explanation. V1 creates a new
 queue/workspace and performs full CPU checking between timed batches;these
 costs are outside its timer. Its original timing eligibility remains passed.
-Next compare bounded2/4/8-expert groups with identical destinations and consumers,
-persistent queue/workspace,and GPU verification cross-checked against small CPU
-oracles. Preserve expert/math order and decode;add no host packing,overfetch or
-model VRAM. No model trial follows from either rejected screen.
+The separately frozen bounded2/4/8-expert comparison now also closes without a
+fresh fault. All10small traced CPU-oracle cases and864comparison batches pass
+correctness,ownership and timing eligibility. No group passes its36prospective
+process/shape gates:geometric-mean candidate/reference time ratios are1.000179,
+1.003995 and1.008300 for groups2,4 and8. All observed copy/reader overlaps are
+zero. These results reject bounded grouping for this persistent synthetic
+fixture;they do not identify PCIe saturation or explain the older V1 variation.
+Keep all864individual timing vectors and the compact decision in
+`prefill_copy_batch_v2`;no production-consumer or model trial follows. The
+component build,normal logs and consumed audit/review can now retire after
+original-source/recipe recovery. Prefill and decode implementations are unchanged.
+Next retrieve the existing parallel-normalizer contract findings before selecting
+another QSA experiment. That earlier proposal was deferred without a GPU run,
+not rejected on performance. A different prospective criterion must follow the
+maintained actual-model SGLang/vLLM numerical policy;it cannot relabel the old
+deferral or inherit numerical/model qualification.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
