@@ -250,8 +250,15 @@ old0.5%screen. That original decision stays failed;the screen is not a user
 requirement or a reason to discard a reproducible smaller improvement. A new
 prospective comparison will assess it without that blanket minimum. The current
 seven-executable source already contains row64 and its pre-exec selector,so no
-new native build is implied. Qualify its actual route/numerics before the model
-comparison;decode processing remains independently selected. See
+new native build is implied. Three fresh same-build row64 device processes now
+pass tiny/large/public-route checks,with10/24/6actual row64 launches,no original
+or row128 launches,quiet validation,normal exit and no fresh driver fault.
+Large coverage includes63/64/65row tiles and117488primary/tail rows;the public
+entry falls back at2333rows and selects row64 at2334/2335/8192on both maps.
+See `official_row64_device_v1` in the compact result,controllerbe06c07b2.
+This qualifies the component and dispatch,not current model speed,TTFT,quality,
+decode preservation or physical262144. A same-ELF original/row64 matched model
+comparison is next;decode processing remains independently selected. See
 [the cumulative performance CSV](../bench/performance-records.csv).
 Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
 oriented,in the same binary. The planned user selector is

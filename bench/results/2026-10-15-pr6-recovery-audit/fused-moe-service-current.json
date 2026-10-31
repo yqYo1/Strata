@@ -55706,7 +55706,7 @@
     }
   },
   "prefill_candidate_selection": {
-    "stage": "source_audited_execution_pending",
+    "stage": "component_qualified_model_pending",
     "development_candidate": "split117K Down-row64",
     "historical_evidence": {
       "commit": "e45c24afec2ccc42928d97b39352f8b0c1590029",
@@ -55737,7 +55737,21 @@
       "selector": "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL=row64 before native exec",
       "same_seven_ELF_generation": true,
       "new_native_build": false,
-      "row64_current_generation_component_and_model_qualified": false
+      "row64_current_generation_component_and_model_qualified": false,
+      "row64_current_generation_component_qualified": true,
+      "row64_current_generation_model_qualified": false,
+      "component_qualification": {
+        "result_commit": "eed24831d2ffd96ad19d4e525af5db6ee3347d57",
+        "key": "official_row64_device_v1",
+        "closed_native_processes": 3,
+        "actual_row64_kernel_launches": [
+          10,
+          24,
+          6
+        ],
+        "fresh_faults": [],
+        "new_native_build": false
+      }
     },
     "decision": "Revalidate the faster owned path with current safety fixes;no blanket minimum percentage gate for future gains. Original failed screens remain unchanged.",
     "deferred_collector": {
@@ -55749,7 +55763,7 @@
       "existing_trace_reader_CPU_tests": 13,
       "retired_to_Git": true
     },
-    "next_action": "Commit a bounded same-build row64 tiny/smoke/public-route qualification before model execution;then matched PP/TTFT comparison and current-generation multi-length curve. Preserve decode and physical262144 correctness gates."
+    "next_action": "Commit a same-ELF original/row64 matched117K PP and client-TTFT comparison with repeated independent processes and no blanket minimum gain;then characterize current-generation multi-length behavior. Preserve independent decode and physical262144 correctness gates. No model comparison is prepared/executed yet."
   },
   "official_row64_device_v1": {
     "stage": "qualified",
@@ -56330,6 +56344,15 @@
           "device": "0xe20c",
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
+        },
+        "raw_retirement": {
+          "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-row64-device-2.json",
+          "manifest_sha256": "ddc68c0ef2ac376411c50638589c7f7c9d6c6188b77afa6a946eb64025221813",
+          "files": 7,
+          "bytes": 665580,
+          "complete": true,
+          "verified_absent": true,
+          "remaining_consumer": "Retain cohort source/ELF/provider proof for the imminent current-generation model comparison; no successful raw outputs."
         }
       }
     ],
