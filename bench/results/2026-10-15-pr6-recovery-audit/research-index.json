@@ -18377,5 +18377,27 @@
       "report_bytes": 19195
     },
     "former_report_path": ".cache/research/2026-10-31/moe_production_bounded_progress_20261031.md"
+  },
+  "official_model_esimd_image_contract_20261031": {
+    "classification": "decision support",
+    "status": "eligible-current-artifact-audit",
+    "schedulable_now": true,
+    "question": "Audit the actually built official2026.2 full engine ESIMD image/subgroup contract before model adoption. Relate effective JIT/AOT/RDC/offload-driver flags and available retained object/ELF metadata to declared ESIMD entrypoints used by native IQ3/IQ2/MMVQ decode and prefill. The old CMake comment about oneAPI2026.1.1 is historical,not proof about2026.2. Distinguish actual source/metadata violations,unverified properties and documented runtime refusals;identify the minimal missing bounded qualification or useful optimization only when evidence supports it. No generic driver survey or performance claim.",
+    "prerequisite_evidence": {
+      "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
+      "native_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/source",
+      "build_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build",
+      "engine": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/strata",
+      "engine_sha256": "152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354",
+      "compile_database_sha256": "9451e4b27b9d7d2776fc0cc81fdac80b2fd914b9cd255d609f4e7bb022bf1abf",
+      "component_gates": "13closed official same-build processes passed,including Top-k/TLA/GU/Down;no model/ESIMD-wide qualification inferred.",
+      "imminent_consumer": "official_model_entry_v1 one32Kbench.sh diagnostic,same fixed native source."
+    },
+    "report_path": ".cache/research/2026-10-31/official_model_esimd_image_contract_20261031.md",
+    "report_budget_bytes": 16384,
+    "report_budget_words": 2000,
+    "constraints": "Read-only code/artifact/primary-source audit. Write only report. No Git/build/test/GPU/profiler/process inspection/package/reset/product changes or child agents. Static ELF/object inspection is allowed;never execute a candidate or initialize GPU. No XeStrata code/helpers/tests/compiler.",
+    "review": "Native Codex gpt-6-luna/max;Main reads short operational digest.",
+    "next_review": "Returned report/source-specific evidence before adoption. Mere absence from component coverage is not a proven safety fault. Main continues frontend/source work and bounded model progression."
   }
 }
