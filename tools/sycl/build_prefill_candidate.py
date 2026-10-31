@@ -6,6 +6,7 @@ retire the superseded selected6e40 binaries after source/consumer verification.
 Compilation does not qualify GPU execution, either profile, or model performance.
 """
 import fcntl
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -21,14 +22,17 @@ import measure_gdn_scheduling as component
 import prefill_strategy_sources as source
 
 P, B, RESULT = base.P, base.B, base.RESULT
-ROOT, KEY = B / 'official-prefill-strategies-v1', 'official_prefill_strategies_build_v1'
+ROOT = B / 'official-prefill-strategies-v1'
+OLD_KEY, KEY = 'official_prefill_strategies_build_v1', 'official_prefill_strategies_build_v2'
+RECORD = ROOT / 'record-v2.json'
+FAILED_COMMIT = 'dd94c45dbcb70cfda4e6308f916c2e2e7c446d72'
 TARGETS = (*base.TARGETS, 'sycl_gdn_columns_bench')
 require, digest, write = base.require, base.digest, base.write
 COMPONENT_EVIDENCE = 'c170d64631a262c8bfdac59f982a52882c736fac'
 
 
-def controls(revision):
-    return base.controls(revision, controller=Path(__file__).resolve())
+def controls(revision, **reuse):
+    return base.controls(revision, controller=Path(__file__).resolve(), **reuse)
 
 
 def compact(row):
@@ -36,7 +40,7 @@ def compact(row):
 
 
 def save(row):
-    write(ROOT / 'record.json', row)
+    write(RECORD, row)
     data = json.loads(RESULT.read_text()); data[KEY] = compact(row); write(RESULT, data)
 
 
@@ -100,9 +104,15 @@ def prepare():
 
 
 def current():
-    row=json.loads((ROOT/'record.json').read_text())
+    row=json.loads(RECORD.read_text())
     require(base.committed(RESULT)[KEY] == compact(row), 'commit exact preceding build plan/result')
-    require(controls(row['source_commit']) == row['controller_inputs'], 'candidate controls changed')
+    return verify_inputs(row)
+
+
+def verify_inputs(row):
+    admission=row.get('controller_admission')
+    reuse=dict(reuse_revision=admission['revision'],controller_changes=tuple(admission['changed_paths'])) if admission else {}
+    require(controls(row['source_commit'],**reuse) == row['controller_inputs'], 'candidate controls changed')
     prior, providers, probe=retained()
     require(prior['binaries']==row['retained_current_binaries'] and probe==row['native_validation_probe'],
             'current reference/probe changed')
@@ -130,6 +140,34 @@ def current():
     return row,allowed
 
 
+def attest_outputs(row,allowed,out):
+    found={str((Path(s.strip()) if Path(s.strip()).is_absolute() else ROOT/'build'/s.strip()).resolve())
+           for s in out.read_text().splitlines() if s.startswith('    ') and s.strip()}
+    require(len(found)>=1000 and str(ROOT/'source/include/strata/prefill/strategy.hpp') in found
+            and all(allowed.get(p)==digest(p) for p in found),'unplanned/missing actual compiler input')
+    db=ROOT/'build/compile_commands.json';attestation=[]
+    for entry in json.loads(db.read_text()):
+        argv=entry.get('arguments') or shlex.split(entry['command'])
+        path=Path(entry['file'])
+        if not path.is_relative_to(ROOT/'source'):continue
+        name=str(path.relative_to(ROOT/'source'))
+        if name not in ('src/prefill/prefill.cpp','src/program/generate.cpp','src/kernels/sycl/fused_gdn.cpp','bench/sycl/gdn_columns.cpp'):continue
+        required=['-fsycl','-DSTRATA_ENABLE_SYCL=1','-O3','-DNDEBUG','-std=c++20']
+        if name!='src/program/generate.cpp':required+=['-fno-fast-math','-ffp-contract=off']
+        require(Path(argv[0]).resolve()==Path(base.COMPILER).resolve() and all(a in argv for a in required)
+                and not any(a in argv for a in ('-ffast-math','-Ofast','-ffp-contract=fast')),'candidate compile options differ: '+name)
+        attestation.append(dict(source=name,output=argv[argv.index('-o')+1],required_options=required,
+            argv_sha256=hashlib.sha256(json.dumps(argv).encode()).hexdigest()))
+    require(len(attestation)==5 and sum(a['source']=='src/kernels/sycl/fused_gdn.cpp' for a in attestation)==2,
+            'production/fixture GDN and policy command attestation missing')
+    write(ROOT/'compiler-inputs.json',{p:allowed[p] for p in sorted(found)})
+    row.update(stage='built-not-executed',passed=True,
+        compiled_inputs=dict(path=str(ROOT/'compiler-inputs.json'),sha256=digest(ROOT/'compiler-inputs.json'),files=len(found)),
+        compile_command_attestation=dict(database_sha256=digest(db),units=attestation),
+        actual_link_inputs=base.traced_link_inputs(allowed,ROOT),
+        binaries={n:dict(path=str(ROOT/'build'/n),sha256=digest(ROOT/'build'/n),bytes=(ROOT/'build'/n).stat().st_size) for n in TARGETS})
+
+
 def compile_candidate():
     row,allowed=current()
     require(row['stage']=='prepared' and not (ROOT/'owned-build').exists(),'one fresh build only')
@@ -138,7 +176,7 @@ def compile_candidate():
             'recover and retire superseded selected6e40 binaries before creating another engine generation')
     deadline=time.monotonic()+row['whole_wall_seconds'];owner=None
     def persist():
-        write(ROOT/'record.json',dict(row,commands_executed=owner.commands if owner else [],
+        write(RECORD,dict(row,commands_executed=owner.commands if owner else [],
                                     active=bool(owner and owner.active)))
     def monitor(io,entry):
         next_size=0.
@@ -158,29 +196,7 @@ def compile_candidate():
             require(base.supervision.closed(entry) and entry['exit_code']==0,
                     label+': '+(out.read_text(errors='replace')+err.read_text(errors='replace'))[-4000:])
         current()
-        found={str((Path(s.strip()) if Path(s.strip()).is_absolute() else ROOT/'build'/s.strip()).resolve())
-               for s in out.read_text().splitlines() if s.startswith('    ') and s.strip()}
-        require(len(found)>=1000 and str(ROOT/'source/include/strata/prefill/strategy.hpp') in found
-                and all(allowed.get(p)==digest(p) for p in found),'unplanned/missing actual compiler input')
-        db=ROOT/'build/compile_commands.json';attestation=[]
-        for entry in json.loads(db.read_text()):
-            argv=entry.get('arguments') or shlex.split(entry['command'])
-            name=str(Path(entry['file']).relative_to(ROOT/'source'))
-            if name not in ('src/prefill/prefill.cpp','src/program/generate.cpp','src/kernels/sycl/fused_gdn.cpp','bench/sycl/gdn_columns.cpp'):continue
-            required=['-fsycl','-DSTRATA_ENABLE_SYCL=1','-O3','-DNDEBUG','-std=c++20']
-            if name!='src/program/generate.cpp':required+=['-fno-fast-math','-ffp-contract=off']
-            require(Path(argv[0]).resolve()==Path(base.COMPILER).resolve() and all(a in argv for a in required)
-                    and not any(a in argv for a in ('-ffast-math','-Ofast','-ffp-contract=fast')),'candidate compile options differ: '+name)
-            attestation.append(dict(source=name,output=argv[argv.index('-o')+1],required_options=required,
-                argv_sha256=hashlib.sha256(json.dumps(argv).encode()).hexdigest()))
-        require(len(attestation)==5 and sum(a['source']=='src/kernels/sycl/fused_gdn.cpp' for a in attestation)==2,
-                'production/fixture GDN and policy command attestation missing')
-        write(ROOT/'compiler-inputs.json',{p:allowed[p] for p in sorted(found)})
-        row.update(stage='built-not-executed',passed=True,
-            compiled_inputs=dict(path=str(ROOT/'compiler-inputs.json'),sha256=digest(ROOT/'compiler-inputs.json'),files=len(found)),
-            compile_command_attestation=dict(database_sha256=digest(db),units=attestation),
-            actual_link_inputs=base.traced_link_inputs(allowed,ROOT),
-            binaries={n:dict(path=str(ROOT/'build'/n),sha256=digest(ROOT/'build'/n),bytes=(ROOT/'build'/n).stat().st_size) for n in TARGETS})
+        attest_outputs(row,allowed,out)
     except BaseException as error:row.update(stage='failed',passed=False,error=repr(error))
     finally:
         require(owner is None or owner.active is None,'CPU build owner remains unresolved')
@@ -190,9 +206,57 @@ def compile_candidate():
     print('Eight candidate executables built;GPU/model/two-profile qualification remains pending.',flush=True)
 
 
+def prepare_attestation_recovery():
+    data=base.committed(RESULT)
+    require(KEY not in data and not RECORD.exists(),'fresh attestation recovery only')
+    oldpath=ROOT/'record.json';old=json.loads(oldpath.read_text())
+    require(data[OLD_KEY]==compact(old) and old['stage']=='failed' and not old['passed']
+            and old['ownership_closed'] and not old['active'] and not old['GPU_executed']
+            and len(old['commands_executed'])==3 and all(base.supervision.closed(v) and v['exit_code']==0
+                for v in old['commands_executed']) and old['error'].startswith('ValueError('),
+            'unchanged closed metadata failure after three successful build commands required')
+    archived=json.loads(base.basis.build.git(P,'show',FAILED_COMMIT+':'+str(RESULT.relative_to(P))))
+    require(archived[OLD_KEY]==compact(old),'original failure archive differs')
+    revision=base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
+    row=copy.deepcopy(old)
+    row['controller_admission']=dict(revision=revision,changed_paths=['tools/sycl/build_prefill_candidate.py'],
+        native_sources_recipe_and_build_commands_unchanged=True)
+    verify_inputs(row)
+    names=[name for name in old['commands_executed'][-1]['logs'] if name.endswith('.stdout')]
+    require(len(names)==1,'one original dependency output required')
+    matches=list((ROOT/'owned-build').rglob(names[0]));require(len(matches)==1,'original dependency log path ambiguous')
+    dependencies=matches[0];require(digest(dependencies)==old['commands_executed'][-1]['logs'][names[0]]['sha256'],
+                                   'original dependency output changed')
+    row.update(stage='pending-attestation',passed=False,
+        original_build_failure=dict(commit=FAILED_COMMIT,key=OLD_KEY,source_commit=old['source_commit'],error=row.pop('error'),
+            record=dict(path=str(oldpath),sha256=digest(oldpath))),
+        attestation_freeze=dict(dependency_stdout=dict(path=str(dependencies),sha256=digest(dependencies)),
+            compile_database=dict(path=str(ROOT/'build/compile_commands.json'),sha256=digest(ROOT/'build/compile_commands.json')),
+            binaries={n:dict(path=str(ROOT/'build'/n),sha256=digest(ROOT/'build'/n),bytes=(ROOT/'build'/n).stat().st_size) for n in TARGETS}),
+        attestation_plan='CPU-only replay of complete actual compiler/link input and five production/fixture option attestations. Filter external dependency commands before project-relative path conversion. Frozen555native inputs,recipe,eight ELFs,dependency output and database must match;no recompilation or GPU execution. Original V1failure receipt stays unchanged. Stop on first mismatch;no hash refresh.')
+    save(row);print('Prepared separate controller-only attestation plan;commit before replay.',flush=True)
+
+
+def attest():
+    row,allowed=current();require(row['stage']=='pending-attestation','fresh pending attestation only')
+    frozen=row['attestation_freeze']
+    for item in [row['original_build_failure']['record'],frozen['dependency_stdout'],frozen['compile_database'],*frozen['binaries'].values()]:
+        require(digest(item['path'])==item['sha256'],'frozen recovery artifact changed')
+    try:
+        attest_outputs(row,allowed,Path(frozen['dependency_stdout']['path']))
+        require(row['binaries']==frozen['binaries'],'attestation changed native executable identities')
+        row['attestation_replayed_without_recompile']=True
+    except BaseException as error:row.update(stage='failed',passed=False,error=repr(error))
+    finally:save(row)
+    require(row['passed'],row.get('error','CPU attestation failed'))
+    print('Original compiled outputs independently attested;V1failure preserved;GPU execution pending.',flush=True)
+
+
 if __name__=='__main__':
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);base.guards.no_model_owners([])
         if sys.argv[1:]==['prepare']:prepare()
         elif sys.argv[1:]==['build']:compile_candidate()
-        else:raise RuntimeError('build_prefill_candidate.py prepare|build')
+        elif sys.argv[1:]==['prepare-attestation']:prepare_attestation_recovery()
+        elif sys.argv[1:]==['attest']:attest()
+        else:raise RuntimeError('build_prefill_candidate.py prepare|build|prepare-attestation|attest')
