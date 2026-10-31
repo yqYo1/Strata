@@ -27,7 +27,12 @@ The separate `official_prefill_strategies_build_v2` attestation now passes with
 unchanged555native source files,recipe and eight ELF hashes. Its controller-only
 admission revision is55a2fd578;native build source remainsf6cea2f63 and the
 original V1failure remains failed. No recompilation or GPU validation is implied.
-Fresh CLI/device and model qualification remain pending. Fourteen older
+V1CLI/device execution reaches21normal individual case exits,including GDN
+context,but its overall post-run gate fails:the controller compares its mutated
+result row with the committed initial plan. This bookkeeping failure remains
+failed;no GPU/numerical fault is observed. Freeze the initial plan separately
+in the V2controller and repeat its prospective cohort before model execution.
+Model qualification remains pending. Fourteen older
 provenance holds remain independent. No new legacy-compiler build runs.
 
 The first official2026.2replacement used
