@@ -18136,7 +18136,7 @@
   },
   "bounded_copy_gpu_verifier_source_audit_20261031": {
     "classification": "decision support",
-    "status": "source-audit-complete-review-pending",
+    "status": "source-audit-reviewed-bounded-execution-eligible",
     "schedulable_now": false,
     "worker_model": "Orca gpt-6-luna/high",
     "policy_commit": "ca8b6f57d",
@@ -18169,10 +18169,18 @@
     ],
     "acceptance": "Source-backed actionable bounds/lifetime/independence findings with exact locations and primary contracts;no implementation or performance claim.",
     "consumer": "Main-owned bounded-group fixture qualification;report review by native Codex gpt-6-luna/max before GPU.",
-    "next_review": "Main must assess native review digest before GPU execution. Keep report only through this current decision,then retain useful compact findings and retire transaction output.",
+    "next_review": "After bounded smoke/comparison closure,retain compact decision and retire full audit/review unless a concrete unresolved question needs them.",
     "report_sha256": "6a4a343faeb7179e545a2544ff29aa5901d5ce7b3d374eb4652044a8e5aa73dc",
     "report_bytes": 11853,
     "ownership_closed": true,
-    "review_status": "Native Codex gpt-6-luna/max review in progress;Main has not loaded original report body."
+    "review_status": "Native Codex gpt-6-luna/max completed;Main accepted bounded smoke only,then frozen comparison if smoke passes.",
+    "review_sha256": "10535eb75e583f362e244b8b0e209d197fe0f2226c52aefcd5179f36ac0c5664",
+    "review_bytes": 6647,
+    "source_blocker": false,
+    "limitations": [
+      "Status bits16/1/2 not deliberately fault-injected;normal bank/output CPU/GPU checks remain.",
+      "Private immutable CPU input is a caller precondition;this probe enforces ordinary vector-backed storage.",
+      "Callback false/throw/partial-run error paths are not dynamically qualified."
+    ]
   }
 }
