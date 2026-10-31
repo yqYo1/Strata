@@ -1824,6 +1824,15 @@ denominator fold. Commit the specific comparator,task limits and performance
 plan before building it. The earlier exact-target proposal remains deferred
 without a GPU run;this source evidence does not inherit numerical/model
 qualification or resolve the physical262144/decode-preservation gates.
+The isolated source05b870a68and prospective V2plan are committed. Its nine
+host evidence-gate checks pass. All eight compiler/link commands exit0,but the
+post-link inventory gate rejects an unfrozen GNU linker and13system link inputs;
+V2remains build-failed with no GPU execution. All726actual compiler inputs
+match the frozen source/SDK. The corrected V3controller queries the linker and
+CRT/archive/shared-library inputs under the exact build environment and freezes
+their bytes/package versions before a new build. The fixture,generated math,
+output criterion and old failure remain unchanged;source audit review still
+precedes GPU execution.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665

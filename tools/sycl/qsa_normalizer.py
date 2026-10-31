@@ -21,12 +21,13 @@ import build_fused_profile as closure
 import measurement_guards as guards
 import measurement_owner as supervision
 import qsa_normalizer_sources as generator
+import qsa_normalizer_link_inventory as host_link
 import relink_qsa_k_model as linking
 
 r, P, B = closure.r, closure.P, closure.B
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'qsa_parallel_normalizer_v2'
-ROOT = B / 'qsa-normalizer-official-v2'
+KEY = 'qsa_parallel_normalizer_v3'
+ROOT = B / 'qsa-normalizer-official-v3'
 OFFICIAL = Path('/opt/intel/oneapi/compiler/2026.2')
 NATIVE = ['src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
           'src/kernels/sycl/prompt_attention.cpp', 'bench/sycl/qsa_normalizer.cpp']
@@ -51,7 +52,7 @@ def public():
 
 
 def source_pins(revision):
-    names=set(NATIVE) | set(git('ls-files','include').decode().splitlines())
+    names=set(NATIVE) | set(git('ls-files','include').decode().splitlines()) | {'tools/sycl/test_qsa_normalizer.py'}
     pending=[Path(__file__).resolve()];seen=set()
     while pending:
         path=pending.pop()
@@ -104,6 +105,8 @@ def verify(row):
     sdk=json.loads(Path(row['sdk']['path']).read_text())
     require(len(sdk)==row['sdk']['files'] and all(digest(p)==h for p,h in sdk.items()),'frozen official SDK/host bytes changed')
     require(all(digest(p)==h for p,h in row['runtime_files'].items()),'official component provider changed')
+    require(host_link.inventory(str(OFFICIAL/'bin/icpx'),row['build_environment'])==row['host_link_inventory'],
+            'prospective host linker input inventory changed')
     require(digest(row['inputs']['path'])==row['inputs']['sha256'],'normalizer input manifest changed')
     inputs=json.loads(Path(row['inputs']['path']).read_text())
     require(inputs['project']==source_pins(row['source_commit']),'normalizer source/controller changed')
@@ -141,9 +144,15 @@ def prepare(data):
     require(sdk['sha256']==prior['sdk']['sha256'],'original/duplicate SDK manifests differ')
     old_lib=Path(next(p for p in rt['runtime_files'] if '/libsycl.so.' in p)).parent
     external={p:h for p,h in closure.external_inputs(rt).items() if not Path(p).is_relative_to(old_lib)}
-    write(ROOT/'inputs.json',dict(project=pins,generated={n:hashlib.sha256(v).hexdigest() for n,v in generated.items()},external=external))
     build_env=copy.deepcopy(prior['build_environment']);native_env=copy.deepcopy(prior['native_environment'])
     for env in (build_env,native_env):env.update(TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache'))
+    host_inventory=host_link.inventory(str(OFFICIAL/'bin/icpx'),build_env)
+    external.update(host_inventory['files'])
+    runtime_files=dict(prior['runtime_files'])
+    for name,h in host_inventory['files'].items():
+        with Path(name).open('rb') as stream:elf=stream.read(4)==b'\x7fELF'
+        if elf and '.so' in Path(name).name:runtime_files[name]=h
+    write(ROOT/'inputs.json',dict(project=pins,generated={n:hashlib.sha256(v).hexdigest() for n,v in generated.items()},external=external))
     native_env.pop('STRATA_TRANSFER_PROBE_GATES',None)
     native_env.pop('UR_LOG_TRACING',None);native_env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION'
     for name,value in dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',EnableDirectSubmission='0').items():
@@ -153,7 +162,9 @@ def prepare(data):
     cases += [dict(kind='compare',argv=['--compare',str(i)]) for i in range(3)]
     row=dict(stage='prepared',source_commit=revision,inputs=dict(path=str(ROOT/'inputs.json'),sha256=digest(ROOT/'inputs.json')),
         generator_proof=generator.proof(),sdk=sdk,runtime_sha256=digest(r.RESULT),selected_binary=full['binary'],
-        driver=guards.driver_guard(),boot=rt['boot'],runtime_files=prior['runtime_files'],preload=prior['preload'],
+        driver=guards.driver_guard(),boot=rt['boot'],runtime_files=runtime_files,preload=prior['preload'],
+        host_link_inventory=host_inventory,
+        predecessor='qsa_parallel_normalizer_v2 remains build-failed:all8commands exited0,but host linker inventory lacked the GNU linker/13system link inputs. No GPU execution or qualification inherited. This new scope prospectively queries and freezes those host files under the actual build environment.',
         commands=commands(),build_workdir=str(ROOT),build_environment=build_env,native_environment=native_env,cases=cases,
         build_limits=BUILD_LIMITS,run_limits=RUN_LIMITS,active=False,ownership_closed=True,passed=False,
         contract=dict(framework='SGLang',revision=contract['revision'],test=contract['newly_inspected_primary_test'],

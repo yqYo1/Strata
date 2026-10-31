@@ -43859,7 +43859,7 @@
     }
   },
   "qsa_parallel_normalizer_v2": {
-    "stage": "prepared",
+    "stage": "build-failed",
     "source_commit": "05b870a6877ecbe71b4626de6bf1139e565d5b05",
     "inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v2/inputs.json",
@@ -44355,6 +44355,45 @@
         "tools/sycl/test_qsa_normalizer.py"
       ],
       "scope": "Host-only evidence-cohort/numerical-policy refusal checks;not GPU numerics,performance or model validation."
+    },
+    "build_passed": false,
+    "error": "RuntimeError('unfrozen executed linker/compiler tool')",
+    "failure_analysis": {
+      "kind": "host_linker_inventory_incomplete",
+      "all8owned_commands_exit0": true,
+      "GPU_executed": false,
+      "exact_missing_tools": [
+        "/usr/bin/x86_64-linux-gnu-ld.bfd"
+      ],
+      "exact_missing_external_link_inputs": [
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o",
+        "/usr/lib/x86_64-linux-gnu/crti.o",
+        "/usr/lib/x86_64-linux-gnu/crtn.o",
+        "/usr/lib/x86_64-linux-gnu/libc.so",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a",
+        "/usr/lib/x86_64-linux-gnu/libdl.a",
+        "/usr/lib/x86_64-linux-gnu/libm.so",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a"
+      ],
+      "post_failure_compiled_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v2/compiled-inputs.json",
+        "sha256": "a339f77f5d3c875a7dcae406cd4667ee6b7281677b9ca98e183bfd9ab28bf8c4",
+        "files": 726,
+        "uncovered": 0
+      },
+      "limitation": "Dependency recovery only;original build_passed remains false. Freeze verified host linker and external link inputs in a new prospective scope;never refresh this failed inventory into success.",
+      "unqualified_ELF": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v2/normalizer_probe",
+        "bytes": 1389192,
+        "sha256": "750d44c71f20561722e63d8ed88efb9a3dc961ea3ed0001b9ce7014790f20b58",
+        "qualified": false
+      },
+      "remaining_provenance": "Compiler inputs726were frozen and recovered. Host linker/13external link inputs lacked pre-link pins;no link-time hashes or qualification are inherited. Close this failed generation and freeze all queried host inputs before a new build. No numerical GPU execution occurred."
     }
   }
 }
