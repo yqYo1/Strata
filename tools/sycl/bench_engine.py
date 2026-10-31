@@ -182,8 +182,12 @@ def compact_window_census(windows):
         limits='Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.')
 
 
-def compact_host_resource_profile(profile):
+def compact_host_resource_profile(profile, job_groups=((1, 2333), (2334, 8192))):
     """Keep aggregate attribution after validating every request/layer/window."""
+    guards.require(job_groups and job_groups[0][0] == 1 and job_groups[-1][1] == 8192 and
+        all(type(lo) is int and type(hi) is int and lo <= hi for lo, hi in job_groups) and
+        all(left[1] + 1 == right[0] for left, right in zip(job_groups, job_groups[1:])),
+        'job groups must partition 1..8192 without gaps or overlap')
     census = compact_window_census(profile['planned_moe_windows'])
     histogram = census.pop('aggregate_job_rows_histogram')
     census.pop('layer_rows_jobs')
@@ -192,7 +196,7 @@ def compact_host_resource_profile(profile):
     census['job_size_groups'] = [dict(min_rows=lo, max_rows=hi,
         jobs=sum(count for rows, count in histogram if lo <= rows <= hi),
         routed_rows=sum(rows * count for rows, count in histogram if lo <= rows <= hi))
-        for lo, hi in ((1, 2333), (2334, 8192))]
+        for lo, hi in job_groups]
     guards.require(sum(group['jobs'] for group in census['job_size_groups']) == census['jobs'] and
         sum(group['routed_rows'] for group in census['job_size_groups']) == census['routed_rows'],
         'compact job groups lost work')
@@ -382,12 +386,14 @@ def validate_window_work(work, gu, down, read_tokens, window_rows):
     validate_fusion_counts(down, jobs, routed_rows)
 
 
-def extract_planned_moe_work(log, expected_window_pairs=None):
+def extract_planned_moe_work(log, expected_window_pairs=None, maximum_window_rows=81920):
     """Check source-emitted plans against retired totals, without GPU observers.
 
     This reads one request interval. It does not reconcile API/device work or
     establish the number of records a complete API collector will emit.
     """
+    guards.require(type(maximum_window_rows) is int and maximum_window_rows in (81920, 117488),
+                   'unsupported prospective window bound')
     record = {}
     prefix = 'strata MoE planned job census: '
     record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]
@@ -402,7 +408,7 @@ def extract_planned_moe_work(log, expected_window_pairs=None):
     for window in record['planned_moe_windows']:
         guards.require(type(window['version']) is int and window['version'] == 1 and
             type(window['layer']) is int and 0 <= window['layer'] < 48 and
-            type(window['rows']) is int and 1 <= window['rows'] <= 81920 and
+            type(window['rows']) is int and 1 <= window['rows'] <= maximum_window_rows and
             type(window['first_row']) is int and window['first_row'] >= 0 and
             type(window['jobs']) is int and window['jobs'] > 0, 'invalid planned window')
         for name, minimum, maximum in (('job_rows_histogram', 1, min(8192, window['rows'])),
@@ -429,16 +435,16 @@ def extract_planned_moe_work(log, expected_window_pairs=None):
         retired['source_H2D_bytes'] == total_rows * 10 * 4 and
         retired['dequants'] <= total_jobs and retired['operator_max'] == 8192 and
         retired['GPU_resident_windows_only'] == 1 and
-        max(w['rows'] for w in record['planned_moe_windows']) <= retired['maximum_rows'] <= 81920,
+        max(w['rows'] for w in record['planned_moe_windows']) <= retired['maximum_rows'] <= maximum_window_rows,
         'planned/retired job totals differ')
     record['retired_moe_totals'] = totals
     return record
 
 
 def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None,
-                             expected_window_pairs=None):
+                             expected_window_pairs=None, maximum_window_rows=81920):
     """Validate one long-request interval; never aggregate across requests."""
-    record = extract_planned_moe_work(log, expected_window_pairs)
+    record = extract_planned_moe_work(log, expected_window_pairs, maximum_window_rows)
     total_jobs = sum(w['jobs'] for w in record['planned_moe_windows'])
     total_rows = sum(w['rows'] for w in record['planned_moe_windows'])
     record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(

@@ -146,10 +146,11 @@ byte count,then uploads two maps totalling `rows*K*8`;the counter omits the othe
 map and readback. It does not count dequantized weights or RAM-tail fallback
 traffic. See `moe_window.inc` router readback,map upload and `owner.source_bytes`,
 and `layer_major.inc`'s final counter. This source-semantic correction changes
-no original samples or comparison criteria;rename the parser field after the
-frozen cohort closes. These remain requested bytes,not measured bus traffic.
-The next resource-controller source is isolated on `work/prefill-resource-profile`,
-commitf03176660;it is not integrated or model-executed. Static review of this
+no original samples or comparison criteria. New resource results call it
+`requested_one_routing_map_H2D_bytes`;the closed comparison's original fields
+remain unchanged. These remain requested bytes,not measured bus traffic.
+The next resource-controller source,commitf03176660,is now integrated into
+`feature/sycl`;it is not model-executed. Static review of this
 exact native generation found that `src/prefill/sycl/gemm16.cpp` rejects command
 profiling together with GU/Down fusion. The prospective pair therefore retains
 both production fusion settings and disables that unsupported observer in both
@@ -158,8 +159,8 @@ clocks,without a per-kernel service or hardware-saturation claim. Its CPU-only
 `selfcheck` passes two ordinary/split controls,nine rejection cases,the127/128and
 2333/2334shape-group boundaries and both fused observer environments. The
 historical81920default stays fixed;117488requires an explicit prospective bound.
-After the frozen cohort closes,merge the source and prepare/qualify the
-clean-versus-observed pair. Retire the temporary branch after its original
+The frozen cohort is closed;next prepare/qualify the clean-versus-observed pair.
+Retire the temporary branch after its original
 commits are also verified reachable from the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
 temperature and energy counters,while xpu-smi reports some corresponding
