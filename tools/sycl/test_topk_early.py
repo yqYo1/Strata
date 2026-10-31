@@ -55,6 +55,9 @@ def radix_model(scores, n, width, early):
         mask |= 15 << shift
         if early and rank == histogram[digit]:
             break
+        if early and histogram[digit] <= 4:
+            threshold = max(k for k, weight in weighted if weight and k & mask == threshold)
+            break
     greater = sum(weight for k, weight in weighted if k > threshold)
     budget, result = width - greater, []
     for b, (k, weight) in enumerate(weighted):
@@ -97,6 +100,10 @@ class EarlyCompletion(unittest.TestCase):
                 scores = [1.] * (n // 4 + 1)
                 self.assertEqual(radix_model(scores, n, width, True)[0], list(range(width)))
         self.assertLess(radix_model([1., 2., 3., 4., float('inf')], 16, 4, True)[1], 8)
+        # Three cells from one full block need its exact key,not its prefix.
+        got, passes = radix_model([1., 2., 3., 4., float('inf')], 16, 3, True)
+        self.assertEqual(got, [12, 13, 14])
+        self.assertLess(passes, 8)
 
     def test_physical_context_end_and_tail(self):
         rng = random.Random(262144)

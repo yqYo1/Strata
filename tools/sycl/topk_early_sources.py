@@ -18,6 +18,21 @@ STOP = '''            // Higher digits are already selected. If the remaining ra
             // rank and histogram are replicated WG reductions, so this break
             // is workgroup-uniform, including zero-weight final blocks.
             if (rank == histogram[digit]) break;
+            // Every completed block weighs4; only the final block can weigh
+            // 1..3. A nonempty bucket weighing<=4 therefore contains exactly
+            // one positive-weight block. Fetch its full key before stopping:
+            // using only the prefix would overselect a partial block budget.
+            if (histogram[digit] <= 4) {
+              uint32_t unique_key = 0;
+              for (int64_t b = lo; b < hi; ++b) {
+                const uint32_t key = order(sc[b]);
+                if (weight(b) > 0 && (key & mask) == threshold)
+                  unique_key = key;
+              }
+              threshold = sycl::reduce_over_group(it.get_group(), unique_key,
+                                                    sycl::maximum<uint32_t>());
+              break;
+            }
 '''
 
 
@@ -123,6 +138,6 @@ def proof():
         reversible_selection_edits=1, reversible_common_counter_edits=len(COMMON),
         production_or_decode_changed=False,
         component_scope='Actual Mapping1 body and validation;private wrappers isolate the kernel mechanism,not production startup dispatch. Same WG256,scores,weighted rank,ties and ascending emission.',
-        mechanism='Stop only when remaining rank equals the complete selected radix bucket;no unselected lower bucket reaches the current prefix threshold.',
+        mechanism='Stop at complete selected bucket,or recover the full unique positive-weight block key when bucket weight<=4. The latter preserves partial-cell budgets. Both branches are WG-uniform.',
         counter_scope='Capture=true records0for uniform early returns,otherwise actual1..8passes. Normal instantiations have no counter stores;capture/normal exact outputs need device checks.',
         generated_sha256={k: hashlib.sha256(v).hexdigest() for k, v in generated().items()})
