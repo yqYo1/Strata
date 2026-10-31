@@ -18134,56 +18134,9 @@
       "temporary_review_retired": true
     }
   },
-  "qsa_normalizer_v2_source_audit_20261031": {
-    "classification": "decision support",
-    "status": "reviewed-bounded-v3-execution-accepted",
-    "schedulable_now": false,
-    "worker_model": "Orca gpt-6-luna/high",
-    "policy_commit": "629c3b811",
-    "source_commit": "05b870a6877ecbe71b4626de6bf1139e565d5b05",
-    "source_sha256": {
-      "bench/sycl/qsa_normalizer.cpp": "1a9d694e2abbfeb665ab47969c5db6ceb8864a28ed9f6c85b9884b3ef4159beb",
-      "tools/sycl/qsa_normalizer.py": "8d5cf147e733fc37edc4a8f31b91bc448aedf0111a45b8806e62c620130dae9f",
-      "tools/sycl/qsa_normalizer_sources.py": "07f5eeaf822546fce8b0cfaa5180fe4acf33e44a4fe8d2650bfb9521dbd818df"
-    },
-    "report": ".cache/research/2026-10-31/qsa_normalizer_v2_source_audit.md",
-    "report_budget_words": 2200,
-    "report_budget_bytes": 18000,
-    "question": "Audit the new official-SDK QSA one-fold fixture:buffer/DMA/capture lifetimes,valid coordinate/detail ranges,uniform subgroup participation,unchanged-state checks and pinned SGLang BF16 output comparator. Identify concrete source blockers to properties/tiny traced qualification;no generic arithmetic-proof or performance survey.",
-    "prerequisites": [
-      {
-        "item": "New fixture/controller and independent generator are committed/frozen",
-        "met": true,
-        "evidence": "05b870a6877ecbe71b4626de6bf1139e565d5b05"
-      },
-      {
-        "item": "Finite new source-safety decision consumer exists",
-        "met": true,
-        "evidence": "Main can build while audit runs;Main must review report before new fixture GPU execution."
-      },
-      {
-        "item": "Actual-model reference and revised prospective output criteria already pinned",
-        "met": true,
-        "evidence": "qsa_parallel_normalizer_v2.contract;SGLang877be2974 BF16test SHA99277da69,not an intermediate-state bound;old exact-target deferral unchanged."
-      }
-    ],
-    "acceptance": "Source-backed bounds/lifetime/capture/comparator findings with exact locations;separate smoke safety,coverage gaps,numerical limitations and performance/model qualification.",
-    "consumer": "Main-owned qsa_parallel_normalizer_v3 frozen properties/smoke/numerics/component screen;V2 remains build-failed.",
-    "next_review": "At V3 component closure:retain compact source findings and retire consumed audit/review.",
-    "report_sha256": "173cc911f5790960a6a3da581884860b94f2e84961e71a4f43c1cf5a298964b3",
-    "report_bytes": 10707,
-    "ownership_closed": true,
-    "review": {
-      "path": ".cache/research/2026-10-31/qsa_normalizer_v3_source_audit.review.json",
-      "sha256": "be6bfe5e47e30a5da42cab59f6756a43278b5b2d4919d834b958c2ad9642276e",
-      "bytes": 9963,
-      "reviewer": "native Codex gpt-6-luna/max",
-      "bounded_execution_accepted": true
-    }
-  },
   "official_selected_model_transition_20261031": {
     "classification": "decision support",
-    "status": "report-complete-native-review-running",
+    "status": "reviewed-with-operational-corrections",
     "schedulable_now": false,
     "policy_commit": "893226bb3",
     "question": "Map a reproducible official-oneAPI2026.2 whole-model transition for exact selected6e40 and split9a79 sources,using existing component coverage and unresolved repeated-GU stall evidence. Identify actual missing entrypoint/shape/ABI/lifetime gates and the smallest safe progression;no implementation or fresh broad runtime survey.",
@@ -18208,7 +18161,7 @@
     "report_budget_words": 2000,
     "report_budget_bytes": 16000,
     "consumer": "Main implementation of a matched official-SDK model build or a concrete missing component gate;native Codex gpt-6-luna/max reviews report first.",
-    "next_review": "Read only native-review digest;then select one finite official-model gate and retire consumed planning transactions at its decision.",
+    "next_review": "At the official model-transition readiness decision,carry only its concrete source/retention/gate choices and retire report/review transactions;no build authorized by this report alone.",
     "measurement_independence": "The active normalizer imports runtime_probe.components and ur_validation.preload_qualification,which consume only the unchanged committed UR_silent_validation_native_child_scope/preload_component subtree. No normalizer pinned source or qualification field changes.",
     "worker_model": "Orca gpt-6-luna/high",
     "run": "run_80ea8ebc9a8c",
@@ -18222,10 +18175,14 @@
     "report_sha256": "3f2eb90f044ac4ce6bcfb95f161ca5abcd62140debff42687ab20ae75909d505",
     "report_bytes": 10741,
     "native_review": {
-      "agent": "/root/review_official_selected_model_transition_20261031",
       "model": "gpt-6-luna",
       "effort": "max",
-      "status": "running"
-    }
+      "status": "complete",
+      "path": ".cache/research/2026-10-31/official_selected_model_transition.review.json",
+      "bytes": 9294,
+      "sha256": "12e518ffc149f7ca069598b15a8e7dca88c943bc4216b8f71d11f726406a027a",
+      "verdict": "accept_with_material_operational_corrections"
+    },
+    "digest": "Actual publicGU is FP16-input/BF16-output vllm/TLA;2048call stall remains unresolved. QSAfold rejected;next Main measured focus is Top-k. Before any official whole-model build,pin a serial transition that retains one known-good fallback and obeys the two-generation cap;no two extra engines. Preserve legacy SDK provenance hold and separate full-model/decode/262144 gates."
   }
 }

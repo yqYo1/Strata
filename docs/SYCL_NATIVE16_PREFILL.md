@@ -1843,6 +1843,10 @@ wall,attention and pack-plus-attention geometric-mean time ratios are1.001793,
 each metric;none meets the frozen no-regression/1percent-gain gate. No model
 trial or inference adoption follows. Preserve individual timings in
 `qsa_parallel_normalizer_v3`;production prefill/decode remain unchanged.
+The rejected official component and consumed normalizer audit/reviews retire
+after exact203project/726compiler/25link input recovery and pushed results:
+125files/7669913bytes. Keep the96individual timing vectors and compact
+numerical/fault/source decision;no normalizer build or raw trace remains.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
