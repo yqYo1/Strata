@@ -1784,20 +1784,21 @@ observer cost does not qualify9a79. Physical PCIe/DRAM bytes and arithmetic
 saturation remain unknown. Repeated clean decode,task/agent checks and
 physical262144 fill/tails/RESTORE remain pending;no inference adoption follows.
 
-The separate two-queue upload/read prototype is rejected on performance. Five
-host controls,a traced4KiB device check with11 admission refusals and in-flight
-cancellation,and three independent comparison processes close without a fresh
-fault. All144 comparison batches pass source/output/guard/drain checks. Across
-the twelve process/shape groups,the median pipeline/serial wall ratios are
-1.571..2.212;observed copy/reader overlap is zero. These are synthetic integer
-readers using the separately qualified official2026.2 component runtime,not
-model speed. The copy queue is created inside each32-expert timed batch,so
-production-window amortization is not matched. Do not advance this schedule
-to model inference. See `prefill_copy_pipeline_v5` in the linked result for
-individual first/subsequent samples and original source/build identities.
-Next test batching exact contiguous active-expert runs in the existing in-order
-queue,only when source/destination strides match the packed blob size. Preserve
-expert/math order and decode;add no RAM packing,overfetch or extra VRAM.
+Two independent upload screens remain rejected. The extra-queue prototype's144
+batches have median candidate/reference ratios1.571..2.212 and zero observed
+copy/reader overlap. The single-queue128-expert pre-upload screen passes all432
+source/output/bank/guard/drain checks,but fails its prospective performance
+gate:the36 group medians range0.437..2.197. Three comparison processes and the
+small compat/cancellation/boundary cases close without a fresh fault. See
+`prefill_copy_pipeline_v5` and `prefill_copy_batch_v1` in the linked result.
+These are synthetic integer-reader screens under the official2026.2 component
+runtime,not model speed or a PCIe/cache/staging explanation. V1 creates a new
+queue/workspace and performs full CPU checking between timed batches;these
+costs are outside its timer. Its original timing eligibility remains passed.
+Next compare bounded2/4/8-expert groups with identical destinations and consumers,
+persistent queue/workspace,and GPU verification cross-checked against small CPU
+oracles. Preserve expert/math order and decode;add no host packing,overfetch or
+model VRAM. No model trial follows from either rejected screen.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
