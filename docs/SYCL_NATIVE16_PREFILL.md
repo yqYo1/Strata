@@ -317,8 +317,8 @@ After its safety/numerical checks,the current candidate needs matched32K/48K/64K
 labels. Keep first-use separate;do not fit across allocation/window transitions
 or call the affine intercept a measured fixed cost. No current-generation
 multi-length predictor is qualified yet.
-Retire the temporary branch after its original
-commits are also verified reachable from the fork default;PR180 remains blocked.
+Retire a finished temporary branch after its original commits are verified
+reachable from pushed `feature/sycl` or the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
 temperature and energy counters,while xpu-smi reports some corresponding
 domains unavailable. These are capability/idle observations,not load-time

@@ -229,9 +229,11 @@ integration and testing.
 - Integrate completed child source, tests, skills and reports into the actual
   `feature/sycl` tree, then push. Update the fork's remote default through a PR
   at each completed boundary; the ghq root remains the default mirror and only pulls.
-  Use a merge commit for PRs containing original source revisions referenced by
-  measurements, and verify those revisions remain reachable from the retained
-  default branch before retiring their branches. Do not squash, rebase away or
+  Use a merge commit for work containing original source revisions referenced by
+  measurements. Before retiring a finished child, verify those revisions and
+  needed reports are reachable from the pushed, retained `feature/sycl` or the
+  fork default. Continue default integration through its PR separately; a blocked
+  PR does not justify retaining a finished child. Do not squash, rebase away or
   force-push measured source revisions that retained results reference; preserve
   their original commit identities and recoverable inputs.
 - Pin delegated source proposals to an immutable commit or a fully hashed source
