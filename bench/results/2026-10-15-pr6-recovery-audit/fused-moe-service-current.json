@@ -55752,7 +55752,7 @@
     "next_action": "Commit a bounded same-build row64 tiny/smoke/public-route qualification before model execution;then matched PP/TTFT comparison and current-generation multi-length curve. Preserve decode and physical262144 correctness gates."
   },
   "official_row64_device_v1": {
-    "stage": "running",
+    "stage": "qualified",
     "source_commit": "be06c07b27360b9005dccbc6ee10cc042d49ac0c",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binaries": {
@@ -56225,10 +56225,116 @@
           "verified_absent": true,
           "remaining_consumer": "ROOT record and provider inventory for route gate2; no raw large-row64 consumer."
         }
+      },
+      {
+        "mode": "route-row64",
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": false,
+        "inference_adopted": false,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "native_identity": {
+          "pid": 1401920,
+          "start_ticks": 181485421,
+          "sid": 1401920
+        },
+        "native_exit_code": 0,
+        "details": {
+          "result_counts": {
+            "selected_route": 8
+          },
+          "cases": [],
+          "post_BF16_FP32_oracles": 0,
+          "production_routes": [
+            {
+              "rows": 2333,
+              "enabled": 1,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2333,
+              "enabled": 1,
+              "selected": 0,
+              "split_rows": 2333
+            },
+            {
+              "rows": 2334,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2334,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2334
+            },
+            {
+              "rows": 2335,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2335
+            },
+            {
+              "rows": 2335,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 2335
+            },
+            {
+              "rows": 8192,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 8192
+            },
+            {
+              "rows": 8192,
+              "enabled": 1,
+              "selected": 1,
+              "split_rows": 8192
+            }
+          ],
+          "limitation": "Fixture post-BF16 consumer contract only;selected-job gathers,not everyjob. No model/performance qualification."
+        },
+        "actual_split_kernel_launches": {
+          "original": 0,
+          "row128": 0,
+          "row64": 6
+        },
+        "pre_main_validation": {
+          "pid": 1401920,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "official_providers_observed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "model_qualified": false,
