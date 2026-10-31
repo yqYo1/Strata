@@ -18689,5 +18689,50 @@
       "report_and_review_retained": true,
       "complete": true
     }
+  },
+  "bmg_sysfs_execution_context_20261031": {
+    "classification": "decision_support",
+    "question": "Interpret readable B570 Xe sysfs clocks,temperature and energy domains and propose a bounded load-time context protocol without extra LevelZero clients.",
+    "status": "task_input_accepted_turn_unproven",
+    "schedulable_now": false,
+    "prerequisites": {
+      "actual_readable_nodes": true,
+      "observed_after_closed_process": 8,
+      "sysfs_name": "xe",
+      "frequency_domains": [
+        "gt0",
+        "gt1"
+      ],
+      "energy_labels": [
+        "card",
+        "pkg"
+      ],
+      "temperature_labels": [
+        "pkg",
+        "vram"
+      ],
+      "xpu_smi_matching_domains_unavailable": true,
+      "load_time_measurement": false,
+      "source_semantics_unresolved": true
+    },
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-10-31/bmg_sysfs_execution_context_20261031.md",
+    "report_budget_bytes": 24576,
+    "rules_commit": "3b24ce754ae831e2af5408c8b5df20540e072bdc",
+    "prior_scope_exclusions": [
+      "b570_pcie_hierarchy_capability_scope",
+      "bmg_metric_collection_contract_20261030",
+      "bmg_metric_pool_refusal_20261030",
+      "native16_physical_scratch_20261031"
+    ],
+    "main_reads_original_on_arrival": false,
+    "next_review": "Native gpt-6-luna max reviews source support,novelty and sampling scope;Main decides later implementation after frozen cohort closure.",
+    "orca_run": "run_4096847f7211",
+    "orca_task": "task_cf2fe1a4cd10",
+    "orca_dispatch": "ctx_a2a980b18483",
+    "orca_terminal": "term_01c973e0-b7a8-4eff-8437-a98df3ff33b3",
+    "model_verified_before_task": "GPT-6-Luna high",
+    "startup_failed_dispatch": "ctx_b3a282fca04d",
+    "startup_failure": "agent-update-prompt before Task delivery;visible escape-skip cleared;retry uses same Task and verified terminal",
+    "spec_sha256": "39cd108f3c958de4a5a8af98fd85ba7bb92fa6353b2c0ac8b53e3a48f14c03bf"
   }
 }
