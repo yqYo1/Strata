@@ -19968,8 +19968,8 @@
     },
     "correction_task": {
       "classification": "knowledge_collection_correction",
-      "status": "prepared_eligible",
-      "schedulable_now": true,
+      "status": "Orca_started_pending_completion",
+      "schedulable_now": false,
       "prerequisites": {
         "original_Orca_worker_exited_and_ACKed": true,
         "native_review_complete_and_hashed": true,
@@ -19987,7 +19987,23 @@
       "worker_model": "Orca Codex gpt-6-luna high",
       "review_model": "native Codex gpt-6-luna max",
       "consumer": "One targeted corrected collection and native re-review;original report/review retained only through that comparison,then retire superseded body and dispatch paperwork.",
-      "main_reads_body_on_arrival": false
+      "main_reads_body_on_arrival": false,
+      "orca": {
+        "run": "run_4096847f7211",
+        "task": "task_1d7d0c336e81",
+        "initial_failed_dispatch": "ctx_0f2d9818cb76",
+        "dispatch": "ctx_2f64746d8f50",
+        "terminal": "term_80ec531e-a1e5-4295-b591-fe9ecc46099d",
+        "input_accepted": true,
+        "turn_started": true,
+        "provider_observed": {
+          "id": "codex",
+          "model": "gpt-6-luna"
+        },
+        "effort_observed": "high at pre-Task idle header",
+        "startup_recovery": "Verified actual update prompt before Task;Esc skipped with no Enter/installation.Idle Luna high/workspace verified,same Task/terminal retry accepted.",
+        "worker_closed": false
+      }
     }
   }
 }
