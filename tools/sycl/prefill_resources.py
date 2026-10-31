@@ -24,11 +24,12 @@ import bench_engine as reader
 
 entry, shared, build = comparison.entry, comparison.shared, comparison.build
 P, B, RESULT = comparison.P, comparison.B, comparison.RESULT
-ROOT, KEY = B / 'official-joint-resources-v1', 'official_joint_resources_v1'
+ROOT, KEY = B / 'official-joint-resources-v2', 'official_joint_resources_v2'
 READ, ROWS, RUNS = 117489, 117488, 4
 GROUPS = ((1, 15), (16, 31), (32, 63), (64, 127), (128, 255),
           (256, 511), (512, 1023), (1024, 2333), (2334, 8192))
-CHANGED = {'tools/sycl/prefill_resources.py', 'tools/sycl/bench_engine.py'}
+NATIVE_CONTROLS_CHANGED = ('tools/sycl/build_official_model.py', 'tools/sycl/bench_engine.py')
+CHANGED = {'tools/sycl/prefill_resources.py', *NATIVE_CONTROLS_CHANGED}
 OBSERVERS = dict(STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1',
     STRATA_PREFILL_LAYER_MAJOR_PROFILE='1', STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE='1',
     STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE='1', STRATA_PREFILL_TRANSITION_PROFILE='1',
@@ -47,8 +48,41 @@ def save(row):
     write(RESULT, data)
 
 
-def qualification():
-    built, _, providers = entry.proof()
+def native_reuse(revision):
+    """Reuse all original native inputs and seven fixtures, not only the engine."""
+    built = json.loads((build.ROOT / 'record.json').read_text())
+    require(built['stage'] == 'built-not-executed' and built['passed']
+            and built['ownership_closed'] and not built['active']
+            and all(build.supervision.closed(v) for v in built['commands_executed']),
+            'closed original native build required')
+    build.admit(built, reuse_revision=revision, controller_changes=NATIVE_CONTROLS_CHANGED)
+    proof = built['compiled_inputs']
+    require(proof['uncovered'] == 0 and digest(proof['path']) == proof['sha256'],
+            'original compiler inventory changed')
+    used = json.loads(Path(proof['path']).read_text())
+    require(len(used) == proof['files'] and all(digest(p) == sha for p, sha in used.items()),
+            'original compiled input bytes changed')
+    require(digest(build.ROOT / 'build/compile_commands.json') == built['compile_database_sha256'],
+            'original native compile recipe changed')
+    require(set(built['binaries']) == set(build.TARGETS)
+            and all(digest(v['path']) == v['sha256'] for v in built['binaries'].values()),
+            'one of the seven original executables changed')
+    gate = build.committed(RESULT)[entry.component.KEY]
+    require(gate['passed'] and gate['complete'] and gate['ownership_closed']
+            and not gate['active'] and not gate['fresh_faults'] and len(gate['processes']) == 13
+            and gate['binaries'] == built['binaries']
+            and gate['native_source_commit'] == built['source_commit'],
+            'original same-build component progression differs')
+    inventory = gate['runtime_manifest']
+    require(digest(inventory['path']) == inventory['sha256'], 'component provider manifest changed')
+    providers = json.loads(Path(inventory['path']).read_text())
+    require(len(providers) == inventory['files']
+            and all(digest(p) == sha for p, sha in providers.items()), 'component providers changed')
+    return built, providers
+
+
+def qualification(revision):
+    built, providers = native_reuse(revision)
     cohort = build.committed(RESULT)[comparison.KEY]
     external = json.loads((comparison.ROOT / 'record.json').read_text())
     require(compact(external) == cohort and cohort['passed'] and cohort['complete']
@@ -94,13 +128,14 @@ def environment(row, plan):
 
 def prepare():
     controls = selfcheck()
-    cohort, providers = qualification()
-    require(not ROOT.exists() and KEY not in build.committed(RESULT), 'fresh diagnostic only')
     revision = shared.gen.git('rev-parse', 'HEAD').decode().strip()
+    controls['native_controller_reuse'] = reuse_control_checks(revision)
+    cohort, providers = qualification(revision)
+    require(not ROOT.exists() and KEY not in build.committed(RESULT), 'fresh diagnostic only')
     sources = shared.pins(revision)
     require(sources.keys() == cohort['sources'].keys()
             and {n for n in sources if sources[n] != cohort['sources'][n]} == CHANGED,
-            'only the resource controller and bounded diagnostic reader may change')
+            'only declared diagnostic and native-reuse controller files may change')
     contract, manifest = entry.python_manifest()
     require(contract == cohort['python_contract'] and manifest['selected'] == cohort['python_selected'],
             'frontend interpreter differs from the closed comparison')
@@ -115,6 +150,11 @@ def prepare():
         boot=cohort['boot'], driver=cohort['driver'],
         runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'),
             sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
+        native_qualification_reuse=dict(original_native_source=cohort['native_source_commit'],
+            current_controller_source=revision, declared_changed_controls=NATIVE_CONTROLS_CHANGED,
+            original_controller_bytes_recovered_from_Git=True,
+            all_native_recipe_compiler_inputs_and_seven_executables_verified=True,
+            new_native_build=False, new_component_GPU_validation=False),
         comparison_fingerprint=comparison.fingerprint(compact(cohort)),
         request_hashes=cohort['request_hashes'][str(READ)], plans=[], processes=[],
         host_passed=False, complete=False, passed=False, active=False, ownership_closed=True,
@@ -166,7 +206,7 @@ def prepare():
 
 def current(row):
     require(build.committed(RESULT)[KEY] == compact(row), 'commit exact diagnostic state')
-    cohort, providers = qualification()
+    cohort, providers = qualification(row['source_commit'])
     require(comparison.fingerprint(compact(cohort)) == row['comparison_fingerprint'],
             'closed comparison evidence changed')
     require(shared.pins(row['source_commit']) == row['sources'], 'resource inputs changed')
@@ -419,6 +459,35 @@ def run(index):
     print(json.dumps({k: outcome.get(k) for k in
         ('index', 'observed', 'passed', 'complete', 'fresh_faults', 'error')}), flush=True)
     require(outcome['passed'], 'resource process did not qualify')
+
+
+def reuse_control_checks(revision):
+    """Exercise real Git admission, including default and undeclared failures."""
+    built = json.loads((build.ROOT / 'record.json').read_text())
+    original = built['source_commit']
+    require(build.controls(original, reuse_revision=revision,
+            controller_changes=NATIVE_CONTROLS_CHANGED) == built['controller_inputs'],
+            'original native controller identities did not recover')
+    rejected = []
+    for name, options in (
+        ('strict_original_default', {}),
+        ('undeclared_changes', dict(reuse_revision=revision)),
+        ('missing_reader_change', dict(reuse_revision=revision,
+            controller_changes=NATIVE_CONTROLS_CHANGED[:1])),
+        ('extra_unused_change', dict(reuse_revision=revision,
+            controller_changes=(*NATIVE_CONTROLS_CHANGED, 'tools/sycl/unused_control.py'))),
+        ('wrong_committed_current_bytes', dict(reuse_revision=original,
+            controller_changes=NATIVE_CONTROLS_CHANGED)),
+    ):
+        try:
+            build.controls(original, **options)
+        except RuntimeError:
+            rejected.append(name)
+        else:
+            raise RuntimeError('invalid native controller reuse admitted: ' + name)
+    return dict(original_controls=len(built['controller_inputs']),
+        exact_declared_changes=list(NATIVE_CONTROLS_CHANGED), rejected=rejected,
+        original_build_identity_unchanged=True, GPU_executed=False)
 
 
 def selfcheck():

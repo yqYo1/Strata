@@ -50,15 +50,35 @@ def committed(path):
     return json.loads(raw)
 
 
-def controls(revision):
-    pending, pins = [Path(__file__).resolve()], {}
+def controls(revision, *, reuse_revision=None, controller_changes=()):
+    """Recover original controls; explicit reuse still verifies current Git bytes.
+
+    Strict build admission remains the default. A diagnostic controller may
+    reuse a closed native generation only with an exact, prospective set of
+    changed Python controls. Native/compiler/fixture checks remain mandatory.
+    """
+    require(reuse_revision is not None or not controller_changes,
+            'controller changes require an explicit committed reuse revision')
+    require(len(set(controller_changes)) == len(controller_changes) and
+            all(type(n) is str and n.startswith('tools/sycl/') and n.endswith('.py')
+                and '..' not in Path(n).parts for n in controller_changes),
+            'invalid controller reuse paths')
+    pending, pins, changed = [Path(__file__).resolve()], {}, set()
     while pending:
         path = pending.pop()
         name = str(path.relative_to(P))
         if name in pins:
             continue
         raw = basis.build.git(P, 'show', revision + ':' + name)
-        require(path.read_bytes() == raw, 'controller input changed: ' + name)
+        actual = path.read_bytes()
+        if reuse_revision is None:
+            require(actual == raw, 'controller input changed: ' + name)
+        else:
+            current = basis.build.git(P, 'show', reuse_revision + ':' + name)
+            require(actual == current, 'uncommitted reuse controller: ' + name)
+            if actual != raw:
+                require(name in controller_changes, 'undeclared reuse controller: ' + name)
+                changed.add(name)
         pins[name] = hashlib.sha256(raw).hexdigest()
         for node in ast.walk(ast.parse(raw)):
             names = [v.name for v in node.names] if isinstance(node, ast.Import) else \
@@ -67,6 +87,8 @@ def controls(revision):
                 local = path.parent / ((module or '').split('.')[0] + '.py')
                 if local.is_file():
                     pending.append(local)
+    require(reuse_revision is None or changed == set(controller_changes),
+            'declared controller reuse changes do not match actual changes')
     return pins
 
 
@@ -255,9 +277,10 @@ def prepare():
     print('Prepared one official model source/recipe; commit plan before compiling.', flush=True)
 
 
-def admit(row):
+def admit(row, *, reuse_revision=None, controller_changes=()):
     require(committed(RESULT)[KEY] == compact(row), 'commit exact model build plan')
-    require(controls(row['source_commit']) == row['controller_inputs'], 'build controller changed')
+    require(controls(row['source_commit'], reuse_revision=reuse_revision,
+            controller_changes=controller_changes) == row['controller_inputs'], 'build controller changed')
     full, native = source.sources()
     require({n: hashlib.sha256(raw).hexdigest() for n, raw in native.items()} == row['native_sources'],
             'composed model source changed')

@@ -54151,5 +54151,21 @@
       "files": 247,
       "aggregate_sha256": "752b714c4ab275ebe4fc48fb6e9cca9f54d74521bacc909ebd9c7f2cd83ee8ff"
     }
+  },
+  "official_joint_resources_v1": {
+    "stage": "source-admission-refused-before-host",
+    "source_commit": "13b74445762d59359d19871a04bfdd2bc1f3d79e",
+    "command": "python3 tools/sycl/prefill_resources.py prepare",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "host_executed": false,
+    "native_process_started": false,
+    "output_directory_created": false,
+    "error": "controller input changed: tools/sycl/bench_engine.py",
+    "cause": "The original build admission follows Python imports and requires the bounded diagnostic reader to match its historical build-time bytes. Planned reader changes were not threaded through that transitive gate.",
+    "next_action": "Preserve refusal;commit a new V2 controller with explicit committed controller-only reuse. Recover original controller identities and preserve all original native/source/recipe/compiler/seven-executable/provider checks. No native rebuild or inherited new GPU validation."
   }
 }
