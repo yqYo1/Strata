@@ -1,6 +1,9 @@
 // Main-authored GU/SwiGLU qualification; repository LICENSE (MIT) applies.
 #include "native16.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/gemm.hpp"
+#include "strata/sycl/command_profile.hpp"
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -22,10 +25,18 @@ constexpr uint16_t Sentinel = 0xa55a;
 std::shared_ptr<sb::Runtime> runtime;
 void need(bool ok, const char *why) { if (!ok) throw std::runtime_error(why); }
 void drain(sycl::queue &q) noexcept {
-  try { q.wait_and_throw(); runtime->check(); } catch (...) { std::_Exit(86); }
+  try { q.wait_and_throw(); runtime->check(); }
+  catch (...) { std::_Exit(86); }
 }
 void wait(sycl::queue &q, sycl::event e) {
-  try { e.wait_and_throw(); runtime->check(); } catch (...) { drain(q); throw; }
+  try {
+    sb::cpu_wait_profile::blocking(sb::cpu_wait_profile::event,[&] { e.wait_and_throw(); });
+    runtime->check();
+  } catch (...) { drain(q); throw; }
+}
+template <class Submit> void submit_wait(sycl::queue &q,Submit submit) {
+  // Keep local host vectors alive through synchronous enqueue failures too.
+  try { wait(q,submit()); } catch (...) { drain(q); throw; }
 }
 struct Buffer {
   sb::Allocation owner;
@@ -34,16 +45,17 @@ struct Buffer {
   Buffer(size_t count, sycl::queue &queue)
       : owner(runtime, (count + 2 * Pad) * 2, sb::MemoryKind::Device), n(count), q(queue) {
     std::vector<uint16_t> all(n + 2 * Pad, Sentinel);
-    wait(q, q.memcpy(owner.data(), all.data(), all.size() * 2));
+    submit_wait(q,[&] { return q.memcpy(owner.data(), all.data(), all.size() * 2); });
   }
   ~Buffer() { drain(q); }
   uint16_t *data() const { return owner.as<uint16_t>() + Pad; }
   void set(const std::vector<uint16_t> &v) {
-    need(v.size() == n, "upload extent"); wait(q, q.memcpy(data(), v.data(), n * 2));
+    need(v.size() == n, "upload extent");
+    submit_wait(q,[&] { return q.memcpy(data(), v.data(), n * 2); });
   }
   std::vector<uint16_t> get() const {
     std::vector<uint16_t> all(n + 2 * Pad);
-    wait(q, q.memcpy(all.data(), owner.data(), all.size() * 2));
+    submit_wait(q,[&] { return q.memcpy(all.data(), owner.data(), all.size() * 2); });
     for (size_t i = 0; i < Pad; ++i)
       need(all[i] == Sentinel && all[n + Pad + i] == Sentinel, "buffer guard changed");
     return {all.begin() + Pad, all.begin() + Pad + n};
@@ -157,6 +169,39 @@ struct Case {
       << ",\"BF16_capture_exact\":true,\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
     return ulp;
   }
+  void check_profile(bool fusion_enabled=true) {
+    namespace cp = sb::command_profile;
+    strata::prefill::Gemm routed;
+    std::string error;
+    if (!routed.init_external(&q,nullptr,0,nullptr,0,error)) throw std::runtime_error(error);
+    candidate.reset();capture.reset();separate(xe::Tile::wide_128x128);drain(q);
+    bool selected=false;
+    {
+      std::unique_ptr<cp::Trace> trace;
+      if (cp::requested()) trace.reset(new cp::Trace(&q,1));
+      // Must drain before Trace or any Case-owned device/host storage unwinds.
+      struct Retirement { sycl::queue& queue; ~Retirement() { drain(queue); } } retirement{q};
+      auto frame=trace ? trace->begin(0,0) : cp::Frame{};
+      frame.consider(0,0,rows);
+      {
+        auto tag=frame.tag(cp::Kind::gu,0,0,rows,N,K);
+        selected=routed.try_gu_swiglu16(x.data(),w.data(),candidate.data(),rows);
+        if (!selected) routed.f16_out16(x.data(),w.data(),gu.data(),rows,N,K,true);
+      }
+      if (!selected) {
+        auto tag=frame.tag(cp::Kind::swiglu,0,0,rows,H);
+        strata::prefill::native16::swiglu(gu.data(),candidate.data(),rows,&q);
+      }
+      drain(q);frame.after_checked_drain();
+    }
+    need(selected==(fusion_enabled && rows>=2334),"profile changed production GU dispatch");
+    const int ulp=compare_hidden(reference,candidate);
+    need(x.get()==hx && w.get()==hw,"profiled GU changed inputs");
+    for (auto v:capture.get()) need(v==Sentinel,"profiled GU wrote diagnostic storage");
+    std::cout<<"{\"kind\":\"profiled_engine_gu\",\"rows\":"<<rows<<",\"selected\":"<<selected
+      <<",\"expected_records\":"<<(selected ? 1 : 2)<<",\"max_half_ulp\":"<<ulp
+      <<",\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+  }
 };
 void admissions(Case &c) {
   int count=0;
@@ -183,6 +228,40 @@ void admissions(Case &c) {
 }
 class Marker;
 sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
+// Exercise the public production dispatcher, including its refused-path cost.
+// The process environment selects an arm before SYCL initializes; never mutate it.
+struct PublicGU {
+  Case &c;
+  strata::prefill::Gemm routed;
+  bool expected;
+  PublicGU(Case &input, bool fusion) : c(input), expected(fusion && c.rows>=2334) {
+    std::string error;
+    if (!routed.init_external(&c.q,nullptr,0,nullptr,0,error)) throw std::runtime_error(error);
+  }
+  ~PublicGU() { drain(c.q); }
+  bool call() {
+    try {
+      const bool selected=routed.try_gu_swiglu16(c.x.data(),c.w.data(),c.candidate.data(),c.rows);
+      if (!selected) {
+        routed.f16_out16(c.x.data(),c.w.data(),c.gu.data(),c.rows,N,K,true);
+        strata::prefill::native16::swiglu(c.gu.data(),c.candidate.data(),c.rows,&c.q);
+      }
+      return selected;
+    } catch (...) { drain(c.q); throw; }
+  }
+};
+void public_settings(int arm) {
+  const auto matches=[](const char *key,const char *wanted) {
+    const char *value=std::getenv(key);
+    return value && std::string(value)==wanted;
+  };
+  need(arm==0 || arm==1,"public arm must be0 or1");
+  need(matches("STRATA_SYCL_PREFILL_NATIVE16","bf16") &&
+       matches("STRATA_SYCL_PREFILL_NATIVE16_BACKEND","vllm") &&
+       matches("STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE","auto") &&
+       matches("STRATA_SYCL_PREFILL_GU_SWIGLU",arm ? "large" : "0"),
+       "public mode requires matching immutable bf16/vllm/auto/GU startup settings");
+}
 void benchmark(int process,sycl::queue &q) {
   for (int rows:{64,160,2334,5963,8192}) {
     const auto tile=rows<128 ? xe::Tile::compact_16x64 : xe::Tile::wide_128x128;
@@ -214,20 +293,36 @@ void benchmark(int process,sycl::queue &q) {
 } // namespace
 int main(int argc,char **argv) {
   std::cout << std::unitbuf;
+  std::cout.precision(17); // preserve nanosecond CPU partitions in longer batches
   try {
     need(argc>=2,"use --ownership|--smoke|--validate|--bench PROCESS");
     const std::string mode=argv[1];
     if (mode=="--ownership") {
       ownership(); std::cout << "fixture_status=PASS mode=ownership GPU_submissions=0\n"; return 0;
     }
-    need(mode=="--smoke" || mode=="--validate" || mode=="--bench","invalid mode");
+    const bool public_profile=mode=="--profile-public";
+    const bool public_smoke=mode=="--smoke-public";
+    int public_arm=0;
+    if (public_profile || public_smoke) {
+      need(argc==3,"public mode needs ARM");
+      public_arm=std::stoi(argv[2]);public_settings(public_arm);
+    }
+    need(mode=="--smoke" || mode=="--validate" || mode=="--bench" || mode=="--profile-engine-hook" ||
+         public_profile || public_smoke,"invalid mode");
     for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
       const auto p=xe::inspect_gu_pair_ownership(8192,tile,xe::GuLayout::matrix);
       need(!p.partner_mismatch && !p.packed_missing && !p.packed_multiple && !p.packed_orientation_mismatch,
            "packed partner ownership gate");
     }
-    runtime=sb::runtime_for(); auto q=runtime->make_queue(true); topology(q);
-    if (mode=="--smoke") {
+    runtime=sb::runtime_for();
+    auto q=runtime->make_queue(true);
+    topology(q);
+    if (public_profile || public_smoke) {
+      for (int rows:{3,160,2333,2334}) { Case c(rows,false,q);c.check_profile(public_arm!=0); }
+    } else if (mode=="--profile-engine-hook") {
+      need(argc==2,"profile hook takes no timing parameters");
+      for (int rows:{2333,2334,8192}) { Case c(rows,false,q);c.check_profile(); }
+    } else if (mode=="--smoke") {
       for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
         Case c(3,false,q); c.check(tile); Case edge(3,true,q); edge.check(tile);
       }

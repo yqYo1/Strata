@@ -71,10 +71,30 @@ struct ExpertBankPlan {
     bool staged() const { return selection == Selection::staged; }
 };
 
+// A private view of an existing allocation; no allocation, ownership or drain.
+// Rebind only after all readers of the preceding layer have checked retirement.
+struct ExpertBankLayout {
+    uint64_t backing_bytes = 0, stride = 0, used_bytes = 0;
+    int32_t slots = 0;
+    static ExpertBankLayout packed(uint64_t backing, uint64_t layer_stride) {
+        if (!backing || !layer_stride || layer_stride % 256 || backing < layer_stride)
+            throw std::invalid_argument("invalid private expert bank extent");
+        const auto count = std::min<uint64_t>(ExpertBankPlan::experts, backing / layer_stride);
+        return {backing, layer_stride, layer_major_mul(count, layer_stride), int32_t(count)};
+    }
+    uint64_t offset(int32_t slot) const {
+        if (slot < 0 || slot >= slots)
+            throw std::invalid_argument("private expert bank slot out of range");
+        return layer_major_mul(uint64_t(slot), stride);
+    }
+    bool full_fit() const { return slots == ExpertBankPlan::experts; }
+};
+
 // Fixed first-demand admission plus ONE reusable scratch slot. Permanent slots
 // are never evicted; a repeated ascending expert scan cannot evict its future
 // cache hits. Private mappings may be published after successful enqueue only
 // when every reader uses the same in-order queue and the slab survives its drain.
+// An explicitly full-fit512 view needs no scratch: all experts can be permanent.
 class ExpertBankSlots {
 public:
     struct Ticket {
@@ -82,8 +102,8 @@ public:
         uint64_t generation = 0;
         bool upload = false, permanent = false;
     };
-    explicit ExpertBankSlots(int32_t slots) : slots_(slots) {
-        if (slots < 1 || slots > ExpertBankPlan::experts)
+    explicit ExpertBankSlots(int32_t slots, bool full_fit = false) : slots_(slots), full_fit_(full_fit) {
+        if (slots < 1 || slots > ExpertBankPlan::experts || (full_fit && slots != ExpertBankPlan::experts))
             throw std::invalid_argument("expert bank needs1..512 slots");
         residency_.fill(-1);
     }
@@ -97,7 +117,7 @@ public:
         if (hit >= 0) return {expert, hit, 0, false, true};
         if (generation_ == std::numeric_limits<uint64_t>::max())
             throw std::overflow_error("expert bank ticket generation exhausted");
-        const bool permanent = used_ < slots_ - 1;
+        const bool permanent = used_ < slots_ - (full_fit_ ? 0 : 1);
         pending_ = {expert, permanent ? used_ : slots_ - 1, ++generation_, true, permanent};
         return pending_;
     }
@@ -125,9 +145,11 @@ public:
     }
     int32_t permanent_used() const { return used_; }
     int32_t slots() const { return slots_; }
+    bool full_fit() const { return full_fit_; }
 
 private:
     int32_t slots_, used_ = 0;
+    bool full_fit_ = false;
     uint64_t generation_ = 0;
     Ticket pending_;
     std::array<int32_t, size_t(ExpertBankPlan::experts)> residency_{};

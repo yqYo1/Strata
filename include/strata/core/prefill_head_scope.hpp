@@ -5,6 +5,30 @@
 #include <cstdint>
 
 namespace strata::core::detail {
+// Commit only an already prepared boundary. A cache-loan activation callback
+// must use this no-fail part: callback refusal/throw poisons the parent loan,
+// even when no device reader was retired. Prepare before entering that callback.
+template<class Backend,class RetireOtherReaders>
+void finish_prepared_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other) noexcept {
+    static_assert(noexcept(b.require_prepared()) &&
+                  noexcept(std::forward<RetireOtherReaders>(retire_other)()) &&
+                  noexcept(b.retire_readers()) && noexcept(b.detach()),
+                  "prepared reader retirement must not unwind runtime owners");
+    b.require_prepared();
+    std::forward<RetireOtherReaders>(retire_other)();
+    b.retire_readers();
+    b.detach();
+}
+
+// Standalone composition owns its fallible preparation. Enclosing transactions
+// instead prepare before loan activation and cancel if preflight refuses.
+template<class Backend,class RetireOtherReaders>
+bool begin_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other,std::string& err) {
+    if(!b.prepare(err))return false;
+    finish_prepared_prefill_head_release(b,std::forward<RetireOtherReaders>(retire_other));
+    return true;
+}
+
 // The backend owns all buffers and runtime handles. After prepare(), every
 // retirement/detach/restore/resume operation MUST be noexcept and fail-stop on
 // unknown completion. The only operation allowed to throw is the prompt itself.
@@ -14,9 +38,7 @@ bool with_prefill_head_release(Backend& b,Prompt&& prompt,std::string& err) {
     static_assert(noexcept(b.retire_readers()) && noexcept(b.detach()) &&
                   noexcept(b.restore()) && noexcept(b.resume()),
                   "head transition operations must never unwind runtime owners");
-    if(!b.prepare(err))return false;
-    b.retire_readers();
-    b.detach();
+    if(!begin_prefill_head_release(b,[]() noexcept {},err))return false;
     bool ok=false;
     try { ok=std::forward<Prompt>(prompt)(); }
     catch (...) { b.restore();b.resume();throw; }
@@ -44,6 +66,12 @@ public:
             (expected==Phase::restored && next==Phase::ready);
         if(phase_!=expected || !edge)return false;
         phase_=next;return true;
+    }
+    // Only preparation can be cancelled: no reader or device owner changed.
+    // Keep this distinct from normal restoration and forbid all retired phases.
+    bool cancel_prepared() noexcept {
+        if(phase_!=Phase::prepared)return false;
+        phase_=Phase::ready;return true;
     }
     Phase phase() const noexcept{return phase_;}
     bool readable() const noexcept{return phase_==Phase::ready;}

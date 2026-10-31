@@ -1,5 +1,6 @@
 // src/core/expert_source.cpp - the adapter.  See the header for the three clauses of the contract.
 #include "strata/core/expert_source.hpp"
+#include "strata/core/cpu_work_census.hpp"
 #include "strata/core/progress.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/peer_experts.hpp"
@@ -2112,7 +2113,7 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     if (native) {
         // Native jobs borrow dispatch-owned buffers. Do not unwind them if completion throws.
         try {
-            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs);
+            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs, d.native_gu_phase);
         } catch (...) {
             std::fprintf(stderr, "strata: native expert pool failed before completion; retaining owners and aborting\n");
             strata::core::release_gpu_waits(stderr);
@@ -2145,6 +2146,13 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     d.ms_actq += ms(c1, c2);
     d.ms_jobs += ms(c2, c3);
     d.ms_run += ms(c3, c4);
+    if (d.cpu_work_census) {
+        static_assert(CpuWorkCensus::kNT == MAXT);
+        if (native) d.cpu_work_census->record(d.layers, n_tok, k, d.n_expert, d.host_res,
+            lay.fmt[(size_t)d.layers], ids, kind, d.job_of.data(), d.jobs_multi.data(), njobs,
+            std::chrono::duration_cast<std::chrono::nanoseconds>(c4 - c3).count());
+        else d.cpu_work_census->invalidate("non_native_dispatch");
+    }
     for (int64_t i = 0; i < n_tok * k; ++i) {
         const int64_t e = ids[i];
         if (e >= 0 && e < d.n_expert) d.job_of[(size_t) e] = -1;

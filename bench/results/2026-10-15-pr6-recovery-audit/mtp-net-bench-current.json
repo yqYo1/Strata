@@ -1,0 +1,1040 @@
+{
+  "schema": "strata-resident-mtp-net-closed-v1",
+  "stage": "closed",
+  "source_commit": "e25c8fbbc25e85cf8c827c8c86ed14af8b6a771f",
+  "original_evidence_commit": "51bb62ed60101b43e92d62d87bd7f92f7407d585",
+  "original_evidence_path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-net-bench-current.json",
+  "benchmark_fingerprint": "0a797a4c917eb1758dfc4d875d75d8aa05dfeca8b65f2ead656ef7262b1e5670",
+  "benchmark_files": 190,
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
+    "bytes": 22194216,
+    "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
+  },
+  "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
+  "short_model_qualification_reference": "mtp-resident-serve-current.json",
+  "short_proof_sha256": "4e9bdf20634dd6ebfdfeb939d8314a87f29f5f4da0bde8387917d39f689f0c97",
+  "private_inputs_sha256": "2f062389a6f0290a12b80942ee005b9bc03e7be5cc61325def8b9166705f1523",
+  "model_reference": {
+    "decode_archive": {
+      "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
+      "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
+    },
+    "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
+    "model": {
+      "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
+      "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+    },
+    "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
+  },
+  "plans": [
+    {
+      "cap": 0,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph",
+          "--mtp-max-t",
+          "0"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "collection": {
+        "source": {
+          "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
+          "sha256": "12e8899846e8b761730edf1a8c298ee8357a3091de3075729484cf6a14865366"
+        },
+        "seconds": 3300,
+        "interval": 1
+      },
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0/config.json": "50af44c0f1b01585863493ab96612bf50e70f67cd5efea5b06f9b9d2604915b0",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0/plan.json": "cab8fa2acad4e204f93ae878399a9b1ff059515e3ada69cc3d5c3e28078c51f7",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0/config.json",
+        "--port",
+        "34351",
+        "--long-generation-only",
+        "--long-generation-speed-only",
+        "--think",
+        "--runs",
+        "1",
+        "--profile-request-gates",
+        "--workload-id",
+        "generation_reference_20261021",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/0/bench"
+      ]
+    },
+    {
+      "cap": 1,
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1",
+      "config": {
+        "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+        "args": [
+          "--pack",
+          "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "--native",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "--max-context",
+          "131072",
+          "--kv",
+          "int8",
+          "--kv-resident",
+          "131072",
+          "--expert-cache",
+          "1256",
+          "--expert-profile",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1/expert-profile.bin",
+          "--expert-cache-per-layer",
+          "--pool-workers",
+          "5",
+          "--pcie-frac",
+          "0",
+          "--adapt-swaps",
+          "0",
+          "--conversation-cache-mib",
+          "0",
+          "--prompt-cache",
+          "0",
+          "--turn-token",
+          "-1",
+          "--suffix-draft",
+          "0",
+          "--greedy",
+          "--no-spec-split",
+          "--short-read",
+          "0",
+          "--spec",
+          "4",
+          "--mtp",
+          "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+          "--prefill",
+          "8192",
+          "--vram-reserve-mib",
+          "700",
+          "--no-coupled-draft",
+          "--no-token-graph",
+          "--mtp-max-t",
+          "1"
+        ],
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+        "model_name": "qwen3.8-flash-next-iq3_s-primary",
+        "aliases": [
+          "strata"
+        ],
+        "host": "127.0.0.1",
+        "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1/engine.stderr",
+        "engine_silence_s": 480,
+        "parallel": 1,
+        "open_browser": false,
+        "env": {}
+      },
+      "collection": {
+        "source": {
+          "path": "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/client_resources.py",
+          "sha256": "12e8899846e8b761730edf1a8c298ee8357a3091de3075729484cf6a14865366"
+        },
+        "seconds": 3300,
+        "interval": 1
+      },
+      "generated_inputs": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1/config.json": "8a07bccdf05fb1d4a33f4cbb37bb8de71b61605d670a926a2baf84dc3c3c0dcf",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1/plan.json": "cab8fa2acad4e204f93ae878399a9b1ff059515e3ada69cc3d5c3e28078c51f7",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+      },
+      "command": [
+        "/bin/sh",
+        "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+        "--config",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1/config.json",
+        "--port",
+        "41979",
+        "--long-generation-only",
+        "--long-generation-speed-only",
+        "--think",
+        "--runs",
+        "1",
+        "--profile-request-gates",
+        "--workload-id",
+        "generation_reference_20261021",
+        "--fail-fast-engine-error",
+        "--ready-timeout",
+        "600",
+        "--out",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-net-bench-v1/1/bench"
+      ]
+    }
+  ],
+  "environment_recipe": {
+    "base_result": "phase-prefill-speed-current.json",
+    "base_sha256": "9543297abc2ce0b4530ee6984d55366e735881caf42a08239f3494d655f9e10d",
+    "controller": "e25c8fbbc25e85cf8c827c8c86ed14af8b6a771f:tools/sycl/mtp_net_bench.py:prepare",
+    "runtime_reference_sha256": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672"
+  },
+  "criteria": "Attribution pilot only:two fresh processes cap0 then1,same binary/config/original prefill/1256slots/resident131072,4 standard warmups and both official v4 thinking-on workloads each. Actual fresh input>=32768,generated1024..16384 including thought,answer>=512 chars,valid complete SSE/journal/native exit. Zero drafts allowed only forcap1;MTP4 reference counters>=256. Require actual target windows/draft rounds/prompt mode2 cells,source-confirmed<64 fallback,and GPU BF16/mode10 with cache/dense restoration. One same-library65536-pair clock screen before each native process;prompt and decode durations>=10s,observed endpoint+rounding<=0.01%,no subtraction/retry. Require native-only preexec validation,source/assets/runtime/owner/boot/fault gates,whole-cohort15 hashes. Keep all samples;stop first failure. No speed/adoption or MTP-classification qualification from one process per arm.",
+  "resources_limits": "Passive proc/fdinfo reader,1s interval,3300s deadline,32MiB reader budget. Report request-contained scheduled CPU and associated CCS busy cycles plus logical native copy counts. CPU ticks include polling/stalls,CCS busy includes stalls and shared clients;neither proves arithmetic saturation. Actual PCIe traffic/VRAM bandwidth/CPU instruction saturation remain unknown. Stage timers are nested/nonadditive;observers remain charged. Separate repeated clean speed and long/agent/phase preservation remain required.",
+  "host_controls": {
+    "tests": 38,
+    "passed": true,
+    "clock_source": "dbf7cc7a21e64dcd37632872be129fc5433e82fadb0e859792c01fbbf1deb676",
+    "clock_provider": {
+      "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+      "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+    },
+    "minimum_time_ms": 10000,
+    "endpoint_rounding_maximum_fraction": 0.0001
+  },
+  "processes": [
+    {
+      "cap": 0,
+      "passed": true,
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "native_identity": {
+        "pid": 3291163,
+        "start_ticks": 117449236,
+        "sid": 3291125
+      },
+      "clock": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 30,
+        "max_ns": 5591,
+        "endpoint_rounding_fraction_at_floor": 6.1182e-06,
+        "provider": {
+          "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+        }
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "prompt_tokens": 33214,
+          "generated_tokens": 3611,
+          "prompt_ms": 52286.5,
+          "decode_ms": 242615.1,
+          "decode_tps": 14.9,
+          "total_s": 294.925,
+          "ttft_s": 52.397,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "acceptance_rate": 0.8310767246937459,
+          "ok": true,
+          "eligible": true,
+          "agreement_eligible": true,
+          "controller_eligible": true,
+          "speed_eligible": true,
+          "ineligible_reasons": [],
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 5496,
+          "reasoning_chars": 4368,
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+          "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1174632785704860,
+            "first_output_monotonic_ns": 1174685182853641,
+            "request_end_monotonic_ns": 1174927710479095
+          }
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "prompt_tokens": 33288,
+          "generated_tokens": 8638,
+          "prompt_ms": 43736.3,
+          "decode_ms": 908312.4,
+          "decode_tps": 9.5,
+          "total_s": 952.071,
+          "ttft_s": 43.852,
+          "drafts_offered": 11931,
+          "drafts_accepted": 4660,
+          "acceptance_rate": 0.390579163523594,
+          "ok": true,
+          "eligible": true,
+          "agreement_eligible": true,
+          "controller_eligible": true,
+          "speed_eligible": true,
+          "ineligible_reasons": [],
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 4452,
+          "reasoning_chars": 21300,
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "output_sha256": "c8f13901e39c197d5020f290998ab2332dc695d93b32365cffa9ce85f743e983",
+          "reasoning_sha256": "5199dece9d887f8928a737a5470e1f470a75b0f6a7ca29ffd2e148f355d46c57",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1174927775928170,
+            "first_output_monotonic_ns": 1174971627739496,
+            "request_end_monotonic_ns": 1175879847576603
+          }
+        }
+      ],
+      "resources": [
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1388,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 51.14265812900001,
+            "process_cpu_seconds": 48.19,
+            "process_cpu_core_equivalents": 0.9422662365035396,
+            "unmatched_thread_intervals": 3,
+            "main_thread_CPU_seconds": 46.25,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 51,
+              "busy_cycles": 820245373,
+              "capacity_total_cycles": 981891181,
+              "busy_fraction": 0.8353729912968838
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 241.75965919350003,
+            "process_cpu_seconds": 1264.68,
+            "process_cpu_core_equivalents": 5.231145693284475,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 233.98,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 241,
+              "busy_cycles": 2684311880,
+              "capacity_total_cycles": 4641572433,
+              "busy_fraction": 0.5783195067506555
+            },
+            "other_engine_busy_cycles": 0
+          }
+        },
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1388,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 42.114427146,
+            "process_cpu_seconds": 41.65,
+            "process_cpu_core_equivalents": 0.9889722554128554,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 41.49,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 42,
+              "busy_cycles": 800002479,
+              "capacity_total_cycles": 808559560,
+              "busy_fraction": 0.9894168822887951
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 907.9081544544996,
+            "process_cpu_seconds": 4679.31,
+            "process_cpu_core_equivalents": 5.153946439451775,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 871.42,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48711,
+              "engine": "ccs",
+              "eligible_intervals": 899,
+              "busy_cycles": 10330816217,
+              "capacity_total_cycles": 17431014177,
+              "busy_fraction": 0.5926686830781986
+            },
+            "other_engine_busy_cycles": 0
+          }
+        }
+      ],
+      "warmup_requests_checked": 4,
+      "total_requests_replayed": 6,
+      "long_routes": [
+        {
+          "target_windows": 1035,
+          "target_rows": 4137,
+          "draft_rounds_delta": 1034,
+          "cumulative_draft_rounds": 1042,
+          "prompt_chunks": [
+            8192,
+            8192,
+            8192,
+            8192,
+            445
+          ],
+          "prompt_paths": [
+            "batched",
+            "batched",
+            "batched",
+            "batched",
+            "batched"
+          ],
+          "long_prefill": {
+            "GPU_BF16_rows": 33213,
+            "MoE_mode": 10,
+            "restored_dense_layers": 48,
+            "cache_payload_and_map_match": true,
+            "loan_generation": 5
+          }
+        },
+        {
+          "target_windows": 3978,
+          "target_rows": 15909,
+          "draft_rounds_delta": 3977,
+          "cumulative_draft_rounds": 5019,
+          "prompt_chunks": [
+            8192,
+            8192,
+            8192,
+            8192,
+            519
+          ],
+          "prompt_paths": [
+            "batched",
+            "batched",
+            "batched",
+            "batched",
+            "batched"
+          ],
+          "long_prefill": {
+            "GPU_BF16_rows": 33287,
+            "MoE_mode": 10,
+            "restored_dense_layers": 48,
+            "cache_payload_and_map_match": true,
+            "loan_generation": 6
+          }
+        }
+      ],
+      "long_cache_restorations_checked": 2
+    },
+    {
+      "cap": 1,
+      "passed": true,
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "native_identity": {
+        "pid": 3343058,
+        "start_ticks": 117601377,
+        "sid": 3343029
+      },
+      "clock": {
+        "samples": 65536,
+        "resolution_ns": 1,
+        "min_ns": 10,
+        "p99_ns": 21,
+        "max_ns": 7995,
+        "endpoint_rounding_fraction_at_floor": 6.599000000000001e-06,
+        "provider": {
+          "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33",
+          "sha256": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11"
+        }
+      },
+      "requests": [
+        {
+          "workload": "regular-code",
+          "run": 0,
+          "order": 0,
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "prompt_tokens": 33214,
+          "generated_tokens": 3126,
+          "prompt_ms": 51760.9,
+          "decode_ms": 276480.6,
+          "decode_tps": 11.3,
+          "total_s": 328.264,
+          "ttft_s": 51.871,
+          "drafts_offered": 0,
+          "drafts_accepted": 0,
+          "acceptance_rate": null,
+          "ok": true,
+          "eligible": false,
+          "agreement_eligible": false,
+          "controller_eligible": false,
+          "speed_eligible": true,
+          "ineligible_reasons": [
+            "MTP counters are missing, invalid or below 256 offered drafts"
+          ],
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 5564,
+          "reasoning_chars": 3689,
+          "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+          "output_sha256": "e36c666647e5d179eff689d3ee30c7951fc6bdca4d1829ee283d14e4266092b7",
+          "reasoning_sha256": "2375294f11bb088eef724a0d67aa9a179569a4b75dff095e84d870bdc65cdbd0",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1176132748617884,
+            "first_output_monotonic_ns": 1176184620080182,
+            "request_end_monotonic_ns": 1176461013215485
+          }
+        },
+        {
+          "workload": "varied-prose",
+          "run": 0,
+          "order": 1,
+          "read_tokens": 33288,
+          "reused_tokens": 0,
+          "prompt_tokens": 33288,
+          "generated_tokens": 10983,
+          "prompt_ms": 43702.0,
+          "decode_ms": 981509.7,
+          "decode_tps": 11.2,
+          "total_s": 1025.234,
+          "ttft_s": 43.813,
+          "drafts_offered": 0,
+          "drafts_accepted": 0,
+          "acceptance_rate": null,
+          "ok": true,
+          "eligible": false,
+          "agreement_eligible": false,
+          "controller_eligible": false,
+          "speed_eligible": true,
+          "ineligible_reasons": [
+            "MTP counters are missing, invalid or below 256 offered drafts"
+          ],
+          "finish_reason": "stop",
+          "stream_complete": true,
+          "completion_includes_thinking": true,
+          "output_chars": 4974,
+          "reasoning_chars": 28310,
+          "request_sha256": "c6d16c6adb19adf79de1cc29929ab71cab5433488ca2fda2dfcdad523bde56f4",
+          "output_sha256": "eeb20bfaec5c704a4d3594892fcab90666700009448d87c2f06551bc2bad4797",
+          "reasoning_sha256": "351fc282b70801d65f86a08392435ec77f07086a2cafa83f2cd65bbf80b713cc",
+          "client_interval": {
+            "request_begin_monotonic_ns": 1176461035939472,
+            "first_output_monotonic_ns": 1176504848919023,
+            "request_end_monotonic_ns": 1177486270522556
+          }
+        }
+      ],
+      "resources": [
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1473,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 51.136002608000005,
+            "process_cpu_seconds": 48.41,
+            "process_cpu_core_equivalents": 0.9466911281881557,
+            "unmatched_thread_intervals": 3,
+            "main_thread_CPU_seconds": 46.45,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 51,
+              "busy_cycles": 821858346,
+              "capacity_total_cycles": 981766410,
+              "busy_fraction": 0.8371220869127107
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 274.79494347,
+            "process_cpu_seconds": 1608.83,
+            "process_cpu_core_equivalents": 5.854656492890086,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 262.98,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 274,
+              "busy_cycles": 3454498324,
+              "capacity_total_cycles": 5275810358,
+              "busy_fraction": 0.6547806099136515
+            },
+            "other_engine_busy_cycles": 0
+          }
+        },
+        {
+          "collector_complete": true,
+          "request_coverage_verified": true,
+          "samples": 1473,
+          "before_first_output": {
+            "contained_CPU_wall_seconds": 43.11908281499999,
+            "process_cpu_seconds": 42.48,
+            "process_cpu_core_equivalents": 0.9851786547097501,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 42.3,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 43,
+              "busy_cycles": 817044857,
+              "capacity_total_cycles": 827844064,
+              "busy_fraction": 0.9869550227275653
+            },
+            "other_engine_busy_cycles": 0
+          },
+          "after_first_output": {
+            "contained_CPU_wall_seconds": 980.9361859175002,
+            "process_cpu_seconds": 5734.04,
+            "process_cpu_core_equivalents": 5.845477088437485,
+            "unmatched_thread_intervals": 0,
+            "main_thread_CPU_seconds": 934.77,
+            "CCS": {
+              "pci": "0000:05:00.0",
+              "client_id": 48779,
+              "engine": "ccs",
+              "eligible_intervals": 967,
+              "busy_cycles": 12241085209,
+              "capacity_total_cycles": 18833081329,
+              "busy_fraction": 0.6499778233395426
+            },
+            "other_engine_busy_cycles": 0
+          }
+        }
+      ],
+      "warmup_requests_checked": 4,
+      "total_requests_replayed": 6,
+      "long_routes": [
+        {
+          "target_windows": 3126,
+          "target_rows": 3126,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_chunks": [
+            8192,
+            8192,
+            8192,
+            8192,
+            445
+          ],
+          "prompt_paths": [
+            "batched",
+            "batched",
+            "batched",
+            "batched",
+            "batched"
+          ],
+          "long_prefill": {
+            "GPU_BF16_rows": 33213,
+            "MoE_mode": 10,
+            "restored_dense_layers": 48,
+            "cache_payload_and_map_match": true,
+            "loan_generation": 5
+          }
+        },
+        {
+          "target_windows": 10983,
+          "target_rows": 10983,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_chunks": [
+            8192,
+            8192,
+            8192,
+            8192,
+            519
+          ],
+          "prompt_paths": [
+            "batched",
+            "batched",
+            "batched",
+            "batched",
+            "batched"
+          ],
+          "long_prefill": {
+            "GPU_BF16_rows": 33287,
+            "MoE_mode": 10,
+            "restored_dense_layers": 48,
+            "cache_payload_and_map_match": true,
+            "loan_generation": 6
+          }
+        }
+      ],
+      "long_cache_restorations_checked": 2
+    }
+  ],
+  "analysis": {
+    "source_commit": "81907432cd61ad48e3f984a61c1a0f7daedbce1c",
+    "passed": true,
+    "inference_rerun": false,
+    "processes": [
+      {
+        "cap": 0,
+        "requests_replayed": 6,
+        "long_requests": [
+          {
+            "workload": "regular-code",
+            "target_windows": 1035,
+            "target_rows": 4137,
+            "emitted_tokens": 3611,
+            "maximum_T": 4,
+            "copy": {
+              "submitted_blobs": 0,
+              "submitted_bytes": 0,
+              "completed_blobs": 0,
+              "completed_bytes": 0,
+              "host_view_groups": 0,
+              "gpu_miss_groups": 0,
+              "cpu_unique_misses": 1370846,
+              "cpu_entries": 1771839
+            },
+            "GPU_routed_entry_fraction": 0.10772751994198693,
+            "cpu_unique_jobs_per_emitted": 379.63057324840764,
+            "cpu_entries_per_emitted": 490.6782054832456,
+            "target_rows_per_emitted": 1.1456660204929383,
+            "exact_decode_tps": 14.883657282667071,
+            "ms_per_window": {
+              "average_T": 4.0,
+              "tokens_per_window": 3.49,
+              "total": 234.41,
+              "verify": 201.19,
+              "GPU_reach_wait": 75.07,
+              "per_layer_host": 109.03,
+              "plan": 1.48,
+              "activation_quant": 0.43,
+              "jobs": 0.09,
+              "CPU_pool_run": 106.64,
+              "stage": 2.63,
+              "commit_emit": 0.04,
+              "draft": 33.15,
+              "CPU_experts": 27.59,
+              "CPU_entries": 35.67,
+              "VRAM_hits": 4.31,
+              "PCIe": 0.0
+            },
+            "approximate_ms_per_emitted": {
+              "total": 67.1875796178344,
+              "verify": 57.66592356687898,
+              "GPU_reach_wait": 21.51687898089172,
+              "per_layer_host": 31.25063694267516,
+              "CPU_pool_run": 30.5656050955414,
+              "stage": 0.7538216560509553,
+              "commit_emit": 0.011464968152866241,
+              "draft": 9.501592356687897
+            },
+            "outer_residual_ms_per_window": 0.030000000000001137,
+            "host_nested_residual_ms_per_window": 0.39000000000000057,
+            "verify_residual_ms_per_window": 14.460000000000008,
+            "clock_binding": {
+              "absolute_total_difference_ms": 0.75,
+              "rounding_bound_ms": 5.225
+            }
+          },
+          {
+            "workload": "varied-prose",
+            "target_windows": 3978,
+            "target_rows": 15909,
+            "emitted_tokens": 8638,
+            "maximum_T": 4,
+            "copy": {
+              "submitted_blobs": 0,
+              "submitted_bytes": 0,
+              "completed_blobs": 0,
+              "completed_bytes": 0,
+              "host_view_groups": 0,
+              "gpu_miss_groups": 0,
+              "cpu_unique_misses": 4605780,
+              "cpu_entries": 6953521
+            },
+            "GPU_routed_entry_fraction": 0.08941466570285161,
+            "cpu_unique_jobs_per_emitted": 533.1998147719379,
+            "cpu_entries_per_emitted": 804.9920120398241,
+            "target_rows_per_emitted": 1.8417457744848345,
+            "exact_decode_tps": 9.50994393558868,
+            "ms_per_window": {
+              "average_T": 4.0,
+              "tokens_per_window": 2.17,
+              "total": 228.33,
+              "verify": 195.24,
+              "GPU_reach_wait": 75.27,
+              "per_layer_host": 100.64,
+              "plan": 1.46,
+              "activation_quant": 0.43,
+              "jobs": 0.09,
+              "CPU_pool_run": 98.29,
+              "stage": 4.84,
+              "commit_emit": 0.04,
+              "draft": 33.03,
+              "CPU_experts": 24.12,
+              "CPU_entries": 36.42,
+              "VRAM_hits": 3.58,
+              "PCIe": 0.0
+            },
+            "approximate_ms_per_emitted": {
+              "total": 105.15127807362816,
+              "verify": 89.91256309330865,
+              "GPU_reach_wait": 34.66358647835147,
+              "per_layer_host": 46.34706181986571,
+              "CPU_pool_run": 45.26483213706877,
+              "stage": 2.2289326232924287,
+              "commit_emit": 0.01842093077101181,
+              "draft": 15.211083584163001
+            },
+            "outer_residual_ms_per_window": 0.020000000000010232,
+            "host_nested_residual_ms_per_window": 0.36999999999999034,
+            "verify_residual_ms_per_window": 14.490000000000009,
+            "clock_binding": {
+              "absolute_total_difference_ms": 15.659999999916181,
+              "rounding_bound_ms": 19.94
+            }
+          }
+        ]
+      },
+      {
+        "cap": 1,
+        "requests_replayed": 6,
+        "long_requests": [
+          {
+            "workload": "regular-code",
+            "target_windows": 3126,
+            "target_rows": 3126,
+            "emitted_tokens": 3126,
+            "maximum_T": 1,
+            "copy": {
+              "submitted_blobs": 0,
+              "submitted_bytes": 0,
+              "completed_blobs": 0,
+              "completed_bytes": 0,
+              "host_view_groups": 0,
+              "gpu_miss_groups": 0,
+              "cpu_unique_misses": 1355340,
+              "cpu_entries": 1355340
+            },
+            "GPU_routed_entry_fraction": 0.09672904670505433,
+            "cpu_unique_jobs_per_emitted": 433.5700575815739,
+            "cpu_entries_per_emitted": 433.5700575815739,
+            "target_rows_per_emitted": 1.0,
+            "exact_decode_tps": 11.306399074654786,
+            "ms_per_window": {
+              "average_T": 1.0,
+              "tokens_per_window": 1.0,
+              "total": 88.45,
+              "verify": 88.37,
+              "GPU_reach_wait": 42.19,
+              "per_layer_host": 35.23,
+              "plan": 1.34,
+              "activation_quant": 0.14,
+              "jobs": 0.04,
+              "CPU_pool_run": 33.46,
+              "stage": 0.56,
+              "commit_emit": 0.05,
+              "draft": 0.0,
+              "CPU_experts": 9.03,
+              "CPU_entries": 9.03,
+              "VRAM_hits": 0.97,
+              "PCIe": 0.0
+            },
+            "approximate_ms_per_emitted": {
+              "total": 88.45,
+              "verify": 88.37,
+              "GPU_reach_wait": 42.19,
+              "per_layer_host": 35.23,
+              "CPU_pool_run": 33.46,
+              "stage": 0.56,
+              "commit_emit": 0.05,
+              "draft": 0.0
+            },
+            "outer_residual_ms_per_window": 0.030000000000001137,
+            "host_nested_residual_ms_per_window": 0.2499999999999929,
+            "verify_residual_ms_per_window": 10.390000000000015,
+            "clock_binding": {
+              "absolute_total_difference_ms": 14.100000000034925,
+              "rounding_bound_ms": 15.680000000000001
+            }
+          },
+          {
+            "workload": "varied-prose",
+            "target_windows": 10983,
+            "target_rows": 10983,
+            "emitted_tokens": 10983,
+            "maximum_T": 1,
+            "copy": {
+              "submitted_blobs": 0,
+              "submitted_bytes": 0,
+              "completed_blobs": 0,
+              "completed_bytes": 0,
+              "host_view_groups": 0,
+              "gpu_miss_groups": 0,
+              "cpu_unique_misses": 4813256,
+              "cpu_entries": 4813256
+            },
+            "GPU_routed_entry_fraction": 0.08698746547694924,
+            "cpu_unique_jobs_per_emitted": 438.2460165710644,
+            "cpu_entries_per_emitted": 438.2460165710644,
+            "target_rows_per_emitted": 1.0,
+            "exact_decode_tps": 11.189904694777852,
+            "ms_per_window": {
+              "average_T": 1.0,
+              "tokens_per_window": 1.0,
+              "total": 89.37,
+              "verify": 89.29,
+              "GPU_reach_wait": 41.99,
+              "per_layer_host": 35.69,
+              "plan": 1.33,
+              "activation_quant": 0.12,
+              "jobs": 0.03,
+              "CPU_pool_run": 33.97,
+              "stage": 1.34,
+              "commit_emit": 0.04,
+              "draft": 0.0,
+              "CPU_experts": 9.13,
+              "CPU_entries": 9.13,
+              "VRAM_hits": 0.87,
+              "PCIe": 0.0
+            },
+            "approximate_ms_per_emitted": {
+              "total": 89.37,
+              "verify": 89.29,
+              "GPU_reach_wait": 41.99,
+              "per_layer_host": 35.69,
+              "CPU_pool_run": 33.97,
+              "stage": 1.34,
+              "commit_emit": 0.04,
+              "draft": 0.0
+            },
+            "outer_residual_ms_per_window": 0.03999999999999204,
+            "host_nested_residual_ms_per_window": 0.240000000000002,
+            "verify_residual_ms_per_window": 10.27000000000001,
+            "clock_binding": {
+              "absolute_total_difference_ms": 41.01000000012573,
+              "rounding_bound_ms": 54.964999999999996
+            }
+          }
+        ]
+      }
+    ],
+    "limits": "Post-collection descriptive replay of predeclared clocks/work/resource evidence. Nested host wall scopes include polling, submission and overlap. Zero expert-copy bytes cover only that native route; no physical PCIe/VRAM bandwidth, hardware saturation, clean speed, repeated gain or adoption qualification.",
+    "host_controls": {
+      "command": "python3 -B tools/sycl/test_decode_footer.py",
+      "tests": 3,
+      "passed": true
+    },
+    "observed_speed_ratios_no_draft_over_MTP4": {
+      "regular-code": 0.7596519363437493,
+      "varied-prose": 1.1766530665761679
+    },
+    "decision": "No production or global policy adoption. The one observer-charged process pair has slower no-draft code and faster no-draft prose, with different generated lengths. These descriptive ratios are not repeated clean gains. Keep selected6e40,original prefill/decode and1256slots. Next source question: qualify the already implemented fixed MTP2 route on original6e40 before any model/performance trial; no new numerical kernel is selected.",
+    "remaining_hardware_question": "CPU-pool host wall and GPU-reach waits dominate this route, but include scheduling/polling/overlap. Counter zeros cover expert-copy only. Physical PCIe/VRAM traffic and arithmetic saturation remain unknown."
+  },
+  "final_full_model_hashes": 15,
+  "active": false,
+  "passed": true,
+  "complete": true,
+  "ownership_closed": true,
+  "production_selected": false,
+  "model_adoption_qualified": false,
+  "clean_speed_qualified": false,
+  "hardware_saturation_qualified": false,
+  "artifact_retirement": {
+    "status": "deleted",
+    "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-net-bench-20261024.jsonl",
+    "sha256": "05fce8da9053bf096b54cf6f0697cbe24c00cbed0caed06bb79eafa7979e01fd",
+    "files": 163,
+    "bytes": 43700882,
+    "proof": "Closed model/owner/12request/route/clock/resource replay;190 original controller inputs recovered and13 selected assets rehashed before deletion.Original full inputs/results recover at51bb62ed6.",
+    "remaining": "Original selected13 plus private13 retained for imminent fixed-MTP2 versus MTP4/T1 comparison after source and bounded route qualification;private generation retires when that comparison closes or before any new native generation. Keep actual private source/compiled-input receipt for its current admission reader. Unrelated provenance/worker holds remain open.",
+    "remaining_native_assets_verified": 26
+  },
+  "helper_retirement": {
+    "original_source": "e25c8fbbc25e85cf8c827c8c86ed14af8b6a771f",
+    "analysis_source": "81907432cd61ad48e3f984a61c1a0f7daedbce1c",
+    "removed": [
+      "tools/sycl/mtp_net_bench.py",
+      "tools/sycl/test_mtp_net_bench.py",
+      "decode_footer.closed_pilot"
+    ],
+    "decision": "Closed launch/replay controllers have no execution consumer after raw retirement. Preserve shared T1/T4 footer parser through maintained generation_engine.decode_timing_evidence;source and original failed/success outcomes remain inGit.",
+    "validation": {
+      "source_commit": "07301aa99",
+      "commands": [
+        "python3 -B tools/sycl/test_decode_footer.py",
+        "python3 -B tools/sycl/test_generation_engine.py"
+      ],
+      "tests": [
+        3,
+        15
+      ],
+      "passed": true,
+      "GPU_executed": false
+    }
+  },
+  "summary_correction": "Compact replay count corrected:each process directly checks payload/map and48-layer dense restoration for its2 long requests. All6 request prompt/target/draft routes replay;this does not separately prove6 warm+long restoration cycles. Original source/gates/samples and successful outcome at51bb62ed6 remain unchanged."
+}

@@ -1,0 +1,486 @@
+{
+  "mode": "engine-compare",
+  "source_commit": "ad7191936ba170fee9f8fed9c0272d74f7dbf0cc",
+  "build_source_commit": "3b4998f326101fa913788fd368e1674b111dea03",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22131792,
+    "sha256": "226b4556ab4d2ffd3850dcb8c7d905379bc353b72685b46e291cdda95dce78ac"
+  },
+  "qualification": {
+    "original_inputs_recovered": 9836,
+    "source_build_record_sha256": "76d9fa9e38c0c7e4ef2897f9ec731429db2a3d9d65c2412611c0c4ee1cf2a57f",
+    "component_sha256": "7d12264da26f4c089c9f2c20a16cc95f1c4e98587022a2feca3b243e8f1a70c3",
+    "cpu_sha256": "4aaf3b2c7f04a1dca9a07aad262887d898545638063eb138bfb0fe7affebd6aa",
+    "changed_native_inputs": [
+      "include/strata/sycl/cpu_wait_profile.hpp",
+      "src/prefill/moe_window.inc",
+      "src/sycl/compat.cpp"
+    ]
+  },
+  "source_count": 141,
+  "benchmark_fingerprint": "f4b4aa65d32016cfe16320317bdfa164b7737e3282ae3619a670afcd6fc1d262",
+  "complete": true,
+  "passed": true,
+  "limits": "Attribution only. Requested trace-layer presence is not a measurement of full trace-output cost. No clean throughput/quality/sustained decode/physical262144/session/RESTORE qualification; enqueue can block on device work. Physical PCIe/GDDR traffic and arithmetic ceilings stay unknown.",
+  "result_format": "closed-status-attribution-compact-v1",
+  "original_plan": {
+    "commit": "2402e87653baa60b91ba9846691bb054e6cf7018",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-status-current.json",
+    "sha256": "10c280129d0f535b21695320ee903314f96e581664709618ce5e591b73957c28"
+  },
+  "runs": [
+    {
+      "arm": 0,
+      "complete": true,
+      "passed": true,
+      "ownership_closed": true,
+      "exit_code": 0,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 4042238,
+        "start_ticks": 86393423,
+        "sid": 4042214
+      },
+      "validation_activation": {
+        "pid": 4042238,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "attribution": {
+        "status": {
+          "scopes": 96,
+          "phases": {
+            "tag": {
+              "count": 96,
+              "cpu_s": 5.7761e-05,
+              "wall_s": 5.7706e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "precheck": {
+              "count": 192,
+              "cpu_s": 0.000178911,
+              "wall_s": 0.000182965,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "queue_context": {
+              "count": 192,
+              "cpu_s": 0.000200489,
+              "wall_s": 0.000201434,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "enqueue": {
+              "count": 96,
+              "cpu_s": 10.82403328,
+              "wall_s": 10.88685777,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "observer": {
+              "count": 96,
+              "cpu_s": 6.5043e-05,
+              "wall_s": 6.7893e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "drain": {
+              "count": 96,
+              "cpu_s": 0.011232344,
+              "wall_s": 0.011243981,
+              "wait_cpu_s": 0.011093559,
+              "wait_wall_s": 0.011097835
+            },
+            "postcheck": {
+              "count": 96,
+              "cpu_s": 6.5194e-05,
+              "wall_s": 6.5731e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "after_drain": {
+              "count": 96,
+              "cpu_s": 6.5574e-05,
+              "wall_s": 6.6421e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "branch": {
+              "count": 96,
+              "cpu_s": 5.827e-05,
+              "wall_s": 5.7665e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            }
+          },
+          "cpu_s": 10.837101985,
+          "wall_s": 10.899998929,
+          "unclassified_cpu_s": 0.001145119,
+          "unclassified_wall_s": 0.001197364,
+          "limits": "Nested wrapper partition; wait is a subset. Queue submission may itself block. Counts do not measure PCIe traffic or GPU arithmetic."
+        },
+        "cpu": {
+          "wall_s": 140.352935125,
+          "main_cpu_s": 119.171517642,
+          "wait_cpu_s": 78.935666555,
+          "wait_wall_s": 79.29607962,
+          "outside_wait_cpu_s": 40.235851087,
+          "unclassified_cpu_s": 10.204606134,
+          "unclassified_wall_s": 30.264224005
+        },
+        "original_moe_status_region": {
+          "cpu_s": 10.836737388,
+          "wall_s": 10.899633362,
+          "outside_wait_cpu_s": 10.825643829,
+          "outside_wait_wall_s": 10.888535527
+        },
+        "work": {
+          "window_count": 96,
+          "jobs": 37353,
+          "routed_rows": 56394240,
+          "gu_nk": [
+            1280,
+            2560
+          ],
+          "down_nk": [
+            2560,
+            640
+          ],
+          "gu_down_storage": "bf16",
+          "hidden_storage": "fp16",
+          "requested_router_D2H_bytes": 225576960,
+          "requested_map_H2D_bytes": 451153920,
+          "all_job_row_and_expert_conservation_checks_passed": true,
+          "planned_matches_retired": true,
+          "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+          "window_rows_counts": [
+            [
+              35568,
+              48
+            ],
+            [
+              81920,
+              48
+            ]
+          ],
+          "job_size_groups": [
+            {
+              "min_rows": 1,
+              "max_rows": 2333,
+              "jobs": 29868,
+              "routed_rows": 7103790
+            },
+            {
+              "min_rows": 2334,
+              "max_rows": 8192,
+              "jobs": 7485,
+              "routed_rows": 49290450
+            }
+          ]
+        },
+        "owners": {
+          "borrowed_ffn_entries": 96,
+          "checked_retirements": 96,
+          "secondary_bank_windows": 48,
+          "layout_generation": 3,
+          "used_bytes": 2311569920,
+          "stable_nonoverlapping_typed_spans": true
+        },
+        "native_dense": {
+          "entry_ms": 395.608,
+          "run_ms": 140479.0,
+          "restore_ms": 816.337
+        },
+        "refill_ms": 387.9
+      },
+      "sample": {
+        "ok": true,
+        "eligible": true,
+        "stream_complete": true,
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "actual_prompt_tokens": 117489,
+        "actual_read_tokens": 117489,
+        "actual_reused_tokens": 0,
+        "generated_tokens": 24,
+        "output_chars": 0,
+        "reasoning_chars": 121,
+        "finish_reason": "length",
+        "prompt_ms": 142083.1,
+        "prompt_tps": 826.9,
+        "prompt_tps_source": "engine",
+        "decode_ms": 1646.7,
+        "decode_tps": 14.6,
+        "decode_tps_source": "engine",
+        "drafts_accepted": 16,
+        "drafts_offered": 21,
+        "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "client_interval": {
+          "request_begin_monotonic_ns": 864031981138589,
+          "first_output_monotonic_ns": 864174253594695,
+          "request_end_monotonic_ns": 864175789134780
+        },
+        "run": 0
+      }
+    },
+    {
+      "arm": 1,
+      "complete": true,
+      "passed": true,
+      "ownership_closed": true,
+      "exit_code": 0,
+      "fresh_faults": [],
+      "fault_probe_successful": true,
+      "boot_unchanged": true,
+      "native_identity": {
+        "pid": 4060404,
+        "start_ticks": 86443713,
+        "sid": 4060374
+      },
+      "validation_activation": {
+        "pid": 4060404,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "attribution": {
+        "status": {
+          "scopes": 96,
+          "phases": {
+            "tag": {
+              "count": 96,
+              "cpu_s": 5.7454e-05,
+              "wall_s": 5.8244e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "precheck": {
+              "count": 192,
+              "cpu_s": 0.000182967,
+              "wall_s": 0.000185753,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "queue_context": {
+              "count": 192,
+              "cpu_s": 0.00020949,
+              "wall_s": 0.000210129,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "enqueue": {
+              "count": 96,
+              "cpu_s": 10.799419633,
+              "wall_s": 10.886815742,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "observer": {
+              "count": 96,
+              "cpu_s": 6.4804e-05,
+              "wall_s": 6.8935e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "drain": {
+              "count": 96,
+              "cpu_s": 0.01139216,
+              "wall_s": 0.011941286,
+              "wait_cpu_s": 0.01125588,
+              "wait_wall_s": 0.0117971
+            },
+            "postcheck": {
+              "count": 96,
+              "cpu_s": 6.6033e-05,
+              "wall_s": 6.6629e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "after_drain": {
+              "count": 96,
+              "cpu_s": 6.6109e-05,
+              "wall_s": 6.8039e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            },
+            "branch": {
+              "count": 96,
+              "cpu_s": 5.986e-05,
+              "wall_s": 6.0543e-05,
+              "wait_cpu_s": 0.0,
+              "wait_wall_s": 0.0
+            }
+          },
+          "cpu_s": 10.812708366,
+          "wall_s": 10.900710381,
+          "unclassified_cpu_s": 0.001189856,
+          "unclassified_wall_s": 0.001235081,
+          "limits": "Nested wrapper partition; wait is a subset. Queue submission may itself block. Counts do not measure PCIe traffic or GPU arithmetic."
+        },
+        "cpu": {
+          "wall_s": 125.164572089,
+          "main_cpu_s": 118.756707343,
+          "wait_cpu_s": 78.574074431,
+          "wait_wall_s": 79.222766816,
+          "outside_wait_cpu_s": 40.182632912,
+          "unclassified_cpu_s": 10.201808904,
+          "unclassified_wall_s": 15.227133805
+        },
+        "original_moe_status_region": {
+          "cpu_s": 10.812339051,
+          "wall_s": 10.900338411,
+          "outside_wait_cpu_s": 10.801083171,
+          "outside_wait_wall_s": 10.88854131
+        },
+        "work": {
+          "window_count": 96,
+          "jobs": 37353,
+          "routed_rows": 56394240,
+          "gu_nk": [
+            1280,
+            2560
+          ],
+          "down_nk": [
+            2560,
+            640
+          ],
+          "gu_down_storage": "bf16",
+          "hidden_storage": "fp16",
+          "requested_router_D2H_bytes": 225576960,
+          "requested_map_H2D_bytes": 451153920,
+          "all_job_row_and_expert_conservation_checks_passed": true,
+          "planned_matches_retired": true,
+          "limits": "Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.",
+          "window_rows_counts": [
+            [
+              35568,
+              48
+            ],
+            [
+              81920,
+              48
+            ]
+          ],
+          "job_size_groups": [
+            {
+              "min_rows": 1,
+              "max_rows": 2333,
+              "jobs": 29868,
+              "routed_rows": 7103790
+            },
+            {
+              "min_rows": 2334,
+              "max_rows": 8192,
+              "jobs": 7485,
+              "routed_rows": 49290450
+            }
+          ]
+        },
+        "owners": {
+          "borrowed_ffn_entries": 96,
+          "checked_retirements": 96,
+          "secondary_bank_windows": 48,
+          "layout_generation": 3,
+          "used_bytes": 2311569920,
+          "stable_nonoverlapping_typed_spans": true
+        },
+        "native_dense": {
+          "entry_ms": 388.43,
+          "run_ms": 125290.0,
+          "restore_ms": 818.538
+        },
+        "refill_ms": 387.8
+      },
+      "sample": {
+        "ok": true,
+        "eligible": true,
+        "stream_complete": true,
+        "thinking_requested": true,
+        "reasoning_observed": true,
+        "actual_prompt_tokens": 117489,
+        "actual_read_tokens": 117489,
+        "actual_reused_tokens": 0,
+        "generated_tokens": 24,
+        "output_chars": 0,
+        "reasoning_chars": 121,
+        "finish_reason": "length",
+        "prompt_ms": 126889.7,
+        "prompt_tps": 925.9,
+        "prompt_tps_source": "engine",
+        "decode_ms": 1648.2,
+        "decode_tps": 14.6,
+        "decode_tps_source": "engine",
+        "drafts_accepted": 16,
+        "drafts_offered": 21,
+        "request_sha256": "26f08fd8364b5c4bce718617fe2aed42761d0a794e068b00532694adef78b3be",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "client_interval": {
+          "request_begin_monotonic_ns": 864534073603816,
+          "first_output_monotonic_ns": 864661125306713,
+          "request_end_monotonic_ns": 864662679502315
+        },
+        "run": 0
+      }
+    }
+  ],
+  "all_benchmark_inputs_unchanged": 141,
+  "profile": "CPU partitionv4 and nested statusv1; validation on, full API output off. Trace layer requested absent/present with identical warning logging.",
+  "precision_contract": "FP16 expert operands/weights, local FP32 accumulation, BF16-rounded intermediate/output storage and FP32 Down scatter accumulator; no inference math change.",
+  "clean_speed_qualified": false,
+  "hardware_saturation_qualified": false,
+  "model_adoption_qualified": false,
+  "post_collection_analysis": "Main extracted the existing unclassified CPU/wall fields from each original native log after both successful closures; original controller samples/statuses unchanged. Original controller records matched exactly after excluding only these four added scalar fields.",
+  "decision": {
+    "copy_enqueue_dominates_status_in_both_processes": true,
+    "precheck_or_context_cost_material": false,
+    "enqueue_internal_waiting_proven": false,
+    "tracing_layer_overhead_qualified": false,
+    "hardware_limiting_resource_known": false,
+    "measured_negative_sample_preserved": "First-use prompt142083.1ms versus126889.7ms; main unclassified wall30.264224005 versus15.227133805s with CPU10.204606134 versus10.201808904s. Cause unknown. Do not compare these diagnostics to clean subsequent-request1000tok/s medians or credit the requested trace toggle."
+  },
+  "next_action": "Native Luna-max curation is complete. Freeze one finite copy/queue discriminator: ordinary C++ versus same-context USM-host destination, each idle versus verified-pending in-order queue, with bounded work/attempts and checked drain/async errors. Select necessary retained artifacts before building; no third engine generation. Confirm actual provider/view/staging flags before adding a narrow cudaHostAlloc timer. Hardware traffic/saturation remain unknown.",
+  "retained_generation_review": "Old396 remains the fastest validated fallback;3b4998 is the status-only candidate. At the imminent source/queue-plan freeze select necessary exact artifacts and retire the extra after source/recipe/default-reachability/consumer checks. No third engine generation. This is a pending selection, not completed cleanup.",
+  "retention": "Raw two-process output remains only through the imminent enqueue/unclassified discriminator plan freeze. Retire after compact evidence/source checks; retain no full successful API history. Prior original collection remains failed in its own result.",
+  "full_model_hashes_matched": 15,
+  "full_model_hash_schedule": "Full SHA256 before preparation and after each native closure; unchanged recorded file identities admitted before each process.",
+  "observer_log_retirement": {
+    "complete": true,
+    "files": 44,
+    "bytes": 22570278,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-prefill-observer-logs-20261021.jsonl",
+      "sha256": "302e35b991db03765e58743976561a28712f2f8dae7247a26eac0741a1fb259b"
+    },
+    "selection": "Only closed stdout/stderr in host-profile-cpu-v2, prefill-status-profile-component-v1 and both prefill-status-wrapper-v1 processes. Includes expected fail-stop protocol cases; no unresolved fault diagnostic is removed.",
+    "evidence_before_deletion": {
+      "commit": "82d485f65",
+      "paths": [
+        "bench/results/2026-10-15-pr6-recovery-audit/prefill-host-cpu-current.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/decode-query-profile-component-current.json",
+        "bench/results/2026-10-15-pr6-recovery-audit/prefill-status-current.json"
+      ]
+    },
+    "outcomes_unchanged": true,
+    "limits": "Engine/fixture/helper bytes, source receipts, generated workloads and cache directories are untouched. This closes normal observer-log retention only; review the other captures at finite-copy decision closure, with legacy provenance holds separate."
+  }
+}

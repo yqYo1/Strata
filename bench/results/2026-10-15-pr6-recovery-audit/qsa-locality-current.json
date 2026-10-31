@@ -1,0 +1,981 @@
+{
+  "result_format": "closed-logical-gather-diagnostic-v1",
+  "stage": "closed_address_sensitivity_observed",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "provenance": {
+    "native_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "fixture_source_commit": "64a929e9116da7207ac83e02d4398c4131710128",
+    "original_build_recipe_commit": "ec911e9a2",
+    "full_input_and_frozen_plan_archive": "425d0b0be649bbb023149c730e179960f064ea49",
+    "controller_commit": "c414fb301ce9343038f45f21792ad57b715eec58",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-v2/fixture",
+      "sha256": "0b61d9d88dd6b8ef1fe77ab2d29805898cbde5141f960d994e0f3bbe628f21d5",
+      "bytes": 1540088
+    },
+    "compiler": {
+      "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+      "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+    },
+    "runtime_qualification": {
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
+      "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97"
+    },
+    "safety": "Immutable pre-exec copy-offload avoidance,direct submission off,in-order queue and qualified native validation retained. Private event export only;no GPU math/layout change;no XeStrata application source."
+  },
+  "workload": {
+    "selected_ID_fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-capture-v1/layer0-final-ids.bin",
+      "bytes": 53252180,
+      "sha256": "a0410c7005f64a89d02becd42fcfd8155c92b68cd7b4d175543c172070a6338c",
+      "header": [
+        0,
+        32768,
+        6491,
+        2051
+      ],
+      "retired": true
+    },
+    "source_count_proof_commit": "1013c2437",
+    "queries": 6491,
+    "positions": [
+      32768,
+      39258
+    ],
+    "all_counts": 2051,
+    "counts_source_derived_not_device_capture": true,
+    "live_cells": 39259,
+    "arms": [
+      "original actual IDs",
+      "private actual IDs",
+      "private hot2047plus4final",
+      "private sixteen2047cellbanksplus4final"
+    ],
+    "values": "Synthetic equal K/V values within each KV head;same Q,counts,page table,packed values and matrix operands. H/S IDs are sorted,distinct,causal;not natural selector rankings."
+  },
+  "property_gate": {
+    "passed": true,
+    "kernel_submissions": 0,
+    "properties": [
+      {
+        "arm": 0,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "spill_descriptor": 12480
+      },
+      {
+        "arm": 1,
+        "max_workgroup": 1024,
+        "subgroup": 16,
+        "arguments": 18,
+        "reported_local_bytes": 32,
+        "declared_dynamic_local_bytes": 20036,
+        "spill_descriptor": 12480
+      }
+    ],
+    "loader_namespace": 0
+  },
+  "native_gates": {
+    "smoke_processes": 3,
+    "performance_processes": 3,
+    "all_exit_codes": 0,
+    "all_outputs_exact": true,
+    "all_guards": true,
+    "inputs_and_packed_rows_unchanged": true,
+    "smoke_words_per_arm": 18432,
+    "perf_words_per_arm": 39880704,
+    "smoke_expected_zero_sign_sites": 288,
+    "perf_expected_zero_sign_sites": 623136,
+    "observed_bits_canonicalized": false,
+    "oracle_note": "Initial FP32+0 accumulation is included in expected BF16 zero sign. Native negative_zero_sites_canonicalized label counts expected-value corrections only. Full outputs checked twice perarm before timing and at the end of every timed batch;not a separate capture of every repeated call.",
+    "smoke_original_private_calls": [
+      2,
+      6
+    ],
+    "dynamic_local_bytes_per_kernel": 20032,
+    "local_size": 128,
+    "local_arguments": [
+      [
+        0,
+        16384
+      ],
+      [
+        1,
+        1024
+      ],
+      [
+        3,
+        64
+      ],
+      [
+        4,
+        64
+      ],
+      [
+        5,
+        64
+      ],
+      [
+        13,
+        256
+      ],
+      [
+        15,
+        2112
+      ],
+      [
+        16,
+        64
+      ]
+    ],
+    "private_direct_event_calls": 576,
+    "protocol_qualified": true,
+    "postchecks_complete": true,
+    "fresh_faults": []
+  },
+  "comparison": {
+    "processes": 3,
+    "rounds": 8,
+    "shapes": [
+      6491
+    ],
+    "arms": [
+      "originalP",
+      "privateP",
+      "privateHot",
+      "privateSpread"
+    ],
+    "order": [
+      [
+        0,
+        1,
+        3,
+        2
+      ],
+      [
+        1,
+        2,
+        0,
+        3
+      ],
+      [
+        2,
+        3,
+        1,
+        0
+      ],
+      [
+        3,
+        0,
+        2,
+        1
+      ]
+    ],
+    "order_row": "(round+process)%4",
+    "repeats": 8,
+    "minimum_batch_ns": 100000000,
+    "minimum_clock_multiple": 1000,
+    "control_original_ratio_bounds": [
+      0.99,
+      1.01
+    ],
+    "sensitivity_ratio_bounds": [
+      0.97,
+      1.03
+    ],
+    "decision": "All3processes must pass privateP/originalPwall calibration. A diagnostic response requires the same H/P,S/P or S/H service-ratio direction beyond3percent in all3process medians. A flat/inconsistent result is inconclusive. Never a model-adoption or saturation gate.",
+    "scope": "Exact6491query/source-derived2051counts,synthetic repeated-value Q/K/V. Only gather-address topology changes among private arms. Wall includes pack and wrapper;direct event covers attention. No physical-traffic claim."
+  },
+  "sample_columns": [
+    "round",
+    "arm",
+    "batch_ns",
+    "attention_device_ns",
+    "timer_floor_ns"
+  ],
+  "repeats_per_batch": 8,
+  "samples": [
+    {
+      "process": 0,
+      "rows": [
+        [
+          0,
+          0,
+          995714171,
+          null,
+          20
+        ],
+        [
+          0,
+          1,
+          996343903,
+          991520939,
+          20
+        ],
+        [
+          0,
+          3,
+          1089558259,
+          1084204688,
+          20
+        ],
+        [
+          0,
+          2,
+          888371978,
+          883497814,
+          20
+        ],
+        [
+          1,
+          1,
+          997796902,
+          992982812,
+          20
+        ],
+        [
+          1,
+          2,
+          888382065,
+          883499271,
+          20
+        ],
+        [
+          1,
+          0,
+          995616032,
+          null,
+          20
+        ],
+        [
+          1,
+          3,
+          1089011077,
+          1084193543,
+          20
+        ],
+        [
+          2,
+          2,
+          888555323,
+          883678126,
+          20
+        ],
+        [
+          2,
+          3,
+          1089146416,
+          1084334479,
+          20
+        ],
+        [
+          2,
+          1,
+          999614930,
+          994807084,
+          20
+        ],
+        [
+          2,
+          0,
+          997792793,
+          null,
+          20
+        ],
+        [
+          3,
+          3,
+          1089222194,
+          1084411772,
+          20
+        ],
+        [
+          3,
+          0,
+          997578584,
+          null,
+          20
+        ],
+        [
+          3,
+          2,
+          888061151,
+          883194377,
+          20
+        ],
+        [
+          3,
+          1,
+          999556222,
+          994742497,
+          20
+        ],
+        [
+          4,
+          0,
+          997690323,
+          null,
+          20
+        ],
+        [
+          4,
+          1,
+          996934389,
+          992080309,
+          20
+        ],
+        [
+          4,
+          3,
+          1088859463,
+          1084042188,
+          20
+        ],
+        [
+          4,
+          2,
+          888236710,
+          883365209,
+          20
+        ],
+        [
+          5,
+          1,
+          1000172590,
+          995349793,
+          20
+        ],
+        [
+          5,
+          2,
+          888434421,
+          883557396,
+          20
+        ],
+        [
+          5,
+          0,
+          998462169,
+          null,
+          20
+        ],
+        [
+          5,
+          3,
+          1088887117,
+          1084062707,
+          20
+        ],
+        [
+          6,
+          2,
+          888036211,
+          883181250,
+          20
+        ],
+        [
+          6,
+          3,
+          1089001187,
+          1084183335,
+          20
+        ],
+        [
+          6,
+          1,
+          998200796,
+          993388438,
+          20
+        ],
+        [
+          6,
+          0,
+          1000352851,
+          null,
+          20
+        ],
+        [
+          7,
+          3,
+          1089012866,
+          1084182813,
+          20
+        ],
+        [
+          7,
+          0,
+          998587654,
+          null,
+          20
+        ],
+        [
+          7,
+          2,
+          888506510,
+          883395729,
+          20
+        ],
+        [
+          7,
+          1,
+          1000335230,
+          995511354,
+          20
+        ]
+      ]
+    },
+    {
+      "process": 1,
+      "rows": [
+        [
+          0,
+          1,
+          998945940,
+          994138750,
+          20
+        ],
+        [
+          0,
+          2,
+          888247307,
+          883378127,
+          20
+        ],
+        [
+          0,
+          0,
+          996988765,
+          null,
+          20
+        ],
+        [
+          0,
+          3,
+          1088670684,
+          1083852916,
+          20
+        ],
+        [
+          1,
+          2,
+          888201784,
+          883338854,
+          20
+        ],
+        [
+          1,
+          3,
+          1089062299,
+          1084240937,
+          20
+        ],
+        [
+          1,
+          1,
+          999728167,
+          994916770,
+          20
+        ],
+        [
+          1,
+          0,
+          998075632,
+          null,
+          20
+        ],
+        [
+          2,
+          3,
+          1089364658,
+          1084547709,
+          20
+        ],
+        [
+          2,
+          0,
+          997926916,
+          null,
+          20
+        ],
+        [
+          2,
+          2,
+          888441390,
+          883566144,
+          20
+        ],
+        [
+          2,
+          1,
+          997465904,
+          992120418,
+          20
+        ],
+        [
+          3,
+          0,
+          999337659,
+          null,
+          20
+        ],
+        [
+          3,
+          1,
+          996779365,
+          991970209,
+          20
+        ],
+        [
+          3,
+          3,
+          1088693508,
+          1083875419,
+          20
+        ],
+        [
+          3,
+          2,
+          888338487,
+          883467605,
+          20
+        ],
+        [
+          4,
+          1,
+          999388529,
+          994579065,
+          20
+        ],
+        [
+          4,
+          2,
+          888170398,
+          883315105,
+          20
+        ],
+        [
+          4,
+          0,
+          999126232,
+          null,
+          20
+        ],
+        [
+          4,
+          3,
+          1088787701,
+          1083973750,
+          20
+        ],
+        [
+          5,
+          2,
+          888264870,
+          883394063,
+          20
+        ],
+        [
+          5,
+          3,
+          1089021358,
+          1084206043,
+          20
+        ],
+        [
+          5,
+          1,
+          999457671,
+          994112605,
+          20
+        ],
+        [
+          5,
+          0,
+          997615599,
+          null,
+          20
+        ],
+        [
+          6,
+          3,
+          1089081359,
+          1084047082,
+          20
+        ],
+        [
+          6,
+          0,
+          997736974,
+          null,
+          20
+        ],
+        [
+          6,
+          2,
+          888217786,
+          883344064,
+          20
+        ],
+        [
+          6,
+          1,
+          996920782,
+          992104689,
+          20
+        ],
+        [
+          7,
+          0,
+          999401197,
+          null,
+          20
+        ],
+        [
+          7,
+          1,
+          1000602417,
+          995794582,
+          20
+        ],
+        [
+          7,
+          3,
+          1089176907,
+          1084357813,
+          20
+        ],
+        [
+          7,
+          2,
+          888231604,
+          883367916,
+          20
+        ]
+      ]
+    },
+    {
+      "process": 2,
+      "rows": [
+        [
+          0,
+          2,
+          887819158,
+          882958125,
+          10
+        ],
+        [
+          0,
+          3,
+          1088893784,
+          1084057395,
+          10
+        ],
+        [
+          0,
+          1,
+          997033345,
+          992200939,
+          10
+        ],
+        [
+          0,
+          0,
+          997023520,
+          null,
+          10
+        ],
+        [
+          1,
+          3,
+          1088676915,
+          1083855314,
+          10
+        ],
+        [
+          1,
+          0,
+          999988372,
+          null,
+          10
+        ],
+        [
+          1,
+          2,
+          888079897,
+          883220729,
+          10
+        ],
+        [
+          1,
+          1,
+          999165057,
+          994351875,
+          10
+        ],
+        [
+          2,
+          0,
+          999862977,
+          null,
+          10
+        ],
+        [
+          2,
+          1,
+          997363825,
+          992548334,
+          10
+        ],
+        [
+          2,
+          3,
+          1088985116,
+          1084167707,
+          10
+        ],
+        [
+          2,
+          2,
+          887735050,
+          882858334,
+          10
+        ],
+        [
+          3,
+          1,
+          998650807,
+          993841666,
+          10
+        ],
+        [
+          3,
+          2,
+          888398722,
+          883523541,
+          10
+        ],
+        [
+          3,
+          0,
+          1000564586,
+          null,
+          10
+        ],
+        [
+          3,
+          3,
+          1089225328,
+          1084406249,
+          10
+        ],
+        [
+          4,
+          2,
+          887884526,
+          883012083,
+          10
+        ],
+        [
+          4,
+          3,
+          1088561963,
+          1083741978,
+          10
+        ],
+        [
+          4,
+          1,
+          998671911,
+          993841874,
+          10
+        ],
+        [
+          4,
+          0,
+          996416118,
+          null,
+          10
+        ],
+        [
+          5,
+          3,
+          1089265260,
+          1083930415,
+          10
+        ],
+        [
+          5,
+          0,
+          997272662,
+          null,
+          10
+        ],
+        [
+          5,
+          2,
+          887785628,
+          882917293,
+          10
+        ],
+        [
+          5,
+          1,
+          998809200,
+          993978437,
+          10
+        ],
+        [
+          6,
+          0,
+          999206835,
+          null,
+          10
+        ],
+        [
+          6,
+          1,
+          996058920,
+          991236148,
+          10
+        ],
+        [
+          6,
+          3,
+          1089113486,
+          1084294791,
+          10
+        ],
+        [
+          6,
+          2,
+          888296356,
+          883427395,
+          10
+        ],
+        [
+          7,
+          1,
+          996714229,
+          991895730,
+          10
+        ],
+        [
+          7,
+          2,
+          887800691,
+          882921459,
+          10
+        ],
+        [
+          7,
+          0,
+          997204273,
+          null,
+          10
+        ],
+        [
+          7,
+          3,
+          1089286042,
+          1083958438,
+          10
+        ]
+      ]
+    }
+  ],
+  "decision": {
+    "calibration_passed": true,
+    "groups": [
+      {
+        "process": 0,
+        "control_original_wall_ratio": 1.001139524550104,
+        "hot_actual_service_ratio": 0.8887209146514287,
+        "spread_actual_service_ratio": 1.090661002163824,
+        "spread_hot_service_ratio": 1.2272255374923853,
+        "hot_actual_wall_ratio": 0.8893744469378708,
+        "spread_actual_wall_ratio": 1.0902346598589199
+      },
+      {
+        "process": 1,
+        "control_original_wall_ratio": 1.001168295602797,
+        "hot_actual_service_ratio": 0.8885929027821535,
+        "spread_actual_service_ratio": 1.0905327032959573,
+        "spread_hot_service_ratio": 1.2272579489229964,
+        "hot_actual_wall_ratio": 0.8889797671803058,
+        "spread_actual_wall_ratio": 1.0899495008410427
+      },
+      {
+        "process": 2,
+        "control_original_wall_ratio": 0.9997671576388846,
+        "hot_actual_service_ratio": 0.8890349870871279,
+        "spread_actual_service_ratio": 1.0914351325771878,
+        "spread_hot_service_ratio": 1.2276627449198736,
+        "hot_actual_wall_ratio": 0.8896245826718969,
+        "spread_actual_wall_ratio": 1.0912237651372088
+      }
+    ],
+    "responses": {
+      "hot_actual_service_ratio": "lower",
+      "spread_actual_service_ratio": "higher",
+      "spread_hot_service_ratio": "higher"
+    },
+    "address_sensitivity_observed": true,
+    "advance_to_model": false,
+    "model_adopted": false,
+    "hardware_saturation_qualified": false,
+    "interpretation": "Only logical-address topology sensitivity at this synthetic equivalent-value6491shape. Flat response does not rule out memory limits. No DRAM/cache/saturation/limiting-resource or model-speed conclusion."
+  },
+  "original_failure": {
+    "source_and_failure_archive": "16686a2eb093d798b469a6d44380422e9256b5b2",
+    "retirement_archive": "09e3e1c94",
+    "passed": false,
+    "original_ownership_closed": false,
+    "physical_process_closed": true,
+    "exit_code": 1,
+    "fresh_faults": [],
+    "actual_mismatch_bits_captured": false,
+    "exclusive_original_failure_cause_proven": false,
+    "note": "Old raw-V signed-zero oracle remains failed;the repaired new source passes its own native cohort."
+  },
+  "source_recovery": {
+    "original_project_inputs_recovered": 196,
+    "actual_compiled_dependencies_verified": 696,
+    "compiler_assets_verified": 8700,
+    "generated_sources_reproduced": 2,
+    "original_commands_verified": 10,
+    "recipe_commit": "ec911e9a2",
+    "source_commit": "64a929e9116da7207ac83e02d4398c4131710128",
+    "archive": "425d0b0be649bbb023149c730e179960f064ea49",
+    "selected_engine_and_fixtures_verified": 13
+  },
+  "retirement": {
+    "authorized": true,
+    "complete": true,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-locality-closure-retirement-20261027.jsonl",
+      "sha256": "bffc65fe758dbf39c24736664d972687da526aea3e4478aec0155b1faebbb92c"
+    },
+    "files": 82,
+    "bytes": 61583388,
+    "consumer": "Closed native diagnostic;no retained component generation or ID fixture. Selected6e40 engine and12fixtures remain. Separate legacy provenance holds are unchanged.",
+    "remote_source_verified": "8680a3834d268f78b384472b27637d69ecd345f2",
+    "selected_engine_and_fixtures_verified_after": 13,
+    "component_directory_absent": true,
+    "selected_ID_fixture_absent": true,
+    "remaining_component_files": 0,
+    "remaining_ID_files": 0
+  },
+  "next_action": "Freeze selected-model planned-work and observer-record-budget evidence before117489-token route coverage;use the existing source census/parser rather than an unselected historical histogram. No model adoption or throughput gain from locality diagnostic.",
+  "prototype_retirement": {
+    "archive": "425d0b0be649bbb023149c730e179960f064ea49",
+    "files": 5,
+    "bytes": 84069,
+    "reason": "No adopted implementation or remaining consumer;restore complete diagnostic source and recipe from Git."
+  }
+}

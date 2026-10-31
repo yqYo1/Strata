@@ -1,0 +1,710 @@
+{
+  "schema": 1,
+  "stage": "closed",
+  "candidate": "8of16Qfragments retained;remaining8reloaded from persistent Q SLM",
+  "source_commit": "f97f7924041ed798c66190188fbe6eab1e469328",
+  "recipe_commit": "dce2d43a7",
+  "original_full_result": {
+    "commit": "336cc6cc4",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/qsa-partial-current.json"
+  },
+  "plan": {
+    "question": "Does caching8of16Q matrix fragments reduce actual QSA latency without changing arithmetic or the selected engine?",
+    "mechanism": "Measured ordered-exp QSA service8.2641s vs packing0.0166s for39260fresh tokens. The compiler reports128GRF/spill12480B,not physical traffic or saturation. GRF-only scratch removal and two loop hints already lost;this new candidate trades eight fragment live ranges for persistent Q SLM and extra local loads.",
+    "arms": "Unmodified6e40 ordered-exp;separate namespace identical body(control);same namespace form with only8cachedQ fragments and8panels loaded from persistent SLM(partialq8). Dim256,DPAS panel order,FP32 state,exp2,rounding,selection,barriers,WG128,SG16 and defaultGRF stay fixed. Dynamic local payload20036to28224B;no claimed resource or speed gain.",
+    "provenance": "Main-authored bounded overlay of ownMIT source6e40;controller/fixture scaffold recovers ownMIT de3f22da7. No XeStrata application code. Current command_profile.cpp only adds inactive diagnostic categories and is separately pinned;normal fixture never activates it. Production sources/dispatch,selected13artifacts and decode implementation/configuration/1256slots remain unchanged.",
+    "qualification": "Three traced/validated small numerical processes,then three independent oracle/exact-prefix33/guards/input immutability/alias/domain/physical262144 component processes. No numerical relaxation. Verify actual compiler resources before clean timing;require normal ownership closure and no freshfault.",
+    "performance": "Only after prior gates:3independent clean processes,6rotated rounds,3arms and3synthetic shapes(32768/8192/2051 gather;117488/8192/2051 gather+clustered),all162latencies. Each batch>=100us and>=1000timesminimum positive128pair clock floor. Candidate/default ANDcandidate/control geometric mean latency<=.95,no shape>1.05,both117488patterns faster in every process. No model trial after failure;preserve original outcomes.",
+    "limits": "Complete wrapper wall includes admission,prefix packing,attention and checked drain. Synthetic locality is not production distribution. Descriptor sizes and summed service are not physical traffic,occupancy or hardware saturation. Component success still needs matched official long/agent/thinking-on strong+weak generation and decode/state/fullphysical262144 qualification.",
+    "retention": "Keep original13engine assets unchanged plus one imminent two-executable component generation. Preserve exact source/recipe,162samples,numerical/fault/resource decisions. Retire generated copies,objects,IR,binaries and routine logs at closure. Legacy144artifact/46root holds are separate;source/recipe recovery is pending for remaining items,not a new comparison allowance."
+  },
+  "compiler": {
+    "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
+    "sha256": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb"
+  },
+  "project_inputs_recovered": 196,
+  "compiler_assets": 8700,
+  "actual_compiled_inputs": 694,
+  "changed_system_headers_consumed": [],
+  "binaries": {
+    "numerical": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/numerical",
+      "sha256": "d2f1dfe65de36398621c1da05bb4854192ccedf0fa8c3336a70762442da93d1a",
+      "bytes": 1589816,
+      "retired": true
+    },
+    "timing": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1/timing",
+      "sha256": "50db636b9470cd9070f3ad6350eaaccdbb791f885800319c58ec4dc7f019dbe2",
+      "bytes": 1569064,
+      "retired": true
+    }
+  },
+  "selected_engine": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "checks": [
+    {
+      "mode": "smoke",
+      "source_commit": "7172fcc007835a1670696e65331872298274428a",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 3,
+      "case_counts": [
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "mode": "component",
+      "source_commit": "c535a64bbddb5d6f27e6f8e209e9f36b122084c4",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 3,
+      "case_counts": [
+        11,
+        11,
+        11
+      ]
+    },
+    {
+      "mode": "resources",
+      "source_commit": "ac518e9dd41025c6801cb59096385c03acc0a443",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 1,
+      "case_counts": null
+    },
+    {
+      "mode": "perf",
+      "source_commit": "5e52f6f11a00cee0071bd4395e43639bff7e4b83",
+      "passed": true,
+      "complete": true,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "processes": 3,
+      "case_counts": null
+    }
+  ],
+  "resources": {
+    "conserved_device_ns": 5865764,
+    "table_rows": 24,
+    "compute_calls": {
+      "0": 8,
+      "1": 7,
+      "2": 7
+    },
+    "properties": [
+      {
+        "arm": 0,
+        "compiled": "JIT",
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 12480,
+        "GRF": 128
+      },
+      {
+        "arm": 1,
+        "compiled": "JIT",
+        "SIMD": 16,
+        "arguments": 18,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 12480,
+        "GRF": 128
+      },
+      {
+        "arm": 2,
+        "compiled": "JIT",
+        "SIMD": 16,
+        "arguments": 19,
+        "raw_SLM": 32,
+        "private_memory_descriptor": 0,
+        "spill_memory_descriptor": 192,
+        "GRF": 128
+      }
+    ],
+    "limits": "Allocation descriptors and summed service only;rawSLM units,actual spill traffic,occupancy,physical traffic and model/decode speed remain unmeasured."
+  },
+  "performance": {
+    "shapes": [
+      {
+        "cells": 32768,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 197.1944515,
+            "sample_sd_ms": 0.3058932094070749,
+            "process_medians_ms": [
+              197.22418399999998,
+              197.1944515,
+              197.1485485
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 197.113099,
+            "sample_sd_ms": 0.6324837635964885,
+            "process_medians_ms": [
+              197.044205,
+              197.2178705,
+              197.154981
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 208.5619705,
+            "sample_sd_ms": 0.4645679686860566,
+            "process_medians_ms": [
+              208.54017449999998,
+              208.3406475,
+              209.04143499999998
+            ]
+          }
+        ],
+        "ratios": [
+          1.0576462416337307,
+          1.058082753292819
+        ]
+      },
+      {
+        "cells": 117488,
+        "pattern": "gather",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 236.708024,
+            "sample_sd_ms": 0.4249982048266403,
+            "process_medians_ms": [
+              236.6920015,
+              236.7671115,
+              236.74337400000002
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 236.5619145,
+            "sample_sd_ms": 0.463466658691648,
+            "process_medians_ms": [
+              236.6503525,
+              236.77967,
+              236.416088
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 252.13705950000002,
+            "sample_sd_ms": 0.46185241566741386,
+            "process_medians_ms": [
+              252.22049049999998,
+              252.32488,
+              252.042972
+            ]
+          }
+        ],
+        "ratios": [
+          1.0651817172872857,
+          1.065839613417569
+        ]
+      },
+      {
+        "cells": 117488,
+        "pattern": "clustered",
+        "arms": [
+          {
+            "arm": 0,
+            "median_ms": 140.329393,
+            "sample_sd_ms": 0.13375632741839766,
+            "process_medians_ms": [
+              140.21633300000002,
+              140.39311450000002,
+              140.407901
+            ]
+          },
+          {
+            "arm": 1,
+            "median_ms": 140.360499,
+            "sample_sd_ms": 0.17034775343001857,
+            "process_medians_ms": [
+              140.3355425,
+              140.34448300000003,
+              140.3816975
+            ]
+          },
+          {
+            "arm": 2,
+            "median_ms": 150.0232365,
+            "sample_sd_ms": 0.31504364669187784,
+            "process_medians_ms": [
+              150.07253500000002,
+              149.9708625,
+              149.9977215
+            ]
+          }
+        ],
+        "ratios": [
+          1.0690792092288177,
+          1.0688422851788237
+        ]
+      }
+    ],
+    "candidate_latency_geomeans_vs_default_and_control": [
+      1.0639584610487527,
+      1.064245215900434
+    ],
+    "advance_to_model": false,
+    "decode_preservation_qualified": false,
+    "model_adoption_qualified": false,
+    "sample_columns": [
+      "process",
+      "cells",
+      "queries",
+      "cap",
+      "pattern",
+      "round",
+      "order",
+      "arm",
+      "milliseconds"
+    ],
+    "sample_count": 162,
+    "rounds_per_batch": 6,
+    "order_rule": "round0..5;arm=(process+round+order)%3;queries8192,cap2051 for every sample",
+    "latency_batches": [
+      {
+        "process": 0,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 0,
+        "milliseconds": [
+          197.263328,
+          197.422287,
+          197.534769,
+          197.039195,
+          197.18504,
+          196.752044
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 1,
+        "milliseconds": [
+          197.60968,
+          196.873013,
+          197.074091,
+          195.729559,
+          198.017919,
+          197.014319
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 2,
+        "milliseconds": [
+          208.285094,
+          208.529204,
+          209.05769,
+          208.572796,
+          208.551145,
+          207.945264
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 0,
+        "milliseconds": [
+          237.607365,
+          236.531099,
+          236.678196,
+          236.705807,
+          236.420911,
+          236.912596
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 1,
+        "milliseconds": [
+          237.142951,
+          236.160721,
+          237.271543,
+          236.820934,
+          236.143518,
+          236.479771
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 2,
+        "milliseconds": [
+          251.66519,
+          252.554264,
+          251.808681,
+          252.157126,
+          253.137983,
+          252.283855
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 0,
+        "milliseconds": [
+          140.206244,
+          140.438972,
+          140.17755,
+          140.226422,
+          140.369021,
+          140.173893
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 1,
+        "milliseconds": [
+          140.249415,
+          140.073424,
+          140.372818,
+          140.509515,
+          140.298267,
+          140.674275
+        ]
+      },
+      {
+        "process": 0,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 2,
+        "milliseconds": [
+          150.050804,
+          150.285686,
+          150.094266,
+          150.175819,
+          149.907564,
+          149.59241
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 0,
+        "milliseconds": [
+          197.157637,
+          197.376529,
+          196.831783,
+          197.482077,
+          197.186451,
+          197.202452
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 1,
+        "milliseconds": [
+          196.799833,
+          197.152107,
+          196.258033,
+          197.503008,
+          197.283634,
+          197.41448
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 2,
+        "milliseconds": [
+          207.74744,
+          208.032286,
+          208.436408,
+          208.768924,
+          208.244887,
+          208.625494
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 0,
+        "milliseconds": [
+          237.219813,
+          236.250258,
+          236.834749,
+          236.27255,
+          236.699474,
+          237.002113
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 1,
+        "milliseconds": [
+          236.32561,
+          236.692832,
+          236.425247,
+          236.866508,
+          237.487808,
+          237.707302
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 2,
+        "milliseconds": [
+          253.178668,
+          252.047678,
+          252.466807,
+          252.182953,
+          252.63277,
+          251.335597
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 0,
+        "milliseconds": [
+          140.164064,
+          140.499255,
+          140.488424,
+          140.180324,
+          140.499705,
+          140.297805
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 1,
+        "milliseconds": [
+          140.475891,
+          140.340786,
+          140.40106,
+          140.237562,
+          140.34818,
+          139.973955
+        ]
+      },
+      {
+        "process": 1,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 2,
+        "milliseconds": [
+          149.779411,
+          149.946056,
+          149.815219,
+          149.995669,
+          150.762332,
+          150.176008
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 0,
+        "milliseconds": [
+          197.787181,
+          196.902916,
+          196.930378,
+          197.366719,
+          196.594575,
+          197.426883
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 1,
+        "milliseconds": [
+          197.014826,
+          197.047779,
+          197.262183,
+          197.520569,
+          196.46469,
+          198.542593
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 32768,
+        "pattern": "gather",
+        "arm": 2,
+        "milliseconds": [
+          208.673623,
+          209.115695,
+          208.967175,
+          209.393569,
+          209.379442,
+          208.377795
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 0,
+        "milliseconds": [
+          237.180628,
+          236.710241,
+          236.776507,
+          236.279682,
+          237.299882,
+          235.934761
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 1,
+        "milliseconds": [
+          236.356335,
+          236.293106,
+          236.644058,
+          236.352087,
+          236.475841,
+          237.059069
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 117488,
+        "pattern": "gather",
+        "arm": 2,
+        "milliseconds": [
+          251.936527,
+          252.132777,
+          252.141342,
+          251.971282,
+          252.105134,
+          251.98081
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 0,
+        "milliseconds": [
+          140.212875,
+          140.350623,
+          140.308163,
+          140.486901,
+          140.493092,
+          140.465179
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 1,
+        "milliseconds": [
+          140.653544,
+          140.386191,
+          140.281603,
+          140.333621,
+          140.377204,
+          140.388645
+        ]
+      },
+      {
+        "process": 2,
+        "cells": 117488,
+        "pattern": "clustered",
+        "arm": 2,
+        "milliseconds": [
+          149.817292,
+          149.624388,
+          150.169204,
+          149.841447,
+          150.694272,
+          150.153996
+        ]
+      }
+    ],
+    "timer_floor_ns_by_process": [
+      20,
+      20,
+      20
+    ]
+  },
+  "advance_to_model": false,
+  "model_adoption_qualified": false,
+  "physical262144_model_qualified": false,
+  "decision": "Reject partial8Qcache:compiler spill allocation12480to192B with128GRF,but candidate latency geomean vsoriginal1.0639584610 andvsnamespacecontrol1.0642452159. All3shapes regress5.76..6.91percent;the predeclared speed gate fails. Numerical/guard/component262144-address checks pass;no model trial or inference adoption. Selected6e40/decode/configuration/1256slots unchanged.",
+  "next_action": "Source-specific matched cache-working-set/reuse controls,then a distinct mechanism if supported;no repeat of GRF-only,partial8,unroll,tree-sum or row-coalesced-K proposals. Keep selected original6e40 and decode configuration/1256slots.",
+  "retirement": {
+    "complete": true,
+    "roots": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-partial-qcache-v1",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-qsa-service-v2"
+    ],
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-closed-diagnostics-retirement-20261027.jsonl",
+      "sha256": "a1b1006da06c7b478c519dc961b0bd2bca63ec4dd684ca8a2b53d3e275525f40",
+      "files": 159,
+      "bytes": 23411285
+    },
+    "source_recovery": {
+      "partial_project_inputs": 196,
+      "QSA_diagnostic_inputs": 209,
+      "actual_compiled_inputs": 694,
+      "recipe": "dce2d43a7",
+      "full_result": "336cc6cc4",
+      "native_reference_inputs": 9853,
+      "selected_assets": 13
+    },
+    "decision": "Closed comparison and QSA diagnostic roots actually deleted after original source/recipe recovery,committed162samples and remote history checks. Original failed observation and rejected speed outcome remain preserved. Separate legacy144artifact/46root and14holds remain unresolved.",
+    "roots_absent": true,
+    "deleted_files": 159,
+    "deleted_bytes": 23411285,
+    "selected13assets_before_after_unchanged": true,
+    "tracked_source_files_retired": 6,
+    "tracked_source_archive_commit": "14c8df026",
+    "tracked_path_hashes": "Git deletion diff;no duplicate manifest.",
+    "shared_native_runtime_profile_Python_admission_after_source_retirement": true
+  }
+}

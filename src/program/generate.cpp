@@ -22,6 +22,7 @@
 #include "strata/core/conversation_memory.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/expert_source.hpp"
+#include "strata/core/cpu_work_census.hpp"
 #include "strata/core/pinned.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/on_device.hpp"
@@ -52,6 +53,7 @@
 #include "strata/core/prefill_head_scope.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #endif
 #include "strata/core/verify.hpp"
 #include "strata/core/mtp.hpp"
@@ -59,6 +61,12 @@
 #include "strata/core/native_dense.hpp"
 #include "strata/core/canonical_dense_bank.hpp"
 #include "strata/program/logits_selection.hpp"
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+#ifndef STRATA_ENABLE_SYCL
+#error "The full-context diagnostic requires the SYCL backend"
+#endif
+#include "strata/program/full_context_diagnostic.hpp"
+#endif
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/program/prefill_logits.hpp"
 #include "strata/program/dense_prefill_nll.hpp"
@@ -66,6 +74,7 @@
 #endif
 #include "strata/program/conv_cache.hpp"
 #include "strata/program/prompt_checkpoint.hpp"
+#include "strata/program/diagnostic_kv_ranges.hpp"
 #include "strata/spec/draft_policy.hpp"
 #include "strata/spec/suffix_drafter.hpp"
 #include "strata/kernels/cvec.hpp"
@@ -123,15 +132,12 @@ namespace {
 // detach. No feature-specific allocation, scan, kernel or wait when default off.
 bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::core::MtpDrafter& mtp,
                                  bool supported, const int64_t* tokens, int64_t n, int64_t pos0,
-                                 std::string& err) {
+                                 std::string& err, strata::prefill::Strategy strategy) {
+    if (!strata::prefill::uses_layer_major(strategy,n,prompt.chunk()))
+        return prompt.run(tokens,n,pos0,err,strategy);
     const char* release = std::getenv("STRATA_PREFILL_RELEASE_MTP_EXPERTS");
     if (!release || std::strcmp(release, "1") != 0)
-        return prompt.run(tokens, n, pos0, err);
-    const char* layer_major = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
-    if (!layer_major || std::strcmp(layer_major, "1") != 0) {
-        err = "MTP expert release requires exact STRATA_PREFILL_LAYER_MAJOR=1"; return false;
-    }
-    if (prompt.chunk() <= 0 || n <= prompt.chunk()) return prompt.run(tokens, n, pos0, err);
+        return prompt.run(tokens, n, pos0, err, strategy);
 #if !defined(STRATA_ENABLE_SYCL)
     (void) mtp; (void) supported;
     err = "MTP expert release requires the SYCL engine"; return false;
@@ -167,7 +173,7 @@ bool run_prompt_with_mtp_experts_impl(strata::prefill::Prefill& prompt, strata::
     };
     bool ok = false;
     try {
-        ok = prompt.run(tokens, n, pos0, err);
+        ok = prompt.run(tokens, n, pos0, err, strategy);
     } catch (...) {
         restore(); // the callee's checked lifetime guards have already run
         throw;
@@ -191,30 +197,28 @@ struct NativeDensePhase {
     std::atomic_flag occupied=ATOMIC_FLAG_INIT;
 };
 
-// Both warm serve and standalone pass through this request-scoped boundary.
-// Default off and short segments take exactly the existing prompt/expert path.
-bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
-        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
-        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
-    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err);};
-    const char* requested=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
-    if(!requested || std::strcmp(requested,"1")!=0 || prompt.chunk()<=0 || n<=prompt.chunk())return run();
-#ifndef STRATA_ENABLE_SYCL
-    (void)head;(void)verifier;(void)main_cs;
-    err="head release requires SYCL";return false;
-#else
-    const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+#ifdef STRATA_ENABLE_SYCL
+bool prefill_head_release_supported(bool supported,std::string& err,strata::prefill::Strategy strategy) {
     const char* cp=std::getenv("STRATA_SPEC_COUPLED");
-    if(!supported || !lm || std::strcmp(lm,"1")!=0 || (cp && std::strcmp(cp,"1")==0) ||
+    if(!supported || strategy!=strata::prefill::Strategy::throughput || (cp && std::strcmp(cp,"1")==0) ||
        std::getenv("STRATA_PREFILL_LOGITS") || std::getenv("STRATA_PREFILL_LOGITS_POSITIONS") ||
        std::getenv("STRATA_PREFILL_NLL") || std::getenv("STRATA_LOGPOS")) {
         err="head release requires long layer-major single-GPU native MTP4 without split/peer/remote/coupled or logits/NLL diagnostics";
         return false; // no owner is detached on unsupported routes
     }
-    struct Boundary {
+    return true;
+}
+
+// A joint transaction prepares while both owners are intact. Its verifier
+// lease retires BOTH reader sets before this boundary withdraws either head.
+// The enclosing dense transaction alone resumes that verifier after restoring
+// all publications and head storage. Standalone behavior stays independent.
+enum class PrefillHeadReaders { standalone, dense_transaction };
+struct PrefillHeadBoundary {
         strata::core::NativeHead& head;strata::core::MtpDrafter& mtp;
         strata::core::Verifier* verifier;cudaStream_t main_cs;
         strata::core::detail::PrefillHeadState state;
+        PrefillHeadReaders readers=PrefillHeadReaders::standalone;
         using Phase=strata::core::detail::PrefillHeadState::Phase;
         [[noreturn]] static void fatal(const char* why) noexcept {strata::sycl_backend::cleanup_fail_stop(why);}
         void move(Phase from,Phase to) noexcept {if(!state.transition(from,to))fatal("head boundary duplicate/out-of-order transition");}
@@ -227,11 +231,25 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
             }catch(...){mtp.cancel_prefill_head();throw;}
             move(Phase::ready,Phase::prepared);return true;
         }
+        void require_prepared() const noexcept {
+            if(state.phase()!=Phase::prepared)fatal("head boundary commit before prepare");
+        }
+        void cancel_prepared() noexcept {
+            require_prepared();
+            head.cancel_prefill_weights();mtp.cancel_prefill_head();
+            if(!state.cancel_prepared())fatal("head boundary prepare cancellation failed");
+        }
         void retire_readers() noexcept try {
             // Ordinary target projection runs on main_cs, outside token graphs.
             if(cudaStreamSynchronize(main_cs)!=cudaSuccess)fatal("main head stream retirement");
             std::string error;
-            if(verifier && !verifier->retire_prefill_head(head,error))fatal("verifier rejected prepared head retirement");
+            if(verifier) {
+                if(readers==PrefillHeadReaders::dense_transaction) {
+                    if(!verifier->has_prefill_dense_head_lease(head))
+                        fatal("head detach without joint verifier lease");
+                } else if(!verifier->retire_prefill_head(head,error))
+                    fatal("verifier rejected prepared head retirement");
+            }
             mtp.retire_prefill_head_readers();
             move(Phase::prepared,Phase::retired);
         }catch(...){fatal("head reader retirement threw");}
@@ -252,11 +270,33 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
             if(state.phase()!=Phase::restored)fatal("head resume before complete restore");
             head.resume_prefill_weights();mtp.resume_prefill_head();
             std::string error;
-            if(verifier && !verifier->resume_prefill_head(head,error))fatal("verifier head resume failed");
+            if(verifier) {
+                if(readers==PrefillHeadReaders::dense_transaction) {
+                    if(!verifier->has_prefill_dense_head_lease(head))
+                        fatal("joint verifier lease lost before head restore");
+                } else if(!verifier->resume_prefill_head(head,error))fatal("verifier head resume failed");
+            }
             move(Phase::restored,Phase::ready);
         }catch(...){fatal("head resume threw");}
-        ~Boundary() noexcept {if(!state.readable())fatal("head boundary escaped without restore");}
-    } boundary{head,mtp,verifier,main_cs,{}};
+        ~PrefillHeadBoundary() noexcept {if(!state.readable())fatal("head boundary escaped without restore");}
+};
+#endif
+
+// Both warm serve and standalone pass through this request-scoped boundary.
+// Default off and short segments take exactly the existing prompt/expert path.
+bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
+        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
+        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err,strata::prefill::Strategy strategy) {
+    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err,strategy);};
+    const char* requested=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
+    if(!requested || std::strcmp(requested,"1")!=0 ||
+       !strata::prefill::uses_layer_major(strategy,n,prompt.chunk()))return run();
+#ifndef STRATA_ENABLE_SYCL
+    (void)head;(void)verifier;(void)main_cs;
+    err="head release requires SYCL";return false;
+#else
+    if(!prefill_head_release_supported(supported,err,strategy))return false;
+    PrefillHeadBoundary boundary{head,mtp,verifier,main_cs,{}};
     return strata::core::detail::with_prefill_head_release(boundary,run,err);
 #endif
 }
@@ -264,9 +304,14 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
 bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
         bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
-        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
-    auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err);};
-    const bool release_dense = prompt.chunk()>0 && n>prompt.chunk();
+        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err,strata::prefill::Strategy strategy) {
+    auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err,strategy);};
+    if (!strata::prefill::valid_strategy(strategy)) {err="prefill: invalid strategy";return false;}
+    const bool release_dense = strata::prefill::uses_layer_major(strategy,n,prompt.chunk());
+    if (std::getenv("STRATA_TRACE"))
+        std::fprintf(stderr,"strata prefill policy: requested=%s route=%s tokens=%lld chunk=%lld\n",
+            strata::prefill::strategy_name(strategy),release_dense?"layer-major":"chunked",
+            (long long)n,(long long)prompt.chunk());
 #ifdef STRATA_ENABLE_SYCL
     const bool cache_loan = prompt.has_cache_scratch_lease();
 #else
@@ -316,25 +361,29 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         if(cache_loan) strata::sycl_backend::cleanup_fail_stop(why);
         std::fflush(stderr); std::abort();
     };
-    const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* heads=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
+    const bool joint_heads=release_dense && heads && !std::strcmp(heads,"1");
     if(!phase.supported || !phase.no_token_graph || !phase.token || phase.token->captured || phase.token->exec ||
        !phase.dense || !phase.table || !phase.session || !phase.graphs || !phase.recapture ||
-       phase.graphs->split_captured || !main_cs || !lm || std::strcmp(lm,"1") ||
-       (heads && !std::strcmp(heads,"1")) || prompt.activate_native_dense_layer ||
+       phase.graphs->split_captured || !main_cs ||
+       prompt.activate_native_dense_layer ||
        phase.dense->residency()!=strata::core::NativeDense::Residency::Full ||
        phase.dense->packed_sources().empty()) {
-        err="prefill dense bank: unsupported request/reader state (head-release combination excluded)"; return false;
+        err="prefill dense bank: unsupported request/reader state"; return false;
     }
     if(phase.canonical && (!strata::core::native_embed() ||
        phase.canonical->state()!=strata::core::CanonicalDenseBank::State::Full)) {
         err="canonical bank requires intact Full owner and independent NativeEmbed";return false;
     }
+    if(joint_heads && !prefill_head_release_supported(supported,err,strategy))return false;
     if(verifier && !verifier->can_retire_prefill_dense(err)) return false;
+    if(joint_heads && verifier && !verifier->can_release_prefill_head(head,err))return false;
     if(phase.occupied.test_and_set()) {err="prefill dense bank: request already owns transaction";return false;}
     struct Exclusion {NativeDensePhase& p;~Exclusion(){p.occupied.clear();}} exclusion{phase};
     const bool recapture=phase.graphs->captured;
     bool retired=false, cache_loan_active=false;
+    PrefillHeadBoundary head_boundary{head,mtp,verifier,main_cs,{},
+                                     PrefillHeadReaders::dense_transaction};
     int64_t activated_layers=0;
     const bool trace_dense=std::getenv("STRATA_TRACE")!=nullptr;
     auto observe=[&](const char* state) noexcept {
@@ -377,7 +426,11 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     auto& ple=phase.session->ple.w;
     const bool native_ple=ple.key_native_data!=nullptr;
     auto restore=[&]() noexcept {
-        if(!retired) return;
+        if(!retired) {
+            if(joint_heads && head_boundary.state.phase()==PrefillHeadBoundary::Phase::prepared)
+                head_boundary.cancel_prepared();
+            return;
+        }
         host_profile.restore_begin();
         drain();
         if(cache_loan_active) {
@@ -404,30 +457,46 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         }
         if(phase.canonical && phase.canonical->state()==strata::core::CanonicalDenseBank::State::RestoredPending)
             phase.canonical->finish_restore(); // PLE no longer points into persistent pool
+        if(joint_heads) {
+            head_boundary.restore();
+            head_boundary.resume();
+        }
         if(recapture && !phase.recapture(e)) fatal("session graph recapture failed; decode prohibited");
-        if(verifier && !verifier->resume_prefill_dense(*phase.dense,e)) fatal("verifier dense resume failed");
+        if(verifier && !(joint_heads ? verifier->resume_prefill_dense_and_head(*phase.dense,head,e) :
+                                      verifier->resume_prefill_dense(*phase.dense,e)))
+            fatal("verifier dense/head resume failed");
         retired=false;
         observe("restored");
         host_profile.restore_end();
     };
     struct Restore {decltype(restore)& f;~Restore() noexcept {f();}} rollback{restore};
-    auto retire_readers=[&]() -> bool {
+    auto retire_dense_readers=[&]() noexcept {
         drain();
         try {
-            if(verifier && !verifier->retire_prefill_dense(err)) fatal("prepared verifier retirement rejected");
+            if(verifier && !(joint_heads ? verifier->retire_prefill_dense_and_head(head,err) :
+                                          verifier->retire_prefill_dense(err)))
+                fatal("prepared verifier retirement rejected");
             if(phase.canonical && verifier && !verifier->retire_prefill_canonical_commit(err))
                 fatal("canonical norm-bearing commit graph retirement rejected");
             strata::core::session_graphs_retire_dense(*phase.graphs,main_cs);
             retired=true;
         } catch(...) { fatal("graph retirement threw; completion unknown"); }
         observe("retired");
+    };
+    auto retire_readers=[&]() noexcept -> bool {
+        // Activation callbacks cannot refuse or unwind safely. All fallible
+        // preparation precedes activation; uncertainty after this point stops.
+        if(joint_heads)strata::core::detail::finish_prepared_prefill_head_release(
+            head_boundary,retire_dense_readers);
+        else retire_dense_readers();
         return true;
     };
     try {
+        if(joint_heads && !head_boundary.prepare(err))return false;
         if(cache_loan) {
             if(!prompt.activate_cache_scratch_lease(retire_readers,err)) return false;
             cache_loan_active=true;
-        } else (void)retire_readers();
+        } else if(!retire_readers())return false;
         if(release_dense) {
             // Withdraw the separate PLE native publication before releasing owners.
             if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
@@ -456,7 +525,9 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
             observe("cache-loan");
         }
         host_profile.run_begin();
-        const bool ok=run();
+        // The joint transaction already owns head release; do not enter the
+        // standalone head wrapper a second time while its verifier is retired.
+        const bool ok=joint_heads ? run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err,strategy) : run();
         host_profile.run_end(ok);
         restore();
         return ok;
@@ -532,6 +603,10 @@ struct Options {
     std::vector<int64_t> tokens;      // the prompt, PRE-TOKENIZED
     int64_t max_new = 16;
     int64_t max_context = 4096;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    bool consume_prompt = false;
+    bool prompt_from_file = false;
+#endif
     bool greedy = true;
     uint64_t seed = 0;
     int top_k = 20;
@@ -715,6 +790,7 @@ struct Options {
     bool vram_reserve_given = false;   ///< --vram-reserve-mib on the command line (#496: no smaller automatic reserve)
     /// Plan v0.3 P5: batched prompt processing in chunks of this many tokens (0 = the token path).
     int64_t prefill_chunk = 0;
+    strata::prefill::Strategy prefill_strategy = strata::prefill::Strategy::ttft;
     /// `--prefill auto`: the largest chunk (up to 8192) whose buffers the expert cache can lend.  Every expert a chunk
     /// routes to is streamed once per chunk, so a bigger chunk streams fewer bytes per token (the "ubatch" effect).
     bool prefill_auto = false;
@@ -815,6 +891,9 @@ void usage() {
                  "  --pack DIR           the pack directory (default pack/full)\n"
                  "  --tokens LIST        the prompt as comma-separated token IDS (required)\n"
                  "  --tokens-file PATH   pretokenized prompt, commas or whitespace (alternative to --tokens)\n"
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+                 "  --consume-prompt    diagnostic only: consume exactly262144 prompt tokens, --max-new 0\n"
+#endif
                  "  --ple-gguf PATH      required PLE table (original second GGUF shard); with --native, the model's\n"
                  "                       shard that holds per_layer_token_embd.weight when not given\n"
                  "  --no-ple             explicit diagnostic ablation of the PLE layer\n"
@@ -909,6 +988,7 @@ void usage() {
                  "  --prefill CHUNK      batched prompt processing in chunks of CHUNK tokens (needs --native); auto =\n"
                  "                       the largest chunk up to 8192 whose buffers the expert cache can lend;\n"
                  "                       auto:16384 / auto:32768 (or STRATA_PREFILL_AUTO_MAX) allow bigger ones\n"
+                 "  --prefill-strategy ttft|throughput  select the prefill route; decode settings stay independent\n"
                  "  --no-pool            skip the CPU expert pool (the GPU-only floor)\n"
                  "  --sync-every-layer   debug: synchronise after every layer\n"
                  "  --ple-gguf PATH      the n-gram/PLE shard.  WITHOUT IT LAYER 1's PLE IS SILENTLY SKIPPED,\n"
@@ -1481,6 +1561,10 @@ int main(int argc, char** argv) {
 #endif
     }
     Options o;
+    // Compatibility default is resolved once, before native runtime setup.
+    const char* legacy_prefill = std::getenv("STRATA_PREFILL_LAYER_MAJOR");
+    if (legacy_prefill && std::strcmp(legacy_prefill,"1")==0)
+        o.prefill_strategy = strata::prefill::Strategy::throughput;
     bool have_tokens = false;
     bool have_logits_stride = false;
     for (int i = 1; i < argc; ++i) {
@@ -1508,9 +1592,15 @@ int main(int argc, char** argv) {
             if (text.find('\0') != std::string::npos || !parse_i64_list(text.c_str(), o.tokens, error)) {
                 std::fprintf(stderr, "malformed token file: %s\n", error.c_str()); return 2;
             }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            o.prompt_from_file = true;
+#endif
             have_tokens = true;
         }
         else if (a == "--max-new") o.max_new = std::atoll(next("--max-new"));
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+        else if (a == "--consume-prompt") o.consume_prompt = true;
+#endif
         else if (a == "--max-context") o.max_context = std::atoll(next("--max-context"));
         else if (a == "--rope-scaling") o.rope_scaling = next("--rope-scaling");
         else if (a == "--rope-scale") o.rope_scale = std::atof(next("--rope-scale"));
@@ -1613,6 +1703,13 @@ int main(int argc, char** argv) {
                                      : (o.prefill_auto && env_max != nullptr ? std::atoll(env_max) : 8192);
             o.prefill_auto_max = want_max >= 32768 ? 32768 : want_max >= 16384 ? 16384 : 8192;
             o.prefill_chunk = o.prefill_auto ? o.prefill_auto_max : std::atoll(v.c_str());
+        }
+        else if (a == "--prefill-strategy") {
+            const char* value = next("--prefill-strategy");
+            if (!strata::prefill::parse_strategy(value,o.prefill_strategy)) {
+                std::fprintf(stderr,"strata generate: --prefill-strategy requires ttft or throughput\n");
+                return 1;
+            }
         }
         else if (a == "--no-split-rows") o.no_split_rows = true;
         else if (a == "--no-prefill-borrow") o.no_prefill_borrow = true;
@@ -1751,6 +1848,20 @@ int main(int argc, char** argv) {
         }
         }
     }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt) {
+        if (!strata::program::full_context_diagnostic::request(o.max_context, o.tokens.size(), o.max_new) ||
+            !have_tokens || !o.prompt_from_file || o.serve || o.vision || o.native_preset.empty() ||
+            o.spec != 4 || o.suffix_draft != 0 || o.prefill_until > 0 || !o.layer_split.empty() ||
+            o.prefill_auto || o.prefill_chunk != 8192 || o.gpu_only_full ||
+            o.peer_device >= 0 || o.gpu_stages ||
+            std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto n) { return n > 0; })) {
+            std::fprintf(stderr, "strata generate: --consume-prompt requires a one-shot native SYCL token-file "
+                                 "request,262144 context/prompt,zero output,spec4,no suffix/vision/split/partial prefill\n");
+            return 2;
+        }
+    }
+#endif
     // Output path opt-in; the recipe is prepared and hashed by the external
     // supervisor before this native process starts. Reject unsupported routes
     // before GPU preflight, owner/graph detachment, or pending submissions.
@@ -2122,6 +2233,9 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: --max-context must be below 2^31\n");
         return 2;
     }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (!o.consume_prompt)
+#endif
     if (o.max_new <= 0 || o.max_context <= 0 || o.max_new > o.max_context ||
         o.tokens.size() > (size_t) (o.max_context - o.max_new)) {
         std::fprintf(stderr, "strata generate: positive --max-new and --max-context must fit the prompt and generation\n");
@@ -2273,6 +2387,12 @@ int main(int argc, char** argv) {
         }
     }
     const bool native_pack = strata::kernels::cpu::expert_layout().native;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt && !native_pack) {
+        std::fprintf(stderr, "strata generate: consume-prompt requires the native first-window route\n");
+        return 2;
+    }
+#endif
 #ifdef STRATA_ENABLE_SYCL
     if ((collect_prefill_logits || collect_prefill_nll) && !native_pack) {
         std::fprintf(stderr, "strata generate: prefill logits/NLL requires a native expert pack\n");
@@ -5748,6 +5868,11 @@ int main(int argc, char** argv) {
         std::fflush(stdout);
         std::string line;
         int64_t rounds = 0;
+        const char* census_env = std::getenv("STRATA_CPU_WORK_CENSUS");
+        const bool cpu_census_enabled = census_env && std::strcmp(census_env, "1") == 0;
+        const char* iq2_audit_env = std::getenv("STRATA_IQ2_PAIR_AUDIT");
+        const bool iq2_audit_enabled = iq2_audit_env && std::strcmp(iq2_audit_env, "1") == 0;
+        uint64_t census_request = 0;
         const int S = o.spec;
         const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
         if (S_mtp < S) mtp.set_max_drafts(S_mtp - 1);
@@ -6003,16 +6128,20 @@ int main(int argc, char** argv) {
                     return 1;
                 }
                 if (std::getenv("STRATA_SNAPSHOT_VERIFY") != nullptr) {
-                    uint64_t draft_hash = 0;
-                    if (!strata::core::conversation_kv_verify(incoming->kv.back(), mtp.kv_state(), g,
-                            int64_t(incoming->live.ids.size()), false, draft_hash, err)) {
-                        std::printf("ERR verifying restored draft KV: %s\n", err.c_str());
+                    strata::core::ConversationVerification checked;
+                    if (!strata::core::conversation_snapshot_verify(*incoming, ss, g, mtp.kv_state(), checked, err)) {
+                        std::printf("ERR verifying restored session: %s\n", err.c_str());
                         return 1;
                     }
-                    std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld\n",
-                                 (unsigned long long) draft_hash, (long long) incoming->kv.back().cells,
+                    std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld "
+                                         "main=%016llx main_layers=%zu main_bytes=%zu draft_bytes=%zu "
+                                         "running=%016llx running_bytes=%zu upto=%zu result=PASS\n",
+                                 (unsigned long long) checked.draft_hash, (long long) incoming->kv.back().cells,
                                  mtp.kv_state().kv_mode, "ram",
-                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size));
+                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size),
+                                 (unsigned long long) checked.main_hash, checked.main_layers, checked.main_bytes,
+                                 checked.draft_bytes, (unsigned long long) checked.running_hash, checked.running_bytes,
+                                 incoming->live.ids.size());
                 }
                 live = std::move(incoming->live.ids);
                 live_imgs = std::move(incoming->live.imgs);
@@ -6087,6 +6216,9 @@ int main(int argc, char** argv) {
             // host copies and slots are always current (every writer writes both), so they need nothing
             if (resume > 0 && reread_to <= 0) mtp.kv_restore(resume);
             tr("request", n, geni ? 1 : 0);
+            if (!strata::core::CpuWorkCensus::checked_add(census_request, 1)) {
+                std::printf("ERR request sequence overflow\n"); return 1;
+            }
             mtp.set_prompt_len(n);
             const int64_t read_from = reread_to > 0 ? 0 : resume;
             conversations.limit_reuse(read_from);
@@ -6440,7 +6572,8 @@ int main(int argc, char** argv) {
                 if (to <= at) continue;
                 err.clear();
                 const bool win = windows_ok(at, to);
-                if(native_dense_bank_enabled && win && to-at>sp.chunk()) {
+                if(native_dense_bank_enabled && win &&
+                   strata::prefill::uses_layer_major(o.prefill_strategy,to-at,sp.chunk())) {
                     std::printf("ERR prefill dense bank excludes window prompts\n"); return 1;
                 }
                 if (win && !refill(err)) {
@@ -6456,8 +6589,10 @@ int main(int argc, char** argv) {
                     sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                     o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                     std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
-                    native_head, &ver, main_stream, ids.data() + at, to - at, at, err);
+                    native_head, &ver, main_stream, ids.data() + at, to - at, at, err, o.prefill_strategy);
                 if (trace) {
+                    if (win) std::fprintf(stderr,"strata prefill policy: requested=%s route=cache-window tokens=%lld chunk=%lld\n",
+                        strata::prefill::strategy_name(o.prefill_strategy),(long long)(to-at),(long long)sp.chunk());
                     std::fprintf(stderr, "strata trace: read %lld tokens (%s) in %.1f ms\n", (long long) (to - at),
                                  win ? "windows" : "batched",
                                  std::chrono::duration<double, std::milli>(Clock::now() - tsp).count());
@@ -6491,6 +6626,8 @@ int main(int argc, char** argv) {
             }
             tr("prompt done (slots refilled)");
             const double prompt_ms = std::chrono::duration<double, std::milli>(Clock::now() - r0).count();
+            strata::kernels::cpu::NativeGuPhaseScope native_decode_phase(
+                drive.d.native_gu_phase, strata::kernels::cpu::NativeGuPhase::Decode);
             std::printf("REUSED %lld\n", (long long) resume);   // the prompt is read; the first window comes next
             std::fflush(stdout);
             // the verify windows: the first holds the last prompt token alone
@@ -6511,11 +6648,19 @@ int main(int argc, char** argv) {
             consumed.reserve((size_t) (n + max_new + S));
             for (int64_t i = 0; i < n - 1; ++i) consumed.push_back((int32_t) ids[(size_t) i]);
             const char* finish = "length";
+#ifdef STRATA_CPU_SERVICE_PROFILE
+            const auto cpu_service_begin=pool.service_snapshot();
+#endif
 #ifdef STRATA_ENABLE_SYCL
             const auto copy0 = ver.expert_copy_stats();
             const auto early_pcie0 = ver.early_pcie_stats();
             const auto host_copy_groups0 = drive.d.host_layer_copy_groups;
             ver.reset_query_profile();
+            // The prior synchronous CPU pool has drained. Snapshot outside the
+            // decode clock; optional callback counters themselves remain charged.
+            strata::kernels::cpu::Iq2GuAudit iq2_audit_begin;
+            if (iq2_audit_enabled) iq2_audit_begin = strata::kernels::cpu::iq2_gu_audit_snapshot();
+            auto mtp_observation = mtp.observe_draft_request(census_request);
 #endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
@@ -6530,6 +6675,29 @@ int main(int argc, char** argv) {
                                drive.d.pcie_experts};
             };
             const DecSnap ds0 = dec_snap();
+            // Only the post-refill decode phase owns these counters. The source
+            // callback is synchronous here; no pointer is captured by a graph,
+            // attached to a worker, or inferred from a thread-local request ID.
+            std::unique_ptr<strata::core::CpuWorkCensus> cpu_census;
+            if (cpu_census_enabled) {
+                const auto& layout = strata::kernels::cpu::expert_layout();
+                cpu_census = std::make_unique<strata::core::CpuWorkCensus>(census_request,
+                    (int)g.n_layers, (int)g.n_expert, drive.d.host_res,
+                    layout.native && layout.fmt.size() == (size_t)g.n_layers ? layout.fmt.data() : nullptr);
+                if (multi_gpu || !o.layer_split.empty() || peer.valid() || drive.d.remote_count ||
+                    !drive.d.usage.empty() || !drive.d.split_rows)
+                    cpu_census->invalidate("unsupported_route");
+                cpu_census->write_begin(stderr, n);
+                drive.d.cpu_work_census = cpu_census.get();
+            }
+            struct CpuCensusDetach {
+                strata::core::ExpertDispatch& dispatch;
+                strata::core::CpuWorkCensus* census;
+                ~CpuCensusDetach() {
+                    dispatch.cpu_work_census = nullptr;
+                    if (census && !census->closed()) census->abort(stderr);
+                }
+            } cpu_census_detach{drive.d, cpu_census.get()};
             double dt_run = 0, dt_commit = 0, dt_draft = 0;
             int64_t dec_windows = 0, dec_T = 0;
             const int64_t decode_hits0 = drive.d.cache_hits;
@@ -6581,12 +6749,14 @@ int main(int argc, char** argv) {
                                cudaMemcpyHostToDevice);
                 }
                 tr("window", p, T);
+                if (cpu_census) cpu_census->begin_window((uint64_t)dec_windows + 1, p, T);
                 const Clock::time_point tw0 = Clock::now();
                 if (!ver.run(T, window.data(), p, win_pool_fn, win_pool_user, outv.data(), err) || drive.d.failed) {
                     std::printf("ERR %s\n", drive.d.failed && drive.d.fail ? drive.d.fail : err.c_str());
                     return 1;
                 }
                 int a = 0;
+                if (cpu_census) cpu_census->end_window();
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
                 const Clock::time_point tw1 = Clock::now();
@@ -6650,6 +6820,37 @@ int main(int argc, char** argv) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+#ifdef STRATA_CPU_SERVICE_PROFILE
+            (void)strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot());
+#endif
+#ifdef STRATA_ENABLE_SYCL
+            mtp_observation.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
+            if (iq2_audit_enabled) {
+                const auto iq2_audit_end = strata::kernels::cpu::iq2_gu_audit_snapshot();
+                // This prints existing host counters only, after the synchronous
+                // pool and commit drain. It does not wait on or read the device.
+                auto write_audit = [&](const char* stage, const strata::kernels::cpu::Iq2GuAudit& a) {
+                    std::fprintf(stderr, "strata IQ2_GU_AUDIT stage=%s request=%llu enabled=%d overflow=%d threads=%u\n",
+                        stage, (unsigned long long)census_request, a.enabled, a.overflow, a.size);
+                    for (unsigned i = 0; i < a.size && i < a.threads.size(); ++i) {
+                        const auto& t = a.threads[i];
+                        std::fprintf(stderr, "strata IQ2_GU_THREAD stage=%s request=%llu slot=%u tid=%llu "
+                            "calls=%llu row_ops=%llu nt1_rows=%llu pair_rows=%llu cpu=%d pinned=%d\n",
+                            stage, (unsigned long long)census_request, i, (unsigned long long)t.tid,
+                            (unsigned long long)t.calls, (unsigned long long)t.row_ops,
+                            (unsigned long long)t.nt1_rows, (unsigned long long)t.pair_rows, t.cpu, t.pinned);
+                    }
+                };
+                write_audit("begin", iq2_audit_begin);
+                write_audit("end", iq2_audit_end);
+            }
+#endif
+            if (cpu_census) {
+                const DecSnap d1 = dec_snap();
+                cpu_census->finish(stderr, dec_windows, dec_T, d1.misses - ds0.misses,
+                    d1.entries - ds0.entries, d1.hits - ds0.hits, d1.pcie - ds0.pcie);
+                drive.d.cpu_work_census = nullptr;
+            }
             if (dec_timing && dec_windows > 0) {
                 const DecSnap d1 = dec_snap();
                 const double w = (double) dec_windows, L = (double) g.n_layers;
@@ -6703,13 +6904,11 @@ int main(int argc, char** argv) {
                 };
                 // the cells [c0, c1) of one int8 K or V pool ([page][kv_head][page_size][head_dim]), bytes per value `w`
                 auto hash_cells = [&](const void* pool, int64_t per_cell, int64_t c0, int64_t c1, uint64_t h) {
-                    const int64_t ps = qs.page_size;
-                    for (int64_t pg = c0 / ps; pg * ps < c1; ++pg)
-                        for (int64_t hd = 0; hd < qs.n_head_kv; ++hd) {
-                            const int64_t a = std::max(c0, pg * ps) - pg * ps, e = std::min(c1, (pg + 1) * ps) - pg * ps;
-                            const size_t off = (size_t) (((pg * qs.n_head_kv + hd) * ps + a) * per_cell);
-                            h = hash_dev((const uint8_t*) pool + off, (size_t) ((e - a) * per_cell), h);
-                        }
+                    if (!strata::program::diagnostic::kv_hash_spans(c0,c1,qs.page_size,qs.n_head_kv,per_cell,
+                            [&](size_t offset,size_t bytes) {
+                                h = hash_dev(static_cast<const uint8_t*>(pool)+offset,bytes,h);
+                                return hash_ok;
+                            })) hash_ok = false;
                     return h;
                 };
                 const ConvStateSizes z = conv_state_sizes(g, ss);
@@ -7120,7 +7319,7 @@ int main(int argc, char** argv) {
                 native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
                 o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
                 std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
-                native_head, nullptr, main_stream, o.tokens.data(), n_batched, 0, err)) {
+                native_head, nullptr, main_stream, o.tokens.data(), n_batched, 0, err, o.prefill_strategy)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
         }
@@ -7192,6 +7391,9 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata generate: ran out of context at position %lld\n", (long long) pos);
             return 2;
         }
+        strata::kernels::cpu::NativeGuPhaseScope native_token_phase(drive.d.native_gu_phase,
+            pos >= n_prompt - 1 ? strata::kernels::cpu::NativeGuPhase::Decode
+                                : strata::kernels::cpu::NativeGuPhase::Prefill);
         // **THE TOKEN TIMER STARTS HERE, BEFORE ANY OF THE TOKEN'S WORK (A7).**  It used to start after
         // `put_input`/`embed_row`, which excluded the embedding and the PLE window advance from the reported
         // rate, and it stopped before the NaN scan, the logits dump and the sampler.  The published tok/s
@@ -7415,7 +7617,14 @@ int main(int argc, char** argv) {
     // round emits (accepted drafts + 1) tokens.  `commit` keeps the state of the tokens that were emitted.
     const bool ended = o.stop_eos && !produced.empty() &&
                        std::find(o.eos_ids.begin(), o.eos_ids.end(), (int64_t) produced.back()) != o.eos_ids.end();
-    if (spec_pos >= 0 && (int64_t) produced.size() < o.max_new && !ended) {
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    bool consume_completed = false;
+#endif
+    if (spec_pos >= 0 && (
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            o.consume_prompt ||
+#endif
+            (int64_t) produced.size() < o.max_new) && !ended) {
         std::vector<int64_t> oracle;
         if (!o.spec_oracle.empty()) {
             std::ifstream in(o.spec_oracle);
@@ -7572,6 +7781,11 @@ int main(int argc, char** argv) {
         // plan v0.3 P6: with a native pack the first window is the last prompt token alone (it produces the first
         // generated token and the MTP's first cell); otherwise the token loop already did that.
         bool first_window = native_pack;
+        strata::kernels::cpu::NativeGuPhaseScope native_spec_phase(
+            drive.d.native_gu_phase, strata::kernels::cpu::NativeGuPhase::Decode);
+#ifdef STRATA_ENABLE_SYCL
+        auto mtp_observation = mtp.observe_draft_request(1, true);
+#endif
         if (use_mtp && !first_window &&
             !mtp.draft_first(o.spec, ss.R, x, p - 1, drafts.data(), err, dprob.data(), (float) o.spec_min_p)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
@@ -7592,7 +7806,11 @@ int main(int argc, char** argv) {
         }
         const double pool_ms0 = drive.cpu_ms;
         const int64_t misses0 = drive.d.multi_misses, entries0 = drive.d.multi_entries;
-        while ((int64_t) produced.size() < o.max_new) {
+        while ((int64_t) produced.size() < o.max_new
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+               || (o.consume_prompt && first_window)
+#endif
+        ) {
             const Clock::time_point t0 = Clock::now();
             int T = S_mtp;
             if (use_mtp && o.spec_min_p > 0.0) {
@@ -7600,6 +7818,16 @@ int main(int argc, char** argv) {
                 while (T < S_mtp && dprob[(size_t) T - 1] >= (float) o.spec_min_p) ++T;
             }
             if (first_window) T = 1;
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            // Capture before first_window is cleared after ver.run().
+            const bool terminal_consume = o.consume_prompt &&
+                strata::program::full_context_diagnostic::last_window(
+                    first_window, n_prompt, p, T, x, o.tokens.back(), produced.size());
+            if (o.consume_prompt && !terminal_consume) {
+                std::fprintf(stderr, "strata generate: consume-prompt did not reach the exact final input window\n");
+                return 1;
+            }
+#endif
             bool from_sfx = false;
             int sfx_match = 0;
             if (o.suffix_draft > 0 && !first_window) {
@@ -7673,6 +7901,24 @@ int main(int argc, char** argv) {
             drafts_ok += a;
             ++accepted_hist[(size_t) a];
             if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+            if (terminal_consume) {
+                if (adapt_thr.joinable()) adapt_thr.join();
+                if (!adapt_ok || a != 0 || !apply_pending(true, err) || !ver.wait_commit(err)) {
+                    std::fprintf(stderr, "strata generate: consume-prompt final commit/refill failed: %s\n", err.c_str());
+                    return 1;
+                }
+                // Diagnostic only: cover every owned refill/default queue before
+                // reporting completion or allowing any graph/owner retirement.
+                if (cudaDeviceSynchronize() != cudaSuccess)
+                    strata::sycl_backend::cleanup_fail_stop("consume-prompt final device drain uncertain");
+                consume_completed = true;
+                std::printf("strata FULL_CONTEXT consumed_position=%lld prompt_tokens=%lld output_tokens=0 "
+                            "window_width=1 commit_count=1 commit_wait=PASS refill_drain=PASS\n",
+                            (long long) (p + 1), (long long) n_prompt);
+                break; // no output publication, suffix proposal or MTP draft
+            }
+#endif
             bool eos = false;
             for (int i = 0; i <= a && (int64_t) produced.size() < o.max_new && !eos; ++i) {
                 produced.push_back(outv[(size_t) i]);
@@ -7772,12 +8018,21 @@ int main(int argc, char** argv) {
                         "pcie experts", (double) (drive.d.pcie_experts - pcie0) / (double) (rounds * g.n_layers),
                         drive.d.pcie_num);
         (void) pool_ms0;
+#ifdef STRATA_ENABLE_SYCL
+        mtp_observation.finish(true);
+#endif
         if (use_mtp && rounds > 0)
             std::printf("%-24s %.3f ms/round drafting (%lld rounds), MTP prompt %.1f ms, %.0f MiB of VRAM\n", "mtp",
                         mtp.ms_draft / (double) mtp.rounds, (long long) mtp.rounds, mtp.ms_prefill,
                         (double) mtp.vram_bytes() / 1048576.0);
     }
 
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt && !consume_completed) {
+        std::fprintf(stderr, "strata generate: consume-prompt terminated without the final checked commit\n");
+        return 1;
+    }
+#endif
     if (dump != nullptr) {
         const bool header_ok = std::fseek(dump, sizeof(int32_t), SEEK_SET) == 0 &&
             std::fwrite(&dump_rows_written, sizeof(dump_rows_written), 1, dump) == 1;
@@ -7820,6 +8075,10 @@ int main(int argc, char** argv) {
 
     const int64_t decoded = (int64_t) produced.size();
     std::printf("prompt  :");
+#ifdef STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC
+    if (o.consume_prompt) std::printf(" %lld tokens (ids omitted)", (long long) n_prompt);
+    else
+#endif
     for (int64_t t : o.tokens) std::printf(" %lld", (long long) t);
     std::printf("\noutput  :");
     for (int64_t t : produced) std::printf(" %lld", (long long) t);

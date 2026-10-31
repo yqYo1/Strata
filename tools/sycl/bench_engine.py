@@ -182,8 +182,12 @@ def compact_window_census(windows):
         limits='Requested/logical metadata; not physical PCIe or VRAM traffic, occupancy or additive wall time.')
 
 
-def compact_host_resource_profile(profile):
+def compact_host_resource_profile(profile, job_groups=((1, 2333), (2334, 8192))):
     """Keep aggregate attribution after validating every request/layer/window."""
+    guards.require(job_groups and job_groups[0][0] == 1 and job_groups[-1][1] == 8192 and
+        all(type(lo) is int and type(hi) is int and lo <= hi for lo, hi in job_groups) and
+        all(left[1] + 1 == right[0] for left, right in zip(job_groups, job_groups[1:])),
+        'job groups must partition 1..8192 without gaps or overlap')
     census = compact_window_census(profile['planned_moe_windows'])
     histogram = census.pop('aggregate_job_rows_histogram')
     census.pop('layer_rows_jobs')
@@ -192,7 +196,7 @@ def compact_host_resource_profile(profile):
     census['job_size_groups'] = [dict(min_rows=lo, max_rows=hi,
         jobs=sum(count for rows, count in histogram if lo <= rows <= hi),
         routed_rows=sum(rows * count for rows, count in histogram if lo <= rows <= hi))
-        for lo, hi in ((1, 2333), (2334, 8192))]
+        for lo, hi in job_groups]
     guards.require(sum(group['jobs'] for group in census['job_size_groups']) == census['jobs'] and
         sum(group['routed_rows'] for group in census['job_size_groups']) == census['routed_rows'],
         'compact job groups lost work')
@@ -237,6 +241,38 @@ CPU_HOST_BASE = ('source_copy', 'host_group', 'gemm_submit', 'route_exchange',
     'residual_store_host', 'residual_store_device')
 CPU_HOST_MOE = ('moe_map_upload', 'moe_job_weights', 'moe_dequant_gu',
     'moe_dequant_down', 'moe_gather', 'moe_swiglu', 'moe_accumulate', 'moe_status')
+CPU_STATUS_NAMES = ('tag', 'precheck', 'queue_context', 'enqueue', 'observer',
+    'drain', 'postcheck', 'after_drain', 'branch')
+
+
+def extract_status_observer(log, scopes, counts):
+    prefix = 'strata prefill status: '
+    lines = [x for x in log.splitlines() if x.startswith(prefix)]
+    guards.require(len(lines) == 1, 'missing or duplicate status observer')
+    tokens = lines[0][len(prefix):].split()
+    guards.require(all(x.count('=') == 1 for x in tokens), 'malformed status observer')
+    fields = dict(x.split('=', 1) for x in tokens)
+    guards.require(len(fields) == len(tokens) and fields['version'] == '1' and
+        fields['available'] == fields['complete'] == '1' and
+        fields['open_scopes'] == fields['open_parts'] == '0' and
+        int(fields['scopes']) == int(fields['completed']) == scopes,
+        'incomplete status accounting')
+    guards.require(set(counts) == set(CPU_STATUS_NAMES), 'complete expected status counts required')
+    phases = {}
+    for name in CPU_STATUS_NAMES:
+        guards.require(int(fields[name+'_count']) == counts[name] and fields[name+'_throws'] == '0',
+            'status call/exception count differs: '+name)
+        row = {key: float(fields[name+'_'+key]) for key in ('cpu_s','wall_s','wait_cpu_s','wait_wall_s')}
+        guards.require(all(math.isfinite(v) and v >= 0 for v in row.values()) and
+            row['wait_cpu_s'] <= row['cpu_s']+2e-9 and row['wait_wall_s'] <= row['wall_s']+2e-9,
+            'invalid status phase partition')
+        phases[name] = dict(count=counts[name], **row)
+    totals = {k:float(fields[k]) for k in ('cpu_s','wall_s','unclassified_cpu_s','unclassified_wall_s')}
+    guards.require(all(math.isfinite(v) and v >= 0 for v in totals.values()) and all(
+        abs(sum(row[k] for row in phases.values()) + totals['unclassified_'+k] - totals[k]) < 1e-7
+        for k in ('cpu_s','wall_s')), 'status phases do not conserve')
+    return dict(scopes=scopes, phases=phases, **totals,
+        limits='Nested wrapper partition; wait is a subset. Queue submission may itself block. Counts do not measure PCIe traffic or GPU arithmetic.')
 
 
 def split_long_request_logs(log, count):
@@ -350,9 +386,14 @@ def validate_window_work(work, gu, down, read_tokens, window_rows):
     validate_fusion_counts(down, jobs, routed_rows)
 
 
-def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None,
-                             expected_window_pairs=None):
-    """Validate one long-request interval; never aggregate across requests."""
+def extract_planned_moe_work(log, expected_window_pairs=None, maximum_window_rows=81920):
+    """Check source-emitted plans against retired totals, without GPU observers.
+
+    This reads one request interval. It does not reconcile API/device work or
+    establish the number of records a complete API collector will emit.
+    """
+    guards.require(type(maximum_window_rows) is int and maximum_window_rows in (81920, 117488),
+                   'unsupported prospective window bound')
     record = {}
     prefix = 'strata MoE planned job census: '
     record['planned_moe_windows'] = [json.loads(x[len(prefix):]) for x in log.splitlines() if x.startswith(prefix)]
@@ -365,15 +406,47 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
             'missing, reordered or changed multi-window census')
     total_jobs = total_rows = 0
     for window in record['planned_moe_windows']:
+        guards.require(type(window['version']) is int and window['version'] == 1 and
+            type(window['layer']) is int and 0 <= window['layer'] < 48 and
+            type(window['rows']) is int and 1 <= window['rows'] <= maximum_window_rows and
+            type(window['first_row']) is int and window['first_row'] >= 0 and
+            type(window['jobs']) is int and window['jobs'] > 0, 'invalid planned window')
+        for name, minimum, maximum in (('job_rows_histogram', 1, min(8192, window['rows'])),
+                                       ('jobs_per_expert_histogram', 0, (window['rows'] + 8191) // 8192)):
+            histogram = window[name]
+            guards.require(type(histogram) is list and histogram and all(
+                type(pair) is list and len(pair) == 2 and
+                type(pair[0]) is int and minimum <= pair[0] <= maximum and
+                type(pair[1]) is int and pair[1] > 0 for pair in histogram),
+                'invalid planned histogram: ' + name)
+            keys = [pair[0] for pair in histogram]
+            guards.require(keys == sorted(set(keys)), 'duplicate or unordered planned histogram: ' + name)
         guards.require(sum(n for m, n in window['job_rows_histogram']) == window['jobs'] and
             sum(m*n for m, n in window['job_rows_histogram']) == window['rows']*10 and
             sum(n for m, n in window['jobs_per_expert_histogram']) == 512 and
             sum(m*n for m, n in window['jobs_per_expert_histogram']) == window['jobs'], 'census conservation')
         total_jobs += window['jobs']; total_rows += window['rows']
     totals = [x for x in log.splitlines() if x.startswith('strata MoE accumulator window: ')]
-    guards.require(len(totals) == 1 and f'jobs={total_jobs} ' in totals[0] and
-                   f'windows={len(record["planned_moe_windows"])} ' in totals[0], 'planned/retired job totals differ')
+    counters = parse_counter_lines(log, 'strata MoE accumulator window:', WINDOW_FIELDS)
+    guards.require(len(counters) == 1, 'missing or duplicate retired MoE totals')
+    retired = {key: int(value) for key, value in counters[0].items()}
+    guards.require(retired['jobs'] == total_jobs and
+        retired['windows'] == len(record['planned_moe_windows']) and
+        retired['source_H2D_bytes'] == total_rows * 10 * 4 and
+        retired['dequants'] <= total_jobs and retired['operator_max'] == 8192 and
+        retired['GPU_resident_windows_only'] == 1 and
+        max(w['rows'] for w in record['planned_moe_windows']) <= retired['maximum_rows'] <= maximum_window_rows,
+        'planned/retired job totals differ')
     record['retired_moe_totals'] = totals
+    return record
+
+
+def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_version=None,
+                             expected_window_pairs=None, maximum_window_rows=81920):
+    """Validate one long-request interval; never aggregate across requests."""
+    record = extract_planned_moe_work(log, expected_window_pairs, maximum_window_rows)
+    total_jobs = sum(w['jobs'] for w in record['planned_moe_windows'])
+    total_rows = sum(w['rows'] for w in record['planned_moe_windows'])
     record['resource_diagnostics'] = [x for x in log.splitlines() if x.startswith(
         ('strata lm profile:', 'strata lm qsa profile:', 'strata prefill cpu wait:', 'strata prefill cpu host:'))]
     coarse_prefix = 'strata lm profile: v=' + ('3' if phase_profile else '2') + ' complete=1 errors=0'
@@ -438,43 +511,12 @@ def extract_resource_profile(log, phase_profile, command_profile, limits, cpu_ve
             aggregate['expected_chunks'] == sum(x['expected_chunks'] for x in layers),
             'incomplete per-layer GDN stage coverage')
     if command_profile:
-        def rows(prefix):
-            return [dict(part.split('=', 1) for part in line[len(prefix):].split())
-                    for line in log.splitlines() if line.startswith(prefix)]
-        summaries = rows('strata command profile: ')
-        groups = rows('strata command group: ')
-        samples = rows('strata command sample: ')
-        invalid = rows('strata command invalid: ')
-        # Keep service intervals and signed clock diagnostics, not a
-        # permanent raw absolute timeline. All samples remain present.
-        for sample in samples:
-            submit, start, end = (int(sample.pop(key)) for key in ('submit', 'start', 'end'))
-            sample.update(service_ns=end-start, start_minus_submit_ns=start-submit)
-        record['command_service_profile'] = dict(version=2, summaries=summaries,
-            groups=groups, samples=samples, invalid=invalid,
-            scope='Deterministic samples in first accumulator expert phases of layers0,15,31,47; initial router/shared/final writes excluded; no device-busy or physical-traffic claim.')
-        frame_layers = {0: 0, 1: 15, 2: 31, 3: 47}
-        group_keys = [(int(g['window']), g['kind'], int(g['bin'])) for g in groups]
-        guards.require(len(set(group_keys)) == len(group_keys) and
-            {int(g['window']) for g in groups} == set(frame_layers) and
-            all(frame_layers.get(int(g['window'])) == int(g['layer']) and int(g['first_row']) == 0
-                for g in groups), 'unexpected or duplicate command window/stratum')
-        observed = Counter((int(s['window']), s['kind'], int(s['bin'])) for s in samples)
-        guards.require(observed == {key: int(g['service_samples']) for key, g in zip(group_keys, groups)},
-                       'command samples do not match window/stratum counts')
-        guards.require('strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
-            'command service must sample the admitted production accumulator route')
-        guards.require(len(summaries) == 1 and summaries[0]['version'] == '2' and
-            summaries[0]['service_complete'] == '1' and summaries[0]['invalid'] == '0' and
-            summaries[0]['windows'] == summaries[0]['expected'] == '4' and not invalid and
-            len(samples) == int(summaries[0]['records']) and groups and
-            all(int(g['selected']) == int(g['service_samples']) and int(g['selected']) > 0 for g in groups) and
-            sum(int(g['service_samples']) for g in groups) == len(samples) and
-            sum(int(g['queue_delay_samples']) for g in groups) +
-                int(summaries[0]['submit_clock_inversions']) == len(samples) and
-            sum(s['start_minus_submit_ns'] < 0 for s in samples) == int(summaries[0]['submit_clock_inversions']) and
-            all(s['service_ns'] >= int(summaries[0]['timer_resolution_ns']) for s in samples),
-            'incomplete GPU-only command service profile')
+        import command_service
+        profiles = command_service.parse_profiles(log, expected_windows=4)
+        guards.require(len(profiles) == 1 and
+            'strata MoE window configuration: requested_mode=10 effective_mode=10 ' in log,
+            'one admitted production accumulator command-service profile required')
+        record['command_service_profile'] = profiles[0]
     return record
 
 

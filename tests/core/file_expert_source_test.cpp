@@ -1,4 +1,5 @@
 #include "strata/core/expert_source.hpp"
+#include "strata/core/cpu_work_census.hpp"
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/pool.hpp"
@@ -420,8 +421,22 @@ void test_arena_copy_dispatch() {
         dispatch.pool=&pool;dispatch.src=&source;dispatch.n_expert=experts;
         dispatch.layers=layer;
         dispatch.host_res=residency.data();dispatch.plan=&sink;dispatch.pcie_num=fraction;
+        CpuWorkCensus census(1, 1, experts, residency.data(), expert_layout().fmt.data());
+        if (layer == 0) {
+            census.begin_window(1, 0, 2);
+            dispatch.cpu_work_census = &census;
+        }
         std::vector<float> output(6*H,123.0f);
         expert_pool_dispatch_multi(dispatch,activation.data(),ids.data(),2,3,output.data());
+        dispatch.cpu_work_census = nullptr;
+        if (layer == 0) {
+            census.end_window();
+            FILE* summary = std::tmpfile(); require(summary != nullptr, "census output");
+            census.finish(summary, 1, 2, 3-expected, 2*(3-expected), 0, expected);
+            std::fclose(summary);
+            require(census.ok() && census.bins()[0].jobs[1] == (uint64_t)(3-expected),
+                "actual final dispatcher CPU NT/copy conservation differs");
+        }
         require(!dispatch.failed && probe.published==(sink.publish!=nullptr) &&
                 probe.copied==expected && counts[2]==expected &&
                 counts[0]==0 && counts[1]==2*expected,
@@ -477,6 +492,7 @@ void test_arena_copy_dispatch() {
     require(arena.open(dir.path.string(),2,experts,2,error,0,(dir.path/"shared-copy-arena.bin").string()),error);
     run(arena,true,0,256,3,0);
     require(cases==17,"incomplete dispatch cases");
+    std::cout<<"cpu_work_census_dispatch cases=14 status=PASS\n";
     std::cout<<"arena_copy_dispatch_test cases=17 native_variable_stride=PASS source_bounds=PASS grouping=PASS limits=PASS cpu_fallback=PASS alias_exclusion=PASS callbacks=PASS\n";
 }
 #endif

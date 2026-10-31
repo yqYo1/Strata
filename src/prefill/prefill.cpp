@@ -50,6 +50,7 @@
 #include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
+#include "strata/kernels/qsa_topk_prefill_early.hpp"
 #include "strata/kernels/mrope.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
@@ -118,6 +119,15 @@ constexpr float EPS = 1e-6f;
 constexpr int64_t N = 2560, HC = 4, D = N * HC, LR = 320, K = 10, NE = 512;
 constexpr int64_t C = 10240, ZV = 6144, HV = 48;
 #if defined(STRATA_ENABLE_SYCL)
+bool gdn_three_barriers() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_BARRIERS3");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_BARRIERS3 must be0 or1");
+    }();
+    return enabled;
+}
 int gdn_column_partitions() {
     static const int partitions = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_COLUMNS");
@@ -478,6 +488,8 @@ struct PeerPrefill {
 // while this object and all raw upload pointers remain alive.
 struct MoeWindowContext {
     std::unique_ptr<detail::ExpertBankSlots> expert_slots;
+    std::unique_ptr<detail::PrivateExpertBank> private_expert_bank;
+    std::unique_ptr<detail::ExpertUploadStaging> expert_upload_staging;
     core::ExpertCache* expert_cache = nullptr; // outer-owned mutable upload target
     const uint8_t* expert_slab = nullptr;
     uint64_t expert_slab_bytes = 0, expert_stride = 0, expert_source_stride = 0;
@@ -488,6 +500,9 @@ struct MoeWindowContext {
     uint64_t mixed_bytes = 0;
     uint16_t* mixed_tail = nullptr;
     uint64_t mixed_tail_bytes = 0, mixed_tail_offset = 0;
+    float* accumulator_tail = nullptr;
+    uint64_t accumulator_tail_bytes = 0;
+    int64_t accumulator_primary_rows = 0; // zero retains the ordinary route
     bool scratch_mixed = false;
     int64_t maximum_rows = 16384;
     bool accumulation = false;
@@ -508,6 +523,24 @@ int moe_window_requested() {
         if (std::strcmp(v, "8") == 0) return 8;
         if (std::strcmp(v, "10") == 0) return 10;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8 or 10");
+    }();
+    return enabled;
+}
+bool moe_split_accumulator_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR must be0 or1");
+    }();
+    return enabled;
+}
+bool expert_upload_staging_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING must be0 or1");
     }();
     return enabled;
 }
@@ -2691,11 +2724,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
                     pt.mark(kPfGdnRec, cs);
 #if defined(STRATA_ENABLE_SYCL)
-                    if (m.layer_major_active && gdn_column_partitions())
-                        gdn_recurrence_partitioned(state, m.hbuf, m.gate, m.beta, m.z,
-                            static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T,
-                            gdn_column_partitions(), m.cs);
-                    else
+                    if (m.layer_major_active && gdn_column_partitions()) {
+                        if (gdn_three_barriers())
+                            gdn_recurrence_barriers3(state, m.hbuf, m.gate, m.beta, m.z,
+                                static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T, m.cs);
+                        else
+                            gdn_recurrence_partitioned(state, m.hbuf, m.gate, m.beta, m.z,
+                                static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T,
+                                gdn_column_partitions(), m.cs);
+                    } else
 #endif
                         gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
@@ -2877,9 +2914,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                                               m.max_blocks, s, m.sel_scores, m.cs, active);
                         }
 #if defined(STRATA_ENABLE_SYCL)
-                        if (m.layer_major_active)
-                            strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
-                                                            m.sel_ids + t0 * m.cap, m.cs, active);
+                        if (m.layer_major_active) {
+                            const auto topk = strata::kernels::qsa_prefill_topk_early_enabled()
+                                ? strata::kernels::qsa_block_topk_prefill_early
+                                : strata::kernels::qsa_block_topk_prefill;
+                            topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                 m.sel_ids + t0 * m.cap, m.cs, active);
+                        }
                         else
 #endif
                         strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
@@ -2930,9 +2971,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             strata::kernels::qsa_block_scores(pooled16, dead16, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs);
 #if defined(STRATA_ENABLE_SYCL)
-                            if (m.layer_major_active)
-                                strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
-                                                                ids16 + t0 * m.cap, m.cs);
+                            if (m.layer_major_active) {
+                                const auto topk = strata::kernels::qsa_prefill_topk_early_enabled()
+                                    ? strata::kernels::qsa_block_topk_prefill_early
+                                    : strata::kernels::qsa_block_topk_prefill;
+                                topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                     ids16 + t0 * m.cap, m.cs, -1);
+                            }
                             else
 #endif
                             strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,

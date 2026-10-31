@@ -23,6 +23,14 @@ constexpr uint64_t Sentinel = 0xa5963c5af00dcafeULL;
 void need(bool value, const char* why) {
     if (!value) throw std::runtime_error(why);
 }
+// Optional owned-controller handshake; environment remains immutable in child.
+void gate(const char* stage) {
+    const char* enabled = std::getenv("STRATA_TRANSFER_PROBE_GATES");
+    if (!enabled || std::string(enabled) != "1") return;
+    std::cout << "GATE stage=" << stage << '\n';
+    std::string response;
+    need(bool(std::getline(std::cin, response)) && response == "continue", "controller acknowledgement");
+}
 size_t number(const char* text) {
     need(text && text[0] >= '0' && text[0] <= '9', "unsigned decimal option required");
     errno = 0;
@@ -90,8 +98,10 @@ void run(bool usm, size_t bytes, int repeats) {
     std::unique_ptr<uint8_t[]> ordinary;
     auto rt = strata::sycl_backend::runtime_for();
     need(rt->device().is_gpu() && rt->device().has(sycl::aspect::usm_host_allocations), "GPU with host USM required");
+    need(Runtime::devices().size() == 1, "one unambiguous GPU required for transfer probe");
     std::cout << "DEVICE name=" << rt->device().get_info<sycl::info::device::name>()
               << " driver=" << rt->device().get_info<sycl::info::device::driver_version>() << '\n';
+    gate("runtime-ready");
     Allocation host;
     const auto allocation_begin = clock::stamp();
     if (usm) host = Allocation(rt, host_bytes, MemoryKind::Host);
@@ -142,7 +152,9 @@ int main(int argc, char** argv) {
         const auto bytes = number(argv[4]), repeats = number(argv[6]);
         need((host == "ordinary" || host == "usm") && bytes >= 4096 && bytes % 8 == 0 && repeats >= 1 && repeats <= 8,
              "host/byte/repetition bounds");
+        gate("before-runtime");
         run(host == "usm", bytes, int(repeats));
+        gate("before-exit");
     } catch (const std::exception& error) {
         std::cerr << "FAIL " << error.what() << '\n';
         return 1;

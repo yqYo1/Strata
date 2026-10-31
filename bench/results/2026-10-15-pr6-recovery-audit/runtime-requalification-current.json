@@ -1,0 +1,285 @@
+{
+  "stage": "device-checked",
+  "source_commit": "bdf6cb3de05e8eb56640acc904f91518d47f5621",
+  "input_sha256": {
+    "tools/sycl/runtime_probe.py": "750818a521dcdf28901638424e9789c2db22d85876226b6f5141a954bb9d41d6",
+    "tools/sycl/check_full_context_source.py": "5e72fa724e890e682382758caf6222042e1ec89770962ce205ab756783332030",
+    "tools/sycl/build_engine.py": "8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131",
+    "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+    "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+    "tools/sycl/ur_validation.py": "2e41d84788dc9cc3c7435b18b43601b3ca79280ccb855414d7a36bae6bff83e7",
+    "tools/sycl/measurement_environment.json": "d4402591df50e80dc45a5ec9e4839c7a794888850b1473537b6f95179be5b03c",
+    "tests/core/test_runtime_probe.py": "10acac780a04a18f3b7e78babf313fee3bae58177f550ee5d07f948d3008b0d3"
+  },
+  "prior_failed_gate": {
+    "commit": "58e353eaa046d6102a25f7f06def19d1403b878f",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
+    "sha256": "d6316756b917a697e43f05ad1bcf8849236ee617518e33b12d6b1fe8170c9325"
+  },
+  "declared_runtime_changes": {
+    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+    "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782",
+    "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957",
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49"
+  },
+  "original_build": {
+    "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "inputs_recovered": 9853,
+    "assets_verified": 13,
+    "receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+      "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+    },
+    "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+  },
+  "preload": {
+    "library": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+    },
+    "canary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+      "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+    },
+    "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "original_plan": {
+      "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+      "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+    },
+    "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+    "retained_reference_until_exit": true,
+    "ordinary_runtime_teardown_qualified": false
+  },
+  "runtime_files": {
+    "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc",
+    "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libsycl.so.9.0.0-0": "74243bafb2766fd1a038cf80fd62632b4aad9ecfdc0d3ce8711e4515a93d7008",
+    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+    "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+    "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+    "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
+    "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
+    "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782",
+    "/usr/local/lib/libigc.so.2.41.5+1788943183": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
+    "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
+    "/usr/local/lib/libopencl-clang2.so.22.1": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
+    "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
+    "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
+    "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957",
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
+    "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
+    "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269",
+    "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libumf.so.1.1.0": "ebe65269abd5869010ab256375e8663f7a8f8b5453e0be0c78f615eb71581ab9",
+    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0.12.0": "05bcafc4a0d45d33f957f16ffb4ba4776da675e79ade1121b93b94b8549335d8",
+    "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+    "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+    "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
+    "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
+    "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.5.0": "b6c51aa06b74e545fada790ccef7eb33256f67087ea8e1dfbea6466b1c20b2bf",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+    "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v4/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v4/cache"
+  },
+  "cases": [
+    {
+      "label": "canary",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+      },
+      "args": []
+    },
+    {
+      "label": "submission",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_submission_test",
+        "sha256": "5a434921664fac6b111ba2a0de5ebe4fd0182d226f1c56d34aeffa73171b9b79"
+      },
+      "args": [
+        "--submission"
+      ]
+    },
+    {
+      "label": "graph0",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+        "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+      },
+      "args": [
+        "--profile=0"
+      ]
+    },
+    {
+      "label": "graph1",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+        "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+      },
+      "args": [
+        "--profile=1"
+      ]
+    }
+  ],
+  "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+  "driver": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "host_controls": {
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tests/core/test_runtime_probe.py"
+    ],
+    "python": {
+      "path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v4/tmp"
+    }
+  },
+  "criteria": "Four ordered fresh owned processes: host-only preload canary,submission/USM/events,ordinary graph profile0,profile1. All exit0,expected numerical/guard/profiling markers,pre-main parameter validation,silent validation log,observed ELF subset pinned and actual new NEO observed in device children. Trace must record enqueue work;fresh fault/boot/source/runtime/owner checks after every child. Stop first failure,no retry. Not model,clean speed,physical context or ordinary runtime destruction qualification.",
+  "budgets": {
+    "wall": 90,
+    "cpu": 120,
+    "rss_cap": 4294967296,
+    "text_cap": 16777216,
+    "file_cap": 33554432,
+    "total_cap": 67108864
+  },
+  "retention": "Keep exact source/recipe,runtime hashes,individual fixture outcomes and limits. Retire successful traces/maps/logs after committed replay;retain provider manifest for imminent model requalification/fresh comparison. No new native engine generation.",
+  "outcomes": [
+    {
+      "label": "canary",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "stdout_sha256": "cf274b50d9312d3f67ff4b2ac7e39f83bfd6feda8b4c1475cd89d47c53b81ae1",
+      "stderr_sha256": "3f06cac70ccf04e2fd128c8030f991de85a1a8944f8312cb2bc7786a65b0ca81",
+      "trace_bytes": 330,
+      "mapped_runtime_files_count": 0,
+      "only_pinned_providers_observed": true,
+      "new_neo_provider_observed": false
+    },
+    {
+      "label": "submission",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+      "stderr_sha256": "c8313f1c0b70392ffcca76a7c258c35d2c69df563c2035abd8da5c0b774b04a4",
+      "trace_bytes": 949721,
+      "mapped_runtime_files_count": 26,
+      "only_pinned_providers_observed": true,
+      "new_neo_provider_observed": true
+    },
+    {
+      "label": "graph0",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "stdout_sha256": "8ead80115559fba31453d1e57d8d58ed2b1bc7536407992b51986dd09c54e2f5",
+      "stderr_sha256": "df4cecb65af0519a9d1827060f45274fa1e2c6818ed5b50b49616afa0887dfb7",
+      "trace_bytes": 22541,
+      "mapped_runtime_files_count": 26,
+      "only_pinned_providers_observed": true,
+      "new_neo_provider_observed": true
+    },
+    {
+      "label": "graph1",
+      "exit_code": 0,
+      "passed": true,
+      "ownership_closed": true,
+      "parameter_validation": true,
+      "fresh_faults": [],
+      "stdout_sha256": "80613a160268676f7c369749a28daafed9813673561f4ac5867c21f0c1303ae3",
+      "stderr_sha256": "b1f4e15d6519dc523e4deedbdd380db523242718758a51a1a936b5b62ce90098",
+      "trace_bytes": 25790,
+      "mapped_runtime_files_count": 26,
+      "only_pinned_providers_observed": true,
+      "new_neo_provider_observed": true
+    }
+  ],
+  "active": false,
+  "ownership_closed": true,
+  "passed": true,
+  "complete": true,
+  "model_qualified": false,
+  "production_selected": false,
+  "clean_speed_qualified": false,
+  "host_probe_accepted": true,
+  "fresh_faults": [],
+  "boot_unchanged": true,
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "files": 31,
+    "bytes": 1118277,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-runtime-device-diagnostics-20261025.jsonl",
+    "manifest_sha256": "ff628ff2ae4dd81ac7ab7d3fc21144ce48958495c46d8e68084ee2fcce391ef5",
+    "source_recovered": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v4": 8,
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/neo-39758-runtime-probe-v3": 7
+    },
+    "recipe_commits": [
+      "52e8ff03c",
+      "da44c7e06"
+    ],
+    "evidence_commit": "c2d8a8c9f",
+    "remote_feature_tip": "98fe3e28f76d832a1350b0162c28daec2017a3a0",
+    "scope": "Successful device traces/logs and resolved old observer diagnostics only. Original13/private13 binaries and UR preload assets retained for named imminent qualification. Exact observed path lists recover fromc2d8a8c9f;current result keeps required-provider/subset checks and counts plus the33-file provider manifest for model qualification."
+  }
+}

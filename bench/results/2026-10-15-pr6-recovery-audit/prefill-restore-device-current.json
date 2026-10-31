@@ -1,0 +1,178 @@
+{
+  "schema": "restored-prefill-components-v1",
+  "stage": "device-checked",
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "controller_source_commit": "1823b0dcf4c70df87e494f3ed38ea4deaae5e275",
+  "build_source_commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/build/strata",
+    "bytes": 22198704,
+    "sha256": "2a128c6a58a46eb9b865eaef355055251297c2f96749f390cf78c3b892246ca5"
+  },
+  "original_plan": {
+    "commit": "a3660572af0c07dd89caa93f7961828e81d20319",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-device-current.json",
+    "sha256": "acad11c4a18276902574448fa1488212a7231da0b7ff35797170361ffdaa6d0d"
+  },
+  "native_build_reference": {
+    "commit": "0f8b3319b0280f07ef615fbebfbaf81cdbaf45ac",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-current.json",
+    "sha256": "aeb0b4936701925a6ca98f0f5c6b835d012218094b85804db661dab7596147ba",
+    "private_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/record.json",
+    "private_record_sha256": "9882f206f5db305ea58f7bec62c54a68d0a93858b4600a6fb3e6db1e847d56c4",
+    "compiled_inputs": 1416,
+    "uncovered": 0,
+    "assets": 17,
+    "assets_fingerprint": "1b12a9c67492ab076252ee1ee83ad9664a4fb4139f83cbf8da44fcf24bae38d8"
+  },
+  "runtime_reference": {
+    "commit": "1c88b59451225c7084c846e9f4c81e8c2f7dad2d",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/runtime-requalification-current.json",
+    "sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    }
+  },
+  "reused_qualification": {
+    "gate": {
+      "commit": "1823b0dcf4c70df87e494f3ed38ea4deaae5e275",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-restore-device-current.json",
+      "sha256": "5c4f931ecc97a20ccef20d013e1ebe5fe87d43198aaf2ce358ac3c2e8779bce7"
+    },
+    "checks": 11,
+    "host": 8,
+    "device": [
+      "submission",
+      "graph0",
+      "graph1"
+    ],
+    "scope": "Exact original native/17-artifact,runtime and effective-environment identities checked.Original whole-gate failure remains failed;Alias0 scratch smoke not reused."
+  },
+  "fresh_device_outcomes": [
+    {
+      "case": "scratch-smoke",
+      "exit_code": 0,
+      "stdout_sha256": "d042b38fc9217cd4924a04307023ebb05ed0884fee1497766748a19e407ce7e1",
+      "stderr_sha256": "19872ef36d6b7659fac4e7fca34617da47da751368de5376ccc5a477d6d7adab"
+    },
+    {
+      "case": "scratch-full",
+      "exit_code": 0,
+      "stdout_sha256": "c6aa0631e20d25db9810637b1608220b0d3daab25d0fe18129572d835870cf3a",
+      "stderr_sha256": "8cff242d00077f9351199af56bd19d4af29a6894115fc8b9169507c1ce1fac2b"
+    },
+    {
+      "case": "scratch-loan",
+      "exit_code": 0,
+      "stdout_sha256": "9011e813ea98f45cfaab4704c351461f020681fa483a85806848e0dd4c9c290c",
+      "stderr_sha256": "a054e9cfc35c9457ba547d51168ac4a4953157dda3719c340359f284bb06d662"
+    },
+    {
+      "case": "expert-private",
+      "exit_code": 0,
+      "stdout_sha256": "c1e9bdcd07ccbc949695eed5147f989f50892a4d4ecf1fa864ac9c0bf5e05933",
+      "stderr_sha256": "ba20c41d677463616e16e39970a43fe988bda827b9dc435b95b7f888691d619d"
+    },
+    {
+      "case": "restore-smoke",
+      "exit_code": 0,
+      "stdout_sha256": "1858b02fea17b05fb2265bf28a5252233e105b21b0c669786c60de212316f831",
+      "stderr_sha256": "0e6056dc84e2be87dfc986e8403a970f207533bb5d81a908a7a2729df4b706b2"
+    }
+  ],
+  "verification": {
+    "host_bounds_cases": 134,
+    "IQ2_pair_arms": [
+      0,
+      1
+    ],
+    "IQ2_phase_cases_per_arm": 12,
+    "scratch_smoke_cases": 1,
+    "scratch_full_cases": 15,
+    "cache_loan_cases": 20,
+    "cache_loan_cycles": 3,
+    "private_bank_immutable_slab_guards_map_and_drain": true,
+    "restore_smoke_checks": 113,
+    "all_fresh_pre_main_validation": true,
+    "all_fresh_parameter_validation_silent": true,
+    "all_fresh_observed_updated_NEO": true,
+    "all_fresh_expected_enqueue_traces": true,
+    "actual_source_runtime_and17_assets_rechecked": true,
+    "host_only_full_extent_hash_cells": 262144
+  },
+  "final_checks": {
+    "owned_fresh_processes": 5,
+    "all_exit0_reaped_empty_sessions": true,
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "fresh_faults": [],
+    "trace_bytes": 8651715,
+    "raw_evidence_replayed": true
+  },
+  "production_selected": false,
+  "model_qualified": false,
+  "clean_speed_qualified": false,
+  "decode_preservation_qualified": false,
+  "physical262144_qualified": false,
+  "ordinary_runtime_teardown_qualified": false,
+  "retention": {
+    "native_generation": "Retain original6e40 fallback and this1baa restored generation only for imminent bounded model/state and independent long prefill/decode comparisons.17 native assets remain outside Git.",
+    "raw": {
+      "complete": true,
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-device-v3",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/selected-prefill-restoration-v2/owned"
+      ],
+      "files": 32,
+      "bytes": 15672462,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-restored-prefill-components-raw-20261025.jsonl",
+        "sha256": "241a22b4d1325aa4f86f58a22525364429fc1c3174968311bbf974a1113e77a3"
+      },
+      "decision": "Successful API traces,closed build output and routine diagnostics retired after compact replay/source evidence was committed.17 current native assets and the original13-asset fallback remain for imminent model/phase qualification."
+    },
+    "controllers": "Closed build/device launchers recover at source1823b0dcf. Removed the one-shot device controller and closed build CLI;retain only the native-input reader in tools/sycl/prefill_restore.py for imminent model/phase admission."
+  },
+  "pending": [
+    "Bounded real-model allocation/prefill-to-decode and conversation RESTORE.",
+    "Matched repeated >=32K long-input prefill and sustained thinking-on decode,agent/task checks. Any decode impact is a separation defect;do not adopt or declare restoration complete.",
+    "Physical262144 final-slot/session/RESTORE/failure-owner and ordinary runtime teardown.",
+    "Fork default PR180 remains OPEN/BLOCKED;source identities must remain reachable without squash."
+  ],
+  "reader_verification": {
+    "source_commit": "3cc6af0b321e2854616ebc1b70f4e8291292a87b",
+    "native_source_commit": "1baa0547f151264d4ef7a0972e5355b6b1b3fe6b",
+    "passed": true,
+    "compiled_inputs": 1416,
+    "assets": 17,
+    "original_project_files": 647,
+    "current_controller_files": 188,
+    "GPU_executed": false,
+    "scope": "Read-only native source/dependency/SDK/recipe/runtime and executable-identity check after retiring closed launchers. Original fixture source1823 and native build1baa identities stay unchanged;no new model or GPU qualification."
+  },
+  "default_integration_hold": {
+    "pr": 180,
+    "url": "https://github.com/yqYo1/Strata/pull/180",
+    "state": "OPEN",
+    "merge_state": "BLOCKED",
+    "observed_head": "3cc6af0b321e2854616ebc1b70f4e8291292a87b",
+    "default": "05069aeedea43f778b97dce30c729739cb3bce5c",
+    "next_action": "Revisit PR integration after real-model/phase qualification;preserve measured original source IDs and do not claim default adoption from feature pushes."
+  }
+}

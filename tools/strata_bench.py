@@ -15,7 +15,7 @@ real HTTP API, three runs each, medians reported:
                 tokens the conversation cache reused, how many had to be read again, time to first token per turn
   5. --clients N   N requests at once (the server needs --batch for them to run together): total tok/s, p50/p95 latency
   6. --long 32K    the same prompt test at about 32,768 tokens
-  7. --long-generation  two >=32K-input, >=1024-output MTP workloads (up to 8192, thinking on)
+  7. --long-generation  two >=32K-input, >=1024-output MTP workloads (default 16384 output, thinking on)
 
 Speeds are the engine's own timings (the `timings` of the answer: prompt_per_second, predicted_per_second); time to first
 token and latency are measured by this client.  Thinking is off for the suite (--think turns it on), so the answers are
@@ -36,6 +36,7 @@ import json
 import os
 import platform
 import re
+import select
 import shutil
 import socket
 import statistics
@@ -54,11 +55,22 @@ from ab_engine import PROMPTS, long_prompt          # noqa: E402  the same three
 from agent_turns_bench import SYSTEM, TOOLS         # noqa: E402  the same agent system prompt and tool list
 import serve_load                                   # noqa: E402  the burst client for --clients
 import long_generation_bench as long_generation     # noqa: E402
+import prefill_scaling_bench as prefill_scaling     # noqa: E402
 
 SCHEMA = 2
 CHAT_MAX_TOKENS = 100
 LONG_MAX_TOKENS = 24
-PREFILL_TOKEN_CHOICES = (32768, 65536, 98304, 131072)
+PREFILL_TOKEN_BOUNDS = (32768, 131072)
+
+
+def validate_prefill_tokens(value):
+    if type(value) is not int or not PREFILL_TOKEN_BOUNDS[0] <= value <= PREFILL_TOKEN_BOUNDS[1]:
+        raise ValueError('prefill minimum must be an integer from 32768 through 131072')
+    return value
+
+
+def prefill_token_argument(text):
+    return validate_prefill_tokens(int(text))
 AGENT_MAX_TOKENS = 64
 AGENT_THINK_MAX_TOKENS = 8192
 AGENT_TURNS = 5
@@ -208,6 +220,23 @@ def chat(base: str, key: str, messages: list, max_tokens: int, think: bool = Fal
             "client_interval": dict(request_begin_monotonic_ns=request_begin_monotonic_ns,
                 first_output_monotonic_ns=first_output_monotonic_ns,
                 request_end_monotonic_ns=time.monotonic_ns())}
+
+
+def count_chat_tokens(base, key, messages, timeout):
+    """Count the exact prefill-only body through the fork's count-only extension."""
+    return count_chat_body_tokens(base, key, chat_body(messages, LONG_MAX_TOKENS, True), timeout)
+
+
+def count_chat_body_tokens(base, key, body, timeout):
+    """Count a final wire body without dropping its template overrides or output cap."""
+    req = urllib.request.Request(base+'/v1/chat/completions/count_tokens',
+        data=json.dumps(body).encode(), headers={'Content-Type': 'application/json',
+            **({'Authorization': 'Bearer '+key} if key else {})})
+    with urllib.request.urlopen(req, timeout=timeout) as reply:
+        value = json.load(reply).get('input_tokens')
+    if type(value) is not int or value <= 0:
+        raise ValueError('count-only endpoint did not return a positive integer input_tokens')
+    return value
 
 
 def digest(r: dict) -> dict:
@@ -371,7 +400,7 @@ def verify_request_journal(directory):
 
 def client_fingerprint():
     return {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in
-            ("tools/strata_bench.py", "tools/long_generation_bench.py", "tools/ab_engine.py",
+            ("tools/strata_bench.py", "tools/long_generation_bench.py", "tools/prefill_scaling_bench.py", "tools/ab_engine.py",
              "tools/agent_turns_bench.py", "tools/serve_load.py")}
 
 
@@ -406,9 +435,10 @@ def prefill_eligibility(raw, row, minimum, context):
         errors.append("actual prompt lacks verified context/output headroom")
     if type(read) is int and type(prompt) is int and read>prompt:
         errors.append("reported read count exceeds reported prompt count")
-    pp=timings.get("prompt_per_second")
-    if type(pp) not in (float,int) or not 0<pp<float("inf"):
-        errors.append("missing finite positive engine prompt_per_second")
+    for field in ('prompt_per_second', 'prompt_ms'):
+        value=timings.get(field)
+        if type(value) not in (float,int) or not 0<value<float('inf'):
+            errors.append('missing finite positive engine '+field)
     return {"eligible":not errors,"eligibility_errors":errors,"requested_min_tokens":minimum,
             "actual_prompt_tokens":prompt,"actual_read_tokens":read,"read_tokens":read,
             "actual_reused_tokens":caches[0] if caches else None,
@@ -418,15 +448,46 @@ def prefill_eligibility(raw, row, minimum, context):
             "reasoning_tokens_reported":(usage.get("completion_tokens_details") or {}).get("reasoning_tokens")}
 
 
+def profile_request_gate(stage, phase, run):
+    """Bounded diagnostic handshake; the owner controls its profiler session."""
+    print('STRATA_PROFILE_GATE '+json.dumps(dict(stage=stage,phase=phase,run=run)),flush=True)
+    deadline=time.monotonic()+30
+    command=bytearray()
+    while True:
+        remaining=deadline-time.monotonic()
+        if remaining<=0 or not select.select([sys.stdin.fileno()],[],[],remaining)[0]:
+            raise RuntimeError('profile request gate deadline')
+        byte=os.read(sys.stdin.fileno(),1)
+        if not byte:raise RuntimeError('profile request gate EOF')
+        if byte==b'\n':break
+        if len(command)>=16:raise RuntimeError('profile request gate command extent')
+        command.extend(byte)
+    if command!=b'continue':raise RuntimeError('profile request gate command')
+
+
 class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
-                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None):
+                 want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False,
+                 generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False,
+                 prefill_exact_tokens=None, generation_input_case=long_generation.STANDARD_INPUT_CASE):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
+        self.prefill_exact_tokens = prefill_exact_tokens
+        self.frozen_prefill_hashes = {}
+        if prefill_exact_tokens is not None:
+            validate_prefill_tokens(prefill_exact_tokens)
+            if not prefill_only or characterize_prefill:
+                raise ValueError('exact prefill needs its own prefill-only scope')
+            self.prefill_tokens = prefill_exact_tokens
+        self.characterize_prefill = characterize_prefill
+        if characterize_prefill and not prefill_only:
+            raise ValueError('prefill characterization requires its independent prefill-only scope')
+        if request_gate is not None and not (prefill_only or long_generation_only):
+            raise ValueError('request gates require prefill-only or long-generation-only')
+        self.request_gate=request_gate
         if prefill_only and (want_clients or want_long or want_long_generation or long_generation_only or quick):
             raise ValueError("prefill-only cannot be combined with other suite scopes")
-        if prefill_tokens not in PREFILL_TOKEN_CHOICES:
-            raise ValueError(f"prefill minimum must be one of {PREFILL_TOKEN_CHOICES}")
+        validate_prefill_tokens(prefill_tokens)
         if prefill_only:
             self.think = True
         self.clients, self.want_long = want_clients, want_long
@@ -437,8 +498,23 @@ class Suite:
                                                not long_generation_only or prefill_only):
             raise ValueError("a long-generation workload selection requires --long-generation-only")
         self.generation_workload = generation_workload
+        if generation_speed_only and not (want_long_generation and long_generation_only):
+            raise ValueError('long-generation speed-only requires --long-generation-only')
+        self.generation_speed_only = generation_speed_only
+        if type(generation_max_tokens) is not int or generation_max_tokens not in long_generation.OUTPUT_TOKEN_CHOICES:
+            raise ValueError('unsupported long-generation output budget')
+        if generation_max_tokens != long_generation.MAX_OUTPUT_TOKENS and not want_long_generation:
+            raise ValueError('custom output budget requires a long-generation scope')
+        self.generation_max_tokens = generation_max_tokens
+        if generation_input_case not in long_generation.INPUT_CASES:
+            raise ValueError("unsupported long-generation input case")
+        if generation_input_case != long_generation.STANDARD_INPUT_CASE and not (want_long_generation and long_generation_only):
+            raise ValueError("split long-generation input requires --long-generation-only")
+        self.generation_input_case = generation_input_case
+        self.frozen_generation_inputs = {}
         self.journal = journal
-        self.fail_fast_engine_error = fail_fast_engine_error or prefill_only
+        self.fail_fast_engine_error = (fail_fast_engine_error or prefill_only or
+                                       generation_input_case == long_generation.SPLIT_INPUT_CASE)
         self.workload_id = validate_workload_id(workload_id) if workload_id is not None else None
         self.nonce = self.workload_id if self.workload_id is not None else str(int(time.time()))
         self.tokens_per_word, self.overhead = 1.1, 40
@@ -453,9 +529,17 @@ class Suite:
             payload = json.dumps(chat_body(messages, max_tokens, think, kwargs.get("tools"),
                                            kwargs.get("request_overrides"))).encode()
             request_index = self.journal.append("start", phase, run, turn,
-                request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think)
+                request_sha256=hashlib.sha256(payload).hexdigest(), max_tokens=max_tokens, thinking=think,
+                **({"input_case": self.generation_input_case,
+                    "target_input_tokens": long_generation.SPLIT_TARGET_INPUT_TOKENS}
+                   if phase.startswith("long-generation/") and self.generation_case_metadata() else {}))
         try:
-            raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
+            gated=self.request_gate is not None and (phase=='prefill-only' or phase.startswith(('prefill-scaling/', 'long-generation/')))
+            if gated:self.request_gate('begin',phase,run)
+            try:
+                raw = chat(self.base, self.key, messages, max_tokens, think, **kwargs)
+            finally:
+                if gated:self.request_gate('end',phase,run)
         except BaseException as error:
             if self.journal:
                 self.journal.append("interrupted", phase, run, turn, request_index=request_index, error=repr(error)[:300])
@@ -464,16 +548,25 @@ class Suite:
         row.update(output_chars=len(raw["text"]), reasoning_chars=len(raw["reasoning_text"]),
                    output_sha256=hashlib.sha256(raw["text"].encode()).hexdigest(),
                    reasoning_sha256=hashlib.sha256(raw["reasoning_text"].encode()).hexdigest())
-        if phase == "prefill-only":
-            row.update(prefill_eligibility(raw, row, self.prefill_tokens, self.ctx))
+        if phase == "prefill-only" or phase.startswith('prefill-scaling/'):
+            minimum = int(phase.rsplit('/', 1)[1]) if phase.startswith('prefill-scaling/') else self.prefill_tokens
+            row.update(prefill_eligibility(raw, row, minimum, self.ctx))
+            if phase == 'prefill-only' and self.prefill_exact_tokens is not None:
+                errors = row['eligibility_errors']
+                if row.get('actual_prompt_tokens') != self.prefill_exact_tokens or row.get('actual_read_tokens') != self.prefill_exact_tokens:
+                    errors.append('actual prompt/read count differs from exact preflight target')
+                if raw.get('request_sha256') != self.frozen_prefill_hashes.get(run):
+                    errors.append('timed body differs from count-verified frozen body')
+                row.update(eligible=not errors, timing_frontend_state='post-count-preflight',
+                           exact_input_tokens=self.prefill_exact_tokens)
             if not row["eligible"]:
                 row.update(ok=False, err="; ".join(row["eligibility_errors"]))
         if phase.startswith("long-generation/"):
-            row.update(long_generation.sample_eligibility(raw, row))
+            row.update(self.generation_eligibility(raw, row, max_tokens, phase, run))
         if self.journal:
             self.journal.append("result", phase, run, turn, request_index=request_index, sample=row)
         if raw.get("_interrupted") is not None:
-            if self.prefill_only:
+            if self.prefill_only or self.generation_case_metadata():
                 self.out.setdefault("request_samples", []).append({"phase":phase,"run":run,"turn":turn,"sample":row})
             raise raw["_interrupted"]
         if self.fail_fast_engine_error:
@@ -490,6 +583,17 @@ class Suite:
         return raw
 
     def prefill_plan(self):
+        if self.characterize_prefill:
+            return prefill_scaling.plan(self)
+        if self.prefill_exact_tokens is not None:
+            return dict(mode='prefill-only', requested_min_tokens=self.prefill_exact_tokens,
+                exact_input_tokens=self.prefill_exact_tokens, construction_target_tokens=self.prefill_exact_tokens,
+                initial_word_factory_target_tokens=self.prefill_exact_tokens*5//4, construction_version=2,
+                max_tokens=LONG_MAX_TOKENS, thinking_requested=True, workload=self.workload_identity(),
+                freshness='Distinct fixed run tags;actual reuse must be zero.',
+                calibration='Count-only preflight,at most32calls/120seconds perbody;all bodies frozen before timed inference,no inference calibration or post-timing repair.',
+                timing_frontend_state='post-count-preflight',
+                limits='Exact rendered/read prompt counts do not prove physical engine rows,route or context capacity.')
         return {"mode":"prefill-only", "requested_min_tokens":self.prefill_tokens,
                 "construction_target_tokens":self.prefill_tokens * 5 // 4,
                 "construction_tokens_per_word":1.1, "construction_overhead":40,
@@ -515,13 +619,30 @@ class Suite:
             raise EngineRequestError(reason)
         # Only the existing bounded short chat warmup; no calibration requests.
         self.request("warm-up/chat",None,None,[{"role":"user","content":PROMPTS[0]}],24,True)
-        label=f"{self.prefill_tokens}-minimum"
+        label=f"{self.prefill_tokens}-"+("exact" if self.prefill_exact_tokens is not None else "minimum")
         self.out["prompts"][label]=cohort
+        frozen = []
+        if self.prefill_exact_tokens is not None:
+            cohort['count_preflight'] = []
+            try:
+                for run in range(self.runs):
+                    messages, proof = prefill_scaling.exact_prompt(self, run,
+                        lambda messages, timeout: count_chat_tokens(self.base, self.key, messages, timeout))
+                    body_sha = hashlib.sha256(json.dumps(chat_body(messages,LONG_MAX_TOKENS,True)).encode()).hexdigest()
+                    proof['body_sha256'] = body_sha
+                    self.frozen_prefill_hashes[run] = body_sha
+                    frozen.append(messages)
+                    cohort['count_preflight'].append(proof)
+            except Exception as error:
+                reason = 'exact count preflight failed: '+str(error)
+                self.out['terminal_failure'] = dict(phase='prefill-only/count-preflight',error=reason)
+                self.fail('prefill-only/count-preflight',dict(err=reason))
+                raise EngineRequestError(reason) from error
         try:
             for run in range(self.runs):
                 before=len(self.out.get("request_samples",[]))
                 try:
-                    self.request("prefill-only",run,None,self.prefill_prompt(run),LONG_MAX_TOKENS,True)
+                    self.request("prefill-only",run,None,frozen[run] if frozen else self.prefill_prompt(run),LONG_MAX_TOKENS,True)
                 finally:
                     # Failed and interrupted returned responses remain individual samples.
                     for sample in self.out.get("request_samples",[])[before:]:
@@ -537,22 +658,63 @@ class Suite:
                           reused_tokens=stat(r["actual_reused_tokens"] for r in good))
         return self.out
 
+    def generation_case_metadata(self):
+        lg = long_generation
+        if self.generation_input_case == lg.STANDARD_INPUT_CASE:
+            return {}
+        selected = [self.generation_workload] if self.generation_workload else list(lg.WORKLOADS)
+        return {"long_generation_input": dict(case=lg.SPLIT_INPUT_CASE, version="split-v1",
+            target_input_tokens=lg.SPLIT_TARGET_INPUT_TOKENS,
+            minimum_input_tokens=lg.SPLIT_MIN_INPUT_TOKENS,
+            maximum_selector_input_tokens=lg.SPLIT_MAX_INPUT_TOKENS,
+            context_reserve=lg.CONTEXT_RESERVE, max_tokens=self.generation_max_tokens,
+            workload=self.workload_identity(), selected_workloads=selected,
+            instructions_sha256={name: hashlib.sha256(lg.WORKLOADS[name]["instruction"].encode()).hexdigest()
+                                 for name in selected},
+            count_preflight="One bounded count-only request of the final nonce-tagged wire body per generation;outside TTFT.",
+            construction="Approximate target from the standard word-list calibration;no body repair after counting or timing.",
+            native_evidence="Actual per-arm route/placement and same-request continued decode require the owned native log;client counts alone do not qualify split admission.")}
+
+    def generation_version(self):
+        return "split-v1" if self.generation_case_metadata() else long_generation.WORKLOAD_VERSION
+
+    def generation_eligibility(self, raw, sample, maximum, phase, run):
+        lg = long_generation
+        if self.generation_case_metadata():
+            return lg.split_sample_eligibility(raw, sample,
+                self.frozen_generation_inputs.get((phase, run)), maximum, self.ctx)
+        return lg.sample_eligibility(raw, sample, maximum=maximum, context=self.ctx)
+
     def run_long_generation(self):
         lg = long_generation
-        required = lg.TARGET_INPUT_TOKENS + lg.MAX_OUTPUT_TOKENS + 512
-        if self.ctx and self.ctx < required:
+        split = bool(self.generation_case_metadata())
+        target = lg.SPLIT_TARGET_INPUT_TOKENS if split else lg.TARGET_INPUT_TOKENS
+        minimum = lg.SPLIT_MIN_INPUT_TOKENS if split else lg.MIN_INPUT_TOKENS
+        maximum = self.generation_max_tokens
+        required = target + maximum + 512
+        known_context = type(self.ctx) is int and self.ctx > 0
+        if (known_context and self.ctx < required) or ((split or maximum != lg.MAX_OUTPUT_TOKENS) and not known_context):
             self.out["skipped"]["long-generation"] = f"context {self.ctx} is below {required}"
             return
         selected = [self.generation_workload] if self.generation_workload else list(lg.WORKLOADS)
         self.log(f"long generation: {', '.join(selected)}, {self.runs} runs, "
-                 f"{lg.MIN_OUTPUT_TOKENS}..{lg.MAX_OUTPUT_TOKENS} actual tokens including thinking")
+                 f"{lg.MIN_OUTPUT_TOKENS}..{maximum} actual tokens including thinking")
         cases = {name: {"expected_mtp": spec["expected_mtp"], "requests": []}
                  for name, spec in lg.WORKLOADS.items()}
         order = []
+        if split:
+            self.out["long_generation"] = dict(workload_version=self.generation_version(),
+                **self.generation_case_metadata(), complete=False, workloads=cases, order=order,
+                minimum_input_tokens=minimum, target_input_tokens=target,
+                minimum_generated_tokens=lg.MIN_OUTPUT_TOKENS, max_tokens=maximum,
+                minimum_body_chars=lg.MIN_BODY_CHARS, thinking=lg.THINKING,
+                reasoning_budget_tokens=0, temperature=0, speed_only=self.generation_speed_only,
+                selected_workloads=selected, diagnostic_subset=self.generation_workload is not None,
+                classification=lg.classify_pair(cases, self.runs), quality_qualified=False)
         for run in range(self.runs):
             names = selected if run % 2 == 0 else list(reversed(selected))
             for name in names:
-                words = max(50, int((lg.TARGET_INPUT_TOKENS - self.overhead) / self.tokens_per_word))
+                words = max(50, int((target - self.overhead) / self.tokens_per_word))
                 filler = long_prompt(words)
                 # Remove the unrelated five-sentence instruction, retaining the upstream word-list generator.
                 filler = filler.split("\n", 1)[1].rsplit("\n\n", 1)[0]
@@ -560,11 +722,35 @@ class Suite:
                              "irrelevant reference data. Do not summarize it. Complete the task in detail."},
                             {"role": "user", "content": f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]\n"
                              f"<background>\n{filler}\n</background>\n\nTask:\n{lg.WORKLOADS[name]['instruction']}"}]
-                raw = self.request("long-generation/" + name, run, None, messages, lg.MAX_OUTPUT_TOKENS, lg.THINKING,
-                           request_overrides={"chat_template_kwargs": {"enable_thinking": lg.THINKING},
-                                              "reasoning_budget_tokens": 0})
+                overrides = {"chat_template_kwargs": {"enable_thinking": lg.THINKING}, "reasoning_budget_tokens": 0}
+                phase = "long-generation/" + name
+                if split:
+                    old = f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]"
+                    tag = f"[long-generation-split-v1 {name} run {run} {self.nonce}]"
+                    assert messages[-1]["content"].startswith(old)
+                    messages[-1]["content"] = tag + messages[-1]["content"][len(old):]
+                    body = chat_body(messages, maximum, lg.THINKING, request_overrides=overrides)
+                    proof = dict(input_case=self.generation_input_case,
+                        body_sha256=hashlib.sha256(json.dumps(body).encode()).hexdigest())
+                    try:
+                        proof["counted_input_tokens"] = count_chat_body_tokens(self.base, self.key, body, 30)
+                        counted = proof["counted_input_tokens"]
+                        if not (minimum <= counted <= lg.SPLIT_MAX_INPUT_TOKENS and
+                                counted + maximum + lg.CONTEXT_RESERVE <= self.ctx):
+                            raise ValueError("counted split input is outside selector/context bounds;no timed request or repair")
+                    except Exception as error:
+                        reason = "split count-only preflight failed: " + str(error)
+                        if self.journal:
+                            self.journal.append("count-preflight-failed", phase, run, proof=proof, error=reason)
+                        self.out["terminal_failure"] = dict(phase=phase, run=run, error=reason)
+                        self.fail(phase, dict(err=reason))
+                        raise EngineRequestError(reason) from error
+                    self.frozen_generation_inputs[(phase, run)] = proof
+                    if self.journal:
+                        self.journal.append("count-preflight", phase, run, proof=proof)
+                raw = self.request(phase, run, None, messages, maximum, lg.THINKING, request_overrides=overrides)
                 d = digest(raw)
-                d.update(lg.sample_eligibility(raw, d), run=run, order=len(order),
+                d.update(self.generation_eligibility(raw, d, maximum, phase, run), run=run, order=len(order),
                          output_sha256=hashlib.sha256(raw["text"].encode()).hexdigest(),
                          reasoning_sha256=hashlib.sha256(raw["reasoning_text"].encode()).hexdigest(),
                          output_chars=len(raw["text"]), reasoning_chars=len(raw["reasoning_text"]),
@@ -573,10 +759,15 @@ class Suite:
                 order.append({"run": run, "workload": name})
                 self.log(f"  run {run + 1} {name}: {d['usage_generated_tokens']} tokens, "
                          f"decode {d['decode_tps']} tok/s, drafts {d['drafts_accepted']}/{d['drafts_offered']}, "
-                         f"eligible={d['eligible']}")
-                if not d["eligible"]:
-                    reason = "; ".join(d["ineligible_reasons"])
+                         f"agreement_eligible={d['agreement_eligible']} speed_eligible={d['speed_eligible']}")
+                if not lg.run_eligible(d, self.generation_speed_only):
+                    reason = "; ".join(d["speed_ineligible_reasons"] if self.generation_speed_only else d["ineligible_reasons"])
+                    if self.generation_speed_only and not reason:
+                        reason = "MTP counters are missing or invalid"
                     self.out["failures"].append({"where": f"long-generation/{name}/{run}", "error": reason})
+                    if split:
+                        self.out["terminal_failure"] = dict(phase=phase, run=run, error=reason)
+                        raise EngineRequestError(reason)
         for case in cases.values():
             good = [r for r in case["requests"] if r["eligible"]]
             speed = [r for r in case["requests"] if r["speed_eligible"]]
@@ -588,11 +779,13 @@ class Suite:
                         acceptance_rate=stat(r["acceptance_rate"] for r in good),
                         pooled_drafts_offered=offered, pooled_drafts_accepted=accepted,
                         pooled_acceptance_rate=accepted / offered if offered else None)
-        self.out["long_generation"] = {"workload_version": lg.WORKLOAD_VERSION,
+        self.out["long_generation"] = {"workload_version": self.generation_version(),
+            **self.generation_case_metadata(), **({"complete": True} if split else {}),
+            "speed_only": self.generation_speed_only,
             "selected_workloads": selected, "diagnostic_subset": self.generation_workload is not None,
-            "minimum_generated_tokens": lg.MIN_OUTPUT_TOKENS, "max_tokens": lg.MAX_OUTPUT_TOKENS,
+            "minimum_generated_tokens": lg.MIN_OUTPUT_TOKENS, "max_tokens": maximum,
             "minimum_body_chars": lg.MIN_BODY_CHARS,
-            "minimum_input_tokens": lg.MIN_INPUT_TOKENS, "target_input_tokens": lg.TARGET_INPUT_TOKENS,
+            "minimum_input_tokens": minimum, "target_input_tokens": target,
             "thinking": lg.THINKING, "reasoning_budget_tokens": 0, "temperature": 0,
             "lifecycle": "warm server; alternating workload order; fresh request prefixes",
             "order": order, "workloads": cases, "classification": lg.classify_pair(cases, self.runs),
@@ -816,6 +1009,8 @@ class Suite:
                                "errors": sum(r["error_count"] for r in rows)}
 
     def run(self):
+        if self.characterize_prefill:
+            return prefill_scaling.run(self, EngineRequestError, stat)
         if self.prefill_only:
             return self.run_prefill_only()
         self.warm_up()
@@ -1146,6 +1341,37 @@ def results_table(out: dict) -> list[str]:
 
 def render_readme(res: dict) -> str:
     mc, out, p = res["machine"], res["results"], res["params"]
+    if p.get('mode') == 'prefill-scaling':
+        cohort = out.get('prefill_scaling', {})
+        lines = ['# Prefill length characterization', '',
+            f"Complete: {res.get('complete', False)}. Thinking enabled; output cap24; no tg/agent/adoption qualification.", '',
+            'One short warmup and one maximum-length first request precede the warmed rounds.',
+            'TTFT ends at the first nonempty reasoning or content output. Model startup is separate.', '',
+            '| Round | Minimum | Actual read | Reused | Eligible | Prefill ms | pp tok/s | TTFT s |',
+            '| --- | ---: | ---: | ---: | --- | ---: | ---: | ---: |']
+        first = cohort.get('first_long_request')
+        for r in ([first] if first else []) + cohort.get('requests', []):
+            lines.append(f"| {r.get('run')} | {r.get('requested_min_tokens')} | {r.get('actual_read_tokens')} | "
+                         f"{r.get('actual_reused_tokens')} | {r.get('eligible')} | {r.get('prompt_ms')} | "
+                         f"{r.get('prompt_tps')} | {r.get('ttft_s')} |")
+        fit = cohort.get('linear_fit')
+        if fit:
+            lines += ['', f"Affine hypothesis only: a={fit['intercept_ms']:.3f} ms; b={fit['ms_per_token']:.6f} ms/token; "
+                      f"maximum relative residual={fit['max_relative_residual']:.3%}.", fit['interpretation']]
+        models = cohort.get('approximation_models')
+        if models:
+            lines += ['', 'Approximation candidates: x=actual read tokens/65536; T in milliseconds; no model selected.', '',
+                      '| Formula | a | b | c | Mean held-out error | Max held-out error |',
+                      '| --- | ---: | ---: | ---: | ---: | ---: |']
+            for model in models['candidates'].values():
+                c = model['coefficients_ms']
+                lines.append(f"| {model['formula_ms']} | {c['a']:.3f} | {c['b']:.3f} | "
+                             f"{format(c['c'], '.3f') if 'c' in c else '-'} | "
+                             f"{model['mean_held_out_relative_error']:.3%} | {model['max_held_out_relative_error']:.3%} |")
+            lines += ['', models['interpretation']]
+        lines += ['', 'Actual requests, order, fit residuals and failures: `results.json`; verified request journal retained until compact evidence is extracted.',
+                  'Failure: '+str(res.get('terminal_failure', out.get('terminal_failure', {})))]
+        return '\n'.join(lines)+'\n'
     if p.get("mode")=="prefill-only":
         cohort=out.get("prefill_only",{})
         lines=["# Prefill-only diagnostic", "",
@@ -1325,6 +1551,16 @@ def write_results(res: dict, parent: Path, red, log_lines: list[str], directory=
 
 
 # --------------------------------------------------------------------------------------------------------- main
+def server_base(host, port) -> str:
+    """The address to talk to for a locally started server. The config's `host` is the interface the server
+    binds - a specific IP, or a wildcard that is not connectable as written - so it cannot be polled as-is.
+    An explicit `--url` bypasses this; there the caller knows the address."""
+    host = host or "127.0.0.1"
+    host = {"0.0.0.0": "127.0.0.1", "::": "::1"}.get(host, host)     # wildcard binds accept loopback
+    authority = f"[{host}]" if ":" in host and not host.startswith("[") else host
+    return f"http://{authority}:{port}"
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Measure this Strata install and write a shareable report (see the top of this file).")
     ap.add_argument("--config", help="the model config to run (default: the newest strata-*.json of this folder)")
@@ -1338,10 +1574,22 @@ def main(argv=None) -> int:
     ap.add_argument("--long", action="store_true", help="also a prompt of about 32,768 tokens")
     ap.add_argument("--long-generation", action="store_true", help="also two 32K-input, >=1K-output MTP workloads (thinking on, up to 16K output)")
     ap.add_argument("--long-generation-only", action="store_true", help="run only the new long-generation workloads and warm-up")
+    ap.add_argument("--long-generation-speed-only", action="store_true", help="allow valid zero-draft throughput baselines; keep agreement eligibility separate (requires --long-generation-only)")
     ap.add_argument("--long-generation-workload", choices=tuple(long_generation.WORKLOADS),
                     help="select one diagnostic workload with --long-generation-only; does not qualify the MTP pair")
+    ap.add_argument("--long-generation-input-case", choices=long_generation.INPUT_CASES,
+                    default=long_generation.STANDARD_INPUT_CASE,
+                    help="input geometry: standard-v4-33k (default), or split-v1-96k with --long-generation-only")
+    ap.add_argument("--long-generation-max-tokens", type=int, choices=long_generation.OUTPUT_TOKEN_CHOICES,
+                    help="finite output budget including thinking (default 16384); use the same budget in both arms")
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
-    ap.add_argument("--prefill-tokens", type=int, choices=PREFILL_TOKEN_CHOICES, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only (default 65536)")
+    ap.add_argument('--prefill-scaling', action='store_true',
+                    help='characterize six short/long input lengths with thinking, total prefill time and TTFT; separate first long request, then ordered warmed rounds')
+    ap.add_argument("--prefill-tokens", type=prefill_token_argument, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only, 32768..131072 (default 65536)")
+    ap.add_argument('--prefill-exact-tokens',type=prefill_token_argument,
+                    help='opt-in exact prompt/read count,32768..131072;count-only preflight requires this fork server extension;implies --prefill-only')
+    ap.add_argument('--profile-request-gates',action='store_true',
+                    help='diagnostic only: wait for owner acknowledgement around prefill-only or long-generation-only requests')
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")
     ap.add_argument("--compare", metavar="DIR", help="a results folder (or its results.json) to put beside this run")
@@ -1351,12 +1599,31 @@ def main(argv=None) -> int:
                     help="stop after the first returned failed request digest (default off; incompatible with --clients)")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
+    if a.prefill_exact_tokens is not None:
+        if a.prefill_tokens is not None or a.prefill_scaling:
+            ap.error('--prefill-exact-tokens cannot combine with --prefill-tokens or --prefill-scaling')
+        a.prefill_only = True
+        a.prefill_tokens = a.prefill_exact_tokens
+    if a.prefill_scaling:
+        if a.prefill_only or a.prefill_tokens is not None:
+            ap.error('--prefill-scaling selects its own lengths; do not combine with --prefill-only/--prefill-tokens')
+        a.prefill_only = True
+    a.mode = 'prefill-scaling' if a.prefill_scaling else 'prefill-only' if a.prefill_only else 'suite'
     if a.long_generation_workload and not a.long_generation_only:
         ap.error("--long-generation-workload requires --long-generation-only")
+    if a.long_generation_speed_only and not a.long_generation_only:
+        ap.error("--long-generation-speed-only requires --long-generation-only")
+    if a.long_generation_input_case != long_generation.STANDARD_INPUT_CASE and not a.long_generation_only:
+        ap.error("--long-generation-input-case split-v1-96k requires --long-generation-only")
+    if a.long_generation_max_tokens is not None and not (a.long_generation or a.long_generation_only):
+        ap.error("--long-generation-max-tokens requires --long-generation or --long-generation-only")
+    a.long_generation_max_tokens = a.long_generation_max_tokens or long_generation.MAX_OUTPUT_TOKENS
     if a.fail_fast_engine_error and a.clients:
         ap.error("--fail-fast-engine-error cannot be combined with --clients")
     if a.prefill_tokens is not None and not a.prefill_only:
         ap.error("--prefill-tokens requires --prefill-only")
+    if a.profile_request_gates and not (a.prefill_only or a.long_generation_only):
+        ap.error('--profile-request-gates requires --prefill-only or --long-generation-only')
     if a.prefill_only and (a.clients or a.long or a.long_generation or a.long_generation_only or a.compare_only):
         ap.error("--prefill-only cannot be combined with other suite scopes or --compare-only")
     if a.prefill_only and a.runs<1:
@@ -1394,7 +1661,7 @@ def main(argv=None) -> int:
         base = a.url.rstrip("/")
     else:
         port = a.port or int(cfg.get("port", 8080))
-        base = f"http://127.0.0.1:{port}"
+        base = server_base(cfg.get("host"), port)
     red = redactor(key=key)
     started = False
     try:
@@ -1426,13 +1693,20 @@ def main(argv=None) -> int:
                       long_generation_only=a.long_generation_only, journal=journal,
                       fail_fast_engine_error=a.fail_fast_engine_error, workload_id=a.workload_id,
                       prefill_only=a.prefill_only, prefill_tokens=a.prefill_tokens,
-                      generation_workload=a.long_generation_workload)
-        journal.append("identity", "suite", source=client_fingerprint(),
+                      generation_workload=a.long_generation_workload,
+                      generation_speed_only=a.long_generation_speed_only,
+                      generation_max_tokens=a.long_generation_max_tokens,
+                      generation_input_case=a.long_generation_input_case,
+                      characterize_prefill=a.prefill_scaling, prefill_exact_tokens=a.prefill_exact_tokens,
+                      request_gate=profile_request_gate if a.profile_request_gates else None)
+        journal.append("identity", "suite", source=client_fingerprint(), **suite.generation_case_metadata(),
+                       long_generation_speed_only=a.long_generation_speed_only,
+                       long_generation_max_tokens=a.long_generation_max_tokens,
                        model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
                        thinking=a.think, long_generation_thinking=long_generation.THINKING,
-                       workload_version=long_generation.WORKLOAD_VERSION, requested_runs=max(1, a.runs),
+                       workload_version=suite.generation_version(), requested_runs=max(1, a.runs),
                        fail_fast_engine_error=suite.fail_fast_engine_error, workload=suite.workload_identity(),
-                       mode="prefill-only" if a.prefill_only else "suite",
+                       mode=a.mode,
                        prefill_plan=suite.prefill_plan() if a.prefill_only else None)
         slots = pre.get("parallel_slots") or 1
         if a.clients and a.clients > slots:
@@ -1451,21 +1725,29 @@ def main(argv=None) -> int:
             if not machine.get("gpu"):
                 machine["gpu"] = pre.get("gpu")
             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
-                   "params": {"mode":"prefill-only" if a.prefill_only else "suite", "prefill_tokens":a.prefill_tokens if a.prefill_only else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                   "params": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
+                              "long_generation_speed_only": a.long_generation_speed_only,
+                              "long_generation_max_tokens": a.long_generation_max_tokens,
                               "command": "python tools/strata_bench.py" + "".join(
                                   f" {x}" for x in (f"--clients {a.clients}" if a.clients else "", "--long" if a.long else "",
                                                     "--think" if a.think else "",
-                                                    f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
+                                                    "--long-generation-speed-only" if a.long_generation_speed_only else "",
+                                                    f"--long-generation-max-tokens {a.long_generation_max_tokens}" if suite.want_long_generation else "",
+                                                    f"--long-generation-input-case {a.long_generation_input_case}" if suite.generation_case_metadata() else "",
+                                                    f"--long-generation-workload {a.long_generation_workload}" if a.long_generation_workload else "",
+                                                    '--prefill-scaling' if a.prefill_scaling else f"--prefill-exact-tokens {a.prefill_exact_tokens}" if a.prefill_exact_tokens is not None else f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
                                                     f"--workload-id {a.workload_id}" if a.workload_id is not None else "",
                                                     "--fail-fast-engine-error" if a.fail_fast_engine_error else "", f"--runs {a.runs}" if a.runs != 3 else "",
                                                     "--long-generation-only" if a.long_generation_only else
                                                     "--long-generation" if a.long_generation else "") if x)},
                    "elapsed_s": time.time() - t0, "machine": machine, "results": out,
-                   "comparison_identity": {"mode":"prefill-only" if a.prefill_only else "suite", "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
+                   "comparison_identity": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
+                       "long_generation_speed_only": a.long_generation_speed_only,
+                       "long_generation_max_tokens": a.long_generation_max_tokens,
                        "reasoning_budget_tokens": 0, "temperature": 0, "model": machine.get("model"),
                        "quant": machine.get("quant"), "context": machine.get("context"),
-                       "long_generation_version": long_generation.WORKLOAD_VERSION,
+                       "long_generation_version": suite.generation_version(),
                        "long_generation_thinking": long_generation.THINKING,
                        "long_generation_instructions": long_generation.WORKLOADS,
                        "calibration": [suite.tokens_per_word, suite.overhead],
@@ -1497,9 +1779,9 @@ def main(argv=None) -> int:
                           complete=False, qualified=False, error=repr(error)[:300])
             if a.prefill_only:
                 partial={"schema":SCHEMA,"tool":"tools/strata_bench.py","date":datetime.date.today().isoformat(),
-                         "params":{"mode":"prefill-only","prefill_tokens":a.prefill_tokens,"think":True,
+                         "params":{"mode":a.mode,"prefill_exact_tokens":a.prefill_exact_tokens,"prefill_tokens":a.prefill_tokens if not a.prefill_scaling else None,"think":True,
                                    "runs":suite.runs,"workload":suite.workload_identity(),"started_server":started},
-                         "comparison_identity":{"mode":"prefill-only","prefill_plan":suite.prefill_plan(),
+                         "comparison_identity":{"mode":a.mode,"prefill_plan":suite.prefill_plan(),
                                                 "workload":suite.workload_identity(),"client":client_fingerprint()},
                          "elapsed_s":time.time()-t0,"machine":pre,"results":suite.out,"complete":False,
                          "qualified":False,"terminal":"interrupted" if isinstance(error,(KeyboardInterrupt,SystemExit)) else "failed","terminal_failure":repr(error)[:300]}
@@ -1509,6 +1791,23 @@ def main(argv=None) -> int:
                     handle.flush();os.fsync(handle.fileno())
                 os.replace(target,directory/"results.json")
                 (directory/"README.md").write_text(red(render_readme(partial)),encoding="utf-8")
+            elif suite.generation_case_metadata():
+                partial = dict(schema=SCHEMA, tool="tools/strata_bench.py",
+                    date=datetime.date.today().isoformat(), complete=False, qualified=False,
+                    terminal="interrupted" if isinstance(error, (KeyboardInterrupt, SystemExit)) else "failed",
+                    terminal_failure=repr(error)[:300], elapsed_s=time.time()-t0, machine=pre, results=suite.out,
+                    params=dict(**suite.generation_case_metadata(), mode=a.mode, runs=suite.runs,
+                        workload=suite.workload_identity(), long_generation=True, long_generation_only=True,
+                        long_generation_max_tokens=a.long_generation_max_tokens,
+                        long_generation_speed_only=a.long_generation_speed_only, started_server=started),
+                    comparison_identity=dict(**suite.generation_case_metadata(), mode=a.mode,
+                        workload=suite.workload_identity(), client=client_fingerprint(),
+                        long_generation_version=suite.generation_version()))
+                target = directory / "results.tmp"
+                with target.open("w", encoding="utf-8") as handle:
+                    json.dump(redact_obj(partial, red), handle, indent=1, ensure_ascii=False)
+                    handle.flush(); os.fsync(handle.fileno())
+                os.replace(target, directory / "results.json")
             raise
         say("\nResults (median, range over the runs):")
         say(red(short_table(res)))
@@ -1526,7 +1825,7 @@ def main(argv=None) -> int:
             return 1
         if suite.want_long_generation and suite.generation_workload is not None:
             say("Diagnostic subset only: the strong/weak MTP pair remains unqualified.")
-        elif suite.want_long_generation and suite.runs >= 3 and not out["long_generation"]["classification"]["qualified"]:
+        elif suite.want_long_generation and not suite.generation_speed_only and suite.runs >= 3 and not out["long_generation"]["classification"]["qualified"]:
             return 1
         if suite.want_long_generation and suite.runs < 3:
             say("Pilot execution only: fewer than three runs cannot qualify the strong/weak MTP pair.")

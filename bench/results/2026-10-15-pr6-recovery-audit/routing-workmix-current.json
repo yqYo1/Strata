@@ -1,0 +1,319 @@
+{
+  "schema": "strata-framed-routing-workmix-closed-v1",
+  "stage": "closed",
+  "source_commit": "063069d5d10fc3cdf58905b0fc3fe320b3217069",
+  "build_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+    "bytes": 22190000,
+    "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+  },
+  "archive": {
+    "commit": "56ccbbfd15e4bae6a0103243f41a51978efad90a",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/routing-workmix-current.json",
+    "sha256": "9ce05eb045b935908df15a9fda9c14eb2e146def05e7b5c3541506a70c2f7066"
+  },
+  "plan_commit": "9912c20d4",
+  "native_frame_source_sha256": {
+    "src/program/generate.cpp": "7b313aaf56eb967f7318b253e58184d0a44dae51ad8a756a0a6b36b97319e4f1",
+    "src/core/verify.cpp": "bcaa44dea05e089bbccea8465ab9e8fb908d79a604f2c53ed5869591486fafbd",
+    "src/core/expert_source.cpp": "30092bcc3d706aa99027f8c12d8093e9e6a330cf63ab58d7484f87c0c7dfcc78"
+  },
+  "host_tests": {
+    "source_commit": "063069d5d10fc3cdf58905b0fc3fe320b3217069",
+    "passed": 10
+  },
+  "configuration": "Unchanged6e40/native runtime;official bench.sh thinking regular-code,4 warmups then32K+,131072 context,residentINT8 KV,8192 prefill,spec4,1256 per-layer slots,5workers,pcie/adapt/caches0;existing diagnostics plus --dump-routing. Full original command/environment/model/source pins in archive.",
+  "sample": {
+    "read_tokens": 33214,
+    "generated_tokens": 3611,
+    "prompt_ms": 52802.9,
+    "decode_ms": 244421.5,
+    "drafts_offered": 3102,
+    "drafts_accepted": 2578,
+    "acceptance_rate": 0.8310767246937459,
+    "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+    "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+    "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+    "output_chars": 5496,
+    "reasoning_chars": 4368,
+    "completion_includes_thinking": true,
+    "stream_complete": true,
+    "finish_reason": "stop"
+  },
+  "census": {
+    "windows": 1035,
+    "rows": 4137,
+    "cpu_jobs": 1370846,
+    "cpu_entries": 1771839,
+    "vram_entries": 213921,
+    "logical_job_blob_bytes": 2796077900800,
+    "jobs_NT": [
+      1058797,
+      239280,
+      56594,
+      16175,
+      0,
+      0,
+      0,
+      0
+    ],
+    "NT1_fraction": 0.7723675744759075,
+    "pool_ms": 111391.824131,
+    "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43"
+  },
+  "frames": [
+    {
+      "begin": 0,
+      "end": 105600,
+      "windows": 7,
+      "rows": 25,
+      "cpu_jobs": 7042,
+      "cpu_entries": 9855,
+      "vram_entries": 2145,
+      "logical_job_blob_bytes": 14435584000
+    },
+    {
+      "begin": 105600,
+      "end": 109824,
+      "windows": 1,
+      "rows": 1,
+      "cpu_jobs": 396,
+      "cpu_entries": 396,
+      "vram_entries": 84,
+      "logical_job_blob_bytes": 809216000
+    },
+    {
+      "begin": 109824,
+      "end": 114048,
+      "windows": 1,
+      "rows": 1,
+      "cpu_jobs": 394,
+      "cpu_entries": 394,
+      "vram_entries": 86,
+      "logical_job_blob_bytes": 805734400
+    },
+    {
+      "begin": 114048,
+      "end": 152064,
+      "windows": 3,
+      "rows": 9,
+      "cpu_jobs": 2455,
+      "cpu_entries": 3413,
+      "vram_entries": 907,
+      "logical_job_blob_bytes": 5040563200
+    },
+    {
+      "begin": 152064,
+      "end": 17626752,
+      "windows": 1035,
+      "rows": 4137,
+      "cpu_jobs": 1370846,
+      "cpu_entries": 1771839,
+      "vram_entries": 213921,
+      "logical_job_blob_bytes": 2796077900800
+    }
+  ],
+  "framing": {
+    "all5_request_and_provider_format_NT_bins_match": true,
+    "begin_gate_offset": 152064,
+    "begin_prefix_sha256": "7f05d66a02649e8f180f0c7fcc6ebdd6ba19095a655138ca2d4f87e66afc106f",
+    "final_offset": 17626752,
+    "route_sha256": "2a0957565e3aa940925320bbfd526ad97bd25919797a1a82d0cb98ccbf2f1a57",
+    "prefix_unchanged": true,
+    "matrix_reencoded_exact": true,
+    "source_order": "Explicit STRATA_TRACE request,prompt-done and T/position window frames plus audited synchronous G1 layer0..47 order;GPU resumes the next segment only after callback/file writer returns;quiescent gate/footer follows FILE fflush. Aggregate matching alone is not framing proof."
+  },
+  "checks": {
+    "native_exit_code": 0,
+    "effective_environment_verified": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "fault_probe_successful": true,
+    "boot_unchanged": true,
+    "full_model_hashes_verified_after_process": 15
+  },
+  "native_identity": {
+    "pid": 1626011,
+    "start_ticks": 102005851,
+    "sid": 1625979
+  },
+  "per_expert_counts": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/routing-workmix-v1/expert-window-counts.bin",
+    "bytes": 393236,
+    "sha256": "7926de15c5e5763bbe256ef9a420765642c2b2c528b64aacfe04b4a0132d367d",
+    "consumer": "Closed window-rank pilot rejected on weak-prose logical work and token latency;no remaining raw consumer.",
+    "review_point": "Consumer closed at 832285dfc83d93c64da8b9610e5d788230e71b8f",
+    "retired": true
+  },
+  "rank_inputs": {
+    "profile": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+    },
+    "manifest": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+      "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+    }
+  },
+  "offline_plan": {
+    "order": [
+      "original shipped ranks",
+      "token-entry frequency",
+      "unique-window frequency"
+    ],
+    "rule": "Stable layer-local original-rank tie breaks;unchanged26-per-layer/last34 quotas and byte extents. Unique-window frequency exactly minimizes logical CPU job-blob visits under these fixed quotas on the captured routes. It may only propose a new model plan with>=5% predicted logical-byte reduction;token-entry score is a separate comparator. No source/model modification or performance adoption follows.",
+    "logical_ratio_max": 0.95,
+    "scope": "Training-request fixed-route counterfactual;no per-expert CPU service. Actual routes/output may change with residency. New prospective pilot must preserve prefill/decode independence,admit exact geometry and validate both MTP workloads;adoption includes independent workload/agent/task/physical262144/session/RESTORE gates."
+  },
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "ownership_closed": true,
+  "clean_speed_qualified": false,
+  "adoption_qualified": false,
+  "artifact_retirement": {
+    "archive": {
+      "commit": "56ccbbfd15e4bae6a0103243f41a51978efad90a",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/routing-workmix-current.json",
+      "sha256": "9ce05eb045b935908df15a9fda9c14eb2e146def05e7b5c3541506a70c2f7066"
+    },
+    "recovered_controller_inputs": 166,
+    "native_inputs": 9853,
+    "required_artifacts": 13,
+    "frozen_plan_byte_exact": true,
+    "all5_frame_census_replayed": true,
+    "matrix_reencoded_exact": true,
+    "owners_closed": true,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/routing-workmix-v1-closed-retirement-20261022.jsonl",
+      "sha256": "52d0ae65610c912cbc019eafd85d1a65244675d1ce6d454d8906c2a0f4dfd056",
+      "files": 73,
+      "bytes": 30604833
+    },
+    "complete": true,
+    "tracked_source_retirement": {
+      "commit": "56ccbbfd15e4bae6a0103243f41a51978efad90a",
+      "path": "tools/sycl/routing_workmix_engine.py",
+      "bytes": 19751,
+      "reason": "Closed successful one-process collector;no current execution consumer. Reuse the maintained reader for the immediate offline ranking question;recover original controller from Git for a separately planned collection."
+    },
+    "files_deleted": 73,
+    "bytes_deleted": 30604833,
+    "retained_files": 0,
+    "retained_bytes": 0,
+    "consumer_update_commit": "da840901b092af11d7d0f00eb98e7606a6cef692",
+    "remaining_matrix_retirement": {
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-window-rank-v1-closed-retirement-20261022.jsonl",
+        "sha256": "fa4b3f4fbbeffdf05c1a10016c644686b4d72bec003aa81259ab47790ee5e4ed",
+        "files": 144,
+        "bytes": 26912616
+      },
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/routing-workmix-v1/expert-window-counts.bin",
+      "bytes": 393236,
+      "sha256": "7926de15c5e5763bbe256ef9a420765642c2b2c528b64aacfe04b4a0132d367d",
+      "consumer_closed": true
+    },
+    "ranker_source_retirement": {
+      "commit": "7fd10a25c35fe0878cf5f8fd90a324bd68d22412",
+      "paths": [
+        "tools/sycl/cache_window_rank_engine.py",
+        "tools/sycl/routing_workmix.py",
+        "tests/core/test_cache_window_rank_engine.py",
+        "tests/core/test_routing_workmix.py"
+      ],
+      "files": 4,
+      "bytes": 44000,
+      "reason": "Rejected single-use pilot and ranker have no current execution/fixture consumer;restore original measured source from Git for a separately planned new question."
+    }
+  },
+  "offline_analysis": {
+    "source_commit": "da840901b092af11d7d0f00eb98e7606a6cef692",
+    "host_tests_passed": 13,
+    "kind": "fixed-observed-route counterfactual;not model performance",
+    "baseline": {
+      "cpu_jobs": 1370846,
+      "cpu_entries": 1771839,
+      "vram_entries": 213921,
+      "jobs_NT": [
+        1058797,
+        239280,
+        56594,
+        16175,
+        0,
+        0,
+        0,
+        0
+      ],
+      "logical_job_blob_bytes": 2796077900800,
+      "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43"
+    },
+    "rankings": {
+      "entries": {
+        "cpu_jobs": 1096918,
+        "cpu_entries": 1322280,
+        "vram_entries": 663480,
+        "jobs_NT": [
+          911741,
+          151040,
+          28089,
+          6048,
+          0,
+          0,
+          0,
+          0
+        ],
+        "logical_job_blob_bytes": 2235982208000,
+        "membership_sha256": "0e83b8c44230a20d5b2dc278ff6fa164c2b6ee37ea1f28cbede59d0d6762965f",
+        "logical_bytes_ratio": 0.7996852331475642,
+        "replaced_pairs": 1087
+      },
+      "windows": {
+        "cpu_jobs": 1089991,
+        "cpu_entries": 1335921,
+        "vram_entries": 649839,
+        "jobs_NT": [
+          893136,
+          156026,
+          32583,
+          8246,
+          0,
+          0,
+          0,
+          0
+        ],
+        "logical_job_blob_bytes": 2222407116800,
+        "membership_sha256": "6d9a49559f408f6a7137ecf51a5091f4d51ac96060757fc93837e01d6c610fc7",
+        "logical_bytes_ratio": 0.7948301855839338,
+        "replaced_pairs": 1120
+      }
+    },
+    "unchanged_geometry": {
+      "slots": 1256,
+      "allocated_bytes": 2575206400,
+      "prefix128_bytes": 245657600,
+      "maximum_loan_bytes": 2329548800,
+      "actual_candidate_admission_qualified": false
+    },
+    "decision": {
+      "can_propose_new_model_plan": true,
+      "prospective_logical_ratio_max": 0.95,
+      "clean_speed_qualified": false,
+      "adoption_qualified": false
+    },
+    "limits": "Training request only;no per-expert CPU service or physical traffic measured. Changed CPU/GPU residency may alter future routes/output. Any pilot needs a new committed plan,actual admission,phase preservation and both MTP workloads;adoption also requires independent workloads/agent/task/full physical262144/session/RESTORE."
+  },
+  "next_pilot": {
+    "status": "proposal;no model launched",
+    "owner": "Main",
+    "source_needed": "Deterministic STRP profile generation preserving original layer-label order and layer-local stable window-frequency ranking;host reverse-map/quotas/byte-prefix tests,then separately committed native controller/config/environment and plan.",
+    "configuration": "Same original6e40 engine/runtime and1256 per-layer slots/8192 prefill;only expert profile membership changes. Preserve current selected default configuration.",
+    "workloads": [
+      "official thinking regular-code >=32K and >=1K output",
+      "official thinking varied-prose >=32K and >=1K output"
+    ],
+    "prospective_screen": "Freeze new order/deadline/output budget before execution. In each workload require actual restored map/offsets and8192 GPU-prefill geometry,>=5% lower CPU logical blob bytes per actual verifier row,increased GPU routed-entry fraction and no observed decode ms/token increase. No automatic retries or adoption;passing only permits a separate repeated clean phase-preserving comparison.",
+    "qualification_remaining": "Independent/agent/task workloads and full physical262144/session/RESTORE remain open;training counterfactual is not measured traffic or speed."
+  }
+}

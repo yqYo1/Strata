@@ -2,6 +2,9 @@
 #include "native16.hpp"
 #include "strata/prefill/gemm.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/kernels/bf16_bits.hpp"
+#include "strata/sycl/command_profile.hpp"
+#include "strata/sycl/cpu_wait_profile.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -84,7 +87,9 @@ template <class T> bool same_bytes(const std::vector<T> &a, const std::vector<T>
   return a.size() == b.size() && std::memcmp(a.data(), b.data(), a.size() * sizeof(T)) == 0;
 }
 uint16_t half(float value) { return sycl::bit_cast<uint16_t>(sycl::half(value)); }
-std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows = 0) {
+std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows = 0, int primary_rows = 0) {
+  need(tokens > 0 && tokens <= (primary_rows ? Routes::max_split_accum_rows : Routes::max_accum_rows) &&
+       primary_rows >= 0 && primary_rows < tokens, "fixture split row bounds");
   std::vector<int32_t> ids(size_t(tokens) * 10);
   need(target_rows >= 0 && target_rows <= std::min(tokens, 8192), "target row span");
   for (int t = 0; t < tokens; ++t) {
@@ -96,7 +101,8 @@ std::shared_ptr<const Routes> plan(int tokens, bool irregular, int target_rows =
     for (int slot = 0; slot < 10; ++slot)
       ids[size_t(t) * 10 + slot] = slot ? slot : (selected ? 0 : 10);
   }
-  return Routes::build_accum(tokens, ids.data(), ids.size());
+  return primary_rows ? Routes::build_split_accum(tokens, ids.data(), ids.size()) :
+                 Routes::build_accum(tokens, ids.data(), ids.size());
 }
 struct Case {
   struct Inputs {
@@ -112,18 +118,25 @@ struct Case {
   Buffer<uint16_t> x, w, down, capture;
   Buffer<int32_t> source, original;
   Buffer<float> weights, reference, candidate;
+  std::unique_ptr<Buffer<float>> candidate_tail;
   Buffer<uint32_t> reference_status, candidate_status;
   std::vector<int32_t> host_source, host_original;
   std::vector<float> initial;
   bool edge_inputs;
-  Case(int tokens, bool irregular, bool edges, sycl::queue &queue, int target_rows = 0)
-      : routes(plan(tokens, irregular, target_rows)), q(queue), gemm(*runtime, q),
+  int split_rows;
+  bool row_address = false;
+  bool row64 = false;
+  Case(int tokens, bool irregular, bool edges, sycl::queue &queue, int target_rows = 0, int primary_rows = 0)
+      : routes(plan(tokens, irregular, target_rows, primary_rows)), q(queue), gemm(*runtime, q),
         x(size_t(std::min(tokens, 8192)) * K, q), w(size_t(N) * K, q),
         down(size_t(std::min(tokens, 8192)) * N, q), capture(down.n, q),
         source(size_t(tokens) * 10, q), original(source.n, q), weights(source.n, q),
-        reference(size_t(tokens) * N, q), candidate(reference.n, q),
+        reference(size_t(tokens) * N, q), candidate(size_t(primary_rows ? primary_rows : tokens) * N, q),
+        candidate_tail(primary_rows ? new Buffer<float>(size_t(tokens - primary_rows) * N, q) : nullptr),
         reference_status(1, q), candidate_status(1, q),
-        host_source(routes->source_rows()), host_original(routes->original_slots()), initial(reference.n), edge_inputs(edges) {
+        host_source(routes->source_rows()), host_original(routes->original_slots()), initial(reference.n),
+        edge_inputs(edges), split_rows(primary_rows) {
+    need(!split_rows || (split_rows > 0 && split_rows < tokens), "fixture split bounds");
     std::vector<uint16_t> hx(x.n), hw(w.n);
     for (size_t i = 0; i < hx.size(); ++i)
       hx[i] = half(edges ? (i % K == 0 ? 1.f : 0.f) : float(int((i * 13 + i / K) % 17) - 8) / 32.f);
@@ -140,7 +153,8 @@ struct Case {
     x.set(hx); w.set(hw); source.set(host_source); original.set(host_original);
     std::vector<float> hwts(weights.n);
     constexpr std::array<float, 8> values{1.f, -.5f, .125f, 0.f, -0.f, 1.f / 3.f, 0x1p-126f, 16.f};
-    for (size_t i = 0; i < hwts.size(); ++i) hwts[i] = values[i % values.size()];
+    for (size_t i = 0; i < hwts.size(); ++i)
+      hwts[i] = split_rows && i % values.size() == 6 ? -.25f : values[i % values.size()];
     weights.set(hwts);
     for (size_t i = 0; i < initial.size(); ++i) initial[i] = float(int(i % 19) - 9) / 16.f;
     reset();
@@ -149,7 +163,11 @@ struct Case {
   // a later submission throws before an event reaches wait().
   ~Case() { drain(q); }
   void reset() {
-    reference.set(initial); candidate.set(initial);
+    reference.set(initial);
+    if (split_rows) {
+      candidate.set(std::vector<float>(initial.begin(), initial.begin() + candidate.n));
+      candidate_tail->set(std::vector<float>(initial.begin() + candidate.n, initial.end()));
+    } else candidate.set(initial);
     reference_status.set({0}); candidate_status.set({0});
   }
   Inputs input_snapshot() const { return {x.get(), w.get(), source.get(), original.get(), weights.get()}; }
@@ -164,6 +182,15 @@ struct Case {
             candidate.data(), candidate_status.data(), observe ? capture.data() : nullptr};
   }
   sycl::event fused(size_t job, xe::Tile tile, bool observe, xe::ScatterLayout mapping) {
+    if (split_rows) {
+      need(tile == xe::Tile::wide_128x128 && mapping == xe::ScatterLayout::matrix_row_cache,
+           "split fixture uses the production wide128 row-cache policy");
+      if (row64)
+        return gemm.down_scatter_split_row64(problem(job, observe), candidate_tail->data(), split_rows);
+      if (row_address)
+        return gemm.down_scatter_split_row_address(problem(job, observe), candidate_tail->data(), split_rows);
+      return gemm.down_scatter_split(problem(job, observe), candidate_tail->data(), split_rows);
+    }
     return gemm.down_scatter(problem(job, observe), tile, mapping);
   }
   void init_routed() {
@@ -176,14 +203,23 @@ struct Case {
   }
   bool try_selected(size_t index) {
     init_routed();
+    if (split_rows)
+      return routed.try_down_scatter16_split(*routes, index, x.data(), w.data(), source.data(),
+          original.data(), weights.data(), candidate.data(), candidate_tail->data(),
+          split_rows, candidate_status.data());
     return routed.try_down_scatter16(*routes, index, x.data(), w.data(), source.data(),
         original.data(), weights.data(), candidate.data(), candidate_status.data());
   }
   void selected_fallback(size_t index) {
     const auto &job = routes->jobs().at(index);
     routed.f16_out16(x.data(), w.data(), down.data(), job.rows, N, K, true);
-    strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(),
-        original.data(), weights.data(), candidate.data(), candidate_status.data(), &q);
+    if (split_rows)
+      strata::prefill::native16::moe_accumulate_split(*routes, index, down.data(), source.data(),
+          original.data(), weights.data(), candidate.data(), candidate_tail->data(),
+          split_rows, candidate_status.data(), &q);
+    else
+      strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(),
+          original.data(), weights.data(), candidate.data(), candidate_status.data(), &q);
   }
   bool selected_submit(size_t index) {
     const bool selected = try_selected(index);
@@ -201,19 +237,57 @@ struct Case {
     need(same_bytes(down_before, down.get()) && same_bytes(capture_before, capture.get()),
          "try route wrote a Down/diagnostic tensor");
     if (!selected) {
-      need(same_bytes(initial, candidate.get()) && candidate_status.get()[0] == 0,
+      need(same_bytes(initial, split_rows ? split_output() : candidate.get()) && candidate_status.get()[0] == 0,
            "false route modified outputs");
       selected_fallback(0); drain(q);
     }
-    equal(reference, candidate); equal(reference_status, candidate_status);
+    if (split_rows) need(same_bytes(reference.get(), split_output()), "selected split accumulator bits");
+    else equal(reference, candidate);
+    equal(reference_status, candidate_status);
     need(candidate_status.get()[0] == expected_mask, "selected route error mask");
     inputs_unchanged(inputs);
     std::cout << "{\"kind\":\"selected_route\",\"rows\":" << routes->jobs().front().rows
-              << ",\"window_rows\":" << routes->rows() << ",\"source_first\":" << host_source.front()
+              << ",\"window_rows\":" << routes->rows() << ",\"split_rows\":" << split_rows
+              << ",\"source_first\":" << host_source.front()
               << ",\"source_last\":" << host_source[size_t(routes->jobs().front().rows - 1)]
               << ",\"enabled\":" << enabled << ",\"selected\":" << selected
               << ",\"expected_mask\":" << expected_mask
               << ",\"inputs_immutable\":true,\"false_route_no_write\":true,\"status\":\"PASS\"}\n";
+  }
+  void check_profile() {
+    namespace cp = sb::command_profile;
+    init_routed();
+    const auto inputs=input_snapshot();
+    separate(0,xe::Tile::wide_128x128);drain(q);
+    const auto before_down=down.get(),before_capture=capture.get();
+    const auto& job=routes->jobs().front();
+    bool selected=false;
+    {
+      std::unique_ptr<cp::Trace> trace;
+      if (cp::requested()) trace.reset(new cp::Trace(&q,1));
+      struct Retirement { sycl::queue& queue; ~Retirement() { drain(queue); } } retirement{q};
+      auto frame=trace ? trace->begin(0,0) : cp::Frame{};
+      frame.consider(job.expert,job.global_row,job.rows);
+      {
+        auto tag=frame.tag(cp::Kind::down,job.expert,job.global_row,job.rows,N,K);
+        selected=try_selected(0);
+        if (!selected) routed.f16_out16(x.data(),w.data(),down.data(),job.rows,N,K,true);
+      }
+      if (!selected) {
+        auto tag=frame.tag(cp::Kind::accumulate,job.expert,job.global_row,job.rows,N);
+        strata::prefill::native16::moe_accumulate(*routes,0,down.data(),source.data(),
+            original.data(),weights.data(),candidate.data(),candidate_status.data(),&q);
+      }
+      drain(q);frame.after_checked_drain();
+    }
+    need(selected==(job.rows>=2334),"profile changed production Down dispatch");
+    equal(reference,candidate);equal(reference_status,candidate_status);
+    need(candidate_status.get()[0]==0,"profiled Down status");
+    need(same_bytes(before_down,down.get()) && same_bytes(before_capture,capture.get()),"profiled Down wrote separate output");
+    inputs_unchanged(inputs);
+    std::cout<<"{\"kind\":\"profiled_engine_down\",\"rows\":"<<job.rows
+      <<",\"selected\":"<<selected<<",\"expected_records\":"<<(selected ? 1 : 2)
+      <<",\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
   }
   void separate(size_t index, xe::Tile tile) {
     try {
@@ -221,8 +295,13 @@ struct Case {
       xe::Problem p;
       p.x = x.data(); p.w = w.data(); p.y = down.data(); p.t = job.rows; p.n = N; p.k = K;
       (void)gemm.beta0(p, tile);
-      strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(), original.data(),
-          weights.data(), reference.data(), reference_status.data(), &q);
+      if (split_rows)
+        strata::prefill::native16::moe_accumulate_split(*routes, index, down.data(), source.data(), original.data(),
+            weights.data(), reference.data(), reference.data() + size_t(split_rows) * N,
+            split_rows, reference_status.data(), &q);
+      else
+        strata::prefill::native16::moe_accumulate(*routes, index, down.data(), source.data(), original.data(),
+            weights.data(), reference.data(), reference_status.data(), &q);
     } catch (...) { drain(q); throw; }
   }
   void check(size_t index, xe::Tile tile, xe::ScatterLayout mapping, uint32_t expected = 0) {
@@ -259,6 +338,59 @@ struct Case {
     equal(reference, candidate); equal(reference_status, candidate_status);
     need(same_bytes(b, capture.get()), "no-capture kernel wrote diagnostic storage");
     inputs_unchanged(inputs);
+  }
+  std::vector<float> split_output() const {
+    auto values = candidate.get(), tail = candidate_tail->get();
+    values.insert(values.end(), tail.begin(), tail.end());
+    return values;
+  }
+  void check_split(size_t index, uint32_t expected_status = 0) {
+    need(split_rows > 0, "explicit split fixture required");
+    const auto inputs = input_snapshot();
+    auto expected = reference.get();
+    const auto &job = routes->jobs().at(index);
+    auto host_accumulate = [&](const std::vector<uint16_t>& values) {
+      for (int r = 0; r < job.rows; ++r) {
+        const size_t at = size_t(job.global_row) + size_t(r);
+        const int32_t token = inputs.source[at], slot = inputs.original[at];
+        if (slot < 0 || size_t(slot) >= inputs.original.size() || token < 0 ||
+            token >= routes->rows() || token != slot / 10) continue;
+        for (int col = 0; col < N; ++col) {
+          float &out = expected[size_t(token) * N + size_t(col)];
+          out = std::fma(inputs.weights[at],
+              strata::kernels::f32_from_bf16(values[size_t(r) * N + size_t(col)]), out);
+        }
+      }
+    };
+    auto verify = [&] {
+      const auto ordinary = reference.get(), fused_values = split_output();
+      need(same_bytes(ordinary, fused_values), "split ordinary/fused raw FP32 mismatch");
+      need(expected.size() == fused_values.size(), "split oracle extent");
+      for (size_t i = 0; i < expected.size(); ++i)
+        need(std::isnan(expected[i]) ? std::isnan(fused_values[i]) :
+            std::bit_cast<uint32_t>(expected[i]) == std::bit_cast<uint32_t>(fused_values[i]),
+            "split complete host FP32 FMA/address oracle mismatch");
+      need(reference_status.get()[0] == expected_status && candidate_status.get()[0] == expected_status,
+           "split route status");
+    };
+    down.set(std::vector<uint16_t>(down.n, marker<uint16_t>()));
+    capture.set(std::vector<uint16_t>(capture.n, marker<uint16_t>()));
+    separate(index, xe::Tile::wide_128x128);
+    wait(q, fused(index, xe::Tile::wide_128x128, true, xe::ScatterLayout::matrix_row_cache));
+    const auto dense = down.get(), captured = capture.get();
+    need(same_bytes(dense, captured), "split complete BF16 capture or logical M-tail mismatch");
+    host_accumulate(dense); verify();
+    // Repeated update also exercises the no-capture specialization and keeps
+    // every FP32 update in the same expert/job order as the ordinary path.
+    separate(index, xe::Tile::wide_128x128);
+    wait(q, fused(index, xe::Tile::wide_128x128, false, xe::ScatterLayout::matrix_row_cache));
+    host_accumulate(dense); verify();
+    need(same_bytes(captured, capture.get()), "split no-capture kernel wrote diagnostic output");
+    inputs_unchanged(inputs);
+    std::cout << "{\"kind\":\"split_correctness\",\"tokens\":" << routes->rows()
+              << ",\"primary_rows\":" << split_rows << ",\"job\":" << index
+              << ",\"job_rows\":" << job.rows << ",\"expected_mask\":" << expected_status
+              << ",\"full_FP32_host_oracle\":true,\"full_BF16_capture\":true,\"guards\":true,\"status\":\"PASS\"}\n";
   }
 };
 
@@ -344,6 +476,156 @@ void exception_unwind(sycl::queue &q, xe::ScatterLayout mapping) {
   std::cout << "{\"kind\":\"exception_unwind\",\"mapping\":" << int(mapping)
             << ",\"queue_complete\":true,\"status\":\"PASS\"}\n";
 }
+void split_dataflow(Case& c) {
+  namespace pn = strata::prefill::native16;
+  const size_t rows = size_t(c.routes->rows()), first_rows = size_t(c.split_rows);
+  Buffer<uint16_t> primary(first_rows * N, c.q), tail((rows - first_rows) * N, c.q);
+  Buffer<float> original_weights(rows * 10, c.q);
+  std::vector<float> original(original_weights.n);
+  for (size_t i = 0; i < original.size(); ++i) original[i] = float(int(i % 23) - 11) / 64.f;
+  original_weights.set(original);
+  const auto pattern = [](size_t row, size_t col) {
+    return uint16_t((row * 31337 + col * 97 + (row >> 3)) & 65535);
+  };
+  auto* a = primary.data(); auto* b = tail.data();
+  submit_wait(c.q, [&] {
+    return c.q.parallel_for(sycl::range<1>(rows * N), [=](sycl::id<1> item) {
+      const size_t i = item[0], row = i / N, col = i % N;
+      if (row < first_rows) a[row * N + col] = pattern(row, col);
+      else b[(row - first_rows) * N + col] = pattern(row, col);
+    });
+  });
+  c.reference_status.set({0});
+  pn::moe_job_weights(*c.routes, original_weights.data(), c.original.data(), c.weights.data(),
+                      c.reference_status.data(), &c.q);
+  drain(c.q);
+  const auto weights = c.weights.get();
+  for (size_t i = 0; i < weights.size(); ++i)
+    need(weights[i] == original[size_t(c.host_original[i])], "split original-slot weight map oracle");
+  std::vector<size_t> jobs{0, c.routes->jobs().size() - 1};
+  for (size_t i = 0; i < c.routes->jobs().size(); ++i) {
+    const auto& job = c.routes->jobs()[i];
+    if (job.expert == 1 && job.expert_row <= c.split_rows && job.expert_row + job.rows > c.split_rows)
+      jobs.push_back(i);
+  }
+  for (auto index : jobs) {
+    const auto& job = c.routes->jobs()[index];
+    c.down.set(std::vector<uint16_t>(c.down.n, marker<uint16_t>()));
+    pn::moe_gather_mixed(*c.routes, index, primary.data(), tail.data(), c.split_rows,
+                       c.source.data(), c.down.data(), c.reference_status.data(), &c.q);
+    drain(c.q);
+    const auto gathered = c.down.get();
+    for (size_t i = 0; i < gathered.size(); ++i)
+      need(gathered[i] == (i < size_t(job.rows) * N ?
+          pattern(size_t(c.host_source[size_t(job.global_row) + i / N]), i % N) : marker<uint16_t>()),
+          "split complete gather/last-job logical guard oracle");
+  }
+  auto check_mixed = [&](const Buffer<uint16_t>& buffer, size_t offset) {
+    const auto values = buffer.get();
+    for (size_t i = 0; i < values.size(); ++i)
+      need(values[i] == pattern(offset + i / N, i % N), "split mixed input changed");
+  };
+  check_mixed(primary, 0); check_mixed(tail, first_rows);
+  need(same_bytes(original, original_weights.get()) &&
+       same_bytes(c.host_source, c.source.get()) && same_bytes(c.host_original, c.original.get()) &&
+       c.reference_status.get()[0] == 0, "split dataflow input/status guard");
+  std::cout << "{\"kind\":\"split_dataflow\",\"tokens\":" << rows << ",\"primary_rows\":" << first_rows
+            << ",\"full_weight_map\":true,\"full_gather\":true,\"inputs_immutable\":true,\"guards\":true,\"status\":\"PASS\"}\n";
+}
+void split_correctness(int tokens, int primary_rows, int target_rows, bool irregular,
+                       bool edges, sycl::queue &q) {
+  Case c(tokens, irregular, edges, q, target_rows, primary_rows);
+  if ((tokens == 17 || tokens == 117488) && irregular) split_dataflow(c);
+  std::vector<size_t> jobs{0, c.routes->jobs().size() - 1};
+  // Expert1 covers every token. Exercise both sides of the split and the
+  // physical final row even when expert0 uses a sparse/irregular target job.
+  for (size_t i = 0; i < c.routes->jobs().size(); ++i) {
+    const auto& job = c.routes->jobs()[i];
+    if (job.expert != 1) continue;
+    const int first = c.host_source[size_t(job.global_row)];
+    const int last = c.host_source[size_t(job.global_row + job.rows - 1)];
+    if ((first <= primary_rows - 1 && last >= primary_rows - 1) ||
+        (first <= primary_rows && last >= primary_rows) || last == tokens - 1)
+      jobs.push_back(i);
+  }
+  std::sort(jobs.begin(), jobs.end());
+  jobs.erase(std::unique(jobs.begin(), jobs.end()), jobs.end());
+  for (auto index : jobs) c.check_split(index);
+  std::cout << "{\"kind\":\"split_case\",\"tokens\":" << tokens << ",\"primary_rows\":" << primary_rows
+            << ",\"target_rows\":" << target_rows << ",\"irregular\":" << irregular
+            << ",\"edges\":" << edges << ",\"jobs\":" << jobs.size()
+            << ",\"physical_final_row\":true,\"status\":\"PASS\"}\n";
+}
+void split_admissions(sycl::queue &q) {
+  Case c(17, false, false, q, 0, 8);
+  int rejected = 0;
+  auto refuses = [&](auto submit) {
+    try { submit(); }
+    catch (const std::invalid_argument&) { ++rejected; return; }
+    catch (const std::out_of_range&) { ++rejected; return; }
+    throw std::runtime_error("split invalid admission submitted work");
+  };
+  auto launch = [&](xe::DownScatterProblem p, float* tail, int rows) {
+    return c.gemm.down_scatter_split(p, tail, rows);
+  };
+  const auto ordinary = plan(17, false);
+  auto p = c.problem(0); p.plan = ordinary.get();
+  refuses([&] { (void)launch(p, c.candidate_tail->data(), 8); });
+  p = c.problem(0); p.plan = nullptr;
+  refuses([&] { (void)launch(p, c.candidate_tail->data(), 8); });
+  p = c.problem(0);
+  refuses([&] { (void)launch(p, c.candidate_tail->data(), 0); });
+  refuses([&] { (void)launch(p, c.candidate_tail->data(), 17); });
+  refuses([&] { (void)launch(p, nullptr, 8); });
+  refuses([&] { (void)launch(p, c.candidate.data(), 8); });
+  refuses([&] { (void)launch(p, c.candidate_tail->data() + 9 * N - 1, 8); });
+  p.accumulator = c.candidate.data() + 8 * N - 1;
+  refuses([&] { (void)launch(p, c.candidate_tail->data(), 8); });
+  p = c.problem(0); p.accumulator = reinterpret_cast<float*>(c.x.data());
+  refuses([&] { (void)launch(p, c.candidate_tail->data(), 8); });
+  p = c.problem(c.routes->jobs().size());
+  refuses([&] { (void)launch(p, c.candidate_tail->data(), 8); });
+  refuses([&] { strata::prefill::native16::moe_accumulate(*c.routes, 0, c.down.data(),
+      c.source.data(), c.original.data(), c.weights.data(), c.candidate.data(), c.candidate_status.data(), &q); });
+  auto ordinary_split = [&](const Routes& routes, float* primary, float* tail, int rows) {
+    strata::prefill::native16::moe_accumulate_split(routes, 0, c.down.data(), c.source.data(),
+        c.original.data(), c.weights.data(), primary, tail, rows, c.candidate_status.data(), &q);
+  };
+  refuses([&] { ordinary_split(*ordinary, c.candidate.data(), c.candidate_tail->data(), 8); });
+  refuses([&] { ordinary_split(*c.routes, c.candidate.data(), c.candidate_tail->data(), 0); });
+  refuses([&] { ordinary_split(*c.routes, c.candidate.data(), c.candidate_tail->data(), 17); });
+  refuses([&] { ordinary_split(*c.routes, c.candidate.data(), c.candidate.data(), 8); });
+  refuses([&] { ordinary_split(*c.routes, c.candidate.data(), c.candidate_tail->data() + 9 * N - 1, 8); });
+  need(rejected == 16, "split admission coverage");
+  for (uint32_t mask : {1u, 2u, 3u}) {
+    c.reset(); auto source = c.host_source, original = c.host_original;
+    if (mask & 1) original[0] = -1;
+    if (mask & 2) source[mask == 3 ? 1 : 0] = -1;
+    c.source.set(source); c.original.set(original);
+    c.check_split(0, mask);
+  }
+  std::cout << "{\"kind\":\"split_admissions\",\"rejected\":" << rejected
+            << ",\"invalid_map_cases\":3,\"status\":\"PASS\"}\n";
+  sycl::event pending;
+  bool submitted = false, refused = false;
+  try {
+    Case doomed(17, false, false, q, 0, 8);
+    pending = doomed.fused(0, xe::Tile::wide_128x128, false, xe::ScatterLayout::matrix_row_cache);
+    submitted = true;
+    auto bad = doomed.problem(0); bad.plan = nullptr;
+    (void)doomed.gemm.down_scatter_split(bad, doomed.candidate_tail->data(), 8);
+  } catch (const std::invalid_argument&) { refused = true; }
+  need(submitted && refused && pending.get_info<sycl::info::event::command_execution_status>() ==
+       sycl::info::event_command_status::complete, "split exception owner retirement");
+  std::cout << "{\"kind\":\"split_exception_unwind\",\"queue_complete\":true,\"status\":\"PASS\"}\n";
+}
+void split_gate(const char* phase) {
+  const char* value = std::getenv("STRATA_TEST_MAIN_GATES");
+  if (value && std::string(value) == "1") {
+    std::cout << "SPLIT_READY " << phase << '\n';
+    need(std::cin.get() == 'X', "split Main admission gate");
+  }
+}
 class Marker;
 sycl::event mark(sycl::queue &q) { return q.single_task<Marker>([] {}); }
 void benchmark(int process, sycl::queue &q, int public_arm = -1) {
@@ -395,6 +677,190 @@ void benchmark(int process, sycl::queue &q, int public_arm = -1) {
     }
   }
 }
+
+// Explicit component controls, not production dispatch or a hardware ceiling.
+// All arms retain the same X/W, map, reset, queue and ordinary FP32 update order.
+void row64_ownership() {
+  for (int rows : {1,3,17,63,64,65,127,128,129,2333,2334,5963,8191,8192}) {
+    const auto x = xe::inspect_down64_ownership(rows);
+    need(x.cells == size_t(rows) * N && !x.missing && !x.multiple &&
+         x.metadata_slots && !x.metadata_missing && !x.metadata_multiple &&
+         !x.metadata_outside_tile, "Down64 coordinate/row-metadata ownership");
+    std::cout << "{\"kind\":\"row64_ownership\",\"rows\":" << rows
+      << ",\"cells\":" << x.cells << ",\"metadata_slots\":" << x.metadata_slots
+      << ",\"masked\":" << x.masked << ",\"status\":\"PASS\"}\n";
+  }
+}
+
+void check_row64_dense(Case &c) {
+  const auto before = c.input_snapshot();
+  const auto &job = c.routes->jobs().front();
+  c.down.set(std::vector<uint16_t>(c.down.n, marker<uint16_t>()));
+  c.capture.set(std::vector<uint16_t>(c.capture.n, marker<uint16_t>()));
+  xe::Problem p;
+  p.x = c.x.data(); p.w = c.w.data(); p.y = c.down.data();
+  p.t = job.rows; p.n = N; p.k = K;
+  wait(c.q, c.gemm.beta0(p, xe::Tile::wide_128x128));
+  p.y = c.capture.data();
+  wait(c.q, c.gemm.beta0_down64(p));
+  equal(c.down, c.capture);
+  c.inputs_unchanged(before);
+  std::cout << "{\"kind\":\"row64_dense\",\"rows\":" << job.rows
+    << ",\"full_BF16_bits_equal\":true,\"guards\":true,\"status\":\"PASS\"}\n";
+}
+
+void row64_checks(bool tiny, sycl::queue &q) {
+  for (bool irregular : {false,true}) {
+    Case c(17, irregular, true, q, 3, 8);
+    c.row64 = true; c.check_split(0); check_row64_dense(c);
+    if (tiny) continue;
+    for (int rows : {63,64,65}) {
+      Case boundary(2 * rows + 17, irregular, false, q, rows, rows);
+      boundary.row64 = true; boundary.check_split(0); check_row64_dense(boundary);
+    }
+    Case tail(117488, irregular, false, q, 8192, 65536);
+    tail.row64 = true; tail.check_split(0);
+    tail.check_split(tail.routes->jobs().size() - 1); check_row64_dense(tail);
+  }
+  if (tiny) for (uint32_t mask : {1u,2u,3u}) {
+    Case bad(17, false, false, q, 3, 8); bad.row64 = true;
+    need(bad.routes->jobs().front().global_row == 0, "invalid-map test job offset");
+    if (mask & 1) { bad.host_original[0] = -1; bad.original.set(bad.host_original); }
+    if (mask & 2) { bad.host_source[1] = 17; bad.source.set(bad.host_source); }
+    bad.check_split(0, mask);
+  }
+}
+
+void row_address_benchmark(int process, sycl::queue &q) {
+  namespace clock = sb::cpu_wait_profile;
+  constexpr int repeat = 64;
+  for (int rows : {2334, 5963, 8192}) for (bool irregular : {false, true}) {
+    Case c(117488, irregular, false, q, rows, 65536);
+    need(c.routes->jobs().front().rows == rows, "row-address job shape");
+    c.check_split(0);
+    c.reset(); c.row_address = true; c.check_split(0);
+    const auto before = c.input_snapshot();
+    std::vector<float> ordinary, address;
+    for (int round = -1; round < 3; ++round) for (int order = 0; order < 3; ++order) {
+      const int arm = (process + round + 3 + order) % 3;
+      c.reset(); c.row_address = arm == 1;
+      std::vector<sycl::event> events; events.reserve(repeat);
+      const auto first = mark(q);
+      const auto begin = clock::stamp();
+      for (int i = 0; i < repeat; ++i) {
+        if (arm < 2) events.push_back(c.fused(0, xe::Tile::wide_128x128, false, xe::ScatterLayout::matrix_row_cache));
+        else {
+          xe::Problem p;
+          p.x = c.x.data(); p.w = c.w.data(); p.y = c.down.data();
+          p.t = rows; p.n = N; p.k = K;
+          events.push_back(c.gemm.beta0(p, xe::Tile::wide_128x128));
+        }
+      }
+      const auto submitted = clock::stamp();
+      const auto last = mark(q); wait(q, last);
+      const auto complete = clock::stamp();
+      const auto start_ns = first.get_profiling_info<sycl::info::event_profiling::command_end>();
+      const auto end_ns = last.get_profiling_info<sycl::info::event_profiling::command_start>();
+      need(begin.valid && submitted.valid && complete.valid && end_ns > start_ns,
+           "row-address timing clocks");
+      uint64_t previous = start_ns, service = 0;
+      for (const auto& event : events) {
+        const auto a = event.get_profiling_info<sycl::info::event_profiling::command_start>();
+        const auto b = event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        need(a >= previous && b > a && b <= end_ns, "row-address event order/coverage");
+        service += b - a; previous = b;
+      }
+      need(service <= end_ns - start_ns && events.size() == repeat &&
+           double(end_ns - start_ns) / 1e6 >= 5.0, "row-address batch eligibility");
+      if (round == 2 && arm < 2) {
+        auto output = c.split_output();
+        if (arm == 0) ordinary = std::move(output); else address = std::move(output);
+      }
+      need(c.candidate_status.get()[0] == 0 && c.reference_status.get()[0] == 0,
+           "row-address timed status");
+      std::cout << "{\"kind\":\"row_address_sample\",\"process\":" << process
+        << ",\"rows\":" << rows << ",\"irregular\":" << irregular << ",\"round\":" << round
+        << ",\"order\":" << order << ",\"arm\":" << arm << ",\"repeat\":" << repeat
+        << ",\"kernel_service_ms\":" << double(service) / 1e6 / repeat
+        << ",\"queue_batch_ms\":" << double(end_ns - start_ns) / 1e6
+        << ",\"wall_ms\":" << (complete.wall - begin.wall) * 1000 / repeat
+        << ",\"submit_cpu_ms\":" << (submitted.cpu - begin.cpu) * 1000 / repeat
+        << ",\"complete_cpu_ms\":" << (complete.cpu - submitted.cpu) * 1000 / repeat
+        << ",\"status\":\"PASS\"}\n";
+    }
+    need(same_bytes(ordinary, address), "timed row-address complete FP32 bits differ");
+    c.inputs_unchanged(before);
+    std::cout << "{\"kind\":\"row_address_case\",\"rows\":" << rows
+      << ",\"irregular\":" << irregular << ",\"final_bits_equal\":true,\"guards\":true,"
+         "\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+  }
+}
+void row64_benchmark(int process, sycl::queue &q) {
+  namespace clock = sb::cpu_wait_profile;
+  constexpr int repeat = 128;
+  for (int rows : {2334, 5963, 8192}) for (bool irregular : {false, true}) {
+    Case c(117488, irregular, false, q, rows, 65536);
+    need(c.routes->jobs().front().rows == rows, "row64 job shape");
+    c.row_address = true; c.check_split(0);
+    c.reset(); c.row64 = true; c.check_split(0);
+    check_row64_dense(c);
+    const auto before = c.input_snapshot();
+    std::vector<float> ordinary, address;
+    for (int round = -1; round < 4; ++round) for (int order = 0; order < 4; ++order) {
+      const int arm = (process + round + 4 + order) % 4;
+      c.reset(); c.row64 = arm == 1;
+      std::vector<sycl::event> events; events.reserve(repeat);
+      const auto first = mark(q);
+      const auto begin = clock::stamp();
+      for (int i = 0; i < repeat; ++i) {
+        if (arm < 2) events.push_back(c.fused(0, xe::Tile::wide_128x128, false, xe::ScatterLayout::matrix_row_cache));
+        else {
+          xe::Problem p;
+          p.x = c.x.data(); p.w = c.w.data(); p.y = c.down.data();
+          p.t = rows; p.n = N; p.k = K;
+          events.push_back(arm == 2 ? c.gemm.beta0(p, xe::Tile::wide_128x128) :
+                                      c.gemm.beta0_down64(p));
+        }
+      }
+      const auto submitted = clock::stamp();
+      const auto last = mark(q); wait(q, last);
+      const auto complete = clock::stamp();
+      const auto start_ns = first.get_profiling_info<sycl::info::event_profiling::command_end>();
+      const auto end_ns = last.get_profiling_info<sycl::info::event_profiling::command_start>();
+      need(begin.valid && submitted.valid && complete.valid && end_ns > start_ns,
+           "row64 timing clocks");
+      uint64_t previous = start_ns, service = 0;
+      for (const auto& event : events) {
+        const auto a = event.get_profiling_info<sycl::info::event_profiling::command_start>();
+        const auto b = event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        need(a >= previous && b > a && b <= end_ns, "row64 event order/coverage");
+        service += b - a; previous = b;
+      }
+      need(service <= end_ns - start_ns && events.size() == repeat &&
+           double(end_ns - start_ns) / 1e6 >= 5.0, "row64 batch eligibility");
+      if (round == 3 && arm < 2) {
+        auto output = c.split_output();
+        if (arm == 0) ordinary = std::move(output); else address = std::move(output);
+      }
+      need(c.candidate_status.get()[0] == 0 && c.reference_status.get()[0] == 0,
+           "row64 timed status");
+      std::cout << "{\"kind\":\"row64_sample\",\"process\":" << process
+        << ",\"rows\":" << rows << ",\"irregular\":" << irregular << ",\"round\":" << round
+        << ",\"order\":" << order << ",\"arm\":" << arm << ",\"repeat\":" << repeat
+        << ",\"kernel_service_ms\":" << double(service) / 1e6 / repeat
+        << ",\"queue_batch_ms\":" << double(end_ns - start_ns) / 1e6
+        << ",\"wall_ms\":" << (complete.wall - begin.wall) * 1000 / repeat
+        << ",\"submit_cpu_ms\":" << (submitted.cpu - begin.cpu) * 1000 / repeat
+        << ",\"complete_cpu_ms\":" << (complete.cpu - submitted.cpu) * 1000 / repeat
+        << ",\"status\":\"PASS\"}\n";
+    }
+    need(same_bytes(ordinary, address), "timed row64 complete FP32 bits differ");
+    c.inputs_unchanged(before);
+    std::cout << "{\"kind\":\"row64_case\",\"rows\":" << rows
+      << ",\"irregular\":" << irregular << ",\"final_bits_equal\":true,\"guards\":true,"
+         "\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+  }
+}
 } // namespace
 
 int main(int argc, char **argv) {
@@ -404,10 +870,56 @@ int main(int argc, char **argv) {
     need(argc >= 2, "use --ownership|--smoke|--validate|--bench PROCESS");
     const std::string mode = argv[1];
     if (mode == "--ownership") ownership();
+    else if (mode == "--row64-ownership") row64_ownership();
     else {
+      const bool split_mode = mode.starts_with("--split-");
+      if (split_mode) split_gate("before-runtime");
       runtime = sb::runtime_for();
       auto q = runtime->make_queue(true);
-      if (mode == "--smoke") {
+      if (split_mode) split_gate("runtime-ready");
+      if (mode == "--split-row64-tiny" || mode == "--split-row64-smoke") {
+        row64_checks(mode == "--split-row64-tiny", q);
+      } else if (mode == "--split-row64-bench") {
+        need(argc == 3 && std::stoi(argv[2]) >= 0 && std::stoi(argv[2]) < 3, "row64 process");
+        row64_benchmark(std::stoi(argv[2]), q);
+      } else if (mode == "--split-row-address-smoke" || mode == "--split-row-address-tiny") {
+        for (bool irregular : {false, true}) {
+          Case small(17, irregular, true, q, 3, 8);
+          small.row_address = true;
+          small.check_split(0);
+          if (mode == "--split-row-address-tiny") continue;
+          Case tail(81921, irregular, false, q, 2334, 65536);
+          tail.row_address = true;
+          tail.check_split(0);
+          tail.check_split(tail.routes->jobs().size() - 1);
+        }
+      } else if (mode == "--split-row-address-bench") {
+        need(argc == 3 && std::stoi(argv[2]) >= 0 && std::stoi(argv[2]) < 3, "row-address process");
+        row_address_benchmark(std::stoi(argv[2]), q);
+      } else if (mode == "--split-smoke") {
+        correctness(3, false, false, xe::Tile::wide_128x128, q, xe::ScatterLayout::matrix_row_cache);
+        split_correctness(3, 1, 0, false, false, q);
+        split_correctness(17, 8, 3, true, true, q);
+        split_admissions(q);
+      } else if (mode == "--split-validate") {
+        for (bool irregular : {false, true})
+          for (int tokens : {65537, 81921, 117488})
+            split_correctness(tokens, 65536, 17, irregular, false, q);
+      } else if (mode == "--split-route-smoke") {
+        need(argc == 3 && (std::string(argv[2]) == "0" || std::string(argv[2]) == "1"), "split route startup arm");
+        const bool enabled = std::string(argv[2]) == "1";
+        const char* flag = std::getenv("STRATA_SYCL_PREFILL_DOWN_SCATTER");
+        need(flag && std::string(flag) == (enabled ? "large" : "0"), "split route must match startup environment");
+        for (int rows : {2333, 2334, 2335, 8192})
+          for (bool irregular : {false, true}) {
+            Case c(2 * rows + 17, irregular, false, q, rows, rows);
+            c.check_selected(enabled);
+          }
+      } else if (mode == "--profile-engine-hook") {
+        need(argc==2,"profile hook takes no timing parameters");
+        for (int rows : {2333,2334,8192}) { Case c(rows,false,false,q);c.check_profile(); }
+        Case irregular(16384,true,false,q,2334);irregular.check_profile();
+      } else if (mode == "--smoke") {
         for (auto mapping : {xe::ScatterLayout::matrix, xe::ScatterLayout::output_copy,
                              xe::ScatterLayout::matrix_row_cache}) {
           correctness(3, false, false, xe::Tile::wide_128x128, q, mapping);
@@ -473,6 +985,7 @@ int main(int argc, char **argv) {
       } else if (mode == "--bench") { need(argc == 3, "bench process required"); benchmark(std::stoi(argv[2]), q); }
       else throw std::runtime_error("invalid mode");
       q.wait_and_throw(); runtime->check(); runtime->wait();
+      if (split_mode) split_gate("before-exit");
     }
     std::cout << "fixture_status=PASS\n"; return 0;
   } catch (const std::exception &e) {

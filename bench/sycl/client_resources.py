@@ -109,7 +109,8 @@ def process_stat(path):
     fields = path.read_text().rsplit(')', 1)[1].split()
     require(len(fields) >= 37, 'incomplete process stat')
     return dict(state=fields[0], sid=int(fields[3]), start_ticks=int(fields[19]),
-                cpu_ticks=int(fields[11]) + int(fields[12]), processor=int(fields[36]))
+                cpu_ticks=int(fields[11]) + int(fields[12]), processor=int(fields[36]),
+                minor_faults=int(fields[7]),major_faults=int(fields[9]),rss_pages=int(fields[21]))
 
 
 def snapshot(target, pci, proc=Path('/proc')):
@@ -272,7 +273,8 @@ def summarize_window(samples, begin, end, ticks_per_second):
         engines=sorted(engines.values(),key=lambda v:(v['pci'],v['client_id'],v['engine'])))
 
 
-def summarize_capture(records, target, boot, client_interval):
+def summarize_capture(records, target, boot, client_interval, *, before_only=False):
+    require(type(before_only) is bool, 'explicit boolean observation scope required')
     require(len(records)>=5 and records[0].get('kind')=='header' and records[-1].get('kind')=='terminal',
         'missing resource header or explicit terminal')
     header,terminal=records[0],records[-1]
@@ -280,12 +282,15 @@ def summarize_capture(records, target, boot, client_interval):
         header['pci']==canonical_pci(header['pci']) and type(header['ticks_per_second']) is int and
         header['ticks_per_second']>0,'resource header identity or clock differs')
     samples=records[1:-1];intervals=CycleIntervals();evidence=CollectionEvidence()
+    previous_cpu = -1
     for i,row in enumerate(samples):
         require(row.get('kind')=='sample' and row['ordinal']==i and row['target']==target and
             row['ticks_per_second']==header['ticks_per_second'] and
             row['process']['start_ticks']==target['start_ticks'] and row['process']['sid']==target['sid'],
             'resource sample identity, order or clock differs')
         require(intervals.update(row)==row['engine_intervals'],'resource cycle interval recomputation differs')
+        require(row['process']['cpu_ticks'] >= previous_cpu, 'process CPU counter decreased')
+        previous_cpu = row['process']['cpu_ticks']
         evidence.observe(row)
     require({k:v for k,v in terminal.items() if k!='end_monotonic_ns'}==
         evidence.terminal(terminal['reason'],terminal.get('error')) and
@@ -302,7 +307,7 @@ def summarize_capture(records, target, boot, client_interval):
     return dict(collector_complete=True,request_coverage_verified=True,samples=len(samples),
         final_sample_to_response_end_seconds=max(0,end-samples[-1]['end_monotonic_ns'])/1e9,
         before_first_output=summarize_window(samples,begin,first,header['ticks_per_second']),
-        after_first_output=summarize_window(samples,first,end,header['ticks_per_second']),
+        after_first_output=None if before_only else summarize_window(samples,first,end,header['ticks_per_second']),
         limits='Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation.')
 
 
@@ -314,19 +319,27 @@ def main(argv=None):
     parser.add_argument('--interval', type=float, default=1.)
     parser.add_argument('--pci', default='0000:05:00.0')
     args = parser.parse_args(argv)
-    require(0 < args.seconds <= 900 and .2 <= args.interval <= 10, 'finite sampling budget required')
+    require(0 < args.seconds <= 3600 and .2 <= args.interval <= 10, 'finite sampling budget required')
     pci = canonical_pci(args.pci)
     boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
     target = receipt_target(json.loads(args.native_receipt.read_text()), boot)
+    conditions = None
+    condition_flag = os.environ.get('STRATA_RESOURCE_CONDITIONS','0')
+    require(condition_flag in ('0','1'), 'condition collection must be0 or1 before exec')
+    if condition_flag == '1':
+        from hardware_conditions import Conditions
+        conditions = Conditions(pci)
     deadline, count = time.monotonic() + args.seconds, 0
     intervals = CycleIntervals()
     evidence = CollectionEvidence()
     reason, error = 'deadline', None
     with args.out.open('x') as stream:
-        stream.write(json.dumps(dict(kind='header', schema=2, target=target, pci=pci, boot_id=boot,
+        header = dict(kind='header', schema=2, target=target, pci=pci, boot_id=boot,
             kernel=Path('/proc/sys/kernel/osrelease').read_text().strip(),
             ticks_per_second=os.sysconf('SC_CLK_TCK'), interval=args.interval, seconds=args.seconds,
-            limits='Associated DRM-client busy cycles and scheduled CPU ticks; no stage alignment, FLOPs, VRAM bandwidth, PCIe bytes or throughput qualification.')) + '\n')
+            limits='Associated DRM-client busy cycles and scheduled CPU ticks; no stage alignment, FLOPs, VRAM bandwidth, PCIe bytes or throughput qualification.')
+        if conditions is not None: header['conditions'] = conditions.describe()
+        stream.write(json.dumps(header) + '\n')
         try:
             while time.monotonic() < deadline:
                 require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == boot, 'boot changed')
@@ -344,6 +357,7 @@ def main(argv=None):
                     break
                 row.update(kind='sample', ordinal=count, ticks_per_second=os.sysconf('SC_CLK_TCK'),
                            engine_intervals=intervals.update(row))
+                if conditions is not None: row['conditions'] = conditions.capture()
                 encoded = json.dumps(row) + '\n'
                 require(stream.tell() + len(encoded.encode()) + 2048 <= 32 << 20, 'raw sample budget exceeded')
                 stream.write(encoded); stream.flush()

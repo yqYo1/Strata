@@ -83,8 +83,8 @@ public:
 
     // Head-only retirement. Own the serialized request boundary; this preserves
     // all arenas, commit graph, session/KV/GDN/PLE and sampling state.
-    // Dedicated native projection retirement. Head release combination is
-    // rejected until a single combined owner transaction is implemented.
+    // Dedicated native projection retirement. Individual methods reject a
+    // head lease; the explicit joint transaction below owns both reader sets.
     bool can_retire_prefill_dense(std::string& err) const;
     bool retire_prefill_dense(std::string& err);
     bool resume_prefill_dense(const NativeDense& native, std::string& err);
@@ -94,6 +94,12 @@ public:
     bool can_release_prefill_head(const NativeHead& head,std::string& err) const;
     bool retire_prefill_head(const NativeHead& head,std::string& err);
     bool resume_prefill_head(const NativeHead& head,std::string& err);
+    // One exclusive lease over the union of dense/head graph readers. All
+    // owners must be intact at retirement and fully restored before resume.
+    // Existing individual APIs continue to reject the other detached owner.
+    bool retire_prefill_dense_and_head(const NativeHead& head,std::string& err);
+    bool has_prefill_dense_head_lease(const NativeHead& head) const noexcept;
+    bool resume_prefill_dense_and_head(const NativeDense& native,const NativeHead& head,std::string& err);
 
     /// One window: `tokens[0..T)` at positions pos0.., the pool served per layer; `out[t]` = argmax after token t.
     /// The PLE rows are gathered here from `ss.ple_prev` and the tokens.  Captures the T-token graph on first use.

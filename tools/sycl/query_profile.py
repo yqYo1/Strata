@@ -23,14 +23,55 @@ COMPONENT = A / 'decode-query-profile-component-current.json'
 BUILD_RECORD = B / 'main-native-gdn-engine/record.json'
 COPY_KEYS = ('submitted_blobs','submitted_bytes','completed_blobs','completed_bytes',
              'host_view_groups','gpu_miss_groups','cpu_unique_misses','cpu_entries')
+HOST_GATE_TESTS = frozenset({'tests/core/test_resource_engine.py',
+                             'tests/core/test_fresh_build_reference.py'})
+# Reviewed6e40 -> retained-controller pair: only recovery evidence and fallback
+# selection change. Configure/build commands and native inputs remain identical.
+# A future edit, even committed, requires another review; this is not a general
+# build-recipe exception.
+RETENTION_CONTROLLER_UPDATES = {
+    'tools/sycl/build_engine.py': (
+        'f526f278a63848863142aab6b361a04e27b1f3d5c4c8bbd7075c2e3971289a5f',
+        '8444783ab417378207ec89ad2bc3cf648480e20d9e77f06ebb3070c93e10b131')}
+
+
+def worktree_input_matches(source, name, expected):
+    """Keep native inputs exact; admit reviewed controller-only changes.
+
+    These tests are inventoried by the historical build but neither compiled nor
+    executed by its CMake recipe. Their controller-only updates do not relabel
+    the original source receipt, engine or same-build fixture qualification.
+    """
+    actual = gen.common.digest(Path(source['root']) / name)
+    if actual == expected:
+        return True
+    controller = RETENTION_CONTROLLER_UPDATES.get(name)
+    allowed = name in HOST_GATE_TESTS or controller == (expected, actual)
+    return (Path(source['root']) == P and allowed and
+        hashlib.sha256(gen.git('show', 'HEAD:' + name)).hexdigest() == actual)
+
+
+def host_gate_test_updates(full):
+    source = full['project']
+    changes = []
+    for name in sorted(HOST_GATE_TESTS & source['source_sha256'].keys()):
+        expected = source['source_sha256'][name]
+        actual = gen.common.digest(Path(source['root']) / name)
+        if actual != expected:
+            guards.require(worktree_input_matches(source, name, expected), 'uncommitted host gate test: ' + name)
+            changes.append(dict(path=name, build_input_sha256=expected, committed_sha256=actual,
+                source_commit=gen.git('log', '-1', '--format=%H', '--', name).decode().strip()))
+    return changes
 
 
 def runtime_assets_unchanged(record):
     # Admit only these new diagnostic modes and the exact assets already used
-    # by the same-build normal51+observer fixture; never relabel a mode to pass
-    # generation_engine's independently scoped admission check.
+    # by the normal-route component fixture; never relabel a mode to pass
+    # generation_engine's independently scoped admission check. This checks
+    # runtime identities only; callers must qualify changed native code.
     guards.require(record['mode'] in ('default-route-query-profile-check',
-        'default-route-query-profile-long','cache-borrow-check','cache-capacity-check'), 'unknown query diagnostic mode')
+        'default-route-query-profile-long','cache-borrow-check','cache-capacity-check',
+        'packed-expert-bank-smoke','packed-expert-bank-validate'), 'unknown query diagnostic mode')
     expected = {n:dict(qualified_sha256=v[0],candidate_sha256=v[1]) for n,v in DELTA.items()}
     component = gen.committed(COMPONENT)
     def identities(delta):
@@ -52,16 +93,13 @@ def runtime_assets_unchanged(record):
         guards.require(gen.common.digest(name) == sha, 'runtime asset changed: '+name)
 
 
-def current_build():
-    compact, component = gen.committed(BUILD), gen.committed(COMPONENT)
-    full = json.loads(BUILD_RECORD.read_text())
-    guards.require(full['passed'] and full['complete'] and full['ownership_closed'] and
-        not full['active'] and all(full[k] == compact[k] for k in
-        ('source_commit','binary','fixtures','compiler','configure_argv')), 'closed committed build required')
+def component_evidence(full, component):
+    """Validate same-build fixture coverage without reading mutable native inputs."""
     guards.require(component['passed'] and component['complete'] and component['ownership_closed'] and
         not component['active'] and not component['fresh_faults'] and component['binary']==full['binary'] and
         component['fixtures']==full['fixtures'] and component['source_commit']==full['source_commit'] and
-        len(component['checks'])==17 and 'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
+        len(component['checks'])==(18 if 'cpu_work_census_host_test' in full['fixtures'] else 17) and
+        'cases=17 native_variable_stride=PASS' in component['checks'][0]['cases'][0]
         and len(component['checks'][1]['cases'])==10 and len(component['checks'][2]['cases'])==8
         and len(component['checks'][3]['cases'])==16 and len(component['checks'][4]['cases'])==1
         and len(component['checks'][5]['cases'])==9 and component.get('residency_publication_contract_passed') is True
@@ -75,18 +113,35 @@ def current_build():
         and component.get('cache_loan_fail_stop_cases')==list(LOAN_FAILURES)
         and component.get('cache_scratch_loan_fail_stop_contract_passed') is True
         and all(len(c['cases'])==1 and c.get('exit_code')==c.get('expected_exit')==1
-                for c in component['checks'][12:])
+                for c in component['checks'][12:17])
         and component.get('grouped_copy_projection_contract_passed') is True
         and component.get('query_profile_contract_passed') is True
         and component.get('mode')=='normal-route-query-profile-components',
         'matching passed normal75+scratch39+device17+loan20+fail-stop5 required before model preparation')
+    if 'cpu_work_census_host_test' in full['fixtures']:
+        guards.require(component.get('cpu_work_census_contract_passed') is True and
+            component.get('cpu_work_census_dispatch_contract_passed') is True and
+            len(component['checks'][17]['cases']) == 15 and component['checks'][17]['exit_code'] == 0,
+            'same-build CPU census ownership/framing and actual dispatcher contracts required')
+    return len(component['checks'])
+
+
+def current_build():
+    compact, component = gen.committed(BUILD), gen.committed(COMPONENT)
+    guards.require(not compact.get('retirement'),
+        'comparison build retired; build and qualify the next candidate before model preparation')
+    full = json.loads(BUILD_RECORD.read_text())
+    guards.require(full['passed'] and full['complete'] and full['ownership_closed'] and
+        not full['active'] and all(full[k] == compact[k] for k in
+        ('source_commit','binary','fixtures','compiler','configure_argv')), 'closed committed build required')
+    component_evidence(full, component)
     count = 0
     for source in [full['project'], *full['dependencies']]:
         recovered = {n:hashlib.sha256(data).hexdigest() for n,data in
             blobs(Path(source['root']),source['revision'],source['source_sha256'])}
         guards.require(recovered==source['source_sha256'], 'original build inputs not recoverable')
         for name, expected in recovered.items():
-            guards.require(gen.common.digest(Path(source['root'])/name)==expected, 'native build input changed: '+name)
+            guards.require(worktree_input_matches(source,name,expected), 'native build input changed: '+name)
         count += len(recovered)
     for item in [full['binary'],*full['fixtures'].values()]:
         guards.require(gen.common.digest(item['path'])==item['sha256'], 'compiled artifact changed')

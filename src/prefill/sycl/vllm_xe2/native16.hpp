@@ -48,6 +48,9 @@ struct DownOwnership {
 DownOwnership inspect_down_ownership(int64_t rows, Tile tile,
                                      ScatterLayout layout = ScatterLayout::matrix);
 
+// Host-only proof for the independent Down M64/N128 matrix/row-cache layout.
+DownOwnership inspect_down64_ownership(int64_t rows);
+
 struct GuPairOwnership {
   size_t gu_values = 0, hidden_values = 0, masked = 0;
   size_t gu_missing = 0, gu_multiple = 0, hidden_missing = 0, hidden_multiple = 0;
@@ -93,6 +96,19 @@ public:
   sycl::event down_scatter(const DownScatterProblem &problem,
                          Tile tile = Tile::wide_128x128,
                          ScatterLayout layout = ScatterLayout::matrix);
+  // Separate split-accumulator candidate, fixed production wide128 tile and
+  // row-cached metadata. Maps remain global window-row IDs; both disjoint
+  // FP32 banks survive the same checked queue drain. No implicit allocation.
+  sycl::event down_scatter_split(const DownScatterProblem &problem,
+                                float *tail, int64_t primary_rows);
+  // Experimental component only: same FP32 updates with per-row destination
+  // addresses cached in SLM. No production dispatcher calls this method.
+  sycl::event down_scatter_split_row_address(const DownScatterProblem &problem,
+                                            float *tail, int64_t primary_rows);
+  // Down-only component policies; no production caller or shared Tile selector.
+  sycl::event down_scatter_split_row64(const DownScatterProblem &problem,
+                                     float *tail, int64_t primary_rows);
+  sycl::event beta0_down64(const Problem &problem);
   // Explicit large-job long-prefill hook; default off pending model qualification.
   sycl::event gu_swiglu(const GuSwiGLUProblem &problem,
                        Tile tile = Tile::wide_128x128);

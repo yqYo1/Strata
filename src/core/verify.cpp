@@ -358,6 +358,44 @@ bool Verifier::resume_prefill_head(const NativeHead& head,std::string& err) {
     head_detached_=false;return true; // windows recapture lazily; arenas remain unchanged
 }
 
+bool Verifier::retire_prefill_dense_and_head(const NativeHead& head,std::string& err) {
+    // Both original entry contracts must pass while both owners are intact.
+    // Head retirement drains the same compute/copy/commit readers and destroys
+    // the same exec/segment/work/PCIe graphs as dense retirement. Publishing
+    // the second lease flag adds no fallible operation or unretired reader.
+    // Canonical norm-bearing commit retirement remains the caller's next step.
+    if(!can_retire_prefill_dense(err) || !can_release_prefill_head(head,err))return false;
+    if(!retire_prefill_head(head,err))return false;
+    dense_retired_=true;
+    return true;
+}
+
+bool Verifier::has_prefill_dense_head_lease(const NativeHead& head) const noexcept {
+    return dense_retired_ && head_detached_ && head_==&head && !released_.load();
+}
+
+bool Verifier::resume_prefill_dense_and_head(const NativeDense& native,const NativeHead& head,std::string& err) {
+    // Validate the union before either inference guard becomes readable. Never
+    // temporarily clear one flag to enter an individual resume API.
+    if(!has_prefill_dense_head_lease(head) || !wt_ || !head.loaded() || head.head_detached() ||
+       head.weight_bytes()!=release_head_bytes_ || head.row_bytes()!=release_head_row_ ||
+       head.type()!=release_head_type_ || native.residency()!=NativeDense::Residency::Full ||
+       native.packed_sources().empty()) {
+        err="verify: joint dense/head resume requires complete restored owners";return false;
+    }
+    for(const auto& source:native.packed_sources()) {
+        const auto* ref=wt_->find(source.name);
+        if(!ref || ref->native_data!=source.original.native_data ||
+           ref->native_q8_1!=source.original.native_q8_1 || ref->native_type!=source.original.native_type ||
+           !ref->native_data || !ref->native_q8_1) {
+            err="verify: joint dense/head resume publication mismatch";return false;
+        }
+    }
+    dense_retired_=false;
+    head_detached_=false;
+    return true; // both graph families recapture lazily against restored owners
+}
+
 Verifier::~Verifier() {
     g_verifiers.remove(this); // Wait for acquired callbacks before freeing any member.
 #ifdef STRATA_ENABLE_SYCL

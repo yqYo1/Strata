@@ -6,7 +6,7 @@
 namespace strata::sycl_backend::command_profile {
 enum class Kind : uint8_t { none, upload, dequant_gu, dequant_down, gather, gu,
                             swiglu, down, combine, write, accumulate,
-                            job_weights, status, count };
+                            job_weights, status, gu_swiglu, down_scatter, expert_upload, count };
 struct Meta {
   Kind kind = Kind::none;
   int32_t expert = -1, rows = 0, n = 0, k = 0, format = -1;
@@ -28,6 +28,7 @@ private:
   std::unique_ptr<Impl> impl_;
   friend class Frame;
   friend class Tag;
+  friend Tag fused_tag(Kind, Kind) noexcept;
   friend void observe_impl(Trace&, void*, const sycl::event&) noexcept;
 };
 // Only selected first windows in layers0,15,31,47 activate a trace. Planning
@@ -61,5 +62,10 @@ private:
   Trace* trace_;
   Meta previous_;
   friend class Frame;
+  friend Tag fused_tag(Kind, Kind) noexcept;
 };
+// Relabel the event already published by finish(), preserving the outer job's
+// sampling choice and shape. No event registration, GPU query or wait is added.
+// Inactive tracing is a no-op. An incompatible active scope invalidates Trace.
+Tag fused_tag(Kind expected, Kind replacement) noexcept;
 } // namespace strata::sycl_backend::command_profile
