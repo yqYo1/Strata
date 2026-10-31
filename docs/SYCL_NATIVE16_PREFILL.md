@@ -101,7 +101,7 @@ question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
 the compact result. Its first117K head-on process closes normally without fresh
 faults. All four requests admit117488GPU rows,128staged slots and checked split
 storage. First use is892.6tok/s;subsequent967.4/969.8/965.4have median967.4.
-The other11processes remain unexecuted;there is no matched mechanism or target
+Eleven further processes are pending;there is no matched mechanism or target
 decision yet,and the candidate remains unadopted.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
