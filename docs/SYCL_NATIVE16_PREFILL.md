@@ -270,8 +270,10 @@ raw output and unused plans retire after249source inputs are recovered,with
 model assets/native ELF still held by the current reference. No build retires.
 Controller56319217e adds both guards;CPU controls reject a warning after the
 last request gate and28invalid TTFT cases across all four sample positions.
-The fresh `official_row64_model_v2` plan is next:row64/original,original/row64,
-row64/original,four matched requests in each new process. First use stays
+The fresh `official_row64_model_v2` plan is prepared:row64/original,original/row64,
+row64/original,four matched requests in each new process. All249 source inputs,
+seven original ELFs,84providers and15full model-asset hashes pass admission.
+Current-source frontend checks are next before native execution. First use stays
 separate. All three paired time ratios below1 assess reproducibility without
 a minimum percentage;the1000tok/s screen and client TTFT stay separate.
 V2does not inherit V1samples or historical1007.3. These corrections concern
