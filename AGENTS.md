@@ -77,7 +77,7 @@ historical logs or the research library wholesale.
 
 | Action | Required check | Detailed rules |
 | --- | --- | --- |
-| Choose an optimization | Identify the measured limiting resource, proposed mechanism and comparison that can accept or reject it. Distinguish an attribution improvement from a throughput gain. | [Tuning](#git-integration-and-tuning), [measurement](#measurement-and-gpu-execution) |
+| Choose an optimization | Identify measured cost/resource evidence, or a previously faster owned path to revalidate, and the comparison that can accept or reject it. Distinguish attribution from throughput. | [Tuning](#git-integration-and-tuning), [measurement](#measurement-and-gpu-execution) |
 | Build | Commit the exact engine, benchmark, controller, generated inputs and recipe first; pin compiler, dependencies and environment. Identify retained generations across worktrees and preserve the validated fallback before overwriting it. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Run or compare | Verify committed inputs against the build record and actual executable hash. Check job ownership and the frozen comparison plan; keep first-use, subsequent-request and independent-process samples distinct. | [Measurement](#measurement-and-gpu-execution), [artifacts](#measurement-and-diagnostic-artifacts) |
 | Integrate | Check provenance and decide inference parts individually, including prefill and decode. Preserve required non-inference functions. History preservation and component success alone do not qualify a model route. | [Scope](#this-forks-scope), [integration](#git-integration-and-tuning) |
@@ -158,9 +158,15 @@ integration and testing.
   When progress stalls, identify the next evidence gap and investigate applicable
   methods from other engines or hardware before selecting another bounded test.
   Keep short-input prefill through the decode weight/cache layout available.
-  Defer its dispatch threshold and new decode optimization until the prefill
-  milestone; this does not defer long-prefill
-  chunk-size, placement or scheduling tuning. Preserve shared state and the
+  Retain two useful prefill strategies initially:TTFT-oriented and long-input
+  throughput-oriented. Select them explicitly with one simple argument or
+  variable in the same binary; adopting one must not discard the other.
+  Keep strategy selection distinct from the independently tuned decode path.
+  Design an explicit policy boundary that can later select by request length;
+  keep process environment immutable after runtime initialization. Defer automatic
+  length thresholds and additional strategy levels until after long-prefill
+  and decode tuning. This does not defer long-prefill chunk-size, placement or
+  scheduling tuning. Preserve shared state and the
   physical 262144-context correctness requirements.
   Keep further detailed regression root-cause investigation delegated to the
   specified Luna researchers; Main prioritizes performance implementation and
@@ -168,6 +174,17 @@ integration and testing.
   each observed decrease into another extended Main investigation. Continue
   measured input-length/time approximations and route/boundary characterization
   alongside tuning; do not assume one fixed-plus-linear law.
+- Start development from the fastest credible owned prefill candidates and
+  satisfy their remaining numerical, safety, decode-preservation and full-context
+  requirements. Consult the performance CSV and its original evidence first;
+  a slower currently qualified reference need not be the development base.
+  Preserve independent safety fixes and runtime controls while recovering faster
+  components. A complete hardware-ceiling inventory or profiler setup is not a
+  prerequisite to revalidating an already measured faster path.
+  Use repeated matched comparisons to judge reproducible gains; a blanket
+  minimum such as0.5% improvement is not a required adoption condition. Keep
+  small credible gains eligible for follow-up. Preserve original failed screens
+  and commit a new plan before changing criteria or gathering new evidence.
 - Prefer GPU-local long-prefill data and control when added GPU work costs less
   than the removed CPU work, transfers and synchronization. Measure the whole
   dependency path. FP16 and BF16 storage both use two bytes; select format from
@@ -496,6 +513,12 @@ Follow [docs/ARTIFACT_RETENTION.md](docs/ARTIFACT_RETENTION.md) for every measur
   resume from committed decisions without separate checkpoints or progress backups.
   Promote reusable fixtures/tooling into maintained source locations instead of
   retaining duplicate proposals or one-run controllers beside results.
+- After a superior performance result or a useful comparison milestone, update
+  the single [performance CSV](bench/performance-records.csv) in addition to the
+  detailed result. Preserve earlier milestones through compaction and later
+  improvements. Follow [the CSV rules](docs/ARTIFACT_RETENTION.md#performance-record-csv)
+  for committed evidence, metrics, conditions and qualification; check it before
+  reporting the best known performance or choosing a speed reference.
 - Decide the minimum retained result fields before collection. A single large
   JSON or report containing full parser output, per-layer arrays, repeated
   diagnostics or full histograms is still raw evidence; combining it into one

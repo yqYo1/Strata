@@ -55704,5 +55704,51 @@
       "files": 247,
       "aggregate_sha256": "62dbf0ab85f581295480c14ab4016e5edd9fcb72165d048dc28059e46977d107"
     }
+  },
+  "prefill_candidate_selection": {
+    "stage": "source_audited_execution_pending",
+    "development_candidate": "split117K Down-row64",
+    "historical_evidence": {
+      "commit": "e45c24afec2ccc42928d97b39352f8b0c1590029",
+      "key": "moe_down_model.clean_down_comparison",
+      "native_source": "9a79cd3520d8f39b7ad026cd64b51a32b505f2a2",
+      "three_process_warm_medians": [
+        1007.3,
+        1009.1,
+        1003.5
+      ],
+      "median": 1007.3,
+      "time_reduction_percent": 0.4640939585902286,
+      "original_gain_screen_passed": false,
+      "original_outcome_preserved": true
+    },
+    "current_candidate": {
+      "native_recipe": "032f4f8a535d857aaa2b5e8123e6662c26554571",
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/strata",
+        "sha256": "05c489eab7254417eb0e76a6f5c4c44a14fc837d83dd4056457d0138f522b29e",
+        "bytes": 23981920
+      },
+      "native_source_files_verified_against_actual_compiler_inventory": {
+        "src/prefill/sycl/gemm16.cpp": "8a4885b80ed75edb21a651243a250a53dc5cd31cc07fbfc7e90c98a5ffa6fd1a",
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "a2e42a4095d5c3e13a473af3d81666090f8839136ee6d0fdc5652fabbc5b7357",
+        "bench/sycl/moe_down_scatter.cpp": "b1c10591188bccdca0d6cb5aa48446ec4714b6ec3c77a0ef52eec39b286d1d9d"
+      },
+      "selector": "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL=row64 before native exec",
+      "same_seven_ELF_generation": true,
+      "new_native_build": false,
+      "row64_current_generation_component_and_model_qualified": false
+    },
+    "decision": "Revalidate the faster owned path with current safety fixes;no blanket minimum percentage gate for future gains. Original failed screens remain unchanged.",
+    "deferred_collector": {
+      "source_commit": "a76babf18324a28265843b3522897af6cb1a2870",
+      "controller": "tools/sycl/official_kernel_profile.py",
+      "prepared": false,
+      "native_process_executed": false,
+      "GPU_executed": false,
+      "existing_trace_reader_CPU_tests": 13,
+      "retired_to_Git": true
+    },
+    "next_action": "Commit a bounded same-build row64 tiny/smoke/public-route qualification before model execution;then matched PP/TTFT comparison and current-generation multi-length curve. Preserve decode and physical262144 correctness gates."
   }
 }

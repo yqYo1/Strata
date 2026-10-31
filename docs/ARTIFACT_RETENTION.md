@@ -77,6 +77,37 @@ does not need to be committed merely so it can subsequently be deleted.
 Keep current state in maintained documentation and committed decisions. Resume
 from those and Git; do not create external resume checkpoints.
 
+## Performance record CSV
+
+Maintain [bench/performance-records.csv](../bench/performance-records.csv) as the
+user-requested cumulative index of superior results and useful comparison
+milestones, in addition to detailed measurement reports. Update it at a result
+boundary when a best or materially better result appears; every routine run
+does not need a row. Keep earlier recorded milestones when they are superseded.
+This compact historical index is an explicit retention requirement, not a raw
+log or separate resume checkpoint.
+
+Use one physical CSV row per workload/configuration/result point, with the full
+commit hash containing its measurement evidence and the tested native source
+commit separately. Several points may refer to the same evidence commit. Commit
+the measurement result first, then its CSV row; the row never needs its own
+future commit hash. Verify values with `git show <record_commit>:<evidence_path>`
+and a precise evidence key before recording them.
+
+Keep input/context/output lengths, thinking, sample scope/counts, PP and its
+spread, prefill time, client TTFT, sustained TG and MTP behavior when measured,
+plus configuration including the explicit prefill strategy when present,and
+qualification/decision. The CSV header defines the
+units. Leave an unavailable metric blank; a24-token prefill check does not
+qualify sustained TG. Separate first use, individual peaks, warmed-request
+medians and independent-process aggregates. Keep different models, workloads,
+runtime/observer envelopes and execution routes distinguishable. A rejected
+candidate can hold the highest measured speed without being adopted or proving
+the target; preserve that qualification. If later evidence invalidates a row,
+mark it explicitly with the correcting evidence rather than silently losing
+the original observation. Keep detailed samples and formulas in the linked
+committed report; the CSV is the cross-commit lookup.
+
 ## Rebuildable binaries
 
 Keep one current known-good engine build by default. Retain an additional

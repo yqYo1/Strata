@@ -243,14 +243,32 @@ The `gemm_submit` host region encloses adapter validation/submission,but exclude
 the earlier `vllm_state` queue lookup and the later `finish` call. CPU and queue
 intervals still require measured attribution,not an assumption that wrapper
 time is GPU math or entirely CPU arithmetic.
-The next collector check uses `tools/sycl/official_kernel_profile.py`:the retained
-indexed PTI collector,first with the CPU canary,then606submission kernels and
-62native-graph kernels from this exact official seven-executable generation.
-It qualifies source/loader/environment,known work,requested copy bytes and raw
-clock coverage before any current-generation model trace. It is not yet run.
+The next development base is the faster owned split/row64 path,with the current
+safety fixes and official runtime retained. The historical matched row64 trial
+shortens time in all three pairs;its0.464094%geometric-mean gain missed Main's
+old0.5%screen. That original decision stays failed;the screen is not a user
+requirement or a reason to discard a reproducible smaller improvement. A new
+prospective comparison will assess it without that blanket minimum. The current
+seven-executable source already contains row64 and its pre-exec selector,so no
+new native build is implied. Qualify its actual route/numerics before the model
+comparison;decode processing remains independently selected. See
+[the cumulative performance CSV](../bench/performance-records.csv).
+Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
+oriented,with one explicit selector in the same binary. These are development
+requirements,not two already-qualified implemented profiles. Compare both PP and
+client TTFT at matched lengths/first-use states;preserve a useful route when
+another wins a different regime. Keep decode independent and pass strategy
+explicitly rather than changing the process environment after runtime init.
+Automatic input-length dispatch and any further levels wait until long-prefill
+and decode tuning;measured curves will determine their thresholds later.
+Collector preparation is deferred in favor of this faster-candidate qualification.
+The unexecuted controller froma76babf18 is retired to Git;no coverage plan/root,
+native process or GPU result was produced by it. The13existing reader rejection
+controls passed. Existing profiling helpers remain available for a concrete
+attribution gap rather than gating all implementation work.
 The selected6e40 multi-length approximation below remains historical evidence;
 the changed head/bank/residual placement is not covered by its coefficients.
-After collector admission,the current candidate needs matched32K/48K/64K/80K/
+After its safety/numerical checks,the current candidate needs matched32K/48K/64K/80K/
 117K time and client TTFT samples,with an unfit length and actual route/placement
 labels. Keep first-use separate;do not fit across allocation/window transitions
 or call the affine intercept a measured fixed cost. No current-generation
