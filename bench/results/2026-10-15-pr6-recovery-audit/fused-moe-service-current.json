@@ -45985,5 +45985,46 @@
         "ELF_sha256": "6aaa7c188f82f1b5317441a637baf8c35abd62af2c0b7524ea855cec877a5876"
       }
     }
+  },
+  "qsa_topk_prefill_route": {
+    "stage": "source-bridge-host-correction",
+    "source_commit": "dc19a1ecb4953e1c9f1c6cf9715a823bc3b68291",
+    "provenance": "Main-authored from selected6e40 and qualified44636e26c exact-completion body;repository LICENSE,no external implementation.",
+    "scope": "Separate layer-major prefill kernel;default off. Original qsa_select.cpp,decode and small-input calls unchanged. Neither retained engine contains the new route.",
+    "policy": {
+      "flag": "STRATA_SYCL_PREFILL_TOPK_EARLY",
+      "default": false,
+      "enable": "1",
+      "disable": "0",
+      "requires_radix4": "1",
+      "excludes_cyclic": "1",
+      "invalid_value": "invalid_argument before selecting the new route",
+      "environment": "immutable before exec"
+    },
+    "component_result": "qsa_topk_early_component_v2",
+    "host_attempts": [
+      {
+        "source_commit": "dc19a1ecb4953e1c9f1c6cf9715a823bc3b68291",
+        "command": [
+          "timeout",
+          "60s",
+          "flock",
+          "-n",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+          "python3",
+          "-B",
+          "tools/sycl/test_topk_plan.py"
+        ],
+        "tests": 11,
+        "elapsed_s": 3.924,
+        "exit_code": 1,
+        "passed": false,
+        "failure": "prefill_proof compared a section excluding its final newline against the qualified body including it. Actual kernel differs only by that extraction boundary;validate/order/span helper bytes match exactly. Original failure preserved;corrected proof requires exactly one terminal newline."
+      }
+    ],
+    "build_passed": false,
+    "GPU_executed": false,
+    "inference_adopted": false,
+    "next_gate": "Commit and run corrected source bridge,then qualify public-entry policy/IDs/guards/default and decode APIs with official SDK before a separately planned whole-engine comparison."
   }
 }
