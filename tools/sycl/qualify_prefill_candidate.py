@@ -62,6 +62,9 @@ def prepare():
         STRATA_SYCL_SELECT_RADIX4='1',STRATA_SYCL_SELECT_CYCLIC='0',STRATA_SYCL_PREFILL_COMMAND_PROFILE='0',
         STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE='0',STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL='original',
         ZE_ENABLE_ALT_DRIVERS=next(p for p in providers if 'libze_intel_gpu.so.' in p))
+    require(env.get('LD_PRELOAD') in (None,probe['library']['path']),'unexpected inherited native preload')
+    env.pop('LD_PRELOAD',None)
+    env['CUDA_MODULE_LOADING']='EAGER'
     env=engine_once.native_environment(native,env)
     loader=next(p for p in providers if Path(p).name.startswith('libze_loader.so.'))
     revision=build.base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
