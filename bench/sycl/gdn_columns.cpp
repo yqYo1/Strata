@@ -301,6 +301,10 @@ void subgroup_benchmark(int process) {
     }
   rt->wait();
   c.compare(*c.trials[0], *c.trials[1]); c.compare(*c.trials[0], *c.trials[2]); c.immutable();
+  std::cout << "{\"kind\":\"train_validation\",\"process\":" << process
+            << ",\"tokens_per_call\":8192,\"updates_per_arm\":7,"
+               "\"final_state_output_fp16_exact\":true,\"guards\":true,\"inputs_immutable\":true,"
+               "\"status\":\"PASS\"}\n";
   for (auto &s : samples) {
     need(s.begin.get_info<sycl::info::event::command_execution_status>() == sycl::info::event_command_status::complete &&
          s.end.get_info<sycl::info::event::command_execution_status>() == sycl::info::event_command_status::complete,
@@ -311,7 +315,7 @@ void subgroup_benchmark(int process) {
          std::isfinite(s.submit_ms) && s.submit_ms >= 0, "invalid/sub-millisecond/coarse subgroup interval");
     std::cout << "{\"kind\":\"sample\",\"process\":" << process << ",\"round\":" << s.round
               << ",\"schedule\":\"" << names[s.arm] << "\",\"queue_interval_ms\":" << double(end - start) / 1e6
-              << ",\"host_submit_ms\":" << s.submit_ms << ",\"exact_output_state_fp16\":true,\"status\":\"PASS\"}\n";
+              << ",\"host_submit_ms\":" << s.submit_ms << ",\"status\":\"PASS\"}\n";
   }
 }
 } // namespace

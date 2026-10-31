@@ -11,6 +11,7 @@ import json
 import math
 from pathlib import Path
 import select
+import shlex
 import statistics
 import subprocess
 import sys
@@ -77,6 +78,7 @@ def prepare():
     require(model['complete'] and model['ownership_closed'] and not model['active']
             and len(model['processes']) == 6 and all(p['passed'] for p in model['processes']),
             'close the frozen six-process model cohort first')
+    controls = selfcheck()
     prior = json.loads((build.ROOT / 'record.json').read_text())
     require(data[build.KEY] == build.compact(prior) and prior['passed'] and prior['ownership_closed']
             and not prior['active'], 'committed retained official build basis required')
@@ -112,7 +114,7 @@ def prepare():
             sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
         native_validation_probe=probe, environment=env, configure_argv=cfg,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=build.guards.driver_guard(),
-        commands=[], processes=[], active=False, ownership_closed=True, build_passed=False,
+        host_controls=controls, commands=[], processes=[], active=False, ownership_closed=True, build_passed=False,
         passed=False, complete=False, inference_adopted=False, model_qualified=False,
         budgets=dict(wall=360, cpu=1080, rss_cap=6 << 30, text_cap=16 << 20,
             file_cap=16 << 20, total_cap=64 << 20), whole_bytes=512 << 20,
@@ -125,7 +127,8 @@ def prepare():
                 'only if every performance pair wins. Stop on first fault/validation failure;no retries or replacements.',
             timing='8192tokens/call;fused,columns4,subgroup4 rotated by process and round. One first-use '
                 'round separate,six subsequent rounds per arm. Eight empty-marker controls;require each '
-                'sample>=1ms and>=1000profiling timer ticks. Queue interval includes host gaps and both kernels.',
+                'sample>=1ms and>=1000profiling timer ticks. Queue interval includes host gaps and both kernels. '
+                'Numerical comparisons follow each complete seven-update train,not every timed sample.',
             acceptance='Bit-exact state,FP32output and FP16capture against both owned references;guards, '
                 'immutable inputs and rejected-call no-write. All3process subgroup4/columns4 median ratios<1 '
                 'and geometric mean<1 permit context/next model proposal;no minimum gain. Normal owner '
@@ -189,10 +192,28 @@ def compile_component():
                  if line.startswith('    ') and line.strip()}
         units = {'src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
                  'src/kernels/sycl/fused_gdn.cpp', 'bench/sycl/gdn_columns.cpp', 'tests/sycl/compat.cpp'}
-        database = json.loads((ROOT / 'build/compile_commands.json').read_text())
-        actual_units = {str(Path(e['file']).resolve()) for e in database
-                        if any(str(Path(e['file']).resolve()) == str(P / n) for n in units)}
-        require(actual_units == {str(P / n) for n in units} and actual_units <= found,
+        database_path = ROOT / 'build/compile_commands.json'
+        database = json.loads(database_path.read_text())
+        selected_commands = []
+        for entry in database:
+            argv = entry.get('arguments') or shlex.split(entry['command'])
+            output = argv[argv.index('-o') + 1]
+            if not any(output.startswith('CMakeFiles/' + name + '.dir/')
+                       for name in (*TARGETS, 'strata_sycl_runtime')): continue
+            name = str(Path(entry['file']).resolve().relative_to(P))
+            require(name in units and Path(argv[0]).resolve() == Path(build.COMPILER).resolve(),
+                    'unexpected component compiler or translation unit')
+            expected = ['-fsycl', '-fsycl-id-queries-range=size_t', '-DSTRATA_ENABLE_SYCL=1',
+                        '-O3', '-DNDEBUG', '-std=c++20']
+            if name in ('bench/sycl/gdn_columns.cpp', 'src/kernels/sycl/fused_gdn.cpp'):
+                expected += ['-fno-fast-math', '-ffp-contract=off']
+                require(not any(a in argv for a in ('-ffast-math', '-ffp-contract=fast', '-Ofast')),
+                        'unexpected relaxed GDN floating-point mode')
+            require(all(a in argv for a in expected), 'missing exact compile option: ' + name)
+            selected_commands.append(dict(source=name, compiler=argv[0], output=output,
+                required_options=expected, argv_sha256=hashlib.sha256(json.dumps(argv).encode()).hexdigest()))
+        actual_units = {str(P / e['source']) for e in selected_commands}
+        require(len(selected_commands) == 6 and actual_units == {str(P / n) for n in units} and actual_units <= found,
                 'six production/fixture translation units missing')
         require({p for p in found if Path(p).is_relative_to(P) and Path(p).suffix == '.cpp'} == actual_units,
                 'unexpected project translation unit compiled')
@@ -200,6 +221,7 @@ def compile_component():
                 'unplanned actual compiler input;close build without refreshing hashes')
         write(ROOT / 'compiler-inputs.json', {p: allowed[p] for p in sorted(found)})
         row.update(stage='built', build_passed=True,
+            compile_command_attestation=dict(database_sha256=digest(database_path), units=selected_commands),
             compiled_inputs=dict(path=str(ROOT / 'compiler-inputs.json'),
                 sha256=digest(ROOT / 'compiler-inputs.json'), files=len(found)),
             actual_link_inputs=build.traced_link_inputs(allowed, ROOT),
@@ -228,16 +250,27 @@ def performance(processes):
         geometric_mean_ratio=geometric, advance=all(r < 1 for r in ratios) and geometric < 1)
 
 
+def final_driver_guard(result, expected):
+    result['final_driver_matches'] = result.get('driver_after') == expected
+    if not result['final_driver_matches']:
+        result['passed'] = False
+        result.setdefault('error', 'Post-run driver differs from the frozen platform')
+
+
 def events_for(stdout, mode, ordinal):
     events = [json.loads(line) for line in stdout.splitlines() if line.startswith('{')]
-    expected = {'submission': 0, 'smoke': 3, 'validate': 6, 'context': 1}.get(mode, 29)
+    expected = {'submission': 0, 'smoke': 3, 'validate': 6, 'context': 1}.get(mode, 30)
     require(len(events) == expected and all(e.get('status') == 'PASS' for e in events),
             'missing or failing fixture events')
     if mode.startswith('perf'):
         controls = [e for e in events if e['kind'] == 'timer_control']
         samples = [e for e in events if e['kind'] == 'sample']
+        checks = [e for e in events if e['kind'] == 'train_validation']
         require([e['control'] for e in controls] == list(range(8)) and len(samples) == 21,
                 'missing timer controls or samples')
+        require(len(checks) == 1 and checks[0] == dict(kind='train_validation', process=ordinal,
+            tokens_per_call=8192, updates_per_arm=7, final_state_output_fp16_exact=True,
+            guards=True, inputs_immutable=True, status='PASS'), 'final-train numerical/guard evidence missing')
         require(all(e['process'] == ordinal and type(e['resolution_ns']) is int and e['resolution_ns'] > 0
                     and type(e['empty_marker_gap_ns']) is int and e['empty_marker_gap_ns'] >= 0
                     for e in controls), 'invalid timer control')
@@ -251,7 +284,7 @@ def events_for(stdout, mode, ordinal):
                     and math.isfinite(e['queue_interval_ms']) and e['queue_interval_ms'] >= 1
                     and e['queue_interval_ms'] * 1e6 / resolution >= 1000
                     and type(e['host_submit_ms']) in (int, float) and math.isfinite(e['host_submit_ms'])
-                    and e['host_submit_ms'] >= 0 and e['exact_output_state_fp16'] is True for e in samples),
+                    and e['host_submit_ms'] >= 0 for e in samples),
                 'invalid/ineligible timer or arithmetic sample')
     elif mode == 'smoke':
         require([(e['kind'], e.get('tokens'), e.get('split')) for e in events[:2]] ==
@@ -281,24 +314,31 @@ def selfcheck():
         empty_marker_gap_ns=120, status='PASS') for i in range(8)]
     samples = [dict(kind='sample', process=0, round=r,
         schedule=('fused', 'columns4', 'subgroup4')[(s + r + 1) % 3],
-        queue_interval_ms=100., host_submit_ms=.2, exact_output_state_fp16=True, status='PASS')
+        queue_interval_ms=100., host_submit_ms=.2, status='PASS')
         for r in range(-1, 6) for s in range(3)]
+    checks = [dict(kind='train_validation', process=0, tokens_per_call=8192, updates_per_arm=7,
+        final_state_output_fp16_exact=True, guards=True, inputs_immutable=True, status='PASS')]
+    valid = controls + samples + checks
     def parse(events):
         return events_for('\n'.join(json.dumps(e) for e in events), 'perf0', 0)
-    require(len(parse(controls + samples)) == 29, 'valid parser control failed')
-    bad = [controls + samples[:-1], controls + list(reversed(samples))]
+    require(len(parse(valid)) == 30, 'valid parser control failed')
+    bad = [controls + samples[:-1] + checks, controls + list(reversed(samples)) + checks,
+           controls + samples]
     for key, value in [('queue_interval_ms', 0.), ('queue_interval_ms', float('nan')),
                        ('queue_interval_ms', float('inf')), ('queue_interval_ms', .9),
                        ('queue_interval_ms', True), ('host_submit_ms', -1.),
                        ('host_submit_ms', float('nan')), ('round', True),
-                       ('exact_output_state_fp16', False), ('process', 1)]:
-        events = copy.deepcopy(controls + samples); events[8][key] = value; bad.append(events)
+                       ('process', 1)]:
+        events = copy.deepcopy(valid); events[8][key] = value; bad.append(events)
     for key, value in [('resolution_ns', 0), ('resolution_ns', 2000), ('empty_marker_gap_ns', -1)]:
-        events = copy.deepcopy(controls + samples)
+        events = copy.deepcopy(valid)
         for event in events[:8]: event[key] = value
         if key == 'resolution_ns' and value == 2000:
-            for event in events[8:]: event['queue_interval_ms'] = 1.
+            for event in events[8:]:
+                if event['kind'] == 'sample': event['queue_interval_ms'] = 1.
         bad.append(events)
+    for key in ('final_state_output_fp16_exact', 'guards', 'inputs_immutable'):
+        events = copy.deepcopy(valid); events[-1][key] = False; bad.append(events)
     for events in bad:
         try: parse(events)
         except (RuntimeError, KeyError, TypeError, ValueError): pass
@@ -309,8 +349,13 @@ def selfcheck():
     for event in processes[1]['events']:
         if event['schedule'] == 'subgroup4': event['queue_interval_ms'] = 100.01
     require(not performance(processes)['advance'], 'one slower process must reject advancement')
+    for actual, prior_pass, expected_pass in (({'device': 'same'}, True, True),
+            ({'device': 'changed'}, True, False), ({'device': 'same'}, False, False)):
+        result = dict(passed=prior_pass, driver_after=actual)
+        final_driver_guard(result, {'device': 'same'})
+        require(result['passed'] is expected_pass, 'final driver guard control failed')
     return dict(valid_parser_controls=1, invalid_parser_controls=len(bad), performance_controls=2,
-                GPU_executed=False)
+                final_driver_controls=3, GPU_executed=False)
 
 
 def run(index):
@@ -391,6 +436,7 @@ def run(index):
         result.update(error=repr(error), complete=False, host_probe_accepted=False)
     finally:
         if owner: validation.finish(result, owner, cursor, row['boot'])
+        final_driver_guard(result, row['driver'])
         result['passed'] = bool(result.get('passed') and result['complete']); persist()
         row['processes'].append(result)
         if index == 5 and result['passed']: row['performance'] = performance(row['processes'][3:6])

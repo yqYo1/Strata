@@ -337,6 +337,15 @@ and actual provider maps before initialization,after initialization and before
 exit. Final validation is checked after normal process closure. Pin actual
 compiler/linker inputs and both executable hashes before any GPU execution.
 No current engine binary is overwritten and no subgroup model route is selected.
+The independent execution-control audit of77c86900fand its native review identify
+a missing final driver-equality pass gate,a compile-command attestation gap and
+a misleading per-sample correctness field. Main's prospective correction checks
+final driver identity,attests all six actual target compiler commands and their
+FP options,and emits one explicit numerical validation result for the complete
+seven-update train. Timed samples claim clock eligibility,not individual numerical
+comparison. Dedicated correctness/context modes remain separate. The original
+CPU parser controls pass1valid/15invalid and2selection cases;corrected controls,
+the CPU build and GPU checks are still pending.
 Integrate completed work into `feature/sycl` and retire the temporary branch;
 remove the unused proposal if its measured result does not justify continuation.
 Collector preparation is deferred in favor of this faster-candidate qualification.
