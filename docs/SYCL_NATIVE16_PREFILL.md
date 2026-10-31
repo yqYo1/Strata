@@ -98,7 +98,8 @@ screen separately requires all three candidate process medians at that length.
 The117K control may retain its legitimate512-slot/RAM-tail fallback;the candidate
 must admit all117488GPU rows and checked split storage. This is a new capacity
 question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
-the compact result. Eleven processes close normally without fresh faults. Each
+the compact result. All twelve processes and48thinking-on requests close normally
+without fresh faults;final model hashes match. Each
 table cell uses its process's subsequent-three median;first-use and all
 individual samples remain in the compact result.
 
@@ -109,21 +110,21 @@ individual samples remain in the compact result.
 | 117489 | 3 | 908.2 | 673.9 | 0.74198251 | 129.664 / 174.580 |
 | 65537 | 1 | 869.9 | 878.8 | 1.01017066 | 75.480 / 74.722 |
 | 65537 | 2,reverse order | 795.0 | 880.4 | 1.10739703 | 82.677 / 74.591 |
-| 65537 | 3,control pending | 775.2 | pending | pending | 84.824 / pending |
+| 65537 | 3 | 775.2 | 802.9 | 1.03579374 | 84.824 / 81.804 |
 
 All three117K head-on processes admit117488GPU rows,128staged slots and checked split
 storage in all requests. All three control processes use81920GPU rows first,73728
 later,512ordinary slots and728432640/896204800RAM residual bytes. The paired
 throughput improvements are32.84%,32.01%and34.77%;the geometric-mean prompt-time
-ratio is0.75074698. All three117K ratios meet that length's prospective mechanism
-screen,but the complete twelve-process decision remains pending. At64K both arms have65536GPU rows,
+ratio is0.75074698. The complete cohort passes the117K mechanism and capacity
+screens,permitting further attribution at that length only. At64K both arms have65536GPU rows,
 384staged slots,no RAM residual and matching job counts and requested expert-bank/
 routing-index transfer bytes. Request hashes match at both lengths.
 The engine prompt clock encloses joint head retirement/restore and the final
 expert-cache refill;it is not pure GPU math time. Client TTFT separately ends
-at first nonempty reasoning/content output. The64K first pair prevents this
-candidate passing that length's predeclared all-three-pairs screen. Both lengths'
-first on-process medians are below1000,so neither target screen can pass. The
+at first nonempty reasoning/content output. All three64K pairs are slower with
+head retirement;their geometric-mean time ratio is1.05032522,so that length fails
+its mechanism screen. Neither length passes the1000tok/s target screen. The
 second64K head-on process has median82438.4ms,10.74%longer than its control;
 its slower samples remain eligible original outcomes,without a noise exemption.
 The third117K candidate median is129367.1ms;its jobs and requested transfer
@@ -133,7 +134,8 @@ is174353.3ms. Both arms are slower than their earlier processes;the paired gain
 does not resolve that absolute variation. The third64K candidate median is
 84544.8ms,with the same jobs and requested transfer counts as the earlier64K
 candidate requests. Its slower samples remain original eligible outcomes. The
-last64K control process is pending under the frozen no-speed-based-stop plan.
+last64K control median is81623.2ms. No run is excluded or replaced. This comparison
+does not select a short/long dispatch threshold or qualify inference adoption.
 The candidate is unadopted. This does not
 identify physical PCIe/VRAM/arithmetic saturation or attribute the64K difference
 solely to head-copy cost.
