@@ -1804,13 +1804,26 @@ zero. These results reject bounded grouping for this persistent synthetic
 fixture;they do not identify PCIe saturation or explain the older V1 variation.
 Keep all864individual timing vectors and the compact decision in
 `prefill_copy_batch_v2`;no production-consumer or model trial follows. The
-component build,normal logs and consumed audit/review can now retire after
-original-source/recipe recovery. Prefill and decode implementations are unchanged.
-Next retrieve the existing parallel-normalizer contract findings before selecting
-another QSA experiment. That earlier proposal was deferred without a GPU run,
-not rejected on performance. A different prospective criterion must follow the
-maintained actual-model SGLang/vLLM numerical policy;it cannot relabel the old
-deferral or inherit numerical/model qualification.
+component build,normal logs and consumed audit/review are now retired:
+44files/3889527bytes. Its677compiled inputs recover as12original Git sources
+plus665dependencies matching the retained original official SDK manifest;the
+exact source and recipe remain in pushed history. The unused batch helper,
+probe,controller and tests are also removed. The host-transfer probe source
+remains a required configuration input for the maintained model build recipes.
+Prefill and decode implementations are unchanged.
+The closed transfer-calibration executable and two consumed receipts are also
+retired:3files/360664bytes,after recovering11original Git sources and633frozen
+dependencies with the original recipe. Its individual bandwidth samples remain;
+legacy SDK/runtime provenance holds are unchanged.
+Existing report review now confirms that the actual-model SGLang QSA path at
+`877be2974aa151a984e52822c028276c2b1e9303` uses FP32`tl.sum` without prescribing
+an exact reduction tree. Main also checked that revision's BF16 attention
+comparison test:it uses output`rtol=atol=0.02`,rather than defining an FP32
+normalizer/state allowance. The next candidate may change only the32term
+denominator fold. Commit the specific comparator,task limits and performance
+plan before building it. The earlier exact-target proposal remains deferred
+without a GPU run;this source evidence does not inherit numerical/model
+qualification or resolve the physical262144/decode-preservation gates.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665

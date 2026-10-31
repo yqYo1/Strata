@@ -3901,6 +3901,23 @@
       "source_recovery_commit": "ea4e1833e27ff22a85d03ec382519c961f07d82d",
       "archive": "64ba4c3a6",
       "raw_research_retired": true
+    },
+    "prospective_framework_review": {
+      "review_sha256": "70efa8a35708b80aa934efd1addf1a03e9ec642f431e5a7a68b0e12f69a9c2c9",
+      "reviewer": "Native Codex gpt-6-luna/max",
+      "framework": "SGLang",
+      "revision": "877be2974aa151a984e52822c028276c2b1e9303",
+      "source": "python/sglang/srt/layers/attention/qsa/sparse_attn.py",
+      "conclusion": "Actual Qwen forward_extend uses FP32 tl.sum without an exact tree. Only the32positive-FP32 denominator fold may change;preserve probability/BF16-PV bits,m/acc,alpha/FMA,masks/layout/output and decode. Earlier exact-output deferral remains unchanged;no GPU/performance/adoption qualification inherited.",
+      "newly_inspected_primary_test": {
+        "path": "test/registered/kernels/ops/attention/qsa/test_qsa.py",
+        "sha256": "99277da69b1a2505015a8bb393875e4bcff823defd44009e4641c10e53d01098",
+        "cases": "test_qsa_sm121_compaction_and_attention_match_sparse_reference: BF16 Q, K/V,head_dim256,24query/2KVheads,valid17/911/2051;compares alternate attention output with qsa_sparse_attention at rtol=atol=0.02. FP8-prefix tests also use0.02 but are distinct. Packing-only tests use exact0 and do not define math tolerance.",
+        "limits": "This output criterion is not an FP32 denominator/state budget or observed local SGLang execution. Do not silently broaden it to intermediate state. Candidate still needs a prospectively committed concrete comparator/task/performance plan."
+      },
+      "next_action": "Inspect/recover independent original one-fold source and official-SDK fixture recipe. Commit actual comparator,repeatability/task criteria and exact candidate before build/GPU. No further generic source survey is needed.",
+      "review_path": ".cache/research/2026-10-31/normalizer_contract_library.review.json",
+      "review_retention": "Keep11184-byte review only for the imminent prospective numerical/task comparison plan;retire after that plan records its relevant constraints and source pins. No full original collection report was loaded by Main."
     }
   },
   "selected_length_holdout": {
@@ -11452,7 +11469,7 @@
     },
     "decision": "Current-runtime normal-RAM bulk H2D process medians5.9338..6.0109GB/s;Host-USM5.0912..5.0955GB/s. Do not assume pinned HostUSM improves H2D in this qualified path. Keep the ordinary2MiB2.6813GB/s process and all individual samples;no variability dismissal or new placement adoption. Calling-thread CPU/wall is near1 in copy/complete alone;it does not prove LLM math runs on CPU or identify the whole-model limiting unit.",
     "next_action": "Use these rates and CPU submission/wait splits to budget requested expert transfers,then measure the split MoE critical path including dequant,shared projections,routing,status/drain and handoff. No new pool trial without actual matching child topology/group evidence.",
-    "retention": "Copy executable and input/compiled receipts only,for imminent2MiB cadence/variability control and split-MoE resource budgeting. Review at the next complete resource-accounting gate;no successful raw logs or disposable objects retained.",
+    "retention": "Original calibration and all individual rates remain committed. No live copy-cadence fixture consumer;closed binary/2receipts retired after exact original644input/recipe recovery. Recover source2d92ec7af and plan72ab43823 for any separately planned replay;legacy runtime/SDK holds are not resolved by this retirement.",
     "diagnostic_UR_paths": [
       {
         "host": "ordinary",
@@ -11518,6 +11535,20 @@
       },
       "source_and_recipe_reachable_from_remote": "de40cee1e on retained feature/sycl;original3dc4/c9a9/2d92/72ab/c454 ancestor checks passed.",
       "kept": "Nine files across three current helper roots:one117-provider closure;query executable/module/selection/dependencies and representative failure;copy executable and two dependency receipts. Normal API traces,intermediates and completed Orca transaction records retired. No engine generation or active owner touched."
+    },
+    "build_retirement": {
+      "complete": true,
+      "files": 3,
+      "bytes": 360664,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261031-transfer-refresh.json",
+      "sha256": "d68c766f76cb0e39b27880f69a677bef5a2af53f1d8c6e8b69cc0046016b26dd",
+      "source_recovery": {
+        "Git_sources": 11,
+        "frozen_dependencies": 633
+      },
+      "source_commit": "2d92ec7afd90bdb95c776acae185357eb519cdb6",
+      "recipe_commit": "72ab43823",
+      "scope": "Only closed transfer-control executable and2receipts. Original shared SDK/runtime/provenance evidence and current engine generations/fixtures remain. This is retirement,not runtime or SDK-origin qualification."
     }
   },
   "moe_down_row_address": {
@@ -43810,6 +43841,21 @@
       "copies": "contiguous160/group;runs4160/min(group,4);gapped160",
       "overlap_s": "All864 observed copy/reader overlap values exactly0;not physical engine saturation.",
       "correctness": "All recorded full-output/bank/guards/input-readers/immutable-source/drain checks PASS;all3processes and10smoke cases normal0,no fresh fault."
+    },
+    "raw_retirement": {
+      "complete": true,
+      "files": 44,
+      "bytes": 3889527,
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261031-copybatch-v2.json",
+      "sha256": "c79df6bf1fe6cb0358172524c16cde19125afa3fbb6d1842c7fbd747d6ad03fb",
+      "source_recovery": {
+        "Git_sources": 12,
+        "original_SDK_dependencies": 665
+      },
+      "source_commit": "d53bf283a05ff2864b4875e2a0de0481eb10b916",
+      "recipe_commit": "1dfef702a",
+      "result_commit": "59d35fdf2",
+      "scope": "Entire closed component build/output and consumed source-audit/review;original official SDK manifest,selected6e40,candidate9a79 and all required model fixtures untouched."
     }
   }
 }

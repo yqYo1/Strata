@@ -18133,54 +18133,5 @@
       "review_point": "After source-exact production copy events are available,or a distinct implementation question needs library retrieval.",
       "temporary_review_retired": true
     }
-  },
-  "bounded_copy_gpu_verifier_source_audit_20261031": {
-    "classification": "decision support",
-    "status": "decision-closed-retirement-pending",
-    "schedulable_now": false,
-    "worker_model": "Orca gpt-6-luna/high",
-    "policy_commit": "ca8b6f57d",
-    "source_commit": "d53bf283a05ff2864b4875e2a0de0481eb10b916",
-    "source_sha256": {
-      "include/strata/prefill/expert_batch_upload.hpp": "503d3c9a0dd2175bc91437269b1210f779acc120004dca2ae45cd239737c67f3",
-      "tools/sycl/expert_batch_probe.cpp": "5853153cc0e1f44c3ec7a08d4053559ee510513e7c26acc4085723970ffb170c",
-      "tools/sycl/refresh_transfer.py": "77f93a4db2d12b0b7c9b78bce41223b84a26f2f6d543bc0e2a640b9b62ea9e48"
-    },
-    "report": ".cache/research/2026-10-31/bounded_copy_gpu_verifier_source_audit.md",
-    "report_budget_words": 2200,
-    "report_budget_bytes": 18000,
-    "question": "Audit newly authored bounded-group wrap/read dependencies,persistent workspace host DMA/device-capture lifetimes and independent GPU affine-verifier/CPU-oracle/corruption-control contract. Source review only;not a hardware-resource survey or device qualification.",
-    "prerequisites": [
-      {
-        "item": "new source is committed and frozen,unlike previously surveyed128-burst schedule",
-        "met": true,
-        "evidence": "d53bf283a05ff2864b4875e2a0de0481eb10b916"
-      },
-      {
-        "item": "finite new safety decision consumer exists",
-        "met": true,
-        "evidence": "Main will build while this audit runs,but source findings must be reviewed before the newly authored GPU-verifier fixture executes."
-      },
-      {
-        "item": "source-memory class,exact q.memcpy call and consumer edges for this fixture are explicit",
-        "met": true,
-        "evidence": "Workspace owns ordinary CPU source and registered device allocations;group scheduler emits exact packed runs into same in-order queue. This does not qualify old9a79 per-upload mappings."
-      }
-    ],
-    "acceptance": "Source-backed actionable bounds/lifetime/independence findings with exact locations and primary contracts;no implementation or performance claim.",
-    "consumer": "Bounded V2 source audit is consumed:10small cases and864batches close correctly,but no group passes performance. Compact findings are in fused-moe-service-current.json::prefill_copy_batch_v2.source_review.",
-    "next_review": "Retire full audit/review at serialized comparison cleanup after source/result push;remove this transaction row once deletion is verified.",
-    "report_sha256": "6a4a343faeb7179e545a2544ff29aa5901d5ce7b3d374eb4652044a8e5aa73dc",
-    "report_bytes": 11853,
-    "ownership_closed": true,
-    "review_status": "Native Codex gpt-6-luna/max completed;Main accepted bounded smoke only,then frozen comparison if smoke passes.",
-    "review_sha256": "10535eb75e583f362e244b8b0e209d197fe0f2226c52aefcd5179f36ac0c5664",
-    "review_bytes": 6647,
-    "source_blocker": false,
-    "limitations": [
-      "Status bits16/1/2 not deliberately fault-injected;normal bank/output CPU/GPU checks remain.",
-      "Private immutable CPU input is a caller precondition;this probe enforces ordinary vector-backed storage.",
-      "Callback false/throw/partial-run error paths are not dynamically qualified."
-    ]
   }
 }
