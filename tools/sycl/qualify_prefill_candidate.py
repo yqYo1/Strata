@@ -85,6 +85,11 @@ def current(row):
     require(native['binaries']==row['binaries'] and native['source_commit']==row['native_source_commit']
             and pins(row['source_commit'])==row['inputs'],'native/controller inputs changed')
     require(row['cases']==cases(row['property_loader']),'case plan changed')
+    require(digest(build.ROOT/'build/compile_commands.json')==native['compile_command_attestation']['database_sha256'],
+            'attested compiler recipe changed')
+    if native.get('original_build_failure'):
+        evidence=native['original_build_failure']['record']
+        require(digest(evidence['path'])==evidence['sha256'],'original failed build receipt changed')
     providers=gdn.inventory(row['runtime_manifest']);return native,allowed,providers
 
 
