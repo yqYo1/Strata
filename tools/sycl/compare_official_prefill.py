@@ -434,6 +434,9 @@ def run(index, experiment=None):
     require(row['host_passed'] and row['stage'] in ('ready', 'running') and len(row['processes']) == index < len(policy.ORDER)
             and all(p['passed'] for p in row['processes']), 'fresh ordered process only;no retry')
     plan = row['plans'][index]
+    native = policy.native_context(row, plan) if hasattr(policy, 'native_context') else row
+    require(native['native_validation_probe'] == row['native_validation_probe'] and
+            native['boot'] == row['boot'], 'campaign native context changed runtime/boot')
     root, env = Path(plan['root']), policy.environment(row, plan)
     require(not (root / 'execution.json').exists() and (plan['read'], plan['heads']) == policy.ORDER[index]
             and fingerprint(env) == plan['environment_sha256'] and
@@ -444,6 +447,8 @@ def run(index, experiment=None):
         host_probe_accepted=False, model_executed=False, clean_speed=True), None
     if 'kernel' in plan:
         outcome['kernel'] = plan['kernel']
+    if hasattr(policy, 'native_context'):
+        outcome.update(binary=native['binary'], native_source_commit=native['native_source_commit'])
     initial = (time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns())
     log_windows = []
     def persist():
@@ -463,16 +468,16 @@ def run(index, experiment=None):
                 claim = json.loads((root / 'engine-start.json').read_text())['native']
                 actual = build.supervision.identity(claim['pid'])
                 require(actual and actual['start_ticks'] == claim['start_ticks'] and actual['sid'] == command['pid']
-                        and str(Path('/proc', str(claim['pid']), 'exe').resolve()) == row['binary']['path']
+                        and str(Path('/proc', str(claim['pid']), 'exe').resolve()) == native['binary']['path']
                         and (identity is None or identity == claim), 'owned native identity differs')
                 identity = claim
-                expected = engine_once.native_environment(row, env)
+                expected = engine_once.native_environment(native, env)
                 observed = dict(v.split(b'=', 1) for v in Path('/proc', str(claim['pid']), 'environ').read_bytes().split(b'\0') if b'=' in v)
                 require(all(observed.get(k.encode()) == v.encode() for k, v in expected.items())
                         and set(observed) - {k.encode() for k in expected} <= {b'PWD', b'OLDPWD', b'SHLVL', b'_'}, 'native environment differs')
                 mapped = shared.runtime.executable_mappings(Path('/proc', str(claim['pid']), 'maps').read_text())
-                require(mapped <= set(files) | {row['binary']['path']} and {row['native_validation_probe']['loader']['path'],
-                    row['native_validation_probe']['library']['path'], env['ZE_ENABLE_ALT_DRIVERS']} <= mapped, 'native providers differ')
+                require(mapped <= set(files) | {native['binary']['path']} and {native['native_validation_probe']['loader']['path'],
+                    native['native_validation_probe']['library']['path'], env['ZE_ENABLE_ALT_DRIVERS']} <= mapped, 'native providers differ')
                 shared.python_runtime.check_running(command['pid'], P / 'tools/strata_bench.py', manifest['selected'], env,
                     {v['realpath'] for v in manifest['inventory']['files'].values()}, plan['command'][2:])
                 require_quiet_validation(root)
@@ -519,7 +524,7 @@ def run(index, experiment=None):
         require(shared.client.verify_request_journal(outputs[0].parent)['valid'], 'request journal invalid')
         policy.current(row)
         config = json.loads((root / 'config.json').read_text())
-        end = shared.gen.native_end(root, row, dict(config=config), row['boot'], command['pid'])
+        end = shared.gen.native_end(root, native, dict(config=config), row['boot'], command['pid'])
         raw_text = (root / 'engine.stderr').read_bytes()
         text = raw_text.decode()
         validation = shared.runtime.validation.preload_evidence(text, end['native']['pid'])
@@ -530,8 +535,12 @@ def run(index, experiment=None):
             policy.validate_model_text(text, plan)
         fields = ('actual_read_tokens', 'actual_reused_tokens', 'prompt_ms', 'prompt_tps', 'ttft_s', 'total_s',
             'generated_tokens', 'request_sha256', 'drafts_offered', 'drafts_accepted', 'timing_frontend_state')
+        routes = [policy.request_route(raw_text[w['begin']:w['end']].decode(), plan)
+                  if hasattr(policy, 'request_route') else
+                  policy.route(raw_text[w['begin']:w['end']].decode(), plan['read'], plan['heads'])
+                  for w in log_windows]
         outcome.update(complete=True, host_probe_accepted=True, native_exit_code=0, validation=validation,
-            routes=[policy.route(raw_text[w['begin']:w['end']].decode(), plan['read'], plan['heads']) for w in log_windows],
+            routes=routes,
             samples=[{k: s[k] for k in fields} for s in samples],
             subsequent_median_ms=statistics.median(s['prompt_ms'] for s in samples[1:]))
         row['request_hashes'][str(plan['read'])] = hashes
