@@ -243,6 +243,18 @@ The `gemm_submit` host region encloses adapter validation/submission,but exclude
 the earlier `vllm_state` queue lookup and the later `finish` call. CPU and queue
 intervals still require measured attribution,not an assumption that wrapper
 time is GPU math or entirely CPU arithmetic.
+The next collector check uses `tools/sycl/official_kernel_profile.py`:the retained
+indexed PTI collector,first with the CPU canary,then606submission kernels and
+62native-graph kernels from this exact official seven-executable generation.
+It qualifies source/loader/environment,known work,requested copy bytes and raw
+clock coverage before any current-generation model trace. It is not yet run.
+The selected6e40 multi-length approximation below remains historical evidence;
+the changed head/bank/residual placement is not covered by its coefficients.
+After collector admission,the current candidate needs matched32K/48K/64K/80K/
+117K time and client TTFT samples,with an unfit length and actual route/placement
+labels. Keep first-use separate;do not fit across allocation/window transitions
+or call the affine intercept a measured fixed cost. No current-generation
+multi-length predictor is qualified yet.
 Retire the temporary branch after its original
 commits are also verified reachable from the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
