@@ -335,11 +335,15 @@ columns4 before the physical262144component check. Numerical,owner,fault and
 runtime validation gates remain mandatory. The two same-build fixtures pass
 submission,17-token whole/split,seven refusal/no-write and
 1/33/65/129/8191/8192token exact comparisons,quiet validation,normal owner closure
-and no fresh fault. All three fresh performance processes beat columns4,with
-individual medians and ratios in `official_gdn_barriers3_v1`. The prospective
-component performance gate passes;the physical262144component carry/restore/
-existing-decode-tail check is next. Model PP,TTFT and decode preservation remain
-unqualified;these component queue intervals are not model throughput.
+and no fresh fault. All three fresh performance processes beat columns4:15.8867/15.8844/15.8874ms
+versus17.6269/17.6304/17.6642ms per8192tokens. The geometric-mean time ratio is
+0.90055264,about9.94%shorter. Individual first-use/warmed samples and timer
+controls remain in `official_gdn_barriers3_v1`. All seven processes close
+normally with quiet validation and no fresh fault. The262144component carry,
+midstream state restore,final prefill position and existing decode-tail comparison
+also pass. This qualifies a component/model proposal,not model PP,TTFT,decode
+performance or full-model physical context. Next:typed two-strategy startup
+selection plus prefill-only model integration and fresh qualification.
 Current original GDN/decode selections and both engine binaries remain unchanged.
 The finished GDN and resource-profile child branches are removed with original
 commits reachable from pushed `feature/sycl`;PR180to default remains blocked.
