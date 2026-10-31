@@ -18238,5 +18238,28 @@
       "review_point": "Next measured scheduling decision or research-index reconciliation;retire if no concrete retrieval consumer remains."
     },
     "new_research_scope_eligible": false
+  },
+  "qsa_topk_prefill_route_source_audit_20261031": {
+    "classification": "decision support",
+    "status": "eligible",
+    "schedulable_now": true,
+    "source_commit": "c3c36ec58bbde7acec1cd52616cb751082ffd46b",
+    "source_pins": {
+      "src/kernels/sycl/qsa_topk_prefill_early.cpp": "988b419e685d011ba82015d25e9e4c1fe5588fd99dc572390c7f650fce908d3d",
+      "include/strata/kernels/qsa_topk_prefill_early.hpp": "9ce26c4da708be887d089fab3a7c99c405b6ae22cf61868d7c1b3cf4911ca126",
+      "src/prefill/prefill.cpp": "cf399bced4bd397ae1bd2d0d5b462528e3bad428f5ea335721f6bc8c70ce71e5",
+      "cmake/sycl_backend.cmake": "6d2109a299c3141b4df27d9aee7e0a4a6d321b8721310e7bc5d1150baf68c75f",
+      "tools/sycl/topk_early_sources.py": "45517e3cf904f16a768103b7e314933276db7ac59466eb988bc653f7a9c7b78f",
+      "tools/sycl/test_topk_early.py": "b460d56668dded641bf7eb48c2c12692237d92f7e9b07607f987ca9fac5adfbc",
+      "src/kernels/sycl/qsa_select.cpp": "463a9ec02ed28125a5cd38b7b5d28784b849a4fbb199cb017042cd99078efee1"
+    },
+    "scope": "Audit the separate prefill exact-completion kernel,checked wrapper,immutable startup policy and two layer-major call sites against qualified source44636e26c and actual SYCL contracts. Excludes the not-yet-authored public-entry fixture/controller and whole-engine qualification.",
+    "actual_prerequisite_evidence": "Private component145device numerical cases and144timings passed with no fresh fault,result1a752d9a3. Current bridge11host tests passed atc3c36ec58 with exact body6099f622;original selector463a9ec unchanged. All162priorOrca dispatch resources released/absent.",
+    "report": ".cache/research/2026-10-31/qsa_topk_prefill_route_source_audit_20261031.md",
+    "report_budget_bytes": 16384,
+    "word_budget": 2000,
+    "consumer": "Main public-entry qualification and nativeLuna-max review before a bounded official-SDK component execution.",
+    "next_review": "After report settlement and native review;retire consumed body after compact source admission and exact pinned inputs are committed.",
+    "implementation_adopted": false
   }
 }

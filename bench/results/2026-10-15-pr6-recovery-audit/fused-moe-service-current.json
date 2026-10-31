@@ -45987,7 +45987,7 @@
     }
   },
   "qsa_topk_prefill_route": {
-    "stage": "source-bridge-host-correction",
+    "stage": "source-bridge-passed",
     "source_commit": "dc19a1ecb4953e1c9f1c6cf9715a823bc3b68291",
     "provenance": "Main-authored from selected6e40 and qualified44636e26c exact-completion body;repository LICENSE,no external implementation.",
     "scope": "Separate layer-major prefill kernel;default off. Original qsa_select.cpp,decode and small-input calls unchanged. Neither retained engine contains the new route.",
@@ -46038,11 +46038,39 @@
         "exit_code": 1,
         "passed": false,
         "failure": "Exact body/helper equality passed after restoring the single extraction-boundary newline. The returned digest still hashed the unterminated section;corrected to hash the same newline-terminated helper as the immutable6099f622 reference. C++ bytes and expected digest unchanged."
+      },
+      {
+        "source_commit": "c3c36ec58bbde7acec1cd52616cb751082ffd46b",
+        "command": [
+          "timeout",
+          "60s",
+          "flock",
+          "-n",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+          "python3",
+          "-B",
+          "tools/sycl/test_topk_plan.py"
+        ],
+        "tests": 11,
+        "elapsed_s": 3.952,
+        "exit_code": 0,
+        "passed": true,
+        "scope": "4752small exact-rank cases,16full-extent host cases,immutable source specialization and six prior plan controls. No native compilation or GPU execution."
       }
     ],
     "build_passed": false,
     "GPU_executed": false,
     "inference_adopted": false,
-    "next_gate": "Commit and run corrected source bridge,then qualify public-entry policy/IDs/guards/default and decode APIs with official SDK before a separately planned whole-engine comparison."
+    "next_gate": "Commit and run corrected source bridge,then qualify public-entry policy/IDs/guards/default and decode APIs with official SDK before a separately planned whole-engine comparison.",
+    "bridge_source_commit": "c3c36ec58bbde7acec1cd52616cb751082ffd46b",
+    "source_proof": {
+      "qualified_source_commit": "44636e26cd45820d3c4714a7cf91f5646670db1b",
+      "qualified_generated_candidate_sha256": "d876dc0c6653883ae540db03139cba07f35bb2239eca463ddfa8f28ee20d0529",
+      "production_kernel_body_sha256": "6099f622994c9da2a4f42dba7d4f4ccbcf711eec4d70d23e93a5dd091eafec61",
+      "original_decode_source_unchanged": true,
+      "instrumented_counter_edits_removed": 6,
+      "scope": "Kernel body/validation specialization only;policy,routing,public entry,ELF and model/decode gates remain unqualified.",
+      "production_entry_GPU_qualified": false
+    }
   }
 }
