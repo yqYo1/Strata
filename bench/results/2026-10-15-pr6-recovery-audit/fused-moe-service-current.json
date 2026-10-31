@@ -55706,7 +55706,7 @@
     }
   },
   "prefill_candidate_selection": {
-    "stage": "model_comparison_prepared",
+    "stage": "model_comparison_ready",
     "development_candidate": "split117K Down-row64",
     "historical_evidence": {
       "commit": "e45c24afec2ccc42928d97b39352f8b0c1590029",
@@ -55763,7 +55763,7 @@
       "existing_trace_reader_CPU_tests": 13,
       "retired_to_Git": true
     },
-    "next_action": "Commit official_row64_model_v1 six-process plan,run current-source frontend probes,then original/row64 matched117K PP/TTFT. No model process or new speed sample yet. Keep independent decode and physical262144 gates."
+    "next_action": "Run official_row64_model_v1 index0(row64),then the committed reversed six-process order. Frontend probes passed;no new model speed yet. Commit and retire each closed process. Independent decode and physical262144 gates remain."
   },
   "official_row64_device_v1": {
     "stage": "qualified",
@@ -56385,7 +56385,7 @@
     }
   },
   "official_row64_model_v1": {
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "75d4132c2f594cbfeb5481eb0f54bf5207c2e1c8",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binary": {
@@ -56841,7 +56841,7 @@
         "duplicate_native_rejected": true
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -56865,6 +56865,16 @@
       "limits": "No current-generation speed is inherited from historical1007.3. No automatic length dispatch,TTFT-profile adoption,sustained decode preservation,agent/task,physical262144or RESTORE qualification. Hardware saturation/ceilings remain unknown.",
       "retention": "Keep individual process/request timing/route samples and decisions. Retire successful full logs,journals,JIT/owner output after each committed closure. Retain current official generation and selected fallback for this comparison and remaining phase-specific gates."
     },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 249,
       "aggregate_sha256": "b01c1fd9f530270425b365653b590fb1c29bfdda582c3e17a6e616cc2dd39813"

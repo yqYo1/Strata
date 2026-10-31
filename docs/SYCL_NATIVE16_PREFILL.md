@@ -264,8 +264,9 @@ four matched117489-read thinking-on requests each. All seven original ELFs,
 249current benchmark/controller inputs,84providers and15full model-asset hashes
 pass preparation. First use stays separate from each subsequent-three median.
 All three paired time ratios below1 assess reproducibility without a minimum
-percentage;the1000tok/s screen and client TTFT are separate. Frontend probes and
-all six model processes remain unexecuted. Decode stays independently selected. See
+percentage;the1000tok/s screen and client TTFT are separate. Both current-source
+frontend probes now pass with normal owned closure;all six model processes remain
+unexecuted. Decode stays independently selected. See
 [the cumulative performance CSV](../bench/performance-records.csv).
 Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
 oriented,in the same binary. The planned user selector is
