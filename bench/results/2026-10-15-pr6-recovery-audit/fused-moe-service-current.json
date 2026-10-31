@@ -43906,53 +43906,14 @@
     }
   },
   "qsa_parallel_normalizer_v3": {
-    "stage": "built",
+    "stage": "closed",
     "source_commit": "e10997bdd9729de9d6b9ab9af6e7e371c918c076",
-    "inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/inputs.json",
-      "sha256": "35fb51b4b96b1b0a7e610099624acb6d8f6f65bd8de16a08c6742118edd47cdd"
-    },
-    "generator_proof": {
-      "original_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-      "original_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
-      "generated_sha256": {
-        "original.cpp": "9e8e38810887bcab2dfd2ffb6ad77dec5c6bb41e75665ac1dbbabaf77db72a91",
-        "candidate.cpp": "3391809a26f9a58b61b8d28cc99cbf48930e6a06ac1a33c7bb84b3974926f8ce",
-        "qsa-head.hpp": "db97f07d588579c2666fbcba86f521c29f9301ea98e2a93dea379f2f0d559f44"
-      },
-      "geometry": "Same M8,N16,K16,WG128,SG16,16padded/12real heads;bothsize_t IDs.",
-      "reversible_geometry_edits": 0,
-      "reversible_math_edits": 1,
-      "reversible_common_diagnostic_edits": 7,
-      "declared_local_bytes": 20036,
-      "production_or_decode_changed": false,
-      "trace_layout": "Capture only:ceil(cap/32)*64uint32words(per tile32FP32p bits+32BF16PVbits),then256FP32A bits+256pre-BF16normalized bits. Allwrites validated disjoint;normal speed exports have no capture stores.",
-      "preservation": "Only normalizer fold changes;same common p/alpha/max/PV/order/geometry/barriers. Fullinstrumented/uninstrumented correspondence,groupmapping,denormal/mathmode and interval/state/task/performance qualification pending. ClosedID-int source recovers at1a2583fb0."
-    },
-    "sdk": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
-      "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
-      "files": 10945,
-      "packages": [
-        "intel-oneapi-compiler-dpcpp-cpp-runtime-2026.2 2026.2.0-863",
-        "intel-oneapi-dpcpp-cpp-2026.2 2026.2.0-863",
-        "intel-oneapi-umf-1.2 1.2.0-116"
-      ],
-      "origin": "Official Intel apt packages;all3035vendor files exactly match original independently qualified snapshot.",
-      "original_manifest": {
-        "commit": "e64229a83",
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
-        "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
-        "vendor_files": 3035
-      },
-      "verification_limit": "Original broad44-package preparation failed on pkgconfig metadata,including unrelated MKL/IPP;that failure remains. This new scope checks exact compiler/UMF vendor bytes against original Git-bound proof and separately freezes current host headers. No legacy SDK reuse or hash refresh."
-    },
-    "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
-    "selected_binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22190000,
-      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
-    },
+    "build_passed": true,
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
     "driver": {
       "pci": "/sys/bus/pci/devices/0000:05:00.0",
       "driver": "xe",
@@ -43961,604 +43922,10 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "runtime_files": {
-      "/usr/lib/x86_64-linux-gnu/libz.so.1.3": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242",
-      "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
-      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
-      "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
-      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
-      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
-      "/usr/lib/x86_64-linux-gnu/libnl-3.so.200.26.0": "afcb69e2ef0b46c2ce7b7483848332fa9462776d33163f64209acf01f86eddd7",
-      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.134.0": "0603c4dcb88bc9e076e34aedeec3513038e608d6d15d21330e49cb0ea38155e1",
-      "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.240": "1806ee390b7693dd61dd5385a25744dd94479295d3a7d15730e578e91b18e782",
-      "/usr/local/lib/libigc.so.2.41.5+1788943183": "40badd8f1ee80ac844a8947f5e91e5654fbcd851caefe343b0e5ec4ce4d1b123",
-      "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5": "0a2128bc10841fb29e76d08d945864dfb0b6a66da5df6df5d8299197439e54bb",
-      "/usr/local/lib/libopencl-clang2.so.22.1": "02ba9fb0f16b7f02c012095c46f8053c4bc20f9b5bde3028eedff6dcfed94bfe",
-      "/usr/local/lib/libigdfcl.so.2.41.5+1788943183": "ece8bcd533a44cc1684c1f24eeeca3302e4d19307a806fad5f1b83171f9fc1c3",
-      "/usr/lib/x86_64-linux-gnu/libze_tracing_layer.so.1.32.0": "db1856f379706d51b6ded84ce028d4aa48740ef63793f60e8a1e027c6db6ffb5",
-      "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957",
-      "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758": "52e29a602f92d3542eac91e20717743e63ca7d4b257d0c79a3c4d6c64c94ea49",
-      "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0": "b764efda507f173560fa6055d433dd5c76140180b4a7c532e1cea813cde67363",
-      "/usr/lib/x86_64-linux-gnu/libcap.so.2.66": "6ac6abc86ac891c6e13486470e26f1d939f47fda9e6b5d5508a7f5ec881adc84",
-      "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269",
-      "/usr/lib/x86_64-linux-gnu/libhwloc.so.15.7.0": "86dff44a023254d997cea910b9a51f35afefe6780f4b5530f974a2009ba47487",
-      "/usr/lib/x86_64-linux-gnu/libnl-genl-3.so.200.26.0": "0757db7e6c5fbc4d2a8bbedbac7061fbb8ebb6196b4d2954d3a321e9ff76933c",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
-      "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
-      "/usr/lib/x86_64-linux-gnu/libdl.so.2": "c2994527172cc23b7fb0f7d611b71e00a37da27af12c2e5e9e0dc1a742886c96",
-      "/usr/lib/x86_64-linux-gnu/libpthread.so.0": "90491a21ce44efcf3bd4b65ec82501c091d7ebe7f8d9b341dd01d721001d9ecd",
-      "/usr/lib/x86_64-linux-gnu/libmetee.so.6.2.5.0": "b6c51aa06b74e545fada790ccef7eb33256f67087ea8e1dfbea6466b1c20b2bf",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.so": "b3beb0aaa614cfcd1f1f6245516911764614fb2c6cfe6290109790f011967a59",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.memprof.so": "f02df5740bb784748bfaa5076c917eae2340234d0e3706005412aadf51565b1a",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.nsan.so": "6ded41376e0ede0b315633db038e90f560e93bf03808a39b0c1cdfaed0f57f54",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.tsan.so": "13b9f31f73198d0062067cecdf2d42fd5eecde62087b8bce5e37d1439e80dabe",
-      "/opt/intel/oneapi/compiler/2026.2/lib/clang/23/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone.so": "b84b84e5ebabac47b6fa2fb233ea59a3be764215af87513656707b67052ebfed",
-      "/opt/intel/oneapi/compiler/2026.2/lib/icx-lto.so": "9da0cef9864a5c974983459bb05138eb2019cac81ad4b1b9c337c179213db34f",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libOpenCL.so.1.0.0": "cc04e15b3cddd6f62af2503b9b03c592dc32de3450e387da6b6965d49a9eda28",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libarcher.so": "f8f4332ed8d895beebf898eb07458b93bc75ed208705bcb29813652c043d8e1c",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libcommon_clang.so.2026.22.10.0": "50dc16df5c663ab7a74e2c5ad07546f0a5d8d88213fc14214157080014cdd627",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libicaf.so": "daa0eef98686b550bc81bf4ef43ba9529864fea1e7a4e57aedfd0b7be4a3a6a5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libifcore.so.5": "18394e8f53b4ed2062dde321a2689e5a60c3ccb91fda9f10607fdfe6c9ffbc9a",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libifcoremt.so.5": "2fde204ac7a2473ae6b59ac042c0318bd5ba93ffc2e24c8a0169b98609d8f61e",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libifport.so.5": "5084a00c25146d9c10d0796f432936157d8f44260d2c239a74205ae385a607d7",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libimf.so": "352cc8d53ceca3a9d50a14479297aff23af0f3d773f073dfe6597e66de8f0b9b",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libintelocl.so.2026.22.10.0": "af51ca856b48bbd073f4f555ff4f15cbfc209aaf14c58448be9de22cf915f28c",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libintlc.so.5": "f16c5e1cad3b3363903afca39def3bfa42dd4f41e8c892fea019103767f1a089",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libiomp5.so": "7d4777c0bf44310fdbd85db70e5e8a7b1e048b0c7bb20f03b54279223a3fb728",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libiomp5_db.so": "00008b59df8dbac125f8838fdea29675c6f93b0e77a917c46609e183c89915b5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libiompstubs5.so": "2d268b7aba183694fc3517f51254e31deb0f30ddba8b55fc5599f981dabdc0ca",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libirc.so": "b5abad56eade71b1a65e841d646ba192ff625ff7d82b28bea74c38d81d66cbb6",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libirng.so": "8e014b69e3c1ea2235c1f98bd70eb1083d35bd39a793f521230c96e865b38db6",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libistrconv.so": "3030f5b4fa47b554b80e9e304c2b1ad2b38e707e486912a122601fc976deead5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_e9.so": "a73a5954135e73e1e60b0e99d1a0347808915a6ab9ed6d23a4271a01045d53aa",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_h8.so": "00c8c20e9d41f70a24913c08a60782109df7a5e084caa37befa4bb4b8c6d0705",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_l9.so": "6972aee87af6f45bcbcd56e4136943c573b953bba393928ecdce4057734a15c3",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_z0.so": "776c7200988b029125d955b52abdcd2e9a0dc83802f2b42c0251ee5ed0ac24f8",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libocl_svml_z1.so": "00720225aa4889c22b35d1d861c9f314870d9b7c32baaf3f1e2b86e5c23db660",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libomptarget.so": "aa3b313ce947a2a8845dcf90c52f4318d49611c035a7ead207a8ab12ec2b1bfd",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libomptarget.sycl.wrap.so": "86bd45b500e14b4418836c4415e1b500bd95dbf819c88a6ea9de978fc8a12380",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libpstloffload.so.1.0.0": "e4bd266de083541a29260fb2e799e2c25fb9d67ec0b9d4e2155f7c28de2708a0",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libqkmalloc.so": "ae9cab245ad593ebc22324b5f25c8621e6153fa2dcfa9259b2cba9047bcbb31f",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.so": "b2cf661fb044dc02d5901113841a294c3a95ce62a38270a396ed8b52680f9ba8",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-jit.so": "ba6e03d3322f8ede884ea6a1c2787d85ac7f40d26e6701bdad0009c2c5ad39f0",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-jit.so.23.1": "ba6e03d3322f8ede884ea6a1c2787d85ac7f40d26e6701bdad0009c2c5ad39f0",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-preview.so.9": "bdf6a93da8211fd733fc5e724a7c56509895ffe61d7a875acf4b63aeae202b63",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-preview.so.9.0.0": "bdf6a93da8211fd733fc5e724a7c56509895ffe61d7a875acf4b63aeae202b63",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libsycl_ur_trace_collector.so": "7feaa99a139d2782acd77b3d01965c8b7652bc423e44601f943826a2829e8718",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero.so.0.12.0": "5e00b2a2fbab5a04d4896a91cdf1ee7d1c38a43ef29262f74401cafa3091b9c5",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0": "ee33dae4d85948ad72f053f3e9c7e2cf0c30cc6339a35bfd92f6be0caac6364e",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0.12.0": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_sanitizer_layer.so": "f169190ff779c6be2b0aac2931473d2c16856ab5492ea224005884ea55aa3b89",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_sanitizer_layer.so.0": "f169190ff779c6be2b0aac2931473d2c16856ab5492ea224005884ea55aa3b89",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libur_sanitizer_layer.so.0.12.0": "f169190ff779c6be2b0aac2931473d2c16856ab5492ea224005884ea55aa3b89",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libxptifw.so.1.0.1": "e86145b0ca073c019b791d59ad877d49df7165c9190b1ec300f0b073914e9ddd",
-      "/opt/intel/oneapi/compiler/2026.2/lib/libze_trace_collector.so": "a00f737a911f1bf1cb177daca5d41d15442d2a8da3cec396d33ce8548ace91a7",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++.so.1": "4b134a710cea74aac1bcf1d37a1e0d4117e0896c317a91e0c207cf0226aaf985",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++.so.1.0": "4b134a710cea74aac1bcf1d37a1e0d4117e0896c317a91e0c207cf0226aaf985",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++abi.so": "59d8d82dddf187b058f9c6561cbcb8a6170534bdc6491ee1469557dbc996e61f",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++abi.so.1": "59d8d82dddf187b058f9c6561cbcb8a6170534bdc6491ee1469557dbc996e61f",
-      "/opt/intel/oneapi/compiler/2026.2/opt/compiler/lib/x86_64-unknown-linux-gnu/libc++abi.so.1.0": "59d8d82dddf187b058f9c6561cbcb8a6170534bdc6491ee1469557dbc996e61f",
-      "/opt/intel/oneapi/umf/1.2/lib/libumf.so.1.2.0": "122651d7860e67d17f01ac0b44f12d4532fb341fa85f6e8837e562da1aa0c038",
-      "/usr/lib/x86_64-linux-gnu/librt.so.1": "6d072187d88e092e81561a44c03a4a41397319022c6d43519757cc051c576d82",
-      "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5"
-    },
-    "preload": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "canary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
-        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
-      },
-      "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-      "original_plan": {
-        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
-        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
-      },
-      "source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
-      "retained_reference_until_exit": true,
-      "ordinary_runtime_teardown_qualified": false
-    },
-    "host_link_inventory": {
-      "files": {
-        "/usr/bin/x86_64-linux-gnu-ld.bfd": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
-        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
-        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
-        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
-        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
-        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
-        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
-        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
-        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
-        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
-        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
-        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
-        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
-        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5"
-      },
-      "compiler_queries": [
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-prog-name=ld"
-          ],
-          "reported": "/usr/bin/ld",
-          "resolved": "/usr/bin/x86_64-linux-gnu-ld.bfd"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=crtbeginS.o"
-          ],
-          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
-          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=crtendS.o"
-          ],
-          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
-          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libgcc.a"
-          ],
-          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
-          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libgcc_s.so"
-          ],
-          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
-          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=Scrt1.o"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/Scrt1.o",
-          "resolved": "/usr/lib/x86_64-linux-gnu/Scrt1.o"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=crti.o"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/crti.o",
-          "resolved": "/usr/lib/x86_64-linux-gnu/crti.o"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=crtn.o"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/crtn.o",
-          "resolved": "/usr/lib/x86_64-linux-gnu/crtn.o"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libc.so"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/libc.so",
-          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libc_nonshared.a"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/libc_nonshared.a",
-          "resolved": "/usr/lib/x86_64-linux-gnu/libc_nonshared.a"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libdl.a"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/libdl.a",
-          "resolved": "/usr/lib/x86_64-linux-gnu/libdl.a"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libm.so"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/libm.so",
-          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libmvec.so.1"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/libmvec.so.1",
-          "resolved": "/usr/lib/x86_64-linux-gnu/libmvec.so.1"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-fsycl",
-            "-print-file-name=libpthread.a"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/libpthread.a",
-          "resolved": "/usr/lib/x86_64-linux-gnu/libpthread.a"
-        }
-      ],
-      "packages": [
-        "binutils-x86-64-linux-gnu 2.42-4ubuntu2.10",
-        "libc6:amd64 2.39-0ubuntu8.9",
-        "libc6-dev:amd64 2.39-0ubuntu8.9",
-        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1"
-      ],
-      "scope": "Exact host linker,CRT,archive/linker-script and math-library bytes from official driver queries. No GPU runtime,safety key or old failure status is changed."
-    },
-    "predecessor": "qsa_parallel_normalizer_v2 remains build-failed:all8commands exited0,but host linker inventory lacked the GNU linker/13system link inputs. No GPU execution or qualification inherited. This new scope prospectively queries and freezes those host files under the actual build environment.",
-    "commands": [
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-g0",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-fno-fast-math",
-        "-ffp-contract=off",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/0.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/0.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-g0",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-fno-fast-math",
-        "-ffp-contract=off",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/1.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/1.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-g0",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-fno-fast-math",
-        "-ffp-contract=off",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/2.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/2.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-g0",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-fno-fast-math",
-        "-ffp-contract=off",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/3.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/prompt_attention.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/3.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-g0",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-fno-fast-math",
-        "-ffp-contract=off",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/4.d",
-        "-c",
-        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_normalizer.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/4.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-g0",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-fno-fast-math",
-        "-ffp-contract=off",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/5.d",
-        "-c",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated/original.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/5.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-std=c++20",
-        "-O3",
-        "-DNDEBUG",
-        "-g0",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-fno-fast-math",
-        "-ffp-contract=off",
-        "-DSTRATA_ENABLE_SYCL=1",
-        "-pthread",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
-        "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
-        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated",
-        "-MD",
-        "-MF",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/6.d",
-        "-c",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/generated/candidate.cpp",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/6.o"
-      ],
-      [
-        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-pthread",
-        "-save-temps=obj",
-        "-v",
-        "-Wl,-t",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/0.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/1.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/2.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/3.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/4.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/5.o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/6.o",
-        "-ldl",
-        "-o",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/normalizer_probe"
-      ]
-    ],
-    "build_workdir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3",
-    "build_environment": {
-      "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-      "OMP_NUM_THREADS": "1",
-      "GIT_TERMINAL_PROMPT": "0",
-      "GIT_SSH_COMMAND": "ssh -oBatchMode=yes",
-      "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/compiler/2026.2/include",
-      "PIP_CONFIG_FILE": "/dev/null",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/cache",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/tmp"
-    },
-    "native_environment": {
-      "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
-      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "ZES_ENABLE_SYSMAN": "0",
-      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
-      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
-      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/cache",
-      "CPLUS_INCLUDE_PATH": "/opt/intel/oneapi/compiler/2026.2/include"
-    },
-    "cases": [
-      {
-        "kind": "host-canary"
-      },
-      {
-        "kind": "properties",
-        "argv": [
-          "--properties",
-          "/usr/lib/x86_64-linux-gnu/libze_loader.so.1.32.0"
-        ]
-      },
-      {
-        "kind": "smoke",
-        "argv": [
-          "--smoke"
-        ]
-      },
-      {
-        "kind": "numerics",
-        "argv": [
-          "--numerics"
-        ]
-      },
-      {
-        "kind": "compare",
-        "argv": [
-          "--compare",
-          "0"
-        ]
-      },
-      {
-        "kind": "compare",
-        "argv": [
-          "--compare",
-          "1"
-        ]
-      },
-      {
-        "kind": "compare",
-        "argv": [
-          "--compare",
-          "2"
-        ]
-      }
-    ],
-    "build_limits": {
-      "wall": 300,
-      "cpu": 900,
-      "rss_cap": 6442450944,
-      "text_cap": 16777216,
-      "file_cap": 268435456,
-      "total_cap": 536870912
-    },
-    "run_limits": {
-      "wall": 600,
-      "cpu": 900,
-      "rss_cap": 5368709120,
-      "text_cap": 33554432,
-      "file_cap": 134217728,
-      "total_cap": 536870912
-    },
-    "active": false,
-    "ownership_closed": true,
-    "passed": false,
-    "contract": {
-      "framework": "SGLang",
-      "revision": "877be2974aa151a984e52822c028276c2b1e9303",
-      "test": {
-        "path": "test/registered/kernels/ops/attention/qsa/test_qsa.py",
-        "sha256": "99277da69b1a2505015a8bb393875e4bcff823defd44009e4641c10e53d01098",
-        "cases": "test_qsa_sm121_compaction_and_attention_match_sparse_reference: BF16 Q, K/V,head_dim256,24query/2KVheads,valid17/911/2051;compares alternate attention output with qsa_sparse_attention at rtol=atol=0.02. FP8-prefix tests also use0.02 but are distinct. Packing-only tests use exact0 and do not define math tolerance.",
-        "limits": "This output criterion is not an FP32 denominator/state budget or observed local SGLang execution. Do not silently broaden it to intermediate state. Candidate still needs a prospectively committed concrete comparator/task/performance plan."
-      },
-      "comparator": "Both arms versus independent FP64 dense attention over the same BF16 Q/K/V operands,and candidate versus original:every finite output abs(a-b)<=0.02+0.02*abs(b). This adopts the pinned BF16 attention-output test criterion,not an intermediate-state tolerance or observed local SGLang run.",
-      "state": "For4real/padded coordinates each numerical case,exact probability/BF16-PV,maximum/alpha and final FP32PVaccumulator bits. Only denominator/sum may differ;record their maximum delta,require finite nonnegative. Captured output equals its own uninstrumented arm. Repeat each normal arm with identical output bits. All inputs and allocation guards unchanged.",
-      "repeatability": "Per-arm exact repeats and3deliberate comparator refusals;no guessed epsilon for FP32state. Independent host reference and cross-arm output checks are not a task-quality result.",
-      "task": "A component pass permits only a new long-prefill model trial. Before adoption require matched bench.sh long+agent session and thinking>=1K output in observed MTP-friendly/weak workloads;no newly failing previously passing objective task. Repeated decode preservation and physical262144 fill/tails/handoff/RESTORE remain mandatory. Generated text need not match."
-    },
-    "numerical_plan": "Official host canary;4compiled normal/state kernel properties before enqueue;traced17cell/17width/1query/page4smoke;then23numerical cases:page4/16,widths1/31/32/33/65/2051,3queries with masked rows;ones,dominant,subnormal/underflow-region scores and both online max-transition orders over65positions;final physical262144-KV-address component. Source/review/owner/preinit/provider/env/normalexit/no-fault gates throughout. This is not full-model262144 qualification.",
-    "performance_plan": "3fresh processes;4scenarios(context32768/117488 x contiguous/gapped),8192queries,cap2051,page4,batch8. Both arms warm once untimed;retain first timing pair(-1) separately,then3rotating matched pairs(0..2).96timing batches total. Each wall>=100ms,timer1000p99<=10us,5empty-control median<=5percent smallest batch. Record pack+attention events and enclosing wall;output checks outside timer.",
-    "acceptance": "All execution/numerical gates pass. For EACH wall,attention,and(pack+attention),all12process/scenario median candidate/original ratios<=1 and geometric mean<=0.99. Stop first source/runtime/owner/fault/budget/correctness failure;no retry,replacement,exclusion or speed-based stop. A performance miss prohibits model trial;component success is not inference adoption.",
-    "resource_hypothesis": "Current9a79QSA-prefix27.081s of134.659s request. Replace32uniform subgroup exchanges and lane0serial additions with one FP32group reduction of p0+p1,leaving exp,DPAS,storage/memory traffic,geometry and queues fixed. This tests dependency/issue cost,not arithmetic or VRAM saturation;matched physical ceilings remain unknown.",
-    "provenance": "Independent Main generator/source recovered from73414ebc2 against exact selected6e40prefix. New fixture/controller are Main-authored under repository LICENSE. SGLang is an Apache2algorithm/criterion reference;no source/test copied. XeStrata excluded.",
-    "retention": "One imminent component executable;selected6e40and9a79engines/required fixtures unchanged,no third engine. Keep compact numerical/state/refusal outcomes,individual96timings,exact source/recipe/SDK/executable identities. Retire component objects,normal traces,generated snapshots and consumed review at decision after exact Git recovery. Independent legacy holds remain.",
-    "host_controls": {
-      "source_commit": "e10997bdd9729de9d6b9ab9af6e7e371c918c076",
-      "path": "tools/sycl/test_qsa_normalizer.py",
-      "sha256": "00bd109cd92911e9701aa2815decbfbc69ca8f1caaa3b98a0d326f9ef4b45d92",
-      "tests": 9,
-      "passed": true,
-      "command": [
-        "timeout",
-        "60s",
-        "flock",
-        "-n",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
-        "python3",
-        "-B",
-        "tools/sycl/test_qsa_normalizer.py"
-      ],
-      "scope": "Host-only gate refusal checks after controller-only link inventory amendment;no GPU qualification."
-    },
-    "build_passed": true,
+    "runtime_sha256": "09ad358e12f6ef58bfc0a978519927863f3d09949a033a1e224db95997647d97",
+    "fresh_faults": [],
+    "original_plan_commit": "29e5cff5e",
+    "original_build_commit": "0353cb803",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/normalizer_probe",
       "bytes": 1389192,
@@ -44576,28 +43943,989 @@
       "frozen": 25,
       "uncovered": 0
     },
+    "source_recovery": {
+      "project_files": 203,
+      "generated_files": 3,
+      "compiled_inputs": 726,
+      "compiled_uncovered": 0,
+      "link_inputs": 25,
+      "link_uncovered": 0,
+      "recipe": "0353cb803 retains the exact8compile/link commands,official SDK manifest and frozen host-link inventory."
+    },
+    "mechanism": "Only the32-term sequential FP32 denominator fold changes to a SG16 sum;private component namespaces,production/decode unchanged.",
+    "numerical": {
+      "passed": true,
+      "host_canary": true,
+      "property_queries": [
+        {
+          "arm": "1",
+          "subgroup": "16",
+          "static_local": "32",
+          "spill": "2944",
+          "PASS": "1"
+        },
+        {
+          "arm": "1",
+          "subgroup": "16",
+          "static_local": "32",
+          "spill": "12480",
+          "PASS": "1"
+        },
+        {
+          "arm": "0",
+          "subgroup": "16",
+          "static_local": "32",
+          "spill": "12480",
+          "PASS": "1"
+        },
+        {
+          "arm": "0",
+          "subgroup": "16",
+          "static_local": "32",
+          "spill": "3008",
+          "PASS": "1"
+        }
+      ],
+      "traced_smoke": "17cells,width17,1query,page4;full trace and parameter validation accepted.",
+      "cases": 23,
+      "coverage": "Page4/16,widths1/31/32/33/65/2051,masked3queries;ones,dominant,underflow-region scores,both online maximum orders;physical262144-KV-address fixture.",
+      "output_rtol": 0.02,
+      "output_atol": 0.02,
+      "output_contract_source": "SGLang877be2974 BF16QSA test SHA99277da69b1a2505015a8bb393875e4bcff823defd44009e4641c10e53d01098",
+      "oracle_maximum_budget_ratio": 0.00648760889975,
+      "cross_arm_maximum_budget_ratio": 0.00301313727853,
+      "normalizer_maximum_absolute_delta": 0.0001220703125,
+      "exact_captured_coordinates_per_case": 4,
+      "captured_probability_PV_maximum_alpha_accumulator_bits": "unchanged in all24smoke/numerical cases",
+      "per_arm_exact_output_repeats": true,
+      "full_input_pack_guard_checks": true,
+      "comparator_refusals_per_native_process": 3,
+      "limits": "Four captured coordinates are not complete intermediate-state coverage;physical-address fixture is not full-model262144fill/handoff/RESTORE."
+    },
+    "timing": {
+      "scenario_columns": [
+        "cells",
+        "gapped"
+      ],
+      "scenarios": [
+        [
+          32768,
+          0
+        ],
+        [
+          32768,
+          1
+        ],
+        [
+          117488,
+          0
+        ],
+        [
+          117488,
+          1
+        ]
+      ],
+      "constants": {
+        "queries": 8192,
+        "cap": 2051,
+        "page": 4,
+        "batch": 8
+      },
+      "sample_columns": [
+        "scenario",
+        "repetition",
+        "arm",
+        "wall_s",
+        "pack_s",
+        "attention_s"
+      ],
+      "first_timing_pair": "repetition-1 after one untimed warm call per arm;not cold JIT first use.",
+      "subsequent_repetitions": [
+        0,
+        1,
+        2
+      ],
+      "arm0": "original",
+      "arm1": "parallel denominator",
+      "cohorts": [
+        {
+          "process": 0,
+          "pid": 3626429,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "elapsed_s": 265.89173102821223,
+          "samples": [
+            [
+              0,
+              -1,
+              0,
+              6.423508542,
+              0.00392979,
+              6.418780416
+            ],
+            [
+              0,
+              -1,
+              1,
+              6.430642599,
+              0.003943957,
+              6.42543375
+            ],
+            [
+              0,
+              0,
+              1,
+              6.424133274,
+              0.003896564,
+              6.41944198
+            ],
+            [
+              0,
+              0,
+              0,
+              6.426436805,
+              0.0038975,
+              6.421712189
+            ],
+            [
+              0,
+              1,
+              0,
+              6.418171914,
+              0.003895937,
+              6.413476561
+            ],
+            [
+              0,
+              1,
+              1,
+              6.433705805,
+              0.003941354,
+              6.428920626
+            ],
+            [
+              0,
+              2,
+              1,
+              6.438236817,
+              0.003925835,
+              6.432883229
+            ],
+            [
+              0,
+              2,
+              0,
+              6.424656329,
+              0.003891458,
+              6.419969376
+            ],
+            [
+              1,
+              -1,
+              1,
+              8.398782034,
+              0.003864793,
+              8.393959481
+            ],
+            [
+              1,
+              -1,
+              0,
+              8.370300051,
+              0.003821354,
+              8.364860937
+            ],
+            [
+              1,
+              0,
+              0,
+              8.365391622,
+              0.00382,
+              8.360631979
+            ],
+            [
+              1,
+              0,
+              1,
+              8.387452685,
+              0.003814481,
+              8.380498648
+            ],
+            [
+              1,
+              1,
+              1,
+              8.385257369,
+              0.003857917,
+              8.37986146
+            ],
+            [
+              1,
+              1,
+              0,
+              8.36354164,
+              0.003817915,
+              8.35879573
+            ],
+            [
+              1,
+              2,
+              0,
+              8.366621579,
+              0.003821562,
+              8.361862396
+            ],
+            [
+              1,
+              2,
+              1,
+              8.374929912,
+              0.003817292,
+              8.370203437
+            ],
+            [
+              2,
+              -1,
+              0,
+              6.446880348,
+              0.01423,
+              6.431622605
+            ],
+            [
+              2,
+              -1,
+              1,
+              6.440855554,
+              0.014157708,
+              6.425900313
+            ],
+            [
+              2,
+              0,
+              1,
+              6.444429519,
+              0.01414802,
+              6.429484792
+            ],
+            [
+              2,
+              0,
+              0,
+              6.435310711,
+              0.014163959,
+              6.420350937
+            ],
+            [
+              2,
+              1,
+              0,
+              6.437374217,
+              0.01417281,
+              6.422428332
+            ],
+            [
+              2,
+              1,
+              1,
+              6.452889321,
+              0.014211562,
+              6.437259273
+            ],
+            [
+              2,
+              2,
+              1,
+              6.448704664,
+              0.014152396,
+              6.433551356
+            ],
+            [
+              2,
+              2,
+              0,
+              6.436687179,
+              0.014187708,
+              6.421711041
+            ],
+            [
+              3,
+              -1,
+              1,
+              9.140582004,
+              0.014134373,
+              9.125513333
+            ],
+            [
+              3,
+              -1,
+              0,
+              9.122046312,
+              0.014105729,
+              9.106975938
+            ],
+            [
+              3,
+              0,
+              0,
+              9.12119367,
+              0.014109689,
+              9.106139376
+            ],
+            [
+              3,
+              0,
+              1,
+              9.130049113,
+              0.014104063,
+              9.114981874
+            ],
+            [
+              3,
+              1,
+              1,
+              9.136858147,
+              0.014090416,
+              9.121832605
+            ],
+            [
+              3,
+              1,
+              0,
+              9.107253536,
+              0.014075416,
+              9.092235831
+            ],
+            [
+              3,
+              2,
+              0,
+              9.113021477,
+              0.014076873,
+              9.09779146
+            ],
+            [
+              3,
+              2,
+              1,
+              9.138253424,
+              0.014075001,
+              9.12304698
+            ]
+          ],
+          "timer": {
+            "samples": "1000",
+            "p99_ns": "90",
+            "resolution_ns": "1"
+          },
+          "empty_controls_s": [
+            0.001242129,
+            8.7837e-05,
+            8.0013e-05,
+            8.1145e-05,
+            7.7899e-05,
+            8.0343e-05
+          ]
+        },
+        {
+          "process": 1,
+          "pid": 3637057,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "elapsed_s": 265.9841459048912,
+          "samples": [
+            [
+              0,
+              -1,
+              1,
+              6.435503,
+              0.003928542,
+              6.430816876
+            ],
+            [
+              0,
+              -1,
+              0,
+              6.421153749,
+              0.003893854,
+              6.416482397
+            ],
+            [
+              0,
+              0,
+              0,
+              6.418070162,
+              0.003895414,
+              6.413409165
+            ],
+            [
+              0,
+              0,
+              1,
+              6.426441038,
+              0.00389448,
+              6.421793856
+            ],
+            [
+              0,
+              1,
+              1,
+              6.437272226,
+              0.003893854,
+              6.432610832
+            ],
+            [
+              0,
+              1,
+              0,
+              6.426189512,
+              0.003894687,
+              6.421543125
+            ],
+            [
+              0,
+              2,
+              0,
+              6.423307254,
+              0.003893542,
+              6.418653543
+            ],
+            [
+              0,
+              2,
+              1,
+              6.42825277,
+              0.00389677,
+              6.422924271
+            ],
+            [
+              1,
+              -1,
+              0,
+              8.373787308,
+              0.00385354,
+              8.368426771
+            ],
+            [
+              1,
+              -1,
+              1,
+              8.388634219,
+              0.003820001,
+              8.383726457
+            ],
+            [
+              1,
+              0,
+              1,
+              8.384965646,
+              0.003821145,
+              8.380267084
+            ],
+            [
+              1,
+              0,
+              0,
+              8.362355349,
+              0.003853439,
+              8.357017918
+            ],
+            [
+              1,
+              1,
+              0,
+              8.36035502,
+              0.003822502,
+              8.355656149
+            ],
+            [
+              1,
+              1,
+              1,
+              8.38832035,
+              0.003818854,
+              8.383622083
+            ],
+            [
+              1,
+              2,
+              1,
+              8.393151646,
+              0.003819688,
+              8.388447811
+            ],
+            [
+              1,
+              2,
+              0,
+              8.364993054,
+              0.003817813,
+              8.360287396
+            ],
+            [
+              2,
+              -1,
+              1,
+              6.45477555,
+              0.014227187,
+              6.439785834
+            ],
+            [
+              2,
+              -1,
+              0,
+              6.443264167,
+              0.014203021,
+              6.427662604
+            ],
+            [
+              2,
+              0,
+              0,
+              6.444112014,
+              0.014185416,
+              6.429169688
+            ],
+            [
+              2,
+              0,
+              1,
+              6.438353234,
+              0.0141575,
+              6.423433125
+            ],
+            [
+              2,
+              1,
+              1,
+              6.449534123,
+              0.014192396,
+              6.434577812
+            ],
+            [
+              2,
+              1,
+              0,
+              6.436524374,
+              0.014152709,
+              6.421623022
+            ],
+            [
+              2,
+              2,
+              0,
+              6.438578815,
+              0.014193856,
+              6.422893126
+            ],
+            [
+              2,
+              2,
+              1,
+              6.447299124,
+              0.014157292,
+              6.432403125
+            ],
+            [
+              3,
+              -1,
+              0,
+              9.12054324,
+              0.014150625,
+              9.105487811
+            ],
+            [
+              3,
+              -1,
+              1,
+              9.143620672,
+              0.014108335,
+              9.128618126
+            ],
+            [
+              3,
+              0,
+              1,
+              9.135874513,
+              0.014119793,
+              9.120854583
+            ],
+            [
+              3,
+              0,
+              0,
+              9.117775457,
+              0.014120416,
+              9.102755834
+            ],
+            [
+              3,
+              1,
+              0,
+              9.11620264,
+              0.014086563,
+              9.100964376
+            ],
+            [
+              3,
+              1,
+              1,
+              9.126825204,
+              0.014090937,
+              9.111857293
+            ],
+            [
+              3,
+              2,
+              1,
+              9.135840835,
+              0.014096563,
+              9.12062979
+            ],
+            [
+              3,
+              2,
+              0,
+              9.124655692,
+              0.014125209,
+              9.108984584
+            ]
+          ],
+          "timer": {
+            "samples": "1000",
+            "p99_ns": "141",
+            "resolution_ns": "1"
+          },
+          "empty_controls_s": [
+            0.010193914,
+            9.1453e-05,
+            8.8238e-05,
+            8.2577e-05,
+            8.431e-05,
+            7.7557e-05
+          ]
+        },
+        {
+          "process": 2,
+          "pid": 3649291,
+          "exit_code": 0,
+          "ownership_closed": true,
+          "elapsed_s": 265.9397291520145,
+          "samples": [
+            [
+              0,
+              -1,
+              0,
+              6.4199744,
+              0.003927394,
+              6.415310934
+            ],
+            [
+              0,
+              -1,
+              1,
+              6.433427461,
+              0.003894688,
+              6.428787188
+            ],
+            [
+              0,
+              0,
+              1,
+              6.425609406,
+              0.003898542,
+              6.420972501
+            ],
+            [
+              0,
+              0,
+              0,
+              6.425112351,
+              0.003925314,
+              6.419846458
+            ],
+            [
+              0,
+              1,
+              0,
+              6.429251407,
+              0.003896355,
+              6.424631251
+            ],
+            [
+              0,
+              1,
+              1,
+              6.434098903,
+              0.003896978,
+              6.42942427
+            ],
+            [
+              0,
+              2,
+              1,
+              6.430871971,
+              0.003891978,
+              6.426236874
+            ],
+            [
+              0,
+              2,
+              0,
+              6.419474787,
+              0.003895209,
+              6.414647187
+            ],
+            [
+              1,
+              -1,
+              1,
+              8.395984873,
+              0.003869583,
+              8.391271667
+            ],
+            [
+              1,
+              -1,
+              0,
+              8.370205737,
+              0.003854062,
+              8.365319587
+            ],
+            [
+              1,
+              0,
+              0,
+              8.372703522,
+              0.003853438,
+              8.367336873
+            ],
+            [
+              1,
+              0,
+              1,
+              8.387706038,
+              0.003823021,
+              8.38304573
+            ],
+            [
+              1,
+              1,
+              1,
+              8.375974598,
+              0.003819999,
+              8.371330104
+            ],
+            [
+              1,
+              1,
+              0,
+              8.36533585,
+              0.003853648,
+              8.360645104
+            ],
+            [
+              1,
+              2,
+              0,
+              8.368985033,
+              0.003819791,
+              8.364306979
+            ],
+            [
+              1,
+              2,
+              1,
+              8.378433043,
+              0.003821457,
+              8.373137188
+            ],
+            [
+              2,
+              -1,
+              0,
+              6.452640328,
+              0.014203436,
+              6.437703436
+            ],
+            [
+              2,
+              -1,
+              1,
+              6.440652757,
+              0.01413823,
+              6.425546875
+            ],
+            [
+              2,
+              0,
+              1,
+              6.436937878,
+              0.014162189,
+              6.421405104
+            ],
+            [
+              2,
+              0,
+              0,
+              6.438688187,
+              0.014156251,
+              6.423810729
+            ],
+            [
+              2,
+              1,
+              0,
+              6.435893792,
+              0.014140417,
+              6.421023228
+            ],
+            [
+              2,
+              1,
+              1,
+              6.448432505,
+              0.014161458,
+              6.433565833
+            ],
+            [
+              2,
+              2,
+              1,
+              6.441569808,
+              0.014178959,
+              6.426673854
+            ],
+            [
+              2,
+              2,
+              0,
+              6.440615804,
+              0.014200418,
+              6.425402293
+            ],
+            [
+              3,
+              -1,
+              1,
+              9.130944683,
+              0.014128643,
+              9.115736354
+            ],
+            [
+              3,
+              -1,
+              0,
+              9.114433558,
+              0.014068645,
+              9.099496146
+            ],
+            [
+              3,
+              0,
+              0,
+              9.115571149,
+              0.014091459,
+              9.100639581
+            ],
+            [
+              3,
+              0,
+              1,
+              9.147007801,
+              0.014107083,
+              9.132055418
+            ],
+            [
+              3,
+              1,
+              1,
+              9.136937419,
+              0.014087188,
+              9.121988333
+            ],
+            [
+              3,
+              1,
+              0,
+              9.112917202,
+              0.014103125,
+              9.097309165
+            ],
+            [
+              3,
+              2,
+              0,
+              9.113553174,
+              0.014067085,
+              9.098619793
+            ],
+            [
+              3,
+              2,
+              1,
+              9.1387612,
+              0.014090728,
+              9.12358646
+            ]
+          ],
+          "timer": {
+            "samples": "1000",
+            "p99_ns": "80",
+            "resolution_ns": "1"
+          },
+          "empty_controls_s": [
+            0.001104391,
+            9.8517e-05,
+            8.6474e-05,
+            8.7385e-05,
+            8.3959e-05,
+            8.0903e-05
+          ]
+        }
+      ],
+      "all96_batches_eligible": true,
+      "minimum_wall_s": 6.418070162,
+      "criterion": "For EACH wall,attention,and(pack+attention):all12process/scenario paired-median ratios<=1 AND geometric mean<=0.99. No retry,replacement,exclusion or speed-based stop."
+    },
+    "decision": {
+      "metrics": {
+        "wall_s": {
+          "geometric_mean_ratio": 1.0017925401546328,
+          "all12_no_slower": false,
+          "passed": false,
+          "median_ratio_min": 1.000148123103292,
+          "median_ratio_max": 1.00334499311729,
+          "no_slower_groups": 0
+        },
+        "attention_s": {
+          "geometric_mean_ratio": 1.001781857236946,
+          "all12_no_slower": false,
+          "passed": false,
+          "median_ratio_min": 1.0001978959358522,
+          "median_ratio_max": 1.0033469464876612,
+          "no_slower_groups": 0
+        },
+        "combined_s": {
+          "geometric_mean_ratio": 1.0017786064465115,
+          "all12_no_slower": false,
+          "passed": false,
+          "median_ratio_min": 1.0001941271932606,
+          "median_ratio_max": 1.0033449796533251,
+          "no_slower_groups": 0
+        }
+      },
+      "mechanism_screen_passed": false,
+      "inference_adopted": false,
+      "physical_saturation_qualified": false,
+      "model_trial_permitted": false,
+      "reason": "All12median ratios exceed1 for each metric;the parallel fold is rejected despite complete numerical/execution success."
+    },
     "source_review": {
       "bounded_execution_accepted": true,
-      "reviewer": "native Codex gpt-6-luna/max",
-      "source_commit": "e10997bdd9729de9d6b9ab9af6e7e371c918c076",
-      "report": {
-        "path": ".cache/research/2026-10-31/qsa_normalizer_v2_source_audit.md",
-        "bytes": 10707,
-        "sha256": "173cc911f5790960a6a3da581884860b94f2e84961e71a4f43c1cf5a298964b3"
-      },
-      "review": {
-        "path": ".cache/research/2026-10-31/qsa_normalizer_v3_source_audit.review.json",
-        "bytes": 9963,
-        "sha256": "be6bfe5e47e30a5da42cab59f6756a43278b5b2d4919d834b958c2ad9642276e"
-      },
-      "decision": "No source blocker to the frozen properties, traced17-cell smoke,23-case numerics and96-batch component screen. Every runtime and numerical gate remains mandatory.",
-      "limits": [
-        "262144-cell fixture still needs actual allocation admission;its failure blocks timing.",
-        "Exact captured states cover four selected head coordinates;repeats compare outputs.",
-        "No model throughput,quality,decode or physical262144-context qualification is inherited."
-      ],
-      "ownership_closed": true,
-      "retention": "Keep report/review only through the current component decision,then retain compact findings and hashes."
-    }
+      "report_sha256": "173cc911f5790960a6a3da581884860b94f2e84961e71a4f43c1cf5a298964b3",
+      "review_sha256": "be6bfe5e47e30a5da42cab59f6756a43278b5b2d4919d834b958c2ad9642276e",
+      "scope": "Source review accepted only staged component execution;no model/runtime adoption."
+    },
+    "retention": "Keep96individual timing vectors and compact source/numerical/fault/decision evidence. The rejected generation and consumed normalizer reviews have no native consumer;retire after this result is pushed and exact original inputs are recovered. Independent legacy holds remain."
   }
 }

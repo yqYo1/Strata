@@ -1833,9 +1833,16 @@ CRT/archive/shared-library inputs under the exact build environment and freezes
 their bytes/package versions before a new build. The fixture,generated math,
 output criterion and old failure remain unchanged. V3now passes all eight
 compile/link commands with726compiler inputs and25link inputs matching the
-frozen inventory. Independent source review accepts the bounded properties,
-traced smoke,numerics and component-screen sequence. GPU numerical and
-performance checks remain pending;the source review is not model qualification.
+frozen inventory. Independent source review accepts the bounded sequence.
+The host canary,four compiled-property queries,traced17-cell smoke,23numerical
+cases and three comparison processes all close normally without a fresh fault.
+All96timing batches pass eligibility;the shortest is6.418070seconds. Despite
+correct final outputs and selected-state checks,the candidate is rejected:
+wall,attention and pack-plus-attention geometric-mean time ratios are1.001793,
+1.001782and1.001779. Every one of the12process/scenario medians is slower in
+each metric;none meets the frozen no-regression/1percent-gain gate. No model
+trial or inference adoption follows. Preserve individual timings in
+`qsa_parallel_normalizer_v3`;production prefill/decode remain unchanged.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
