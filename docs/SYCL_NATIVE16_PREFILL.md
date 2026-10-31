@@ -258,7 +258,14 @@ entry falls back at2333rows and selects row64 at2334/2335/8192on both maps.
 See `official_row64_device_v1` in the compact result,controllerbe06c07b2.
 This qualifies the component and dispatch,not current model speed,TTFT,quality,
 decode preservation or physical262144. A same-ELF original/row64 matched model
-comparison is next;decode processing remains independently selected. See
+comparison is prepared as `official_row64_model_v1`,controller75d4132c2:
+six fresh processes in row64/original,original/row64,row64/original order,
+four matched117489-read thinking-on requests each. All seven original ELFs,
+249current benchmark/controller inputs,84providers and15full model-asset hashes
+pass preparation. First use stays separate from each subsequent-three median.
+All three paired time ratios below1 assess reproducibility without a minimum
+percentage;the1000tok/s screen and client TTFT are separate. Frontend probes and
+all six model processes remain unexecuted. Decode stays independently selected. See
 [the cumulative performance CSV](../bench/performance-records.csv).
 Retain two useful strategies initially:TTFT-oriented and long-prefill-throughput-
 oriented,in the same binary. The planned user selector is
