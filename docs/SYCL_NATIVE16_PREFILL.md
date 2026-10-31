@@ -98,29 +98,31 @@ screen separately requires all three candidate process medians at that length.
 The117K control may retain its legitimate512-slot/RAM-tail fallback;the candidate
 must admit all117488GPU rows and checked split storage. This is a new capacity
 question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
-the compact result. Its first117K pair closes normally without fresh faults.
-Head-on admits117488GPU rows,128staged slots and checked split storage in all
-four requests. First use is892.6tok/s;subsequent967.4/969.8/965.4have median967.4
-and median121453.1ms. Head-off first use is708.9tok/s;subsequent727.8/732.0/728.2
-have median728.2and161335.1ms. The control has81920GPU rows first,73728later,
-512ordinary slots and728432640/896204800RAM residual bytes. Request hashes match.
-This first on/off time ratio is0.75280023(24.72%less time,32.84%more throughput);
-warmed client TTFT medians are121.630/161.518s. The first64K pair also closes
-normally without fresh faults. Both arms have65536GPU rows,384staged slots,no
-RAM residual and matching request hashes,job counts and requested expert-bank/
-routing-index transfer bytes. Head-on/off first use is779.5/776.3tok/s;
-subsequent-three medians are869.9/878.8tok/s and75335.8/74577.3ms.
-Warmed client TTFT is75.480/74.722s.
-The64K on/off time ratio1.01017066 shows no gain and prevents this candidate
-passing that length's predeclared all-three-pairs screen. Both lengths' first
-on-process medians are below1000,so neither target screen can pass. The second
-117K head-off process also closes normally without fresh faults:its subsequent
-median is733.4tok/s,160192.2ms and client TTFT160.366s,again with81920GPU rows
-first and73728later. Its matched head-on process is pending. Seven further
-processes still run under the frozen no-speed-based-stop plan;the117K mechanism
-decision remains open. The candidate is unadopted. This does not identify
-physical PCIe/VRAM/arithmetic saturation or attribute the64K difference solely
-to head-copy cost.
+the compact result. Six processes close normally without fresh faults. Each
+table cell uses its process's subsequent-three median;first-use and all
+individual samples remain in the compact result.
+
+| Read tokens | Pair | Head-on tok/s | Head-off tok/s | On/off prompt time | On/off client TTFT seconds |
+| --- | --- | --- | --- | --- | --- |
+| 117489 | 1 | 967.4 | 728.2 | 0.75280023 | 121.630 / 161.518 |
+| 117489 | 2,reverse order | 968.2 | 733.4 | 0.75754313 | 121.523 / 160.366 |
+| 65537 | 1 | 869.9 | 878.8 | 1.01017066 | 75.480 / 74.722 |
+
+Both117K head-on processes admit117488GPU rows,128staged slots and checked split
+storage in all requests. Their control processes use81920GPU rows first,73728
+later,512ordinary slots and728432640/896204800RAM residual bytes. The paired
+throughput improvements are32.84%and32.01%. At64K both arms have65536GPU rows,
+384staged slots,no RAM residual and matching job counts and requested expert-bank/
+routing-index transfer bytes. Request hashes match at both lengths.
+The engine prompt clock encloses joint head retirement/restore and the final
+expert-cache refill;it is not pure GPU math time. Client TTFT separately ends
+at first nonempty reasoning/content output. The64K first pair prevents this
+candidate passing that length's predeclared all-three-pairs screen. Both lengths'
+first on-process medians are below1000,so neither target screen can pass. Six
+further processes still run under the frozen no-speed-based-stop plan;the117K
+mechanism decision remains open. The candidate is unadopted. This does not
+identify physical PCIe/VRAM/arithmetic saturation or attribute the64K difference
+solely to head-copy cost.
 The retained `requested_dequant_H2D_bytes` field is misnamed:the native
 `source_H2D_bytes` counter adds `rows*K*4` once per GPU-resident MoE window for
 one routing-index map. Actual Mode10 code reads router IDs back with that same
