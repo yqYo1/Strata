@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main-owned official-SDK model build; repository LICENSE.
+"""Main-owned official-SDK joint dense/head model build; repository LICENSE.
 
 Freeze one composed source/recipe before compilation. Keep selected6e40 and
 its twelve fixtures; retire the superseded second engine before building.
@@ -18,15 +18,17 @@ import sys
 import time
 
 sys.dont_write_bytecode = True
-import official_model_sources as source
+import official_joint_sources as source
 import measurement_owner as supervision
 import measurement_guards as guards
 import host_link_inventory
 
 P, B = source.P, source.B
-ROOT = B / 'official-prefill-model-v1'
+basis = source.original
+OLD_ROOT = B / 'official-prefill-model-v1'
+ROOT = B / 'official-prefill-joint-v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'official_prefill_model_v1'
+KEY = 'official_prefill_joint_build_v1'
 SDK = B / 'prefill-expert-staging-v3/sdk-inputs.json'
 SDK_SHA = 'c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8'
 COMPILER = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
@@ -35,7 +37,7 @@ TARGETS = ['strata', 'sycl_qsa_topk_prefill_entry_test', 'sycl_submission_test',
            'sycl_vllm_native16_test', 'sycl_moe_gu_swiglu_bench',
            'sycl_moe_down_scatter_bench', 'sycl_moe_accum_test']
 HEADER = b'#pragma once\n\n#define GGML_VERSION "0.24.0"\n#define GGML_COMMIT  "3cf03257f"\n'
-require, digest = source.require, source.build.digest
+require, digest = source.require, basis.build.digest
 
 
 def write(path, value):
@@ -43,7 +45,7 @@ def write(path, value):
 
 
 def committed(path):
-    raw = source.build.git(P, 'show', 'HEAD:' + str(path.relative_to(P)))
+    raw = basis.build.git(P, 'show', 'HEAD:' + str(path.relative_to(P)))
     require(path.read_bytes() == raw, 'commit exact input: ' + str(path))
     return json.loads(raw)
 
@@ -55,7 +57,7 @@ def controls(revision):
         name = str(path.relative_to(P))
         if name in pins:
             continue
-        raw = source.build.git(P, 'show', revision + ':' + name)
+        raw = basis.build.git(P, 'show', revision + ':' + name)
         require(path.read_bytes() == raw, 'controller input changed: ' + name)
         pins[name] = hashlib.sha256(raw).hexdigest()
         for node in ast.walk(ast.parse(raw)):
@@ -121,22 +123,82 @@ def save(row):
     write(RESULT, result)
 
 
+def previous_build(sdk_files, full):
+    """Recover the closed seed before retiring its executable generation.
+
+    Old controller bytes come from their original Git revision. They need not
+    equal this deliberately new controller; no old qualification is refreshed.
+    """
+    row = json.loads((OLD_ROOT / 'record.json').read_text())
+    require(committed(RESULT)['official_prefill_model_v1'] == compact(row) and
+            row['source_commit'] == 'e4617c85c2f0009eced4484d43c2f53661b76d1e' and
+            row['stage'] == 'built-not-executed' and row['passed'] and not row['active'] and
+            row['ownership_closed'] and all(supervision.closed(v) for v in row['commands_executed']),
+            'closed original official seed required')
+    recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in basis.build.blobs(
+        P, row['source_commit'], row['controller_inputs'])}
+    require(recovered == row['controller_inputs'], 'original seed controller recovery failed')
+    _, native = basis.sources()
+    require({n: hashlib.sha256(raw).hexdigest() for n, raw in native.items()} == row['native_sources'],
+            'original seed source recovery failed')
+    allowed = dict(sdk_files)
+    inventory = row['external_manifest']
+    require(digest(inventory['path']) == inventory['sha256'], 'original external inventory changed')
+    external = json.loads(Path(inventory['path']).read_text())
+    require(len(external) == inventory['files'] and all('/MistVVK/' not in p and digest(p) == sha
+            for p, sha in external.items()), 'original external input changed')
+    allowed.update(external)
+    for name, raw in native.items():
+        path = OLD_ROOT / 'source' / name
+        require(path.read_bytes() == raw, 'original native input changed: ' + name)
+        allowed[str(path)] = row['native_sources'][name]
+    for group in full['dependencies']:
+        expected = group['source_sha256']
+        recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in basis.build.blobs(
+            Path(group['root']), group['revision'], expected)}
+        require(recovered == expected, 'original dependency Git recovery failed')
+        for name, sha in expected.items():
+            path = (Path(group['root']) / name).resolve()
+            require(digest(path) == sha, 'original dependency changed: ' + name)
+            allowed[str(path)] = sha
+    allowed.update(row['generated_expected'])
+    proof = row['compiled_inputs']
+    require(digest(proof['path']) == proof['sha256'] and proof['uncovered'] == 0,
+            'original compiler inventory changed')
+    used = json.loads(Path(proof['path']).read_text())
+    require(len(used) == proof['files'] and all(allowed.get(p) == sha == digest(p)
+            for p, sha in used.items()), 'original actual compiler input is not recovered')
+    require(digest(OLD_ROOT / 'build/compile_commands.json') == row['compile_database_sha256'],
+            'original compile recipe changed')
+    for item in row['binaries'].values():
+        require(digest(item['path']) == item['sha256'], 'original executable changed')
+    gate = committed(RESULT)['official_prefill_device_v3']
+    require(gate['passed'] and gate['complete'] and gate['ownership_closed'] and
+            gate['binaries'] == row['binaries'] and gate['fresh_faults'] == [],
+            'original component result changed')
+    rt = gate['runtime_manifest']
+    require(digest(rt['path']) == rt['sha256'], 'original runtime inventory changed')
+    runtime_files = json.loads(Path(rt['path']).read_text())
+    require(len(runtime_files) == rt['files'] and all(digest(p) == sha for p, sha in runtime_files.items()),
+            'original runtime provider changed')
+    return row, external, gate, runtime_files
+
+
 def prepare():
     result = committed(RESULT)
     require(KEY not in result and not ROOT.exists(), 'fresh single model transition only')
     full, native = source.sources()
-    revision = source.build.git(P, 'rev-parse', 'HEAD').decode().strip()
+    revision = basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     pins = controls(revision)
     sdk_files = sdk()
-    old = B / 'moe-down-model-v1'
-    original = json.loads((old / 'record.json').read_text())
-    inventory = original['external_manifest']
-    require(digest(inventory['path']) == inventory['sha256'], 'original external inventory changed')
-    external = {p: sha for p, sha in json.loads(Path(inventory['path']).read_text()).items()
-                if '/MistVVK/' not in p}
-    resources = committed(RESULT.with_name('prefill-resources-current.json'))
-    qualified = resources['event_reconciliation']['fused_command_profile']['native16_public_calibration_build']
-    env = dict(qualified['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    original, external, gate, runtime_files = previous_build(sdk_files, full)
+    correction = result['joint_prefill_heads_v1']['correction']
+    require(not correction['source_review_pending'] and
+            not correction['source_review']['source_blockers_remaining_from_this_review'] and
+            correction['host_test']['result'] == dict(kind='prefill_head_scope', cases=15, checks=315, status='PASS') and
+            source.original.aggregate(native) == correction['source_construction']['aggregate_sha256'],
+            'exact corrected source and host/source gates required')
+    env = dict(original['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     require(all('/MistVVK/' not in v for v in env.values()), 'legacy SDK in official environment')
     links = host_link_inventory.inventory(COMPILER, env)
     external.update(links['files'])
@@ -144,20 +206,8 @@ def prepare():
                  '/usr/bin/as', '/usr/bin/ld', '/usr/bin/git'):
         external[str(Path(path).resolve())] = digest(path)
     require(all(digest(p) == sha for p, sha in external.items()), 'prospective external input changed')
-    for group in full['dependencies']:
-        expected = group['source_sha256']
-        recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in source.build.blobs(
-            Path(group['root']), group['revision'], expected)}
-        require(recovered == expected and all(digest(Path(group['root']) / n) == sha
-                                            for n, sha in expected.items()), 'dependency changed')
-    cfg = list(full['configure_argv'])
-    cfg[cfg.index('-S') + 1] = str(ROOT / 'source')
-    cfg[cfg.index('-B') + 1] = str(ROOT / 'build')
-    cfg = ['-DCMAKE_CXX_COMPILER=' + COMPILER if v.startswith('-DCMAKE_CXX_COMPILER=') else v for v in cfg]
-    # Preserve the already checked legacy API/index contract. Suppress only
-    # promotion of visible deprecation warnings, without changing kernel math.
-    cfg += ['-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations',
-            '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t']
+    require(links == original['host_link_inputs'], 'seed compiler host inputs changed')
+    cfg = [v.replace(str(OLD_ROOT), str(ROOT)) for v in original['configure_argv']]
     require(not any('/MistVVK/' in v for v in cfg), 'legacy compiler in new configure recipe')
     ROOT.mkdir(mode=0o700)
     for name in ('source', 'tmp', 'cache'):
@@ -167,11 +217,14 @@ def prepare():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
     write(ROOT / 'external-inputs.json', external)
+    write(ROOT / 'runtime-basis.json', runtime_files)
     row = dict(stage='prepared', source_commit=revision, controller_inputs=pins,
         native_sources={n: hashlib.sha256(raw).hexdigest() for n, raw in native.items()},
-        selected_binary=full['binary'], source_basis=dict(selected=source.split.BASE, down=source.DOWN,
-            topk=source.TOPK, fixture=source.FIXTURE, gu_progress_fixture=source.GU_PROGRESS,
-            fully_submitted_MoE_jobs_per_checkpoint=8, decode_controller_unchanged=True),
+        selected_binary=full['binary'], source_basis=dict(selected=basis.split.BASE, down=basis.DOWN,
+            topk=basis.TOPK, fixture=basis.FIXTURE, gu_progress_fixture=basis.GU_PROGRESS,
+            joint_source=source.JOINT, seed_native_source=original['source_commit'],
+            seed_recipe_git_commit=revision, fully_submitted_MoE_jobs_per_checkpoint=8,
+            outside_prefill_phase_section_unchanged=True),
         sdk=dict(path=str(SDK), sha256=SDK_SHA, files=len(sdk_files)),
         compiler=dict(path=COMPILER, sha256=COMPILER_SHA), host_link_inputs=links,
         packages=subprocess.check_output(['dpkg-query', '-W', '-f=${Package} ${Version}\n',
@@ -182,6 +235,9 @@ def prepare():
                       for g in full['dependencies']],
         external_manifest=dict(path=str(ROOT / 'external-inputs.json'),
             sha256=digest(ROOT / 'external-inputs.json'), files=len(external)),
+        runtime_basis=dict(path=str(ROOT / 'runtime-basis.json'), sha256=digest(ROOT / 'runtime-basis.json'),
+            files=len(runtime_files), original_component_source=gate['source_commit'],
+            environment=gate['environment'], canary=gate['canary']),
         configure_argv=cfg, environment=env, targets=TARGETS,
         commands=[('configure', cfg), ('compile', ['/usr/bin/cmake', '--build', str(ROOT / 'build'),
             '--target', *TARGETS, '-j', '4']), ('dependencies', ['/usr/bin/ninja', '-C', str(ROOT / 'build'), '-t', 'deps'])],
@@ -190,9 +246,9 @@ def prepare():
                      file_cap=512 << 20, total_cap=4 << 30), whole_wall_seconds=3600,
         active=False, ownership_closed=True, passed=False, GPU_executed=False,
         inference_adopted=False, ordinary_runtime_teardown_qualified=False,
-        retention='One replacement candidate for imminent official production checks and matched model comparison. '
-            'Preserve selected6e40+12fixtures;retire superseded9a79before compile and this candidate after selection.',
-        next_gate='Commit plan;retire superseded9a79;build only. Fresh same-build bounded production-GU/provider '
+        retention='One joint replacement candidate for imminent real-owner release/restore and matched model comparison. '
+            'Preserve selected6e40+12fixtures;recover/retire officiale461before compile and this candidate after selection.',
+        next_gate='Commit plan;retire officiale461;build only. Fresh same-build bounded production-GU/provider '
             'progression before one small model,then32K+ long/agent/thinking PP/TTFT and independent repeated '
             'decode,handoff,physical262144fill/tails/RESTORE. No inherited model qualification.')
     save(row)
@@ -228,6 +284,11 @@ def admit(row):
             require(digest(path) == sha, 'dependency input changed: ' + name)
             allowed[str(path.resolve())] = sha
     require(digest(full['binary']['path']) == full['binary']['sha256'], 'selected fallback changed')
+    runtime = row['runtime_basis']
+    require(digest(runtime['path']) == runtime['sha256'], 'runtime provider basis changed')
+    files = json.loads(Path(runtime['path']).read_text())
+    require(len(files) == runtime['files'] and all(digest(p) == sha for p, sha in files.items()),
+            'runtime provider bytes changed')
     allowed.update(row['generated_expected'])
     return allowed
 
@@ -235,8 +296,8 @@ def admit(row):
 def run():
     row = json.loads((ROOT / 'record.json').read_text())
     require(row['stage'] == 'prepared' and not (ROOT / 'owned-build').exists(), 'fresh committed build only')
-    retirement = committed(RESULT)['moe_down_model'].get('official_transition_retirement', {})
-    require(retirement.get('complete') and not (B / 'moe-down-model-v1').exists(),
+    retirement = committed(RESULT)['official_prefill_model_v1'].get('joint_transition_retirement', {})
+    require(retirement.get('complete') and not OLD_ROOT.exists(),
             'recover and retire superseded second generation before compile')
     allowed = admit(row)
     initial, owner = copy.deepcopy(row), None
@@ -269,7 +330,7 @@ def run():
                       else ROOT / 'build' / line.strip()).resolve())
                  for line in out.read_text().splitlines() if line.startswith('    ') and line.strip()}
         require(len(found) >= 1000 and {str(ROOT / 'source' / n) for n in
-                ('src/prefill/prefill.cpp', 'src/prefill/sycl/gemm16.cpp', *source.TOPK_FILES[:1])} <= found,
+                ('src/prefill/prefill.cpp', 'src/prefill/sycl/gemm16.cpp', *basis.TOPK_FILES[:1])} <= found,
                 'incomplete actual compiler closure')
         require(all('/MistVVK/' not in p and allowed.get(p) == digest(p) for p in found),
                 'unplanned or changed actual compiler input')
