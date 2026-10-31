@@ -76,8 +76,13 @@ on refusal/throw,even before readers retire. The correction prepares before
 activation,uses a no-fail retirement callback and explicitly cancels prepared
 heads if activation preflight refuses. Original proposal0391301a6 remains
 unqualified. The original seven-case host plan closed without execution;
-a prospective fifteen-case ASan/UBSan host plan exercises the actual cache state,
-the old poison mechanism and corrected cancellation/restore ordering. Native
+a fresh fifteen-case ASan/UBSan host gate passes315checks on the actual cache
+state,the old poison mechanism and corrected cancellation/restore ordering.
+Its214actual compiler inputs and28link inputs match the prospective inventory;
+both owned processes exit normally. Corrected native source is29f8657ee.
+The next constructor overlays only the head/verifier changes and exact prefill
+phase section onto the original official candidate;all other code stays pinned.
+This is source construction,without another engine build. Native
 graphs,head tensors,handoff,decode preservation and262144/RESTORE remain separate
 gates. See `fused-moe-service-current.json::joint_prefill_heads_v1`.
 

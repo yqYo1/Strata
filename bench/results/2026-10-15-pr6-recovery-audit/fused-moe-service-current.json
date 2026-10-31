@@ -49268,7 +49268,7 @@
     "decode_preservation_qualified": false,
     "physical262144_qualified": false,
     "inference_adopted": false,
-    "next_gate": "Corrected source and real host cache-state controls require a fresh committed V2plan;then independently audit exact source before native construction/qualification. Original0391301a6proposal and V1unexecuted outcome remain unqualified.",
+    "next_gate": "Independent corrected-source audit;verify exact official_joint_sources construction and freeze new recipe before replacement native build. Host ASan/UBSan15cases315checks pass;no GPU graph,payload,handoff,decode or physical262144 qualification. Preserve original0391301a6source blocker and unexecutedV1plan.",
     "retention": "Current implementation/fixture decision. Keep selected fallback and official candidate only for the imminent source/budget comparison;retire the unselected official generation before a new replacement engine build after source recovery. No third engine generation.",
     "source_review": {
       "accepted": false,
@@ -49288,7 +49288,27 @@
       "source_review_pending": true,
       "native_built": false,
       "GPU_executed": false,
-      "host_test": "Fifteen-case actual host state regression plan;see joint_prefill_heads_host_v2. No model/device qualification."
+      "host_test": {
+        "source_commit": "29f8657ee454f9f841ee752e3c9c6ff6c515ef4d",
+        "stage": "closed",
+        "result": {
+          "kind": "prefill_head_scope",
+          "cases": 15,
+          "checks": 315,
+          "status": "PASS"
+        },
+        "ownership_closed": true,
+        "compiled_inputs": {
+          "files": 214,
+          "uncovered": 0,
+          "aggregate_sha256": "1898d190766ff3779a229b71e1dca184fab42b75ad8c1e8f01eb4433c76aff46"
+        },
+        "link_inputs": {
+          "files": 28,
+          "uncovered": 0,
+          "aggregate_sha256": "e18d3c44f1098200721911b3eadb1e75b606aad82da43a56f4f4fac39ea6cd17"
+        }
+      }
     }
   },
   "joint_prefill_heads_host_v1": {
@@ -49363,7 +49383,7 @@
     }
   },
   "joint_prefill_heads_host_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "29f8657ee454f9f841ee752e3c9c6ff6c515ef4d",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -49450,11 +49470,32 @@
       "total_cap": 67108864
     },
     "criteria": "Fifteen host-only cases:previous seven boundary controls plus two actual CacheScratchState poison reproductions,two preparation-before-activation failures,prepared cancellation on stale activation preflight,and joint prompt success/false/throw with checked retirement/refill. At least250checks. Exact committed inputs,actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
+    "compiled_inputs": {
+      "files": 214,
+      "uncovered": 0,
+      "aggregate_sha256": "1898d190766ff3779a229b71e1dca184fab42b75ad8c1e8f01eb4433c76aff46"
+    },
+    "link_inputs": {
+      "files": 28,
+      "uncovered": 0,
+      "aggregate_sha256": "e18d3c44f1098200721911b3eadb1e75b606aad82da43a56f4f4fac39ea6cd17"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v2/prefill_head_scope",
+      "sha256": "c54a3b34dbc00df8a4df20723d149cf1a32fb5833037a745c801a71ee1b59d77",
+      "bytes": 1838128
+    },
+    "result": {
+      "kind": "prefill_head_scope",
+      "cases": 15,
+      "checks": 315,
+      "status": "PASS"
+    },
     "source_inputs": {
       "files": 32,
       "aggregate_sha256": "e7f99899e181216cdb3d3040ba96e90463c0cac52bfb8236e270b45ac4df3a93"
