@@ -1,4 +1,4 @@
-"""Host controls for complete paired samples and prospective performance gates."""
+"""Host admission controls for the real prefill selector entry,not speed claims."""
 import copy
 import unittest
 
@@ -6,80 +6,68 @@ from test_topk_early import EarlyCompletion
 import topk_early as probe
 
 
-def cohort():
-    result=[]
-    for process in range(3):
-        samples=[]
-        for scenario in range(6):
-            for rep in [-1,0,1,2]:
-                for arm in [0,1]:
-                    # First timing pair must remain visible but outside the
-                    # subsequent median;all samples still pass timing admission.
-                    ratio=2. if rep==-1 else .98
-                    samples.append(dict(process=str(process),scenario=str(scenario),repetition=str(rep),
-                        arm=str(arm),cells=str((32768,65536,117488)[scenario//2]),pattern=str(scenario%2),
-                        queries='256',capacity='131072',cap='2051',batch='1024',checkpoint='64',
-                        wall_s=str(1.1*(ratio if arm else 1)),service_s=str(ratio if arm else 1),output='PASS'))
-        result.append(dict(kind='compare',argv=['--compare',str(process)],process=dict(pid=100+process),
-            samples=samples,cases=[dict(cells=str(n),pattern=str(p),capacity='131072',queries='256',
-                cap='2051',invalid='0',saved_passes='256',stopped_queries='64',
-                oracle='PASS',counters='PASS',inputs='PASS',guards='PASS',repeatability='PASS')
-                for n in (32768,65536,117488) for p in (0,1)],
-            timers=[dict(samples='1000',p99_ns='100',resolution_ns='1')],
-            controls=[dict(repetition=str(i),wall_s='.00001') for i in [-1,0,1,2,3,4]]))
-    return result
+def parsed():
+    return {name:[] for name in ('PROPERTY','CASE','ADMISSION','ROUTE','POLICY','SAMPLE')}
+
+
+def numeric_cases():
+    geometries=[(n,n,min(3,n),2051,p,0) for n in probe.ENDPOINTS for p in range(8)]
+    geometries.append((65,128,14,13,6,1))
+    return [dict(zip(('cells','capacity','queries','cap','pattern','invalid'),map(str,g)),
+        oracle='PASS',inputs='PASS',guards='PASS',repeats='2',apis='3') for g in geometries]
 
 
 class PlanControls(unittest.TestCase):
-    def test_all_zero_process_is_rejected(self):
-        for process in range(3):
-            records=cohort()
-            for case in records[process]['cases']:case.update(saved_passes='0',stopped_queries='0')
-            with self.assertRaisesRegex(RuntimeError,'saved no radix passes'):probe.decision(records)
+    def test_missing_duplicate_wrong_extent_and_missing_api_checks_refused(self):
+        probe.case_checks(numeric_cases())
+        for change in range(7):
+            cases=copy.deepcopy(numeric_cases())
+            if change==0:cases.pop()
+            if change==1:cases[-1]=copy.deepcopy(cases[-2])
+            if change==2:cases[-2]['cells']='262143'
+            if change==3:cases[0]['guards']='FAIL'
+            if change==4:cases[0].pop('inputs')
+            if change==5:cases[0]['apis']='1'
+            if change==6:cases[0]['repeats']='1'
+            with self.assertRaises(RuntimeError):probe.case_checks(cases)
 
-    def test_mixed_positive_zero_keeps_all_timing_samples(self):
-        records=cohort()
-        for record in records:
-            for case in record['cases'][1:]:case.update(saved_passes='0',stopped_queries='0')
-        result=probe.decision(records)
-        self.assertTrue(result['mechanism_screen_passed'])
-        self.assertEqual(len(result['process_scenario']),18)
-        self.assertEqual(sum(len(r['samples']) for r in records),144)
-        self.assertEqual(sum(g['radix_savings']['saved_passes']==0 for g in result['process_scenario']),15)
+    def test_invalid_policy_cannot_be_reported_as_disabled(self):
+        case=dict(kind='policy',argv=['--policy','invalid'])
+        result=parsed();result['POLICY']=[dict(expected='invalid',invalid='1',enabled='0',PASS='1')]
+        probe.check_result(case,result)
+        result['POLICY'][0]['invalid']='0'
+        with self.assertRaises(RuntimeError):probe.check_result(case,result)
 
-    def test_mechanism_census_refuses_missing_duplicate_and_bad_counts(self):
-        for mutation in range(5):
-            records=cohort();cases=records[0]['cases']
-            if mutation==0:cases.pop()
-            if mutation==1:cases[-1]=copy.deepcopy(cases[0])
-            if mutation==2:cases[0]['capacity']='32768'
-            if mutation==3:cases[0]['saved_passes']='0'
-            if mutation==4:cases[0]['saved_passes']='1793'
-            with self.assertRaises(RuntimeError):probe.decision(records)
+    def test_wrong_dispatch_and_missing_actual_kernel_refused(self):
+        case=dict(kind='smoke',early=True);result=parsed()
+        result['ROUTE']=[dict(early='1',entry='qsa_block_topk_prefill_early')]
+        result['CASE']=[dict(cells='17',capacity='32',queries='3',cap='5',pattern='0',invalid='0',
+            oracle='PASS',inputs='PASS',guards='PASS',repeats='2',apis='3')]
+        trace='urEnqueueKernelLaunch\nurKernelCreate kernel=submit_topk_prefill_early'
+        probe.check_result(case,result,trace)
+        for change in range(3):
+            bad=copy.deepcopy(result);badtrace=trace
+            if change==0:bad['ROUTE'][0].update(early='0',entry='qsa_block_topk_prefill')
+            if change==1:badtrace='urEnqueueKernelLaunch\nurKernelCreate kernel=submit_topk'
+            if change==2:badtrace='urKernelCreate kernel=submit_topk_prefill_early'
+            with self.assertRaises(RuntimeError):probe.check_result(case,bad,badtrace)
+        case['early']=False;result['ROUTE']=[dict(early='0',entry='qsa_block_topk_prefill')]
+        with self.assertRaises(RuntimeError):probe.check_result(case,result,trace)
 
-    def test_first_pair_and_all_metrics(self):
-        result=probe.decision(cohort())
-        self.assertTrue(result['mechanism_screen_passed'])
-        for value in result['metrics'].values():self.assertAlmostEqual(value['geometric_mean_ratio'],.98)
+    def test_preexec_cases_do_not_mutate_the_base_environment(self):
+        base={probe.ENV_FLAG:'1','STRATA_SYCL_SELECT_RADIX4':'1','STRATA_SYCL_SELECT_CYCLIC':'0'}
+        before=copy.deepcopy(base);cases=probe.planned_cases('/pinned/libze_loader.so.1')
+        self.assertEqual(len(cases),16)
+        missing=next(c for c in cases if c.get('label')=='missing-radix')
+        child=probe.case_environment(base,missing)
+        self.assertNotIn('STRATA_SYCL_SELECT_RADIX4',child)
+        self.assertEqual(base,before)
+        unset=next(c for c in cases if c.get('label')=='unset')
+        self.assertNotIn(probe.ENV_FLAG,probe.case_environment(base,unset))
 
-    def test_one_regressing_group_vetoes_gain(self):
-        records=cohort()
-        for sample in records[0]['samples']:
-            if sample['scenario']=='0' and sample['arm']=='1' and int(sample['repetition'])>=0:
-                sample.update(wall_s='1.122',service_s='1.02')
-        result=probe.decision(records)
-        self.assertFalse(result['mechanism_screen_passed'])
-        self.assertLess(result['metrics']['wall_s']['geometric_mean_ratio'],.99)
-
-    def test_missing_duplicate_pid_and_ineligible_samples(self):
-        for mutation in range(5):
-            records=copy.deepcopy(cohort())
-            if mutation==0:records[0]['samples'].pop()
-            if mutation==1:records[0]['samples'][-1]=copy.deepcopy(records[0]['samples'][-2])
-            if mutation==2:records[1]['process']['pid']=records[0]['process']['pid']
-            if mutation==3:records[0]['samples'][0]['service_s']='.001'
-            if mutation==4:records[0]['samples'][0]['wall_s']='nan'
-            with self.assertRaises(RuntimeError):probe.decision(records)
+    def test_timing_data_cannot_qualify_as_correctness(self):
+        result=parsed();result['SAMPLE']=[dict(wall_s='0.01')]
+        with self.assertRaises(RuntimeError):probe.check_result(dict(kind='properties'),result)
 
 
 if __name__=='__main__':unittest.main()

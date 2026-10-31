@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Main-owned official-SDK exact-set Top-k component;repository LICENSE.
+"""Main-owned official-SDK prefill Top-k public-entry qualification.
 
-Prepare -> commit -> build -> commit -> reviewed staged run. The common build,
-source/runtime/owner checks derive from e10997bdd's closed normalizer controller.
-No production selection,legacy compilation,implicit retry or automatic adoption.
+Repository LICENSE. Reuses the closed private controller's source/runtime/owner
+checks. Prepare -> commit -> build -> commit -> reviewed bounded run. No legacy
+compilation,implicit retry,model performance claim or automatic adoption.
 """
 import ast
 import copy
@@ -27,15 +27,16 @@ import relink_qsa_k_model as linking
 
 r,P,B=closure.r,closure.P,closure.B
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY='qsa_topk_early_component_v2'
-ROOT=B/'topk-early-component-v2'
+KEY='qsa_topk_prefill_entry_v1'
+ROOT=B/'topk-prefill-entry-v1'
 OFFICIAL=Path('/opt/intel/oneapi/compiler/2026.2')
-NATIVE=['src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','bench/sycl/topk_early.cpp']
+NATIVE=['src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp','bench/sycl/topk_early.cpp',
+    'src/kernels/sycl/qsa_select.cpp','src/kernels/sycl/qsa_topk_prefill_early.cpp']
 FLAGS=['-std=c++20','-O3','-DNDEBUG','-g0','-fsycl','-fsycl-id-queries-range=size_t',
     '-fno-fast-math','-ffp-contract=off','-DSTRATA_ENABLE_SYCL=1','-pthread',
-    '-I'+str(P/'include'),'-I'+str(P/'include/strata/sycl/compat'),'-I'+str(ROOT/'generated')]
+    '-I'+str(P/'include'),'-I'+str(P/'include/strata/sycl/compat')]
 BUILD_LIMITS=dict(wall=300,cpu=900,rss_cap=6<<30,text_cap=16<<20,file_cap=256<<20,total_cap=512<<20)
-RUN_LIMITS=dict(wall=600,cpu=900,rss_cap=5<<30,text_cap=32<<20,file_cap=128<<20,total_cap=512<<20)
+RUN_LIMITS=dict(wall=180,cpu=300,rss_cap=4<<30,text_cap=16<<20,file_cap=64<<20,total_cap=256<<20)
 require,digest,write=guards.require,supervision.sha,closure.write
 
 
@@ -53,7 +54,8 @@ def public():
 
 def source_pins(revision):
     names=set(NATIVE) | set(git('ls-files','include').decode().splitlines()) | {
-        'tools/sycl/test_topk_early.py','tools/sycl/test_topk_plan.py',generator.SOURCE}
+        'tools/sycl/test_topk_early.py','tools/sycl/test_topk_plan.py',generator.SOURCE,
+        'src/prefill/prefill.cpp','cmake/sycl_backend.cmake'}
     pending=[Path(__file__).resolve()];seen=set()
     while pending:
         path=pending.pop()
@@ -88,7 +90,7 @@ def runtime():
 
 def commands():
     compiler=str(OFFICIAL/'bin/icpx')
-    units=[P/name for name in NATIVE]+[ROOT/'generated'/name for name in ('original.cpp','candidate.cpp')]
+    units=[P/name for name in NATIVE]
     rows=[[compiler,*FLAGS,'-MD','-MF',str(ROOT/(str(i)+'.d')),'-c',str(path),'-o',str(ROOT/(str(i)+'.o'))]
           for i,path in enumerate(units)]
     rows.append([compiler,'-fsycl','-fsycl-id-queries-range=size_t','-pthread','-save-temps=obj','-v','-Wl,-t',
@@ -111,15 +113,16 @@ def verify(row):
     require(digest(row['inputs']['path'])==row['inputs']['sha256'],'Top-k input manifest changed')
     inputs=json.loads(Path(row['inputs']['path']).read_text())
     require(inputs['project']==source_pins(row['source_commit']),'Top-k source/controller changed')
-    require(generator.proof()==row['generator_proof'],'Top-k generator differs')
-    generated=generator.generated()
-    require({name:hashlib.sha256(raw).hexdigest() for name,raw in generated.items()}==inputs['generated'],
-            'prospective generated source changed')
-    for name,raw in generated.items():require((ROOT/'generated'/name).read_bytes()==raw,'actual generated source changed:'+name)
+    require(generator.prefill_proof()==row['prefill_proof'],'prefill body bridge differs')
     for name,h in inputs['external'].items():require(digest(name)==h,'frozen external input changed:'+name)
     require(commands()==row['commands'],'Top-k recipe changed')
+    loader=next(p for p in row['runtime_files'] if Path(p).name.startswith('libze_loader.so.'))
+    require(row['cases']==planned_cases(loader),'bounded public-entry cases changed')
+    for name,value in dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',
+            EnableDirectSubmission='0',STRATA_SYCL_SELECT_RADIX4='1',STRATA_SYCL_SELECT_CYCLIC='0').items():
+        require(row['native_environment'].get(name)==value,'public-entry safety/policy key changed:'+name)
+    require(ENV_FLAG not in row['native_environment'],'set the route only in each pre-exec case')
     allowed={str((P/name).resolve()):h for name,h in inputs['project'].items()}
-    allowed.update({str(ROOT/'generated'/name):h for name,h in inputs['generated'].items()})
     allowed.update(inputs['external']);allowed.update(sdk);allowed.update(row['runtime_files'])
     return allowed,rt
 
@@ -146,8 +149,6 @@ def build(data):
                 path=str(Path(name).resolve());h=digest(path)
                 require(allowed.get(path)==h,'unfrozen compiler input:'+path);observed[path]=h
         require(all(str(P/name) in observed for name in NATIVE),'incomplete native source closure')
-        require(all(str(ROOT/'generated'/name) in observed for name in ('original.cpp','candidate.cpp','topk-early.hpp')),
-                'incomplete generated compiler input closure')
         write(ROOT/'compiled-inputs.json',observed);verify(row)
         binary=ROOT/'selector_probe'
         row.update(stage='built',build_passed=True,binary=dict(path=str(binary),bytes=binary.stat().st_size,sha256=digest(binary)),
@@ -163,38 +164,50 @@ def fields(line):
     return dict(part.split('=',1) for part in line.split()[1:] if '=' in part)
 
 
+ENV_FLAG='STRATA_SYCL_PREFILL_TOPK_EARLY'
+ENDPOINTS=(1,3,4,5,31,32,33,2047,2048,2051,2052,32768,65536,117488,262141,262142,262143,262144)
+
+
+def case_environment(base,case):
+    env=dict(base)
+    for name,value in case.get('environment',{}).items():
+        if value is None:env.pop(name,None)
+        else:env[name]=value
+    return env
+
+
+def planned_cases(loader):
+    cases=[dict(kind='host-canary'),dict(kind='properties',argv=['--properties',loader])]
+    policies=[('unset',None,'0',{}),('off','0','0',{}),('on','1','1',{}),
+        ('empty','','invalid',{}),('text','true','invalid',{}),('partial','01','invalid',{}),
+        ('missing-radix','1','invalid',{'STRATA_SYCL_SELECT_RADIX4':None}),
+        ('disabled-radix','1','invalid',{'STRATA_SYCL_SELECT_RADIX4':'0'}),
+        ('cyclic-conflict','1','invalid',{'STRATA_SYCL_SELECT_CYCLIC':'1'})]
+    cases.extend(dict(kind='policy',label=name,argv=['--policy',expected],
+        environment={ENV_FLAG:flag,**extra}) for name,flag,expected,extra in policies)
+    cases.extend(dict(kind='smoke',label=name,argv=['--smoke'],
+        environment={ENV_FLAG:flag},early=flag=='1') for name,flag in [('unset',None),('off','0'),('on','1')])
+    cases.extend(dict(kind='numerics',label=name,argv=['--numerics'],
+        environment={ENV_FLAG:flag},early=flag=='1') for name,flag in [('off','0'),('on','1')])
+    return cases
+
+
 def prepare(data):
-    require(KEY not in data and not ROOT.exists(),'fresh Top-k scope only')
-    proposal=data['qsa_topk_early_completion']
-    require(proposal['stage']=='host-model-only' and proposal['host_controls']['passed'] and
-        not proposal['GPU_executed'] and generator.proof()==proposal['generator_proof'],
-        'original host model and unchanged selector constructor required')
-    prior=json.loads(git('show','0353cb803:'+str(RESULT.relative_to(P))))['qsa_parallel_normalizer_v3']
-    closed=data['qsa_parallel_normalizer_v3']
-    require(closed['passed'] and closed['ownership_closed'] and not closed['active'] and
-        not closed['fresh_faults'] and closed['retirement']['complete'],'closed official component basis required')
+    require(KEY not in data and not ROOT.exists(),'fresh public-entry scope only')
+    proposal=data['qsa_topk_prefill_route'];component=data['qsa_topk_early_component_v2']
+    require(proposal['stage']=='source-bridge-passed' and proposal['host_attempts'][-1]['passed'] and
+        generator.prefill_proof()==proposal['source_proof'],'closed exact production source bridge required')
+    require(component['passed'] and component['complete'] and component['ownership_closed'] and
+        not component['active'] and not component['fresh_faults'] and component['retirement']['complete'] and
+        component['decision']['mechanism_screen_passed'],'closed successful private component required')
+    # Recover original preparation from reachable Git,never from retired manifests.
+    prior=json.loads(git('show','519cd056a:'+str(RESULT.relative_to(P))))['qsa_topk_early_component_v2']
     rt,full=runtime();revision=git('rev-parse','HEAD').decode().strip();pins=source_pins(revision)
-    predecessor=data['qsa_topk_early_component_v1']
-    require(predecessor['build_passed'] and predecessor['ownership_closed'] and not predecessor['active'] and
-        predecessor['source_review']['source_mechanism_supported'] and
-        not predecessor['source_review']['bounded_execution_accepted'],
-        'preserve unexecuted V1 source-review condition')
-    require(digest(predecessor['inputs']['path'])==predecessor['inputs']['sha256'],'original V1 input manifest changed')
-    previous=json.loads(Path(predecessor['inputs']['path']).read_text())
-    require(set(pins)==set(previous['project']),'V2 project input set differs')
-    changed=sorted(n for n,h in pins.items() if h!=previous['project'][n])
-    require(changed==['tools/sycl/test_topk_plan.py','tools/sycl/topk_early.py'],
-        'V2 may change only controller and host plan tests')
-    require(generator.proof()==predecessor['generator_proof'],'V2 GPU constructor differs')
-    require({n:hashlib.sha256(v).hexdigest() for n,v in generator.generated().items()}==previous['generated'],
-        'V2 generated native inputs differ')
     ROOT.mkdir(mode=0o700)
-    for name in ('tmp','cache','generated'):(ROOT/name).mkdir(mode=0o700)
-    generated=generator.generated()
-    for name,raw in generated.items():(ROOT/'generated'/name).write_bytes(raw)
+    for name in ('tmp','cache'):(ROOT/name).mkdir(mode=0o700)
     sdk=copy.deepcopy(prior['sdk'])
-    require(sdk['path']==sdk['original_manifest']['path'] and
-        sdk['sha256']==sdk['original_manifest']['sha256'],'use original official SDK manifest')
+    require(sdk['path']==sdk['original_manifest']['path'] and sdk['sha256']==sdk['original_manifest']['sha256'],
+            'original official SDK manifest required')
     old_lib=Path(next(p for p in rt['runtime_files'] if '/libsycl.so.' in p)).parent
     external={p:h for p,h in closure.external_inputs(rt).items() if not Path(p).is_relative_to(old_lib)}
     build_env=copy.deepcopy(prior['build_environment']);native_env=copy.deepcopy(prior['native_environment'])
@@ -204,103 +217,58 @@ def prepare(data):
     for name,h in inventory['files'].items():
         with Path(name).open('rb') as stream:elf=stream.read(4)==b'\x7fELF'
         if elf and '.so' in Path(name).name:runtime_files[name]=h
-    write(ROOT/'inputs.json',dict(project=pins,generated={n:hashlib.sha256(v).hexdigest() for n,v in generated.items()},external=external))
-    native_env.pop('UR_LOG_TRACING',None);native_env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION'
+    write(ROOT/'inputs.json',dict(project=pins,external=external))
+    native_env.pop('UR_LOG_TRACING',None);native_env.pop(ENV_FLAG,None)
+    native_env.update(UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION',
+        STRATA_SYCL_SELECT_RADIX4='1',STRATA_SYCL_SELECT_CYCLIC='0')
     for name,value in dict(UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1',NEOReadDebugKeys='1',EnableDirectSubmission='0').items():
         require(native_env.get(name)==value,'mandatory runtime safety key differs:'+name)
-    cases=[dict(kind='host-canary'),dict(kind='properties',argv=['--properties',
-        next(p for p in runtime_files if Path(p).name.startswith('libze_loader.so.'))]),
-        dict(kind='smoke',argv=['--smoke']),dict(kind='numerics',argv=['--numerics'])]
-    cases += [dict(kind='compare',argv=['--compare',str(i)]) for i in range(3)]
+    loader=next(p for p in runtime_files if Path(p).name.startswith('libze_loader.so.'))
     row=dict(stage='prepared',source_commit=revision,inputs=dict(path=str(ROOT/'inputs.json'),sha256=digest(ROOT/'inputs.json')),
-        generator_proof=generator.proof(),sdk=sdk,runtime_sha256=digest(r.RESULT),selected_binary=full['binary'],
+        prefill_proof=generator.prefill_proof(),sdk=sdk,runtime_sha256=digest(r.RESULT),selected_binary=full['binary'],
         driver=guards.driver_guard(),boot=rt['boot'],runtime_files=runtime_files,preload=prior['preload'],
         host_link_inventory=inventory,commands=commands(),build_workdir=str(ROOT),build_environment=build_env,
-        native_environment=native_env,cases=cases,build_limits=BUILD_LIMITS,run_limits=RUN_LIMITS,
+        native_environment=native_env,cases=planned_cases(loader),build_limits=BUILD_LIMITS,run_limits=RUN_LIMITS,
         active=False,ownership_closed=True,passed=False,
-        predecessor=dict(scope='qsa_topk_early_component_v1',source_commit=predecessor['source_commit'],
-            source_build_record='ed5f7680f',original_inputs=copy.deepcopy(predecessor['inputs']),
-            original_binary=copy.deepcopy(predecessor['binary']),changed_project_inputs=changed,
-            unchanged_project_inputs=len(pins)-len(changed),generated_inputs_unchanged=True,
-            scope_limit='Same native fixture/headers/GPU constructor bytes for source-audit applicability only. New official build required;no native execution qualification is inherited.'),
-        contract='Exact selected integer IDs,including ascending ties,NaNs,zeros,partial4-cell budgets and zero-weight spare. Independent numeric per-cell ranking;capture/normal output correspondence and exact pass counts. No floating arithmetic change or production/decode hook.',
-        numerical_plan='Host canary;four normal/counter compiled properties;traced17cell/3query/cap5smoke;26host admission refusals and145device cases over18context endpoints x8patterns plus mixed invalid/zero steps. Actual final262144addresses are selector component coverage,not full-model context qualification.',
-        performance_plan='Three fresh processes;6scenarios(context32768/65536/117488 x positive varied/quantized-tie scores),256causal queries,capacity131072,cap2051,1024calls/batch,checked drain every64calls. Qualification warms each normal arm twice plus one capture. Retain first timing pair(-1) separately,then3rotating matched pairs(0..2).144batches total. AllCPU references,uploads,allocations and output checks outside timing. Direct actual kernel events and enclosing wall;both>=20ms,1000-clock p99<=10us,subsequent5empty-control median<=5percent minimum wall.',
-        acceptance='Each comparison process must show positive actual saved radix passes in at least one of its six complete timed scenarios. Mixed positive/zero cases stay eligible;keep tie cases and all144samples. For EACH enclosing wall and direct GPU service:all18process/scenario paired-median ratios<=1.01 AND geometric mean<=0.99. This is a prospectively bounded component screen,not model adoption. Complete all144batches unless a source/runtime/review/owner/fault/budget/correctness/mechanism/timer gate fails. No retry,replacement,exclusion or speed-based stop. Performance miss prohibits model trial.',
-        resource_hypothesis='Top-k accounts4.428919159s in the source-bound9a79profile. Early completion removes global score scans and WG reductions;singleton-key recovery adds one scan/reduction only when needed for partial budgets. This tests GPU service/issue cost,not physical VRAM/PCIe saturation. No H2D within timing.',
-        provenance='Main-authored fixture/controller;build/owner/environment checks derive from e10997bdd. Private Mapping1source constructor derives from selected6e40,repository LICENSE;no XeStrata implementation input.',
-        retention='One imminent integer-selector component executable;no third engine. Selected6e40/candidate9a79 and their required fixtures remain for current qualification;legacy provenance holds unchanged. Keep compact correctness/fault/branch counts and all144individual timing samples. Retire component objects,traces,generated snapshots and consumed audit at decision after exact Git recovery.')
+        contract='Exact numeric per-cell oracle and ascending IDs;public prefill selection,unchanged decode/short API and ref API,twice each with explicit/default active capacity. Persistent host DMA owners and last-member fail-stop drain.',
+        numerical_plan='One compiled dedicated-kernel property;9startup-policy cases in separate pre-exec environments;traced17cell/3query/cap5smoke for unset/off/on;145cases in EACH off/on process over18context endpoints x8patterns plus14mixed-invalid/zero rows.60host admission refusals across3public APIs per numerical process. Full262144extent is selector-only,not physical model qualification.',
+        acceptance='Complete all16ordered cases with zero exit/no new fault/no validation warning and exact expected environment/provider/ELF at3gates per native process. Require actual tiny-trace kernel creation to match early on/off and numerical output/guards/inputs for all3APIs. No retries or omission. This is public-entry correctness/source admission only;no timing or whole-model/decode throughput claim.',
+        provenance='Main-authored from this fork\'s qualified44636e26c private controller/fixture and independent public APIs;repository LICENSE. Original build/environment basis519cd056a with immutable official SDK snapshot. No external implementation.',
+        retention='One imminent small public-entry fixture executable,not a third engine. Preserve selected6e40/candidate9a79 for their named qualification. Keep compact per-process outcomes,case census/source/binary/faults;retire successful raw traces,objects and private fixture build after exact Git recovery at bridge closure. Ordinary UR/provider destruction remains unqualified under the retained-reference preload.')
     verify(row);data[KEY]=row;write(RESULT,data)
-    print('Top-k recipe/inputs/criteria prepared;commit before build.',flush=True)
+    print('Public-entry recipe and immutable inputs prepared;commit before build.',flush=True)
 
 
-def case_checks(parsed,expected):
-    require(len(parsed['CASE'])==expected,'incomplete Top-k numerical case count')
-    for c in parsed['CASE']:
-        require(all(c.get(k)=='PASS' for k in ('oracle','counters','inputs','guards','repeatability')),
-                'Top-k output/counter/input/guard gate')
-        require(int(c['saved_passes'])>=0 and 0<=int(c['stopped_queries'])<=int(c['queries']),
-                'invalid actual pass counters')
-
-
-def timed_mechanism(cases):
-    case_checks({'CASE':cases},6)
-    observed={}
+def case_checks(cases,smoke=False):
+    expected=[(17,32,3,5,0,0)] if smoke else [
+        (n,n,min(3,n),2051,p,0) for n in ENDPOINTS for p in range(8)]+[(65,128,14,13,6,1)]
+    actual=[]
     for c in cases:
-        pair=(int(c['cells']),int(c['pattern']))
-        require(pair not in observed and int(c['queries'])==256 and int(c['capacity'])==131072 and
-            int(c['cap'])==2051 and c['invalid']=='0','timed mechanism shape/count differs')
-        saved,stopped=int(c['saved_passes']),int(c['stopped_queries'])
-        require(0<=saved<=7*256 and (saved>0)==(stopped>0),'inconsistent radix savings')
-        observed[pair]=dict(saved_passes=saved,stopped_queries=stopped)
-    require(set(observed)=={(n,p) for n in (32768,65536,117488) for p in (0,1)},
-        'incomplete timed mechanism census')
-    require(any(v['saved_passes']>0 for v in observed.values()),'comparison process saved no radix passes')
-    return observed
+        require(all(c.get(k)=='PASS' for k in ('oracle','inputs','guards')) and
+            c.get('repeats')=='2' and c.get('apis')=='3','public numerical/guard/API gate')
+        actual.append(tuple(int(c[k]) for k in ('cells','capacity','queries','cap','pattern','invalid')))
+    require(actual==expected,'public numerical geometry census differs')
 
 
-def decision(measurements):
-    cases=[m for m in measurements if m['kind']=='compare']
-    require(len(cases)==3 and [m['argv'][-1] for m in cases]==['0','1','2'] and
-        len({m['process']['pid'] for m in cases})==3,'three distinct ordered processes required')
-    ratios={k:[] for k in ('wall_s','service_s')};groups=[]
-    for process,m in enumerate(cases):
-        savings=timed_mechanism(m['cases'])
-        samples=m['samples'];require(len(samples)==48,'48timing samples per process required')
-        observed=set()
-        for s in samples:
-            stamp=(int(s['scenario']),int(s['repetition']),int(s['arm']))
-            require(stamp not in observed,'duplicate timing sample');observed.add(stamp)
-            require(int(s['process'])==process and int(s['queries'])==256 and int(s['capacity'])==131072 and
-                int(s['cap'])==2051 and int(s['batch'])==1024 and int(s['checkpoint'])==64 and s['output']=='PASS',
-                'timed shape/dispatch/correspondence changed')
-            scenario=stamp[0];require(0<=scenario<6 and int(s['cells'])==(32768,65536,117488)[scenario//2] and
-                int(s['pattern'])==scenario%2,'timed scenario changed')
-            w=float(s['wall_s']);g=float(s['service_s'])
-            require(math.isfinite(w) and math.isfinite(g) and w>=.02 and .02<=g<=1.01*w,'ineligible timing batch')
-        require(observed=={(s,rep,arm) for s in range(6) for rep in (-1,0,1,2) for arm in (0,1)},'missing timing pair')
-        require(len(m['timers'])==1 and int(m['timers'][0]['samples'])==1000 and
-            int(m['timers'][0]['p99_ns'])<=10000 and int(m['timers'][0]['resolution_ns'])<=1000,'timer qualification')
-        require(len(m['controls'])==6 and [int(v['repetition']) for v in m['controls']]==[-1,0,1,2,3,4],
-                'empty controls incomplete')
-        controls=[float(v['wall_s']) for v in m['controls'][1:]]
-        require(all(math.isfinite(v) and v>0 for v in controls) and
-            statistics.median(controls)<=.05*min(float(s['wall_s']) for s in samples),'empty-control overhead')
-        for scenario in range(6):
-            by={(int(s['repetition']),int(s['arm'])):s for s in samples if int(s['scenario'])==scenario}
-            group=dict(process=process,scenario=scenario,
-                radix_savings=savings[((32768,65536,117488)[scenario//2],scenario%2)],metrics={})
-            for key in ratios:
-                paired=[float(by[(rep,1)][key])/float(by[(rep,0)][key]) for rep in range(3)]
-                median=statistics.median(paired);ratios[key].append(median)
-                group['metrics'][key]=dict(paired_ratios=paired,median_ratio=median)
-            groups.append(group)
-    metrics={k:dict(geometric_mean_ratio=math.exp(statistics.mean(math.log(v) for v in a)),
-        all18_within_noninferiority=all(v<=1.01 for v in a)) for k,a in ratios.items()}
-    for v in metrics.values():v['passed']=v['all18_within_noninferiority'] and v['geometric_mean_ratio']<=.99
-    return dict(process_scenario=groups,metrics=metrics,mechanism_screen_passed=all(v['passed'] for v in metrics.values()),
-        inference_adopted=False,physical_saturation_qualified=False)
-
+def check_result(case,parsed,trace=''):
+    kind=case['kind']
+    require(not parsed['SAMPLE'],'public-entry correctness must not masquerade as a speed test')
+    if kind=='properties':require(len(parsed['PROPERTY'])==1 and parsed['PROPERTY'][0]['PASS']=='1','compiled property gate')
+    if kind=='policy':
+        expected=case['argv'][-1];wanted=dict(expected=expected,invalid=str(int(expected=='invalid')),
+            enabled=str(int(expected=='1')),PASS='1')
+        require(parsed['POLICY']==[wanted],'actual startup policy differs')
+    if kind in ('smoke','numerics'):
+        require(parsed['ROUTE']==[dict(early=str(int(case['early'])),
+            entry='qsa_block_topk_prefill_early' if case['early'] else 'qsa_block_topk_prefill')],
+            'actual prefill dispatch differs')
+        case_checks(parsed['CASE'],smoke=kind=='smoke')
+        if kind=='smoke':
+            require('urEnqueueKernelLaunch' in trace,'tiny public-entry trace missing')
+            creations=[s for s in trace.splitlines() if 'urKernelCreate' in s]
+            require(any('submit_topk_prefill_early' in s for s in creations)==case['early'],
+                'actual early kernel creation differs from selected public route')
+        else:require(parsed['ADMISSION']==[dict(refusals='60',apis='3',output='PASS')],'public host admission gate')
 
 def kernel_faults(cursor):
     raw=subprocess.check_output(['journalctl','-k','-b','--after-cursor',cursor,'--no-pager','-o','json'],timeout=15)
@@ -322,7 +290,7 @@ def run(data):
     try:
         row.update(stage='running',active=True,ownership_closed=False,complete=False);write(RESULT,data)
         for i,case in enumerate(row['cases']):
-            env=dict(row['native_environment']);warning=ROOT/'native'/('case-'+str(i)+'-validation.log')
+            env=case_environment(row['native_environment'],case);warning=ROOT/'native'/('case-'+str(i)+'-validation.log')
             trace=ROOT/'native'/('case-'+str(i)+'-trace.log')
             env['UR_LOG_VALIDATION']='level:warning;flush:warning;output:file,'+str(warning)
             if case['kind']=='smoke':env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
@@ -368,29 +336,19 @@ def run(data):
             require(not warning.exists() or not warning.stat().st_size,'native validation warning')
             require(lines.count('COMPARATOR refusals=3 identity=PASS')==1,'comparator controls absent')
             parsed={prefix:[fields(s) for s in lines if s.startswith(prefix+' ')]
-                for prefix in ('PROPERTY','CASE','ADMISSION','SAMPLE','SCENARIO','TIMER','CONTROL')}
-            kind=case['kind']
-            if kind=='properties':require(len(parsed['PROPERTY'])==4 and all(p['PASS']=='1' for p in parsed['PROPERTY']),
-                'compiled property gate')
-            if kind=='smoke':
-                case_checks(parsed,1);c=parsed['CASE'][0]
-                require((c['cells'],c['capacity'],c['queries'],c['cap'],c['pattern'])==('17','32','3','5','0') and
-                    int(c['saved_passes'])>0 and trace.exists() and 'urEnqueue' in trace.read_text(),'tiny trace/mechanism absent')
-            if kind=='numerics':
-                case_checks(parsed,145);require(len(parsed['ADMISSION'])==1 and parsed['ADMISSION'][0]==
-                    dict(refusals='26',PASS='1'),'host admission controls absent')
-            if kind=='compare':
-                case_checks(parsed,6);require(len(parsed['SCENARIO'])==6 and all(s['inputs']==s['guards']=='PASS'
-                    for s in parsed['SCENARIO']),'scenario closure failed')
-                timed_mechanism(parsed['CASE'])
-            measurements.append(dict(kind=kind,argv=case['argv'],passed=True,
+                for prefix in ('PROPERTY','CASE','ADMISSION','ROUTE','POLICY','SAMPLE')}
+            check_result(case,parsed,trace.read_text() if trace.exists() else '')
+            measurements.append(dict(kind=case['kind'],label=case.get('label'),argv=case['argv'],passed=True,
                 process={k:entry.get(k) for k in ('pid','exit_code','elapsed_seconds','peak_session_rss_bytes',
                     'observation_complete','direct_child_reaped','session_empty')},
                 cases=parsed['CASE'],properties=parsed['PROPERTY'],admission=parsed['ADMISSION'],
-                samples=parsed['SAMPLE'],timers=parsed['TIMER'],controls=parsed['CONTROL']))
+                route=parsed['ROUTE'],policy=parsed['POLICY']))
             write(RESULT,data);require(not kernel_faults(cursor),'fresh kernel fault');guards.driver_guard()
         verify(row);require(digest(row['binary']['path'])==row['binary']['sha256'],'native ELF changed')
-        row['decision']=decision(measurements);row.update(stage='closed',complete=True,passed=True)
+        require(len(measurements)==16,'all planned public-entry processes required')
+        row['decision']=dict(public_entry_correctness_passed=True,inference_adopted=False,
+            full_model_context_qualified=False,decode_throughput_qualified=False)
+        row.update(stage='closed',complete=True,passed=True)
     except BaseException as e:row.update(stage='failed',passed=False,error=repr(e))
     finally:
         try:row.update(fresh_faults=kernel_faults(cursor),driver_after=guards.driver_guard())
