@@ -89,6 +89,16 @@ task and physical262144/RESTORE remain open;the candidate is not adopted. These
 checks do not inherit the seed's model results. See
 `fused-moe-service-current.json::official_prefill_joint_build_v1`,
 `official_prefill_joint_device_v1` and `official_joint_model_entry_v1`.
+The separate clean head-capacity comparison,controller82fdd969c,freezes12fresh
+processes and48thinking-on requests:three reversed-order pairs at each64K/117K
+length,Top-k fixed0,only head retirement0/1 changed before native exec. First use
+is separate from each process's subsequent-three median. Each length needs all
+three paired time ratios below1 and their geometric mean at most0.99;the1000
+screen separately requires all three candidate process medians at that length.
+The117K control may retain its legitimate512-slot/RAM-tail fallback;the candidate
+must admit all117488GPU rows and checked split storage. This is a new capacity
+question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
+the compact result;it is prepared,not yet a speed result or adoption decision.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found
