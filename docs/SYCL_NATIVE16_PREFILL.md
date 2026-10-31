@@ -41,10 +41,16 @@ providers and immutable environments are checked. Native source remains
 e4617c85c;cohort source83590826a. The initial wrong-UR-loader property lookup
 failed before a kernel launch;V2was closed before execution to correct nested
 stage analysis. Their original failed/unexecuted outcomes remain in the compact
-result. No model runs yet:the eight-job production loop,speed,decode handoff and
-physical262144/RESTORE still require their own checks. The next entry uses
-bench.sh with32Kinput,stage progress and parameter validation;clean64K/117K
-measurements follow separately. The earlier22GEMM ABI checks remain separate.
+result. The first official-engine model entry now passes bench.sh with32769read
+tokens,zero reuse,32768GPU-resident BF16 residual rows and24generated tokens.
+All48MoE windows complete18293jobs with2264paired eight-job checkpoints;
+the ordinary accumulator is active at this length. Parameter validation is quiet,
+the native process exits normally and no fresh driver fault appears. This logged
+diagnostic reports583.5tok/s and56.289s client TTFT,not clean speed or sustained
+decode evidence. Clean64K/117K comparisons,matched decode preservation,task and
+physical262144/RESTORE gates remain pending. See
+`fused-moe-service-current.json::official_model_entry_v1`,native sourcee4617c85c,
+controller source7493d0487. The earlier22GEMM ABI checks remain separate.
 
 The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
 exact-completion Top-k kernel only in layer-major prefill. It defaults off,
@@ -54,9 +60,10 @@ counter instrumentation. The fresh official-SDK public-entry V2 passes all16
 processes:9startup policies,3traced smoke cases and145numeric cases in each
 off/on process,including the262144selector endpoint and unchanged decode/ref
 APIs. No new fault or validation warning appears. This qualifies direct selector
-APIs;production model routing,whole-engine speed and decode handoff remain pending.
+APIs;matched whole-engine speed and decode preservation remain pending after the
+official candidate's first32K production-entry diagnostic above.
 See `fused-moe-service-current.json::qsa_topk_prefill_entry_v2`. Selected6e40
-does not contain the route;the official candidate contains it with model
+does not contain the route;the official candidate contains it with full model
 qualification still pending.
 The original selector source and small-input/decode calls remain unchanged.
 

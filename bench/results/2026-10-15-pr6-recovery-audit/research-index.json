@@ -18380,8 +18380,8 @@
   },
   "official_model_esimd_image_contract_20261031": {
     "classification": "decision support",
-    "status": "eligible-current-artifact-audit",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "Audit the actually built official2026.2 full engine ESIMD image/subgroup contract before model adoption. Relate effective JIT/AOT/RDC/offload-driver flags and available retained object/ELF metadata to declared ESIMD entrypoints used by native IQ3/IQ2/MMVQ decode and prefill. The old CMake comment about oneAPI2026.1.1 is historical,not proof about2026.2. Distinguish actual source/metadata violations,unverified properties and documented runtime refusals;identify the minimal missing bounded qualification or useful optimization only when evidence supports it. No generic driver survey or performance claim.",
     "prerequisite_evidence": {
       "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
@@ -18398,6 +18398,12 @@
     "report_budget_words": 2000,
     "constraints": "Read-only code/artifact/primary-source audit. Write only report. No Git/build/test/GPU/profiler/process inspection/package/reset/product changes or child agents. Static ELF/object inspection is allowed;never execute a candidate or initialize GPU. No XeStrata code/helpers/tests/compiler.",
     "review": "Native Codex gpt-6-luna/max;Main reads short operational digest.",
-    "next_review": "Returned report/source-specific evidence before adoption. Mere absence from component coverage is not a proven safety fault. Main continues frontend/source work and bounded model progression."
+    "next_review": "Returned report/source-specific evidence before adoption. Mere absence from component coverage is not a proven safety fault. Main continues frontend/source work and bounded model progression.",
+    "orchestration": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_e41e4d385f53",
+      "dispatch": "ctx_3a4d244220ff",
+      "terminal": "term_1fdd8ce0-843e-47ff-b993-0c151d2b3fc9"
+    }
   }
 }
