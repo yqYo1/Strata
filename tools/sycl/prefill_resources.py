@@ -21,7 +21,6 @@ import time
 sys.dont_write_bytecode = True
 import compare_official_prefill as comparison
 import bench_engine as reader
-import command_service
 
 entry, shared, build = comparison.entry, comparison.shared, comparison.build
 P, B, RESULT = comparison.P, comparison.B, comparison.RESULT
@@ -33,7 +32,7 @@ CHANGED = {'tools/sycl/prefill_resources.py', 'tools/sycl/bench_engine.py'}
 OBSERVERS = dict(STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1',
     STRATA_PREFILL_LAYER_MAJOR_PROFILE='1', STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE='1',
     STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE='1', STRATA_PREFILL_TRANSITION_PROFILE='1',
-    STRATA_SYCL_PREFILL_COMMAND_PROFILE='1')
+    STRATA_SYCL_PREFILL_COMMAND_PROFILE='0')
 require, digest, write = comparison.require, comparison.digest, comparison.write
 
 
@@ -83,6 +82,9 @@ def environment(row, plan):
         env['STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE'] = '0'
     require(not env.get('LD_PRELOAD') and env['STRATA_PREFILL_RELEASE_HEADS'] == '1'
             and env['STRATA_SYCL_PREFILL_TOPK_EARLY'] == '0'
+            and env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] == '0'
+            and env['STRATA_SYCL_PREFILL_GU_SWIGLU'] == 'large'
+            and env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] == 'large'
             and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1'
             and env['EnableDirectSubmission'] == '0'
             and env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1',
@@ -117,19 +119,22 @@ def prepare():
         request_hashes=cohort['request_hashes'][str(READ)], plans=[], processes=[],
         host_passed=False, complete=False, passed=False, active=False, ownership_closed=True,
         budgets=cohort['budgets'], controls=controls, inference_adopted=False,
-        plan=dict(question='Which host regions, GPU queue intervals and sampled kernel shapes consume the admitted117K path?',
+        plan=dict(question='Which host regions and coarse GPU queue intervals consume the admitted117K fused path?',
             order='Two fresh processes:clean then observed;each4exact-count thinking-on requests with24output tokens. '
                 'First use separate,subsequent-three medians;body hashes match the closed comparison.',
             constants='Same ELF,seven fixtures,official providers,131072 INT8 context,1256decode slots,5workers,'
                 'spec4,8192chunks,BF16/vLLM,split/original Down,Top-k0,head retirement1.',
             acceptance='Both processes close normally;all samples eligible,all117488rows GPU-resident,128staged slots,'
                 'checked split/lease restoration,quiet parameter validation,no fresh fault. Observed requests each '
-                'pass all48window/work,CPU partition,GDN/QSA and4sampled-layer command gates. '
+                'pass all48window/work,CPU partition,GDN/QSA and transition gates. '
                 'Observed/clean warmed-time ratio<=1.15 is an observer-cost screen,not a statistical cost claim.',
             stopping='Stop first input,owner,clock,budget,warning,fault,route,observer or sample failure. '
                 'No retry,exclusion,hash refresh or speed-based replacement. Commit each closed process before next.',
-            limitations='Queue intervals include host gaps;sampled kernel service is not device utilization or an '
-                'additive full critical path. Logical/requested bytes are not physical bus/VRAM traffic. '
+            limitations='Queue intervals include host gaps and are not an additive full critical path. '
+                'Fine-grained command profiling is unavailable on this native generation with GU/Down fusion: '
+                'its immutable gemm16.cpp startup guards reject that combination. Keep fusion and the native '
+                'generation fixed;do not measure a different unfused path as its proxy. '
+                'Logical/requested bytes are not physical bus/VRAM traffic. '
                 'Hardware ceilings and saturation remain unmeasured. No clean speed gain,quality,decode,'
                 'physical262144/RESTORE or adoption qualification.',
             retention='Keep individual latency samples,compact aggregate host/phase/shape evidence and limits. '
@@ -212,35 +217,6 @@ def host():
     require(row['host_passed'] and row['ownership_closed'], row.get('error', 'host probes incomplete'))
 
 
-def sampled_service(profile):
-    groups = {}
-    for sample in profile['samples']:
-        key = (sample['kind'], int(sample['bin']))
-        item = groups.setdefault(key, dict(kind=key[0], bin=key[1], service_ns=[],
-            eligible=0, selected=0, logical_gemm_flops=0))
-        item['service_ns'].append(sample['service_ns'])
-        if key[0] in {'gu', 'gu_swiglu', 'down', 'down_scatter'}:
-            m, n, k = (int(sample[name]) for name in ('m', 'n', 'k'))
-            require(1 <= m <= 8192 and (n, k) == (
-                (1280, 2560) if key[0] in {'gu', 'gu_swiglu'} else (2560, 640)),
-                'sampled MoE GEMM geometry differs')
-            item['logical_gemm_flops'] += 2 * m * n * k
-    for group in profile['groups']:
-        item = groups[(group['kind'], int(group['bin']))]
-        item['eligible'] += int(group['eligible'])
-        item['selected'] += int(group['selected'])
-    out = []
-    for key in sorted(groups):
-        item = groups[key]
-        values = item.pop('service_ns')
-        require(item['selected'] == len(values) and item['eligible'] >= len(values), 'sample reduction lost work')
-        out.append(dict(item, sample_service_ns=sum(values), median_service_ns=statistics.median(values),
-            min_service_ns=min(values), max_service_ns=max(values)))
-    return dict(sampled_layers=[0, 15, 31, 47], groups=out, complete=True,
-        scope='Selected stratum samples only;logical GEMM FLOPs exclude non-GEMM epilogues and are not DPAS '
-            'instruction counts. No full-model service,occupancy,saturation or ceiling claim.')
-
-
 def transition(text):
     frames = list(re.finditer(r'^strata native dense host profile: (.+)$', text, re.M))
     refills = list(re.finditer(r'^strata trace: refilled (\d+) slots on (\d+) stage\(s\) in ([\d.eE+\-]+) ms$', text, re.M))
@@ -262,7 +238,7 @@ def transition(text):
 
 
 def observed(text, route):
-    record = reader.extract_resource_profile(text, True, True,
+    record = reader.extract_resource_profile(text, True, False,
         'Nonexclusive queue spans;not additive wall time or hardware saturation.',
         cpu_version=4, expected_window_pairs=[(0, ROWS)], maximum_window_rows=ROWS)
     result = reader.compact_host_resource_profile(record, GROUPS)
@@ -271,7 +247,10 @@ def observed(text, route):
             and result['window_census']['requested_router_D2H_bytes'] == ROWS * 10 * 4 * 48
             and result['window_census']['requested_map_H2D_bytes'] == ROWS * 10 * 8 * 48,
             'whole-window route/CPU census differs')
-    result['sampled_gpu_service'] = sampled_service(record['command_service_profile'])
+    require('strata command ' not in text, 'unsupported command observer must remain disabled')
+    result['sampled_gpu_service'] = dict(available=False,
+        reason='This exact native generation rejects command profiling together with GU/Down fusion. '
+            'The measured production fusion settings remain unchanged;no per-kernel service claim.')
     result['transition'] = transition(text)
     return result
 
@@ -507,16 +486,19 @@ def selfcheck():
             rejected.append(name)
         else:
             raise RuntimeError('invalid resource control accepted: ' + name)
-    samples = [dict(kind='gu', bin=3, m=127, n=1280, k=2560, service_ns=t)
-               for t in (1000, 2000)]
-    groups = [dict(kind='gu', bin=3, eligible=n, selected=1) for n in (10, 20)]
-    service = sampled_service(dict(samples=samples, groups=groups))['groups'][0]
-    require(service['selected'] == 2 and service['eligible'] == 30
-            and service['sample_service_ns'] == 3000 and service['median_service_ns'] == 1500
-            and service['logical_gemm_flops'] == 4 * 127 * 1280 * 2560,
-            'sampled-service reduction lost extent or time')
+    template = dict(STRATA_MEASUREMENT_ROOT='selfcheck-origin', EnableDirectSubmission='0',
+        UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1', STRATA_SYCL_PREFILL_SAME_QUEUE='1',
+        STRATA_SYCL_PREFILL_GU_SWIGLU='large', STRATA_SYCL_PREFILL_DOWN_SCATTER='large')
+    for measured in (False, True):
+        env = environment(dict(environment_template=template),
+            dict(root='selfcheck-fused', heads=1, observed=measured))
+        require(env['STRATA_SYCL_PREFILL_COMMAND_PROFILE'] == '0'
+                and env['STRATA_SYCL_PREFILL_GU_SWIGLU'] == 'large'
+                and env['STRATA_SYCL_PREFILL_DOWN_SCATTER'] == 'large'
+                and bool(env.get('STRATA_TRACE')) is measured,
+                'resource observer changed production fusion or enabled unsupported command profiling')
     return dict(ordinary_and_split_controls=2, rejected=rejected, shape_boundaries=[127, 128, 2333, 2334],
-        defaults_preserved=True, GPU_executed=False)
+        fused_observer_environment_controls=2, defaults_preserved=True, GPU_executed=False)
 
 
 if __name__ == '__main__':
