@@ -1877,9 +1877,11 @@ The prospective V2controller44636e26c implements the per-process savings gate
 and passes10host tests in4.013seconds,including all-zero refusal and mixed
 positive/zero acceptance retaining all18groups/144samples. Only the controller
 and its host tests change;all other project/native/generated inputs match V1.
-Commit the V2plan and make a fresh official build before reviewed admission,
-properties,traced tiny,numerics and timing. No GPU execution or adoption follows
-from the host tests or inherited source proof.
+Planccfd29440 and the corrected controller now have native Luna-max source
+admission. Retire unexecuted V1after original-source recovery and make a fresh
+official V2build;commit its actual input/ELF record before properties,traced
+tiny,numerics and timing. No GPU execution or adoption follows from host tests
+or the inherited source proof.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
