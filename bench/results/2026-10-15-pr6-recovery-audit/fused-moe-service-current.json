@@ -58603,6 +58603,114 @@
           "devcoredump": false
         },
         "final_driver_matches": true
+      },
+      {
+        "mode": "validate",
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "environment_delta": {
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/validate/validation.log",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/validate/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-barriers3-v1/validate/cache",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "STRATA_TEST_MAIN_GATES": "1",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+        },
+        "native_identity": {
+          "pid": 1872073,
+          "start_ticks": 182611809,
+          "sid": 1872073
+        },
+        "pre_main_validation": {
+          "pid": 1872073,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "events": [
+          {
+            "kind": "validation",
+            "schedule": "barriers3",
+            "tokens": 1,
+            "split": false,
+            "exact_vs_fused_and_columns4": true,
+            "guards": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "validation",
+            "schedule": "barriers3",
+            "tokens": 33,
+            "split": false,
+            "exact_vs_fused_and_columns4": true,
+            "guards": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "validation",
+            "schedule": "barriers3",
+            "tokens": 65,
+            "split": false,
+            "exact_vs_fused_and_columns4": true,
+            "guards": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "validation",
+            "schedule": "barriers3",
+            "tokens": 129,
+            "split": false,
+            "exact_vs_fused_and_columns4": true,
+            "guards": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "validation",
+            "schedule": "barriers3",
+            "tokens": 8191,
+            "split": false,
+            "exact_vs_fused_and_columns4": true,
+            "guards": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "validation",
+            "schedule": "barriers3",
+            "tokens": 8192,
+            "split": false,
+            "exact_vs_fused_and_columns4": true,
+            "guards": true,
+            "status": "PASS"
+          }
+        ],
+        "native_exit_code": 0,
+        "official_providers_observed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "final_driver_matches": true
       }
     ],
     "active": false,

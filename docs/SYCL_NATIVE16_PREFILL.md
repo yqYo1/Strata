@@ -332,7 +332,11 @@ with no model dispatch or decode change. `measure_gdn_scheduling.py` pins a fres
 source/recipe and compares fused/columns4/barriers3 with first use separate,
 six warmed rounds and three independent processes. Every process must beat
 columns4 before the physical262144component check. Numerical,owner,fault and
-runtime validation gates remain mandatory;model qualification is still pending.
+runtime validation gates remain mandatory. The two same-build fixtures pass
+submission,17-token whole/split,seven refusal/no-write and
+1/33/65/129/8191/8192token exact comparisons,quiet validation,normal owner closure
+and no fresh fault. Three fresh performance processes are next;model
+qualification remains pending. See `official_gdn_barriers3_v1`.
 Current original GDN/decode selections and both engine binaries remain unchanged.
 The finished GDN and resource-profile child branches are removed with original
 commits reachable from pushed `feature/sycl`;PR180to default remains blocked.
