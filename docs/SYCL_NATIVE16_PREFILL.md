@@ -191,8 +191,9 @@ explicitly unqualified. Main has read only the short review digest. See
 `official_joint_resources_v2` for the preserved failure. V3prepare,source2bcd52634,
 now passes all11finalization controls,the unchanged reader/reuse controls and
 native/provider/model proof. It creates two fresh117Kplans;neither model process
-has executed. Next commit the plan and qualify the four frontend environments
-before clean process0. See `official_joint_resources_v3`.
+has executed. All four clean/observed benchmark/server frontend probes now pass
+with quiet stderr and normal closure. Next execute clean process0 and preserve
+its result before observed process1. See `official_joint_resources_v3`.
 Retire the temporary branch after its original
 commits are also verified reachable from the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
