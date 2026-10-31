@@ -55750,5 +55750,261 @@
       "retired_to_Git": true
     },
     "next_action": "Commit a bounded same-build row64 tiny/smoke/public-route qualification before model execution;then matched PP/TTFT comparison and current-generation multi-length curve. Preserve decode and physical262144 correctness gates."
+  },
+  "official_row64_device_v1": {
+    "stage": "prepared",
+    "source_commit": "be06c07b27360b9005dccbc6ee10cc042d49ac0c",
+    "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/strata",
+        "sha256": "05c489eab7254417eb0e76a6f5c4c44a14fc837d83dd4056457d0138f522b29e",
+        "bytes": 23981920
+      },
+      "sycl_qsa_topk_prefill_entry_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_qsa_topk_prefill_entry_test",
+        "sha256": "4ba024ef4386be7192ffd78624c4f6aeee9d7ccd43f16f37b5ff893d0a60fbe0",
+        "bytes": 316784
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_submission_test",
+        "sha256": "f91b841c8191c94d37f7066a46d5b212a9e35055e77878cbc91c83136f5ebacd",
+        "bytes": 343000
+      },
+      "sycl_vllm_native16_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_vllm_native16_test",
+        "sha256": "d1b28549a77c8ed457130477a8d6ec2a99957d8e6ebc1a55e797c4718d4ef4db",
+        "bytes": 2452528
+      },
+      "sycl_moe_gu_swiglu_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_gu_swiglu_bench",
+        "sha256": "789e987d711ea2580bc8e480ea056c0724f8f6ef24119bfd9575ddc116d0d076",
+        "bytes": 13836784
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "e5d7be2953ba68c6e3ddc55c02d39f5653d38d2cc9354fa43cf6ab0544755145",
+        "bytes": 13857592
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_accum_test",
+        "sha256": "e93b9b0d50e357acc928c01b8dd7e6bcd0d38655b5d4f5994b04bf26ff762839",
+        "bytes": 3055560
+      }
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "cases": [
+      {
+        "index": 0,
+        "mode": "tiny-row64",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/tiny-row64",
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/tiny-row64/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/tiny-row64/validation.log",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/tiny-row64/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/tiny-row64/cache",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_SELECT_RADIX4": "1",
+          "STRATA_SYCL_SELECT_CYCLIC": "0",
+          "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "row64",
+          "STRATA_TEST_MAIN_GATES": "1",
+          "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+          "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+          "STRATA_SYCL_PREFILL_TOPK_EARLY": "0"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_down_scatter_bench",
+          "--split-row64-tiny"
+        ],
+        "expected_split_kernel_launches": {
+          "original": 0,
+          "row128": 0,
+          "row64": 10
+        }
+      },
+      {
+        "index": 1,
+        "mode": "large-row64",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/large-row64",
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/large-row64/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/large-row64/validation.log",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/large-row64/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/large-row64/cache",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_SELECT_RADIX4": "1",
+          "STRATA_SYCL_SELECT_CYCLIC": "0",
+          "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "row64",
+          "STRATA_TEST_MAIN_GATES": "1",
+          "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+          "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+          "STRATA_SYCL_PREFILL_TOPK_EARLY": "0"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_down_scatter_bench",
+          "--split-row64-smoke"
+        ],
+        "expected_split_kernel_launches": {
+          "original": 0,
+          "row128": 0,
+          "row64": 24
+        }
+      },
+      {
+        "index": 2,
+        "mode": "route-row64",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/route-row64",
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "HOME": "/home/yayoi",
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+          "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+          "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+          "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+          "NEOReadDebugKeys": "1",
+          "EnableDirectSubmission": "0",
+          "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+          "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+          "SYCL_CACHE_PERSISTENT": "0",
+          "ZES_ENABLE_SYSMAN": "0",
+          "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+          "UR_LOG_TRACING": "level:info;flush:info;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/route-row64/ur.trace",
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/route-row64/validation.log",
+          "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+          "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/route-row64/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-row64-device-v1/route-row64/cache",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+          "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+          "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+          "STRATA_SYCL_SELECT_RADIX4": "1",
+          "STRATA_SYCL_SELECT_CYCLIC": "0",
+          "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+          "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "row64",
+          "STRATA_TEST_MAIN_GATES": "1",
+          "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+          "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+          "STRATA_SYCL_PREFILL_TOPK_EARLY": "0"
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/build/sycl_moe_down_scatter_bench",
+          "--split-route-smoke",
+          "1"
+        ],
+        "expected_split_kernel_launches": {
+          "original": 0,
+          "row128": 0,
+          "row64": 6
+        }
+      }
+    ],
+    "processes": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "model_qualified": false,
+    "inference_adopted": false,
+    "budgets": {
+      "wall": 180,
+      "cpu": 600,
+      "rss_cap": 17179869184,
+      "text_cap": 8388608,
+      "file_cap": 16777216,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 134217728,
+    "plan": {
+      "question": "Qualify the previously faster row64 component and production dispatch on the current exact native generation.",
+      "order": "Fresh tiny,large,public-route processes;stop first failure;commit each closure before next.",
+      "coverage": "Tiny:edge values,invalid maps1/2/3,dense64bits. Large:63/64/65rows,117488-row primary/tail/final destinations,regular/irregular maps. Public:2333/2334/2335/8192rows on both maps,selected/fallback and false-return no-write. Full FP32 consumer oracle,BF16 capture,guards and immutable inputs;reuse the maintained source-bound readers.",
+      "acceptance": "Same seven ELF/1447compiler inputs/84providers/source recipe;immutable pre-exec row64 choice with current safety controls. Three native gates,actual code maps/environment,pre-main validation,normal closure and no fresh fault. Successful UR create-to-launch identities must show exactly10/24/6row64split kernels and no original/row128split kernels.",
+      "limitations": "Component/dispatch qualification only;no clean speed,TTFT,model quality,sustained decode,physical262144or adoption follows. No blanket minimum percentage speed gain.",
+      "retention": "Keep compact individual outcomes,counts,source/ELF/provider identities and limits. Retire successful full UR/JIT/polling output after coverage verification;keep one useful distinct failure diagnostic. No new native build generation."
+    },
+    "source_inputs": {
+      "files": 62,
+      "aggregate_sha256": "f6c3d7b615e1bf214841502037c4256252f7dee09e1b25dbdf9855e38270dd31"
+    }
   }
 }
