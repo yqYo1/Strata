@@ -59007,6 +59007,323 @@
           "complete": true,
           "verified_absent": true
         }
+      },
+      {
+        "mode": "perf1",
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "environment_delta": {
+          "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-subgroup-v1/perf1/validation.log",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-subgroup-v1/perf1/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-subgroup-v1/perf1/cache",
+          "CUDA_MODULE_LOADING": "EAGER",
+          "STRATA_TEST_MAIN_GATES": "1",
+          "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+          "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+        },
+        "native_identity": {
+          "pid": 1817916,
+          "start_ticks": 182488090,
+          "sid": 1817916
+        },
+        "pre_main_validation": {
+          "pid": 1817916,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "events": [
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 0,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 27291,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 1,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 27084,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 2,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 26875,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 3,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 27708,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 4,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 27291,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 5,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 29271,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 6,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 26979,
+            "status": "PASS"
+          },
+          {
+            "kind": "timer_control",
+            "process": 1,
+            "control": 7,
+            "resolution_ns": 52,
+            "empty_marker_gap_ns": 27083,
+            "status": "PASS"
+          },
+          {
+            "kind": "train_validation",
+            "process": 1,
+            "tokens_per_call": 8192,
+            "updates_per_arm": 7,
+            "final_state_output_fp16_exact": true,
+            "guards": true,
+            "inputs_immutable": true,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": -1,
+            "schedule": "columns4",
+            "queue_interval_ms": 385.599583,
+            "host_submit_ms": 362.657732,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": -1,
+            "schedule": "subgroup4",
+            "queue_interval_ms": 133.06875,
+            "host_submit_ms": 0.408179,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": -1,
+            "schedule": "fused",
+            "queue_interval_ms": 23.646771,
+            "host_submit_ms": 0.55722,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 0,
+            "schedule": "subgroup4",
+            "queue_interval_ms": 129.961458,
+            "host_submit_ms": 0.103946,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 0,
+            "schedule": "fused",
+            "queue_interval_ms": 23.644167,
+            "host_submit_ms": 0.039023,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 0,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.59552,
+            "host_submit_ms": 0.0746,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 1,
+            "schedule": "fused",
+            "queue_interval_ms": 23.638125,
+            "host_submit_ms": 0.03729,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 1,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.580625,
+            "host_submit_ms": 0.073439,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 1,
+            "schedule": "subgroup4",
+            "queue_interval_ms": 129.826875,
+            "host_submit_ms": 0.071796,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 2,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.637813,
+            "host_submit_ms": 0.073459,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 2,
+            "schedule": "subgroup4",
+            "queue_interval_ms": 129.904688,
+            "host_submit_ms": 0.071124,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 2,
+            "schedule": "fused",
+            "queue_interval_ms": 23.630521,
+            "host_submit_ms": 0.037099,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 3,
+            "schedule": "subgroup4",
+            "queue_interval_ms": 129.865937,
+            "host_submit_ms": 0.070903,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 3,
+            "schedule": "fused",
+            "queue_interval_ms": 23.634271,
+            "host_submit_ms": 0.036759,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 3,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.625208,
+            "host_submit_ms": 0.072807,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 4,
+            "schedule": "fused",
+            "queue_interval_ms": 23.643646,
+            "host_submit_ms": 0.037481,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 4,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.64375,
+            "host_submit_ms": 0.072657,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 4,
+            "schedule": "subgroup4",
+            "queue_interval_ms": 129.983646,
+            "host_submit_ms": 0.071024,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 5,
+            "schedule": "columns4",
+            "queue_interval_ms": 17.709063,
+            "host_submit_ms": 0.073038,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 5,
+            "schedule": "subgroup4",
+            "queue_interval_ms": 129.909792,
+            "host_submit_ms": 0.070563,
+            "status": "PASS"
+          },
+          {
+            "kind": "sample",
+            "process": 1,
+            "round": 5,
+            "schedule": "fused",
+            "queue_interval_ms": 23.627917,
+            "host_submit_ms": 0.036789,
+            "status": "PASS"
+          }
+        ],
+        "native_exit_code": 0,
+        "official_providers_observed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "final_driver_matches": true
       }
     ],
     "active": false,
