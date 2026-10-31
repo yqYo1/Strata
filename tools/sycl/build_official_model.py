@@ -50,7 +50,7 @@ def committed(path):
     return json.loads(raw)
 
 
-def controls(revision, *, reuse_revision=None, controller_changes=()):
+def controls(revision, *, reuse_revision=None, controller_changes=(), controller=None):
     """Recover original controls; explicit reuse still verifies current Git bytes.
 
     Strict build admission remains the default. A diagnostic controller may
@@ -63,7 +63,7 @@ def controls(revision, *, reuse_revision=None, controller_changes=()):
             all(type(n) is str and n.startswith('tools/sycl/') and n.endswith('.py')
                 and '..' not in Path(n).parts for n in controller_changes),
             'invalid controller reuse paths')
-    pending, pins, changed = [Path(__file__).resolve()], {}, set()
+    pending, pins, changed = [controller or Path(__file__).resolve()], {}, set()
     while pending:
         path = pending.pop()
         name = str(path.relative_to(P))
@@ -101,23 +101,24 @@ def sdk():
     return files
 
 
-def traced_link_inputs(allowed):
+def traced_link_inputs(allowed, root=None):
     """Account for GNU ld -t paths, apart from Ninja/warning text.
 
     Temporary device objects are produced by this owned compiler below its
     private TMPDIR. External linker inputs must match the prospective map.
     No missing external path is accepted as a compiler temporary.
     """
+    root = root or ROOT
     frozen, generated = {}, set()
-    stdout = (ROOT / 'owned-build/compile.stdout').read_text(errors='replace')
+    stdout = (root / 'owned-build/compile.stdout').read_text(errors='replace')
     for line in stdout.splitlines():
         value = line.strip()
         path = Path(value)
         if not value or any(c.isspace() for c in value) or not (path.is_absolute() or
                 path.suffix in ('.o', '.a') or '.so' in path.name):
             continue
-        path = (path if path.is_absolute() else ROOT / 'build' / path).resolve()
-        if path.is_relative_to(ROOT / 'build') or path.is_relative_to(ROOT / 'tmp'):
+        path = (path if path.is_absolute() else root / 'build' / path).resolve()
+        if path.is_relative_to(root / 'build') or path.is_relative_to(root / 'tmp'):
             generated.add(str(path))
             continue
         require(path.is_file() and allowed.get(str(path)) == digest(path),

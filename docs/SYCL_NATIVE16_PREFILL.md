@@ -305,6 +305,61 @@ another wins a different regime. A faster kernel alone does not establish which
 profile minimizes TTFT. Automatic input-length dispatch and any further levels
 wait until long-prefill and decode tuning;measured curves will determine their
 thresholds later.
+The isolated `work/prefill-gdn-subgroup` proposal next targets the9.70631s GDN
+recurrence interval recorded by `official_joint_resources_v3`. Its source maps
+four adjacent subgroup lanes to each column's four32-row partials,then uses
+converged `select_from_group` calls instead of the recurrence's five workgroup
+barriers per token. It keeps explicit ordered FMAs,left-associated partial sums
+and the separate RMS/gating consumer. This removes source-level workgroup
+barriers;emitted shuffles,register use,spills,physical traffic and speed are not
+measured. Duplicate Q/K loads and exchanges may offset any saving.
+The source audit ofa1cb5de85and independent Luna-max review find no defined
+source-level blocker to a bounded smoke,while flagging four times the logical
+Q/K vector loads of columns4and104subgroup selections per lane/token. These
+counts are neither physical traffic nor emitted instruction counts. The fixture
+compiles the production GDN source with the existing runtime target,without
+depending on the rest of the engine's kernel archive;this wiring is not yet built.
+The new `gdn_recurrence_subgroup` entrypoint is prefill-only and not wired into
+model dispatch. Main authored it from this fork's existing recurrence and the
+indexed subgroup feasibility reference,with the
+[Khronos collective contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html)
+and [selection API](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html#select).
+No XeStrata source is involved. Source editing is isolated while the original/
+row64 comparison is frozen;there is no new build or test result yet.
+After that cohort closes,commit a bounded exact-build component plan before
+compiling:traced17-token whole/split and invalid/no-write cases,1/33/65/129/8191/
+8192tails,262144component carry/restore/unchanged-decode-tail checks,and three
+fresh rotated comparisons of fused/columns4/subgroup4. The current best columns4
+path is the performance control;the fused arm is an additional arithmetic
+reference. Each process records eight empty-marker controls and the device's
+profiling timer resolution. Every sample must span at least1ms and1000timer
+ticks;no subtraction of marker cost or claim of isolated device service follows.
+Freeze comparison acceptance before timing. Queue-marker
+spans include host gaps,so do not label them isolated kernel service. A component
+pass cannot qualify model quality,sustained decode or physical-context behavior.
+The new Main controller `tools/sycl/measure_gdn_subgroup.py` prepares an exact
+two-target build with the official2026.2SDK,then serializes submission,smoke,
+tail validation and three rotated resident processes. All three subgroup4/
+columns4process-median ratios below1and their geometric mean below1permit the
+262144component continuity check;there is no minimum percentage. This plan is
+unexecuted. Native gates outside timed regions check the startup environment
+and actual provider maps before initialization,after initialization and before
+exit. Final validation is checked after normal process closure. Pin actual
+compiler/linker inputs and both executable hashes before any GPU execution.
+No current engine binary is overwritten and no subgroup model route is selected.
+The independent execution-control audit of77c86900fand its native review identify
+a missing final driver-equality pass gate,a compile-command attestation gap and
+a misleading per-sample correctness field. Main's prospective correction checks
+final driver identity,attests all six actual target compiler commands and their
+FP options,and emits one explicit numerical validation result for the complete
+seven-update train. Timed samples claim clock eligibility,not individual numerical
+comparison. Dedicated correctness/context modes remain separate. The original
+CPU parser controls pass1valid/15invalid and2selection cases. Corrected source
+51f4e34a6passes1valid/18invalid parser,2selection and3final-driver CPU controls;
+prepare reruns them from the frozen recipe. The CPU build and GPU checks remain
+pending.
+Integrate completed work into `feature/sycl` and retire the temporary branch;
+remove the unused proposal if its measured result does not justify continuation.
 Collector preparation is deferred in favor of this faster-candidate qualification.
 The unexecuted controller froma76babf18 is retired to Git;no coverage plan/root,
 native process or GPU result was produced by it. The13existing reader rejection
