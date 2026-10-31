@@ -25,7 +25,7 @@ r, P, B = closure.r, closure.P, closure.B
 ROOT = B / 'transfer-refresh-39758-v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'transfer_refresh'
-PIPELINE = False
+BATCH = False
 BINARY = 'host_transfer_probe'
 NATIVE = ['src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
           'tools/sycl/host_transfer_probe.cpp']
@@ -75,8 +75,8 @@ def public():
     return data
 
 
-def commands(compiler, output_root=None):
-    root = ROOT if output_root is None else output_root
+def commands(compiler):
+    root = ROOT
     rows = [[compiler, *FLAGS, '-MD', '-MF', str(root / (str(i) + '.d')),
              '-c', str(P / source), '-o', str(root / (str(i) + '.o'))] for i, source in enumerate(NATIVE)]
     rows.append([compiler, '-fsycl', '-fsycl-id-queries-range=size_t', '-pthread',
@@ -136,7 +136,7 @@ def verify(row):
     rt, full = runtime()
     require(digest(r.RESULT) == row['runtime_sha256'] and full['binary'] == row['selected_binary'], 'runtime/selected engine changed')
     require(guards.driver_guard() == row['driver'] and rt['boot'] == row['boot'], 'transfer boot/driver')
-    if PIPELINE:
+    if BATCH:
         official_admit(row['sdk'])
         require(all(digest(p) == h for p,h in row['runtime_files'].items()), 'proposed official runtime changed')
     else:
@@ -146,88 +146,21 @@ def verify(row):
     require(inputs['project'] == pins(row['source_commit']), 'transfer source closure changed')
     for name, sha in inputs['external'].items():
         require(digest(name) == sha, 'transfer external input changed: ' + name)
-    compiler = str(OFFICIAL / 'bin/icpx') if PIPELINE else full['compiler']['path']
-    require(commands(compiler,Path(row['build_root']) if row.get('build_reused') else None) == row['commands'],
-            'transfer build command changed')
-    if row.get('build_reused'):
-        require(digest(row['compiled_inputs']['path']) == row['compiled_inputs']['sha256'], 'reused compiled manifest differs')
-        require(all(digest(p) == h for p,h in json.loads(Path(row['compiled_inputs']['path']).read_text()).items()),
-                'reused native compiled inputs differ')
+    compiler = str(OFFICIAL / 'bin/icpx') if BATCH else full['compiler']['path']
+    require(commands(compiler) == row['commands'], 'transfer build command changed')
     return inputs, rt
-
-
-def reuse_pipeline(data):
-    require(PIPELINE and KEY not in data and not ROOT.exists(), 'fresh controller-only reuse scope required')
-    old = data['prefill_copy_pipeline_v4']
-    frozen = json.loads(git('show','a28e5a838:'+str(RESULT.relative_to(P))))['prefill_copy_pipeline_v4']
-    require(old['stage'] == 'failed' and not old['passed'] and old['ownership_closed'] and not old['active'] and
-            not old['fresh_faults'] and old['error'] == "RuntimeError('official host canary failed')",
-            'preserve the closed pre-GPU host failure')
-    for key in ('source_commit','binary','compiled_inputs','commands','sdk','runtime_sha256','selected_binary'):
-        require(old[key] == frozen[key], 'original component build identity differs: '+key)
-    native_root = Path(old['binary']['path']).parent
-    owners = json.loads((native_root/'native-owner.json').read_text())
-    require(len(owners) == 1 and supervision.closed(owners[0]) and owners[0]['exit_code'] == 125 and
-            owners[0]['argv'] == [old['preload']['canary']['path']] and
-            'unexpected loader provider' in (native_root/'native/case-0.stderr').read_text(),
-            'actual host failure/closure differs;no GPU reuse assumption')
-    live = supervision.identity(owners[0]['pid'])
-    require(live is None or live['start_ticks'] != owners[0]['owners'][0]['start_ticks'], 'old native process remains')
-    require(digest(old['binary']['path']) == old['binary']['sha256'] and
-            digest(old['compiled_inputs']['path']) == old['compiled_inputs']['sha256'], 'original artifacts differ')
-    sdk_files = official_admit(old['sdk'])
-    compiled = json.loads(Path(old['compiled_inputs']['path']).read_text())
-    require(len(compiled) == old['compiled_inputs']['files'] and all(digest(p) == h for p,h in compiled.items()),
-            'original actual native inputs differ')
-    recovered = 0
-    for p,h in compiled.items():
-        path = Path(p)
-        if path.is_relative_to(P):
-            require(hashlib.sha256(git('show',old['source_commit']+':'+str(path.relative_to(P)))).hexdigest() == h,
-                    'original native source unrecoverable')
-            recovered += 1
-    loader = str((OFFICIAL/'lib/libur_loader.so.0').resolve())
-    require(loader != old['preload']['loader'] and digest(loader) == digest(old['preload']['loader']),
-            'loader alias must have identical original bytes')
-    rt,full = runtime()
-    require(digest(r.RESULT) == old['runtime_sha256'] and full['binary'] == old['selected_binary'] and
-            guards.driver_guard() == old['driver'] and rt['boot'] == old['boot'], 'runtime/fallback/boot differs')
-    original_inputs = json.loads(Path(old['inputs']['path']).read_text())
-    require(all(digest(p) == h for p,h in original_inputs['external'].items()), 'original external inputs differ')
-    ROOT.mkdir(mode=0o700)
-    for name in ('tmp','cache'): (ROOT/name).mkdir(mode=0o700)
-    revision = git('rev-parse','HEAD').decode().strip()
-    project = pins(revision)
-    write(ROOT/'inputs.json',dict(project=project,external=original_inputs['external']))
-    row = copy.deepcopy(old)
-    for name in ('measurements','error','fresh_faults','driver_after','fault_evidence_error','decision','host_failure'):
-        row.pop(name,None)
-    row.update(stage='built',source_commit=revision,native_source_commit=old['source_commit'],
-        build_reused=True,build_root=str(native_root),
-        inputs=dict(path=str(ROOT/'inputs.json'),sha256=digest(ROOT/'inputs.json'),
-                    project_files=len(project),external_files=len(original_inputs['external'])),
-        passed=False,complete=False,active=False,ownership_closed=True,
-        reuse_proof=dict(original_build='a28e5a838',actual_compiler_inputs=len(compiled),
-            native_project_inputs_recovered=recovered,uncovered=0,original_ELF_verified=True,
-            only_uncompiled_controller_changed=True),
-        scope=old['scope']+' Controller-only alias correction;new prospective host/device scope,original V4 remains failed.')
-    row['preload']['loader'] = loader
-    row['native_environment'].update(STRATA_UR_PROBE_EXPECTED_LOADER=loader,TMPDIR=str(ROOT/'tmp'),
-                                     XDG_CACHE_HOME=str(ROOT/'cache'))
-    data[KEY] = row; write(RESULT,data)
-    print('Original677-input native build reused after source/recipe/ELF proof;commit new controller-only plan.',flush=True)
 
 
 def prepare(data):
     require(KEY not in data and not ROOT.exists(), 'fresh transfer plan only')
     rt, full = runtime()
     revision = git('rev-parse', 'HEAD').decode().strip(); project = pins(revision)
-    sdk = None if PIPELINE else closure.sdk_inputs()
+    sdk = None if BATCH else closure.sdk_inputs()
     external = closure.external_inputs(rt)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir(mode=0o700)
-    if PIPELINE:
+    if BATCH:
         sdk = official_snapshot()
         old_lib = Path(next(p for p in rt['runtime_files'] if '/libsycl.so.' in p)).parent
         external = {p:h for p,h in external.items() if not Path(p).is_relative_to(old_lib)}
@@ -240,7 +173,7 @@ def prepare(data):
     cases = [dict(host=host, size=2 << 20, repeats=1, diagnostic=True) for host in ('ordinary', 'usm')]
     cases += [dict(host=host, size=size, repeats=3, diagnostic=False) for size in (2 << 20, 320 << 20)
               for host in ('ordinary', 'usm', 'usm', 'ordinary', 'ordinary', 'usm')]
-    if PIPELINE:
+    if BATCH:
         cases = [dict(diagnostic=False,host_canary=True,argv=[]),dict(diagnostic=True, argv=['--smoke'])]
         cases += [dict(diagnostic=False, argv=['--compare', str(i)]) for i in range(3)]
     row = dict(stage='prepared', source_commit=revision, inputs=dict(path=str(ROOT / 'inputs.json'),
@@ -255,7 +188,7 @@ def prepare(data):
                provenance='Existing independent Main transfer tool with owned gates;unchanged production runtime/compat/profile implementation. SDK/compiler only,not XeStrata source.',
                retention='One tiny helper for imminent resource budgeting. Retire objects/normal logs after source recovery and compact individual samples;engine fallback/candidate untouched.',
                active=False, ownership_closed=True, passed=False)
-    if PIPELINE:
+    if BATCH:
         sdk_files = json.loads(Path(sdk['path']).read_text())
         runtime_files = {p:h for p,h in rt['runtime_files'].items() if not Path(p).is_relative_to(old_lib)}
         for p,h in sdk_files.items():
@@ -264,7 +197,7 @@ def prepare(data):
                 with path.open('rb') as stream: elf = stream.read(4) == b'\x7fELF'
                 if elf: runtime_files[p] = h
         preload = copy.deepcopy(rt['preload'])
-        preload['loader'] = str(OFFICIAL / 'lib/libur_loader.so.0.12.0')
+        preload['loader'] = str((OFFICIAL / 'lib/libur_loader.so.0').resolve())
         for env in (build_env,native_env):
             env.update(PATH=str(OFFICIAL / 'bin')+':/usr/bin:/bin',
                 CPLUS_INCLUDE_PATH=str(OFFICIAL / 'include'),
@@ -288,9 +221,9 @@ def prepare(data):
         row.update(commands=commands(str(OFFICIAL / 'bin/icpx')),runtime_files=runtime_files,preload=preload,
             runtime_scope='NEW official Intel2026.2/UMF1.2 component proposal;host loader canary and traced smoke required. No prior native/model/runtime qualification inherited;selected original engines unchanged.')
         row.update(
-            scope='Two in-order queues in the qualified Runtime: same-context event dependencies,ordinary immutable CPU source,two borrowed device slots,no extra host/device staging and no overfetch. Synthetic full-byte GPU readers plus dependent integer work16/256;not XMX,MoE arithmetic,PCIe wire or LLM throughput.',
-            criteria='Official-loader host canary before any GPU;then one4KiB traced smoke before3fresh comparison processes. Source/destination/slot guards,all integer outputs,source immutability,11pre-enqueue/order refusals,and in-flight cancellation must pass. Normal exit,preinit/executable/provider/environment gates and no new fault. First batches separate;five subsequent alternating pairs per1971200/2662400-byte and16/256-loop shape. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty-control<=5percent of smallest batch. Feasibility advancement requires all six256-loop process/shape median ratios<=0.98 and median observed copy/reader overlap>=10percent of copy service;every16-loop ratio<=1.05. A passing mechanism probe permits only a newly planned production consumer check,not model adoption.',
-            reference='fused-moe-service-current.json::moe_down_model.split_resource_profile_v2:117.215264736s summed observed GPU service versus117.192532093s union;22.733ms total overlap. Original in-order expert copy/compute sequence exposes transfer service;physical engine overlap remains unproven.',
+            scope='One in-order queue and a128-slot borrowed private bank;packed ordinary CPU source,160ascending active experts,contiguous/four-adjacent/gapped patterns. Exact active bytes,no CPU packing,overfetch,extra VRAM or decode changes. Isolate batching scheduler using event-recording queue.memcpy callbacks in both arms;default production cudaMemcpyAsync separately checked in smoke. Integer readers1/64iterations are not XMX or LLM throughput.',
+            criteria='Official-loader host canary before GPU;one4KiB traced9-case smoke with20pre-enqueue/order refusals,cancellation,bank/group tails,expert511 and default compat-copy check. Then3fresh processes,each144batches:2payloads(1971200/2662400),3patterns(contiguous/runs4/gapped),2integer workloads(1/64),one first pair plus5subsequent balanced pairs. Every full batch160experts/320readers,128slots,exact active payload and prescribed copy-call counts(serial160,batch2/40/160),full source/output/bank guards,normal owner/exit/provider/preinit/environment/no-fault gates. Every subsequent wall/device span>=10ms,timerp99<=10us,median empty control<=5percent smallest batch. Advancement requires every process/shape median batch/serial wall ratio<=0.98 for contiguous/runs4,and<=1.03 for gapped. All criteria frozen before execution;component success permits only a separately committed production-consumer plan,never inference adoption.',
+            reference='Original9a79 source:PrivateExpertBank packed stride equals blob;ordinary private PinnedArena source views,one expert scan in one in-order queue;18888uploads request38561740800B. Prior two-queue screen rejected at180be494c. This new granularity screen claims neither physical PCIe saturation nor whole-model speed.',
             retention='One mechanism fixture for imminent prefill-only scheduling decision;no third engine generation. Keep original6e40 and9a79 engines/required fixtures. Retire normal output and this component build at decision closure after exact source/recipe recovery;retain compact paired samples and ownership/fault outcome.')
     data[KEY] = row; write(RESULT, data)
     print('Transfer source/recipe prepared;commit before build.', flush=True)
@@ -307,7 +240,7 @@ def build(data):
             require(supervision.closed(entry) and entry['exit_code'] == 0, 'transfer compiler/link failed')
         allowed = {str((P / name).resolve()): sha for name, sha in inputs['project'].items()}
         allowed.update(inputs['external'])
-        allowed.update(official_admit(row['sdk']) if PIPELINE else
+        allowed.update(official_admit(row['sdk']) if BATCH else
             {str(Path(x['path']).resolve()): closure.SYSTEM_HEADER_UPDATES.get(x['path'], (None, x['sha256']))[1]
              for x in json.loads(closure.lineage.SDK.read_text())})
         observed = {}
@@ -353,7 +286,7 @@ def run(data):
             if case['diagnostic']:
                 env.update(UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                            UR_LOG_TRACING='level:info;flush:info;output:file,' + str(trace))
-            if PIPELINE and case.get('host_canary'):
+            if BATCH and case.get('host_canary'):
                 asset = row['preload']['canary']
                 require(digest(asset['path']) == asset['sha256'], 'host canary changed')
                 entry,out,err = supervisor.run('case-'+str(i),[asset['path']],env,P,**RUN_LIMITS)
@@ -366,7 +299,7 @@ def run(data):
                 cases.append(dict(case=case,passed=True,host_only=True,ownership_closed=True))
                 write(RESULT,data)
                 continue
-            argv = [row['binary']['path'], *case['argv']] if PIPELINE else \
+            argv = [row['binary']['path'], *case['argv']] if BATCH else \
                 [row['binary']['path'], '--host', case['host'], '--bytes', str(case['size']), '--repeats', str(case['repeats'])]
             gates, lines, code_maps = [], [], []
 
@@ -382,7 +315,7 @@ def run(data):
                     actual_env = dict(v.split(b'=', 1) for v in (proc / 'environ').read_bytes().split(b'\0') if v)
                     require(actual_env == {k.encode(): v.encode() for k, v in env.items()}, 'transfer immutable child env')
                     mapped = r.executable_mappings((proc / 'maps').read_text())
-                    providers = row['runtime_files'] if PIPELINE else rt['runtime_files']
+                    providers = row['runtime_files'] if BATCH else rt['runtime_files']
                     allowed = set(providers) | {row['binary']['path']}
                     require(mapped <= allowed, 'unfrozen transfer provider: ' + repr(mapped - allowed))
                     for name in mapped:
@@ -399,32 +332,40 @@ def run(data):
                         io.exit(10); break
 
             entry, out, err = supervisor.run('case-' + str(i), argv, env, P, interaction=observe, **RUN_LIMITS)
-            prefix = 'PIPELINE ' if PIPELINE else 'COPY '
+            prefix = 'BATCH ' if BATCH else 'COPY '
             rows = [{part.split('=', 1)[0]: part.split('=', 1)[1] for part in line.split()[1:]} for line in lines if line.startswith(prefix)]
             checks = [line for line in lines if line.startswith('CHECK ')]
             passed = supervision.closed(entry) and entry['exit_code'] == 0 and gates == ['before-runtime', 'runtime-ready', 'before-exit']
-            if PIPELINE:
-                passed = passed and len(rows) == (4 if case['diagnostic'] else 48) and all(
+            if BATCH:
+                passed = passed and len(rows) == (9 if case['diagnostic'] else 144) and all(
                     all(sample.get(k) == 'PASS' for k in ('source','guards','output','drain')) for sample in rows)
                 if case['diagnostic']:
-                    passed = passed and sum(int(s['admission_rejections']) for s in rows) == 11 and \
-                        sum(int(s['cancelled']) for s in rows) == 1
+                    passed = passed and sum(int(s['admission_rejections']) for s in rows) == 20 and \
+                        sum(int(s['cancelled']) for s in rows) == 1 and \
+                        sum(int(s['compat']) for s in rows) == 1 and \
+                        {s['pattern'] for s in rows} == {'contiguous','runs4','gapped','edge'} and \
+                        any(s['capacity'] == '1' and s['copy_calls'] == '8' for s in rows) and \
+                        any(s['cancelled'] == '1' and s['completed'] == '5' and
+                            s['uploaded_experts'] == '6' and s['copy_calls'] == '2' for s in rows) and \
+                        any(s['compat'] == '1' and s['copy_calls'] == '3' and s['copy_events'] == '0' for s in rows)
             else:
                 passed = passed and len(rows) == len(checks) == 2 * (case['repeats'] + 1) and all(
                     'full=PASS guards=PASS source=PASS' in line for line in checks)
             require(any(line.startswith('DEVICE name=') and 'B570' in line for line in lines), 'actual transfer GPU differs')
             require(any(line.startswith('DONE ') for line in lines) and not any('FAIL' in line for line in lines), 'transfer completion failed')
             preload = r.validation.preload_evidence(err.read_text(), entry['pid'])
-            require(preload['loader'] == (row['preload']['loader'] if PIPELINE else rt['preload']['loader']), 'transfer actual UR loader differs')
+            require(preload['loader'] == (row['preload']['loader'] if BATCH else rt['preload']['loader']), 'transfer actual UR loader differs')
             require(not warnings.exists() or not warnings.stat().st_size, 'transfer parameter validation warning')
             if case['diagnostic']:
                 require(trace.exists() and 'urEnqueue' in trace.read_text(), 'transfer enqueue trace absent')
-            if PIPELINE:
+            if BATCH:
                 for sample in rows:
                     require(all(math.isfinite(float(sample[k])) and float(sample[k]) > 0
-                                for k in ('wall_s','copy_s','reader_s','device_span_s')) and
+                                for k in ('wall_s','reader_s','device_span_s')) and
+                            math.isfinite(float(sample['copy_s'])) and float(sample['copy_s']) >= 0 and
+                            math.isfinite(float(sample['submission_s'])) and 0 <= float(sample['submission_s']) <= float(sample['wall_s']) and
                             0 <= float(sample['overlap_s']) <= min(float(sample['copy_s']), float(sample['reader_s'])),
-                            'pipeline clock/overlap mismatch')
+                            'batch clock/overlap mismatch')
                 controls = [{part.split('=',1)[0]:part.split('=',1)[1] for part in line.split()[1:]}
                             for line in lines if line.startswith(('CONTROL ', 'TIMER '))]
             else:
@@ -435,15 +376,15 @@ def run(data):
             cases.append(dict(case=case, passed=bool(passed), samples=rows, gates=code_maps,
                               process={k: entry.get(k) for k in ('pid', 'exit_code', 'elapsed_seconds', 'peak_session_rss_bytes',
                               'observation_complete', 'direct_child_reaped', 'session_empty', 'error')}))
-            if PIPELINE: cases[-1]['controls'] = controls
+            if BATCH: cases[-1]['controls'] = controls
             write(RESULT, data)
             require(passed, 'transfer case failed')
             guards.driver_guard()
         verify(row)
         require(digest(row['binary']['path']) == row['binary']['sha256'], 'transfer binary changed')
-        row.update(stage='closed', passed=True)
-        if PIPELINE:
-            row['decision'] = pipeline_decision(cases[1:])
+        row.update(stage='closed', passed=True, complete=True)
+        if BATCH:
+            row['decision'] = batch_decision(cases[1:])
     except BaseException as error:
         row.update(stage='failed', passed=False, error=repr(error))
     finally:
@@ -462,54 +403,63 @@ def run(data):
     print(json.dumps({k: row.get(k) for k in ('stage', 'passed', 'ownership_closed', 'error')}), flush=True)
 
 
-def pipeline_decision(cases):
-    require(len(cases) == 4 and all(p['passed'] for p in cases), 'four completed pipeline processes required')
+def batch_decision(cases):
+    comparisons = [case for case in cases if case.get('case',{}).get('argv',[None])[0] == '--compare']
+    require(len(comparisons) == 3 and {case['case']['argv'][-1] for case in comparisons} == {'0','1','2'},
+            'three distinct batch comparison processes required')
     summaries, eligibility = [], []
-    for process in cases[1:]:
-        samples = process['samples']
-        require(all(int(s['experts']) == int(s['completed']) == int(s['requested_uploads']) ==
-                    int(s['observed_uploads']) == 32 and int(s['readers']) == 64 and
-                    int(s['cancelled']) == 0 for s in samples), 'pipeline actual workload differs')
+    for process in comparisons:
+        samples = process['samples']; require(process['passed'] and len(samples) == 144, 'batch sample coverage')
+        keys = {(s['arm'],s['bytes'],s['pattern'],s['loops'],s['repetition']) for s in samples}
+        expected = {(arm,str(size),pattern,str(loops),str(repetition)) for arm in ('serial','batch')
+                    for size in (1971200,2662400) for pattern in ('contiguous','runs4','gapped')
+                    for loops in (1,64) for repetition in range(-1,5)}
+        require(keys == expected, 'batch configuration/repetition coverage differs')
+        for s in samples:
+            expected_calls = 160 if s['arm'] == 'serial' else {'contiguous':2,'runs4':40,'gapped':160}[s['pattern']]
+            require(all(int(s[k]) == 160 for k in ('experts','completed','uploaded_experts')) and
+                    int(s['readers']) == 320 and int(s['capacity']) == 128 and
+                    int(s['copy_calls']) == int(s['copy_events']) == expected_calls and
+                    int(s['requested_upload_bytes']) == 160 * int(s['bytes']) and
+                    int(s['cancelled']) == int(s['compat']) == int(s['admission_rejections']) == 0 and
+                    s['source_usm'] == 'unknown', 'batch payload/call/consumer conservation differs')
         timer = [c for c in process['controls'] if 'p99_ns' in c]
-        empty = [float(c['wall_s']) for c in process['controls'] if 'wall_s' in c and int(c['repetition']) >= 0]
+        empty = [float(c['wall_s']) for c in process['controls'] if int(c.get('repetition',-1)) >= 0]
         subsequent = [s for s in samples if int(s['repetition']) >= 0]
         valid = len(timer) == 1 and int(timer[0]['samples']) == 1000 and int(timer[0]['p99_ns']) <= 10000 and \
-            len(empty) == 5 and statistics.median(empty) <= 0.05 * min(float(s['wall_s']) for s in subsequent) and \
-            all(float(s['wall_s']) >= 0.01 and float(s['device_span_s']) >= 0.01 for s in subsequent)
+            len(empty) == 5 and statistics.median(empty) <= .05 * min(float(s['wall_s']) for s in subsequent) and \
+            all(float(s['wall_s']) >= .01 and float(s['device_span_s']) >= .01 for s in subsequent)
         eligibility.append(valid)
         for size in (1971200,2662400):
-            for loops in (16,256):
-                selected = [s for s in subsequent if int(s['bytes']) == size and int(s['loops']) == loops]
-                arms = {arm:[s for s in selected if s['arm'] == arm] for arm in ('serial','pipeline')}
-                require(all(len(v) == 5 for v in arms.values()), 'pipeline repetition coverage')
-                ratios = [float(next(s for s in arms['pipeline'] if s['repetition'] == str(i))['wall_s']) /
-                          float(next(s for s in arms['serial'] if s['repetition'] == str(i))['wall_s']) for i in range(5)]
-                overlap = statistics.median(float(s['overlap_s'])/float(s['copy_s']) for s in arms['pipeline'])
-                ratio = statistics.median(ratios)
-                summaries.append(dict(process=process['case']['argv'][-1], bytes=size,loops=loops,
-                                      paired_wall_ratios=ratios,median_ratio=ratio,copy_overlap_fraction=overlap,
-                                      performance_passed=valid and ratio <= (0.98 if loops == 256 else 1.05) and
-                                          (loops != 256 or overlap >= 0.10)))
+            for pattern in ('contiguous','runs4','gapped'):
+                for loops in (1,64):
+                    selected = [s for s in subsequent if int(s['bytes']) == size and s['pattern'] == pattern and int(s['loops']) == loops]
+                    ratios = [float(next(s for s in selected if s['arm'] == 'batch' and int(s['repetition']) == i)['wall_s']) /
+                              float(next(s for s in selected if s['arm'] == 'serial' and int(s['repetition']) == i)['wall_s']) for i in range(5)]
+                    ratio = statistics.median(ratios)
+                    summaries.append(dict(process=process['case']['argv'][-1],bytes=size,pattern=pattern,loops=loops,
+                                          paired_wall_ratios=ratios,median_ratio=ratio,
+                                          performance_passed=valid and ratio <= (1.03 if pattern == 'gapped' else .98)))
     return dict(timing_eligible=all(eligibility),shapes=summaries,
                 mechanism_screen_passed=all(s['performance_passed'] for s in summaries),
                 inference_adopted=False,physical_saturation_qualified=False,
-                next_action='Only a successful mechanism screen permits a new source-bound production consumer plan;otherwise reject this schedule without a model run.')
+                next_action='Only all matched-shape mechanism gates permit a new production-consumer plan;otherwise reject without model run.')
 
 
 def main():
-    global KEY, ROOT, NATIVE, PIPELINE, BINARY, RUN_LIMITS
-    require(len(sys.argv) == 2, 'choose prepare,build,run or pipeline-prepare,pipeline-build,pipeline-run')
+    global KEY, ROOT, NATIVE, BATCH, BINARY, RUN_LIMITS
+    require(len(sys.argv) == 2, 'choose prepare,build,run or batch-prepare,batch-build,batch-run')
     action = sys.argv[1]
-    if action.startswith('pipeline-'):
-        action = action.removeprefix('pipeline-')
-        PIPELINE = True; KEY = 'prefill_copy_pipeline_v5'; ROOT = B / 'prefill-copy-pipeline-v5'
-        BINARY = 'expert_pipeline_probe'
-        NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_pipeline_probe.cpp']
-        RUN_LIMITS = dict(RUN_LIMITS,wall=180,cpu=240,rss_cap=5 << 30)
-    require(action in ('prepare','build','run','reuse'), 'choose prepare,build,run or pipeline-reuse')
+    if action.startswith('batch-'):
+        action = action.removeprefix('batch-')
+        BATCH = True; KEY = 'prefill_copy_batch_v1'; ROOT = B / 'prefill-copy-batch-v1'
+        BINARY = 'expert_batch_probe'
+        NATIVE = [*NATIVE[:-1], 'tools/sycl/expert_batch_probe.cpp']
+        RUN_LIMITS = dict(RUN_LIMITS,wall=240,cpu=360,rss_cap=5 << 30)
+    require(action in ('prepare','build','run'), 'choose prepare,build,run')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); guards.no_model_owners([])
-        data = public(); {'prepare': prepare, 'build': build, 'run': run,'reuse':reuse_pipeline}[action](data)
+        data = public(); {'prepare': prepare, 'build': build, 'run': run}[action](data)
 
 
 if __name__ == '__main__':
