@@ -31,8 +31,14 @@ V1CLI/device execution reaches21normal individual case exits,including GDN
 context,but its overall post-run gate fails:the controller compares its mutated
 result row with the committed initial plan. This bookkeeping failure remains
 failed;no GPU/numerical fault is observed. Freeze the initial plan separately
-in the V2controller and repeat its prospective cohort before model execution.
-Model qualification remains pending. Fourteen older
+in the V2controller. The new `official_prefill_strategies_device_v2` cohort
+passes all21fresh processes,including its final frozen-plan/source/ELF/provider
+and driver checks. CLIttft/throughput/help,invalid/case/missing-value refusal,
+fresh public-GU progression and GDN tails/context all pass. No new fault or
+validation warning occurs. Model qualification remains pending;next use the
+same ELF for each explicit strategy,with the existing short thinking warmup
+checked before admitting its first32Krequest. Input-length automatic selection
+and additional strategy levels remain deferred. Fourteen older
 provenance holds remain independent. No new legacy-compiler build runs.
 
 The first official2026.2replacement used

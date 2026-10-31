@@ -60279,7 +60279,7 @@
     }
   },
   "official_prefill_strategies_device_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "f184273ccb78fdc5e0cdd53d3acb7e4711252e25",
     "native_source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
     "implementation_commit": "271333f64af10e088897753e142dd600c1aad3d4",
@@ -60640,12 +60640,506 @@
         "gdn_mode": "context"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "cli-ttft",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "exit_code": 0,
+          "expected_message": true,
+          "GPU_body_requested": false
+        }
+      },
+      {
+        "name": "cli-throughput",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "exit_code": 0,
+          "expected_message": true,
+          "GPU_body_requested": false
+        }
+      },
+      {
+        "name": "cli-invalid",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 1,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "exit_code": 1,
+          "expected_message": true,
+          "GPU_body_requested": false
+        }
+      },
+      {
+        "name": "cli-case",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 1,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "exit_code": 1,
+          "expected_message": true,
+          "GPU_body_requested": false
+        }
+      },
+      {
+        "name": "cli-missing",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 2,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "exit_code": 2,
+          "expected_message": true,
+          "GPU_body_requested": false
+        }
+      },
+      {
+        "name": "host-canary",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "host_only": true
+        }
+      },
+      {
+        "name": "Topk-properties",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "properties": true
+        }
+      },
+      {
+        "name": "Topk-smoke0",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "numeric_cases": 1,
+          "early": 0,
+          "input_output_guards": true
+        }
+      },
+      {
+        "name": "Topk-smoke1",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "numeric_cases": 1,
+          "early": 1,
+          "input_output_guards": true
+        }
+      },
+      {
+        "name": "submission",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "submission_ordering_and_guards": true
+        }
+      },
+      {
+        "name": "native16-smoke",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "dyadic_exact_RNE_cases": 32,
+          "storage": "allFP16/BF16input/output pairs,both tiles"
+        }
+      },
+      {
+        "name": "native16-guards",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "pre_enqueue_rejections": 26,
+          "inputs_outputs_immutable": true
+        }
+      },
+      {
+        "name": "GU-progress",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "calls": 64,
+          "groups": 4,
+          "stage_pairs": 308,
+          "maximum_pending_ordinary_kernels": 32,
+          "max_half_ulp": 0,
+          "guards": true,
+          "inputs_immutable": true
+        }
+      },
+      {
+        "name": "GU-public0",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "cases": [
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 3,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 160,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2333,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2334,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            }
+          ]
+        }
+      },
+      {
+        "name": "GU-public1",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [],
+        "details": {
+          "cases": [
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 3,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 160,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2333,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2334,
+              "selected": 1,
+              "expected_records": 1,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Down-split-original",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "cases": 8,
+          "original_split_kernel": true,
+          "inputs_immutable": true
+        }
+      },
+      {
+        "name": "Topk-numerics0",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "numeric_cases": 145,
+          "early": 0,
+          "input_output_guards": true
+        }
+      },
+      {
+        "name": "Topk-numerics1",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "numeric_cases": 145,
+          "early": 1,
+          "input_output_guards": true
+        }
+      },
+      {
+        "name": "GDN-smoke",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "events": [
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 17,
+              "split": false,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 17,
+              "split": true,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "rejection",
+              "schedule": "barriers3",
+              "cases": 7,
+              "no_write": true,
+              "status": "PASS"
+            }
+          ]
+        }
+      },
+      {
+        "name": "GDN-tails",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "events": [
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 1,
+              "split": false,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 33,
+              "split": false,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 65,
+              "split": false,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 129,
+              "split": false,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 8191,
+              "split": false,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "validation",
+              "schedule": "barriers3",
+              "tokens": 8192,
+              "split": false,
+              "exact_vs_fused_and_columns4": true,
+              "guards": true,
+              "status": "PASS"
+            }
+          ]
+        }
+      },
+      {
+        "name": "GDN-context",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "gates": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "details": {
+          "events": [
+            {
+              "kind": "context",
+              "tokens": 262144,
+              "partitions": 4,
+              "schedule": "barriers3",
+              "state_restore": true,
+              "existing_decode_tail": true,
+              "status": "PASS"
+            }
+          ]
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "complete": false,
-    "passed": false,
-    "GPU_executed": false,
+    "complete": true,
+    "passed": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -60660,6 +61154,17 @@
     "whole_wall_seconds": 1800,
     "criteria": "Five real CLI parser/help/refusal cases plus13fresh official cases and3GDN cases,once in fixed order;stop first failure,no retries. Same frozen eight ELFs/providers,pre-main validation,quiet final log,normal ownership and unchanged driver/no fresh fault. GDN includes exact tails and262144carry/restore/existing decode tail. Public GU64calls in four16-call groups with stage conservation;never repeat the stalled2048batch. CLI source checks alone do not qualify runtime strategy/default/override or model speed. GDN/public-GU success is not a universal progress or model qualification.",
     "retention": "Keep compact individual case outcomes/coverage/provenance. Retire successful full API traces,JIT/polling output after verification. Keep only current official reference and this candidate for imminent model comparison;old6e40executables already retired. Separate legacy provenance holds remain.",
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
     "input_manifest": {
       "files": 50,
       "sha256": "e814d50134835702922edf84d1d3219524eeb571ddb2e58d887f940b71447cf4"
