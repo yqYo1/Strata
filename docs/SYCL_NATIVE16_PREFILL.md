@@ -326,8 +326,13 @@ The next candidate uses separate KV/output reduction scratch to reduce five
 workgroup barriers per token to three. Independent source review finds no
 dependency blocker with uniform barriers and distinct,fully written arrays;
 local storage increases from1536to2048B per four-partition workgroup. Preserve
-the existing four32-row partials and their FP32order. The new kernel remains
-unimplemented and unqualified;its speed must be measured.
+the existing four32-row partials and their FP32order. The new explicit prefill
+entrypoint `gdn_recurrence_barriers3` is implemented for component comparison,
+with no model dispatch or decode change. `measure_gdn_scheduling.py` pins a fresh
+source/recipe and compares fused/columns4/barriers3 with first use separate,
+six warmed rounds and three independent processes. Every process must beat
+columns4 before the physical262144component check. Numerical,owner,fault and
+runtime validation gates remain mandatory;model qualification is still pending.
 Current original GDN/decode selections and both engine binaries remain unchanged.
 The finished GDN and resource-profile child branches are removed with original
 commits reachable from pushed `feature/sycl`;PR180to default remains blocked.

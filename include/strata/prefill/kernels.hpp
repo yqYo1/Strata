@@ -54,10 +54,11 @@ void gdn_recurrence(float* state, const float* h, const float* gate, const float
 void gdn_recurrence_partitioned(float* state, const float* h, const float* gate, const float* beta,
                                const float* z, const float* gamma, float eps, float* y, uint16_t* y16,
                                int64_t T, int partitions, void* stream);
-/// Experimental four-partition subgroup recurrence, T<=8192. Explicit prefill
+/// Experimental four-partition recurrence with three barriers/token, T<=8192.
+/// Separate KV/output local scratch; explicit prefill
 /// entrypoint; unchanged separate RMS/gating stage and FP32 arithmetic order.
 /// Component qualification only: no model dispatch or decode selection.
-void gdn_recurrence_subgroup(float* state, const float* h, const float* gate, const float* beta,
+void gdn_recurrence_barriers3(float* state, const float* h, const float* gate, const float* beta,
                             const float* z, const float* gamma, float eps, float* y, uint16_t* y16,
                             int64_t T, void* stream);
 #endif

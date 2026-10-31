@@ -172,12 +172,14 @@ void recurrence(float *state, const float *q, const float *k, const float *v,
 // Main-authored scheduling variant of this file's recurrence. A column owns
 // its complete128-row state, so partitions never communicate during the scan.
 // RMS is the only cross-column operation and runs after the ordered scan.
-template <int Partitions>
+template <int Partitions, bool SplitReductions = false>
 void recurrence_columns(float *state, const float *h, const float *gate,
                         const float *beta, float *raw, int T, void *stream) {
   constexpr int Columns = 128 / Partitions, WG = 4 * Columns, HV = 48, C = 10240;
   auto event = queue_for(stream).submit([&](sycl::handler &handler) {
-    sycl::local_accessor<float, 1> sk(128, handler), sq(128, handler), red(WG, handler);
+    sycl::local_accessor<float, 1> sk(128, handler), sq(128, handler),
+        red(WG * (SplitReductions ? 2 : 1), handler);
+    constexpr int Output = SplitReductions ? WG : 0;
     handler.parallel_for(
         sycl::nd_range<1>(size_t(HV * Partitions) * WG, WG),
         [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
@@ -191,8 +193,10 @@ void recurrence_columns(float *state, const float *h, const float *gate,
           for (int r = 0; r < 32; ++r)
             s[r] = state[base + r * rs];
           for (int t = 0; t < T; ++t) {
-            // All readers of the previous tile finish before local reuse.
-            it.barrier(sycl::access::fence_space::local_space);
+            // In the split-scratch variant, the preceding output-publication
+            // barrier already follows every read of the old q/k tile.
+            if constexpr (!SplitReductions)
+              it.barrier(sycl::access::fence_space::local_space);
             for (int d = tid; d < 128; d += WG) {
               sq[d] = h[size_t(t) * C + (head % 16) * 128 + d];
               sk[d] = h[size_t(t) * C + 16 * 128 + (head % 16) * 128 + d];
@@ -213,13 +217,19 @@ void recurrence_columns(float *state, const float *h, const float *gate,
               s[r] = sycl::fma(decay, s[r], sk[rg * 32 + r] * delta);
               o = sycl::fma(s[r], sq[rg * 32 + r], o);
             }
-            it.barrier(sycl::access::fence_space::local_space);
-            red[tid] = o;
+            // Reusing one array requires all projection readers to finish.
+            // Distinct output scratch removes that WAR dependency. The next
+            // q/k-publication barrier orders the prior output reads before
+            // any subsequent overwrite of this output scratch.
+            if constexpr (!SplitReductions)
+              it.barrier(sycl::access::fence_space::local_space);
+            red[Output + tid] = o;
             it.barrier(sycl::access::fence_space::local_space);
             if (rg == 0)
               raw[(size_t(t) * HV + head) * 128 + col] =
-                  (((red[local_col] + red[Columns + local_col]) +
-                    red[2 * Columns + local_col]) + red[3 * Columns + local_col]) * sycl::rsqrt(128.f);
+                  (((red[Output + local_col] + red[Output + Columns + local_col]) +
+                    red[Output + 2 * Columns + local_col]) +
+                    red[Output + 3 * Columns + local_col]) * sycl::rsqrt(128.f);
           }
           for (int r = 0; r < 32; ++r)
             state[base + r * rs] = s[r];
@@ -228,66 +238,6 @@ void recurrence_columns(float *state, const float *h, const float *gate,
   finish(stream, event);
 }
 
-// Main-authored prefill experiment. Four adjacent subgroup lanes own the four
-// ordered 32-row partials of one column. Collectives execute in every lane;
-// only the final store is conditional. No workgroup-local storage or barriers.
-float quartet_sum(sycl::sub_group sg, float value, size_t base) {
-  const float a = sycl::select_from_group(sg, value, sycl::id<1>(base));
-  const float b = sycl::select_from_group(sg, value, sycl::id<1>(base + 1));
-  const float c = sycl::select_from_group(sg, value, sycl::id<1>(base + 2));
-  const float d = sycl::select_from_group(sg, value, sycl::id<1>(base + 3));
-  return ((a + b) + c) + d;
-}
-void recurrence_subgroups(float *state, const float *h, const float *gate,
-                         const float *beta, float *raw, int T, void *stream) {
-  constexpr int Partitions = 4, WG = 128, HV = 48, C = 10240;
-  auto event = queue_for(stream).submit([&](sycl::handler &handler) {
-    handler.parallel_for(
-        sycl::nd_range<1>(size_t(HV * Partitions) * WG, WG),
-        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
-          const auto sg = it.get_sub_group();
-          const int lane = sg.get_local_linear_id();
-          const int group = it.get_group_linear_id();
-          const int head = group / Partitions, partition = group % Partitions;
-          const int rg = lane % 4;
-          const int col = partition * 32 + int(sg.get_group_linear_id()) * 8 + lane / 4;
-          const size_t rs = size_t(HV) * 128;
-          const size_t base = (size_t(rg * 32) * HV + head) * 128 + col;
-          float s[32];
-          for (int r = 0; r < 32; ++r) s[r] = state[base + r * rs];
-          for (int t = 0; t < T; ++t) {
-            float qcache[4], kcache[4];
-            for (int j = 0; j < 4; ++j) {
-              qcache[j] = h[size_t(t) * C + (head % 16) * 128 + 4 * lane + j];
-              kcache[j] = h[size_t(t) * C + 16 * 128 + (head % 16) * 128 + 4 * lane + j];
-            }
-            const float decay = sycl::exp(gate[size_t(t) * HV + head]);
-            float kv = 0;
-            for (int r = 0; r < 32; ++r) {
-              const float k = sycl::select_from_group(sg, kcache[r % 4],
-                                                      sycl::id<1>(rg * 8 + r / 4));
-              kv = sycl::fma(s[r], k, kv);
-            }
-            const float proj = quartet_sum(sg, kv, size_t(lane / 4) * 4);
-            const float delta = sycl::fma(-decay, proj,
-                h[size_t(t) * C + 32 * 128 + head * 128 + col]) * beta[size_t(t) * HV + head];
-            float o = 0;
-            for (int r = 0; r < 32; ++r) {
-              const auto source = sycl::id<1>(rg * 8 + r / 4);
-              const float k = sycl::select_from_group(sg, kcache[r % 4], source);
-              const float q = sycl::select_from_group(sg, qcache[r % 4], source);
-              s[r] = sycl::fma(decay, s[r], k * delta);
-              o = sycl::fma(s[r], q, o);
-            }
-            const float output = quartet_sum(sg, o, size_t(lane / 4) * 4);
-            if (rg == 0)
-              raw[(size_t(t) * HV + head) * 128 + col] = output * sycl::rsqrt(128.f);
-          }
-          for (int r = 0; r < 32; ++r) state[base + r * rs] = s[r];
-        });
-  });
-  finish(stream, event);
-}
 } // namespace
 void fused_gdn_conv_l2(float *hist, const float *x, const float *w, float *out,
                        int C, int qkh, float eps, void *stream) {
@@ -412,7 +362,7 @@ namespace {
 void gdn_recurrence_separate(float *state, const float *h, const float *gate,
                             const float *beta, const float *z, const float *gamma,
                             float eps, float *y, uint16_t *y16, int64_t T,
-                            int partitions, bool subgroup, void *stream) {
+                            int partitions, bool split_reductions, void *stream) {
   using namespace strata::sycl_backend;
   constexpr size_t HV = 48, V = HV * 128, C = 10240;
   strata::kernels::dims(T > 0 && T <= 8192 &&
@@ -432,14 +382,14 @@ void gdn_recurrence_separate(float *state, const float *h, const float *gate,
   const size_t wg = 512 / partitions;
   strata::kernels::dims(device.get_info<sycl::info::device::max_work_group_size>() >= std::max(wg, size_t(128)) &&
       device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] >= std::max(wg, size_t(128)) &&
-      device.get_info<sycl::info::device::local_mem_size>() >= (256 + wg) * sizeof(float));
+      device.get_info<sycl::info::device::local_mem_size>() >= (256 + wg * (split_reductions ? 2 : 1)) * sizeof(float));
   const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
   strata::kernels::dims(std::find(subgroups.begin(), subgroups.end(), size_t(32)) != subgroups.end());
   for (auto span : outputs) validate_device_span(span.pointer, span.bytes, queue);
   for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue);
-  if (subgroup) {
+  if (split_reductions) {
     strata::kernels::dims(partitions == 4);
-    strata::kernels::recurrence_subgroups(state, h, gate, beta, y, int(T), stream);
+    strata::kernels::recurrence_columns<4, true>(state, h, gate, beta, y, int(T), stream);
   } else switch (partitions) {
   case 1: strata::kernels::recurrence_columns<1>(state, h, gate, beta, y, int(T), stream); break;
   case 2: strata::kernels::recurrence_columns<2>(state, h, gate, beta, y, int(T), stream); break;
@@ -478,7 +428,7 @@ void gdn_recurrence_partitioned(float *state, const float *h, const float *gate,
   gdn_recurrence_separate(state, h, gate, beta, z, gamma, eps, y, y16, T,
                           partitions, false, stream);
 }
-void gdn_recurrence_subgroup(float *state, const float *h, const float *gate,
+void gdn_recurrence_barriers3(float *state, const float *h, const float *gate,
                             const float *beta, const float *z, const float *gamma,
                             float eps, float *y, uint16_t *y16, int64_t T,
                             void *stream) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main-owned GDN subgroup component build and comparison; repository LICENSE.
+"""Main-owned GDN barrier-scheduling component build and comparison; repository LICENSE.
 
 No model dispatch change, inherited GPU qualification or XeStrata input.
 Commit prepare/build/each process before the next serialized invocation.
@@ -24,13 +24,13 @@ import runtime_probe
 import ur_validation as validation
 
 P, B, RESULT = build.P, build.B, build.RESULT
-ROOT, KEY = B / 'official-gdn-subgroup-v1', 'official_gdn_subgroup_v1'
+ROOT, KEY = B / 'official-gdn-barriers3-v1', 'official_gdn_barriers3_v1'
 TARGETS = ('sycl_submission_test', 'sycl_gdn_columns_bench')
 CASES = [('submission', TARGETS[0], ['--submission']),
-         ('smoke', TARGETS[1], ['--subgroup-smoke']),
-         ('validate', TARGETS[1], ['--subgroup-validate']),
-         *[(f'perf{i}', TARGETS[1], ['--subgroup-bench', str(i)]) for i in range(3)],
-         ('context', TARGETS[1], ['--subgroup-context'])]
+         ('smoke', TARGETS[1], ['--barriers3-smoke']),
+         ('validate', TARGETS[1], ['--barriers3-validate']),
+         *[(f'perf{i}', TARGETS[1], ['--barriers3-bench', str(i)]) for i in range(3)],
+         ('context', TARGETS[1], ['--barriers3-context'])]
 require, digest, write, owner_api = build.require, build.digest, build.write, build.supervision
 
 
@@ -152,22 +152,23 @@ def prepare():
         retention='One two-executable component comparison;retain current official seven-ELF generation '
             'and selected6e40 fallback. Legacy provenance holds remain unresolved. Retire this component '
             'build/raw output after rejection or completed model integration;no engine is overwritten.',
-        plan=dict(question='Can subgroup register exchange shorten the measured GDN recurrence path?',
+        plan=dict(question='Can separate KV/output scratch and three uniform barriers shorten the measured GDN recurrence path?',
             order='Build only,submission,17-token whole/split+7refusals,1/33/65/129/8191/8192exact '
                 'validation,three fresh rotated resident processes,then262144component carry/restore/decode tail '
                 'only if every performance pair wins. Stop on first fault/validation failure;no retries or replacements.',
-            timing='8192tokens/call;fused,columns4,subgroup4 rotated by process and round. One first-use '
+            timing='8192tokens/call;fused,columns4,barriers3 rotated by process and round. One first-use '
                 'round separate,six subsequent rounds per arm. Eight empty-marker controls;require each '
                 'sample>=1ms and>=1000profiling timer ticks. Queue interval includes host gaps and both kernels. '
                 'Numerical comparisons follow each complete seven-update train,not every timed sample.',
             acceptance='Bit-exact state,FP32output and FP16capture against both owned references;guards, '
-                'immutable inputs and rejected-call no-write. All3process subgroup4/columns4 median ratios<1 '
+                'immutable inputs and rejected-call no-write. All3process barriers3/columns4 median ratios<1 '
                 'and geometric mean<1 permit context/next model proposal;no minimum gain. Normal owner '
                 'closure,three native provider/environment gates,pre-main validation,quiet final validation '
                 'and no fresh fault required. No model quality,RESTORE,TTFT,TG or1000tok/s follows.',
-            source='Main-authored from owned GDN plus Khronos SYCL API contract;no XeStrata derivation. '
-                'Core subgroup mapping source-audited at a1cb5de85;later timer/admission/build controls '
-                'are new and require their own execution checks.'))
+            source='Main-authored from owned GDN;no XeStrata derivation. Distinct scratch with uniform '
+                'KQ/KV/output publication barriers preserves32state values/lane and FP32order. '
+                'Independent source dependency review at79b996c4c;local storage1536->2048bytes. '
+                'Retain old columns4 and fused references;decode and model dispatch unchanged.'))
     save(row)
     print('Prepared bounded GDN component source/recipe;commit before build.', flush=True)
 
@@ -272,13 +273,13 @@ def compile_component():
 
 def performance(processes):
     arms, ratios = {}, []
-    for name in ('fused', 'columns4', 'subgroup4'):
+    for name in ('fused', 'columns4', 'barriers3'):
         arms[name] = [statistics.median(e['queue_interval_ms'] for e in p['events']
             if e['kind'] == 'sample' and e['round'] >= 0 and e['schedule'] == name)
             for p in processes]
-    ratios = [a / b for a, b in zip(arms['subgroup4'], arms['columns4'])]
+    ratios = [a / b for a, b in zip(arms['barriers3'], arms['columns4'])]
     geometric = math.prod(ratios) ** (1 / 3)
-    return dict(process_medians_ms=arms, subgroup_over_columns_ratios=ratios,
+    return dict(process_medians_ms=arms, barriers3_over_columns_ratios=ratios,
         geometric_mean_ratio=geometric, advance=all(r < 1 for r in ratios) and geometric < 1)
 
 
@@ -309,7 +310,7 @@ def events_for(stdout, mode, ordinal):
         resolution = controls[0]['resolution_ns']
         require(all(e['resolution_ns'] == resolution for e in controls), 'timer resolution changed')
         require([(e['round'], e['schedule']) for e in samples] ==
-            [(r, ('fused', 'columns4', 'subgroup4')[(s + r + 1 + ordinal) % 3])
+            [(r, ('fused', 'columns4', 'barriers3')[(s + r + 1 + ordinal) % 3])
              for r in range(-1, 6) for s in range(3)], 'sample order/arm differs')
         require(all(e['process'] == ordinal and type(e['queue_interval_ms']) in (int, float)
                     and type(e['round']) is int and type(e['process']) is int
@@ -335,7 +336,7 @@ def events_for(stdout, mode, ordinal):
             'case ordinary_host_roundtrips=3 status=PASS', 'case teardown=PASS')),
             'incomplete actual-runtime submission checks')
     if mode in ('smoke', 'validate'):
-        require(all(e['schedule'] == 'subgroup4' and e['exact_vs_fused_and_columns4'] is True
+        require(all(e['schedule'] == 'barriers3' and e['exact_vs_fused_and_columns4'] is True
                     and e['guards'] is True for e in events if e['kind'] == 'validation'),
                 'missing exact arithmetic/guard evidence')
     return events
@@ -345,7 +346,7 @@ def selfcheck():
     controls = [dict(kind='timer_control', process=0, control=i, resolution_ns=80,
         empty_marker_gap_ns=120, status='PASS') for i in range(8)]
     samples = [dict(kind='sample', process=0, round=r,
-        schedule=('fused', 'columns4', 'subgroup4')[(s + r + 1) % 3],
+        schedule=('fused', 'columns4', 'barriers3')[(s + r + 1) % 3],
         queue_interval_ms=100., host_submit_ms=.2, status='PASS')
         for r in range(-1, 6) for s in range(3)]
     checks = [dict(kind='train_validation', process=0, tokens_per_call=8192, updates_per_arm=7,
@@ -375,11 +376,11 @@ def selfcheck():
         try: parse(events)
         except (RuntimeError, KeyError, TypeError, ValueError): pass
         else: raise RuntimeError('invalid parser control accepted')
-    processes = [dict(events=[dict(e, queue_interval_ms=99.9 if e['schedule'] == 'subgroup4' else 100.)
+    processes = [dict(events=[dict(e, queue_interval_ms=99.9 if e['schedule'] == 'barriers3' else 100.)
         for e in samples]) for _ in range(3)]
     require(performance(processes)['advance'], 'small credible improvement was rejected')
     for event in processes[1]['events']:
-        if event['schedule'] == 'subgroup4': event['queue_interval_ms'] = 100.01
+        if event['schedule'] == 'barriers3': event['queue_interval_ms'] = 100.01
     require(not performance(processes)['advance'], 'one slower process must reject advancement')
     for actual, prior_pass, expected_pass in (({'device': 'same'}, True, True),
             ({'device': 'changed'}, True, False), ({'device': 'same'}, False, False)):
@@ -488,4 +489,4 @@ if __name__ == '__main__':
         elif sys.argv[1:] == ['prepare']: prepare()
         elif sys.argv[1:] == ['build']: compile_component()
         elif len(sys.argv) == 3 and sys.argv[1] == 'run' and sys.argv[2] in tuple(map(str, range(7))): run(int(sys.argv[2]))
-        else: raise RuntimeError('measure_gdn_subgroup.py selfcheck|prepare|build|run INDEX(0..6)')
+        else: raise RuntimeError('measure_gdn_scheduling.py selfcheck|prepare|build|run INDEX(0..6)')
