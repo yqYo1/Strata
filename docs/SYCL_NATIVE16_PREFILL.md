@@ -1798,9 +1798,15 @@ individual first/subsequent samples and original source/build identities.
 Next test batching exact contiguous active-expert runs in the existing in-order
 queue,only when source/destination strides match the packed blob size. Preserve
 expert/math order and decode;add no RAM packing,overfetch or extra VRAM.
-The successful v2 raw outputs and consumed phase-handoff report/review/source
-exports are retired after the compact result is pushed. The deletion manifest
-records91files/13363315bytes;12baseline exports match original Git blobs.
+The five closed pipeline roots and consumed resource-profile outputs are now
+retired after the compact result is pushed:164files/392368585bytes. The final
+component's677 compiler inputs recover as12 original Git sources plus665
+dependencies matching the retained original official SDK manifest. The partial
+failed build's680 dependency paths and exact recipes also recover. Keep only
+two generated configuration fixtures totaling3754bytes for the prospective PLE
+attribution plan,then retire them when that plan commits the effective settings.
+Selected6e40 and candidate9a79 are unchanged. Original failed receipts and the
+rejected prototype's source remain recoverable from their recorded Git commits.
 Both retained native build generations and their fixtures remain for the named
 repeated comparison/qualification;independent legacy provenance holds remain.
 
