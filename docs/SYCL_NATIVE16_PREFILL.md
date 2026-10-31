@@ -56,7 +56,16 @@ The clean official comparison,controller578f8435f,freezes12fresh processes and
 four requests each across65537/117489read tokens. Its first64K off/on pair closes
 normally without fresh faults:subsequent-three medians880.8/877.9tok/s and
 on/off time ratio1.00330227. This pair does not support a speedup;the remaining
-repetitions and117K measurements are pending. No policy is adopted. See
+cohort stops at process2's correct route refusal. Its four117489-read requests
+finish with native exit0,quiet validation and no fresh fault,but actual placement
+uses512slots and73728..81920GPU rows,leaving728432640..896204800residual bytes
+in RAM. Split accumulation is inactive. PP698.0/727.7/733.9/733.1and client
+TTFT168.568/161.623/160.244/160.424s are diagnostic samples,not the planned
+matched Top-k comparison. The all-GPU split budget requires4057356672bytes
+including512MiB headroom;first available3822460928leaves234895744bytes missing.
+Preserve the failed V1gate and nine unexecuted processes. Resolve capacity
+before a new committed comparison;do not relax the route parser or continue
+index3. No policy is adopted. See
 `fused-moe-service-current.json::official_prefill_speed_v1`.
 
 The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate

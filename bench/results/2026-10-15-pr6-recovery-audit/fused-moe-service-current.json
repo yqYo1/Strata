@@ -48131,7 +48131,7 @@
     }
   },
   "official_prefill_speed_v1": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "578f8435f78ecfc646b41bb48ade267bb5535685",
     "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
     "binary": {
@@ -49014,6 +49014,143 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 2,
+        "read": 117489,
+        "topk": 0,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": true,
+        "native_identity": {
+          "pid": 150137,
+          "start_ticks": 178096373,
+          "sid": 150082
+        },
+        "error": "RuntimeError('missing/duplicate route records')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false,
+        "failed_route_diagnostic": {
+          "native_exit_code": 0,
+          "timing_classification": "Diagnostic-only:unexpected host-tail placement;not matched Top-k or throughput-target evidence.",
+          "samples": [
+            {
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 168328.5,
+              "prompt_tps": 698.0,
+              "ttft_s": 168.568,
+              "total_s": 170.264,
+              "generated_tokens": 24,
+              "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+              "drafts_offered": 21,
+              "drafts_accepted": 16,
+              "timing_frontend_state": "post-count-preflight"
+            },
+            {
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 161446.3,
+              "prompt_tps": 727.7,
+              "ttft_s": 161.623,
+              "total_s": 163.434,
+              "generated_tokens": 24,
+              "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+              "drafts_offered": 21,
+              "drafts_accepted": 16,
+              "timing_frontend_state": "post-count-preflight"
+            },
+            {
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 160078.2,
+              "prompt_tps": 733.9,
+              "ttft_s": 160.244,
+              "total_s": 162.066,
+              "generated_tokens": 24,
+              "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+              "drafts_offered": 21,
+              "drafts_accepted": 16,
+              "timing_frontend_state": "post-count-preflight"
+            },
+            {
+              "actual_read_tokens": 117489,
+              "actual_reused_tokens": 0,
+              "prompt_ms": 160255.2,
+              "prompt_tps": 733.1,
+              "ttft_s": 160.424,
+              "total_s": 162.198,
+              "generated_tokens": 24,
+              "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+              "drafts_offered": 21,
+              "drafts_accepted": 16,
+              "timing_frontend_state": "post-count-preflight"
+            }
+          ],
+          "subsequent_median_ms": 160255.2,
+          "routes": [
+            {
+              "residual_gpu_rows": 81920,
+              "residual_host_bytes": 728432640,
+              "prefill_slots": 512,
+              "staged": false,
+              "split_active": false,
+              "free_gpu_bytes": 3822460928,
+              "window_rows": 81920
+            },
+            {
+              "residual_gpu_rows": 73728,
+              "residual_host_bytes": 896204800,
+              "prefill_slots": 512,
+              "staged": false,
+              "split_active": false,
+              "free_gpu_bytes": 3818811392,
+              "window_rows": 73728
+            },
+            {
+              "residual_gpu_rows": 73728,
+              "residual_host_bytes": 896204800,
+              "prefill_slots": 512,
+              "staged": false,
+              "split_active": false,
+              "free_gpu_bytes": 3818614784,
+              "window_rows": 73728
+            },
+            {
+              "residual_gpu_rows": 73728,
+              "residual_host_bytes": 896204800,
+              "prefill_slots": 512,
+              "staged": false,
+              "split_active": false,
+              "free_gpu_bytes": 3818614784,
+              "window_rows": 73728
+            }
+          ],
+          "source_budget": {
+            "residual": 2406154240,
+            "bank128": 340787200,
+            "prefix": 241555328,
+            "score_status": 256,
+            "tail_allocation": 531988736,
+            "headroom": 536870912,
+            "total_required": 4057356672,
+            "first_available": 3822460928,
+            "first_deficit": 234895744
+          },
+          "conclusion": "Correct gate refusal:the actual117Kroute is safe fallback512slots/host residual tail,not planned all-GPU128slot split. Native exit0/quiet validation/no fresh fault do not qualify the intended model route. No parser relaxation.",
+          "next_action": "Preserve the stopped V1outcome. Resolve the full-GPU VRAM admission budget under the official build,then commit a new plan before fresh comparison;do not resume index3or retroactively qualify this process."
+        }
       }
     ],
     "request_hashes": {
@@ -49065,10 +49202,6 @@
         "passed": true
       }
     ],
-    "source_inputs": {
-      "files": 245,
-      "aggregate_sha256": "17faae30eeca35968907deb50516e4c6fae227ec3a03f6c926044f4465e7a764"
-    },
     "raw_retirement_batches": [
       {
         "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261031-official-prefill-speed-first-pair.json",
@@ -49078,6 +49211,12 @@
         "verified_absent": true,
         "retained": "Process0cache/manifest only for actual JIT property mapping and native review;configuration/native launch plans and shared input record remain for current12process comparison. Review at mapping/comparison closure."
       }
-    ]
+    ],
+    "cohort_stopped": true,
+    "remaining_processes_unexecuted": 9,
+    "source_inputs": {
+      "files": 245,
+      "aggregate_sha256": "17faae30eeca35968907deb50516e4c6fae227ec3a03f6c926044f4465e7a764"
+    }
   }
 }
