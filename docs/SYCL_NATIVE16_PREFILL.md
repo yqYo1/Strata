@@ -68,6 +68,19 @@ before a new committed comparison;do not relax the route parser or continue
 index3. No policy is adopted. See
 `fused-moe-service-current.json::official_prefill_speed_v1`.
 
+The joint dense/head release proposal addresses that capacity deficit by
+temporarily freeing the521472000-byte target head,plus its optional MTP subset.
+It is default-off and not built or adopted. Independent source review found
+that fallible head preparation inside cache-loan activation poisons the parent
+on refusal/throw,even before readers retire. The correction prepares before
+activation,uses a no-fail retirement callback and explicitly cancels prepared
+heads if activation preflight refuses. Original proposal0391301a6 remains
+unqualified. The original seven-case host plan closed without execution;
+a prospective fifteen-case ASan/UBSan host plan exercises the actual cache state,
+the old poison mechanism and corrected cancellation/restore ordering. Native
+graphs,head tensors,handoff,decode preservation and262144/RESTORE remain separate
+gates. See `fused-moe-service-current.json::joint_prefill_heads_v1`.
+
 The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
 exact-completion Top-k kernel only in layer-major prefill. It defaults off,
 requires `STRATA_SYCL_SELECT_RADIX4=1` and excludes the cyclic selection arm.

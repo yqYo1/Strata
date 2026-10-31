@@ -235,6 +235,14 @@ struct PrefillHeadBoundary {
             }catch(...){mtp.cancel_prefill_head();throw;}
             move(Phase::ready,Phase::prepared);return true;
         }
+        void require_prepared() const noexcept {
+            if(state.phase()!=Phase::prepared)fatal("head boundary commit before prepare");
+        }
+        void cancel_prepared() noexcept {
+            require_prepared();
+            head.cancel_prefill_weights();mtp.cancel_prefill_head();
+            if(!state.cancel_prepared())fatal("head boundary prepare cancellation failed");
+        }
         void retire_readers() noexcept try {
             // Ordinary target projection runs on main_cs, outside token graphs.
             if(cudaStreamSynchronize(main_cs)!=cudaSuccess)fatal("main head stream retirement");
@@ -417,7 +425,11 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     auto& ple=phase.session->ple.w;
     const bool native_ple=ple.key_native_data!=nullptr;
     auto restore=[&]() noexcept {
-        if(!retired) return;
+        if(!retired) {
+            if(joint_heads && head_boundary.state.phase()==PrefillHeadBoundary::Phase::prepared)
+                head_boundary.cancel_prepared();
+            return;
+        }
         host_profile.restore_begin();
         drain();
         if(cache_loan_active) {
@@ -470,16 +482,16 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         } catch(...) { fatal("graph retirement threw; completion unknown"); }
         observe("retired");
     };
-    auto retire_readers=[&]() -> bool {
-        // Prepare only after cache-loan preflight accepted its owner. The
-        // shared policy retires the union before head readers/storage, and a
-        // prepare refusal leaves both original device owners readable.
-        if(joint_heads)return strata::core::detail::begin_prefill_head_release(
-            head_boundary,retire_dense_readers,err);
-        retire_dense_readers();
+    auto retire_readers=[&]() noexcept -> bool {
+        // Activation callbacks cannot refuse or unwind safely. All fallible
+        // preparation precedes activation; uncertainty after this point stops.
+        if(joint_heads)strata::core::detail::finish_prepared_prefill_head_release(
+            head_boundary,retire_dense_readers);
+        else retire_dense_readers();
         return true;
     };
     try {
+        if(joint_heads && !head_boundary.prepare(err))return false;
         if(cache_loan) {
             if(!prompt.activate_cache_scratch_lease(retire_readers,err)) return false;
             cache_loan_active=true;

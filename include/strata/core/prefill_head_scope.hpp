@@ -5,19 +5,27 @@
 #include <cstdint>
 
 namespace strata::core::detail {
-// Optional enclosing owners retire their readers between successful head RAM
-// preparation and head detachment. A refusal/throw from prepare never calls
-// either retirement. Once retirement starts, uncertainty must fail-stop.
-// The caller owns restoration when composing this with a larger transaction.
+// Commit only an already prepared boundary. A cache-loan activation callback
+// must use this no-fail part: callback refusal/throw poisons the parent loan,
+// even when no device reader was retired. Prepare before entering that callback.
 template<class Backend,class RetireOtherReaders>
-bool begin_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other,std::string& err) {
-    static_assert(noexcept(std::forward<RetireOtherReaders>(retire_other)()) &&
+void finish_prepared_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other) noexcept {
+    static_assert(noexcept(b.require_prepared()) &&
+                  noexcept(std::forward<RetireOtherReaders>(retire_other)()) &&
                   noexcept(b.retire_readers()) && noexcept(b.detach()),
                   "prepared reader retirement must not unwind runtime owners");
-    if(!b.prepare(err))return false;
+    b.require_prepared();
     std::forward<RetireOtherReaders>(retire_other)();
     b.retire_readers();
     b.detach();
+}
+
+// Standalone composition owns its fallible preparation. Enclosing transactions
+// instead prepare before loan activation and cancel if preflight refuses.
+template<class Backend,class RetireOtherReaders>
+bool begin_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other,std::string& err) {
+    if(!b.prepare(err))return false;
+    finish_prepared_prefill_head_release(b,std::forward<RetireOtherReaders>(retire_other));
     return true;
 }
 
@@ -58,6 +66,12 @@ public:
             (expected==Phase::restored && next==Phase::ready);
         if(phase_!=expected || !edge)return false;
         phase_=next;return true;
+    }
+    // Only preparation can be cancelled: no reader or device owner changed.
+    // Keep this distinct from normal restoration and forbid all retired phases.
+    bool cancel_prepared() noexcept {
+        if(phase_!=Phase::prepared)return false;
+        phase_=Phase::ready;return true;
     }
     Phase phase() const noexcept{return phase_;}
     bool readable() const noexcept{return phase_==Phase::ready;}

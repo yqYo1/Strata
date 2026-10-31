@@ -9,21 +9,23 @@ import hashlib
 import json
 from pathlib import Path
 import shlex
+import subprocess
 import sys
 
 sys.dont_write_bytecode = True
 import build_official_model as model
 
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT, KEY = B / 'prefill-dense-head-scope-v1', 'joint_prefill_heads_host_v1'
+ROOT, KEY = B / 'prefill-dense-head-scope-v2', 'joint_prefill_heads_host_v2'
 TEST = 'tests/sycl/prefill_head_scope.cpp'
 HEADER = 'include/strata/core/prefill_head_scope.hpp'
+LEASE = 'include/strata/core/cache_scratch_lease.hpp'
 require, digest, write = model.require, model.digest, model.write
 
 
 def pins(revision):
     values = model.controls(revision)
-    for name in [str(Path(__file__).resolve().relative_to(P)), TEST, HEADER]:
+    for name in [str(Path(__file__).resolve().relative_to(P)), TEST, HEADER, LEASE]:
         raw = model.source.build.git(P, 'show', revision + ':' + name)
         require(raw == (P / name).read_bytes(), 'commit exact host source: ' + name)
         values[name] = hashlib.sha256(raw).hexdigest()
@@ -49,6 +51,29 @@ def inputs():
     return native, model.admit(native)
 
 
+def sanitizer_links(environment):
+    # Prospective additions for this CPU ASan link, not changes to the previous
+    # model build's inventory. Query and freeze before any compilation.
+    files, queries, owners = {}, [], set()
+    for name in ('librt.a', 'libresolv.so'):
+        argv = [model.COMPILER, '-print-file-name=' + name]
+        reported = subprocess.check_output(argv, env=environment, text=True, timeout=15).strip()
+        path = Path(reported)
+        require(path.is_absolute() and path.is_file(), 'unresolved sanitizer link input: ' + name)
+        path = path.resolve()
+        require(path.is_relative_to('/usr'), 'unexpected sanitizer host library')
+        files[str(path)] = digest(path)
+        queries.append(dict(argv=argv, reported=reported, resolved=str(path)))
+        ownership = subprocess.check_output(['dpkg-query', '-S', str(path)],
+            env=environment, text=True, timeout=15)
+        packages = [line.split(': /', 1)[0] for line in ownership.splitlines() if ': /' in line]
+        require(packages, 'unowned sanitizer link input: ' + str(path))
+        owners.update(packages)
+    versions = subprocess.check_output(['dpkg-query', '-W', '-f=${binary:Package} ${Version}\n',
+        *sorted(owners)], env=environment, text=True, timeout=15).splitlines()
+    return dict(files=files, compiler_queries=queries, packages=versions)
+
+
 def prepare():
     require(not ROOT.exists() and KEY not in model.committed(RESULT), 'fresh host scope only')
     native, _ = inputs()
@@ -58,18 +83,21 @@ def prepare():
     for name in ('tmp', 'cache'): (ROOT / name).mkdir()
     env = dict(native['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
                ASAN_OPTIONS='detect_leaks=1:abort_on_error=1', UBSAN_OPTIONS='halt_on_error=1:print_stacktrace=1')
+    links = sanitizer_links(env)
     command = [model.COMPILER, '-std=c++17', '-O1', '-g0', '-fno-omit-frame-pointer',
         '-fsanitize=address,undefined', '-fno-fast-math', '-ffp-contract=off', '-I' + str(P / 'include'),
         '-MD', '-MF', str(ROOT / 'policy.d'), '-save-temps=obj', '-v', '-Wl,-t',
         str(P / TEST), '-o', str(ROOT / 'prefill_head_scope')]
     row = dict(stage='prepared', source_commit=revision, sources=sources, compiler=native['compiler'],
-        sdk=native['sdk'], official_build_source=native['source_commit'],
+        sdk=native['sdk'], official_build_source=native['source_commit'], sanitizer_link_inputs=links,
         environment=env, environment_overrides={k: v for k, v in env.items() if native['environment'].get(k) != v},
         environment_sha256=hashlib.sha256(json.dumps(env, sort_keys=True).encode()).hexdigest(),
         commands=[['compile', command], ['policy', [str(ROOT / 'prefill_head_scope')]]],
         budgets=dict(wall=90, cpu=180, rss_cap=4 << 30, text_cap=1 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        criteria='Seven host-only cases:joint prepare refusal/throw,complete ordered joint begin/restore,'
-            'standalone prompt success/false/throw and invalid state edges. Exact committed inputs,'
+        criteria='Fifteen host-only cases:previous seven boundary controls plus two actual CacheScratchState'
+            ' poison reproductions,two preparation-before-activation failures,prepared cancellation on stale'
+            ' activation preflight,and joint prompt success/false/throw with checked retirement/refill.'
+            ' At least250checks. Exact committed inputs,'
             'actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.',
         passed=False, complete=False, active=False, ownership_closed=True, GPU_executed=False)
     save(row)
@@ -82,6 +110,8 @@ def run():
             and not (ROOT / 'owned').exists(), 'fresh committed host plan required')
     require(pins(row['source_commit']) == row['sources'], 'host inputs changed')
     _, allowed = inputs(); allowed.update({str(P / n): sha for n, sha in row['sources'].items()})
+    require(sanitizer_links(row['environment']) == row['sanitizer_link_inputs'], 'sanitizer link inputs changed')
+    allowed.update(row['sanitizer_link_inputs']['files'])
     owner = None
     def persist():
         write(ROOT / 'execution.json', dict(active=bool(owner and owner.active), commands=owner.commands if owner else []))
@@ -94,7 +124,7 @@ def run():
             if label == 'compile':
                 words = shlex.split((ROOT / 'policy.d').read_text().replace('\\\n', ' ').split(':', 1)[1])
                 dependencies = {str(Path(p).resolve()) for p in words}
-                require(len(dependencies) > 40 and {str(P / TEST), str(P / HEADER)} <= dependencies
+                require(len(dependencies) > 40 and {str(P / TEST), str(P / HEADER), str(P / LEASE)} <= dependencies
                         and all(allowed.get(p) == digest(p) for p in dependencies), 'unfrozen actual compiler input')
                 links = {}
                 for line in out.read_text().splitlines():
@@ -113,10 +143,11 @@ def run():
                                      bytes=(ROOT / 'prefill_head_scope').stat().st_size)
             else:
                 result = json.loads(out.read_text())
-                require(not err.read_bytes() and result['kind'] == 'prefill_head_scope' and result['cases'] == 7
-                        and result['checks'] >= 100 and result['status'] == 'PASS', 'policy/sanitizer check failed')
+                require(not err.read_bytes() and result['kind'] == 'prefill_head_scope' and result['cases'] == 15
+                        and result['checks'] >= 250 and result['status'] == 'PASS', 'policy/sanitizer check failed')
                 row['result'] = result
         inputs()
+        require(sanitizer_links(row['environment']) == row['sanitizer_link_inputs'], 'sanitizer link inputs changed after run')
         require(pins(row['source_commit']) == row['sources'], 'host source changed during execution')
         row.update(passed=True, complete=True)
     except BaseException as error:
