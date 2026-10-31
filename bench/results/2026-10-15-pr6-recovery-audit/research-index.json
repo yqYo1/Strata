@@ -19701,14 +19701,14 @@
   },
   "prefill_fp32_projection_tla_contract_20261101": {
     "classification": "decision_support",
-    "status": "Orca_Luna_high_read_only_running",
+    "status": "native_Luna_max_reviewed_conditional",
     "schedulable_now": false,
     "question": "Does the pinned public TLA adapter support an isolated beta0 large-GDN mixed16-to-FP32 projection endpoint with unchanged consumers, and what exact layout/lifetime/dispatch gates are needed?",
     "prerequisite_evidence": {
       "actual_selected_native_source": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
-      "actual_route": "GDN columns4/barriers3,chunk64=0;native_proj/bf16_proj call oneMKL FP32 output;out16 TLA geometry is not this projection path.",
+      "actual_route": "Selected columns4/barriers3,chunk64=0:qkv/gate native_proj and small alpha/beta bf16_proj call oneMKL FP32 output;GDN final projection uses native_proj16 when native16_active. An out16 tile change does not apply to the FP32 producer calls.",
       "measured_scope": "official_joint_resources_v3 atdc5dcff259eca316e61e7f0aaf00b393e813def7:GDN projection9.3439s/output4.7951s nonexclusive queue intervals;no saturation/slow-library claim.",
-      "prospective_candidate": "Prefill-only private large-GDN beta0 TLA FP32 destination;first existingwide128x128/K32,SG16,256GRF. Not implemented/adopted;shape/GRF changes separate.",
+      "prospective_candidate": "Not implemented:prefill-only eligible large beta0 qkv/gate TLA FP32 destination,first existingwide128x128/K32 SG16/256GRF;existing GDN output/HC/MoE/decode unchanged. Shape/GRF variants separate.",
       "static_research_only": true,
       "no_missing_hardware_counter_required_for_static_contract": true
     },
@@ -19751,13 +19751,46 @@
       "terminal": "term_3703e764-b988-4ab3-984c-e8fdfd1bd53f",
       "initial_failure": "Verified Codex update prompt before Task input;ESC skipped without installation,then idle GPT-6-Luna high/workspace verified and same-task/same-terminal retry accepted.",
       "input_accepted": true,
-      "worker_state": "running",
+      "worker_state": "succeeded_released",
       "transaction_paths": [
         ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.task.json",
         ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.launch.json",
         ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.startup-skip.json",
-        ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.retry1.json"
-      ]
+        ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.retry1.json",
+        ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.inbox.json",
+        ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.release.json",
+        ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.ack.json"
+      ],
+      "worker_done_message": "msg_fa781c193c10",
+      "delivery": "delivery_21464e0162dd",
+      "delivery_acked": true,
+      "exact_worker_observation": "exited",
+      "release_state": "released"
+    },
+    "report_bytes": 13410,
+    "report_sha256": "a5e9776a8f2fe78d2b53d49618d2e7f350f9215467ac0f4a1c10329b1cbed704",
+    "worker_closed": true,
+    "review": {
+      "path": ".cache/research/2026-11-01/review_prefill_fp32_projection_tla_contract_20261101.md",
+      "bytes": 5575,
+      "sha256": "12b01ea850a885f146abd8f1f00a63a766fc72eebf31c179abbc796a2be77189",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "corrections": [
+        "Adapter borrows runtime,queue and allocation owners;caller retains them through event completion and checked queue drain.",
+        "Selected native16 GDN output projection already uses out16 even when chunk64=0;new FP32 endpoint is limited to eligible qkv/gate producers,not the existing output projection.",
+        "Commit the exact compile-only source and recipe before compilation;float block2D epilogue/codegen remain unproven."
+      ],
+      "main_read_short_digest_only": true
+    },
+    "policy_anchor_content_verified": "AGENTS.md and docs/ARTIFACT_RETENTION.md exactly match the original14490d9ad policy anchor despite later result/index commits.",
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Frozen12-process model cohort closes.",
+        "Main selects a concrete projection candidate,then commits exact compile-only instantiation and recipe."
+      ],
+      "action": "If selected,first compile and verify direct FP32 store/shape/bounds/owner contract;then numerical/progression/codegen and matched timing. No repeated static survey or speed adoption from this report."
     }
   }
 }
