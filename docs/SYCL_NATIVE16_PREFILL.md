@@ -280,8 +280,11 @@ Process1(original) also closes normally:PP819.9/918.7/941.4/931.1,subsequent
 median931.1tok/s and TTFT126.377s,no fresh fault. The first row64/original prompt
 time ratio1.02302406is slower;it does not establish a gain. Process2(original)
 closes normally atPP877.8/925.5/919.0/900.7,subsequent median919.0tok/s and
-TTFT128.138s,without a fresh fault. Row64process3is next to complete the reverse
-pair;all three remaining cases are still required.
+TTFT128.138s,without a fresh fault. Process3(row64) closes normally at
+PP856.7/909.6/910.2/916.9,subsequent median910.2tok/s and TTFT129.298s,
+with quiet final validation and no fresh fault. The reverse-pair prompt-time
+ratio1.00963576also favors original. Processes4and5are still required by the
+frozen plan;neither completed pair establishes a row64 gain.
 First use stays separate. All three paired time ratios below1 assess reproducibility without
 a minimum percentage;the1000tok/s screen and client TTFT stay separate.
 V2does not inherit V1samples or historical1007.3. These corrections concern
