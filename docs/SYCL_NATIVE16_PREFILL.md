@@ -168,7 +168,12 @@ clocks,without a per-kernel service or hardware-saturation claim. Its CPU-only
 `selfcheck` passes two ordinary/split controls,nine rejection cases,the127/128and
 2333/2334shape-group boundaries and both fused observer environments. The
 historical81920default stays fixed;117488requires an explicit prospective bound.
-The frozen cohort is closed;next prepare/qualify the new V2clean-versus-observed pair.
+V2prepare now passes recovery of29original controls,five invalid-reuse rejection
+cases,the native/compiler/seven-executable proof,84providers and15full model
+hashes. Its247current Python inputs differ from the closed cohort only in the
+three declared diagnostic/admission files;native source remains032f4f8a5and the
+engine hash remains05c489eab7. The two117489-read process plans are committed
+before host probes;neither process has run. See `official_joint_resources_v2`.
 Retire the temporary branch after its original
 commits are also verified reachable from the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
