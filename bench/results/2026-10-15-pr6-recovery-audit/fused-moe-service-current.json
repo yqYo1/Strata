@@ -50132,7 +50132,7 @@
     }
   },
   "official_prefill_joint_device_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "aec63444504b6c894bd4cf7fe62fb48742cb8812",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "native_build_commit": "aec63444504b6c894bd4cf7fe62fb48742cb8812",
@@ -50397,12 +50397,243 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "host_only": true
+        }
+      },
+      {
+        "name": "Topk-properties",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 3,
+        "details": {
+          "properties": true
+        }
+      },
+      {
+        "name": "Topk-smoke0",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 3,
+        "details": {
+          "numeric_cases": 1,
+          "early": 0,
+          "input_output_guards": true
+        }
+      },
+      {
+        "name": "Topk-smoke1",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 3,
+        "details": {
+          "numeric_cases": 1,
+          "early": 1,
+          "input_output_guards": true
+        }
+      },
+      {
+        "name": "submission",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "submission_ordering_and_guards": true
+        }
+      },
+      {
+        "name": "native16-smoke",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "dyadic_exact_RNE_cases": 32,
+          "storage": "allFP16/BF16input/output pairs,both tiles"
+        }
+      },
+      {
+        "name": "native16-guards",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "pre_enqueue_rejections": 26,
+          "inputs_outputs_immutable": true
+        }
+      },
+      {
+        "name": "GU-progress",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "calls": 64,
+          "groups": 4,
+          "stage_pairs": 308,
+          "maximum_pending_ordinary_kernels": 32,
+          "max_half_ulp": 0,
+          "guards": true,
+          "inputs_immutable": true
+        }
+      },
+      {
+        "name": "GU-public0",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "cases": [
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 3,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 160,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2333,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2334,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            }
+          ]
+        }
+      },
+      {
+        "name": "GU-public1",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 0,
+        "details": {
+          "cases": [
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 3,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 160,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2333,
+              "selected": 0,
+              "expected_records": 2,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            },
+            {
+              "kind": "profiled_engine_gu",
+              "rows": 2334,
+              "selected": 1,
+              "expected_records": 1,
+              "max_half_ulp": 0,
+              "guards": true,
+              "inputs_immutable": true,
+              "status": "PASS"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Down-split-original",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 3,
+        "details": {
+          "cases": 8,
+          "original_split_kernel": true,
+          "inputs_immutable": true
+        }
+      },
+      {
+        "name": "Topk-numerics0",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 3,
+        "details": {
+          "numeric_cases": 145,
+          "early": 0,
+          "input_output_guards": true
+        }
+      },
+      {
+        "name": "Topk-numerics1",
+        "passed": true,
+        "ownership_closed": true,
+        "pre_main_parameter_validation": true,
+        "gates": 3,
+        "details": {
+          "numeric_cases": 145,
+          "early": 1,
+          "input_output_guards": true
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "complete": false,
-    "passed": false,
-    "GPU_executed": false,
+    "complete": true,
+    "passed": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "ordinary_runtime_teardown_qualified": false,
@@ -50418,6 +50649,9 @@
     "whole_bytes": 67108864,
     "whole_wall_seconds": 900,
     "criteria": "13ordered fresh owned processes,stop first failure. Exact source/ELF/providers and immutable environment,pre-main parameter validation,quiet warnings,no new fault. Traced tiny Top-k off/on, 32dyadic matrix cases,26admission guards,64ordinary public GU calls in16call groups,public GU threshold cases and original split-Down route;then145Top-k numerical cases per off/on process with warning-only logging. Never2048call batch. Same-build component checks only;MoE8job production-loop progress,model speed,decode/handoff,task and physical full context remain separate.",
-    "retention": "Retain compact individual outcomes/case counts and source/native identity. Successful full API traces,JIT and polling output retire after verification. Seven candidate binaries remain only for imminent production/model comparison;selected6e40+12fixtures remain untouched."
+    "retention": "Retain compact individual outcomes/case counts and source/native identity. Successful full API traces,JIT and polling output retire after verification. Seven candidate binaries remain only for imminent production/model comparison;selected6e40+12fixtures remain untouched.",
+    "fresh_faults": [],
+    "observed_provider_count": 42,
+    "error": null
   }
 }

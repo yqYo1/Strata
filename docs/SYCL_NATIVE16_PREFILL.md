@@ -74,8 +74,11 @@ It is default-off and not adopted. Its replacement recipe032f4f8a5
 pins554native sources,aggregatec3b781a2378a0d208c6ac7852bff505ce36f8c4955ae2956877c0db44dfd7dbc.
 Seven executables now compile with1447matched actual compiler inputs and29
 observed external link inputs;engine SHA-256 is05c489eab7254417eb0e76a6f5c4c44a14fc837d83dd4056457d0138f522b29e.
-GPU/model qualification remains pending;compilation does not inherit the seed's
-model results. See `fused-moe-service-current.json::official_prefill_joint_build_v1`.
+The fresh same-build13-process device cohort also passes,with quiet parameter
+validation,no new driver fault and normal ownership closure. Joint-model
+qualification remains pending;these checks do not inherit the seed's model
+results. See `fused-moe-service-current.json::official_prefill_joint_build_v1`
+and `official_prefill_joint_device_v1`.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found
