@@ -171,10 +171,10 @@ def prefill_proof():
                     'sycl::event submit_topk_prefill_early(')
     path = P / 'src/kernels/sycl/qsa_topk_prefill_early.cpp'
     actual = path.read_text()
-    kernel = section(actual, 'sycl::event submit_topk_prefill_early(', '\nint64_t validate_topk(')
     # section() excludes the newline that starts its closing delimiter;
     # parts() includes the original helper's terminal newline.
-    if kernel + '\n' != expected or any(actual.count(part) != 1 for part in (validate, order, spans)):
+    kernel = section(actual, 'sycl::event submit_topk_prefill_early(', '\nint64_t validate_topk(') + '\n'
+    if kernel != expected or any(actual.count(part) != 1 for part in (validate, order, spans)):
         raise ValueError('prefill kernel/validation differs from qualified source')
     return dict(qualified_source_commit='44636e26cd45820d3c4714a7cf91f5646670db1b',
         qualified_generated_candidate_sha256=hashlib.sha256(qualified).hexdigest(),

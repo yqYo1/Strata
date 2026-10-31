@@ -46020,6 +46020,24 @@
         "exit_code": 1,
         "passed": false,
         "failure": "prefill_proof compared a section excluding its final newline against the qualified body including it. Actual kernel differs only by that extraction boundary;validate/order/span helper bytes match exactly. Original failure preserved;corrected proof requires exactly one terminal newline."
+      },
+      {
+        "source_commit": "bddb683538ce9d1dc4ac49fa5c22ce39a0c82b8d",
+        "command": [
+          "timeout",
+          "60s",
+          "flock",
+          "-n",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+          "python3",
+          "-B",
+          "tools/sycl/test_topk_plan.py"
+        ],
+        "tests": 11,
+        "elapsed_s": 4.039,
+        "exit_code": 1,
+        "passed": false,
+        "failure": "Exact body/helper equality passed after restoring the single extraction-boundary newline. The returned digest still hashed the unterminated section;corrected to hash the same newline-terminated helper as the immutable6099f622 reference. C++ bytes and expected digest unchanged."
       }
     ],
     "build_passed": false,
