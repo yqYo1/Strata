@@ -60,6 +60,18 @@ def fingerprint(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
+def require_quiet_validation(root):
+    path = root / 'validation.log'
+    require(not path.exists() or path.stat().st_size == 0, 'validation warning/error')
+
+
+def require_valid_client_ttft(sample):
+    first, total = sample['ttft_s'], sample['total_s']
+    require(type(first) in (int, float) and type(total) in (int, float)
+            and math.isfinite(first) and math.isfinite(total) and 0 < first <= total,
+            'invalid individual client TTFT or duration')
+
+
 def prepare():
     controls = selfcheck()
     built, _, files = entry.proof()
@@ -463,7 +475,7 @@ def run(index, experiment=None):
                     row['native_validation_probe']['library']['path'], env['ZE_ENABLE_ALT_DRIVERS']} <= mapped, 'native providers differ')
                 shared.python_runtime.check_running(command['pid'], P / 'tools/strata_bench.py', manifest['selected'], env,
                     {v['realpath'] for v in manifest['inventory']['files'].values()}, plan['command'][2:])
-                require(not (root / 'validation.log').exists() or (root / 'validation.log').stat().st_size == 0, 'validation warning/error')
+                require_quiet_validation(root)
                 outcome.update(model_executed=True, native_identity=claim)
                 offsets[stage] = (root / 'engine.stderr').stat().st_size
                 print(f'Prefill process{index} read{plan["read"]} heads{plan["heads"]} '
@@ -484,6 +496,9 @@ def run(index, experiment=None):
         owner = build.supervision.Owner(root / 'owned', persist)
         command, _, _ = owner.run('bench', plan['command'], env, P, interaction=interact, **row['budgets'])
         require(build.supervision.closed(command) and command['exit_code'] == 0, 'model process failed')
+        # The final request gate precedes native/runtime destruction. Only an
+        # empty owned session proves that all validation-log producers exited.
+        require_quiet_validation(root)
         outputs = list((root / 'bench').glob('*/results.json'))
         require(len(outputs) == 1, 'missing/duplicate benchmark result')
         result = json.loads(outputs[0].read_text())
@@ -495,6 +510,7 @@ def run(index, experiment=None):
         require(len(set(hashes)) == policy.RUNS and all(re.fullmatch('[0-9a-f]{64}', s) for s in hashes)
                 and hashes == row['request_hashes'].get(str(plan['read']), hashes), 'request bodies differ')
         for sample, count in zip(samples, counts):
+            require_valid_client_ttft(sample)
             require(all(sample[k] is True for k in ('ok', 'eligible', 'stream_complete', 'thinking_requested', 'reasoning_observed'))
                     and sample['actual_read_tokens'] == sample['actual_prompt_tokens'] == count['counted_input_tokens'] == plan['read']
                     and sample['actual_reused_tokens'] == 0 and sample['request_sha256'] == count['body_sha256']

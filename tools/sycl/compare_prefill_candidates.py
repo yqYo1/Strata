@@ -21,7 +21,7 @@ import qualify_prefill_candidates as device
 
 comparison, shared, build = reference.comparison, reference.shared, reference.build
 P, B, RESULT = reference.P, reference.B, reference.RESULT
-ROOT, KEY = B / 'official-row64-model-v1', 'official_row64_model_v1'
+ROOT, KEY = B / 'official-row64-model-v2', 'official_row64_model_v2'
 READ, RUNS = 117489, 4
 KERNELS = ('row64', 'original', 'original', 'row64', 'row64', 'original')
 ORDER = ((READ, 1),) * len(KERNELS)
@@ -119,6 +119,35 @@ def decision(processes):
 
 def selfcheck():
     result = dict(route=comparison.selfcheck(), finalization=reference.finalization_controls())
+    # Reproduce the reviewed gaps: a warning appended after the last gate and
+    # an invalid first/warmed request hidden by reducing three later values.
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix='row64-log-guard-', dir=B) as temporary:
+        root = Path(temporary)
+        comparison.require_quiet_validation(root)
+        (root / 'validation.log').write_text('')
+        comparison.require_quiet_validation(root)
+        (root / 'validation.log').write_text('late validation warning\n')
+        try:
+            comparison.require_quiet_validation(root)
+        except RuntimeError:
+            result['final_validation'] = dict(absent_and_empty_accepted=True, late_warning_rejected=True)
+        else:
+            raise RuntimeError('post-gate validation warning accepted')
+    comparison.require_valid_client_ttft(dict(ttft_s=1.0, total_s=1.0))
+    bad_clocks = (None, True, 0, -1, float('nan'), float('inf'), 126.0)
+    rejected = 0
+    for position in range(RUNS):
+        for value in bad_clocks:
+            requests = [dict(ttft_s=121.0, total_s=125.0) for _ in range(RUNS)]
+            requests[position]['ttft_s'] = value
+            try:
+                for request in requests: comparison.require_valid_client_ttft(request)
+            except RuntimeError:
+                rejected += 1
+            else:
+                raise RuntimeError('invalid individual TTFT hidden by other requests')
+    result['individual_TTFT'] = dict(invalid_values_rejected_at_all_four_positions=rejected)
     def sample(i):
         return dict(passed=True, complete=True, ownership_closed=True, fresh_faults=[],
             read=READ, heads=1, kernel=KERNELS[i], native_identity=dict(pid=i + 1, start_ticks=i + 10),
@@ -172,6 +201,9 @@ def prepare():
         host_passed=False, passed=False, complete=False, active=False, ownership_closed=True,
         inference_adopted=False, whole_bytes=400 << 20, budgets=prior['budgets'],
         plan=dict(question='Does previously faster row64 shorten current-generation117K prefill/TTFT?',
+            prior='V1closed after one diagnostic process because source review found missing final '
+                'validation-log and per-request TTFT guards. Preserve its automatic pass and individual '
+                'samples;do not continue or reuse it as matched evidence. V2uses six new processes.',
             order='Six fresh processes,row64/original,original/row64,row64/original;four matched '
                 'thinking-on requests each. First long use separate;median of subsequent3 is the process unit.',
             constants='Same seven-ELF native generation,official2026.2 providers,safety controls,128staged '
@@ -179,7 +211,10 @@ def prepare():
                 '1256decode slots,5workers,spec4. Only Down split kernel changes before exec.',
             acceptance='All24requests must match bodies/actual117489read,zero reuse,complete thinking '
                 'streams,engine prompt clock,full-GPU split placement,checked restoration,quiet validation,'
-                'normal owner/native closure and no fresh fault. Source-bound fused-job routes plus '
+                'normal owner/native closure and no fresh fault. Every TTFT must be a finite positive '
+                'number no greater than its finite total duration,including first use;validate before '
+                'any median. Check validation.log at all request gates AND after the owned native '
+                'session closes,including runtime teardown. Source-bound fused-job routes plus '
                 'immutable compiled selector identify the production choice;no model UR launch count is claimed. '
                 'All3paired warmed prompt-time ratios<1 and geometric mean<1 permit further row64 '
                 'qualification;no minimum percentage. Report first-use and clientTTFT independently. '
