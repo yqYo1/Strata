@@ -305,70 +305,27 @@ another wins a different regime. A faster kernel alone does not establish which
 profile minimizes TTFT. Automatic input-length dispatch and any further levels
 wait until long-prefill and decode tuning;measured curves will determine their
 thresholds later.
-The isolated `work/prefill-gdn-subgroup` proposal next targets the9.70631s GDN
-recurrence interval recorded by `official_joint_resources_v3`. Its source maps
-four adjacent subgroup lanes to each column's four32-row partials,then uses
-converged `select_from_group` calls instead of the recurrence's five workgroup
-barriers per token. It keeps explicit ordered FMAs,left-associated partial sums
-and the separate RMS/gating consumer. This removes source-level workgroup
-barriers;emitted shuffles,register use,spills,physical traffic and speed are not
-measured. Duplicate Q/K loads and exchanges may offset any saving.
-The source audit ofa1cb5de85and independent Luna-max review find no defined
-source-level blocker to a bounded smoke,while flagging four times the logical
-Q/K vector loads of columns4and104subgroup selections per lane/token. These
-counts are neither physical traffic nor emitted instruction counts. The fixture
-compiles the production GDN source with the existing runtime target,without
-depending on the rest of the engine's kernel archive. Source/recipeb66a73731
-builds both fixtures with the official2026.2SDK:721actual compiler inputs,six
-attested target commands and24external linker inputs. Neither engine binary is
-overwritten.
-The new `gdn_recurrence_subgroup` entrypoint is prefill-only and not wired into
-model dispatch. Main authored it from this fork's existing recurrence and the
-indexed subgroup feasibility reference,with the
-[Khronos collective contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html)
-and [selection API](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html#select).
-No XeStrata source is involved. The same-build submission/lifecycle check,
-traced17-token whole/split cases and seven invalid/no-write cases pass with
-normal closure,quiet validation and no fresh fault. All1/33/65/129/8191/8192
-cases also match fused and columns4state/FP32output/FP16capture exactly,with
-guards and immutable inputs. Three fresh rotated resident comparisons of
-fused/columns4/subgroup4are next;262144component carry/restore/unchanged-decode-
-tail follows only if their advancement rule passes. The current best columns4
-path is the performance control;the fused arm is an additional arithmetic
-reference. Each process records eight empty-marker controls and the device's
-profiling timer resolution. Every sample must span at least1ms and1000timer
-ticks;no subtraction of marker cost or claim of isolated device service follows.
-Freeze comparison acceptance before timing. Queue-marker
-spans include host gaps,so do not label them isolated kernel service. A component
-pass cannot qualify model quality,sustained decode or physical-context behavior.
-The new Main controller `tools/sycl/measure_gdn_subgroup.py` prepares an exact
-two-target build with the official2026.2SDK,then serializes submission,smoke,
-tail validation and three rotated resident processes. All three subgroup4/
-columns4process-median ratios below1and their geometric mean below1permit the
-262144component continuity check;there is no minimum percentage. Native gates
-outside timed regions check the startup environment
-and actual provider maps before initialization,after initialization and before
-exit. Final validation is checked after normal process closure. Pin actual
-compiler/linker inputs and both executable hashes before any GPU execution.
-No current engine binary is overwritten and no subgroup model route is selected.
-The independent execution-control audit of77c86900fand its native review identify
-a missing final driver-equality pass gate,a compile-command attestation gap and
-a misleading per-sample correctness field. Main's prospective correction checks
-final driver identity,attests all six actual target compiler commands and their
-FP options,and emits one explicit numerical validation result for the complete
-seven-update train. Timed samples claim clock eligibility,not individual numerical
-comparison. Dedicated correctness/context modes remain separate. The original
-corrected CPU controls pass1valid/18invalid parser,2selection and3final-driver
-cases at source51f4e34a6and again in the frozenb66a73731prepare. That prepare
-also corrects an old qualification reader's historical-libz refusal;the current
-official providers and unchanged probe are checked against the closed13-process
-component and six-process model evidence. Original hashes are preserved.
-Clean resident speed,component262144and every model-adoption gate remain pending.
-Source proposal and controls are integrated atdc8c0b0a5for bounded component
-qualification;this is not inference adoption. The finished GDN and resource-
-profile child branches/worktrees are removed after their original commits are
-verified reachable from pushed `feature/sycl`. PR180to default remains blocked.
-Remove the unused proposal if its measured result does not justify continuation.
+The subgroup GDN experiment closes without advancement. Source/recipeb66a73731
+builds two component fixtures with the official2026.2SDK:721actual compiler
+inputs,six attested target commands and24external linker inputs. Submission,
+17-token whole/split,seven refusal/no-write and1/33/65/129/8191/8192exact cases
+pass,with quiet validation,normal closure and no fresh fault. The three rotated
+8192-token process medians are17.6182/17.6315/17.5706ms for columns4 and
+129.9163/129.9072/129.8402ms for subgroup4;the geometric-mean time ratio is
+7.37716315. Thus all three pairs reject the subgroup proposal. The planned
+262144component and model checks are unrun;no inference route is adopted.
+See `official_gdn_subgroup_v1` for individual first-use/warmed samples,empty-marker
+controls and exact source/ELF identities. Intervals include host submission gaps;
+they do not establish emitted-shuffle cost,register spills or hardware saturation.
+The source's104subgroup selections/lane/token and4xlogical Q/K vector loads
+are mechanism hypotheses,not measured instruction or bus counts.
+The next source-only decision compares separate KV/output reduction scratch,
+which could reduce five workgroup barriers per token to three,against higher-
+register variants. Preserve the existing four32-row partials and their FP32order.
+That dependency proof is under independent review;the new kernel is unimplemented.
+Current original GDN/decode selections and both engine binaries remain unchanged.
+The finished GDN and resource-profile child branches are removed with original
+commits reachable from pushed `feature/sycl`;PR180to default remains blocked.
 Collector preparation is deferred in favor of this faster-candidate qualification.
 The unexecuted controller froma76babf18 is retired to Git;no coverage plan/root,
 native process or GPU result was produced by it. The13existing reader rejection
