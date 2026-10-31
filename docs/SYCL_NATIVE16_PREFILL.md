@@ -105,14 +105,18 @@ and median121453.1ms. Head-off first use is708.9tok/s;subsequent727.8/732.0/728.
 have median728.2and161335.1ms. The control has81920GPU rows first,73728later,
 512ordinary slots and728432640/896204800RAM residual bytes. Request hashes match.
 This first on/off time ratio is0.75280023(24.72%less time,32.84%more throughput);
-warmed client TTFT medians are121.630/161.518s. The first64K head-on process
-also closes normally without fresh faults,with65536GPU rows,384staged slots and
-no RAM residual in every request. First use is779.5tok/s;subsequent869.1/875.1/
-869.9have median869.9,median75335.8ms and warmed client TTFT75.480s. Its matched
-head-off control is pending;this sample alone shows no64K strategy gain. Nine
-further processes remain;three-pair mechanism and target decisions remain open,
-and the candidate is unadopted. This does not identify physical PCIe/VRAM/
-arithmetic saturation.
+warmed client TTFT medians are121.630/161.518s. The first64K pair also closes
+normally without fresh faults. Both arms have65536GPU rows,384staged slots,no
+RAM residual and matching request hashes,job counts and requested bank/dequant
+transfer bytes. Head-on/off first use is779.5/776.3tok/s;subsequent-three medians
+are869.9/878.8tok/s and75335.8/74577.3ms. Warmed client TTFT is75.480/74.722s.
+The64K on/off time ratio1.01017066 shows no gain and prevents this candidate
+passing that length's predeclared all-three-pairs screen. Both lengths' first
+on-process medians are below1000,so neither target screen can pass. Eight further
+processes still run under the frozen no-speed-based-stop plan;the117K mechanism
+decision remains open. The candidate is unadopted. This does not identify
+physical PCIe/VRAM/arithmetic saturation or attribute the64K difference solely
+to head-copy cost.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found
