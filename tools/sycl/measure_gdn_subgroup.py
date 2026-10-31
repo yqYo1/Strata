@@ -71,6 +71,37 @@ def inventory(item):
     return values
 
 
+def qualified_probe(data, providers):
+    """Reuse immutable probe code and its current official-provider evidence.
+
+    The original preload qualification also froze historical GPU/OS libraries.
+    Those are not the runtime used by the13official component processes and
+    the just-closed model cohort. Never refresh their old hashes.
+    """
+    gate, model, built = (data[k] for k in ('official_prefill_joint_device_v1',
+        'official_row64_model_v2', build.KEY))
+    require(gate['passed'] and gate['complete'] and gate['ownership_closed'] and not gate['active']
+            and gate['fresh_faults'] == [] and len(gate['processes']) == 13
+            and all(p['passed'] for p in gate['processes'])
+            and gate['binaries'] == built['binaries'] and gate['native_source_commit'] == built['source_commit'],
+            'closed same-generation official runtime qualification required')
+    require(model['passed'] and model['complete'] and model['ownership_closed'] and not model['active']
+            and len(model['processes']) == 6 and all(p['passed'] and not p['fresh_faults'] for p in model['processes'])
+            and model['native_source_commit'] == gate['native_source_commit']
+            and model['boot'] == gate['boot'] and model['driver'] == gate['driver'],
+            'current official model/runtime evidence differs')
+    require(inventory(gate['runtime_manifest']) == providers, 'same official provider set required')
+    original = runtime_probe.components()  # Recover/check original native artifacts, not old GPU qualification.
+    loader = gate['environment']['STRATA_UR_PROBE_EXPECTED_LOADER']
+    library = gate['environment']['LD_PRELOAD']
+    probe = dict(library=dict(path=library, sha256=providers[library]),
+                 loader=dict(path=loader, sha256=providers[loader]))
+    require(probe == model['native_validation_probe'] and probe['library'] == original['library']
+            and loader == '/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0',
+            'unchanged native probe/current official loader required')
+    return probe
+
+
 def prepare():
     data = build.committed(RESULT)
     require(not ROOT.exists() and KEY not in data, 'fresh component generation only')
@@ -87,7 +118,7 @@ def prepare():
     pins = sources(git('rev-parse', 'HEAD').decode().strip())
     providers = inventory(prior['runtime_basis']); external = inventory(prior['external_manifest'])
     sdk = build.sdk()
-    probe = validation.preload_qualification()
+    probe = qualified_probe(data, providers)
     env = dict(prior['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     env.pop('UR_LOG_TRACING', None)
     env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
@@ -150,7 +181,8 @@ def current():
     allowed.update({str(P / n): h for n, h in row['sources'].items()})
     require(build.host_link_inventory.inventory(build.COMPILER, row['environment']) == row['host_link_inputs'],
             'host linker changed')
-    require(validation.preload_qualification() == row['native_validation_probe'], 'private preload changed')
+    require(qualified_probe(build.committed(RESULT), providers) == row['native_validation_probe'],
+            'private preload/current official qualification changed')
     require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot']
             and build.guards.driver_guard() == row['driver'], 'boot/driver changed')
     for item in row.get('binaries', {}).values():
