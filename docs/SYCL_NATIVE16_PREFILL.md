@@ -53,8 +53,13 @@ subsequent requests are845.0/852.2/846.8tok/s,their median846.8tok/s and client
 TTFT median77.561s. The first matched reference also closes normally without
 fresh faults:723.2tok/s first use,then817.4/826.8/814.0tok/s,median817.4tok/s
 and80.358s client TTFT. Candidate/reference prompt-time ratio is0.96526577
-(3.5984%higher PP);TTFT ratio0.96519326. Two of12processes are complete;this
-single pair does not establish reproducibility,adoption or the1000target.
+(3.5984%higher PP);TTFT ratio0.96519326. The first117Kcandidate also closes
+normally with all four route checks and no fresh fault:853.7tok/s first use,
+then916.0/922.8/924.2tok/s,median922.8tok/s and127.516s client TTFT. Every
+request has117488GPU residual rows,zero host residuals,128expert slots and
+checked split accumulation. Three of12processes are complete;the117Kmatched
+reference and remaining pairs are pending. No reproducible gain,adoption or
+1000target is established from these first processes.
 Each request must pass its actual route check before the next request proceeds.
 Reference admission directly recovers its554native source and1447compiler
 inputs plus seven ELFs;the retired ancestor executable is not required. The
