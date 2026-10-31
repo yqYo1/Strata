@@ -450,7 +450,7 @@ def run(index, experiment=None):
     if hasattr(policy, 'native_context'):
         outcome.update(binary=native['binary'], native_source_commit=native['native_source_commit'])
     initial = (time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns())
-    log_windows = []
+    log_windows, live_routes = [], []
     def persist():
         write(root / 'execution.json', dict(outcome, active=bool(owner and owner.active), commands=owner.commands if owner else []))
     def interact(io, command):
@@ -483,6 +483,12 @@ def run(index, experiment=None):
                 require_quiet_validation(root)
                 outcome.update(model_executed=True, native_identity=claim)
                 offsets[stage] = (root / 'engine.stderr').stat().st_size
+                if stage == 'end':
+                    text = (root / 'engine.stderr').read_bytes()[offsets['begin']:offsets['end']].decode()
+                    live_routes.append(policy.request_route(text, plan) if hasattr(policy, 'request_route') else
+                                       policy.route(text, plan['read'], plan['heads']))
+                    outcome['request_routes_checked_before_continue'] = len(live_routes)
+                    persist()
                 print(f'Prefill process{index} read{plan["read"]} heads{plan["heads"]} '
                       f'kernel={plan.get("kernel", "original")} request{request} {stage}', flush=True)
                 io.send(b'continue\n')
@@ -539,6 +545,7 @@ def run(index, experiment=None):
                   if hasattr(policy, 'request_route') else
                   policy.route(raw_text[w['begin']:w['end']].decode(), plan['read'], plan['heads'])
                   for w in log_windows]
+        require(routes == live_routes and len(routes) == policy.RUNS, 'request-route evidence changed after its gate')
         outcome.update(complete=True, host_probe_accepted=True, native_exit_code=0, validation=validation,
             routes=routes,
             samples=[{k: s[k] for k in fields} for s in samples],

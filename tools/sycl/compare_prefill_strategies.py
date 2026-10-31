@@ -19,6 +19,7 @@ import sys
 sys.dont_write_bytecode = True
 import check_prefill_strategy_model as model
 import prefill_resources as original
+import retained_prefill_reference as reference_inputs
 
 comparison, shared, build = model.comparison, model.shared, model.build
 P, B, RESULT = model.P, model.B, model.RESULT
@@ -27,7 +28,8 @@ READS, RUNS = (65537, 117489), 4
 ARMS = ('candidate', 'reference', 'reference', 'candidate', 'candidate', 'reference')
 CASES = [(read, arm) for pair in range(3) for read in READS for arm in ARMS[2*pair:2*pair+2]]
 ORDER = [(read, int(read == 117489)) for read, _ in CASES]
-CHANGED, ADDED = {'tools/sycl/compare_official_prefill.py'}, {'tools/sycl/compare_prefill_strategies.py'}
+CHANGED = {'tools/sycl/compare_official_prefill.py'}
+ADDED = {'tools/sycl/compare_prefill_strategies.py', 'tools/sycl/retained_prefill_reference.py'}
 require, digest, write = model.require, model.digest, model.write
 compact = model.compact
 
@@ -40,13 +42,25 @@ def save(row):
 
 def proof(revision):
     candidate, _, providers = model.proof()
-    baseline, old_providers = original.native_reuse(revision)
-    require(providers == old_providers and candidate['boot'] == baseline['boot'] and
+    baseline = reference_inputs.verify(candidate, providers, revision)
+    require(candidate['boot'] == baseline['boot'] and
             candidate['driver'] == baseline['driver'], 'matched native runtime/platform required')
     data = build.committed(RESULT)
     require(data['official_row64_model_v2']['passed'] and data['official_row64_model_v2']['complete']
             and data['official_row64_model_v2']['ownership_closed'] and
             not data['official_row64_model_v2']['active'], 'closed original model reference required')
+    for key, read, heads in (('official_row64_model_v2', 117489, 1), ('official_joint_speed_v1', 65537, 0)):
+        prior = data[key]
+        require(prior['passed'] and prior['complete'] and prior['ownership_closed'] and not prior['active']
+                and prior['binary'] == baseline['binaries']['strata'] and
+                prior['native_source_commit'] == baseline['source_commit'], 'reference model generation differs')
+        points = [p for p in prior['processes'] if p['read'] == read and p['heads'] == heads and
+                  p.get('kernel', 'original') == 'original']
+        require(len(points) == 3 and all(p['passed'] and p['complete'] and p['ownership_closed']
+                and not p['fresh_faults'] and p['native_exit_code'] == 0 and len(p['routes']) == RUNS and
+                all(r['residual_gpu_rows'] == read-1 and r['residual_host_bytes'] == 0 and
+                    r['prefill_slots'] == (128 if heads else 384) and r['split'] == bool(heads)
+                    for r in p['routes']) for p in points), 'reference per-length route evidence differs')
     qualified = {}
     for strategy in ('ttft', 'throughput'):
         key = 'official_prefill_strategy_' + strategy + '_model_v1'
@@ -193,7 +207,8 @@ def prepare():
         template=prior['template'], boot=prior['boot'], driver=prior['driver'],
         runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'), sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
         qualification_reuse=dict(component_and_both_model_routes=True, changed_controls=sorted(CHANGED),
-            added_controls=sorted(ADDED), native_recompiled=False, current_source_and_recipe_checked=True),
+            added_controls=sorted(ADDED), native_recompiled=False, current_source_and_recipe_checked=True,
+            reference_admission='Direct554source/1447actual compiler-input/seven-ELF proof using identical freshly verified SDK/external/provider inputs;retired ancestor ELF is not a build or runtime input.'),
         plans=[], processes=[], request_hashes={}, controls=checks, host_passed=False,
         passed=False, complete=False, active=False, ownership_closed=True, inference_adopted=False,
         whole_bytes=800 << 20, budgets=dict(wall=1800, cpu=5400, rss_cap=104 << 30, text_cap=16 << 20,
@@ -203,7 +218,7 @@ def prepare():
             placement='Same per-length config in both arms:head retirement0at64K,1at117K,chosen from closed official_joint_speed_v1. Manual benchmark settings,not an automatic threshold. Full GPU BF16 residuals,384staged slots/ordinary64K,128staged slots/checked split117K. Same1256decode slots,5workers,spec4,8192chunk,131072INT8resident context,Top-k0,originalDown,qualified immutable runtime safety.',
             differences='Two exact retained ELF generations,policy selector and3-versus5GDN barriers. Candidate explicit CLIthroughput;reference legacy layer-major startup selection. No clean model speed inherited from component or diagnostic results;not an isolated causal GDN attribution.',
             acceptance='Every request must satisfy all existing sample,body/actual tokens/reuse,thinking,clock,owner,provider,quiet-final-validation,native-exit and fault checks. Actual per-request GDN schedule,full-GPU placement,bank/split drain/guard and head-retirement choice must match. Keep all48individual samples. All3paired warmed prompt-time ratios<1 and geometric mean<1 allow follow-up at that length,no minimum percentage. TTFT judged separately.1000target separately requires all3candidate process medians>=1000at a length>=64K. No sustained TG/adoption from24outputs.',
-            stopping='Stop first source,provider,owner,clock,route,validation,fault,budget or sample failure. No speed-based stop,rerun,replacement,exclusion or hash refresh. Commit each process before the next. Full model hashes before/after cohort,identities throughout.',
+            stopping='Check actual routes at every end gate before allowing the next request;stop immediately on detected source,provider,owner,clock,route,validation,fault or budget failure. Validate all sample eligibility when the final benchmark result is available;failure prevents the next process. No speed-based stop,rerun,replacement,exclusion or hash refresh. Commit each process before the next. Full model hashes before/after cohort,identities throughout.',
             limits='Neither strategy globally wins without length/latency measurements. No automatic length selection,sustained decode,agent/task,physical262144/RESTORE qualification or resource saturation claim. Both useful profiles remain available in candidate ELF.',
             retention='Compact individual samples,route conservation,source/config and decisions. Retire verified successful raw logs,journals,JIT and ownership output at closure;keep both retained generations for this named comparison and remaining phase gates.'))
     for index, (read, arm) in enumerate(CASES):
