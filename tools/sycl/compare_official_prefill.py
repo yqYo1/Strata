@@ -177,12 +177,14 @@ def current(row):
     return files, manifest
 
 
-def host():
-    row = json.loads((ROOT / 'record.json').read_text())
-    _, manifest = current(row)
-    require(row['stage'] == 'prepared' and not (ROOT / 'host').exists(), 'fresh host probes only')
-    owner = build.supervision.Owner(ROOT / 'host')
-    env = environment(row, row['plans'][0])
+def host(experiment=None):
+    """Reuse frontend checks with an explicit campaign policy, never global mutation."""
+    policy = experiment or sys.modules[__name__]
+    row = json.loads((policy.ROOT / 'record.json').read_text())
+    _, manifest = policy.current(row)
+    require(row['stage'] == 'prepared' and not (policy.ROOT / 'host').exists(), 'fresh host probes only')
+    owner = build.supervision.Owner(policy.ROOT / 'host')
+    env = policy.environment(row, row['plans'][0])
     reports = []
     try:
         for role, target in (('benchmark', 'tools/strata_bench.py'), ('server', 'serve/server.py')):
@@ -205,7 +207,7 @@ def host():
         row.update(stage='failed', error=repr(error))
     finally:
         row.update(active=bool(owner.active), ownership_closed=owner.active is None and all(build.supervision.closed(v) for v in owner.commands))
-        save(row)
+        policy.save(row)
     require(row['host_passed'] and row['ownership_closed'], row.get('error', 'host check failed'))
     print('Current-source frontend probes passed;commit before native execution.', flush=True)
 
@@ -407,27 +409,36 @@ def selfcheck():
     raise RuntimeError('reused native identity accepted')
 
 
-def run(index):
-    row = json.loads((ROOT / 'record.json').read_text())
-    files, manifest = current(row)
-    require(row['host_passed'] and row['stage'] in ('ready', 'running') and len(row['processes']) == index < len(ORDER)
+def run(index, experiment=None):
+    """Owned clean model case; campaign supplies admission, selection and decision.
+
+    The original head comparison remains the default. A separate campaign may
+    reuse the same request/clock/owner/provider/fault checks without replacing
+    this module's globals or mutating the native process environment.
+    """
+    policy = experiment or sys.modules[__name__]
+    row = json.loads((policy.ROOT / 'record.json').read_text())
+    files, manifest = policy.current(row)
+    require(row['host_passed'] and row['stage'] in ('ready', 'running') and len(row['processes']) == index < len(policy.ORDER)
             and all(p['passed'] for p in row['processes']), 'fresh ordered process only;no retry')
     plan = row['plans'][index]
-    root, env = Path(plan['root']), environment(row, plan)
-    require(not (root / 'execution.json').exists() and (plan['read'], plan['heads']) == ORDER[index]
+    root, env = Path(plan['root']), policy.environment(row, plan)
+    require(not (root / 'execution.json').exists() and (plan['read'], plan['heads']) == policy.ORDER[index]
             and fingerprint(env) == plan['environment_sha256'] and
             all(digest(root / n) == sha for n, sha in plan['generated'].items()), 'process plan changed')
     cursor = next(v.split(': ', 1)[1] for v in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines() if v.startswith('-- cursor: '))
     outcome, owner = dict(index=index, read=plan['read'], heads=plan['heads'], complete=False,
         host_probe_accepted=False, model_executed=False, clean_speed=True), None
+    if 'kernel' in plan:
+        outcome['kernel'] = plan['kernel']
     initial = (time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns())
     log_windows = []
     def persist():
         write(root / 'execution.json', dict(outcome, active=bool(owner and owner.active), commands=owner.commands if owner else []))
     def interact(io, command):
         identity = None
-        for request in range(RUNS):
+        for request in range(policy.RUNS):
             offsets = {}
             for stage in ('begin', 'end'):
                 while True:
@@ -455,7 +466,8 @@ def run(index):
                 require(not (root / 'validation.log').exists() or (root / 'validation.log').stat().st_size == 0, 'validation warning/error')
                 outcome.update(model_executed=True, native_identity=claim)
                 offsets[stage] = (root / 'engine.stderr').stat().st_size
-                print(f'Joint process{index} read{plan["read"]} heads{plan["heads"]} request{request} {stage}', flush=True)
+                print(f'Prefill process{index} read{plan["read"]} heads{plan["heads"]} '
+                      f'kernel={plan.get("kernel", "original")} request{request} {stage}', flush=True)
                 io.send(b'continue\n')
             require(offsets['end'] > offsets['begin'], 'missing native request log window')
             log_windows.append(offsets)
@@ -478,9 +490,9 @@ def run(index):
         cohort = result['results']['prefill_only']
         samples, counts = cohort['requests'], cohort['count_preflight']
         require(result['complete'] and not result['results']['failures'] and
-                len(samples) == len(counts) == len(log_windows) == RUNS, 'incomplete benchmark')
+                len(samples) == len(counts) == len(log_windows) == policy.RUNS, 'incomplete benchmark')
         hashes = [s['request_sha256'] for s in samples]
-        require(len(set(hashes)) == RUNS and all(re.fullmatch('[0-9a-f]{64}', s) for s in hashes)
+        require(len(set(hashes)) == policy.RUNS and all(re.fullmatch('[0-9a-f]{64}', s) for s in hashes)
                 and hashes == row['request_hashes'].get(str(plan['read']), hashes), 'request bodies differ')
         for sample, count in zip(samples, counts):
             require(all(sample[k] is True for k in ('ok', 'eligible', 'stream_complete', 'thinking_requested', 'reasoning_observed'))
@@ -489,7 +501,7 @@ def run(index):
                     and 1 <= sample['generated_tokens'] <= 24 and sample['prompt_tps_source'] == 'engine'
                     and math.isfinite(sample['prompt_ms']) and sample['prompt_ms'] > 10000, 'sample/workload/clock differs')
         require(shared.client.verify_request_journal(outputs[0].parent)['valid'], 'request journal invalid')
-        current(row)
+        policy.current(row)
         config = json.loads((root / 'config.json').read_text())
         end = shared.gen.native_end(root, row, dict(config=config), row['boot'], command['pid'])
         raw_text = (root / 'engine.stderr').read_bytes()
@@ -498,28 +510,33 @@ def run(index):
         require(validation['loader'] == row['native_validation_probe']['loader']['path'] and not any(s in text for s in
             ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'terminate called', 'teardown uncertain', 'strata trace:',
              'strata MoE progress:', 'strata MoE mixed owners:', 'strata prefill dense:', 'strata decode timing:')), 'runtime/observer differs')
+        if hasattr(policy, 'validate_model_text'):
+            policy.validate_model_text(text, plan)
         fields = ('actual_read_tokens', 'actual_reused_tokens', 'prompt_ms', 'prompt_tps', 'ttft_s', 'total_s',
             'generated_tokens', 'request_sha256', 'drafts_offered', 'drafts_accepted', 'timing_frontend_state')
         outcome.update(complete=True, host_probe_accepted=True, native_exit_code=0, validation=validation,
-            routes=[route(raw_text[w['begin']:w['end']].decode(), plan['read'], plan['heads']) for w in log_windows],
+            routes=[policy.route(raw_text[w['begin']:w['end']].decode(), plan['read'], plan['heads']) for w in log_windows],
             samples=[{k: s[k] for k in fields} for s in samples],
             subsequent_median_ms=statistics.median(s['prompt_ms'] for s in samples[1:]))
         row['request_hashes'][str(plan['read'])] = hashes
-        if index == len(ORDER) - 1:
+        if index == len(policy.ORDER) - 1:
             shared.models.model_pins(config, row['model_assets'], full=True)
     except BaseException as error:
         outcome.update(error=repr(error), complete=False, host_probe_accepted=False)
     finally:
         if owner:
             shared.runtime.validation.finish(outcome, owner, cursor, row['boot'])
+        if owner and outcome.get('driver_after') != row['driver']:
+            outcome['passed'] = False
+            outcome.setdefault('error', 'Post-run driver differs from the frozen platform')
         outcome['passed'] = bool(outcome.get('passed') and outcome['complete'])
         persist()
         row['processes'].append(outcome)
         row.update(stage='running' if outcome['passed'] else 'failed', active=bool(owner and owner.active),
             ownership_closed=outcome.get('ownership_closed', False))
-        if outcome['passed'] and len(row['processes']) == len(ORDER):
-            row.update(stage='closed', passed=True, complete=True, decision=decision(row['processes']))
-        save(row)
+        if outcome['passed'] and len(row['processes']) == len(policy.ORDER):
+            row.update(stage='closed', passed=True, complete=True, decision=policy.decision(row['processes']))
+        policy.save(row)
     print(json.dumps({k: outcome.get(k) for k in ('index', 'read', 'heads', 'passed', 'complete', 'fresh_faults', 'error')}), flush=True)
     require(outcome['passed'], 'official model process did not qualify')
 
