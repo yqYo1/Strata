@@ -34,9 +34,16 @@ The CLI overrides the legacy layer-major startup default. Both requests and
 native teardown complete with quiet validation,unchanged assets/providers and
 no fresh GPU fault. These are diagnostic route/handoff checks,not clean speed,
 sustained decode,quality or physical262144model qualification. The same-ELF
-`throughput` model route is next;then matched long-input speed and decode checks.
-Keep both explicit strategies. Defer automatic input-length selection and extra
-profiles. Fourteen older provenance holds remain independent.
+`throughput` model route also passes two32769-read thinking-on requests with
+24outputs each. It executes144actual GDN3calls per request,conserves all48MoE
+windows and eight-job checkpoints,restores all48dense layers and both heads,
+then resumes decode. Both requests exit normally with quiet validation and no
+fresh fault. Both strategy names select actual independently checked routes in
+one ELF;neither is a universal latency/performance winner. Next compare the
+GDN3 throughput route against the retained official reference at64K/117K with
+first-use and repeated warmed samples separated,then verify sustained decode,
+agent/task and physical262144model/RESTORE behavior. Keep both explicit
+strategies;automatic length selection and additional profiles remain deferred. Fourteen older provenance holds remain independent.
 No new legacy-compiler build runs.
 
 The first official2026.2replacement used
