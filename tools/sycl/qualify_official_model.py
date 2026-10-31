@@ -20,8 +20,8 @@ import qualify_native16_control as prior
 import runtime_probe as runtime
 
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT = model.ROOT / 'component-checks-v3'
-KEY = 'official_prefill_device_v3'
+ROOT = model.ROOT / 'component-checks-v1'
+KEY = 'official_prefill_joint_device_v1'
 require, digest, write = model.require, model.digest, model.write
 
 
@@ -71,15 +71,15 @@ def cases(loader):
 def prepare():
     require(KEY not in model.committed(RESULT) and not ROOT.exists(), 'fresh single-use component cohort only')
     built = native()
-    rt = runtime.validation.committed(runtime.RESULT)
-    runtime.current(rt)
-    loader = str(Path('/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0').resolve())
-    sdk = model.sdk()
-    files = prior.runtime_inputs(dict(built, fixtures=built['binaries']), sdk, rt)
-    require(sdk.get(loader) == digest(loader), 'original official loader snapshot changed')
-    files[loader] = sdk[loader]
+    basis = built['runtime_basis']
+    files = json.loads(Path(basis['path']).read_text())
+    require(digest(basis['path']) == basis['sha256'] and len(files) == basis['files'] and
+            all(digest(p) == sha for p, sha in files.items()), 'pinned runtime provider basis changed')
+    loader = basis['environment']['STRATA_UR_PROBE_EXPECTED_LOADER']
+    require(Path(loader).name.startswith('libur_loader.so.') and files.get(loader) == digest(loader),
+            'official UR loader basis changed')
     property_loader = next(p for p in files if Path(p).name.startswith('libze_loader.so.'))
-    env = dict(built['environment'], LD_PRELOAD=rt['preload']['library']['path'],
+    env = dict(basis['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
         STRATA_UR_PROBE_EXPECTED_LOADER=loader,
         ZE_ENABLE_ALT_DRIVERS=next(p for p in files if 'libze_intel_gpu.so.' in p),
         STRATA_SYCL_PREFILL_NATIVE16='bf16', STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm',
@@ -91,11 +91,11 @@ def prepare():
     ROOT.mkdir(mode=0o700)
     write(ROOT / 'runtime-inputs.json', files)
     row = dict(stage='prepared', source_commit=revision, inputs=pins,
-        native_source_commit=built['source_commit'], native_build_commit='fcad66e1a',
-        binaries=built['binaries'], canary=rt['preload']['canary'], environment=env,
+        native_source_commit=built['source_commit'], native_build_commit=revision,
+        binaries=built['binaries'], canary=basis['canary'], environment=env,
         runtime_files=files, runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'),
             sha256=digest(ROOT / 'runtime-inputs.json'), files=len(files)),
-        runtime_basis_sha256=digest(runtime.RESULT), boot=built['boot'], driver=built['driver'],
+        runtime_basis=dict(basis), boot=built['boot'], driver=built['driver'],
         property_loader=dict(path=property_loader, sha256=files[property_loader]),
         cases=cases(property_loader), processes=[], active=False, ownership_closed=True, complete=False, passed=False,
         GPU_executed=False, model_executed=False, inference_adopted=False,
@@ -124,7 +124,7 @@ def current(row):
     require(row['runtime_files'].get(row['property_loader']['path']) == row['property_loader']['sha256'] and
             digest(row['property_loader']['path']) == row['property_loader']['sha256'], 'Level Zero property loader changed')
     require(row['cases'] == cases(row['property_loader']['path']), 'component case plan changed')
-    require(digest(runtime.RESULT) == row['runtime_basis_sha256'], 'runtime proof changed')
+    require(row['runtime_basis'] == built['runtime_basis'], 'runtime basis changed')
     require(digest(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
             json.loads(Path(row['runtime_manifest']['path']).read_text()) == row['runtime_files'] and
             all(digest(p) == sha for p, sha in row['runtime_files'].items()), 'runtime inputs changed')
