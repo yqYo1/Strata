@@ -19299,5 +19299,29 @@
       "complete": true,
       "verified_absent": true
     }
+  },
+  "prefill_two_strategy_implementation_contract_20261101": {
+    "classification": "decision_support",
+    "status": "ready_for_orca_source_audit",
+    "schedulable_now": true,
+    "prerequisites": {
+      "implementation_committed": "271333f64af10e088897753e142dd600c1aad3d4",
+      "prior_policy_scope_closed": true,
+      "GDN_component_evidence": "c170d64631a262c8bfdac59f982a52882c736fac",
+      "no_model_build_or_GPU_qualification": true
+    },
+    "source_manifest": {
+      "include/strata/prefill/strategy.hpp": "2c3a769478c6a3e97ab772a2b31fafad935214ab658c2e69b021bf2ad46dc60b",
+      "include/strata/prefill/prefill.hpp": "00c61e08b5470359304e71affa671ba343982441e3735ff8d1caffdd934b3da1",
+      "src/program/generate.cpp": "d6260ada9709f805c825b009061c54c899cfffb2577e213d33accfa2a3281ff5",
+      "src/prefill/prefill.cpp": "6e4bc5f157e0636ce7f68bd7bbcdded7c65c96a9b8743ec5acbd0cb282c863d4",
+      "src/prefill/layer_major.inc": "19980264fa273356b096eac56ceff157bf76f916df5e8d3819b751dfe9323d4c",
+      "src/kernels/sycl/fused_gdn.cpp": "0816408946b0bc65a8246824e85e5d7d95728a4da2e01f340f142c78784b0d4f"
+    },
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/prefill_two_strategy_implementation_contract_20261101.md",
+    "scope_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/prefill_two_strategy_implementation_contract_20261101.scope.txt",
+    "report_budget_bytes": 20480,
+    "worker_model": "Orca codex gpt-6-luna high",
+    "retention": "Retain source-contract findings through Main implementation/model-qualification decision;retire consumed transaction/report bodies after compact corrections are recorded. No broad repeat survey eligible."
   }
 }
