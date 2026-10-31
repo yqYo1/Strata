@@ -408,7 +408,9 @@
     ],
     "resource_result_commit": "e8de942dd",
     "conclusion": "Same requested payload and emitted128GRF/SLM/scratch do not make row-coalescing faster. Local-store mapping and memory-level parallelism not isolated. Next Main experiment may preserve original parallel row mapping with4adjacent typed values per lane.",
-    "retirement_manifest_commit": "761cd4c59a3ba178a9321af35e547206a5eae58c"
+    "retirement_manifest_commit": "761cd4c59a3ba178a9321af35e547206a5eae58c",
+    "performance_reference_admissible": false,
+    "provenance_hold": "Native JIT-map review cc7e6238 identifies qsa-k-staging-current.json compiler.path and11headers under a XeStrata worktree. Preserve all original slower outcomes;do not use this historical comparison to qualify/reject/steer a current implementation until provenance is resolved. Independent official2026.2cache/build remains separate."
   },
   "sparse_cross_query_reuse_scope": {
     "classification": "knowledge_collection",
@@ -18419,7 +18421,7 @@
   },
   "official_model_jit_property_mapping_20261031": {
     "classification": "decision support",
-    "status": "returned-review-pending",
+    "status": "native-reviewed-static-map-no-kernel-selection-proof",
     "schedulable_now": false,
     "question": "Map relevant kernels in the actual closed official64K baseline NEO cache to immutable source/device-image properties: QSA attention/index/Top-k and native IQ decode where identifiable. Extract only proven subgroup/GRF/scratch/local-storage facts and distinguish cached compilation from actual kernel execution. Compare with the prior static ESIMD audit and historical GRF experiments;identify a concrete minimal correction or next performance decision,not another generic runtime survey.",
     "prerequisite_evidence": {
@@ -18443,10 +18445,49 @@
       "qsa_realhead_softmax_contract_20261030"
     ],
     "review": "Native Codex gpt-6-luna/max;Main reads short operational digest.",
-    "retention": "Closed process0cache and7173-byte initial ESIMD report remain only through this exact artifact mapping and review. Retire raw cache/review transaction records when useful properties and decision are verified.",
-    "next_review": "Returned mapping,then Main source/performance decision. No model performance,physical traffic,spill traffic,occupancy or hang-cause inference from static metadata.",
+    "retention": "Mapping/review consumed. At the next serialized model-process closure retain only these useful facts and source/hash references;retire closed process0cache and consumed report/review bodies. No full ELF dumps.",
+    "next_review": "After current clean comparison or a concrete selected-kernel identity question;no repeated static cache/image survey.",
     "report_bytes": 8155,
     "report_sha256": "9a6fe759956130bcf6d0fbc1ae6e5fd07021027321455e6ec44a6fc883d6e807",
-    "review_agent": "/root/review_official_esimd_artifact_20261031"
+    "review_result": {
+      "bytes": 6992,
+      "sha256": "cc7e62387947b6c339e74d581d0e6a030f91a7c6ef3cacbda5dae581b2d0bc89",
+      "verdict": "Accept with source-route and historical-provenance corrections."
+    },
+    "findings": [
+      "All54closed process0cache entries match size/hash;53ELFs total12211128bytes. Static properties map compiled artifacts,not actual launches.",
+      "Attention cache artifact has48kernel records. Source-selected ordered-exp family requestsSG16;configuration and cache alone do not identify its exact launched specialization. No new2026.2ESIMD/subgroup defect is established.",
+      "Grouped IQ ESIMD accepts18,20-23 under enable/entry guards;16/17use ordinary grouped path. Prompt IQ requiresmax_rows1,declines20/23,handles18/21/22. Separate native_mmvq ESIMD routes cover11/12/13/23/42under their own guards. Cache presence is not execution evidence.",
+      "Q2_0/IQ4_XS cached ESIMD records reportSIMD1,GRF128. SIMD metadata is not an explicit subgroup requirement;spill/private/SLM descriptors do not measure traffic,occupancy or hardware saturation."
+    ],
+    "decision": "No new kernel optimization or GRF/spill trial follows from this static map. Finish the owned clean comparison. A later source/performance decision must join the actual selected kernel identity before using its resource record."
+  },
+  "moe_two_job_native16_contract_20261031": {
+    "classification": "decision support",
+    "status": "ready",
+    "schedulable_now": true,
+    "question": "Assess one concrete two-problem small-GU launch using the current owned TLA adapter:for two consecutive MoE jobs of1..128rows,N1280,K2560,combine their compact16x64 workgroup-M ranges in one kernel. Each whole workgroup uniformly selects one original Problem and local tile coordinate,then calls the unchanged xe_gemm_beta0 implementation. Compare this direct by-value two-problem schedule with the pinned TLA grouped API only as needed. Prove/refute complete spans,block2D bounds,collective/barrier uniformity,logical tails,FP16operands/BF16output/FP32accumulation and existing two dequant-buffer/arena lifetimes. Keep Down/scatter in original job order;no atomic/reordered accumulation. Identify the smallest source/fixture contract and blocking counterexamples,not another generic grouped-GEMM survey.",
+    "prerequisite_evidence": {
+      "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
+      "native_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/source",
+      "adapter": "src/prefill/sycl/vllm_xe2/native16.cpp::geometry,enqueue,beta0;native16.hpp and xe_gemm_bsd.hpp",
+      "lifetime": "src/prefill/moe_window.inc::run_moe_accum_window;include/strata/prefill/moe_accum_plan.hpp;src/prefill/prefill.cpp DQ=2 and actual allocation. Current window usespair0only. Audit whether the existing8192row planes suffice for two <=128row views without extra residency;do not assume the older generic report budget.",
+      "tla_include": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f/include",
+      "tla_commit": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+      "measured_context": "Closed78K census:11764/21514jobs below128,only0.6273percent arithmetic rows;counted GEMM-submitCPU3.361s/114s diagnostic is not a bound on device gains or current physical saturation. Old report records generic grouping only;this exact combined-range adapter/alias proof did not exist."
+    },
+    "previous_report_refs": [
+      "moe_grouped_decision",
+      "moe_native16_traffic_scope",
+      "current_operation_ceiling_scope"
+    ],
+    "report_path": ".cache/research/2026-10-31/moe_two_job_native16_contract_20261031.md",
+    "report_budget_bytes": 16384,
+    "report_budget_words": 2200,
+    "constraints": "Read-only static local source and primary documentation. Write only named report under existing workspace;stdout-only analysis allowed. No Git commands,builds,compilation,tests,GPU/runtime/device initialization,profiler,process/job inspection,installation,reset,product/index edits,extra files or child workers. No XeStrata code/tools/diagnostics/tests/compiler/header or unlicensed vLLM policy header. Main alone implements and serializes all testing.",
+    "consumer": "Main proposal/fixture decision after the frozen official64K/117K comparison;Main continues owned model measurements concurrently. No engine adoption/performance claim from source review.",
+    "acceptance": "Source-linked legality/lifetime/precision and memory budget for exactly two small jobs;contrast at least one valid simpler alternative and one concrete counterexample. State unknown performance/resource ceilings. Cite immutable licensed primary sources. Return path,bytes,SHA256 and a three-sentence executive summary;do not paste report.",
+    "review": "Native Codex gpt-6-luna/max;Main reads only short operational digest before targeted retrieval.",
+    "retention": "Report-only current decision support. Keep compact reusable contract/corrections after review;retire consumed report/lifecycle records. Review eligibility again when the exact source/shape changes."
   }
 }
