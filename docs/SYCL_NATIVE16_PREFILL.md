@@ -190,10 +190,22 @@ layer and540total;QSA per-row detail and nested CPU status attribution remain
 explicitly unqualified. Main has read only the short review digest. See
 `official_joint_resources_v2` for the preserved failure. V3prepare,source2bcd52634,
 now passes all11finalization controls,the unchanged reader/reuse controls and
-native/provider/model proof. It creates two fresh117Kplans;neither model process
-has executed. All four clean/observed benchmark/server frontend probes now pass
-with quiet stderr and normal closure. Next execute clean process0 and preserve
-its result before observed process1. See `official_joint_resources_v3`.
+native/provider/model proof. Both fresh117Kplans and all four frontend probes
+are committed. Clean process0 now passes four thinking-on requests,quiet
+validation,native exit0,no fresh fault and checked117488-row all-GPU split
+placement. PP826.6/907.1/904.9/906.9,subsequent median129554.2ms and client TTFT
+median129.786s are the current observer-cost reference;not a new speedup or
+adoption result. The finalization bridge accepts this complete evidence while
+the original V2failure remains unchanged. Next preserve/retire clean raw output
+and execute observed process1. See `official_joint_resources_v3`.
+Source attribution note:the actual `Gemm::f16_out16`/GU/Down wrappers call
+`sycl_backend::finish` with the production's nonnull in-order stream.
+`include/strata/sycl/launch.hpp` waits there only for a null stream;the command
+observer is disabled. Do not infer a per-GEMM completion wait from that name.
+The `gemm_submit` host region encloses adapter validation/submission,but excludes
+the earlier `vllm_state` queue lookup and the later `finish` call. CPU and queue
+intervals still require measured attribution,not an assumption that wrapper
+time is GPU math or entirely CPU arithmetic.
 Retire the temporary branch after its original
 commits are also verified reachable from the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
