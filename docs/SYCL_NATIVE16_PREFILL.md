@@ -70,7 +70,11 @@ index3. No policy is adopted. See
 
 The joint dense/head release proposal addresses that capacity deficit by
 temporarily freeing the521472000-byte target head,plus its optional MTP subset.
-It is default-off and not built or adopted. Independent source review found
+It is default-off and not built or adopted. Its replacement recipe032f4f8a5
+pins554native sources,aggregatec3b781a2378a0d208c6ac7852bff505ce36f8c4955ae2956877c0db44dfd7dbc.
+The unselected e461generation is retired after exact source/recipe/dependency
+recovery;its84-provider inventory migrates to the new candidate's pinned runtime
+basis. Selected6e40 remains the validated fallback. Independent source review found
 that fallible head preparation inside cache-loan activation poisons the parent
 on refusal/throw,even before readers retire. The correction prepares before
 activation,uses a no-fail retirement callback and explicitly cancels prepared
