@@ -18167,8 +18167,8 @@
   },
   "topk_early_device_source_audit_20261031": {
     "classification": "decision support",
-    "status": "ready",
-    "schedulable_now": true,
+    "status": "report-received-native-review-pending",
+    "schedulable_now": false,
     "source_commit": "21c39e7c34f9e28fb5d271579113999998ef3d6d",
     "prerequisites": {
       "committed_fixture_controller": "21c39e7c34f9e28fb5d271579113999998ef3d6d",
@@ -18191,6 +18191,26 @@
       "bytes": 16384
     },
     "ownership": "Report only;no Git,build,test,GPU,profiler,process inspection or product edits. Main owns implementation and serialized execution.",
-    "next_consumer": "Native Codex gpt-6-luna/max review and Main bounded-execution admission;retire audit body after compact correction/decision extraction."
+    "next_consumer": "Native Codex gpt-6-luna/max review and Main bounded-execution admission;retire audit body after compact correction/decision extraction.",
+    "worker": {
+      "run": "run_80ea8ebc9a8c",
+      "task": "task_50134a3b0e1d",
+      "dispatch": "ctx_17867f55ce06",
+      "terminal": "term_5a0ad2c9-0e43-4105-9fd2-6e2f0beff425",
+      "turn_start": "observed",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "model_evidence": "Fresh launch requested gpt-6-luna/high;update prompt skipped with ESC without installing or changing settings;ready terminal displayed GPT-6-Luna high before same-Task retry.",
+      "state": "succeeded",
+      "dispatch_status": "completed",
+      "stage": "settled",
+      "resource": "released",
+      "delivery_acknowledged": true
+    },
+    "report_sha256": "b01753de47cfd96108ff7efa5097d3410f28f284bf910d75a8b8fbf4b8b80638",
+    "report_bytes": 10703,
+    "worker_ownership_closed": true,
+    "reviewer": "native Codex gpt-6-luna/max",
+    "review": "bench/results/2026-10-15-pr6-recovery-audit/topk-early-source-review-20261031.json"
   }
 }

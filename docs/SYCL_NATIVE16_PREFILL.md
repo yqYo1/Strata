@@ -1865,9 +1865,13 @@ not a compiled-kernel speed or correctness result. Production/decode stay unchan
 The official-SDK normal/counter fixture and controller are now committed at
 21c39e7c3. Seven host tests pass in3.995seconds,including paired-sample decision
 controls. The frozen component plan covers145numerical cases and144timing
-batches across32K/64K/117488contexts in three processes. It remains unbuilt and
-unexecuted on the GPU. Source review and official2026.2build precede compiled
-properties,traced tiny qualification,numerics and the prospective speed screen.
+batches across32K/64K/117488contexts in three processes. The official2026.2build
+passes all seven compile/link commands with719compiler and25link inputs covered.
+The returned conditional source audit is awaiting native Luna-max review;
+there is no GPU execution or inference adoption. Reviewed admission and any
+prospective correction precede compiled properties,traced tiny qualification,
+numerics and the speed screen. Preserve native21c39e7c3 separately from later
+controller/admission commits.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
