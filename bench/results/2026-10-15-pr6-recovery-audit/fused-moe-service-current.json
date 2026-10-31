@@ -54169,7 +54169,7 @@
     "next_action": "Preserve refusal;commit a new V2 controller with explicit committed controller-only reuse. Recover original controller identities and preserve all original native/source/recipe/compiler/seven-executable/provider checks. No native rebuild or inherited new GPU validation."
   },
   "official_joint_resources_v2": {
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "b2bacdfc69bce2847dfe5d39f312562aba57e561",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binary": {
@@ -54466,7 +54466,7 @@
       }
     ],
     "processes": [],
-    "host_passed": false,
+    "host_passed": true,
     "complete": false,
     "passed": false,
     "active": false,
@@ -54528,6 +54528,28 @@
       "limitations": "Queue intervals include host gaps and are not an additive full critical path. Fine-grained command profiling is unavailable on this native generation with GU/Down fusion: its immutable gemm16.cpp startup guards reject that combination. Keep fusion and the native generation fixed;do not measure a different unfused path as its proxy. Logical/requested bytes are not physical bus/VRAM traffic. Hardware ceilings and saturation remain unmeasured. No clean speed gain,quality,decode,physical262144/RESTORE or adoption qualification.",
       "retention": "Keep individual latency samples,compact aggregate host/phase/shape evidence and limits. Discard successful raw journals,traces,JIT and full layer/histogram arrays after verification."
     },
+    "host_results": [
+      {
+        "arm": 0,
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "arm": 0,
+        "role": "server",
+        "passed": true
+      },
+      {
+        "arm": 1,
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "arm": 1,
+        "role": "server",
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 247,
       "aggregate_sha256": "dca8cf5c54d987fc2149cc0886ae74fd1f06b7f5348ab791fa8013e87f741a8f"
