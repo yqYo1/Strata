@@ -1888,6 +1888,10 @@ and25frozen link inputs,and checking all seven command/environment owners closed
 Original build success and blocked device admission remain in the compact result;
 the pushed source/recipe commits stay reachable. V2has not inherited its ELF or
 any device qualification.
+The fresh official V2build now passes all seven commands with719compiler and
+25frozen link inputs covered. Its ELF matches V1because the native inputs are
+unchanged;all V2commands actually ran and no executable/qualification was reused.
+Commit this build record before the predeclared staged device sequence.
 The five closed pipeline roots and consumed resource-profile outputs are now
 retired after the compact result is pushed:164files/392368585bytes. The final
 component's677 compiler inputs recover as12 original Git sources plus665
