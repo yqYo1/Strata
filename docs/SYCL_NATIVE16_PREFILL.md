@@ -47,7 +47,11 @@ requests:three reversed-order candidate/reference pairs per65537/117489read
 length,first use separate from each process's subsequent-three median. Both
 arms use head retention at64K and retirement at117K,from prior per-length
 measurements;this is manual benchmark configuration,not an automatic threshold.
-The first64Kcandidate process is running;no paired speed decision is available.
+The first64Kcandidate process closes normally with all four actual-route gates,
+quiet final validation and no fresh fault. First-use PP is741.3tok/s;the three
+subsequent requests are845.0/852.2/846.8tok/s,their median846.8tok/s and client
+TTFT median77.561s. One of12processes is complete;the matched reference and
+remaining independent pairs are pending,so no speedup or target is established.
 Each request must pass its actual route check before the next request proceeds.
 Reference admission directly recovers its554native source and1447compiler
 inputs plus seven ELFs;the retired ancestor executable is not required. The
