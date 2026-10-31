@@ -44397,7 +44397,7 @@
     }
   },
   "qsa_parallel_normalizer_v3": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "e10997bdd9729de9d6b9ab9af6e7e371c918c076",
     "inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/inputs.json",
@@ -45048,6 +45048,47 @@
         "tools/sycl/test_qsa_normalizer.py"
       ],
       "scope": "Host-only gate refusal checks after controller-only link inventory amendment;no GPU qualification."
+    },
+    "build_passed": true,
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/normalizer_probe",
+      "bytes": 1389192,
+      "sha256": "750d44c71f20561722e63d8ed88efb9a3dc961ea3ed0001b9ce7014790f20b58"
+    },
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/compiled-inputs.json",
+      "sha256": "7d4e436dcbef7a0597376b5ee9f211310ac6b0d9b0a7b4fbd45a5d42f4415aea",
+      "files": 726,
+      "uncovered": 0
+    },
+    "link_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-normalizer-official-v3/link-inputs.json",
+      "sha256": "9ee1cd2f7aa267b1d8dc5c054e5b644c6eeb771d9fed12ed1b9d8e892d5391ef",
+      "frozen": 25,
+      "uncovered": 0
+    },
+    "source_review": {
+      "bounded_execution_accepted": true,
+      "reviewer": "native Codex gpt-6-luna/max",
+      "source_commit": "e10997bdd9729de9d6b9ab9af6e7e371c918c076",
+      "report": {
+        "path": ".cache/research/2026-10-31/qsa_normalizer_v2_source_audit.md",
+        "bytes": 10707,
+        "sha256": "173cc911f5790960a6a3da581884860b94f2e84961e71a4f43c1cf5a298964b3"
+      },
+      "review": {
+        "path": ".cache/research/2026-10-31/qsa_normalizer_v3_source_audit.review.json",
+        "bytes": 9963,
+        "sha256": "be6bfe5e47e30a5da42cab59f6756a43278b5b2d4919d834b958c2ad9642276e"
+      },
+      "decision": "No source blocker to the frozen properties, traced17-cell smoke,23-case numerics and96-batch component screen. Every runtime and numerical gate remains mandatory.",
+      "limits": [
+        "262144-cell fixture still needs actual allocation admission;its failure blocks timing.",
+        "Exact captured states cover four selected head coordinates;repeats compare outputs.",
+        "No model throughput,quality,decode or physical262144-context qualification is inherited."
+      ],
+      "ownership_closed": true,
+      "retention": "Keep report/review only through the current component decision,then retain compact findings and hashes."
     }
   }
 }
