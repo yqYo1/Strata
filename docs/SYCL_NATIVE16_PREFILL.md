@@ -98,7 +98,7 @@ screen separately requires all three candidate process medians at that length.
 The117K control may retain its legitimate512-slot/RAM-tail fallback;the candidate
 must admit all117488GPU rows and checked split storage. This is a new capacity
 question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
-the compact result. Six processes close normally without fresh faults. Each
+the compact result. Seven processes close normally without fresh faults. Each
 table cell uses its process's subsequent-three median;first-use and all
 individual samples remain in the compact result.
 
@@ -118,9 +118,11 @@ The engine prompt clock encloses joint head retirement/restore and the final
 expert-cache refill;it is not pure GPU math time. Client TTFT separately ends
 at first nonempty reasoning/content output. The64K first pair prevents this
 candidate passing that length's predeclared all-three-pairs screen. Both lengths'
-first on-process medians are below1000,so neither target screen can pass. Six
-further processes still run under the frozen no-speed-based-stop plan;the117K
-mechanism decision remains open. The candidate is unadopted. This does not
+first on-process medians are below1000,so neither target screen can pass. The
+second64K head-off process has median880.4tok/s,74443.4ms and TTFT74.591s;
+its matched head-on process is pending. Five further processes still run under
+the frozen no-speed-based-stop plan;the117K mechanism decision remains open.
+The candidate is unadopted. This does not
 identify physical PCIe/VRAM/arithmetic saturation or attribute the64K difference
 solely to head-copy cost.
 The retained `requested_dequant_H2D_bytes` field is misnamed:the native
@@ -132,6 +134,12 @@ traffic. See `moe_window.inc` router readback,map upload and `owner.source_bytes
 and `layer_major.inc`'s final counter. This source-semantic correction changes
 no original samples or comparison criteria;rename the parser field after the
 frozen cohort closes. These remain requested bytes,not measured bus traffic.
+The next resource-controller source is isolated on `work/prefill-resource-profile`,
+commit561f11312;it is not integrated or model-executed. Its CPU-only `selfcheck`
+passes two ordinary/split controls,nine rejection cases and the127/128and2333/2334
+shape-group boundaries. The historical81920default stays fixed;117488requires
+an explicit prospective bound. After the frozen cohort closes,merge the source,
+retire the temporary branch,and prepare/qualify the clean-versus-observed pair.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found
