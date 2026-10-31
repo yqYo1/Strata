@@ -17,7 +17,13 @@ longer a runnable fallback. Retirement removes13executables plus three closed
 research transactions:16files/91471606B. Current official admission passes after
 removal. See [the historical build proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
 The prepared555-file two-strategy/GDN3 candidate will become the second engine
-generation;compilation and fresh qualification are pending. Fourteen older
+generation. Its configure,compile/link and dependency commands exit0,but build
+attestation fails before qualification:the new controller attempts to relativize
+an external GGML source path against the project root. This is a controller
+metadata defect;no candidate GPU execution occurred. Preserve the failed
+`official_prefill_strategies_build_v1` receipt,then pin a controller-only
+attestation-recovery plan with unchanged native sources,recipe and ELF bytes.
+Fresh qualification remains pending. Fourteen older
 provenance holds remain independent. No new legacy-compiler build runs.
 
 The first official2026.2replacement used
