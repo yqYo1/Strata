@@ -49274,6 +49274,21 @@
       "accepted": false,
       "review_sha256": "6cceb17fc00e466898a175b7f65579f4906ffd7aeefd8e1358c08a83a1dbcdfa",
       "blocker": "Fallible head preparation inside cache-loan activation poisons parent on refusal/throw before retirement. Move preparation before activation,commit only no-fail retirement,and cancel prepared state on preflight refusal."
+    },
+    "correction": {
+      "source_commit": "29f8657ee454f9f841ee752e3c9c6ff6c515ef4d",
+      "source_files": {
+        "include/strata/core/prefill_head_scope.hpp": "d03d1b0faba82e25bb17dc9b43ff1a9e5a228eacc137958309e7c2774a43f855",
+        "include/strata/core/cache_scratch_lease.hpp": "71e0c67d49cacb055b51e54db34afe8d0533029413a72303bbec4ad0de92e494",
+        "include/strata/core/verify.hpp": "18531e1a5f2963476b9d99cf2d6e095088d1c8d53510ab7a2f8952190804a9b4",
+        "src/core/verify.cpp": "6cdf2668f85e5ed1e28823398faa9e97206df27d3008ccc649c926d367bdf2a0",
+        "src/program/generate.cpp": "3b3e59361b56cb62a1f4dcc7097c19360c4746fc2b66e3448558c3fa078a3132",
+        "tests/sycl/prefill_head_scope.cpp": "8c3cda7e940559a3904b9e08f0d20c0da4afaae5081b32c9d457442f24883fd8"
+      },
+      "source_review_pending": true,
+      "native_built": false,
+      "GPU_executed": false,
+      "host_test": "Fifteen-case actual host state regression plan;see joint_prefill_heads_host_v2. No model/device qualification."
     }
   },
   "joint_prefill_heads_host_v1": {
@@ -49345,6 +49360,104 @@
     "source_inputs": {
       "files": 31,
       "aggregate_sha256": "4025c28250e009c5b0bf6004955813b10280c660d171602c847da3c0273d79fb"
+    }
+  },
+  "joint_prefill_heads_host_v2": {
+    "stage": "prepared",
+    "source_commit": "29f8657ee454f9f841ee752e3c9c6ff6c515ef4d",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+      "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+      "files": 10945
+    },
+    "official_build_source": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
+    "sanitizer_link_inputs": {
+      "files": {
+        "/usr/lib/x86_64-linux-gnu/librt.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libresolv.so.2": "1d730ea434da5a5595bc6a961d7a9ace83e03703205df9644044b3dca79c362f"
+      },
+      "compiler_queries": [
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=librt.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/librt.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/librt.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libresolv.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libresolv.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libresolv.so.2"
+        }
+      ],
+      "packages": [
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9"
+      ]
+    },
+    "environment_overrides": {
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v2/cache",
+      "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+    },
+    "environment_sha256": "346ffa48b695582089fa267d5c3c9c8eb48a1e429c0ef108a859f2866358fb73",
+    "commands": [
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O1",
+          "-g0",
+          "-fno-omit-frame-pointer",
+          "-fsanitize=address,undefined",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v2/policy.d",
+          "-save-temps=obj",
+          "-v",
+          "-Wl,-t",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/prefill_head_scope.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v2/prefill_head_scope"
+        ]
+      ],
+      [
+        "policy",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dense-head-scope-v2/prefill_head_scope"
+        ]
+      ]
+    ],
+    "budgets": {
+      "wall": 90,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 1048576,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "criteria": "Fifteen host-only cases:previous seven boundary controls plus two actual CacheScratchState poison reproductions,two preparation-before-activation failures,prepared cancellation on stale activation preflight,and joint prompt success/false/throw with checked retirement/refill. At least250checks. Exact committed inputs,actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "source_inputs": {
+      "files": 32,
+      "aggregate_sha256": "e7f99899e181216cdb3d3040ba96e90463c0cac52bfb8236e270b45ac4df3a93"
     }
   }
 }
