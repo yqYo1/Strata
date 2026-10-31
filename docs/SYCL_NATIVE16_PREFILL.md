@@ -276,9 +276,11 @@ seven original ELFs,84providers and15full model-asset hashes pass admission.
 Both current-source frontend probes pass with normal ownership closure.
 Process0(row64) closes normally with quiet final validation and no fresh fault:
 PP842.5/910.2/908.2/916.2,subsequent median910.2tok/s and TTFT129.327s.
-The original-kernel process1is next;the remaining five cases stay required.
-First use stays
-separate. All three paired time ratios below1 assess reproducibility without
+Process1(original) also closes normally:PP819.9/918.7/941.4/931.1,subsequent
+median931.1tok/s and TTFT126.377s,no fresh fault. The first row64/original prompt
+time ratio1.02302406is slower;it does not establish a gain. Original process2
+starts the reverse pair next;all four remaining cases are still required.
+First use stays separate. All three paired time ratios below1 assess reproducibility without
 a minimum percentage;the1000tok/s screen and client TTFT stay separate.
 V2does not inherit V1samples or historical1007.3. These corrections concern
 measurement admission,not a demonstrated numerical or GPU-kernel fault.
