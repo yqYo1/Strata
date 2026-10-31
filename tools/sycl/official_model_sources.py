@@ -22,6 +22,7 @@ ORIGIN_SHA = 'a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2'
 DOWN = '9a79cd3520d8f39b7ad026cd64b51a32b505f2a2'
 TOPK = 'dc19a1ecb4953e1c9f1c6cf9715a823bc3b68291'
 FIXTURE = 'd5d767eb16a1857e98bef32deb74ceab892c4ac7'
+GU_PROGRESS = '3af1c47d965bbb71b39dd40bda479ed7537fb58c'
 BASE_AGGREGATE = 'ae8b2082ab2f7284221f7805de10afceb7e6291e9bceb91272ac3b227d740f83'
 CONFIGURATION = ['tools/sycl/' + name + '.cpp' for name in (
     'host_transfer_probe', 'kv_copy_groups_host', 'kv_copy_groups_bench',
@@ -86,6 +87,10 @@ def sources():
         values[name] = split.blob(TOPK, name)
     name = 'tests/sycl/qsa_topk_prefill_entry.cpp'
     values[name] = split.blob(FIXTURE, name)
+    # Preserve the bounded 64-call public fallback diagnostic, never run its
+    # older 2048-call benchmark mode during first qualification.
+    name = 'bench/sycl/moe_gu_swiglu.cpp'
+    values[name] = split.blob(GU_PROGRESS, name)
 
     cmake = 'cmake/sycl_backend.cmake'
     original_cmake = values[cmake]
@@ -118,6 +123,33 @@ def sources():
     require(b'ExpertUploadStaging' not in values[prefill] and
             b'STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC' not in values[prefill],
             'unselected experiments entered official model source')
+    # Bound complete MoE job submissions on the actual in-order stream. This
+    # is a prospective official-runtime progression policy, not a hang repair
+    # or a performance result. The existing final status drain covers the tail.
+    # A failed compatibility wait may fail its sticky runtime precheck; return
+    # through the outer checked lease, which must retain owners/fail-stop when
+    # retirement cannot be proved. Never interpret that error as a drained queue.
+    name = 'src/prefill/moe_window.inc'
+    seam = b'        ++owner.jobs;\n    }\n    // The host status destination'
+    checkpoint = b'''        ++owner.jobs;
+        // Count fully submitted jobs, not completed GPU work.
+        if ((index + 1) % 8 == 0) {
+            if (std::getenv("STRATA_TRACE"))
+                std::fprintf(stderr, "strata MoE progress: phase=before_drain layer=%lld first=%lld submitted=%llu total=%llu interval=8 queue=%p\\n",
+                    (long long)layer, (long long)first_row, (unsigned long long)(index + 1),
+                    (unsigned long long)owner.routes->jobs().size(), m.cs);
+            if (cudaStreamSynchronize(m.cs) != cudaSuccess) {
+                err = "prefill MoE accumulator: bounded job drain failed; retirement unproved";
+                return false;
+            }
+            if (std::getenv("STRATA_TRACE"))
+                std::fprintf(stderr, "strata MoE progress: phase=after_drain layer=%lld first=%lld submitted=%llu total=%llu interval=8 queue=%p\\n",
+                    (long long)layer, (long long)first_row, (unsigned long long)(index + 1),
+                    (unsigned long long)owner.routes->jobs().size(), m.cs);
+        }
+    }
+    // The host status destination'''
+    values[name] = once(values[name], seam, checkpoint)
     require(len(values) == 554, 'unexpected model source count')
     return full, values
 
