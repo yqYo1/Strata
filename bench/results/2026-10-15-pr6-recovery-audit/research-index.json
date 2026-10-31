@@ -18382,89 +18382,40 @@
   },
   "official_model_esimd_image_contract_20261031": {
     "classification": "decision support",
-    "status": "reviewed-static-followup-pending",
+    "status": "reviewed-consumed-payload-retired",
     "schedulable_now": false,
-    "question": "Audit the actually built official2026.2 full engine ESIMD image/subgroup contract before model adoption. Relate effective JIT/AOT/RDC/offload-driver flags and available retained object/ELF metadata to declared ESIMD entrypoints used by native IQ3/IQ2/MMVQ decode and prefill. The old CMake comment about oneAPI2026.1.1 is historical,not proof about2026.2. Distinguish actual source/metadata violations,unverified properties and documented runtime refusals;identify the minimal missing bounded qualification or useful optimization only when evidence supports it. No generic driver survey or performance claim.",
-    "prerequisite_evidence": {
-      "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
-      "native_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/source",
-      "build_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build",
-      "engine": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/build/strata",
-      "engine_sha256": "152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354",
-      "compile_database_sha256": "9451e4b27b9d7d2776fc0cc81fdac80b2fd914b9cd255d609f4e7bb022bf1abf",
-      "component_gates": "13closed official same-build processes passed,including Top-k/TLA/GU/Down;no model/ESIMD-wide qualification inferred.",
-      "imminent_consumer": "official_model_entry_v1 one32Kbench.sh diagnostic,same fixed native source."
-    },
-    "report_path": ".cache/research/2026-10-31/official_model_esimd_image_contract_20261031.md",
-    "report_budget_bytes": 16384,
-    "report_budget_words": 2000,
-    "constraints": "Read-only code/artifact/primary-source audit. Write only report. No Git/build/test/GPU/profiler/process inspection/package/reset/product changes or child agents. Static ELF/object inspection is allowed;never execute a candidate or initialize GPU. No XeStrata code/helpers/tests/compiler.",
-    "review": "Native Codex gpt-6-luna/max;Main reads short operational digest.",
-    "next_review": "Returned report/source-specific evidence before adoption. Mere absence from component coverage is not a proven safety fault. Main continues frontend/source work and bounded model progression.",
-    "report_bytes": 7173,
-    "report_sha256": "1fbb5bb19e65b9ba403da61d05667e52fc089e767eaf5a33d7cc45b0898d7575",
-    "review_sha256": "6acdb44e49855fb97bfd4b8d912dc868ea2b3a478de51f2d9cf50031a032b5ce",
-    "findings": [
-      "Official2026.2 artifact audit found Strata JIT-capable SPIR and a separate VLLM AOT image;no demonstrated ESIMD marker/subgroup defect.",
-      "ELF strings do not bind each kernel to its image properties. IQ formats and layouts select different routes;do not generalize one ESIMD path to all IQ inference.",
-      "Next bounded check is static per-image property association,then only the actually selected type/shape/route if new evidence requires execution. Existing component/model passes do not establish this contract."
-    ],
-    "retention": {
-      "consumer": "Main static per-image property follow-up before official engine adoption;retain7173-byte primary report for exact artifact/source references.",
-      "next_review": "After initial official clean64K/117K comparison preparation or when metadata association is resolved.",
-      "report_budget_bytes": 16384
-    },
-    "next_scope_eligibility": {
-      "schedulable_now": false,
-      "prerequisite": "A concrete image/property mismatch or reproducible route-specific runtime refusal;no generic repeated runtime survey."
-    }
+    "archive_index_commit": "f6f52050e",
+    "decision": "No official2026.2ESIMD/subgroup defect demonstrated. NativeAOT and JITSPIR are distinct;strings alone do not associate device-image/kernel contracts. Actual closed-cache mapping subsequently reviewed;see official_model_jit_property_mapping_20261031.",
+    "raw_retirement_manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261031-official-prefill-stopped-v1.json"
   },
   "official_model_jit_property_mapping_20261031": {
     "classification": "decision support",
-    "status": "native-reviewed-static-map-no-kernel-selection-proof",
+    "status": "reviewed-useful-facts-retained-raw-retired",
     "schedulable_now": false,
-    "question": "Map relevant kernels in the actual closed official64K baseline NEO cache to immutable source/device-image properties: QSA attention/index/Top-k and native IQ decode where identifiable. Extract only proven subgroup/GRF/scratch/local-storage facts and distinguish cached compilation from actual kernel execution. Compare with the prior static ESIMD audit and historical GRF experiments;identify a concrete minimal correction or next performance decision,not another generic runtime survey.",
-    "prerequisite_evidence": {
-      "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
-      "native_source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/source",
-      "engine_sha256": "152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354",
-      "closed_process": "fused-moe-service-current.json::official_prefill_speed_v1.processes[0] at b16576eee;65537read,Top-k0,four requests,normal native exit,empty owned session,quiet validation,no fresh fault.",
-      "cache_manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-speed-v1/0/jit-inputs.json",
-      "cache_manifest_sha256": "67da976598f0ee73f32a46196e8684467b53e12072e46310c9f7f3a602892cab",
-      "cache_files": 54,
-      "cache_bytes": 12211128,
-      "elf_files": 53
-    },
-    "report_path": ".cache/research/2026-10-31/official_model_jit_property_mapping_20261031.md",
-    "report_budget_bytes": 16384,
-    "report_budget_words": 2200,
-    "constraints": "Read only manifest-listed closed process0cache,immutable build/source and primary documentation. Write only named report;stdout-only static ELF/property parsing allowed. No Git,build,compilation,tests,GPU/LevelZero/runtime initialization,profiler,process inspection,install,reset,other output files or product edits. Main continues process1and owns tests. No XeStrata code/helpers/tests/compiler. No active-run cache inspection.",
-    "previous_report_refs": [
-      "official_model_esimd_image_contract_20261031",
-      "qsa_exact_compiler_arithmetic_lowering_20261029",
-      "qsa_realhead_softmax_contract_20261030"
-    ],
-    "review": "Native Codex gpt-6-luna/max;Main reads short operational digest.",
-    "retention": "Mapping/review consumed. At the next serialized model-process closure retain only these useful facts and source/hash references;retire closed process0cache and consumed report/review bodies. No full ELF dumps.",
-    "next_review": "After current clean comparison or a concrete selected-kernel identity question;no repeated static cache/image survey.",
-    "report_bytes": 8155,
+    "native_source_commit": "e4617c85c2f0009eced4484d43c2f53661b76d1e",
+    "engine_sha256": "152f43036c93b5b6a96e25874ea3055c80d280e8f9cfeb062fa36f57ac5f4354",
     "report_sha256": "9a6fe759956130bcf6d0fbc1ae6e5fd07021027321455e6ec44a6fc883d6e807",
-    "review_result": {
-      "bytes": 6992,
-      "sha256": "cc7e62387947b6c339e74d581d0e6a030f91a7c6ef3cacbda5dae581b2d0bc89",
-      "verdict": "Accept with source-route and historical-provenance corrections."
-    },
+    "review_sha256": "cc7e62387947b6c339e74d581d0e6a030f91a7c6ef3cacbda5dae581b2d0bc89",
     "findings": [
       "All54closed process0cache entries match size/hash;53ELFs total12211128bytes. Static properties map compiled artifacts,not actual launches.",
       "Attention cache artifact has48kernel records. Source-selected ordered-exp family requestsSG16;configuration and cache alone do not identify its exact launched specialization. No new2026.2ESIMD/subgroup defect is established.",
       "Grouped IQ ESIMD accepts18,20-23 under enable/entry guards;16/17use ordinary grouped path. Prompt IQ requiresmax_rows1,declines20/23,handles18/21/22. Separate native_mmvq ESIMD routes cover11/12/13/23/42under their own guards. Cache presence is not execution evidence.",
       "Q2_0/IQ4_XS cached ESIMD records reportSIMD1,GRF128. SIMD metadata is not an explicit subgroup requirement;spill/private/SLM descriptors do not measure traffic,occupancy or hardware saturation."
     ],
-    "decision": "No new kernel optimization or GRF/spill trial follows from this static map. Finish the owned clean comparison. A later source/performance decision must join the actual selected kernel identity before using its resource record."
+    "decision": "No new kernel optimization or GRF/spill trial follows from this static map. Finish the owned clean comparison. A later source/performance decision must join the actual selected kernel identity before using its resource record.",
+    "archive_index_commit": "f6f52050e",
+    "raw_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261031-official-prefill-stopped-v1.json",
+      "sha256": "ad17f1f06183e4f54be6d27a4d0b29890182d7fce1441e0152f329de4428db1e",
+      "cache_files": 54,
+      "cache_bytes": 12211128,
+      "verified_absent": true
+    },
+    "next_review": "After current clean comparison or a concrete selected-kernel identity question;no repeated static cache/image survey."
   },
   "moe_two_job_native16_contract_20261031": {
     "classification": "decision support",
-    "status": "returned-native-review-pending",
+    "status": "native-reviewed-conditional-slot1-ownership-needed",
     "schedulable_now": false,
     "question": "Assess one concrete two-problem small-GU launch using the current owned TLA adapter:for two consecutive MoE jobs of1..128rows,N1280,K2560,combine their compact16x64 workgroup-M ranges in one kernel. Each whole workgroup uniformly selects one original Problem and local tile coordinate,then calls the unchanged xe_gemm_beta0 implementation. Compare this direct by-value two-problem schedule with the pinned TLA grouped API only as needed. Prove/refute complete spans,block2D bounds,collective/barrier uniformity,logical tails,FP16operands/BF16output/FP32accumulation and existing two dequant-buffer/arena lifetimes. Keep Down/scatter in original job order;no atomic/reordered accumulation. Identify the smallest source/fixture contract and blocking counterexamples,not another generic grouped-GEMM survey.",
     "prerequisite_evidence": {
@@ -18488,11 +18439,20 @@
     "consumer": "Main proposal/fixture decision after the frozen official64K/117K comparison;Main continues owned model measurements concurrently. No engine adoption/performance claim from source review.",
     "acceptance": "Source-linked legality/lifetime/precision and memory budget for exactly two small jobs;contrast at least one valid simpler alternative and one concrete counterexample. State unknown performance/resource ceilings. Cite immutable licensed primary sources. Return path,bytes,SHA256 and a three-sentence executive summary;do not paste report.",
     "review": "Native Codex gpt-6-luna/max;Main reads only short operational digest before targeted retrieval.",
-    "retention": "Report-only current decision support. Keep compact reusable contract/corrections after review;retire consumed report/lifecycle records. Review eligibility again when the exact source/shape changes.",
+    "retention": "Keep10077-byte source-contract report only for the concrete next small-GU batching fixture decision after the joint VRAM work;review after the next two prefill boundaries. Consumed5251-byte native review body retired;hash/digest retained.",
     "report_bytes": 10077,
     "report_sha256": "e0622c4faad484b174224c2fc4c92f333e82ea02eb382875ed24c685c89356bf",
     "worker_closed": true,
-    "review_agent": "/root/review_moe_two_job_20261031"
+    "review_result": {
+      "bytes": 5251,
+      "sha256": "86bb6d9481ea053a4733c32bace4e8b9a8130d79bc66fa805efd3a5edb3e8166"
+    },
+    "findings": [
+      "Combined workgroup-M mapping is source-feasible with original tile counts/collective participation and existing8192row planes;no performance/native qualification.",
+      "M128uses the current automatic wide tile. A future mechanism test must either restrict matched compact cases to1..127or compare an explicit matched128baseline;do not confuse tile changes with batching.",
+      "Public f16_out16 includes an event completion wait;future timing must include actual production wrapper/synchronization. Slot1has other callers;its exclusive ownership in this window is still unproved."
+    ],
+    "next_gate": "Main must prove actual mode10slot1exclusive lifetime before a native fixture or candidate. No further generic grouping research."
   },
   "joint_prefill_dense_head_source_20261031": {
     "classification": "decision support",
