@@ -5,6 +5,22 @@
 #include <cstdint>
 
 namespace strata::core::detail {
+// Optional enclosing owners retire their readers between successful head RAM
+// preparation and head detachment. A refusal/throw from prepare never calls
+// either retirement. Once retirement starts, uncertainty must fail-stop.
+// The caller owns restoration when composing this with a larger transaction.
+template<class Backend,class RetireOtherReaders>
+bool begin_prefill_head_release(Backend& b,RetireOtherReaders&& retire_other,std::string& err) {
+    static_assert(noexcept(std::forward<RetireOtherReaders>(retire_other)()) &&
+                  noexcept(b.retire_readers()) && noexcept(b.detach()),
+                  "prepared reader retirement must not unwind runtime owners");
+    if(!b.prepare(err))return false;
+    std::forward<RetireOtherReaders>(retire_other)();
+    b.retire_readers();
+    b.detach();
+    return true;
+}
+
 // The backend owns all buffers and runtime handles. After prepare(), every
 // retirement/detach/restore/resume operation MUST be noexcept and fail-stop on
 // unknown completion. The only operation allowed to throw is the prompt itself.
@@ -14,9 +30,7 @@ bool with_prefill_head_release(Backend& b,Prompt&& prompt,std::string& err) {
     static_assert(noexcept(b.retire_readers()) && noexcept(b.detach()) &&
                   noexcept(b.restore()) && noexcept(b.resume()),
                   "head transition operations must never unwind runtime owners");
-    if(!b.prepare(err))return false;
-    b.retire_readers();
-    b.detach();
+    if(!begin_prefill_head_release(b,[]() noexcept {},err))return false;
     bool ok=false;
     try { ok=std::forward<Prompt>(prompt)(); }
     catch (...) { b.restore();b.resume();throw; }

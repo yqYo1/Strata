@@ -200,18 +200,8 @@ struct NativeDensePhase {
     std::atomic_flag occupied=ATOMIC_FLAG_INIT;
 };
 
-// Both warm serve and standalone pass through this request-scoped boundary.
-// Default off and short segments take exactly the existing prompt/expert path.
-bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
-        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
-        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
-    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err);};
-    const char* requested=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
-    if(!requested || std::strcmp(requested,"1")!=0 || prompt.chunk()<=0 || n<=prompt.chunk())return run();
-#ifndef STRATA_ENABLE_SYCL
-    (void)head;(void)verifier;(void)main_cs;
-    err="head release requires SYCL";return false;
-#else
+#ifdef STRATA_ENABLE_SYCL
+bool prefill_head_release_supported(bool supported,std::string& err) {
     const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* cp=std::getenv("STRATA_SPEC_COUPLED");
     if(!supported || !lm || std::strcmp(lm,"1")!=0 || (cp && std::strcmp(cp,"1")==0) ||
@@ -220,10 +210,19 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
         err="head release requires long layer-major single-GPU native MTP4 without split/peer/remote/coupled or logits/NLL diagnostics";
         return false; // no owner is detached on unsupported routes
     }
-    struct Boundary {
+    return true;
+}
+
+// A joint transaction prepares while both owners are intact. Its verifier
+// lease retires BOTH reader sets before this boundary withdraws either head.
+// The enclosing dense transaction alone resumes that verifier after restoring
+// all publications and head storage. Standalone behavior stays independent.
+enum class PrefillHeadReaders { standalone, dense_transaction };
+struct PrefillHeadBoundary {
         strata::core::NativeHead& head;strata::core::MtpDrafter& mtp;
         strata::core::Verifier* verifier;cudaStream_t main_cs;
         strata::core::detail::PrefillHeadState state;
+        PrefillHeadReaders readers=PrefillHeadReaders::standalone;
         using Phase=strata::core::detail::PrefillHeadState::Phase;
         [[noreturn]] static void fatal(const char* why) noexcept {strata::sycl_backend::cleanup_fail_stop(why);}
         void move(Phase from,Phase to) noexcept {if(!state.transition(from,to))fatal("head boundary duplicate/out-of-order transition");}
@@ -240,7 +239,13 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
             // Ordinary target projection runs on main_cs, outside token graphs.
             if(cudaStreamSynchronize(main_cs)!=cudaSuccess)fatal("main head stream retirement");
             std::string error;
-            if(verifier && !verifier->retire_prefill_head(head,error))fatal("verifier rejected prepared head retirement");
+            if(verifier) {
+                if(readers==PrefillHeadReaders::dense_transaction) {
+                    if(!verifier->has_prefill_dense_head_lease(head))
+                        fatal("head detach without joint verifier lease");
+                } else if(!verifier->retire_prefill_head(head,error))
+                    fatal("verifier rejected prepared head retirement");
+            }
             mtp.retire_prefill_head_readers();
             move(Phase::prepared,Phase::retired);
         }catch(...){fatal("head reader retirement threw");}
@@ -261,11 +266,32 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
             if(state.phase()!=Phase::restored)fatal("head resume before complete restore");
             head.resume_prefill_weights();mtp.resume_prefill_head();
             std::string error;
-            if(verifier && !verifier->resume_prefill_head(head,error))fatal("verifier head resume failed");
+            if(verifier) {
+                if(readers==PrefillHeadReaders::dense_transaction) {
+                    if(!verifier->has_prefill_dense_head_lease(head))
+                        fatal("joint verifier lease lost before head restore");
+                } else if(!verifier->resume_prefill_head(head,error))fatal("verifier head resume failed");
+            }
             move(Phase::restored,Phase::ready);
         }catch(...){fatal("head resume threw");}
-        ~Boundary() noexcept {if(!state.readable())fatal("head boundary escaped without restore");}
-    } boundary{head,mtp,verifier,main_cs,{}};
+        ~PrefillHeadBoundary() noexcept {if(!state.readable())fatal("head boundary escaped without restore");}
+};
+#endif
+
+// Both warm serve and standalone pass through this request-scoped boundary.
+// Default off and short segments take exactly the existing prompt/expert path.
+bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
+        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
+        const int64_t* tokens,int64_t n,int64_t pos0,std::string& err) {
+    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err);};
+    const char* requested=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
+    if(!requested || std::strcmp(requested,"1")!=0 || prompt.chunk()<=0 || n<=prompt.chunk())return run();
+#ifndef STRATA_ENABLE_SYCL
+    (void)head;(void)verifier;(void)main_cs;
+    err="head release requires SYCL";return false;
+#else
+    if(!prefill_head_release_supported(supported,err))return false;
+    PrefillHeadBoundary boundary{head,mtp,verifier,main_cs,{}};
     return strata::core::detail::with_prefill_head_release(boundary,run,err);
 #endif
 }
@@ -327,23 +353,28 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
     };
     const char* lm=std::getenv("STRATA_PREFILL_LAYER_MAJOR");
     const char* heads=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
+    const bool joint_heads=release_dense && heads && !std::strcmp(heads,"1");
     if(!phase.supported || !phase.no_token_graph || !phase.token || phase.token->captured || phase.token->exec ||
        !phase.dense || !phase.table || !phase.session || !phase.graphs || !phase.recapture ||
        phase.graphs->split_captured || !main_cs || !lm || std::strcmp(lm,"1") ||
-       (heads && !std::strcmp(heads,"1")) || prompt.activate_native_dense_layer ||
+       prompt.activate_native_dense_layer ||
        phase.dense->residency()!=strata::core::NativeDense::Residency::Full ||
        phase.dense->packed_sources().empty()) {
-        err="prefill dense bank: unsupported request/reader state (head-release combination excluded)"; return false;
+        err="prefill dense bank: unsupported request/reader state"; return false;
     }
     if(phase.canonical && (!strata::core::native_embed() ||
        phase.canonical->state()!=strata::core::CanonicalDenseBank::State::Full)) {
         err="canonical bank requires intact Full owner and independent NativeEmbed";return false;
     }
+    if(joint_heads && !prefill_head_release_supported(supported,err))return false;
     if(verifier && !verifier->can_retire_prefill_dense(err)) return false;
+    if(joint_heads && verifier && !verifier->can_release_prefill_head(head,err))return false;
     if(phase.occupied.test_and_set()) {err="prefill dense bank: request already owns transaction";return false;}
     struct Exclusion {NativeDensePhase& p;~Exclusion(){p.occupied.clear();}} exclusion{phase};
     const bool recapture=phase.graphs->captured;
     bool retired=false, cache_loan_active=false;
+    PrefillHeadBoundary head_boundary{head,mtp,verifier,main_cs,{},
+                                     PrefillHeadReaders::dense_transaction};
     int64_t activated_layers=0;
     const bool trace_dense=std::getenv("STRATA_TRACE")!=nullptr;
     auto observe=[&](const char* state) noexcept {
@@ -413,30 +444,46 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         }
         if(phase.canonical && phase.canonical->state()==strata::core::CanonicalDenseBank::State::RestoredPending)
             phase.canonical->finish_restore(); // PLE no longer points into persistent pool
+        if(joint_heads) {
+            head_boundary.restore();
+            head_boundary.resume();
+        }
         if(recapture && !phase.recapture(e)) fatal("session graph recapture failed; decode prohibited");
-        if(verifier && !verifier->resume_prefill_dense(*phase.dense,e)) fatal("verifier dense resume failed");
+        if(verifier && !(joint_heads ? verifier->resume_prefill_dense_and_head(*phase.dense,head,e) :
+                                      verifier->resume_prefill_dense(*phase.dense,e)))
+            fatal("verifier dense/head resume failed");
         retired=false;
         observe("restored");
         host_profile.restore_end();
     };
     struct Restore {decltype(restore)& f;~Restore() noexcept {f();}} rollback{restore};
-    auto retire_readers=[&]() -> bool {
+    auto retire_dense_readers=[&]() noexcept {
         drain();
         try {
-            if(verifier && !verifier->retire_prefill_dense(err)) fatal("prepared verifier retirement rejected");
+            if(verifier && !(joint_heads ? verifier->retire_prefill_dense_and_head(head,err) :
+                                          verifier->retire_prefill_dense(err)))
+                fatal("prepared verifier retirement rejected");
             if(phase.canonical && verifier && !verifier->retire_prefill_canonical_commit(err))
                 fatal("canonical norm-bearing commit graph retirement rejected");
             strata::core::session_graphs_retire_dense(*phase.graphs,main_cs);
             retired=true;
         } catch(...) { fatal("graph retirement threw; completion unknown"); }
         observe("retired");
+    };
+    auto retire_readers=[&]() -> bool {
+        // Prepare only after cache-loan preflight accepted its owner. The
+        // shared policy retires the union before head readers/storage, and a
+        // prepare refusal leaves both original device owners readable.
+        if(joint_heads)return strata::core::detail::begin_prefill_head_release(
+            head_boundary,retire_dense_readers,err);
+        retire_dense_readers();
         return true;
     };
     try {
         if(cache_loan) {
             if(!prompt.activate_cache_scratch_lease(retire_readers,err)) return false;
             cache_loan_active=true;
-        } else (void)retire_readers();
+        } else if(!retire_readers())return false;
         if(release_dense) {
             // Withdraw the separate PLE native publication before releasing owners.
             if(native_ple) {ple.key_native_data=nullptr;ple.key_native_q8_1=nullptr;ple.key_native_type=-1;}
@@ -465,7 +512,9 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
             observe("cache-loan");
         }
         host_profile.run_begin();
-        const bool ok=run();
+        // The joint transaction already owns head release; do not enter the
+        // standalone head wrapper a second time while its verifier is retired.
+        const bool ok=joint_heads ? run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err) : run();
         host_profile.run_end(ok);
         restore();
         return ok;
