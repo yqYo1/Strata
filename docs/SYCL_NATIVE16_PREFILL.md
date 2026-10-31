@@ -50,8 +50,11 @@ measurements;this is manual benchmark configuration,not an automatic threshold.
 The first64Kcandidate process closes normally with all four actual-route gates,
 quiet final validation and no fresh fault. First-use PP is741.3tok/s;the three
 subsequent requests are845.0/852.2/846.8tok/s,their median846.8tok/s and client
-TTFT median77.561s. One of12processes is complete;the matched reference and
-remaining independent pairs are pending,so no speedup or target is established.
+TTFT median77.561s. The first matched reference also closes normally without
+fresh faults:723.2tok/s first use,then817.4/826.8/814.0tok/s,median817.4tok/s
+and80.358s client TTFT. Candidate/reference prompt-time ratio is0.96526577
+(3.5984%higher PP);TTFT ratio0.96519326. Two of12processes are complete;this
+single pair does not establish reproducibility,adoption or the1000target.
 Each request must pass its actual route check before the next request proceeds.
 Reference admission directly recovers its554native source and1447compiler
 inputs plus seven ELFs;the retired ancestor executable is not required. The
