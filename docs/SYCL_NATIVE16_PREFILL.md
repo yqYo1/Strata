@@ -98,7 +98,11 @@ screen separately requires all three candidate process medians at that length.
 The117K control may retain its legitimate512-slot/RAM-tail fallback;the candidate
 must admit all117488GPU rows and checked split storage. This is a new capacity
 question,not continuation of failed Top-k V1. See `official_joint_speed_v1` in
-the compact result;it is prepared,not yet a speed result or adoption decision.
+the compact result. Its first117K head-on process closes normally without fresh
+faults. All four requests admit117488GPU rows,128staged slots and checked split
+storage. First use is892.6tok/s;subsequent967.4/969.8/965.4have median967.4.
+The other11processes remain unexecuted;there is no matched mechanism or target
+decision yet,and the candidate remains unadopted.
 The unselected e461generation is retired after exact source/recipe/dependency
 recovery;its84-provider inventory migrates to the new candidate's pinned runtime
 basis. Selected6e40 remains the validated fallback. Independent source review found
