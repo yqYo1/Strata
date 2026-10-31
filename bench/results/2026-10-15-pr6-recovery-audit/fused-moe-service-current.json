@@ -54169,7 +54169,7 @@
     "next_action": "Preserve refusal;commit a new V2 controller with explicit committed controller-only reuse. Recover original controller identities and preserve all original native/source/recipe/compiler/seven-executable/provider checks. No native rebuild or inherited new GPU validation."
   },
   "official_joint_resources_v2": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "b2bacdfc69bce2847dfe5d39f312562aba57e561",
     "native_source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
     "binary": {
@@ -54465,7 +54465,185 @@
         "environment_sha256": "18c62d6cf50438af3866c906a2a8142d626e3bfa98be55133ce5afe6e85d26a7"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "observed": false,
+        "complete": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1053802,
+          "start_ticks": 180524077,
+          "sid": 1053751
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1053802,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23840,
+            "fused_down_jobs": 7432,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38561740800,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          },
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23832,
+            "fused_down_jobs": 7429,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38587673600,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          },
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23792,
+            "fused_down_jobs": 7423,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38468480000,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          },
+          {
+            "rows": 117488,
+            "residual_gpu_rows": 117488,
+            "residual_gpu_bytes": 2406154240,
+            "residual_host_bytes": 0,
+            "prefill_slots": 128,
+            "staged": true,
+            "split": true,
+            "windows": 48,
+            "jobs": 23817,
+            "fused_down_jobs": 7442,
+            "maximum_window_rows": 117488,
+            "staged_bank_checked_drain": true,
+            "split_guard_checked": true,
+            "requested_bank_H2D_bytes": 38524006400,
+            "target_snapshot_bytes": 521472000,
+            "draft_rebuilt_bytes": 223227900,
+            "physical_saturation_qualified": false,
+            "head_payload_bytes_verified": false,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 137936.7,
+            "prompt_tps": 851.8,
+            "ttft_s": 138.18,
+            "total_s": 140.287,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 129340.1,
+            "prompt_tps": 908.4,
+            "ttft_s": 129.553,
+            "total_s": 131.658,
+            "generated_tokens": 24,
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 129254.3,
+            "prompt_tps": 909.0,
+            "ttft_s": 129.458,
+            "total_s": 131.595,
+            "generated_tokens": 24,
+            "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 128054.6,
+            "prompt_tps": 917.5,
+            "ttft_s": 128.269,
+            "total_s": 130.352,
+            "generated_tokens": 24,
+            "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 129254.3,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "host_passed": true,
     "complete": false,
     "passed": false,
@@ -54559,6 +54737,14 @@
       "bytes": 38894,
       "plans_untouched": true,
       "complete": true
+    },
+    "closure_refusal": {
+      "cause": "The resource controller never sets host_probe_accepted;ur_validation.finish requires that field,so the clean process remains unqualified despite complete model evidence and normal fault/ownership checks.",
+      "controller_source": "b2bacdfc69bce2847dfe5d39f312562aba57e561",
+      "shared_finalizer": "tools/sycl/ur_validation.py:finish",
+      "original_status_preserved": true,
+      "observed_process_executed": false,
+      "next_action": "Commit a new V3 finalization bridge and CPU regression checks before fresh prospective resource evidence. Do not relabel V2 or continue its observed process."
     },
     "source_inputs": {
       "files": 247,

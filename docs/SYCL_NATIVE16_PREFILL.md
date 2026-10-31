@@ -173,10 +173,16 @@ cases,the native/compiler/seven-executable proof,84providers and15full model
 hashes. Its247current Python inputs differ from the closed cohort only in the
 three declared diagnostic/admission files;native source remains032f4f8a5and the
 engine hash remains05c489eab7. The two117489-read process plans are committed
-before host probes. All four clean/observed benchmark/server frontend probes now
-pass with quiet stderr and normal closure;neither native model process has run.
-Next execute clean process0,commit its result,then observed process1. See
-`official_joint_resources_v2`.
+before host probes. All four clean/observed benchmark/server frontend probes pass
+with quiet stderr and normal closure. V2clean process0 completes all four117K
+requests with quiet validation,native exit0,no fresh fault and checked all-GPU
+split placement. PP851.8/908.4/909.0/917.5and subsequent median129254.3ms remain
+diagnostic samples:the controller omits `host_probe_accepted`,which the shared
+finalizer requires,so the process and V2cohort are failed. Preserve that status;
+do not execute V2observed process1. Next commit a V3finalization bridge and CPU
+failure-path checks before new prospective resource evidence. The independent
+Orca emitter-contract report is complete and released;native Luna max review
+is pending. Main has not read its body. See `official_joint_resources_v2`.
 Retire the temporary branch after its original
 commits are also verified reachable from the fork default;PR180 remains blocked.
 A closed-boundary inventory after process8 finds readable Xe sysfs frequency,
