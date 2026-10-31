@@ -10,13 +10,26 @@ original project/dependency inputs and the build recipe recover from Git.
 Restoring that exact package required no recompilation and supplied no new GPU
 validation. See [the selected build proof](../bench/results/2026-10-15-pr6-recovery-audit/native-gdn-engine-build.json).
 
-The retained split9a79candidate and selected6e40already occupy the normal
-two-engine comparison allowance. The official2026.2transition must preserve
-one known-good fallback and close/recover the other generation before building
-a replacement;do not add two full engines. Legacy compiler provenance remains
-unresolved. Pin one chosen source and bounded public-GU progress/provider gate
-before a small model entrypoint,then long-input measurements. Existing64call
-GUand22GEMM passes do not establish avoidance of the older2048call stall.
+The split9a79generation is retired after recovery of551native/configuration,
+9311GGML/TLA and53controller inputs,1400actual compiler inputs and all three
+original command/environment owners. Its historical results and failures remain;
+735files/130689718bytes,including consumed source audits,are removed. Selected6e40
+and its twelve fixtures remain unchanged. Fourteen older provenance holds remain
+independent. Legacy compiler provenance is unresolved;no new legacy build runs.
+
+The prospective official2026.2replacement uses
+[a pinned constructor](../tools/sycl/official_model_sources.py),not the whole
+working tree: selected6e40,qualified split/Down overlays,the independent Top-k
+route,official bundler discovery and a prefill-only eight-job checkpoint.
+Its554source files have aggregate5f468f91a381399d120eafa9b65baa274ea6b2137176e490f8676e7c1d1f89d0;
+source/recipee4617c85c is frozen before compilation. Each checkpoint follows eight
+fully submitted jobs on their actual in-order stream. A split window has at most
+655jobs,81interval waits and seven tail jobs covered by the existing status drain.
+A failed wait does not prove retirement;the outer checked lease retains owners
+or fail-stops. This bounds submissions,not elapsed time or native command count,
+and does not prove avoidance of the older2048call stall. Build and model tests
+remain pending. Fresh same-build provider/progress checks precede a small model
+entrypoint and32K+timing;the earlier64call GUand22GEMM passes are separate facts.
 
 The experimental `STRATA_SYCL_PREFILL_TOPK_EARLY=1` route selects a separate
 exact-completion Top-k kernel only in layer-major prefill. It defaults off,
