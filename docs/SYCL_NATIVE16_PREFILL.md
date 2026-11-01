@@ -351,9 +351,32 @@ V1preparation refused an older collector audit's Python-parser fingerprint;its
 original refusal remains recorded. The reviewed delta only extends the census
 parser's explicit row bound/job groups;all31original collector inputs are
 recovered,and460actual compiler inputs,generated code,recipe and both tool ELFs
-are checked unchanged. No new native build is claimed. Next execute the single
-controlled117Kmodel request with this committed source and plan. Hardware-resource
-attribution and observer cost remain unqualified until that request closes.
+are checked unchanged. No new native build is claimed. The controlled117Kmodel
+request now closes with all source/body/token/route/provider/validation/owner
+and final full-model hash checks,normal native exit and no fresh fault. Its
+135.5392s prompt is1.052851times the median of three clean first-use prompts,
+within the predeclared1.15observer limit. It is not a new clean-speed result.
+The138.5979s whole-request capture includes24decode outputs;280135GPU events
+have unique native-host source IDs and contained raw-clock service. Both fused
+GU and Down counters reconcile at7441each. GPU interval union is118.5177s;
+the20.0802s unobserved intervals are not proof of hardware idle or an exact
+critical path. Main-thread CPU is127.3153s,of which91.7816s is inside known GPU
+waits. Outside-known-wait CPU is35.5337s,including13.9348unclassified;the
+separate host grouping region uses0.2587s. UnitTrace's global-timestamp API
+calls alone sum7.7743s of host wall,and first-use module creation sums4.2444s:
+do not assign all host time to useful CPU arithmetic or warmed-request cost.
+Largest named kernel groups include the180long QSA-prefix kernels at26.9761s,
+540typed GDN recurrences at7.8538s,and1440native16 HC residual writes at2.7455s.
+Requested M2D copy payload is49.9439GB with11.6779s summed service;these are
+not measured PCIe wire bytes or saturation. The legacy coarse family classifier
+also places the two hgemm groups (6.6216s) in other_kernel;use the actual names
+until taxonomy is corrected. The36Q80 prompt-product kernels total7.0359s;
+their exact source/caller role needs a join before selecting a replacement.
+Physical arithmetic/VRAM/PCIe saturation remains unknown. Next compare the
+source/shape-specific opportunities and characterize longer inputs on this
+same validated generation,without attributing a length/configuration change
+to a kernel speedup. Keep first-use,subsequent-request and per-placement curves
+distinct,and retain the current clean900.5242/984.4641tok/s references.
 The closed cohort's raw output is retired after recovering its261source inputs
 from pushed history. Keep its full qualification record and runtime inventory
 for the next profile;the unchanged admission passes after deletion.
