@@ -73844,8 +73844,8 @@
       "errors": 1,
       "GPU_executed": false
     },
-    "next": "Fresh gdn16_model_speed_v2 plan at61d81697c;run original64K scenario before declaring live-observer resolution. The failed v1cohort is not resumed or reclassified.",
-    "diagnostic_consumer": "Main CPU regression and first fresh v2case;keep one original error/session/engine excerpt until that repro is resolved.790.5tok/s native footer is diagnostic only,not an eligible benchmark sample.",
+    "next": "Observer bug resolved by CPU regression,original captured-log replay and the first fresh64Kmodel process. Continue the frozen V2cohort;original V1failure remains failed.",
+    "diagnostic_consumer": "Closed after original-scenario verification. The maintained regression and compact original failure suffice;successful and failed raw V1outputs are retired.",
     "green_regression": {
       "source_commit": "61d81697ccfdd53080c0ee1daaa3620c71e7f14a",
       "test_sha256": "650bbaa15dffce86694879e7ccf1646f1c208d5d636d13afd5f3a41027723c71",
@@ -73876,7 +73876,28 @@
         "small_gain_and_independent_TTFT_controls": true
       },
       "GPU_executed": false,
-      "harness_note": "An initial CLI selfcheck child was refused by the parent-held serialization lock before execution. Main then called the same selfcheck directly under that lock;it passed. No model or GPU process was launched."
+      "harness_note": "An initial CLI selfcheck child was refused by the parent-held serialization lock before execution. Main then called the same selfcheck directly under that lock;it passed. No model or GPU process was launched.",
+      "original_model_scenario": {
+        "record_commit": "496bdc17184bf522c79b74ff54e5370f68abc4e8",
+        "key": "gdn16_model_speed_v2.processes[0]",
+        "passed": true,
+        "requests": 4,
+        "actual_read_tokens_each": 65537,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": []
+      }
+    },
+    "raw_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-gdn-model-speed-observer-v1.json",
+      "sha256": "0869825000b0709a7e64e60b9d6a7dba21b321784783adca1a6d7fae954faaf5",
+      "files": 96,
+      "bytes": 12432288,
+      "source_files_recovered": 261,
+      "original_failure_preserved": true,
+      "old_root_absent": true,
+      "current_V2_admission_after_cleanup": "passed",
+      "scope": "Closed failed V1output only;current V2cohort and both retained native generations untouched."
     }
   },
   "gdn16_model_speed_v2": {

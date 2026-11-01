@@ -290,8 +290,15 @@ diagnostic. All owned processes are reaped and no fresh GPU fault was observed.
 Controller61d81697c now requires the always-on actual geometry/native16 headers
 and checks optional policy output for consistency. The five CPU regression tests,
 two positive/twelve negative route controls and captured clean-log replay pass.
-Fresh`gdn16_model_speed_v2`must recheck the original64K scenario before live
-observer resolution;it retains the same engine,arms,workloads and criteria.
+Fresh`gdn16_model_speed_v2`now passes its first64Kprocess:all four request
+gates,quiet final validation,native exit0,closed ownership and no fresh fault.
+Subsequent prompt times are72.7056/72.7765/72.8644s;their process median is
+900.5242tok/s,with client TTFT72.917s. This single process is not a paired gain
+or the1000target. Continue the frozen cohort with the same engine,arms,workloads
+and criteria. The observer bug is resolved by the original live scenario.
+After original-source recovery and result verification,the failed V1root's
+96files/12432288B are retired;its original failed status and compact diagnosis
+remain committed. Current V2admission passes after deletion.
 The closed two-generation controller and its now-unused
 `retained_prefill_reference.py`are recoverable at`055c4ee36`;the latter is removed
 from the active tree after its sole caller moved to this same-binary campaign.
