@@ -66334,5 +66334,78 @@
       "files": 555,
       "aggregate_sha256": "2854fb62b5e1fc058add1fa49e9d0f9c0a0d9a09e52702f66474d147cdf86bd0"
     }
+  },
+  "official_gdn_fp32_projection_ownership_v1": {
+    "stage": "prepared",
+    "source_commit": "06369729f9143ee7199216829effcfb89db59524",
+    "compiled_native_implementation": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
+    "image_proof": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/record-v2.json",
+      "sha256": "3caf8734ef88dc2788de31d412f22d1308d4d7a789b4ace6a3ebb32d76086214"
+    },
+    "commands": [
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-O2",
+          "-std=c++20",
+          "-fno-sycl",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DCUTLASS_ENABLE_HEADERS_ONLY",
+          "-DCUTLASS_ENABLE_SYCL",
+          "-DSYCL_INTEL_TARGET",
+          "-isystem",
+          "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership/inputs.d",
+          "-Wl,-t",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_projection_fp32.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership/ownership"
+        ]
+      ],
+      [
+        "host-proof",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership/ownership"
+        ]
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership/cache"
+    },
+    "budgets": {
+      "wall": 180,
+      "cpu": 360,
+      "rss_cap": 3221225472,
+      "text_cap": 8388608,
+      "file_cap": 134217728,
+      "total_cap": 536870912
+    },
+    "plan": {
+      "scope": "CPU-only coordinate/descriptor proof,not device masking/numerical/model qualification.",
+      "acceptance": "Actual public TLA SG accumulator/payload/D-copy cells agree and uniquely cover128x128;all T1..8192,both N6144/10240,and four pitches conserve valid writes,descriptor bounds and spans;GPU_submissions0.",
+      "numerical_gate": "Not exercised here;prospective guarded device oracle and checked same-Runtime event/queue retirement remain required."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "GPU_executed": false,
+    "controller_inputs": {
+      "files": 41,
+      "aggregate_sha256": "470ca9a86b71e857bbf5c899ba019f7f06be20f9f41f2f02c6210e9976bfcd50"
+    },
+    "native_sources": {
+      "files": 1,
+      "aggregate_sha256": "d5a8fb39c46ad3cdc10cbc8e5584fd56b9742169b1b57d8aa1ddb1091c1ccbbe"
+    }
   }
 }
