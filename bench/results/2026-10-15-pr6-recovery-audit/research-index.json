@@ -20628,5 +20628,59 @@
       "schedulable_now": false,
       "recommendation": "None. This report plus the indexed verifier source audit is sufficient to frame upcoming decode/handoff checks; wait for cohort closure and actual >=1K samples rather than repeating covered research."
     }
+  },
+  "gpu_power_state_aware_burst_scheduling_20261102": {
+    "classification": "knowledge_collection",
+    "status": "reviewed_conditional_reference",
+    "schedulable_now": false,
+    "finite_question": "For bursty discrete-GPU workloads, compare power/frequency residency mechanisms and launch policies: fixed per-request launches, bounded batching/coalescing, deadline-aware deferral, and race-to-idle versus sustained work. Cover RC6/runtime power, SLPC or equivalent, devfreq where applicable, GPU versus memory/VRAM clock domains, wake/ramp costs, hysteresis, energy per useful work and latency/tail tradeoffs. Identify which layer can influence transitions and how studies separate policy effects from compute, memory and bus limits. Reuse existing telemetry and observer contracts; do not repeat a sensor/counter survey.",
+    "novelty": "Current reports measure/interpret changing state, resident bursts, counter access and host submission cost. None compares how dispatch/batching policies alter idle residency, wake cost, energy and tail latency. This external-method question does not depend on local counters.",
+    "prior_report_ids": [
+      "accelerator_dvfs_steady_state_measurement_collection_20261030",
+      "resident_ceiling_methods_scope",
+      "bmg_sysfs_execution_context_20261031",
+      "bmg_metric_collection_contract_20261030",
+      "level_zero_39395_16_runtime_delta_scope",
+      "runtime_prefill_drift_controls_20261025",
+      "sycl_command_submission_amortization_collection_scope"
+    ],
+    "eligibility_review_sha256": "59f3c41b8aa5482cb1784f77c776c6c527c049a65942599f595a82498a419921",
+    "local_counter_prerequisite": false,
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/gpu_power_state_aware_burst_scheduling_20261102.md",
+    "report_bytes": 11188,
+    "report_sha256": "0df13010f396f5169d3c18f718487a12daec4fb24197179639a1c5da24aa72b6",
+    "taskId": "task_d40723e2042a",
+    "dispatchId": "ctx_71259dfa1d9d",
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "accepted_worker_done": true,
+    "ownership_closed": true,
+    "completion": "Accepted succeeded worker_done acknowledged. Release confirmed external_terminal/processAction none;Main closed its own separately launched terminal with ptyKilled true. No source/settings or permission changes.",
+    "native_review": {
+      "path": ".cache/research/2026-11-01/power_burst_report_review_20261102.json",
+      "bytes": 7933,
+      "sha256": "7cb27546b718270dbaf188de5cb3d5a2dca76150cba876c719f24de1b6cee30c",
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "corrections": "Distinguish Xe GuC Render-C/RC from host RC6. Yeh LAX is device-integrated;neither establishes host deferral benefits on B570.",
+    "retrieval": {
+      "sections": [
+        "Power transition layers and domains",
+        "Policy comparison",
+        "Energy, latency, and hysteresis",
+        "Minimal future evidence, if traces justify it"
+      ],
+      "trigger": "Retrieve only for a concrete Main-owned dispatch/batching decision after request traces establish meaningful inter-burst gaps or launch bursts. No local counter prerequisite applies to this generic reference."
+    },
+    "consumer": "A future Main-owned dispatch/batching comparison if observed request traces show idle opportunities or launch bursts that could change the policy choice.",
+    "next_review": "At the first committed batch/dispatch comparison closure; if no decision retrieves the reference, remove its active library/index reference and rely on reachable history only if already retained there.",
+    "limits": "External methods only;no local power/performance/saturation evidence or inference adoption. Main reads short native review,not collection body on arrival.",
+    "next_scope": {
+      "schedulable_now": false,
+      "classification": null,
+      "candidate_question": null,
+      "reason": "No distinct collection remains. Any later policy choice is Main-owned and should follow request traces and a committed comparison plan; do not repeat a generic power/counter survey. No local-counter prerequisite is imposed."
+    }
   }
 }
