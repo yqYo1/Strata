@@ -290,12 +290,15 @@ diagnostic. All owned processes are reaped and no fresh GPU fault was observed.
 Controller61d81697c now requires the always-on actual geometry/native16 headers
 and checks optional policy output for consistency. The five CPU regression tests,
 two positive/twelve negative route controls and captured clean-log replay pass.
-Fresh`gdn16_model_speed_v2`now passes its first64Kprocess:all four request
-gates,quiet final validation,native exit0,closed ownership and no fresh fault.
-Subsequent prompt times are72.7056/72.7765/72.8644s;their process median is
-900.5242tok/s,with client TTFT72.917s. This single process is not a paired gain
-or the1000target. Continue the frozen cohort with the same engine,arms,workloads
-and criteria. The observer bug is resolved by the original live scenario.
+Fresh`gdn16_model_speed_v2`now passes its first64Kpair:all eight request
+gates,quiet final validation,native exits0,closed ownership and no fresh faults.
+Candidate subsequent prompt times are72.7056/72.7765/72.8644s;reference times
+are73.5620/74.1731/73.3517s. Process medians are900.5242/890.9083tok/s and
+client TTFT72.917/73.703s,candidate/reference. The paired prompt-time ratio is
+0.98932193(1.0678%less time). First use is slower with FP16:83.1682/82.6929s.
+One pair does not pass the frozen three-pair reproducibility criterion or the
+1000target. Continue the same engine,arms,workloads and criteria at117K and
+in the remaining pairs. The observer bug is resolved by the original live scenario.
 After original-source recovery and result verification,the failed V1root's
 96files/12432288B are retired;its original failed status and compact diagnosis
 remain committed. Current V2admission passes after deletion.
