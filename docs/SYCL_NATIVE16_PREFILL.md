@@ -586,7 +586,16 @@ The next nine-ELF generation is prepared by`tools/sycl/adaptive_cache_model.py`
 at`20f2a971b5fa3c0b2c65ab08712c32febb894f93`,using the same557-file projection
 with only`src/program/generate.cpp`changed by the reversible fix/diagnostic delta
 `5465f65d0`to`f8f632341`. Source/compiler/runtime/configuration are pinned before
-compilation. Keep the current521c175nine-ELF generation as the validated fallback
+compilation. The new CPU build succeeds with1451covered actual compiler inputs,
+29external link inputs and all nine target ELFs. Its engine SHA-256 is
+`bdba183e582c6b6bdcaa923d37b5d6282e834166a7b40b10f84b35d08efc310e`;
+all eight fixtures are byte-identical to the selected generation. Native source
+changes are confined to the program;236normalized compile commands,configure
+arguments,build environment and external link inputs match. The fixed-source
+Luna review finds no blocker for the named single-GPU scratch-lease route;
+multi-GPU stage failed-drain cleanup is outside that source decision. Prepare
+two fresh host-canary/traced-submission cases and reuse only the unchanged
+component evidence after exact source/recipe/fixture checks. Keep the current521c175nine-ELF generation as the validated fallback
 until the replacement's small device/model/lifecycle checks complete;compilation
 and the parallel source review do not establish model or performance adoption.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for

@@ -20779,7 +20779,7 @@
   },
   "adaptive_expert_cache_request_boundary_20261102": {
     "classification": "decision_support",
-    "status": "source_fixed_not_built_or_positive_swap_qualified",
+    "status": "fixed_source_built_single_gpu_review_passed_runtime_checks_pending",
     "schedulable_now": false,
     "finite_question": "On pinned 521c175, trace final serve decode-window adaptive copies into the next valid long-prefill cache loan/restore. Verify event and RAM-source lifetime, host/device residency publication, lease entry/return fences and reader admission. Cover GEN/GENI, next vs last window, STOP/cancel, malformed/error, QUIT and stdin EOF; say which paths prefill, defer safely or fail closed, with concrete counterexamples and runtime-proof limits.",
     "native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
@@ -20846,7 +20846,8 @@
     "review_findings": [
       "apply_pending(true) already precedes the next valid prefill; absence is not a finding.",
       "Unchecked event-record failures can leave a stale or unrecorded event. A later residency-table drain occurs after RAM exchange and cannot protect the H2D source at that earlier boundary.",
-      "Existing checked teardown drains registered queues while source/cache owners live; an uncertain drain fail-stops. Source review is not runtime fault reproduction."
+      "Existing checked teardown drains registered queues while source/cache owners live; an uncertain drain fail-stops. Source review is not runtime fault reproduction.",
+      "Fixed-source review finds no blocking defect for the named single-GPU scratch-lease route. Multi-GPU stage failed-drain cleanup is outside that decision;no guarantee is inferred for it."
     ],
     "implementation": {
       "path": "src/program/generate.cpp",
@@ -20854,10 +20855,24 @@
         "Propagate main/stage event-record failures from serve adaptation.",
         "Propagate standalone event-record failures,including the EOS branch after joining adaptation."
       ],
-      "built": false,
+      "built": true,
       "runtime_qualified": false,
       "positive_swaps_adopted": false,
-      "next_check": "Recover parent build inputs,replace the old-eight-ELF verifier dependency,then build and bounded-check the fixed path before positive-swap model comparisons."
-    }
+      "next_check": "Two fresh bounded device cases with exact source/compiler/ELF component reuse,then injected second-record failure and positive-swap next-GEN prefill lifecycle checks.",
+      "native_recipe_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+      "engine_sha256": "bdba183e582c6b6bdcaa923d37b5d6282e834166a7b40b10f84b35d08efc310e"
+    },
+    "fixed_source_review": {
+      "sha256": "d9900e0a21e52e834ff0c053fb40ef8fa51955059bd620c07cc79a79f4db51ec",
+      "bytes": 4524,
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "status": "source_fix_reviewed; named_single_gpu_runtime_gate_remains",
+      "reviewed_program_sha256": "040f7ae162375499cb60f1f5f56955172b5e038218eefd31df8a1dfdb7f107c9"
+    },
+    "runtime_review_gates": [
+      "Run a bounded traced/validated injected-failure case with two actual refill record attempts. Require ordinal 2 API failure, nonzero process exit before later prefill or ADAPT_COMMIT, and successful checked queue drain before owner release.",
+      "Then run a bounded traced/validated serve case with an observed positive swap and immediate next-request long GEN prefill; verify completion, RAM exchange commit, matching residency/payload, and table publication. Keep clean speed and broader model qualification separate."
+    ]
   }
 }
