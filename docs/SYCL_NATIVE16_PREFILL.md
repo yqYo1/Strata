@@ -705,10 +705,17 @@ qualify the later after-code history. Check common cache statistics after all
 four official warmups,before long generation. Native DONE precedes its stderr
 footer,so use a bounded5s wait at the paused gate and take offsets from the same
 complete log snapshot. Native source,ELFs and safety settings do not change.
-After source recovery and admission checks,the prior diagnostic's140raw/JIT
-files totaling25881204bytes and four closed research transactions totaling
-21926bytes are retired. Its record/runtime and two generated config/plan pairs
-remain while qualification consumes them. No new engine generation is created.
+The v5source's78related host tests finish with77passes and one optional real-
+tokenizer fixture skipped. An initial invocation missing`PYTHONPATH`failed to
+import one test module;the corrected invocation passes without a source/gate
+change. The controller rejects5invalid footer windows,5wrong-source/missing-
+warmup histories and4disabled-observer strings,without GPU execution.
+After original265-file source recovery from pushed history,the closed V1and
+prior cache diagnostic retire95more files totaling12419188bytes,including raw/
+JIT output,unused generated plans/runtime copies and the completed observer
+report/transactions. Only their two`record.json`files remain for current
+admission. The path/hash/reason manifest and original failed outcome are
+retained;both engine generations and separate legacy holds are unchanged.
 Next complete the repeated comparison and independent prefill checks,then
 separate remaining GPU kernel service from runtime/event waits with a bounded
 UnitTrace capture. Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
