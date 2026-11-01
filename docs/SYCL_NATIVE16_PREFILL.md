@@ -5,10 +5,15 @@
 The closed comparison's reference is the official2026.2source
 `032f4f8a535d857aaa2b5e8123e6662c26554571`,engine SHA-256
 `05c489eab7254417eb0e76a6f5c4c44a14fc837d83dd4056457d0138f522b29e`.
-Its seven executables remain only until the pending exact source/recipe and
-live-consumer retirement check before the next build. The13component
-and six fresh117Kmodel processes below qualify their stated scopes;they do not
-establish full model/task/decode/physical-context adoption.
+Its seven executables and obsolete source/build outputs are retired after
+recovering554native files,1447actual compiler inputs and the original
+f6407063f0a94d29c8b36ac361ec1c0b8c78f1e8recipe from pushed feature/sycl.
+Three small consumed manifests remain;740files/155728633B are removed. The
+first post-cleanup check exposed a deleted runtime-basis inventory;its exact
+bytes were restored from the retained identical component inventory without
+changing hashes. Selected555-source/1449-input/eight-ELF admission then passes.
+The13component and six fresh117Kmodel processes below qualify their stated
+scopes;they do not establish full model/task/decode/physical-context adoption.
 
 Historical6e40source and9853project/dependency inputs plus the final recipe are
 recovered and verified. Its engine and12fixtures are now retired;the unchanged
@@ -99,8 +104,11 @@ The selectedf6cea2source calls `native_proj`/oneMKL for these two producers;
 the GDN output already uses `native_proj16` when native16 is active,including
 outside chunk64. Do not change that output,QSA,HC,MoE,small alpha/beta GEMMs,
 generic `Gemm::native` dispatch or decode. Keep the existing oneMKL producer
-as the control selected before runtime initialization. No inference change is
-implemented or qualified by this plan.
+as the control selected before runtime initialization. The private FP32 endpoint is committed at
+e618f3466432dca7ee7435a399e7eb92ecfc06c3;production dispatch is unchanged.
+The555-source compile-only plan uses the exact production translation-unit
+flags and separate BMG G21 AOT link. Compilation,codegen and device validation
+are pending;no inference speed or adoption is established.
 
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
