@@ -48,7 +48,7 @@ def prepare():
         commands=[('compile',[base.COMPILER, '-O2', '-std=c++20', '-fno-sycl',
             '-fno-fast-math', '-ffp-contract=off', '-DCUTLASS_ENABLE_HEADERS_ONLY',
             '-DCUTLASS_ENABLE_SYCL', '-DSYCL_INTEL_TARGET',
-            '-isystem', '/opt/intel/oneapi/compiler/2026.2/include/sycl', '-isystem', tla,
+            '-isystem', '/opt/intel/oneapi/compiler/2026.2/include', '-isystem', tla,
             '-MD', '-MF', str(ROOT / 'inputs.d'), '-Wl,-t', str(base.P / FIXTURE),
             '-o', str(ROOT / 'ownership')]), ('host-proof',[str(ROOT / 'ownership')])],
         environment=dict(PATH='/usr/bin:/bin',HOME='/home/yayoi',LANG='C.UTF-8',LC_ALL='C.UTF-8',
