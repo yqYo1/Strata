@@ -623,8 +623,15 @@ publishing them. Both32769-read/zero-reuse requests emit24tokens with thinking e
 actual GDN16/MTP16 routes and dense/head/cache-loan restoration pass. This does
 not verify byte-exact cache payload,wire traffic,clean speed or sustained decode.
 Next compare zero/positive swaps using the same fixed binary and matched long
-generation. Keep payload/task,other exit paths,full256K and repeated independent
-prefill/decode adoption checks pending.
+generation. The next same-binary plan uses8swaps/every1 versus0swaps,with
+20ms CPU idle bound and all other settings fixed. Four official warmups precede
+one >=32K regular-code request with >=1K generated tokens per fresh process.
+Compare actual CPU expert work,cache hits,requested refill payload,nested decode
+clocks and end-to-end TG;one diagnostic pair cannot adopt the policy. Its
+controller recovers the closed positive check's original265-file inputs and
+allows only its own declared controller delta,without refreshing native hashes
+or invoking retired wait-plan dependencies. Keep payload/task,other exit paths,
+full256K and repeated independent prefill/decode adoption checks pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
