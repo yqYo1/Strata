@@ -84433,5 +84433,29 @@
       },
       "interpretation": "One descriptive pair:200us cuts whole-request CPU38.1549% but decode takes3.02207% longer. CPU pool-call wall adds7.54ms/window of7.87ms total difference;GPU reach adds0.27ms and draft prints the same33.62ms. This localizes the observed difference to a host scope,not specifically wake syscalls,CPU arithmetic,DRAM saturation or a causal hardware ceiling. Keep the20ms decode default;do not adopt200us. Faster prefill in this pair is a separate unqualified observation."
     }
+  },
+  "gdn16_pool_wait_raw_retirement": {
+    "complete": true,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261102-pool-wait-closures.json",
+      "sha256": "51e2c3f8e924fdcaf308da60ab8d626fd109000c05c5f91a9f1d64048ba660b3"
+    },
+    "files": 288,
+    "bytes": 51612661,
+    "source_recovery": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/pool-spin-diagnostic-v1",
+        "source_commit": "caa46d5e71e476e92ea4cf20c74da5a0291b1588",
+        "files": 262,
+        "aggregate_sha256": "3282c2f2fb674ccc80f91feae4fc74fada6e12316511b34ea328ec9f18680458"
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/pool-spin-timing-v2",
+        "source_commit": "6508753e209398c56078ae0ea9cac256b74196e6",
+        "files": 262,
+        "aggregate_sha256": "0c4602046cde3ab73b48dae271b75e0bc98073812c17c2f8d7cbc4fd0ceaaaf0"
+      }
+    ],
+    "retained": "Two closed root records/runtime inventories only. Successful raw/config/JIT/ownership output has no active consumer. Native9ELFs and named8ELF TTFT fallback unchanged;separate legacy provenance holds remain."
   }
 }

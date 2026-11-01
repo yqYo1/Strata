@@ -526,6 +526,12 @@ speed,task quality or adoption. Stop idle-bound-only tuning. Next audit the
 existing adaptive expert-cache path,including ownership and prefill restore,
 before a bounded trial that reduces the measured CPU expert work. Keep the
 current20ms decode default and the faster long-prefill development path.
+Both wait-comparison roots now retain only their record and runtime inventory.
+After recovering each original262-file source set from pushed history,
+288closed raw/config/JIT/ownership files totaling51612661bytes are retired with
+a path/hash/reason manifest. Their useful samples and decisions remain in Git;
+the generated arm files have no live consumer. Current9ELFs,the named8ELF
+TTFT fallback and separate legacy provenance holds remain unchanged.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
