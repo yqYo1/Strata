@@ -25,7 +25,7 @@ RESULT = base.RESULT
 ROOT = image.ROOT / 'resident-bench-v2'
 BUILD_KEY = 'official_gdn_fp32_resident_fixture_build_v2'
 CHECK_KEY = 'official_gdn_fp32_general_check_v1'
-SPEED_KEY = 'official_gdn_fp32_resident_speed_v1'
+SPEED_KEY = 'official_gdn_fp32_resident_speed_v2'
 FIXTURE = 'bench/sycl/gdn_projection_fp32_bench.cpp'
 CONTROLLER = Path(__file__).resolve()
 qualified.configure('tails-v2')
@@ -43,8 +43,12 @@ def prior():
     return row, qualified.current(row)
 
 
-def source_controls(row):
-    require(base.controls(row['source_commit'], controller=CONTROLLER) == row['controller_inputs'],
+def source_controls(row, reuse_revision=None):
+    changes = ()
+    if reuse_revision is not None and row['controller_inputs'].get(str(CONTROLLER.relative_to(base.P))) != digest(CONTROLLER):
+        changes = (str(CONTROLLER.relative_to(base.P)),)
+    require(base.controls(row['source_commit'], controller=CONTROLLER,
+            reuse_revision=reuse_revision, controller_changes=changes) == row['controller_inputs'],
             'measurement controller inputs changed')
     for name, sha in row['native_sources'].items():
         require(digest(base.P / name) == sha, 'measurement fixture changed')
@@ -150,11 +154,11 @@ def build():
     require(row['passed'], 'resident fixture build failed')
 
 
-def admitted_build():
+def admitted_build(reuse_revision=None):
     row = json.loads((ROOT/'record.json').read_text())
     require(base.committed(RESULT)[BUILD_KEY] == base.compact(row) and row['passed'] and
             row['stage'] == 'built-not-executed' and row['ownership_closed'] and not row['active'], 'closed committed build required')
-    source_controls(row); allowed = allowed_inputs()
+    source_controls(row, reuse_revision); allowed = allowed_inputs()
     for field in ('original_fixture_recipe', 'original_native_proof', 'original_device_proof'):
         asset = row[field]; require(digest(asset['path']) == asset['sha256'], 'original proof changed')
     asset = row['actual_compiler_inputs']; require(digest(asset['path']) == asset['sha256'], 'compiler manifest changed')
@@ -171,7 +175,8 @@ def admitted_build():
 
 def cases(speed):
     if speed:
-        return [dict(name='host-canary', args=[], trace=False, clean=False)] + [
+        return [dict(name='host-canary', args=[], trace=False, clean=False),
+                dict(name='clean-smoke', args=['--smoke'], trace=False, clean=True)] + [
             dict(name='resident-'+str(i), args=['--bench', str(i%2)], trace=False, clean=True) for i in range(3)]
     return [dict(name='host-canary', args=[], trace=False, clean=False),
         dict(name='rejections', args=['--guards'], trace=True, clean=False),
@@ -180,19 +185,28 @@ def cases(speed):
 
 
 def prepare(speed):
-    key = SPEED_KEY if speed else CHECK_KEY; root = ROOT/('speed-v1' if speed else 'general-v1')
+    key = SPEED_KEY if speed else CHECK_KEY; root = ROOT/('speed-v2' if speed else 'general-v1')
     require(key not in base.committed(RESULT) and not root.exists(), 'one fresh committed cohort only')
-    old, _ = prior(); built = admitted_build()
+    revision = base.basis.build.git(base.P, 'rev-parse', 'HEAD').decode().strip()
+    old, _ = prior(); built = admitted_build(reuse_revision=revision)
     refs = dict(build=dict(path=str(ROOT/'record.json'), sha256=digest(ROOT/'record.json')))
     if speed:
         path = ROOT/'general-v1/record.json'; check = json.loads(path.read_text())
         require(base.committed(RESULT)[CHECK_KEY] == base.compact(check) and check['passed'] and check['complete'] and
                 check['ownership_closed'] and check['fresh_faults'] == [], 'general/guard gate required before timing')
+        recovered = {n:hashlib.sha256(raw).hexdigest() for n,raw in
+            base.basis.build.blobs(base.P,check['source_commit'],check['controller_inputs'])}
+        require(recovered == check['controller_inputs'] and check['binary'] == built['binary'],
+            'original general qualification source/binary not recoverable')
         refs['general'] = dict(path=str(path), sha256=digest(path))
-    revision = base.basis.build.git(base.P, 'rev-parse', 'HEAD').decode().strip()
+        path = ROOT/'speed-v1/record.json'; failed = json.loads(path.read_text())
+        require(base.committed(RESULT)['official_gdn_fp32_resident_speed_v1'] == base.compact(failed) and
+            failed['stage']=='failed' and not failed['passed'] and failed['ownership_closed'] and
+            failed['failure_analysis']['native_exit_code']==0, 'preserve failed original observer gate')
+        refs['original_failed_speed'] = dict(path=str(path),sha256=digest(path))
     root.mkdir(mode=0o700)
     row = dict(stage='prepared', source_commit=revision, controller_inputs=base.controls(revision, controller=CONTROLLER),
-        native_sources={}, prerequisite_records=refs, binary=built['binary'],
+        native_sources={}, prerequisite_records=refs, binary=built['binary'], build_controller_admission=revision,
         **{k:old[k] for k in ('environment', 'canary', 'native_validation_probe', 'runtime_manifest', 'boot', 'driver')},
         cases=cases(speed), processes=[], commands_executed=[], active=False, ownership_closed=True,
         passed=False, complete=False, GPU_executed=False, model_executed=False, inference_adopted=False,
@@ -205,6 +219,8 @@ def prepare(speed):
             timing='Three fresh processes,arm-order0/1/0;four T4096/8192,N6144/10240 shapes. First shape calls separate,two warmups per arm,five alternating paired64-call batches. All setup/copies/numerical checks outside timing. Host interval includes submission,at-most-eight drains and ending barrier. Queue boundary gap may include host starvation;not physical busy. Native event sum separate;no oneMKL event-as-whole-service claim.',
             eligibility='Every steady batch>=50ms;median of five empty-control host times<=5% of every steady batch. Preserve ineligible samples;no batch resizing/retries. General correctness and final guards required. Per-shape follow-up eligible when every independent native/reference median host ratio<1 and all batches eligible;no minimum improvement floor.',
             observers='Correctness:pre-main UR validation,traced small cases,warning-only tails. Timing:remove UR tracing/validation/preload observers before exec,retain all safety settings;parent checks actual maps/environment at100ms intervals.',
+            provider_binding='Fresh clean small smoke before resident cohorts. All executable mappings must belong to the original pinned provider inventory. Clean mode requires actual libsycl plus forced Level Zero V2 adapter and NEO driver. External UR-loader/preload maps are additionally required only in validated mode;this SDK embeds private UR-loader code in libsycl. No runtime/provider hash is refreshed.',
+            controller_reuse='Explicit controller-only reuse of the same admitted build/general gate;only this Python controller may differ,at the committed admission revision. Exact C++ fixture,AOT objects,compiler/link inputs and executable remain unchanged.',
             optional_queue_timestamps='Record null if barrier events report SYCL errc::invalid;checked host timing remains authoritative. Other errors fail. Native returned-event profiling must succeed.',
             timer_sources=['https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc',
                 'https://github.khronos.org/SYCL_Reference/iface/event.html']),
@@ -222,7 +238,7 @@ def analyze(case, stdout, folder, pid):
         require(rows == [dict(kind='rejections', count=16, canaries_unchanged=True, passed=True)], 'rejection controls differ')
     else:
         validation = [v for v in rows if v['kind'] == 'validation']
-        if case['name'] == 'general-smoke': expected = [(1,6144,'general'),(129,10240,'general')]
+        if case['name'] in ('general-smoke','clean-smoke'): expected = [(1,6144,'general'),(129,10240,'general')]
         elif case['name'] == 'general-tails':
             expected = [(t,n,'general') for t in (1,127,128,129,255,256,257,8191,8192) for n in (6144,10240)] + \
                 [(t,n,'cancel') for t in (1,129) for n in (6144,10240)] + \
@@ -232,7 +248,7 @@ def analyze(case, stdout, folder, pid):
             v['passed'] and v['guards_inputs'] and v['FP64_spots'] == 64 and
             v['outputs'] == v['T']*v['N'] and 0 <= v['max_comparator_bound_fraction'] <= 1 and
             0 <= v['max_FP64_bound_fraction'] <= 1 for v in validation), 'numerical coverage differs')
-        if case['clean']:
+        if case['clean'] and case['name'].startswith('resident-'):
             timing = [v for v in rows if v['kind'] == 'timing']
             require(len(timing) == 68, 'timing rows missing')
             for t in (4096,8192):
@@ -276,10 +292,12 @@ def speed_decision(row):
 
 
 def run(speed):
-    key = SPEED_KEY if speed else CHECK_KEY; root = ROOT/('speed-v1' if speed else 'general-v1')
+    key = SPEED_KEY if speed else CHECK_KEY; root = ROOT/('speed-v2' if speed else 'general-v1')
     row = json.loads((root/'record.json').read_text())
     require(base.committed(RESULT)[key] == base.compact(row) and row['stage']=='prepared' and not (root/'owned').exists(), 'one frozen cohort only')
-    source_controls(row); old, providers = prior(); buildrow = admitted_build()
+    source_controls(row); old, providers = prior()
+    require(row['build_controller_admission']==row['source_commit'],'explicit committed build admission required')
+    buildrow = admitted_build(reuse_revision=row['build_controller_admission'])
     require(row['binary']==buildrow['binary'] and row['cases']==cases(speed) and all(row[k]==old[k]
         for k in ('environment','canary','native_validation_probe','runtime_manifest','boot','driver')), 'cohort envelope changed')
     for asset in row['prerequisite_records'].values(): require(digest(asset['path'])==asset['sha256'], 'cohort prerequisite changed')
@@ -334,10 +352,13 @@ def run(speed):
                 require(not(folder/'validation.log').exists() or (folder/'validation.log').stat().st_size==0,'parameter validation not quiet')
             details=analyze(case,stdout,folder,entry['pid'])
             if device:
-                required={row['environment']['STRATA_UR_PROBE_EXPECTED_LOADER'],env['ZE_ENABLE_ALT_DRIVERS'],
+                required={env['UR_ADAPTERS_FORCE_LOAD'],env['ZE_ENABLE_ALT_DRIVERS'],
                     '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0'}
-                if not case['clean']:required.add(env['LD_PRELOAD'])
-                require(env_seen and required<=mapped,'actual provider observation incomplete');row['GPU_executed']=True
+                if not case['clean']:required.update((env['LD_PRELOAD'],env['STRATA_UR_PROBE_EXPECTED_LOADER']))
+                if not env_seen or not required<=mapped:
+                    row['failed_process_observation']=dict(name=active,environment_observed=env_seen,
+                        mapped=sorted(mapped),missing=sorted(required-mapped),exit_code=entry['exit_code'])
+                require(env_seen and required<=mapped,'actual provider observation incomplete: '+repr(required-mapped));row['GPU_executed']=True
             check=dict(host_probe_accepted=True);runtime.validation.finish(check,owner,cursor,row['boot'])
             require(check['passed'] and check['driver_after']==row['driver'],'fault/ownership gate failed')
             row['processes'].append(dict(name=active,passed=True,exit_code=0,clean_speed=case['clean'],
@@ -345,7 +366,7 @@ def run(speed):
                 proc_observation=observer.summary(),ownership_closed=True,details=details,
                 environment_sha256=hashlib.sha256(json.dumps(env,sort_keys=True).encode()).hexdigest()))
             observed.update(mapped);persist();print('Passed '+active,flush=True)
-        source_controls(frozen);prior();admitted_build()
+        source_controls(frozen);prior();admitted_build(reuse_revision=row['build_controller_admission'])
         require(base.committed(RESULT)[key]==base.compact(frozen),'frozen comparison plan changed')
         if speed: row['component_decisions']=speed_decision(row)
         row.update(stage='resident-speed-closed' if speed else 'general-check-passed',complete=True,host_probe_accepted=True)
@@ -356,7 +377,8 @@ def run(speed):
         if row.get('driver_after')!=row['driver']:row['passed']=False
         if not row.get('passed'):row['stage']='failed'
         if row.get('GPU_execution_requested') and not row['GPU_executed']:row['GPU_executed']=None
-        row.update(active=bool(owner and owner.active),observed_provider_count=len(observed),ordinary_runtime_teardown_qualified=False)
+        row.update(active=bool(owner and owner.active),observed_provider_count=len(observed),ordinary_runtime_teardown_qualified=False,
+            commands_executed=owner.commands if owner else [])
         require(owner is None or owner.active is None,'GPU process ownership unresolved');save(root,key,row)
     print(json.dumps({k:row.get(k) for k in ('stage','passed','GPU_executed','fresh_faults','error','component_decisions')}),flush=True)
     require(row['passed'],'resident GDN cohort failed')

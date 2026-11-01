@@ -193,6 +193,21 @@ OneMKL remains a comparator;the general-data bounds do not assume its internal
 accumulation from the public type tuple. Full model/task/physical262144 gates
 remain pending. Current engine speed evidence is unchanged.
 
+The first resident-speed cohort stops after its first native process. All four
+shapes complete their checks and timing rows and the child exits0,but the
+controller requires an external UR-loader mapping after removing the validation
+preload. The original gate remains failed,with all68timing rows and checked child
+closure recorded as unqualified evidence;no speed decision is drawn from it.
+This installed libsycl ELF has no DT_NEEDED UR-loader entry and contains private
+ur_lib/ur_loader implementation symbols. A fresh controller-only V2plan therefore
+first checks two small clean-mode shapes and their actual libsycl,forced V2
+adapter and NEO mappings against the unchanged84-provider inventory. Validated
+mode still requires the external loader/preload as well. This changes no native
+source,compiler input,executable,queue or runtime safety setting. The original
+general-data qualification is recovered from Git;the new controller's exact
+reuse revision is explicit before execution. V2then repeats all three fresh
+resident processes with the original timing/precision/eligibility criteria.
+
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
 weights are50MiB and30MiB,so these shapes do not require N-splitting. Reuse
