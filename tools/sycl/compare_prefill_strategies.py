@@ -22,7 +22,7 @@ import prefill_resources as original
 
 comparison, shared, build = model.comparison, model.shared, model.build
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT, KEY = model.gdn16.ROOT/'model-speed-v1', 'gdn16_model_speed_v1'
+ROOT, KEY = model.gdn16.ROOT/'model-speed-v2', 'gdn16_model_speed_v2'
 READS, RUNS = (65537, 117489), 4
 ARMS = ('candidate', 'reference', 'reference', 'candidate', 'candidate', 'reference')
 CASES = [(read, arm) for pair in range(3) for read in READS for arm in ARMS[2*pair:2*pair+2]]
@@ -90,12 +90,18 @@ def gdn_selection(text, arm):
 
 
 def native16_route(text,read):
-    policies=[dict(re.findall(r'(\w+)=([^\s;]+)',v)) for v in text.splitlines()
-              if v.startswith('strata prefill policy: ')]
-    require(len(policies)==1 and policies[0]==dict(requested='throughput',route='layer-major',
-            tokens=str(read-1),chunk='8192') and
+    actual=[dict(re.findall(r'(\w+)=([^\s;]+)',v)) for v in text.splitlines()
+            if v.startswith('strata prefill: layer-major candidate, ')]
+    require(len(actual)==1 and all(actual[0].get(k)==v for k,v in
+            dict(tokens=str(read-1),chunk='8192',residual_dtype='bf16').items()) and
             len([v for v in text.splitlines() if v.startswith('strata prefill: native16 BF16 HC ')])==1,
             'actual native16 throughput route differs')
+    # The policy line is trace-only; the actual execution headers above are
+    # always emitted. If tracing supplies a policy, it must agree as well.
+    policies=[dict(re.findall(r'(\w+)=([^\s;]+)',v)) for v in text.splitlines()
+              if v.startswith('strata prefill policy: ')]
+    require(not policies or policies==[dict(requested='throughput',route='layer-major',
+            tokens=str(read-1),chunk='8192')], 'trace policy disagrees with actual native16 route')
 
 
 def request_route(text, plan):
@@ -148,14 +154,22 @@ def decision(processes):
 
 def selfcheck():
     result = dict(route=comparison.selfcheck(), finalization=original.finalization_controls())
-    good='strata prefill policy: requested=throughput route=layer-major tokens=65536 chunk=8192\nstrata prefill: native16 BF16 HC residual/projection IO\n'
+    main='strata prefill: layer-major candidate, tokens=65536 chunk=8192 residual_dtype=bf16\n'
+    native='strata prefill: native16 BF16 HC residual/projection IO\n'
+    trace='strata prefill policy: requested=throughput route=layer-major tokens=65536 chunk=8192\n'
+    good=main+native
     native16_route(good,65537)
-    for wrong in ('',good+good,good.replace('throughput','ttft'),good.replace('tokens=65536','tokens=65535'),
-                  good.replace('chunk=8192','chunk=0'),good.replace('native16 BF16 HC','FP32 HC')):
+    native16_route(trace+good,65537)
+    invalid=('',good+good,trace+native,good.replace('tokens=65536','tokens=65535'),
+             good.replace('chunk=8192','chunk=0'),good.replace('residual_dtype=bf16','residual_dtype=fp32'),
+             good.replace('native16 BF16 HC','FP32 HC'),trace.replace('throughput','ttft')+good,
+             trace.replace('route=layer-major','route=chunked')+good,trace+trace+good,
+             trace.replace('tokens=65536','tokens=65535')+good,trace.replace('chunk=8192','chunk=0')+good)
+    for wrong in invalid:
         try:native16_route(wrong,65537)
         except RuntimeError:pass
         else:raise RuntimeError('invalid native16 actual route accepted')
-    result['native16_route']=dict(positive=1,negative=6)
+    result['native16_route']=dict(positive=2,negative=len(invalid))
     base = 'strata prefill: GDN columns=4 workgroups=192 lanes=128'
     tail = ' epilogue=GPU_FP32_same_order scratch=existing_y'
     for arm, header in [('reference', base+' barriers=3'+tail), ('candidate', base+' barriers=3'+tail)]:
@@ -209,6 +223,7 @@ def prepare():
         whole_bytes=800 << 20, budgets=dict(wall=1800, cpu=5400, rss_cap=104 << 30, text_cap=16 << 20,
             file_cap=16 << 20, total_cap=64 << 20),
         plan=dict(question='Does production GDN16 storage improve long prefill and client TTFT over the preserved FP32 GDN route in this exact same engine?',
+            prior_campaign='gdn16_model_speed_v1 remains failed:its clean end-gate parser required a trace-only policy line. V2 requires the always-on actual geometry/native16 headers and checks any optional policy for consistency. Same engine,arms,workloads,criteria and safety settings;fresh processes only.',
             order='12fresh processes:3paired comparisons per64K/117K length,interleaved lengths;candidate/reference,reference/candidate,candidate/reference. Four exact-input thinking-on fresh requests each;first use separate,median of subsequent3 is the process unit.',
             placement='Same per-length config in both arms:head retirement0at64K,1at117K,chosen from closed official_joint_speed_v1. Manual benchmark settings,not an automatic threshold. Full GPU BF16 residuals,384staged slots/ordinary64K,128staged slots/checked split117K. Same1256decode slots,5workers,spec4,8192chunk,131072INT8resident context,Top-k0,originalDown,qualified immutable runtime safety.',
             differences='One exact engine and identical per-length settings. Only STRATA_SYCL_PREFILL_GDN_FP16 differs:1candidate,0reference,set before exec and immutable. Both request explicit throughput,native16 BF16 main tensors and3GDN barriers. This measures the complete storage/producer/consumer mechanism including dequantization and routing effects,not just the resident component. No clean model speed inherited.',
