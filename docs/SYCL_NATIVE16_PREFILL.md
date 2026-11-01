@@ -532,6 +532,18 @@ After recovering each original262-file source set from pushed history,
 a path/hash/reason manifest. Their useful samples and decisions remain in Git;
 the generated arm files have no live consumer. Current9ELFs,the named8ELF
 TTFT fallback and separate legacy provenance holds remain unchanged.
+The current nine-ELF generation now also passes its explicit`ttft`model check
+(`gdn16-ttft`,controller/source admission`dfa9bd9c5`):two32769-read,zero-reuse,
+thinking-on requests each emit24tokens,with normal native exit0,quiet validation,
+closed owners,no fresh fault and all15final model hashes passing. The actual
+chunked route retains dense/head/MTP weights and retires/restores its cache loan;
+no throughput-only GDN16 storage calls occur. Prefill is94.8646/91.6617s
+(345.4/357.5tok/s),client TTFT94.988/91.790s. This qualifies route availability,
+not a latency gain at32K,clean speed,sustained decode,task quality or physical
+262144/RESTORE. Both manual strategies work in the same binary. Before another
+native generation,replace the build verifier's actual dependency on the old
+eight ELFs with recovered parent-source evidence,then retire those unused
+executables;do not remove them while`allowed_inputs`still calls`retained.verify`.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
