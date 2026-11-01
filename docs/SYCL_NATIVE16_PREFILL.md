@@ -222,16 +222,14 @@ batches per arm/length. All60steady batches are eligible;all numerical,provider,
 source,ownership and fresh-fault checks pass. Intervals below are the median of
 three process medians;ratios are the paired process geometric mean.
 
-| Rows T | FP32,ms | SYCL-cast FP16,ms | FP16/FP32 time GM |
-| ---: | ---: | ---: | ---: |
-| 4096 | 16.34054 | 15.64189 | 0.957553 |
-| 8192 | 33.06911 | 31.04379 | 0.938721 |
-
-The typed path takes4.24%and6.13%less time in this resident packed component,
+The raw-MKL typed path takes4.24%and6.13%less time at4096/8192rows,
 excluding dequantization,PCIe,output projection and model execution. Both
 lengths pass their prospective component follow-up screen. The prior slower
 software-half result remains rejected. This does not establish model PP,
-physical resource saturation,quality or inference adoption.
+physical resource saturation,quality or inference adoption. Original individual
+samples and source identity remain at`abb50990cf3fbf1d3213add80c71ca70ae7f981b`
+and in the performance CSV;the production-wrapper comparison below supersedes
+this raw-call screen as the next model-entry consumer.
 
 The production connection is now authored in`26f33c7a8`:an opt-in half-output
 Gemm entrypoint and typed consumers in native16 layer-major long prefill.
@@ -248,8 +246,24 @@ T1/T17smoke and ten general/pattern cases:the same conversion corpus,rounded
 storage/state/history/output,FP64producer spots,guards,18GDN and15vendor-wrapper
 no-write refusals per non-benchmark process. Validation is quiet,actual providers
 match,all three process owners close and no fresh driver fault appears. This
-qualifies the component only;model and clean speed checks remain pending.
+qualifies the component only.
 The source-only integration audit is indexed separately.
+The actual-wrapper clean speed cohort now also passes:three fresh processes,
+five alternating64-call batches per arm/length,all60steady batches eligible.
+All three paired process medians favor FP16 at both lengths;first calls remain
+separate. Intervals are median of process medians;ratios are paired geometric means.
+
+| Rows T | FP32 production API,ms | FP16 production API,ms | FP16/FP32 time GM |
+| ---: | ---: | ---: | ---: |
+| 4096 | 16.32147 | 15.65170 | 0.958236 |
+| 8192 | 33.06543 | 31.04602 | 0.939055 |
+
+The full wrapper retains4.18%/6.09%less component time. This is not a model
+speedup:weight dequantization,PCIe and output projection are still excluded.
+Model-entry modes now preserve one binary for throughput with GDN FP16 on/off
+and TTFT with the option enabled but the typed long route inactive. They require
+both new component gates and the reviewed eight-file source integration before
+their separate exact32769-token,thinking-on model plan can be prepared.
 Qualify actual wrapper costs,allocation ownership,real-model range and decode
 handoff before adoption. The component executable and closed raw output are retired after exact
 original-source/recipe/input recovery from pushed history;retain selected
