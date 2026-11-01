@@ -464,8 +464,10 @@ The next bounded discriminator uses the same binary and existing immutable
 `STRATA_POOL_SPIN_US` knob:explicit20000us versus0us,with MTP16fixed.
 Zero still checks the clock only after1024pause iterations. The actual projected
 CPU pool differs from HEAD only by absent optional service observers;the startup
-knob and20ms default are present. The new controller is committed at`8f85b1b5f`;
-execution and the prospective plan are separate gates. It measures one33K code
+knob and20ms default are present. Controller`1d08e837b` passes three CPU
+accounting controls,four rejected windows and a replay of the actual retained
+prefill partition. The fresh plan is frozen from`caa46d5e7` with262source inputs;
+two frontend probes precede GPU execution. It measures one33K code
 request per process plus four official warmups,read-only request CPU snapshots
 and the existing disjoint main-thread prefill accounting. Lower CPU use alone is
 not a speedup;prefill and decode require independent repeated phase comparisons
