@@ -81947,7 +81947,7 @@
     "limits": "Only named closed raw outputs and7closed research transaction/scope-selection files retired. Current nine-ELF build and TTFT-option eight-ELF fallback remain;legacy build/source holds still need bounded follow-up. No global retirement or new GPU validation claim."
   },
   "gdn16_mtp16_generation_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "d21705f3279da9b86d6ac0ad2cbcc74e41d31b2e",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/build/strata",
@@ -82240,12 +82240,39 @@
         "environment_sha256": "d525de261ff956d55cf45d2f1fade7801da231c5e7fde69fb4dfe2347fb9c784"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "candidate",
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 605809,
+          "start_ticks": 190003711,
+          "sid": 605665
+        },
+        "request_routes_checked_before_continue": 0,
+        "error": "RuntimeError('owned official benchmark failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "controls": {
       "passed": true,
       "GPU_executed": false,
@@ -82283,6 +82310,34 @@
         "passed": true
       }
     ],
+    "diagnosis": {
+      "cause": "Controller treated two human-readable headroom labels after the semicolon as duplicate structured fields;native long request completed before the end gate acknowledgement.",
+      "original_owner_error": "RuntimeError('duplicate native field')",
+      "source_commit": "d21705f3279da9b86d6ac0ad2cbcc74e41d31b2e",
+      "native_header": "strata prefill: layer-major candidate, tokens=33209 chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total=680120320 residual_gpu_rows=33209 residual_gpu=680120320 residual_host=0 residual_staging=0 layer_cache=1022361600; extra allocations, GPU headroom=536870912, RAM headroom=8589934592",
+      "native_header_sha256": "b29872d568ad46e76d7a8ce07d6e197f75443c761d235039d74c97592f555951",
+      "partial_native_observation": {
+        "read_tokens": 33210,
+        "reused_tokens": 0,
+        "generated_tokens": 2869,
+        "prompt_ms": 50760,
+        "decode_ms": 214341,
+        "drafts_accepted": 2061,
+        "drafts_offered": 2427,
+        "qualified": false,
+        "reason": "Client end gate not acknowledged;no closed journal/result or normal native exit. Trace/validation diagnostic,not clean speed."
+      },
+      "cleanup": {
+        "observation_complete": false,
+        "session_empty": true,
+        "direct_child_reaped": true,
+        "ownership_status": "observed",
+        "survivors": [],
+        "same_identity_still_present": false
+      },
+      "next": "Commit parser boundary fix and actual-log CPU check;new V2 root/plan before another GPU execution. Original V1 remains failed.",
+      "raw_consumer": "Main CPU route-parser replay against this completed native request;review and retire after V2 closure."
+    },
     "source_inputs": {
       "files": 261,
       "aggregate_sha256": "9cc63d78c95dc4324c75dfcaa929d0ed17ee718a73b551fd94a3b8b925206b47"
