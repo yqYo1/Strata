@@ -67297,7 +67297,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "e40018e330c7baf5740025b274e5fd4c7c2c0115",
     "cases": [
       {
@@ -67313,13 +67313,26 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "environment_observed": false,
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        }
+      }
+    ],
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "passed": false,
     "complete": false,
-    "GPU_executed": false,
-    "GPU_execution_requested": false,
+    "GPU_executed": null,
+    "GPU_execution_requested": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -67436,6 +67449,157 @@
       "sha256": "34044d55d6ad0236102e86ed8702939b371cda88154c8e5c63d363df9c45e814",
       "original_controller_source": "f31837203b8f7911ef76d1b2d8f0d4d7c904b75b",
       "scope": "Same image,fixture,host proof,providers and safety settings;new controller and additional device shapes only."
+    },
+    "host_probe_accepted": false,
+    "failed_case": "fp32-tails",
+    "error": "RuntimeError('native process failed: fp32-tails: strata UR validation: pid=2827139 phase=begin loader=/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0\\nstrata UR validation API: pid=2827139 operation=preinit result=37\\nstrata UR validation API: pid=2827139 operation=config-create result=0\\nstrata UR validation API: pid=2827139 operation=layers-size result=0\\nstrata UR validation API: pid=2827139 operation=layers-query result=0\\nstrata UR validation API: pid=2827139 operation=enable result=0\\nstrata UR validation API: pid=2827139 operation=first-init result=0\\nstrata UR validation API: pid=2827139 operation=config-release result=0\\nstrata UR validation API: pid=2827139 operation=postinit result=46\\nstrata UR validation: pid=2827139 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\ncase-start T=1 N=6144 ld=6148\\nnative-complete\\nreference-complete\\ncase-start T=1 N=10240 ld=10244\\nnative-complete\\nreference-complete\\ncase-start T=127 N=6144 ld=6148\\nnative-complete\\nreference-complete\\ncase-start T=127 N=10240 ld=10244\\nnative-complete\\nreference-complete\\ncase-start T=128 N=6144 ld=6160\\nnative-complete\\nreference-complete\\ncase-start T=128 N=10240 ld=10256\\nnative-complete\\nreference-complete\\ncase-start T=129 N=6144 ld=6148\\nnative-complete\\nreference-complete\\ncase-start T=129 N=10240 ld=10244\\nnative-complete\\nreference-complete\\ncase-start T=255 N=6144 ld=6148\\nnative-complete\\nreference-complete\\ncase-start T=255 N=10240 ld=10244\\nnative-complete\\nreference-complete\\ncase-start T=256 N=6144 ld=6160\\nnative-complete\\nreference-complete\\ncase-start T=256 N=10240 ld=10256\\nnative-complete\\nreference-complete\\ncase-start T=257 N=6144 ld=6148\\nnative-complete\\nreference-complete\\ncase-start T=257 N=10240 ld=10244\\nnative-complete\\nreference-complete\\ncase-start T=8191 N=6144 ld=6148\\nnative-complete\\nreference-complete\\ncase-start T=8191 N=10240 ld=10244\\nnative-complete\\nreference-complete\\ncase-start T=8192 N=6144 ld=6160\\nnative-complete\\nreference-complete\\ncase-start T=8192 N=10240 ld=10256\\nnative-complete\\nreference-complete\\n')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 0,
+    "ordinary_runtime_teardown_qualified": false,
+    "failure_analysis": {
+      "mechanism": "Observer /proc exit race;original observation gate remains failed.",
+      "observer_error": "RuntimeError('live native /proc access denied')",
+      "native_exit_code": 0,
+      "native_final_PASS": true,
+      "quiet_parameter_validation": true,
+      "partial_numerics": {
+        "shape_columns": [
+          "T",
+          "N",
+          "ldy",
+          "not_FP16_representable_outputs"
+        ],
+        "shapes": [
+          [
+            1,
+            6144,
+            6148,
+            3351
+          ],
+          [
+            1,
+            10240,
+            10244,
+            5585
+          ],
+          [
+            127,
+            6144,
+            6148,
+            425577
+          ],
+          [
+            127,
+            10240,
+            10244,
+            709295
+          ],
+          [
+            128,
+            6144,
+            6160,
+            428928
+          ],
+          [
+            128,
+            10240,
+            10256,
+            714880
+          ],
+          [
+            129,
+            6144,
+            6148,
+            432279
+          ],
+          [
+            129,
+            10240,
+            10244,
+            720465
+          ],
+          [
+            255,
+            6144,
+            6148,
+            854505
+          ],
+          [
+            255,
+            10240,
+            10244,
+            1424175
+          ],
+          [
+            256,
+            6144,
+            6160,
+            857856
+          ],
+          [
+            256,
+            10240,
+            10256,
+            1429760
+          ],
+          [
+            257,
+            6144,
+            6148,
+            861207
+          ],
+          [
+            257,
+            10240,
+            10244,
+            1435345
+          ],
+          [
+            8191,
+            6144,
+            6148,
+            27448041
+          ],
+          [
+            8191,
+            10240,
+            10244,
+            45746735
+          ],
+          [
+            8192,
+            6144,
+            6160,
+            27451392
+          ],
+          [
+            8192,
+            10240,
+            10256,
+            45752320
+          ]
+        ],
+        "all_reported_ULP_zero": true,
+        "all_reported_guards_oneMKL_retirement_passed": true
+      },
+      "next": "Qualify a bounded pidfd-backed /proc retirement grace on host;commit a new controller/plan and repeat18shape gate. Do not refresh the failed result or reset GPU."
+    },
+    "closure_reconciliation": {
+      "direct_child_reaped": true,
+      "owned_session_empty": true,
+      "no_cleanup_signals": true,
+      "old_process_identity_absent": true,
+      "original_observation_complete": false,
+      "original_gate_passed": false
     },
     "controller_inputs": {
       "files": 43,
