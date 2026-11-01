@@ -65591,5 +65591,165 @@
       "retained_admission_after": true,
       "scope": "Rejected prototype generation and closed audit/transaction output only;current eight-ELF engine and independent ProcObserver fix remain. Separate14legacy provenance holds unchanged."
     }
+  },
+  "official_gdn_storage_fixture_build_v1": {
+    "stage": "prepared",
+    "source_commit": "605e73d451b3425fa275e6e917069909d39d8f7c",
+    "selected_native_source": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
+    "selected_engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/strata",
+      "sha256": "2bcad061b8e7eaae8a15d0775a4d03f3c2c33fcdd76631399764e08bbe4d170f",
+      "bytes": 23994384
+    },
+    "original_compile_database": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/compile_commands.json",
+      "sha256": "d3f7ecfaa4eae9319111de9fbbe83faa91e72ee8a87bfc55be9d11e7a2bb723a"
+    },
+    "original_Runtime_command": {
+      "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build",
+      "command": "/opt/intel/oneapi/compiler/2026.2/bin/icpx -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include/strata/sycl/compat -fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -o CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o -c /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/src/sycl/runtime.cpp",
+      "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/src/sycl/runtime.cpp",
+      "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o"
+    },
+    "commands": [
+      [
+        "fixture-object",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-isystem",
+          "/opt/intel/oneapi/mkl/2026.1/include",
+          "-DMKL_ILP64",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/fixture.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/fixture.o",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_projection_storage.cpp"
+        ]
+      ],
+      [
+        "runtime-object",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/runtime.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/runtime.o",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/src/sycl/runtime.cpp"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-O3",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fsycl-allow-device-image-dependencies",
+          "-Wl,-t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/fixture.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/runtime.o",
+          "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+          "-lm",
+          "-ldl",
+          "-lpthread",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/gdn-storage"
+        ]
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/cache"
+    },
+    "budgets": {
+      "wall": 300,
+      "cpu": 900,
+      "rss_cap": 5368709120,
+      "text_cap": 16777216,
+      "file_cap": 268435456,
+      "total_cap": 1073741824
+    },
+    "plan": {
+      "scope": "CPU compile/link only;new resident oneMKL storage diagnostic,not model qualification.",
+      "arms": [
+        "oneMKL half/half/float",
+        "oneMKL half/half/half",
+        "oneMKL half/half/float plus explicit half conversion"
+      ],
+      "numerical": "Finite normal half operands,certified absolute dot sum <65504;FP32-error-plus-half-rounding diagnostic,not proof of vendor accumulation type or model quality.",
+      "next": "Commit a separately bounded canary/traced smoke before device validation;require its gates before clean3-process speed cohort.",
+      "speed": "4096/8192 rows x6144/10240 columns,K2560;3fresh rotated-order processes,5x128-call batches per arm/shape;first calls separate;100ms floor and <=5%empty-control overhead.",
+      "retained": "Selected eight-ELF engine is unchanged fallback. This one fixture is for the imminent GDN3 storage decision;retire it if rejected."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "GPU_executed": false,
+    "controller_inputs": {
+      "files": 38,
+      "aggregate_sha256": "1db11c9e602d6b2a42ad1d4c773694816942a2632e63fb7659f1605931b368e6"
+    },
+    "native_sources": {
+      "files": 2,
+      "aggregate_sha256": "cf278030c2ced82b45c4af33127b1d1ba8a8194028a9debc98eb9f195f1ca8eb"
+    }
   }
 }
