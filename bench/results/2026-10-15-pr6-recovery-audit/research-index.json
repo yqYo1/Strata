@@ -20159,7 +20159,7 @@
   },
   "native_half_conversion_codegen_collection_20261101": {
     "classification": "knowledge_collection",
-    "status": "completed_native_review_pending",
+    "status": "reviewed_indexed_collection",
     "schedulable_now": false,
     "question": "Compare native FP16-bit to FP32 casts and integer bit-decomposition converters on Intel Xe2/SYCL,including subnormals,signed zero,NaNs,infinities,alignment,SPIR-V/LLVM/IGC lowering and compiler floating-point flags. Use primary compiler/runtime/spec source and original technical studies from SIMD/GPU imaging or scientific computing where transferable. Separate instruction/semantic evidence from measured throughput and CPU fallback claims. Discuss which finite discriminating conversion/IR/ISA tests could decide whether the existing software converter is expensive or necessary;do not execute them. Existing historical CUDA conversion failures do not establish a current Intel failure.",
     "prerequisites": {
@@ -20200,6 +20200,18 @@
       "bytes": 11838,
       "sha256": "f7ed404ac8263a1f6047f1ee5863fd77f7a793bdff6f3f722779c2b1edcb4d42"
     },
-    "report_body_read_by_Main": false
+    "report_body_read_by_Main": false,
+    "review_asset": {
+      "path": ".cache/research/2026-11-01/native_half_conversion_codegen_collection_20261101.review.json",
+      "bytes": 8336,
+      "sha256": "a7bf8677e8b64e32353d53f6fdd7fbfde19c2980b6c40725579d6a1caec12579",
+      "model": "native Codex gpt-6-luna max"
+    },
+    "review_digest": "Retain as conditional conversion-lowering reference. Scope OpenCL vstore_half/vload_half guarantees to those APIs;SYCL fp16 aspect alone does not guarantee half-denormal support,and OpenCL SPIR-V permits FP16 subnormal FTZ. Cited IGC emulation flag concerns only FP64-to-FP16. No installed Xe2 IR/ISA/timing/CPU fallback evidence collected;historical CUDA failure is not Intel evidence.",
+    "next_research_eligibility": {
+      "schedulable_now": false,
+      "prerequisite": "Main must produce pinned conversion correctness/IR/ISA/timing artifacts before artifact-review follow-up."
+    },
+    "retention_review": "Indexed method collection for an actual native-half versus software-bit conversion-cost question. Main does not read body on arrival;review need after first typed GDN3 compound performance decision."
   }
 }
