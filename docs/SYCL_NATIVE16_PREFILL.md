@@ -325,8 +325,8 @@ prefill needs about1.8541s less time to reach1000. The observer bug is resolved
 by the original live scenario.
 Select GDN16on in the current nine-ELF generation for the next development and
 profiling step;retain the eight-ELF two-strategy generation for its still-needed
-qualified fallback and option-preservation checks. Next adapt the maintained
-resource-profile controller to this exact117Kroute,recording kernel service,
+qualified fallback and option-preservation checks. The maintained
+resource-profile controller now targets this exact117Kroute,recording kernel service,
 requested transfers/overlap and disjoint CPU work/submission/wait time. The
 limiting physical resource remains unknown;kernel service shares alone cannot
 establish arithmetic,VRAM or PCIe saturation. Keep clean speed separate from
@@ -335,6 +335,15 @@ the next change;64K384-slot ordinary and117K128-slot split routes cannot share
 an assumed physical fixed-plus-linear model. Broader task/agent,TTFT-option,
 sustained decode and physical262144model/RESTORE gates remain pending;24outputs
 per request qualify none of those by themselves.
+The current resource-profile V2plan is prepared after17CPU rejection controls.
+V1preparation refused an older collector audit's Python-parser fingerprint;its
+original refusal remains recorded. The reviewed delta only extends the census
+parser's explicit row bound/job groups;all31original collector inputs are
+recovered,and460actual compiler inputs,generated code,recipe and both tool ELFs
+are checked unchanged. No new native build is claimed. Execute the current
+frontend/prefix probes and same-build606-launch submission/62-launch native-graph
+fixtures before the single controlled117Kmodel request. Hardware-resource
+attribution and observer cost remain unqualified until that request closes.
 The closed cohort's raw output is retired after recovering its261source inputs
 from pushed history. Keep its full qualification record and runtime inventory
 for the next profile;the unchanged admission passes after deletion.
