@@ -98,7 +98,14 @@ class ExitObservation(unittest.TestCase):
         def bad_provider():
             raise RuntimeError('unplanned provider')
         with self.assertRaisesRegex(RuntimeError, 'unplanned provider'):
-            observer.sample(bad_provider, lambda: True)
+            observer.sample(bad_provider, lambda: False)
+        self.assertEqual(observer.successful_samples, 0)
+
+    def test_positive_exit_does_not_parse_zombie_maps(self):
+        observer = ProcObserver()
+        def no_longer_live():
+            self.fail('positive pidfd exit must precede any further /proc access')
+        self.assertFalse(observer.sample(no_longer_live, lambda: True))
         self.assertEqual(observer.successful_samples, 0)
 
     def test_missing_file_requires_exit_or_finite_grace(self):

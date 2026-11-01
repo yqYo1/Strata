@@ -22,6 +22,11 @@ class ProcObserver:
 
     def sample(self, observe, exited):
         """Try a snapshot; tolerate a short gap, never infer exit from it."""
+        if exited():
+            # An unreaped zombie can expose an empty readable maps file. It is
+            # no longer a live provider snapshot; do not parse it as one.
+            self.exit_confirmed_after_unavailable |= self.unavailable_since is not None
+            return False
         try:
             observe()
         except (PermissionError, FileNotFoundError, ProcessLookupError) as error:
