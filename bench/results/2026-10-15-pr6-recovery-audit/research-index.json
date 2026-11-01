@@ -20104,8 +20104,8 @@
   },
   "gdn16_typed_consumer_audit_20261101": {
     "classification": "decision_support",
-    "status": "eligible_not_started",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "Audit the actual new prefill-only gdn_conv_f16 and gdn_recurrence_barriers3_f16 against unchanged FP32 GDN3:typed packed spans,subgroup uniformity,history T=1/2/3 tails,three-barrier hazards,state ownership,raw scratch versus normalized output and decode isolation. Explain required rounded-storage reference tests and real model range/precision limits. Identify concrete bugs or counterexamples,not a generic source tour. Main is writing the compound packed producer/consumer fixture separately;this review does not cover its future bytes.",
     "prerequisites": {
       "satisfied": true,
@@ -20123,12 +20123,26 @@
     "worker_model": "Orca gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
     "ownership": "Only read source/docs/web and write the single named report;no Git commands,builds,tests,GPU,profilers,process inspection,cleanup,product edits,extra agents or messages to others. Main owns implementation/testing. Do not conduct generic startup Git/job checks.",
-    "consumer": "Main implementation and next packed GDN3 component comparison"
+    "consumer": "Main implementation and next packed GDN3 component comparison",
+    "execution": {
+      "run": "run_4096847f7211",
+      "task": "task_10abf1700a54",
+      "dispatch": "ctx_37b973c73a3e",
+      "terminal": "term_f7426ef8-1174-4c65-8b12-ed55c0db58e0",
+      "initial_failed_dispatch": "ctx_b1aba1221cef",
+      "initial_failure": "agent-update-prompt before Task;ESC skip then same-Task/same-terminal retry",
+      "model_observed": "GPT-6-Luna high",
+      "prompt_stages": [
+        "input_accepted",
+        "turn_started"
+      ],
+      "normal_startup_protections_preserved": true
+    }
   },
   "native_half_conversion_codegen_collection_20261101": {
     "classification": "knowledge_collection",
-    "status": "eligible_not_started",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "Compare native FP16-bit to FP32 casts and integer bit-decomposition converters on Intel Xe2/SYCL,including subnormals,signed zero,NaNs,infinities,alignment,SPIR-V/LLVM/IGC lowering and compiler floating-point flags. Use primary compiler/runtime/spec source and original technical studies from SIMD/GPU imaging or scientific computing where transferable. Separate instruction/semantic evidence from measured throughput and CPU fallback claims. Discuss which finite discriminating conversion/IR/ISA tests could decide whether the existing software converter is expensive or necessary;do not execute them. Existing historical CUDA conversion failures do not establish a current Intel failure.",
     "prerequisites": {
       "satisfied": true,
@@ -20145,6 +20159,20 @@
     "worker_model": "Orca gpt-6-luna high",
     "review_model": "native Codex gpt-6-luna max",
     "ownership": "Only read source/docs/web and write the single named report;no Git commands,builds,tests,GPU,profilers,process inspection,cleanup,product edits,extra agents or messages to others. Main owns implementation/testing. Do not conduct generic startup Git/job checks.",
-    "consumer": "Indexed reusable method collection;Main retrieves only for a concrete conversion-cost question"
+    "consumer": "Indexed reusable method collection;Main retrieves only for a concrete conversion-cost question",
+    "execution": {
+      "run": "run_4096847f7211",
+      "task": "task_275ad1a7fea8",
+      "dispatch": "ctx_8ac25895d402",
+      "terminal": "term_c9859f43-0977-488e-898b-d7dbf106cf3b",
+      "initial_failed_dispatch": "ctx_f07e12db09d1",
+      "initial_failure": "agent-update-prompt before Task;ESC skip then same-Task/same-terminal retry",
+      "model_observed": "GPT-6-Luna high",
+      "prompt_stages": [
+        "input_accepted",
+        "turn_started"
+      ],
+      "normal_startup_protections_preserved": true
+    }
   }
 }
