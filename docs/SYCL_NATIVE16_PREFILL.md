@@ -670,6 +670,20 @@ Keep all individual lengths,acceptance,TG,prompt time and TTFT;classify strong
 and weak MTP from observed acceptance in each arm,not workload names. Require
 three paired TG gains per workload without a minimum percentage floor;this
 does not adopt a policy or qualify dedicated117K prefill nonregression.
+The first reference process exposes a controller error:its mandatory resident-
+RAM exchange footer is conditional on`FileExpertSource::complement_ready()`,
+which is inactive for this configured direct-GGUF expert source. The common
+decode-cache hit/lookup footer is present. Leave this process's source and
+configuration frozen through normal closure,record the original failure,then
+commit a new comparison plan using the applicable common footer and check its
+availability during the official warmups before long generation. Do not advance
+to process1 or relabel V1passed. The completed code observation is3900tokens,
+381648.2ms decode and10.2printed TG at33211fresh read;its count/acceptance match
+the earlier reference,but this observation is not a repeated clean gain.
+The prose response and native/fault closure are still pending. A one-off
+resource check observes the main thread onCPU0,expert workers onCPU1..5 and
+GPU2750MHz;these are placement/clock observations,not saturation or a cause
+of the timing difference. No new GPU fault is inferred from a counter failure.
 After source recovery and admission checks,the prior diagnostic's140raw/JIT
 files totaling25881204bytes and four closed research transactions totaling
 21926bytes are retired. Its record/runtime and two generated config/plan pairs
