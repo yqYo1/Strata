@@ -20547,8 +20547,8 @@
   },
   "mtp_draft_precision_acceptance_methods_20261101": {
     "classification": "knowledge_collection",
-    "status": "ready_for_Orca_research",
-    "schedulable_now": true,
+    "status": "reviewed_knowledge_collection",
+    "schedulable_now": false,
     "finite_question": "With target verification fixed, compare reduced-precision MTP draft/cache methods: when can draft precision change proposal acceptance while preserving target outputs, and how do greedy vs position-keyed sampled paths differ? Focus on precision-to-acceptance, not kernels or generic workload design.",
     "novelty": "No indexed report joins draft-only precision to target-verifier exactness/acceptance; existing MTP reports cover operator formats, HC state, activation packing or workload methods.",
     "prior_report_ids": [
@@ -20564,7 +20564,8 @@
       "src/prefill/prefill.cpp": "79e08eb7e303b6a02c380edea92ccb0312df942469e90dc22775bfb398cd3ead",
       "src/core/mtp.cpp": "7e98636191fa0b9c10d4a651c2148c1446dfb722c1536bda2be4d4f78e2e2af5",
       "src/core/verify.cpp": "6cdf2668f85e5ed1e28823398faa9e97206df27d3008ccc649c926d367bdf2a0",
-      "src/program/generate.cpp": "d6260ada9709f805c825b009061c54c899cfffb2577e213d33accfa2a3281ff5"
+      "src/program/generate.cpp": "d6260ada9709f805c825b009061c54c899cfffb2577e213d33accfa2a3281ff5",
+      "src/kernels/sycl/sampler.cpp": "9a8549f6b5865fac7a3ac89ddd3ecfe6ca4bce6bb1d4ad78cdd951600fe3f054"
     },
     "prerequisites_met": [
       "Current native revision and checkout hashes supplied; current MTP-F16 cohort is a concrete read-only trigger.",
@@ -20590,6 +20591,42 @@
     },
     "coverage_decision": "One nonduplicate draft-precision/target-verification scope is ready. Broad heterogeneous MoE and CPU low-bit multirow surveys overlap indexed work. Current called CPU dispatch and shape,not kernel names alone,must select later methods.",
     "main_read_policy": "Main reads the native Luna-max short review only;retrieve collection sections for a concrete implementation question. No automatic report retention.",
-    "next_review": "Dispatch after checking Orca capacity;review the returned report through native Luna-max before using it for the >=1K decode comparison plan."
+    "next_review": "After the decode plan consumes these semantics; retire the report if no concrete follow-up question remains.",
+    "taskId": "task_d63b1b2c8762",
+    "dispatchId": "ctx_5ad65f11d5c1",
+    "terminal": "term_b8bfab7f-9155-49bc-b585-2a2610966839",
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "accepted_worker_done": true,
+    "ownership_closed": true,
+    "startup": "Fresh Orca agent;TUI confirms GPT-6-Luna high and inherited YOLO permissions permitting the named in-workspace report. Update skipped;no permissions or configuration changed. Existing-terminal dispatch turn_started observed.",
+    "completion": "Accepted succeeded worker_done consumed and acknowledged. Release confirmed external_terminal/processAction none;Main then closed its own separately launched exact terminal,ptyKilled true. No retained worker or research adoption claimed.",
+    "report_bytes": 12098,
+    "report_sha256": "497ee61494b2ef683639f40d941c77f354a8cf4b541b531e261b48585113d857",
+    "native_review": {
+      "path": ".cache/research/2026-11-01/mtp_precision_report_review_20261101.json",
+      "bytes": 5832,
+      "sha256": "400d73bb5ef3f272da04be48d5441e5c646c89c664de3c008daa319fda6c16dd",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "disposition": "retain_with_material_corrections",
+      "digest": "Retain as a conditional reference for the post-cohort >=1K decode plan. It adds nonduplicate precision-to-acceptance analysis and correctly separates greedy argmax prefix matching, this caller's position-keyed target draws with equality acceptance, and textbook stochastic acceptance plus residual correction. No model route or decode-performance claim follows. Add src/kernels/sycl/sampler.cpp (worktree SHA-256 9a8549f6b5865fac7a3ac89ddd3ecfe6ca4bce6bb1d4ad78cdd951600fe3f054) to the source pins. Clarify that corrected sampling does not require proposal full support when zero-q and normalized residual cases are handled. Retire after the committed decode plan consumes it unless a concrete unresolved question remains."
+    },
+    "corrections": "Include the sampler source pin. Corrected rejection sampling does not require full proposal support when q=0 and normalized residual cases are handled. This caller uses equality against position-keyed target draws,not textbook acceptance/residual correction.",
+    "retrieval": {
+      "consumer": "Frame Main's committed >=1K decode and handoff comparison plan after the frozen cohort closes.",
+      "sections": [
+        "Pinned caller and assumptions",
+        "Method matrix",
+        "Greedy and sampled semantics",
+        "Acceptance and useful output",
+        "Later evidence (not qualification)"
+      ],
+      "review_point": "After the decode plan consumes these semantics; retire the report if no concrete follow-up question remains."
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "recommendation": "None. This report plus the indexed verifier source audit is sufficient to frame upcoming decode/handoff checks; wait for cohort closure and actual >=1K samples rather than repeating covered research."
+    }
   }
 }

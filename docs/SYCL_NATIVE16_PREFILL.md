@@ -387,16 +387,17 @@ both thinking-on requests and24outputs each,with144typed GDN calls and four
 successful mode2 MTP callbacks per request. Native exit0,quiet final validation,
 closed owners,full model hashes and no fresh fault pass. Logged PP666.2/825.3
 and client TTFT49.309/39.841s are first/subsequent diagnostic observations,not
-matched clean speed. The117Kcomparison now has its first normal closed
-MTP16process:initial969.0tok/s,then three subsequent requests1047.1/1043.4/1041.6
-printed tok/s. Its exact process median is1043.3617tok/s,TTFT112.776s.
-This first-candidate observation is indexed separately in the CSV. Its matched
-Q8control closes at983.7602tok/s/TTFT119.600s;the first
-paired prompt-time ratio is0.94287544(5.7125%less time). Both normal
-process exits,quiet final validation,source/provider/route/owner checks and no
-fresh fault pass. Two more pairs remain,so the frozen paired-gain and repeated
-1000target decisions remain pending. No native kernel or decode
-selection is changed. Initial117K preparation refuses two unlisted Python
+matched clean speed. The117Kcomparison now has two normally closed MTP16processes. Their
+subsequent-request process medians are1043.3617/1049.4353tok/s with client
+TTFT112.776s/112.145s. Matched Q8controls are983.7602/980.9363tok/s and
+119.600s/119.949s. Paired prompt-time ratios are0.94287544/0.93472781
+(5.7125%/6.5272%less time). All four normal process exits,quiet final
+validation,source/provider/route/owner checks and no fresh faults pass.
+First use remains separate:the candidate first requests print969.0/797.1tok/s;
+this does not establish a general first-use TTFT improvement. The first
+candidate observation is indexed separately in the CSV. The final pair remains,
+so frozen paired-gain and repeated1000target decisions are pending. No native
+kernel or decode selection is changed. Initial117K preparation refuses two unlisted Python
 observer-controller changes before any GPU work or output-root creation. Its
 failed result remains. The V2admission recovers the original qualified profile
 and model-probe controllers,requiring the exact two observer hashes and only
