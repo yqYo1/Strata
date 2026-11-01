@@ -544,6 +544,20 @@ not a latency gain at32K,clean speed,sustained decode,task quality or physical
 native generation,replace the build verifier's actual dependency on the old
 eight ELFs with recovered parent-source evidence,then retire those unused
 executables;do not remove them while`allowed_inputs`still calls`retained.verify`.
+The adaptive request-boundary source audit and independent Luna review identify
+unchecked refill event records: a failed new record can leave an older completed
+event,allowing RAM exchange before the new H2D source is safe to overwrite.
+The maintained source now checks main/stage records in serve and standalone
+generation and propagates failure,including the standalone EOS branch,through
+checked teardown. Successful event completion still precedes RAM exchange and
+residency publication. This fix is source-only,not built or GPU-qualified;the
+selected executable and its zero-swap configuration are unchanged. No observed
+GPU fault is attributed to this error path. Before positive-swap testing,replace
+the obsolete parent-binary verifier dependency,build the fixed source and use
+bounded validation for deferred final-window copies,next GEN/GENI prefill,
+invalid input,QUIT/EOF and partial-submit/error teardown. Compare positive swaps
+against zero using matched long generation,then verify independent prefill and
+decode performance;do not infer a gain from source review.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.

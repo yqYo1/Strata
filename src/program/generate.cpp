@@ -5663,12 +5663,20 @@ int main(int argc, char** argv) {
                 host_res[out] = strata::core::kNotResident;   // evicted now: the CPU computes it meanwhile
                 pending.emplace_back((int32_t) in, slot);      // resident once the copy has landed
             }
-            if (!swaps.empty()) cudaEventRecord(adapt_ev, adapt_stream);
+            // A previous successful record must not publish these new copies.
+            // Failure exits through checked teardown while their owners live.
+            if (!swaps.empty() && cudaEventRecord(adapt_ev, adapt_stream) != cudaSuccess) {
+                std::fprintf(stderr, "strata serve: cannot record the adaptive refill event\n");
+                return false;
+            }
             (void) main_live;
             for (auto& st : stages)
                 if (st->adapt_live) {
                     const strata::core::OnDevice on(st->dev);
-                    cudaEventRecord(st->adapt_ev, st->adapt_stream);
+                    if (cudaEventRecord(st->adapt_ev, st->adapt_stream) != cudaSuccess) {
+                        std::fprintf(stderr, "strata serve: cannot record the stage adaptive refill event\n");
+                        return false;
+                    }
                 }
             // #477: the routing counted since the start (each count adds up to 1 / (1 - --adapt-decay) over its
             // decays: the sum is proportional to the routing itself) - only with --expert-profile-save, else `heat`
@@ -7764,7 +7772,12 @@ int main(int argc, char** argv) {
                 host_res[out] = strata::core::kNotResident;   // evicted now: the CPU computes it meanwhile
                 pending.emplace_back((int32_t) in, slot);      // resident once the copy has landed
             }
-            if (!swaps.empty()) cudaEventRecord(adapt_ev, adapt_stream);
+            // Keep pending residency unpublished if this record fails, even
+            // when adapt_ev still describes an earlier completed refill.
+            if (!swaps.empty() && cudaEventRecord(adapt_ev, adapt_stream) != cudaSuccess) {
+                std::fprintf(stderr, "strata generate: cannot record the adaptive refill event\n");
+                return false;
+            }
             if (trace_adapt)
                 std::fprintf(stderr, "strata: ADAPT round=%lld swapped %zu of %d slots, usage decayed\n",
                              (long long) adapt_rounds, swaps.size(), o.adapt_swaps);
@@ -7927,6 +7940,7 @@ int main(int argc, char** argv) {
             }
             if (eos) {
                 if (adapt_thr.joinable()) adapt_thr.join();
+                if (!adapt_ok) return 1;
                 total_ms += std::chrono::duration<double, std::milli>(Clock::now() - t0).count();
                 break;
             }

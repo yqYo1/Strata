@@ -20779,12 +20779,11 @@
   },
   "adaptive_expert_cache_request_boundary_20261102": {
     "classification": "decision_support",
-    "status": "native_review_pending_worker_and_terminal_closed",
+    "status": "source_fixed_not_built_or_positive_swap_qualified",
     "schedulable_now": false,
     "finite_question": "On pinned 521c175, trace final serve decode-window adaptive copies into the next valid long-prefill cache loan/restore. Verify event and RAM-source lifetime, host/device residency publication, lease entry/return fences and reader admission. Cover GEN/GENI, next vs last window, STOP/cancel, malformed/error, QUIT and stdin EOF; say which paths prefill, defer safely or fail closed, with concrete counterexamples and runtime-proof limits.",
     "native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
     "scope_review": {
-      "path": ".cache/research/2026-11-01/adaptive_request_boundary_scope_review_20261102.json",
       "sha256": "b993a19b71acff10c6ea570f4b982adf9798f2194ff26d27b23e83fa573d61d9",
       "bytes": 2994,
       "model": "gpt-6-luna",
@@ -20822,8 +20821,8 @@
       "target_bytes": 10240,
       "hard_max_bytes": 14336
     },
-    "consumer": "Main's decision to commit a bounded positive --adapt-swaps safety/behavior check, retaining the zero-swaps fallback; source review alone is not adoption.",
-    "next_review": "Native Luna-max review, before planning/enabling positive swaps; retire after that decision unless a named lifecycle fixture needs the detail.",
+    "consumer": "Main fixed-source qualification and positive-swap admission decision,retaining zero swaps as fallback.",
+    "next_review": "After fixed-source qualification and positive-swap admission decision;retain report anchors only if a named lifecycle fixture needs them.",
     "limits": "Source audit only;no policy adoption or claim that apply_pending is absent. Main owns all implementation/build/test/GPU work.",
     "report": {
       "path": ".cache/research/2026-11-01/adaptive_cache_request_boundary_audit_20261102.md",
@@ -20836,6 +20835,29 @@
     "accepted_worker_done": true,
     "ownership_closed": true,
     "report_review": "native Codex gpt-6-luna max /root/review_adaptive_boundary_report_20261102",
-    "main_read_policy": "Short worker summary and native review first;retrieve only sections needed for the concrete source fix."
+    "main_read_policy": "Short worker summary and native review first;retrieve only sections needed for the concrete source fix.",
+    "native_review": {
+      "sha256": "46fde2f178421e2ed3a8a235568e027070d36c94c4cc3f701477049382a4b1df",
+      "bytes": 6114,
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "status": "usable_with_material_corrections"
+    },
+    "review_findings": [
+      "apply_pending(true) already precedes the next valid prefill; absence is not a finding.",
+      "Unchecked event-record failures can leave a stale or unrecorded event. A later residency-table drain occurs after RAM exchange and cannot protect the H2D source at that earlier boundary.",
+      "Existing checked teardown drains registered queues while source/cache owners live; an uncertain drain fail-stops. Source review is not runtime fault reproduction."
+    ],
+    "implementation": {
+      "path": "src/program/generate.cpp",
+      "changes": [
+        "Propagate main/stage event-record failures from serve adaptation.",
+        "Propagate standalone event-record failures,including the EOS branch after joining adaptation."
+      ],
+      "built": false,
+      "runtime_qualified": false,
+      "positive_swaps_adopted": false,
+      "next_check": "Recover parent build inputs,replace the old-eight-ELF verifier dependency,then build and bounded-check the fixed path before positive-swap model comparisons."
+    }
   }
 }
