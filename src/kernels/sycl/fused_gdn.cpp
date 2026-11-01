@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <type_traits>
 namespace strata::kernels {
 namespace {
 using namespace sycl_backend;
@@ -174,8 +175,11 @@ void recurrence(float *state, const float *q, const float *k, const float *v,
 // Main-authored scheduling variant of this file's recurrence. A column owns
 // its complete128-row state, so partitions never communicate during the scan.
 // RMS is the only cross-column operation and runs after the ordered scan.
-template <int Partitions, bool SplitReductions = false>
-void recurrence_columns(float *state, const float *h, const float *gate,
+inline float stored_value(float value) { return value; }
+inline float stored_value(uint16_t bits) { return f32_from_f16(bits); }
+
+template <int Partitions, bool SplitReductions = false, class Input = float>
+void recurrence_columns(float *state, const Input *h, const float *gate,
                         const float *beta, float *raw, int T, void *stream) {
   constexpr int Columns = 128 / Partitions, WG = 4 * Columns, HV = 48, C = 10240;
   auto event = queue_for(stream).submit([&](sycl::handler &handler) {
@@ -200,8 +204,8 @@ void recurrence_columns(float *state, const float *h, const float *gate,
             if constexpr (!SplitReductions)
               it.barrier(sycl::access::fence_space::local_space);
             for (int d = tid; d < 128; d += WG) {
-              sq[d] = h[size_t(t) * C + (head % 16) * 128 + d];
-              sk[d] = h[size_t(t) * C + 16 * 128 + (head % 16) * 128 + d];
+              sq[d] = stored_value(h[size_t(t) * C + (head % 16) * 128 + d]);
+              sk[d] = stored_value(h[size_t(t) * C + 16 * 128 + (head % 16) * 128 + d]);
             }
             it.barrier(sycl::access::fence_space::local_space);
             const float decay = sycl::exp(gate[size_t(t) * HV + head]);
@@ -213,7 +217,7 @@ void recurrence_columns(float *state, const float *h, const float *gate,
             const float proj = ((red[local_col] + red[Columns + local_col]) +
                                 red[2 * Columns + local_col]) + red[3 * Columns + local_col];
             const float delta = sycl::fma(-decay, proj,
-                h[size_t(t) * C + 32 * 128 + head * 128 + col]) * beta[size_t(t) * HV + head];
+                stored_value(h[size_t(t) * C + 32 * 128 + head * 128 + col])) * beta[size_t(t) * HV + head];
             float o = 0;
             for (int r = 0; r < 32; ++r) {
               s[r] = sycl::fma(decay, s[r], sk[rg * 32 + r] * delta);
@@ -330,6 +334,67 @@ void gdn_step_norm_multi(float *state, const float *h, int C, const float *gate,
 } // namespace strata::kernels
 
 namespace strata::prefill {
+// Independent prefill-only FP16 storage boundary. The decode conv above keeps
+// its original FP32 input/output and persistent history representation.
+void gdn_conv_f16(float *history, const uint16_t *qkv, const float *w,
+                  uint16_t *out, int64_t T, float eps, void *stream) {
+  using namespace strata::sycl_backend;
+  constexpr size_t C = 10240;
+  strata::kernels::dims(T > 0 && T <= 8192);
+  strata::kernels::eps_check(eps);
+  const std::initializer_list<Span> outputs = {
+      {history, C * 3 * sizeof(float)}, {out, size_t(T) * C * sizeof(uint16_t)}};
+  const std::initializer_list<Span> inputs = {
+      {qkv, size_t(T) * C * sizeof(uint16_t)}, {w, C * 4 * sizeof(float)}};
+  validate_spans(outputs, inputs);
+  auto &queue = queue_for(stream);
+  for (auto span : outputs) validate_device_span(span.pointer, span.bytes, queue);
+  for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue);
+  const auto device = queue.get_device();
+  strata::kernels::dims(device.get_info<sycl::info::device::max_work_group_size>() >= 128 &&
+      device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] >= 128 &&
+      device.get_info<sycl::info::device::local_mem_size>() >= 4 * sizeof(float));
+  const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
+  strata::kernels::dims(std::find(subgroups.begin(), subgroups.end(), size_t(32)) != subgroups.end());
+  auto event = queue.submit([&](sycl::handler &handler) {
+    sycl::local_accessor<float, 1> partial(4, handler);
+    handler.parallel_for(sycl::nd_range<1>(size_t(T) * C, 128),
+        [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+          const size_t lane = it.get_local_linear_id(), block = it.get_group_linear_id();
+          const size_t t = block / (C / 128), head = block % (C / 128), c = head * 128 + lane;
+          float value[4];
+          for (size_t j = 0; j < 3; ++j) {
+            const size_t src = t + j;
+            value[j] = src < 3 ? history[c * 3 + src] :
+                strata::kernels::f32_from_f16(qkv[(src - 3) * C + c]);
+          }
+          value[3] = strata::kernels::f32_from_f16(qkv[t * C + c]);
+          float sum = value[0] * w[c * 4];
+          for (size_t j = 1; j < 4; ++j) sum = sycl::fma(value[j], w[c * 4 + j], sum);
+          float y = sum / (1.f + sycl::exp(-sum));
+          if (head < 32) {
+            const float ss = strata::kernels::xor_sum(it.get_sub_group(), y * y);
+            if (lane % 32 == 0) partial[lane / 32] = ss;
+            it.barrier(sycl::access::fence_space::local_space);
+            y *= sycl::rsqrt(((partial[0] + partial[1]) + partial[2]) + partial[3] + eps);
+          }
+          out[t * C + c] = strata::kernels::f16_from_f32(y);
+        });
+  });
+  finish(stream, event);
+  // Separate ordered history publication, including chunks shorter than3.
+  // Every old history cell needed by convolution is retired before this write.
+  for_each(C, stream, [=](size_t c) {
+    float value[3];
+    for (int j = 0; j < 3; ++j) {
+      const int64_t t = T - 3 + j;
+      value[j] = t < 0 ? history[c * 3 + size_t(t + 3)] :
+          strata::kernels::f32_from_f16(qkv[size_t(t) * C + c]);
+    }
+    for (size_t j = 0; j < 3; ++j) history[c * 3 + j] = value[j];
+  });
+}
+
 void gdn_conv(float *history, const float *qkv, const float *w, float *out,
               int64_t T, float eps, void *stream) {
   constexpr int C = 10240;
@@ -361,8 +426,9 @@ void gdn_recurrence(float *state, const float *h, const float *gate,
 }
 
 namespace {
-void gdn_recurrence_separate(float *state, const float *h, const float *gate,
-                            const float *beta, const float *z, const float *gamma,
+template <class Input>
+void gdn_recurrence_separate(float *state, const Input *h, const float *gate,
+                            const float *beta, const Input *z, const float *gamma,
                             float eps, float *y, uint16_t *y16, int64_t T,
                             int partitions, bool split_reductions, void *stream) {
   using namespace strata::sycl_backend;
@@ -374,8 +440,8 @@ void gdn_recurrence_separate(float *state, const float *h, const float *gate,
       {state, V * 128 * sizeof(float)}, {y, size_t(T) * V * sizeof(float)},
       {y16, size_t(T) * V * sizeof(uint16_t)}};
   const std::initializer_list<Span> inputs = {
-      {h, size_t(T) * C * sizeof(float)}, {gate, size_t(T) * HV * sizeof(float)},
-      {beta, size_t(T) * HV * sizeof(float)}, {z, size_t(T) * V * sizeof(float)},
+      {h, size_t(T) * C * sizeof(Input)}, {gate, size_t(T) * HV * sizeof(float)},
+      {beta, size_t(T) * HV * sizeof(float)}, {z, size_t(T) * V * sizeof(Input)},
       {gamma, 128 * sizeof(float)}};
   validate_spans(outputs, inputs);
   auto &queue = queue_for(stream);
@@ -389,10 +455,16 @@ void gdn_recurrence_separate(float *state, const float *h, const float *gate,
   strata::kernels::dims(std::find(subgroups.begin(), subgroups.end(), size_t(32)) != subgroups.end());
   for (auto span : outputs) validate_device_span(span.pointer, span.bytes, queue);
   for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue);
-  if (std::getenv("STRATA_TRACE"))
+  if (std::getenv("STRATA_TRACE")) {
     std::fprintf(stderr, "strata GDN dispatch: schedule=%s partitions=%d tokens=%lld\n",
                  split_reductions ? "barriers3" : "columns", partitions, (long long)T);
-  if (split_reductions) {
+    if constexpr (!std::is_same_v<Input, float>)
+      std::fprintf(stderr, "strata GDN storage: fp16;state=fp32;tokens=%lld\n", (long long)T);
+  }
+  if constexpr (!std::is_same_v<Input, float>) {
+    strata::kernels::dims(partitions == 4 && split_reductions);
+    strata::kernels::recurrence_columns<4, true>(state, h, gate, beta, y, int(T), stream);
+  } else if (split_reductions) {
     strata::kernels::dims(partitions == 4);
     strata::kernels::recurrence_columns<4, true>(state, h, gate, beta, y, int(T), stream);
   } else switch (partitions) {
@@ -417,8 +489,8 @@ void gdn_recurrence_separate(float *state, const float *h, const float *gate,
           it.barrier(sycl::access::fence_space::local_space);
           const float ss = ((part[0] + part[1]) + part[2]) + part[3];
           const float value = ((oc * sycl::rsqrt(ss / 128.f + eps)) * gamma[col]) *
-                             (1.f / (1.f + sycl::exp(-z[idx])));
-          y[idx] = value;
+                             (1.f / (1.f + sycl::exp(-strata::kernels::stored_value(z[idx]))));
+          if constexpr (std::is_same_v<Input, float>) y[idx] = value;
           y16[idx] = strata::kernels::f16_from_f32(value);
         });
   });
@@ -438,5 +510,11 @@ void gdn_recurrence_barriers3(float *state, const float *h, const float *gate,
                             float eps, float *y, uint16_t *y16, int64_t T,
                             void *stream) {
   gdn_recurrence_separate(state, h, gate, beta, z, gamma, eps, y, y16, T, 4, true, stream);
+}
+void gdn_recurrence_barriers3_f16(float *state, const uint16_t *h, const float *gate,
+                                const float *beta, const uint16_t *z, const float *gamma,
+                                float eps, float *raw, uint16_t *y16, int64_t T,
+                                void *stream) {
+  gdn_recurrence_separate(state, h, gate, beta, z, gamma, eps, raw, y16, T, 4, true, stream);
 }
 } // namespace strata::prefill
