@@ -79,6 +79,41 @@ model/RESTORE behavior. Keep both explicit strategies;automatic length selection
 and additional profiles remain deferred. Fourteen older provenance holds remain independent.
 No new legacy-compiler build runs.
 
+### Next GDN projection candidate
+
+After the frozen12-process cohort closes,prepare a private long-prefill-only
+FP16-input/FP32-output,beta0 TLA endpoint for GDN QKV and gate projections.
+The selectedf6cea2source calls `native_proj`/oneMKL for these two producers;
+the GDN output already uses `native_proj16` when native16 is active,including
+outside chunk64. Do not change that output,QSA,HC,MoE,small alpha/beta GEMMs,
+generic `Gemm::native` dispatch or decode. Keep the existing oneMKL producer
+as the control selected before runtime initialization. No inference change is
+implemented or qualified by this plan.
+
+The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
+The existing33554432-half-element scratch is64MiB;their complete dequantized
+weights are50MiB and30MiB,so these shapes do not require N-splitting. Reuse
+that scratch and existing FP32 outputs,without additional global allocations.
+First retain the actual wide128x128/K32 policy:128work-items,eight SG16
+subgroups and256GRF. The research report's four-subgroup description does
+not match this policy's checked4x2subgroup layout.
+
+Use a distinct typed `float*` output contract,checked four-byte spans and
+surface pitches,disjoint registered device owners and the existing in-order
+queue. Runtime and adapter lifetime do not retain borrowed allocations.
+Commit exact source,fixture,recipe,compiler/dependency pins and a finite
+compile-only plan before building. First instantiate the public TLA FP32
+D-copy path and inspect direct FP32 store codegen;the generic selector's
+32-bit store support is source evidence,not successful compiler lowering.
+Do not substitute a16-bit store followed by widening or add a copy kernel.
+After compilation,qualify actual store ownership/tails,guarded outputs,
+numerics and checked owner retirement before clean component timing. Include
+native dequantization and unchanged consumers in the dependency-path comparison.
+Commit model A/B criteria only after the component is eligible. Keep physical
+262144,RESTORE,task/agent and sustained decode gates separate. Before another
+build generation,select the retained current engine and retire the closed
+comparison generation after exact source/recipe and live-consumer checks.
+
 The first official2026.2replacement used
 [a pinned constructor](../tools/sycl/official_model_sources.py),not the whole
 working tree: selected6e40,qualified split/Down overlays,the independent Top-k
