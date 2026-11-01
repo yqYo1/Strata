@@ -233,10 +233,14 @@ lengths pass their prospective component follow-up screen. The prior slower
 software-half result remains rejected. This does not establish model PP,
 physical resource saturation,quality or inference adoption.
 
-Next integrate the checked producer/typed consumers into the production Gemm
-entrypoint and dedicated throughput-prefill caller,keeping the TTFT and decode
-routes independent. Qualify actual wrapper costs,allocation ownership,real-model
-range and decode handoff before adoption. The component executable and closed raw output are retired after exact
+The production connection is now authored in`26f33c7a8`:an opt-in half-output
+Gemm entrypoint and typed consumers in native16 layer-major long prefill.
+Default,TTFT,short-input and decode selections remain independent. The full
+557-file source/recipe is frozen at`521c1757b`,with its prepared record committed
+in`cb6ffca7e`. CPU compilation is in progress;no new model/GPU qualification
+is inherited. The source-only integration audit is indexed separately.
+Qualify actual wrapper costs,allocation ownership,real-model range and decode
+handoff before adoption. The component executable and closed raw output are retired after exact
 original-source/recipe/input recovery from pushed history;retain selected
 f6cea2as the reference for the next production-wrapper/model generation.
 Physical262144model/RESTORE,task/agent,sustained decode and a current-route

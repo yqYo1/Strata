@@ -20167,5 +20167,38 @@
       "files": 6,
       "deleted_verified": true
     }
+  },
+  "gdn16_model_integration_contract_audit_20261101": {
+    "classification": "decision_support",
+    "status": "eligible_not_started",
+    "schedulable_now": true,
+    "question": "Audit the newly integrated production half-output Gemm, shared dequantization scratch and arena views, native16 long-prefill dispatch and prefill/decode handoff. Identify concrete contract violations or untested requirements; do not repeat standalone typed-kernel or algorithm surveys.",
+    "novelty": "The prior typed-consumer report predates the new Gemm::f16_vendor_out16 API, shared-arena carve and production prefill caller. These are new committed source connections,not a request to resurvey the old component.",
+    "eligibility_evidence": [
+      "Product integration commit26f33c7a8 and projected full-generation source at521c1757b exist;the eight actual source pins below were checked.",
+      "The raw-MKL component passed both prospective speed screens;the production-wrapper GPU checks and model qualification remain pending.",
+      "Main is building the frozen full generation;the reviewer may inspect source only and cannot execute tests or touch the build."
+    ],
+    "source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+    "projected_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/source",
+    "source_sha256": {
+      "include/strata/prefill/gemm.hpp": "92d68b2a21e3194a1206d09a32a1cb1d2313e2b45bd304a6086151ff7caa373e",
+      "src/prefill/sycl/gemm.cpp": "5c4a05ebb9106169351b7b10fd94655eb20ec9e91098269e6f423b3317ff3cef",
+      "src/prefill/prefill.cpp": "9c739484e49b39f615d85871468880727dd138499c135eed9b85aa4d029524fa",
+      "src/prefill/layer_major.inc": "4f9357e2abd2e45443f37468870a24a6cc6c7de5cd713f26f36c76bfa806dbd3",
+      "src/kernels/sycl/fused_gdn.cpp": "2d23f1499e864f7f787b0800456afedb043c857af0be250a88add2d613d22227",
+      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
+      "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+      "bench/sycl/gdn_storage_pipeline.cpp": "3a7f0948c815ac455218dd9673e5a67863b8d101d4d98dc9a438c70ad1726d12"
+    },
+    "report": ".cache/research/2026-11-01/gdn16_model_integration_contract_audit_20261101.md",
+    "report_byte_budget": 11500,
+    "consumer": "Main before the first real-model range/handoff qualification;native Luna-max report review first.",
+    "required_model": "gpt-6-luna high",
+    "prior_reports": [
+      "gdn16_typed_consumer_audit_20261101",
+      "gdn16_projection_consumer_contract_20261101",
+      "gdn3_causal_convolution_gpu_dataflows_20261101"
+    ]
   }
 }
