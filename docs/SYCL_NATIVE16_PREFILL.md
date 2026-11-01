@@ -684,6 +684,14 @@ The prose response and native/fault closure are still pending. A one-off
 resource check observes the main thread onCPU0,expert workers onCPU1..5 and
 GPU2750MHz;these are placement/clock observations,not saturation or a cause
 of the timing difference. No new GPU fault is inferred from a counter failure.
+An independent source audit and review verifies12source/header hashes from the
+actual compiled snapshot. The disabled observer switches add no explicit waits
+or queue/graph dispatch changes. CPU-wait profiling times existing host/status
+regions using thread-local state;runtime environment reads,clock sampling,
+stderr output and selected memory queries can still perturb host timing. The
+final decode-summary snapshot/output follows`decode_ms`,and`profile_report()`
+is empty in this SYCL build. These source findings do not explain the slower
+single clean observation;keep the repeated same-envelope comparison next.
 After source recovery and admission checks,the prior diagnostic's140raw/JIT
 files totaling25881204bytes and four closed research transactions totaling
 21926bytes are retired. Its record/runtime and two generated config/plan pairs
