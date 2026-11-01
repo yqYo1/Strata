@@ -152,6 +152,13 @@ def cpu_delta(before, after):
                        'Common-thread sum can omit exited threads;no worker-only,decode-only,arithmetic,DRAM or speed claim.')
 
 
+def prefill_cpu_summary(text):
+    cpu = shared.gen.common.extract_cpu_observers(text, 4)
+    return dict(cpu_s=float(cpu['wait']['main_cpu_s']), wall_s=float(cpu['wait']['wall_s']),
+                known_wait_cpu_s=float(cpu['wait']['wait_cpu_s']), known_wait_wall_s=float(cpu['wait']['wait_wall_s']),
+                unclassified_cpu_s=float(cpu['host']['unclassified_cpu_s']), partition_qualified=cpu['partition_qualified'])
+
+
 def prepare():
     require(not ROOT.exists() and KEY not in build.committed(RESULT), 'fresh bounded diagnostic only')
     rev = shared.gen.git('rev-parse', 'HEAD').decode().strip()
@@ -278,10 +285,7 @@ def run(index):
                 header, = re.findall(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*$', text, re.M)
                 require(header[1] == '0' and header[0] == header[2], 'native request footer differs')
                 outcome['route'] = generation.native_route(text, int(header[2]))
-                cpu = shared.gen.common.extract_cpu_observers(text, 4)
-                outcome['prefill_main_cpu'] = dict(cpu_s=float(cpu['wait']['cpu_s']), wall_s=float(cpu['wait']['wall_s']),
-                    known_wait_cpu_s=float(cpu['wait']['wait_cpu_s']), known_wait_wall_s=float(cpu['wait']['wait_wall_s']),
-                    unclassified_cpu_s=float(cpu['host']['unclassified_cpu_s']), partition_qualified=cpu['partition_qualified'])
+                outcome['prefill_main_cpu'] = prefill_cpu_summary(text)
                 outcome['request_cpu'] = cpu_delta(snapshots['begin'], snapshots['end'])
             outcome.update(model_executed=True, native_identity=claim); persist()
             print(f'Pool idle process{index} {plan["spin_us"]}us {stage}', flush=True); io.send(b'continue\n')
@@ -336,6 +340,15 @@ def run(index):
 
 
 def selfcheck():
+    # Replay the retained real current-build partition, not an invented schema:
+    # the main-thread total is named main_cpu_s, not cpu_s.
+    profile = build.committed(RESULT)['gdn16_resource_profile_v3']
+    require(profile['passed'] and profile['complete'] and profile['ownership_closed'], 'closed CPU partition replay required')
+    cpu = profile['observation']['cpu_partition']
+    text = '\n'.join(prefix + ' '.join(k + '=' + v for k, v in cpu[name].items())
+        for name, prefix in [('wait', 'strata prefill cpu wait: '), ('host', 'strata prefill cpu host: ')])
+    replay = prefill_cpu_summary(text)
+    require(replay['cpu_s'] == float(cpu['wait']['main_cpu_s']) and replay['partition_qualified'], 'actual CPU partition replay')
     fields = ['S'] + ['0'] * 25; fields[11], fields[12], fields[19] = '40', '10', '123'
     require(proc_fields('7 (comm with ) spaces) ' + ' '.join(fields)) == dict(start_ticks=123, cpu_ticks=50), 'proc comm parsing')
     a = dict(pid=7, process=dict(start_ticks=123, cpu_ticks=50), threads={'7': dict(start_ticks=123, cpu_ticks=50)},
@@ -354,7 +367,8 @@ def selfcheck():
         try: cpu_delta(a, value)
         except RuntimeError: pass
         else: raise RuntimeError('invalid CPU window accepted')
-    return dict(passed=True, valid_accounting_controls=3, invalid_windows_rejected=len(bad), GPU_executed=False)
+    return dict(passed=True, valid_accounting_controls=3, invalid_windows_rejected=len(bad),
+                actual_prefill_partition_replay=True, GPU_executed=False)
 
 
 if __name__ == '__main__':
