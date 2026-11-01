@@ -425,6 +425,14 @@ to a kernel speedup. Keep first-use,subsequent-request and per-placement curves
 distinct. Keep900.5242tok/s at64K with MTPQ8 as the earlier length reference;
 the new117K MTP16development reference is1046.0957tok/s,while984.4641is the
 earlier117K MTPQ8 result. Broader inference adoption remains unqualified.
+The closed MTPcohort and V3profile now retain only their qualification records
+and runtime inventories. After original-source recovery and evidence checks,
+554closed raw/transaction files totaling490360094bytes are retired,including
+the400382791-byte timeline;the compact retirement entry records path/hash/reason.
+The unchanged source/native admission passes after deletion without GPU execution.
+Current9ELFs and the8ELF TTFT-option fallback remain;legacy provenance holds
+are separate and are not reported retired. Next prepare a bounded current-engine
+thinking-on >=1K generation check before any sustained-decode/adoption claim.
 The earlier GDN16on/off cohort's raw output is retired after recovering its
 261source inputs from pushed history. Keep its qualification record and runtime
 inventory for the next profile;the unchanged admission passes after deletion.
