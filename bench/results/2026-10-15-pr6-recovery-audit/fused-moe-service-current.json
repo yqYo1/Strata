@@ -65804,7 +65804,7 @@
     }
   },
   "official_gdn_storage_device_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "b8ff310f20e456a1d01f978ffdf3595ecadab73b",
     "prerequisite_records": {
       "build": {
@@ -65946,12 +65946,33 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": false,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        },
+        "environment_sha256": "20a4d14b4704e368b80a72d09357be746848eae30efebe19b9514ed6e9109309"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "passed": false,
     "complete": false,
-    "GPU_executed": false,
+    "GPU_executed": null,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -65976,6 +65997,22 @@
       "tracing": "Pre-main validation canary,small traced smoke,warning-only general cohort. Record successful kernel creations/launch counts;names are evidence of dispatched kernels,not accumulator/range guarantees.",
       "retention": "Preserve individual speed samples,numeric maxima,source/runtime/closure and decisions. Retire successful full traces and closed raw logs after compact evidence verification."
     },
+    "GPU_execution_requested": true,
+    "host_probe_accepted": false,
+    "failed_case": "storage-smoke",
+    "error": "RuntimeError('complete successful GPU kernel census required')",
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 0,
+    "ordinary_runtime_teardown_qualified": false,
     "controller_inputs": {
       "files": 40,
       "aggregate_sha256": "693aadede8f4dfa3a718a74bca7d38d18cfab5daf0c393d3e442402bc5a2e328"
@@ -65983,6 +66020,46 @@
     "native_sources": {
       "files": 1,
       "aggregate_sha256": "085d00b4b3e6fbfd79ddf8f15303ec4c4a23f712dca6b332d62793407aa8ab02"
+    },
+    "failure_analysis": {
+      "mechanism": "Host trace parser recognized urKernelCreate but not oneMKL successful urKernelCreateWithNativeHandle interop imports;successful launches therefore appeared unmapped.",
+      "native_exit_code": 0,
+      "native_ownership_closed": true,
+      "native_numeric_rows": [
+        {
+          "kind": "validation",
+          "T": 1,
+          "N": 6144,
+          "ldy": 6160,
+          "pattern": "general",
+          "outputs": 6144,
+          "FP64_spots": 64,
+          "max_abs_difference": 0.007537841796875,
+          "max_comparator_bound_fraction": 0.04959423069072862,
+          "max_FP64_bound_fraction": 0.11398565597486443,
+          "guards_inputs": true,
+          "passed": true
+        },
+        {
+          "kind": "validation",
+          "T": 129,
+          "N": 10240,
+          "ldy": 10256,
+          "pattern": "general",
+          "outputs": 1320960,
+          "FP64_spots": 64,
+          "max_abs_difference": 0.0078067779541015625,
+          "max_comparator_bound_fraction": 0.05287317492624513,
+          "max_FP64_bound_fraction": 0.11078813134625767,
+          "guards_inputs": true,
+          "passed": true
+        }
+      ],
+      "trace_native_imports": 5,
+      "trace_successful_launches": 9,
+      "validation_bytes": 0,
+      "original_status_preserved": true,
+      "next": "Correct native-import provenance parsing;host regression cases;commit a new V2cohort. No device reset or inference/math/source changes."
     }
   }
 }
