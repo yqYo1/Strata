@@ -19947,8 +19947,8 @@
   },
   "current_research_scope_admission": {
     "eligible_scopes": 0,
-    "reason": "Two distinct bounded report-only scopes are running;no duplicate dispatch or steering.",
-    "next_review": "After their native Luna-max reviews or a distinct component result exposes a new question."
+    "reason": "Both Orca reports settled/released;native Luna-max curators are reviewing frozen-source evidence. No duplicate scope while Main qualifies observer and component tails.",
+    "next_review": "After curated acceptance recipe or first component timing;knowledge-collection body remains outside Main context."
   },
   "gdn_fp32_projection_source_audit_20261101": {
     "classification": "decision_support",
@@ -20079,7 +20079,7 @@
   },
   "gdn_fp32_fixture_validation_contract_20261101": {
     "classification": "decision_support",
-    "status": "Orca_research_running",
+    "status": "received_native_Luna_max_review_running",
     "schedulable_now": false,
     "question": "Review the actual guarded device fixture and frozen correctness controller,not another endpoint/queue feasibility audit. Determine what the simple separable exact-product/exact-sum oracle misses (address permutations,value patterns,cancellation/rounding,input/weight immutability,padded tails,exception retirement) and specify a practical independent general-input check before component performance. Compare full oneMKL comparisons,small FP64 spot/reference oracles and analytically bounded accumulations;match the FP16-product/FP32-accumulation contract used in vLLM/SGLang rather than imposing bitwise FP32 or full-model token identity. All finite binary FP16 values are dyadic;distinguish nontrivial accumulation rounding from literally non-dyadic input. Identify actual source defects separately from missing coverage. Keep this one coherent fixture/numerical acceptance review,including rejection tests that can prove no GPU enqueue. Read prior gdn_fp32_projection_source_audit_20261101 and gdn_fp32_copy_descriptor_ownership_20261101 reviews to avoid redoing descriptor ownership. Do not run the code. Give a minimal meaningful case matrix,tolerances justified by arithmetic,how to avoid costly full CPU GEMM,and necessary vs optional gates. Main will implement a fast validator and performance fixture after this report.",
     "prerequisites": {
@@ -20105,7 +20105,7 @@
       "gdn_fp32_copy_descriptor_ownership_20261101",
       "sycl_kernel_resource_introspection_20261101"
     ],
-    "worker_closed": false,
+    "worker_closed": true,
     "orca": {
       "run": "run_4096847f7211",
       "task": "task_6ad08242b55f",
@@ -20115,13 +20115,20 @@
       "initial_failure": "Verified pre-task update prompt;ESC skipped installation,sameTask/sameTerminal retry accepted with actual GPT-6-Luna high header.",
       "input_accepted": true,
       "turn_started": true,
-      "worker_state": "ready",
-      "delivery_acked": false
-    }
+      "worker_state": "succeeded_released",
+      "delivery_acked": true,
+      "release_state": "released",
+      "exact_worker_observation": "exited",
+      "delivery": "delivery_a421f80fd4df"
+    },
+    "report_bytes": 12129,
+    "report_sha256": "06c7566c3880415491693c8ae06dd53096a1ec524c3913399fbb80c24fd052bc",
+    "native_review_task": "/root/review_gdn_fp32_fixture_contract_20261101",
+    "native_review_closed": false
   },
   "gdn_fp32_tile_resource_envelope_20261101": {
     "classification": "knowledge_collection",
-    "status": "Orca_research_running",
+    "status": "received_native_Luna_max_review_running",
     "schedulable_now": false,
     "question": "Investigate the actual private GDN FP16xFP16-toFP32 GEMM resource envelope on Xe2/B570 and how to interpret the upcoming oneMKL comparison. Read the actual kernel and retained ISA /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/codegen-member/dump/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_123GdnProjectionFp32KernelE.asm. Compare meaningful tile/subgroup/register policies and FP32 epilogue/store cost from public Intel sycl-tla/CuTe Xe examples or official GPU optimization material;include proven applicability and counterexamples. Derive operation counts and ideal operand/output bytes across small,tail,8192 shapes;clearly separate modeled lower bounds from actual VRAM/PCIe traffic,occupancy,spills or achieved throughput. Explain which event/kernel/host timing observations would distinguish launch,compute,store or dequant/transfer constraints,and which supported local device/UR queries can constrain occupancy without requiring privileged metrics. Prior scopes sycl_kernel_resource_introspection_20261101,prefill_fp32_projection_tla_contract_20261101 and prior GPU roofline/collection reports already cover generic APIs;read relevant index digests first and add only shape/kernel-specific or transferable novel findings. No generic profiler setup survey, unsupported GRF=occupancy inference or XeStrata material. Collect design alternatives,not copied code or an implementation proposal. Main should retrieve this report only after concrete component results need interpretation.",
     "prerequisites": {
@@ -20147,7 +20154,7 @@
       "gdn_fp32_copy_descriptor_ownership_20261101",
       "sycl_kernel_resource_introspection_20261101"
     ],
-    "worker_closed": false,
+    "worker_closed": true,
     "orca": {
       "run": "run_4096847f7211",
       "task": "task_614a5a28e844",
@@ -20157,8 +20164,15 @@
       "initial_failure": "Verified pre-task update prompt;ESC skipped installation,sameTask/sameTerminal retry accepted with actual GPT-6-Luna high header.",
       "input_accepted": true,
       "turn_started": true,
-      "worker_state": "ready",
-      "delivery_acked": false
-    }
+      "worker_state": "succeeded_released",
+      "delivery_acked": true,
+      "release_state": "released",
+      "exact_worker_observation": "exited",
+      "delivery": "delivery_a421f80fd4df"
+    },
+    "report_bytes": 12160,
+    "report_sha256": "52a5268d058043ece550a4acd2c0950ceef1d3ceabc923abfd234dc1ab3f694c",
+    "native_review_task": "/root/review_gdn_fp32_resources_20261101",
+    "native_review_closed": false
   }
 }

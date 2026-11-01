@@ -67609,5 +67609,49 @@
       "files": 0,
       "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
     }
+  },
+  "native_proc_observer_host_v1": {
+    "source_commit": "29093716349c9a467ebace421d35f4f04515dedf",
+    "files": {
+      "tools/sycl/proc_observer.py": "a9e47eb2f344f0b10f1402bda3f03e41941c5d25d4cc330e8c5bb11872482a8f",
+      "tests/core/test_proc_observer.py": "0171f8196b4c1ea69a64d19a0ecad204d68ec94553672ee27d19caf5396d573f"
+    },
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "command": [
+      "/usr/bin/python3.12",
+      "-B",
+      "tests/core/test_proc_observer.py",
+      "-v"
+    ],
+    "passed": true,
+    "GPU_executed": false,
+    "tests_run": 6,
+    "failures": 0,
+    "coverage": [
+      "Real non-dumpable child stays live:permission denial must not count as exit and expires finite grace.",
+      "Same real child exits0:pidfd confirms exit after denied/empty /proc snapshots.",
+      "Positive pidfd exit prevents parsing zombie maps.",
+      "Unknown provider/validation exception is not masked.",
+      "Missing files require positive exit or finite grace.",
+      "NaN/infinite/nonpositive/over5s grace rejected."
+    ],
+    "prior_failures": [
+      {
+        "source_commit": "94ab717403f6d5ce9752b1db4b48c7640fb455e6",
+        "tests_run": 5,
+        "failures": 1,
+        "reason": "Real exiting child exposed readable empty zombie maps;observer parsed it as live snapshot."
+      },
+      {
+        "source_commit": "9ce0ec46de9c8f2d22fd23e1d9eed4e0a6fcc30b",
+        "tests_run": 6,
+        "failures": 1,
+        "reason": "Test callback accepted empty retiring maps as a successful snapshot and cleared its pending gap;correct callback treats empty maps as unavailable."
+      }
+    ],
+    "scope": "Host process-observation behavior only;does not repair the failed GPU cohort or qualify kernel/model speed."
   }
 }
