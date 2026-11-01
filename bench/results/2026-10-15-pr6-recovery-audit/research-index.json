@@ -20204,8 +20204,8 @@
   },
   "gdn_fp32_resident_fixture_oracle_audit_20261101": {
     "classification": "decision_support",
-    "status": "eligible_committed_fixture_audit",
-    "schedulable_now": true,
+    "status": "native_Luna_max_reviewed",
+    "schedulable_now": false,
     "prerequisites_satisfied": [
       "Independent maintained fixture/controller committed at4705bea2b14307a48903a4fdd337619900741137",
       "Original full18 exact gate closed and current",
@@ -20218,12 +20218,39 @@
       "tools/sycl/measure_gdn_projection_fp32.py": "ebf5eab5cb107aa1e316d6e206cad1a0c9fe86f56b0af274f57533c30f7d3c8a"
     },
     "report_byte_budget": 10000,
-    "consumer": "Main next general-data/resident timing decision;read only native Luna-max review digest first"
+    "consumer": "Main next general-data/resident timing decision;read only native Luna-max review digest first",
+    "report_sha256": "d922a499dba0203fb923cd15a79a2bc902ca4093624769e34ac3263691b277ee",
+    "report_bytes": 9189,
+    "review": {
+      "path": ".cache/research/2026-11-01/gdn_fp32_resident_fixture_oracle_audit_20261101.review.json",
+      "sha256": "33c50a2778cfcfb2465be60a4b7662f9b4288fca1ea665dd0ffc88d6b51c03d5",
+      "bytes": 5630,
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "verdict": "conditional_accept_with_oracle_scope_correction",
+      "short_digest": "The fixture/source description and finite-half arithmetic are substantially accurate; no implementation defect is demonstrated. The 2*gamma bound is valid for two FP32-accumulation results, but oneMKL's published type table does not establish its accumulation type, so the differential gate and FP64 spot tolerance remain conditional. Preserve the no-enqueue gate: source ordering and unchanged canaries do not independently count submissions. The fixed-K onehot control at 0, 31, 32, and 2559 is a useful targeted addition. Retain only through Main's next numerical and resident timing decision."
+    },
+    "worker": {
+      "task": "task_ad8462cab00f",
+      "initial_failed_dispatch": "ctx_b425801c14b2",
+      "dispatch": "ctx_e225f460227f",
+      "terminal": "term_0a6b097b-a608-4a0f-a3e5-2c78e0083c28",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "startup_recovery": "Actual update prompt observed;ESC skipped update before Task,retried same Task/terminal;no agent steering.",
+      "turn_started": true,
+      "worker_done_message": "msg_179eb6314c8a",
+      "worker_done_accepted": true,
+      "released": true,
+      "execution_host_status": "exited",
+      "delivery_acknowledged": "delivery_e0ba222b27f5"
+    },
+    "remaining": "Main resident speed comparison;no new audit until a concrete result or changed source requires one."
   },
   "gdn_fp32_resident_timing_contract_audit_20261101": {
     "classification": "decision_support",
-    "status": "eligible_committed_fixture_audit",
-    "schedulable_now": true,
+    "status": "native_Luna_max_reviewed",
+    "schedulable_now": false,
     "prerequisites_satisfied": [
       "Independent maintained fixture/controller committed at4705bea2b14307a48903a4fdd337619900741137",
       "Original full18 exact gate closed and current",
@@ -20236,6 +20263,33 @@
       "tools/sycl/measure_gdn_projection_fp32.py": "ebf5eab5cb107aa1e316d6e206cad1a0c9fe86f56b0af274f57533c30f7d3c8a"
     },
     "report_byte_budget": 10000,
-    "consumer": "Main next general-data/resident timing decision;read only native Luna-max review digest first"
+    "consumer": "Main next general-data/resident timing decision;read only native Luna-max review digest first",
+    "report_sha256": "8e8643b908be4ca43200c316895af49d3f71e8842bcc4f69ba5cc20b0b8eb025",
+    "report_bytes": 10163,
+    "review": {
+      "path": ".cache/research/2026-11-01/gdn_fp32_resident_timing_contract_audit_20261101.review.json",
+      "sha256": "e7b6f1b84ec39ba7108e409d7af90e2ad32098d8d9fbb6d935ad43d9936033b1",
+      "bytes": 5865,
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "verdict": "useful_decision_support_with_minor_correction",
+      "short_digest": "The resident host-time comparison is symmetric at the API-batch boundary: same resident inputs and in-order profiling queue, 64 calls per batch, eight-call drains, and checked completion. Primary oneMKL/SYCL contracts support the queue and event reasoning; timestamps are not device-busy time. The fixture covers four direct-component shapes, not production dispatch, transfers, model throughput, or saturation. A report sentence understates first-call coverage: every shape has two first_shape_call rows, though only the first shape is first library use. No timing defect was found; emitted-order checks would harden the controller, and the report is 163 bytes over budget."
+    },
+    "worker": {
+      "task": "task_73e9afe3764d",
+      "initial_failed_dispatch": "ctx_14382b34a3d7",
+      "dispatch": "ctx_ff5048e31462",
+      "terminal": "term_8e96f58d-8ec2-49a3-a170-1def7f9bf04b",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "startup_recovery": "Actual update prompt observed;ESC skipped update before Task,retried same Task/terminal;no agent steering.",
+      "turn_started": true,
+      "worker_done_message": "msg_c0378ca6617a",
+      "worker_done_accepted": true,
+      "released": true,
+      "execution_host_status": "exited",
+      "delivery_acknowledged": "delivery_e0ba222b27f5"
+    },
+    "remaining": "Main resident speed comparison;no new audit until a concrete result or changed source requires one."
   }
 }

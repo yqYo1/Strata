@@ -68545,7 +68545,7 @@
     }
   },
   "official_gdn_fp32_general_check_v1": {
-    "stage": "prepared",
+    "stage": "general-check-passed",
     "source_commit": "ace0935e54a37f02cc0df67fa5af8c4712926e6c",
     "prerequisite_records": {
       "build": {
@@ -68694,12 +68694,502 @@
         "clean": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": false,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        },
+        "environment_sha256": "50a02fed73d1723636efc4f9739d3461affee0196ddc555ca61a672a8040c5d2"
+      },
+      {
+        "name": "rejections",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 3,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "rejections",
+              "count": 16,
+              "canaries_unchanged": true,
+              "passed": true
+            }
+          ],
+          "kernel_census": {
+            "native_FP32_launches": 0,
+            "all_successful_kernel_launches": 0
+          }
+        },
+        "environment_sha256": "bd8e3ab47349219a50a8e0824b090de5ad113082fea178ecbb8f1d4323ad17b5"
+      },
+      {
+        "name": "general-smoke",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 6,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.021484375,
+              "max_comparator_bound_fraction": 6.474846154267766e-05,
+              "max_FP64_bound_fraction": 0.00028732884196733624,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 129,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 1320960,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.0002670644194964162,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ],
+          "kernel_census": {
+            "native_FP32_launches": 2,
+            "all_successful_kernel_launches": 5
+          }
+        },
+        "environment_sha256": "59f88b16bcb9f334c4d5b908aee455426b30763c936dd20a76f4ce68d43e8d2c"
+      },
+      {
+        "name": "general-tails",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 139,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.021484375,
+              "max_comparator_bound_fraction": 6.474846154267766e-05,
+              "max_FP64_bound_fraction": 0.00028732884196733624,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 1,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 10240,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.021484375,
+              "max_comparator_bound_fraction": 6.474846154267766e-05,
+              "max_FP64_bound_fraction": 0.0003353781608133463,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 127,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 780288,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00020649715821842476,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 127,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 1300480,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.0002146259504454055,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 128,
+              "N": 6144,
+              "ldy": 6160,
+              "outputs": 786432,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00023596729853452662,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 128,
+              "N": 10240,
+              "ldy": 10256,
+              "outputs": 1310720,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00025610284800708103,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 129,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 792576,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00029483120020467343,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 129,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 1320960,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.0002670644194964162,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 255,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 1566720,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00023422872591492152,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 255,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 2611200,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.0002579947771144556,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 256,
+              "N": 6144,
+              "ldy": 6160,
+              "outputs": 1572864,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.0002543599731198129,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 256,
+              "N": 10240,
+              "ldy": 10256,
+              "outputs": 2621440,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00017207413698507596,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 257,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 1579008,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.0002865528037898007,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 257,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 2631680,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.0002473732782548291,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 8191,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 50325504,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00036219930653080476,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 8191,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 83875840,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00019644719379987937,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00017399266861735285,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "general",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0.00018286467357484253,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "cancel",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 1.4347230942053573e-05,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "cancel",
+              "T": 1,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 10240,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 1.3714202151839248e-05,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "cancel",
+              "T": 129,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 792576,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 1.4932244113107634e-05,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "cancel",
+              "T": 129,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 1320960,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 1.4932244113107634e-05,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "zero",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "zero",
+              "T": 257,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 2631680,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "onehot",
+              "T": 129,
+              "N": 6144,
+              "ldy": 6148,
+              "outputs": 792576,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "pattern": "onehot",
+              "T": 8191,
+              "N": 10240,
+              "ldy": 10244,
+              "outputs": 83875840,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "071b1e3ac04d0a118c1662a28ace563f0bbdfd947e8406b65d6b7a993bc0f64f"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -68727,6 +69217,20 @@
       ]
     },
     "retention": "Keep individual samples,compact numerical maxima,source/runtime/closure and decisions;retire successful raw traces and build logs after evidence commit. Existing exact qualification files stay unchanged.",
+    "GPU_execution_requested": true,
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 38,
+    "ordinary_runtime_teardown_qualified": false,
     "controller_inputs": {
       "files": 45,
       "aggregate_sha256": "89442fd03b6815aebd106a673a49ce54ee075254f9ad53b7edc451934838bb92"

@@ -172,14 +172,22 @@ The independent maintained fixture is now
 `tools/sycl/measure_gdn_projection_fp32.py`;it has not run on GPU yet.
 The first CPU build fails because this SDK's event.wait_and_throw is non-const;
 the two local barrier event handles are corrected before a fresh V2build.
-That V2build now passes with724actual compiler inputs and no uncovered host
-linker inputs. All three owned CPU commands close normally;GPU execution has
-not started. The original failed build and its exact inputs remain recorded.
+That V2build passes with724actual compiler inputs and no uncovered host
+linker inputs. All three owned CPU commands close normally. Its independent
+general-data gate now passes:16synchronous rejections cause zero traced kernel
+launches,the two small shapes launch the new kernel twice,and all26larger
+general/cancel/zero/onehot cases pass guards and64FP64 spots each. Maximum
+native/oneMKL absolute difference is0.021484375;maximum fractions of the
+prospective comparator and FP64 bounds are0.0000647485 and0.000362200.
+All four owned processes close normally,38executable providers are observed
+and no fresh GPU fault occurs. This is component numerical evidence,not model
+quality or speed. The original failed build and its exact inputs remain recorded.
 It preserves the original exact fixture and its consumed receipts. The new
 plan adds26general/cancellation/zero/onehot shapes,64FP64 spots per shape,
 16safe synchronous rejections and three fresh resident timing processes.
-Each timing process checks four T4096/8192,N6144/10240 shapes,keeps first
-shape calls separate and alternates five64-call batches per arm. Every steady
+Each timing process checks four T4096/8192,N6144/10240 shapes,keeps each shape's
+first calls separate and alternates five64-call batches per arm. Only the first
+shape is first library use in that process. Every steady
 batch must exceed50ms and its empty-control overhead must be at most5%.
 OneMKL remains a comparator;the general-data bounds do not assume its internal
 accumulation from the public type tuple. Full model/task/physical262144 gates
