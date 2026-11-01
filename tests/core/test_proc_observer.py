@@ -78,7 +78,11 @@ class ExitObservation(unittest.TestCase):
     def test_exact_child_exit_ends_unreadable_gap(self):
         with child() as (proc, watch):
             observer = ProcObserver()
-            observe = lambda: Path('/proc', str(proc.pid), 'maps').read_text()
+            def observe():
+                text = Path('/proc', str(proc.pid), 'maps').read_text()
+                if not text:
+                    raise ProcessLookupError('empty maps while child retires')
+                return text
             self.assertTrue(observer.sample(observe, lambda: bool(watch.poll(0))))
             unreadable(proc)
             self.assertFalse(observer.sample(observe, lambda: bool(watch.poll(0))))
