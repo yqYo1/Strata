@@ -85759,7 +85759,7 @@
     }
   },
   "adaptive_cache_model_entry_adaptive-fault-throughput_model_v1": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "ce30c289dad5dbe48d8c7202647d233dfaffabf3",
     "native_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
     "binary": {
@@ -86063,7 +86063,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -86072,6 +86072,20 @@
     "inference_adopted": false,
     "criteria": "Expected-failure diagnostic,not a speed or successful-generation run. Use the official bench.sh thinking workload and its ordinary warmup;the injected failure may occur before any long request. Require two actual refill record attempts:ordinal1 succeeds and is committed,ordinal2 returns a nonzero real compatibility-API status after copies were queued. Native and benchmark must exit nonzero normally;no later ADAPT_COMMIT/prefill,DONE or retry. Require the source-qualified return/checked-teardown path,absence of fail-stop/termination/runtime errors,quiet parameter validation,matched native environment/provider/identity,closed owners,no fresh fault and all final model hashes. This does not emulate valid-handle provider failure or directly measure DMA completion.",
     "retention": "Keep compact model/lifecycle outcomes and source/binary/runtime identities. Retire successful traces,journals,JIT and expected-error output after evidence verification. Keep selected nine-ELF fallback and fixed nine-ELF candidate only for this imminent qualification/comparison;review and retire the extra generation at closure.",
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 190,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 265,
       "aggregate_sha256": "93b6ba706d4e72813e5fdef9bbd0e7f3734ced3b239fc7fd144f03cb02457b87"
