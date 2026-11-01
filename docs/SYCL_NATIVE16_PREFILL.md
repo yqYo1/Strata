@@ -440,7 +440,7 @@ the structured fields before the semicolon and passes that real-request CPU
 replay plus four valid/nine rejected route controls. Its fresh two-process plan
 uses both standard33K workloads,thinking on and a16384-output cap;only MTP16
 differs. Require >=1K generated tokens and a substantive answer in each request.
-Frontend/native checks remain next;one sample per workload/arm cannot qualify
+Both frontend probes pass;native execution is next. One sample per workload/arm cannot qualify
 sustained-decode nonregression,strong/weak-MTP classes or inference adoption.
 The earlier GDN16on/off cohort's raw output is retired after recovering its
 261source inputs from pushed history. Keep its qualification record and runtime
