@@ -20935,5 +20935,59 @@
         "prompt-summary producer or explicit verify-only population"
       ]
     }
+  },
+  "native_cpu_expert_row_granularity_source_feasibility_20261102": {
+    "classification": "decision_support",
+    "status": "reviewed",
+    "schedulable_now": false,
+    "finite_question": "Native production CPU expert row-task grain: compare flattened3T with expert-bounded3T and other task multiples,including quantization,two phases,park/drain,locality,tails and numerical ownership.",
+    "report": ".cache/research/2026-11-02/native_cpu_expert_row_granularity_source_feasibility_20261102.md",
+    "report_bytes": 12880,
+    "report_sha256": "21b32657cc06d447db65e83552c6b55caf48b272c007a8fac4d563db01f2c1fa",
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "effective_model_verified": true,
+    "accepted_worker_done": true,
+    "ownership_closed": true,
+    "launch_observation": "Initial turn-start observation was unavailable;the exact original Dispatch later settled with valid worker_done. No retry or duplicate.",
+    "source_pin": {
+      "recipe_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+      "pool_cpp_sha256": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
+      "scope_review_sha256": "244afd4ba13e472e266caecef40292cb3df29f9f2a77905534681736bd908c5c",
+      "verified_native_boundary_files": 5
+    },
+    "report_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "sha256": "01e829809b2fec42f919216e208b5a2e05b2f3e5bba743e91cc887978499e5e1",
+      "corrections": [
+        "Keep the budget per pool batch: at least one bounded tile per expert job is feasible only when nb<=M, M=3T. Log dispatch njobs, each batch nb, each nt, M, apply/fallback status and fallback fraction. Flat fallback for nb>M is unchanged control work, not candidate effect. Never infer eligibility from averages.",
+        "No per-worker imbalance or phase-exclusive compute/park-wait clocks are present. The 113.31 ms pool interval includes row work, quantization and synchronization; counts and interval share do not establish CPU saturation or a scheduling opportunity. Require per-worker GU/Down service and wait/park accounting in the later comparison.",
+        "For both phases, validate task-index uniqueness, exact per-expert row coverage without overlap, tails, and unchanged quantization/barrier ownership before interpreting timing. A fixed task count alone does not prove the candidate ran expert-bounded work."
+      ]
+    },
+    "retrieval_terms": [
+      "ExpertPool::run_split_multi_native",
+      "mtasks_=3*threads",
+      "mrows_/mtasks_",
+      "ExpertJobMulti::nt",
+      "run_phase(5/6)",
+      "act_quant_any",
+      "native_quant_h",
+      "parked_",
+      "expert-bounded row tiles",
+      "per-worker phase service"
+    ],
+    "consumer": "Choose whether to plan one bounded production-pool row-task comparison after the active adaptive-cache timing closes.",
+    "next_review": "At cache-cohort closure,choose a concrete bounded follow-up or retire if no row-task comparison remains planned.",
+    "next_scope": {
+      "schedulable_now": false,
+      "question": "Matched flat3T versus expert-bounded3T for eligible pool batches,with flat fallback otherwise.",
+      "missing_prerequisites": [
+        "current adaptive-cache cohort closure"
+      ],
+      "required_evidence": "Per-batch nb,nt,M and eligibility/fallback;exact row coverage/task uniqueness;per-worker GU/Down service and park/wait;host quantization;matched numerical/phase and end-to-end decode evidence."
+    },
+    "limits": "Source feasibility is not a speedup or CPU/RAM saturation result. No implementation adopted. Other task multiples lack empirical support;XeStrata excluded."
   }
 }
