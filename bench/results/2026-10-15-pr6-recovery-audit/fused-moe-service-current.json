@@ -65845,7 +65845,7 @@
     }
   },
   "official_gdn_fp32_projection_check_v2": {
-    "stage": "prepared",
+    "stage": "attested-compiled-not-executed",
     "source_commit": "047fbb451482e6f7b692362fb2233e8f38a7693e",
     "compiled_source_commit": "2ec130cd6e3d40fc12fe06d5d46a83bf7a6acfc5",
     "implementation_commit": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
@@ -65880,8 +65880,8 @@
         "sha256": "57cfe9bf9bb35c663604609c798e6a125552abf4c5bc4224ea9217e3b8836b28"
       }
     },
-    "passed": false,
-    "compiler_inputs_attested": false,
+    "passed": true,
+    "compiler_inputs_attested": true,
     "plan": {
       "scope": "Original CPU objects and compiler inputs only;no recompilation or device execution.",
       "acceptance": "All914 actual inputs must match original native/SDK/provider/dependency Git pins;four objects unchanged.",
@@ -65930,6 +65930,13 @@
     "ownership_closed": true,
     "GPU_executed": false,
     "inference_adopted": false,
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/compiler-inputs-v2.json",
+      "sha256": "67b255811061ea262848417fc916c40a3ea722666d20237f16b5433f23e0e7dc",
+      "files": 914,
+      "uncovered": 0
+    },
+    "recompilation": false,
     "controller_inputs": {
       "files": 40,
       "aggregate_sha256": "0614acf2cd732f23190014c3697528c8d120b3b287cb738e5cdd7dbe34aac37e"
