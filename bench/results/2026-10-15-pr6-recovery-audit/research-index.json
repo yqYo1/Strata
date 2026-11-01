@@ -20099,5 +20099,31 @@
     "bytes": 105635,
     "deleted_verified": true,
     "preserved_collection": "native_half_conversion_codegen_collection_20261101"
+  },
+  "gdn3_causal_convolution_gpu_dataflows_20261101": {
+    "classification": "knowledge_collection",
+    "status": "eligible_not_started",
+    "schedulable_now": true,
+    "question": "For the causal per-channel temporal convolution in Main's packed GDN3 long-prefill producer-consumer path, establish exact operation and chunk/history semantics from the pinned source and official vLLM/SGLang/FLA paths. Compare direct short-FIR loads, temporal/channel lane mapping, register sliding windows/subgroup shuffles, local-memory tiles with halos, and legal producer-consumer fusion. Account for work, logical traffic, halo reloads, dispatch/synchronization, layout, alignment and live registers; compare original GPU stencil/FIR and scientific-computing studies, limits and counterexamples. Preserve current FP32 recurrence/state and arithmetic contract. No code, cast lowering, Xe2 speed claim, port or adoption proposal.",
+    "novelty": "Indexed work covers GDN projection tiling/resources, typed-storage boundaries, recurrent scans, barriers/subgroups and epilogue separation. No dedicated causal-convolution dataflow comparison appears; this asks about the consumer algorithm and producer-to-consumer boundary.",
+    "eligibility_evidence": [
+      "Main supplied an active source-pinned GDN3 fixture; the consumer question exists while CPU build prep proceeds and does not require half-cast artifacts.",
+      "gdn16_projection_consumer_contract_20261101 records the actual QKV/z consumer path and typed boundary.",
+      "gdn_fp32_tile_resource_envelope_20261101 documents prior K=2560, N=6144/10240, T<=8192 producer shapes and leaves consumer timing unmeasured."
+    ],
+    "source_commit": "2181e5fb1fc499fca5cba86f419ba865eadf23a1",
+    "report": ".cache/research/2026-11-01/gdn3_causal_convolution_gpu_dataflows_20261101.md",
+    "report_byte_budget": 11000,
+    "consumer": "Main's next source-specific GDN3 consumer-kernel or projection-to-convolution boundary decision, if that stage is selected/changed after build/source review.",
+    "review_point": "After the first valid matched device comparison of this stage; retire the active report/index row if no named decision needs it.",
+    "prior_scope_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "ownership": "Report only;no Git/builds/tests/GPU/profilers/process inspection/product edits/extra agents;Main owns implementation and serialized testing.",
+    "worker_model": "Orca gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "eligibility_review": {
+      "path": ".cache/research/2026-11-01/gdn_next_collection_scope_review_20261101.json",
+      "sha256": "239227eb3b981ba0410b3f016789def9403ce92356d63bc1b2ba8bbde121cebb",
+      "bytes": 4647
+    }
   }
 }

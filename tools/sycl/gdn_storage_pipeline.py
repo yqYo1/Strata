@@ -5,6 +5,7 @@ CPU build and finite GPU cohorts are distinct committed stages. Production
 dispatch remains unchanged. Reuse qualified supervision/provider code, not old
 prototype executable bytes or implicit current-HEAD source labels.
 """
+import ast
 import copy
 import fcntl
 import hashlib
@@ -26,8 +27,8 @@ import ur_validation as validation
 
 base, P, B, RESULT = retained.base, retained.P, retained.B, retained.RESULT
 require, digest, write = base.require, base.digest, base.write
-ROOT = B / 'gdn16-pipeline-v2'
-BUILD, CHECK, SPEED = 'gdn16_pipeline_build_v2', 'gdn16_pipeline_device_v2', 'gdn16_pipeline_speed_v2'
+ROOT = B / 'gdn16-pipeline-v3'
+BUILD, CHECK, SPEED = 'gdn16_pipeline_build_v3', 'gdn16_pipeline_device_v3', 'gdn16_pipeline_speed_v3'
 CAST = 'include/strata/prefill/detail/gdn_storage_casts.hpp'
 HOST_KEY, HOST_TEST = 'gdn_kernel_trace_host_v4', 'tests/core/test_gdn_storage_trace.py'
 FIXTURE, KERNEL, HEADER = ('bench/sycl/gdn_storage_pipeline.cpp',
@@ -109,6 +110,9 @@ def prepare_build():
     retirement = base.committed(RESULT)['gdn16_software_pipeline_retirement']
     require(retirement['source_recipe_recovered'] and retirement['deleted_verified'] and
             not Path(retirement['retired_binary']['path']).exists(), 'retire recovered V1 component first')
+    failed_ir = base.committed(RESULT)['gdn16_optional_ir_build_retirement']
+    require(failed_ir['source_recipe_recovered'] and failed_ir['deleted_verified'] and
+            not (B/'gdn16-pipeline-v2').exists(), 'retire closed optional-IR build first')
     host_path = B/'gdn-kernel-trace-host-v4/record.json'
     host = json.loads(host_path.read_text())
     require(base.committed(RESULT)[HOST_KEY] == base.compact(host), 'committed full parser record required')
@@ -116,13 +120,19 @@ def prepare_build():
     # executed by unittest; preserve its original measured controller identity.
     name = str(CONTROLLER.relative_to(P))
     original_host = base.basis.build.git(P, 'show', host['source_commit'] + ':' + name)
-    current_host = CONTROLLER.read_bytes(); boundary = b'\n\ndef prepare_build():'
+    current_host = CONTROLLER.read_bytes()
+    def runner_functions(raw):
+        text = raw.decode()
+        return {n.name:ast.get_source_segment(text,n) for n in ast.parse(text).body
+                if isinstance(n,ast.FunctionDef) and n.name in ('save','controls','host_check')}
     require(hashlib.sha256(original_host).hexdigest() == host['controller_inputs'][name] and
-            original_host[:original_host.index(boundary)] == current_host[:current_host.index(boundary)],
-            'CPU parser runner/preamble changed')
+            len(runner_functions(original_host)) == 3 and
+            runner_functions(original_host) == runner_functions(current_host), 'CPU parser runner changed')
     require(all(n == name or digest(P/n) == sha for n,sha in host['controller_inputs'].items()),
             'CPU parser dependency changed')
     require(host['passed'] and host['ownership_closed'] and not host['active'] and host['tests']==6 and
+            all(base.supervision.closed(v) for v in host['commands_executed']) and
+            digest(host['interpreter']['path']) == host['interpreter']['sha256'] and
             digest(P/HOST_TEST)==host['test']['sha256'], 'current parser host gate required')
     old = base.basis.build.git(P, 'show', retained.NATIVE + ':' + KERNEL)
     new = (P / KERNEL).read_bytes(); seam = b'// Main-authored scheduling variant'
@@ -150,9 +160,6 @@ def prepare_build():
         if label == 'fixture': flags += ['-isystem', '/opt/intel/oneapi/mkl/2026.1/include', '-DMKL_ILP64']
         steps.append([label, [base.COMPILER, *flags, '-MD', '-MF', str(build / (label + '.d')),
             '-o', str(build / (label + '.o')), '-c', str(source)]])
-        if label == 'kernel':
-            steps.append(['kernel-ir', [base.COMPILER, *flags, '-fsycl-device-only', '-S', '-emit-llvm',
-                '-MD', '-MF', str(build/'kernel-ir.d'), '-o', str(build/'gdn-kernel.ll'), str(source)]])
     mkl = Path('/opt/intel/oneapi/mkl/2026.1/lib')
     libraries = [str(mkl / n) for n in ('libmkl_sycl_blas.so', 'libmkl_intel_ilp64.so', 'libmkl_sequential.so', 'libmkl_core.so')]
     steps.append(['compile', [base.COMPILER, '-O3', '-fsycl', '-fsycl-id-queries-range=size_t',
@@ -162,7 +169,7 @@ def prepare_build():
     for name in ('build', 'tmp', 'cache'): (ROOT / name).mkdir()
     row = dict(stage='prepared', source_commit=revision, controller_inputs=base.controls(revision,controller=CONTROLLER),
         native_sources={n:digest(P/n) for n in (FIXTURE,KERNEL,HEADER,CAST)}, selected_native_source=retained.NATIVE,
-        parser_gate_reuse=dict(source_commit=host['source_commit'],test=host['test'],scope='Exact CPU test,parser,runner preamble and unchanged helper inputs;new prepare_build resolver is outside unittest. No new parser test or GPU qualification claimed.'),
+        parser_gate_reuse=dict(source_commit=host['source_commit'],test=host['test'],scope='Exact CPU test,parser,runner functions,interpreter and unchanged helper inputs;build-root/constants/resolver changes are outside unittest. No new parser test or GPU qualification claimed.'),
         original_compile_database=dict(path=str(retained.ROOT/'build/compile_commands.json'),sha256=digest(retained.ROOT/'build/compile_commands.json')),
         commands=steps,environment=dict(original['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
         budgets=dict(wall=300,cpu=1000,rss_cap=6<<30,text_cap=16<<20,file_cap=256<<20,total_cap=1<<30),
@@ -194,7 +201,7 @@ def build():
             require(base.supervision.closed(entry) and entry['exit_code']==0,
                     label+' failed: '+(out.read_text(errors='replace')+err.read_text(errors='replace'))[-6000:])
         found=set()
-        for label in ('runtime','profile','kernel','kernel-ir','fixture'):
+        for label in ('runtime','profile','kernel','fixture'):
             for line in (ROOT/'build'/(label+'.d')).read_text().replace('\\\n','').splitlines():
                 if not line.strip(): continue
                 left,colon,right=line.partition(':'); require(colon and left.strip(),'invalid depfile')
@@ -203,8 +210,6 @@ def build():
         write(ROOT/'compiler-inputs.json',{p:allowed[p] for p in sorted(found)})
         row['actual_compiler_inputs']=dict(path=str(ROOT/'compiler-inputs.json'),sha256=digest(ROOT/'compiler-inputs.json'),files=len(found),uncovered=0)
         row['actual_link_inputs']=base.traced_link_inputs(allowed,ROOT)
-        ir=ROOT/'build/gdn-kernel.ll'
-        row['device_IR']=dict(path=str(ir),sha256=digest(ir),bytes=ir.stat().st_size,consumer='Read-only conversion-lowering review after device corpus;IR is not final GPU ISA or a throughput observation.')
         binary=ROOT/'build/gdn-pipeline'
         row.update(stage='built-not-executed',passed=True,binary=dict(path=str(binary),sha256=digest(binary),bytes=binary.stat().st_size))
         retained.verify()
@@ -226,7 +231,6 @@ def verify():
     require(len(found)==asset['files'] and all(allowed.get(p)==sha==digest(p) for p,sha in found.items()),'actual compiler inputs changed')
     require(row['actual_link_inputs']['uncovered_external_inputs']==0 and all(allowed.get(p)==sha==digest(p)
         for p,sha in row['actual_link_inputs']['frozen_inputs'].items()),'link inputs changed')
-    ir=row['device_IR']; require(digest(ir['path'])==ir['sha256'] and Path(ir['path']).stat().st_size==ir['bytes'],'device IR changed')
     asset=row['binary']; require(digest(asset['path'])==asset['sha256'] and Path(asset['path']).stat().st_size==asset['bytes'],'binary changed')
     return row
 
@@ -241,16 +245,16 @@ def cases(speed):
 def prerequisites(speed):
     built=verify(); data=base.committed(RESULT); refs=dict(build=dict(path=str(ROOT/'record.json'),sha256=digest(ROOT/'record.json')))
     if speed:
-        device=json.loads((ROOT/'device-v2/record.json').read_text())
+        device=json.loads((ROOT/'device-v3/record.json').read_text())
         require(data[CHECK]==base.compact(device) and device['passed'] and device['complete'] and
                 device['ownership_closed'] and not device['active'] and not device['fresh_faults'] and
                 device['binary']==built['binary'],'same-build closed device cohort required')
-        controls(device); refs['device']=dict(path=str(ROOT/'device-v2/record.json'),sha256=digest(ROOT/'device-v2/record.json'))
+        controls(device); refs['device']=dict(path=str(ROOT/'device-v3/record.json'),sha256=digest(ROOT/'device-v3/record.json'))
     gate=data['official_prefill_strategies_device_v2']; return built,refs,gate,retained.runtime.inventory(gate['runtime_manifest'])
 
 
 def prepare_run(speed):
-    key,root=(SPEED,ROOT/'speed-v2') if speed else (CHECK,ROOT/'device-v2')
+    key,root=(SPEED,ROOT/'speed-v3') if speed else (CHECK,ROOT/'device-v3')
     require(key not in base.committed(RESULT) and not root.exists(),'one fresh cohort')
     built,refs,gate,_=prerequisites(speed); root.mkdir(mode=0o700)
     revision=base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
@@ -333,7 +337,7 @@ def decisions(row):
 
 
 def run(speed):
-    key,root=(SPEED,ROOT/'speed-v2') if speed else (CHECK,ROOT/'device-v2'); row=json.loads((root/'record.json').read_text())
+    key,root=(SPEED,ROOT/'speed-v3') if speed else (CHECK,ROOT/'device-v3'); row=json.loads((root/'record.json').read_text())
     require(base.committed(RESULT)[key]==base.compact(row) and row['stage']=='prepared' and not (root/'owned').exists(),'one frozen fresh cohort')
     controls(row);built,refs,gate,providers=prerequisites(speed)
     require(row['binary']==built['binary'] and row['prerequisite_records']==refs and row['cases']==cases(speed) and
