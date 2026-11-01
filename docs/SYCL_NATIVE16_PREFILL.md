@@ -93,7 +93,9 @@ inputs plus seven ELFs;the retired ancestor executable is not required. The
 initial obsolete-helper refusal remains recorded in the research index.
 After speed selection,verify sustained decode,agent/task and physical262144
 model/RESTORE behavior. Keep both explicit strategies;automatic length selection
-and additional profiles remain deferred. Fourteen older provenance holds remain independent.
+and additional profiles remain deferred. Older provenance holds remain independent;
+their actual retained roots and current consumers need a bounded inventory before
+the next build retirement. The previously cited count of fourteen is not verified.
 No new legacy-compiler build runs.
 
 ### Closed FP32 GDN projection comparison
@@ -276,8 +278,8 @@ and46.8973s/698.7tok/s,with client TTFT55.696s/47.031s. These are first-use and
 subsequent requests in one process,not a matched gain or clean speed cohort.
 Short generation exercises handoff but does not qualify sustained decode,
 real-model range/task quality,TTFT-option preservation or physical262144/RESTORE.
-Next compare the same new engine with GDN16on/off at64K/117K,keeping both
-manual strategies and decode unchanged;qualify remaining adoption gates separately.
+The same new engine's GDN16on/off comparison at64K/117K is now closed below;
+keep both manual strategies and decode unchanged,with remaining adoption gates separate.
 The maintained`compare_prefill_strategies.py`now targets that single-variable
 comparison:three independent pairs per length,four requests per process,
 first-use separate and three-subsequent-request median per process. Both arms
@@ -290,11 +292,13 @@ diagnostic. All owned processes are reaped and no fresh GPU fault was observed.
 Controller61d81697c now requires the always-on actual geometry/native16 headers
 and checks optional policy output for consistency. The five CPU regression tests,
 two positive/twelve negative route controls and captured clean-log replay pass.
-Fresh`gdn16_model_speed_v2`passes all three64Kpairs and two117Kpairs:all40request
-gates,quiet final validation,native exits0,closed ownership and no fresh faults.
+Fresh`gdn16_model_speed_v2`passes all three pairs at both lengths:12fresh
+processes and all48request gates,quiet final validation,native exits0,closed
+ownership,no fresh faults and the final full-model hash audit.
 Each value below is one process's median of three subsequent requests;first
-use is separate. Individual samples remain in the compact result,and these
-preliminary milestones are indexed in the performance CSV.
+use is separate. Individual samples remain in the compact result at
+`5c98c7eaccdd1458054ef6c718e725a98851a4ce`;the final aggregates and earlier
+preliminary milestones are indexed separately in the performance CSV.
 
 | Read tokens | Pair,first arm | FP16/reference PP,tok/s | Prompt-time ratio | FP16/reference client TTFT,s |
 | ---: | --- | ---: | ---: | ---: |
@@ -303,17 +307,37 @@ preliminary milestones are indexed in the performance CSV.
 | 65537 | 3,FP16 | 895.0587 / 889.1847 | 0.99343732 | 73.372 / 73.848 |
 | 117489 | 1,FP16 | 983.9043 / 977.5028 | 0.99349380 | 119.581 / 120.364 |
 | 117489 | 2,reference | 984.4641 / 976.9834 | 0.99240127 | 119.522 / 120.426 |
+| 117489 | 3,FP16 | 984.8578 / 976.0071 | 0.99101325 | 119.465 / 120.554 |
 
 All three64Kpairs favor FP16,by1.0678%/1.5639%/0.6563%less prompt time;
 their time-ratio geometric mean is0.98903306. Candidate process medians range
 895.0587..900.6393tok/s,reference886.5540..890.9083. All three64KTTFT ratios
-are also below1. These satisfy that length's numerical follow-up conditions;
-the complete cohort/final asset audit and broader adoption gates remain pending.
-The117Kpairs measure0.6506%/0.7599%less time,with geometric mean0.99294738.
+are also below1. All three117Kpairs favor FP16,by0.6506%/0.7599%/0.8987%less
+prompt time,with geometric mean0.99230225. Its candidate process medians range
+983.9043..984.8578tok/s,reference976.0071..977.5028;all three TTFT ratios are
+below1. Both lengths pass the prospective prompt-time follow-up screen,without
+a minimum percentage floor. This is not full inference adoption.
 First use favors different arms across pairs at both lengths;all first-use
-timings remain separate in the result. Neither length reaches1000. Continue
-the frozen engine,arms,workloads and criteria,next117KFP16first. The observer
-bug is resolved by the original live scenario.
+timings remain separate in the result. Median-of-process-median FP16 PP is
+900.5242tok/s at64K and984.4641at117K,with client TTFT72.917s/119.522s.
+Neither length reaches1000. At117489read tokens,the representative119.3431s
+prefill needs about1.8541s less time to reach1000. The observer bug is resolved
+by the original live scenario.
+Select GDN16on in the current nine-ELF generation for the next development and
+profiling step;retain the eight-ELF two-strategy generation for its still-needed
+qualified fallback and option-preservation checks. Next adapt the maintained
+resource-profile controller to this exact117Kroute,recording kernel service,
+requested transfers/overlap and disjoint CPU work/submission/wait time. The
+limiting physical resource remains unknown;kernel service shares alone cannot
+establish arithmetic,VRAM or PCIe saturation. Keep clean speed separate from
+profiling. Refit input-length/time behavior within each placement family after
+the next change;64K384-slot ordinary and117K128-slot split routes cannot share
+an assumed physical fixed-plus-linear model. Broader task/agent,TTFT-option,
+sustained decode and physical262144model/RESTORE gates remain pending;24outputs
+per request qualify none of those by themselves.
+The closed cohort's raw output is retired after recovering its261source inputs
+from pushed history. Keep its full qualification record and runtime inventory
+for the next profile;the unchanged admission passes after deletion.
 After original-source recovery and result verification,the failed V1root's
 96files/12432288B are retired;its original failed status and compact diagnosis
 remain committed. Current V2admission passes after deletion.
