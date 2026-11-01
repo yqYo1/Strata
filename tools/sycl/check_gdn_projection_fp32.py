@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import select
 import shlex
+import struct
 import subprocess
 import sys
 
@@ -72,9 +73,12 @@ def prepare():
     print('Prepared unchanged-object V2 attestation and bounded offline disassembly.', flush=True)
 
 
-def admission(row):
+def admission(row, reuse_revision=None):
     require(base.committed(RESULT)[KEY] == base.compact(row), 'commit exact V2 plan')
-    require(base.controls(row['source_commit'], controller=Path(__file__).resolve()) ==
+    revision = reuse_revision or row.get('codegen_member', {}).get('controller_source_commit')
+    require(base.controls(row['source_commit'], controller=Path(__file__).resolve(),
+            reuse_revision=revision, controller_changes=(
+                'tools/sycl/check_gdn_projection_fp32.py',) if revision else ()) ==
             row['controller_inputs'], 'V2 controller inputs changed')
     ref = row['original_build_record']
     require(digest(ref['path']) == ref['sha256'], 'original failed record changed')
@@ -116,13 +120,68 @@ def attest(row):
     print('V2:914 original compiler inputs and four unchanged outputs pass;no recompilation/GPU execution.', flush=True)
 
 
-def inspect(row):
+def elf_members(raw):
+    """Walk concatenated ELF64 images by their actual section-table extents."""
+    members, pos = [], 0
+    while pos < len(raw):
+        require(raw[pos:pos+6] == b'\x7fELF\x02\x01', 'ELF64LE member boundary required')
+        h = struct.unpack_from('<16sHHIQQQIHHHHHH', raw, pos)
+        require(h[8] == 64 and h[11] == 64 and 0 < h[12] < 4096 and
+                h[6] >= 64 and h[6] + h[11]*h[12] <= len(raw)-pos and
+                h[13] < h[12] and h[10] == 0, 'unsupported/truncated device ELF')
+        sections = [struct.unpack_from('<IIQQQQIIQQ', raw, pos+h[6]+i*h[11]) for i in range(h[12])]
+        end = max([h[6]+h[11]*h[12]] + [s[4]+s[5] for s in sections if s[1] != 8])
+        require(pos+end <= len(raw), 'device section outside its container')
+        names = sections[h[13]]; table = raw[pos+names[4]:pos+names[4]+names[5]]
+        labels = []
+        for s in sections:
+            require(s[0] < len(table), 'invalid device section name')
+            finish = table.find(b'\0', s[0]); require(finish >= 0, 'unterminated section name')
+            labels.append(table[s[0]:finish].decode('ascii'))
+        members.append(dict(offset=pos, bytes=end, sections=labels)); pos += end
+    require(pos == len(raw), 'uncovered device container bytes')
+    return members
+
+
+def prepare_member(row):
+    revision = base.basis.build.git(base.P, 'rev-parse', 'HEAD').decode().strip()
+    admission(row, reuse_revision=revision)
+    require(row['passed'] and row['compiler_inputs_attested'] and 'codegen_member' not in row and
+            row['codegen']['stage'] == 'decoded-needs-store-ownership-review', 'closed first-member decode required')
+    raw = (ROOT / 'device.bin').read_bytes(); members = elf_members(raw)
+    selected = [m for m in members if any(s.startswith('.text.') and
+                'GdnProjectionFp32Kernel' in s for s in m['sections'])]
+    require(len(members) == 3 and len(selected) == 1, 'one actual FP32 kernel image required')
+    member = selected[0]; root = ROOT / 'codegen-member'; require(not root.exists(), 'fresh member decode root')
+    root.mkdir(mode=0o700); path = root / 'member.bin'
+    path.write_bytes(raw[member['offset']:member['offset']+member['bytes']])
+    row['codegen']['selection_scope'] = 'Only the first concatenated ELF (four GU kernels);no GDN FP32 ISA qualification.'
+    row['codegen_member'] = dict(stage='prepared', passed=False, controller_source_commit=revision,
+        container_sha256=digest(ROOT / 'device.bin'), members=members,
+        selected=dict(member, path=str(path), sha256=digest(path)),
+        command=['/usr/bin/ocloc', 'disasm', '-file', str(path), '-dump', str(root / 'dump')],
+        environment=row['codegen']['environment'], tools=row['codegen']['tools'],
+        budgets=row['codegen']['budgets'],
+        scope='Decode the byte-identical GDN FP32 ELF member of the existing production AOT container;no recompilation/device execution.')
+    save(row); print('Prepared exact FP32 ELF member;commit before offline decoding.', flush=True)
+
+
+def inspect(row, member=False):
     admission(row)
-    require(row['passed'] and row['compiler_inputs_attested'] and row['codegen']['stage'] == 'prepared',
+    key = 'codegen_member' if member else 'codegen'
+    require(row['passed'] and row['compiler_inputs_attested'] and row[key]['stage'] == 'prepared',
             'attested objects and fresh disassembly required')
-    plan = row['codegen']; root = ROOT / 'codegen'; require(not root.exists(), 'fresh codegen directory')
+    plan = row[key]; root = ROOT / ('codegen-member' if member else 'codegen')
+    if member:
+        selected = plan['selected']; raw = (ROOT / 'device.bin').read_bytes()
+        require(elf_members(raw) == plan['members'] and digest(selected['path']) == selected['sha256'] and
+                Path(selected['path']).read_bytes() == raw[selected['offset']:selected['offset']+selected['bytes']],
+                'selected image is not an unchanged container member')
+        require(not (root / 'owned').exists() and not (root / 'dump').exists(), 'fresh member decoder only')
+    else:
+        require(not root.exists(), 'fresh codegen directory'); root.mkdir(mode=0o700)
     require(all(digest(p) == sha for p,sha in plan['tools'].items()), 'decoder tools changed')
-    root.mkdir(mode=0o700); owner = None
+    owner = None
     def persist():
         write(RECORD, dict(row, commands_executed=owner.commands if owner else [], active=bool(owner and owner.active)))
     def monitor(io, entry):
@@ -159,4 +218,6 @@ if __name__ == '__main__':
             row = json.loads(RECORD.read_text())
             if sys.argv[1:] == ['attest']: attest(row)
             elif sys.argv[1:] == ['inspect']: inspect(row)
-            else: raise RuntimeError('check_gdn_projection_fp32.py prepare|attest|inspect')
+            elif sys.argv[1:] == ['prepare-member']: prepare_member(row)
+            elif sys.argv[1:] == ['inspect-member']: inspect(row, member=True)
+            else: raise RuntimeError('check_gdn_projection_fp32.py prepare|attest|inspect|prepare-member|inspect-member')

@@ -65888,8 +65888,8 @@
       "correction": "Add the already frozen dependency source maps omitted by V1;do not refresh expected hashes."
     },
     "codegen": {
-      "stage": "prepared",
-      "passed": false,
+      "stage": "decoded-needs-store-ownership-review",
+      "passed": true,
       "tools": {
         "/usr/bin/ocloc": "5ec7d3130e6f99a30064e504cd0ad400038779f2e1d8e1f454446aa59d152009",
         "/usr/lib/x86_64-linux-gnu/libocloc.so": "a575b21fe2774845519492741aa8c8ff762de64dcab91b5e4e2cca8cba7a7d48",
@@ -65924,7 +65924,67 @@
         "file_cap": 134217728,
         "total_cap": 268435456
       },
-      "scope": "Decode this exact offline AOT image;no GPU execution or numeric/ownership/speed qualification."
+      "scope": "Decode this exact offline AOT image;no GPU execution or numeric/ownership/speed qualification.",
+      "files": {
+        "dump/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE0ELb0EEE": {
+          "bytes": 43,
+          "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+        },
+        "dump/.symtab": {
+          "bytes": 1507,
+          "sha256": "4d25fb655a5fbb28ea91f21f9b03c96f77615fc89e87735cbd03369616e742b3"
+        },
+        "dump/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE1ELb0EEE.asm": {
+          "bytes": 352928,
+          "sha256": "5a5a51a273f4227bad0d45a83198382277671059958b1a4e8d535521150ca128"
+        },
+        "dump/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE0ELb1EEE": {
+          "bytes": 43,
+          "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+        },
+        "dump/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE0ELb1EEE.asm": {
+          "bytes": 76268,
+          "sha256": "fdee2ecd18d5ebd35c8ebd907246eb4aa16fdd38370dbbc1822f55682113f928"
+        },
+        "dump/.note.intelgt.metrics": {
+          "bytes": 3,
+          "sha256": "709e80c88487a2411e1ee4dfb9f22a861492d20c4765150c0c794abd70f8147c"
+        },
+        "dump/.spv": {
+          "bytes": 43844,
+          "sha256": "dce35e7806e66d9d426022fb312451ec385e30b7b265632a65071de749864b80"
+        },
+        "dump/sections.txt": {
+          "bytes": 993,
+          "sha256": "f0bf0df263f57cf2c9b025acdd42e085b1bc97b817ec4e014856aa7f32ac97fe"
+        },
+        "dump/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE1ELb1EEE": {
+          "bytes": 43,
+          "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+        },
+        "dump/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE1ELb1EEE.asm": {
+          "bytes": 525912,
+          "sha256": "2c3ec279efda3b42bf4d276cf03c4eb4a8f282d545f802ab306c53ffaebe8c91"
+        },
+        "dump/.rel.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE1ELb0EEE": {
+          "bytes": 43,
+          "sha256": "83feefb3e44f66640a5627ef529f12648f14a0b37712191c7398969ba710fad6"
+        },
+        "dump/.ze_info": {
+          "bytes": 11421,
+          "sha256": "a64067f237e39c1d18c9bb5ff227dd99abc038e6380ed31687c264587992175f"
+        },
+        "dump/.text._ZTSN6strata12experimental17vllm_xe2_native1612_GLOBAL__N_114GuSwiGLUKernelILNS1_4TileE0ELb0EEE.asm": {
+          "bytes": 53760,
+          "sha256": "0ef1bf3acf443406db569c2d822e789adfb9afdd073d1e22f1e0233417ec09c3"
+        },
+        "dump/.note.intelgt.compat": {
+          "bytes": 172,
+          "sha256": "27b041e4558fa1ea0c0df77ee78ffd453f87733204846a0aa91c93f0791d6fd9"
+        }
+      },
+      "manual_FP32_store_review_passed": false,
+      "numerical_or_device_qualification": false
     },
     "active": false,
     "ownership_closed": true,
