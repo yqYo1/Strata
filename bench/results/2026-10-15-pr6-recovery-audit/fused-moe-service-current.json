@@ -66061,5 +66061,45 @@
       "original_status_preserved": true,
       "next": "Correct native-import provenance parsing;host regression cases;commit a new V2cohort. No device reset or inference/math/source changes."
     }
+  },
+  "gdn_storage_trace_parser_host_v1": {
+    "source_commit": "3c689b1050270cccdffb3a74c4fbd85d368728a0",
+    "command": [
+      "/usr/bin/python3.12",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/core",
+      "-p",
+      "test_gdn_storage_trace.py",
+      "-v"
+    ],
+    "interpreter": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "active": false,
+    "passed": true,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "result": "4native/named/import-reuse/unknown-or-failed-provenance tests",
+    "output_excerpt": "test_named_conversion_and_native_import_coexist (test_gdn_storage_trace.TraceProvenance.test_named_conversion_and_native_import_coexist) ... ok\ntest_native_import_has_no_invented_name (test_gdn_storage_trace.TraceProvenance.test_native_import_has_no_invented_name) ... ok\ntest_reused_native_handle_keeps_distinct_imports (test_gdn_storage_trace.TraceProvenance.test_reused_native_handle_keeps_distinct_imports) ... ok\ntest_unknown_and_failed_provenance_refuse (test_gdn_storage_trace.TraceProvenance.test_unknown_and_failed_provenance_refuse) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nOK\n",
+    "controller_inputs": {
+      "files": 41,
+      "aggregate_sha256": "f51a3492b27347616d683289cbb75be5bf6ea0757b7622e0e237c3b5140616cd"
+    },
+    "native_sources": {
+      "files": 0,
+      "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
   }
 }
