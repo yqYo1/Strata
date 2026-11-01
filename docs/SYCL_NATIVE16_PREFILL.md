@@ -236,8 +236,9 @@ physical resource saturation,quality or inference adoption.
 Next integrate the checked producer/typed consumers into the production Gemm
 entrypoint and dedicated throughput-prefill caller,keeping the TTFT and decode
 routes independent. Qualify actual wrapper costs,allocation ownership,real-model
-range and decode handoff before adoption. Retire the component executable before
-creating the next model generation;retain selected f6cea2as the reference.
+range and decode handoff before adoption. The component executable and closed raw output are retired after exact
+original-source/recipe/input recovery from pushed history;retain selected
+f6cea2as the reference for the next production-wrapper/model generation.
 Physical262144model/RESTORE,task/agent,sustained decode and a current-route
 length/time refit remain pending. Model PP/TTFT and both manual profiles are
 unchanged.
