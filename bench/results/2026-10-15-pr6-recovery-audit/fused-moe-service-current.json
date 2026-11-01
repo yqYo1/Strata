@@ -73793,5 +73793,49 @@
     "cause": "prepare_build passed compact host-result input descriptors to controls instead of the exact external full host record. No ROOT/build was created. Correct reader verifies full record against committed compact record first;new host cohort v4 preserves original v3 pass.",
     "GPU_executed": false,
     "build_executed": false
+  },
+  "gdn_kernel_trace_host_v4": {
+    "stage": "host-tests-passed",
+    "source_commit": "2181e5fb1fc499fca5cba86f419ba865eadf23a1",
+    "test": {
+      "path": "tests/core/test_gdn_storage_trace.py",
+      "sha256": "98d1d20d5a397e5b980d6a0602ac62d2f9d8d2bd41032e5a95ee4bbd90195d0c"
+    },
+    "interpreter": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "command": [
+      "/usr/bin/python3.12",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/core",
+      "-p",
+      "test_gdn_storage_trace.py",
+      "-v"
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": true,
+    "GPU_executed": false,
+    "tests": 6,
+    "controller_inputs": {
+      "files": 40,
+      "aggregate_sha256": "eeac60cdd6c57b23480297908cc20add1e24f3ac0f99db0d11db41c5dd4e4896"
+    },
+    "native_sources": {
+      "files": 0,
+      "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
   }
 }
