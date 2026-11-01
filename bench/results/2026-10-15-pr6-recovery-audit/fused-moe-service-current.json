@@ -82344,7 +82344,7 @@
     }
   },
   "gdn16_mtp16_generation_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "1f8c3335df4cd3c0d2828ea3fe566efb603bde71",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/build/strata",
@@ -82797,11 +82797,171 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "index": 1,
+        "kernel": "reference",
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 719373,
+          "start_ticks": 190318049,
+          "sid": 719331
+        },
+        "request_routes_checked_before_continue": 2,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "prompt_tokens": 33210,
+            "read_tokens": 33210,
+            "reused_tokens": 0,
+            "generated_tokens": 2974,
+            "reasoning_tokens": null,
+            "output_chars": 5578,
+            "reasoning_chars": 2832,
+            "prompt_ms": 57709.2,
+            "prompt_tps": 575.5,
+            "decode_ms": 222605.4,
+            "decode_tps": 13.4,
+            "ttft_s": 57.838,
+            "total_s": 280.339,
+            "drafts_offered": 2529,
+            "drafts_accepted": 2132,
+            "acceptance_rate": 0.8430209568999605,
+            "request_sha256": "1f3abe00dea144b0e26d862f282e7b90833de131b4527662a4aca2542cda918a",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "1530ca09508ad5af5e2596fef3272dab4b746bfb23f4a2a0c9d042b46ed340f5",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "prompt_tokens": 33284,
+            "read_tokens": 33284,
+            "reused_tokens": 0,
+            "generated_tokens": 11390,
+            "reasoning_tokens": null,
+            "output_chars": 5584,
+            "reasoning_chars": 29443,
+            "prompt_ms": 49624.8,
+            "prompt_tps": 670.7,
+            "decode_ms": 1316796.5,
+            "decode_tps": 8.6,
+            "ttft_s": 49.754,
+            "total_s": 1366.445,
+            "drafts_offered": 15687,
+            "drafts_accepted": 6160,
+            "acceptance_rate": 0.392681838464971,
+            "request_sha256": "14b9c7ec3c1c3af432e25fa765ed54abc916df5b88d57c014760269e677b87f3",
+            "output_sha256": "e5e9bb69313dffd57356793941341cff7f7c7f51714f0c2a5b1f2b5ca4bbcd43",
+            "reasoning_sha256": "41e9cdb3a170c72a24eac11adbeb4ac5109e7d226940a832317cad094b7ac615",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 719373,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33210,
+            "rows": 33209,
+            "GPU_residual_rows": 33209,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_FP16_calls": 180,
+            "GDN_FP16_rows": 1195524,
+            "GDN_barriers": 3,
+            "checkpoint_pairs": 2516,
+            "windows": 48,
+            "jobs": 20288,
+            "restored_dense_layers": 48,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33209,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "physical_resource_saturation_qualified": false
+          },
+          {
+            "read_tokens": 33284,
+            "rows": 33283,
+            "GPU_residual_rows": 33283,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_FP16_calls": 180,
+            "GDN_FP16_rows": 1198188,
+            "GDN_barriers": 3,
+            "checkpoint_pairs": 2492,
+            "windows": 48,
+            "jobs": 20106,
+            "restored_dense_layers": 48,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33283,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "physical_resource_saturation_qualified": false
+          }
+        ],
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "97f9de806f4106c2487b30ca8525239d7e5481f3434f83499787bde4a59d0907",
+            "d002cce15fe2b877c107d0ecc191990b4a98eaabdb9ab07016aa18a12c05c3ed",
+            "a39a7db993416b76334b4f8f76f9180042f6c7945e29420e4ea8c989f535785f",
+            "1f3abe00dea144b0e26d862f282e7b90833de131b4527662a4aca2542cda918a",
+            "14b9c7ec3c1c3af432e25fa765ed54abc916df5b88d57c014760269e677b87f3"
+          ],
+          "valid": true,
+          "journal_sha256": "1a41005a2aacc8b5d1166bbedcecf1f90b8a7b1f5098cddccaa69c82b599648e"
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68804
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "controls": {
@@ -82874,6 +83034,16 @@
         "passed": true
       }
     ],
+    "decision": {
+      "pilot_complete": true,
+      "observations_per_workload_per_arm": 1,
+      "MTP_strong_weak_classification_qualified": false,
+      "speed_nonregression_qualified": false,
+      "inference_adopted": false,
+      "physical262144_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "next": "Inspect actual generation lengths,answer and acceptance;freeze repeated clean comparison before speed/adoption claims."
+    },
     "source_inputs": {
       "files": 261,
       "aggregate_sha256": "cac0185453ce97673b31362c2ee0a965eec757b6bd1ef418b6f7edf7713fe096"

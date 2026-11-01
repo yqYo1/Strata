@@ -440,20 +440,40 @@ the structured fields before the semicolon and passes that real-request CPU
 replay plus four valid/nine rejected route controls. Its fresh two-process plan
 uses both standard33K workloads,thinking on and a16384-output cap;only MTP16
 differs. Require >=1K generated tokens and a substantive answer in each request.
-Both frontend probes pass. V2's FP16process now closes both requests with normal
-native exit0,quiet validation,all six warmup/long-request bindings,closed owners
-and no fresh fault. Code reads33210tokens and generates2869at13.3tok/s;
-prose reads33284and generates11674at8.4tok/s. Draft acceptance is84.92%/37.61%.
-Actual answer/thinking characters are5578/2461and4104/35318;these establish
-answer presence,not task-quality adjudication. The Q8process and final model
-hashes remain next. These are one-sample diagnostic observations,not clean speed,
-decode nonregression,strong/weak-MTP classification or inference adoption.
-After this pair,the CPU idle-spin policy is a bounded next discriminator:
-the current pool defaults to20000us before CV parking,and its existing immutable
-startup knob permits a shorter bound. Prior CPU accounting motivates checking
-this,but does not prove spinning's critical-path cost. Compare wake costs and
-actual phase throughput,using the indexed idle-wait methods;lower CPU use alone
-does not qualify a speedup. Physical resource saturation remains unknown.
+Both frontend probes and both V2processes now pass. All12warmup/long-request
+bindings,normal native exits0,closed owners,quiet validation,actual GPU residual
+and GDN16 dispatch,48dense restores per long request,and all15final model hashes
+pass with no fresh fault. Each workload/arm has one diagnostic observation:
+
+| Workload,read tokens | FP16/Q8 generated tokens | FP16/Q8 TG,tok/s | FP16/Q8 draft acceptance |
+| --- | ---: | ---: | ---: |
+| regular-code,33210 | 2869 / 2974 | 13.3 / 13.4 | 84.92% / 84.30% |
+| varied-prose,33284 | 11674 / 11390 | 8.4 / 8.6 | 37.61% / 39.27% |
+
+FP16/Q8 prompt times are50.5749/57.7092s for code and42.9342/49.6248s for
+prose;client TTFT is50.790/57.838s and43.069/49.754s. These are ordinary33K
+routes and diagnostic observers,not the clean117K speed campaign. Actual
+answer/thinking characters are5578/2461and4104/35318for FP16,and5578/2832and
+5584/29443for Q8. The code answer hashes match;the thoughts and prose differ.
+Answer presence is established,not task-quality adjudication. Both FP16 TG
+observations are slower;do not dismiss that as noise or qualify nonregression
+without a repeated clean comparison. Strong/weak-MTP classification and inference
+adoption remain unqualified. Native validation retains one URreference until OS
+exit;ordinary runtime teardown remains a separate unresolved contract.
+The next bounded discriminator uses the same binary and existing immutable
+`STRATA_POOL_SPIN_US` knob:explicit20000us versus0us,with MTP16fixed.
+Zero still checks the clock only after1024pause iterations. The actual projected
+CPU pool differs from HEAD only by absent optional service observers;the startup
+knob and20ms default are present. The new controller is committed at`8f85b1b5f`;
+execution and the prospective plan are separate gates. It measures one33K code
+request per process plus four official warmups,read-only request CPU snapshots
+and the existing disjoint main-thread prefill accounting. Lower CPU use alone is
+not a speedup;prefill and decode require independent repeated phase comparisons
+before selecting any shared wait policy. Existing CPU totals motivate this test,
+not a claim of spinning's critical-path cost or physical resource saturation.
+The parallel Linux host-Arena THP methods collection is reviewed and indexed for
+its named later CPU-only comparison;no page-policy implementation or performance
+claim follows from that literature research.
 The earlier GDN16on/off cohort's raw output is retired after recovering its
 261source inputs from pushed history. Keep its qualification record and runtime
 inventory for the next profile;the unchanged admission passes after deletion.
