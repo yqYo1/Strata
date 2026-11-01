@@ -19968,7 +19968,7 @@
     },
     "correction_task": {
       "classification": "knowledge_collection_correction",
-      "status": "Orca_started_pending_completion",
+      "status": "native_rereviewed_needs_targeted_correction",
       "schedulable_now": false,
       "prerequisites": {
         "original_Orca_worker_exited_and_ACKed": true,
@@ -20002,8 +20002,31 @@
         },
         "effort_observed": "high at pre-Task idle header",
         "startup_recovery": "Verified actual update prompt before Task;Esc skipped with no Enter/installation.Idle Luna high/workspace verified,same Task/terminal retry accepted.",
-        "worker_closed": false
-      }
+        "worker_closed": true,
+        "outcome": "succeeded",
+        "worker_done_message": "msg_ed8228a462c1",
+        "worker_done_utc": "2026-10-31T23:49:41Z",
+        "release_state": "released",
+        "exact_worker_observation": "exited",
+        "delivery": "delivery_ba7ba955429a",
+        "delivery_acked": true,
+        "completion_metadata": "Typed filesModified matched;completion text omitted path/hash,so Main independently pinned the actual artifact before native review."
+      },
+      "worker_closed": true,
+      "report_bytes": 14536,
+      "report_sha256": "a1129a459a846b71b912e3bc7c13adefd7fc0e151b81c4e294b33c43b5ab471e",
+      "native_review_task": "/root/curate_layer_scoped_kv_residency_20261101",
+      "native_review_closed": true,
+      "native_review": {
+        "path": ".cache/research/2026-11-01/layer_scoped_kv_residency_collection_20261101.corrected.review.json",
+        "bytes": 5965,
+        "sha256": "823f9398668e06d7a8378788fc82f9753b9b4576c21b6e0ab1fa2f05b2fe08b7",
+        "verdict": "needs_targeted_correction",
+        "retrieval_eligible": false,
+        "source_and_residency_corrections_passed": true,
+        "remaining": "Remove unsupported vLLM statements or pin matching immutable evidence;remove the leftover verify-hash marker.Then obtain a fresh native review before retrieval."
+      },
+      "next_action": "Fresh bounded report-only citation correction;no implementation or GPU qualification implied."
     }
   }
 }
