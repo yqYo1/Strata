@@ -20,15 +20,6 @@ struct Problem {
   float beta = 0; // only +/-0 accepted; no alpha, bias or activation
 };
 
-// Private long-prefill GDN producer: FP16 X/W, FP32 accumulation and output.
-// Fixed QKV/gate weights N10240/6144,K2560; no beta,bias or output conversion.
-// Y has logical shape [t,n], with ldy=0 selecting n and ldy%4=0 otherwise.
-struct GdnProjectionFp32Problem {
-  const uint16_t *x = nullptr, *w = nullptr;
-  float *y = nullptr;
-  int64_t t = 0, n = 0, k = 0, ldy = 0;
-};
-
 // Fixed production MoE Down shape: X[job.rows,640], W[2560,640], FP16.
 // The published plan and its uploaded maps/weights must remain immutable and
 // alive until the returned event is checked and the queue is drained. Maps
@@ -100,10 +91,6 @@ public:
   // still requires the caller to drain the queue before releasing any owner.
   // Explicit tile makes later operator comparisons possible without env edits.
   sycl::event beta0(const Problem &problem, Tile tile = Tile::wide_128x128);
-  // Compile-stage candidate only; no production dispatcher selects it.
-  // Borrows the same registered owners and in-order queue as beta0. Returns
-  // the actual event; all guards precede enqueue and caller drains on error.
-  sycl::event gdn_projection_fp32(const GdnProjectionFp32Problem &problem);
   // Component candidate and explicit large-job engine hook; default off.
   // Same DPAS order, then BF16 rounding/widening, then FP32 sycl::fma.
   sycl::event down_scatter(const DownScatterProblem &problem,

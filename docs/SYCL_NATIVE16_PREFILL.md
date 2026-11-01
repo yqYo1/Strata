@@ -96,124 +96,20 @@ model/RESTORE behavior. Keep both explicit strategies;automatic length selection
 and additional profiles remain deferred. Fourteen older provenance holds remain independent.
 No new legacy-compiler build runs.
 
-### Next GDN projection candidate
+### Closed FP32 GDN projection comparison
 
-The frozen12-process cohort is closed. Prepare a private long-prefill-only
-FP16-input/FP32-output,beta0 TLA endpoint for GDN QKV and gate projections.
-The selectedf6cea2source calls `native_proj`/oneMKL for these two producers;
-the GDN output already uses `native_proj16` when native16 is active,including
-outside chunk64. Do not change that output,QSA,HC,MoE,small alpha/beta GEMMs,
-generic `Gemm::native` dispatch or decode. Keep the existing oneMKL producer
-as the control selected before runtime initialization. The private FP32 endpoint is committed at
-e618f3466432dca7ee7435a399e7eb92ecfc06c3;production dispatch is unchanged.
-The555-source compile-only plan uses the exact production translation-unit
-flags and separate BMG G21 AOT link. All four CPU commands exit0. V1fails
-post-build input bookkeeping because its allowed map omits the already pinned
-TLA dependencies;the failure remains recorded. V2attests914actual inputs and
-four unchanged objects without recompilation. The AOT container has three
-concatenated ELF images;only its second image contains the new kernel. Exact
-member disassembly shows16static32-bit block2D stores reading FP32 DPAS
-accumulator registers directly,without FP16/BF16 conversion after the final
-DPAS. SIMD16,256GRF and two barriers are codegen observations,not occupancy
-measurements. The corrected host-only D-copy proof now passes65536shape/pitch
-combinations:all T1..8192,both output widths,and four pitches. It enumerates
-one8x16collective write rectangle per descriptor and128unique payload cells,
-rather than treating replicated descriptor anchors as scalar destinations.
-The earlier host compile and equality failures remain recorded. This proves
-coordinate ownership,not accumulator-value composition or hardware tail masking.
-The guarded device fixture source is committed at4ccfb3079 and its production
-runtime/AOT build passes. The frozen first-device smoke now passes the host
-canary and T1/N6144/ld6144 plus T129/N10240/ld10256. Complete outputs match the
-exact FP32 oracle and unchanged oneMKL control at zero ULP;3351and720465outputs
-respectively cannot be represented in FP16. Input/output guards and checked
-owner retirement pass. The trace observes two actual new-kernel launches out
-of five successful kernel launches. Actual device environment/maps,pre-main
-validation,38observed executable providers,normal process closure and the final
-frozen source/driver checks pass,with no fresh GPU fault. This establishes only
-these two small shapes. The subsequent18-shape gate reports exact outputs but
-fails its original exit observer:the native child exits0 while `/proc` briefly
-becomes inaccessible. Preserve that failed outcome. Six host-only real-child/
-pidfd controls qualify a bounded observer that never infers exit from denial
-and stops on persistent loss while the child is live. The fresh V2gate now
-passes all18shapes,including8191/8192rows and both padded widths,with38observed
-providers,quiet validation,normal ownership and no fresh GPU fault. Its3150
-live snapshots include two permission denials followed by positive child exit.
-These are selected device shapes,not every T or a physical262144model fill.
-General rounded-input,numerical/task/speed/decode and physical-context
-qualification remain pending;production dispatch is unchanged.
+The private FP16-input/FP32-output TLA producer is rejected for the measured
+GDN QKV/gate shapes. Keep the existing oneMKL producers and the selected
+f6cea2two-strategy/GDN3 engine. No production dispatch or decode path changed.
+Its18exact shapes,26general/cancellation/zero/onehot shapes,64FP64 spots per
+case and16synchronous no-enqueue rejections pass their stated component gates.
+Three fresh clean processes then pass all120steady timing batches,numerical,
+provider,source and checked-closure gates,with no fresh GPU fault.
 
-The next maintained fixture compares this resident GEMM with unchanged oneMKL
-before adding a prefill-only production bridge. Preserve the current exact
-oracle and add seeded nonperiodic row/column/K inputs,paired cancellation,
-zero/one-hot probes and safe synchronous admission rejections. Finite binary16
-inputs are dyadic;the new cases exercise accumulation rounding rather than
-literally non-dyadic values. Compare all outputs with oneMKL and at least32..64
-independent FP64 spots across boundaries/cancellation. Predeclare bounds using
-`gamma2559(u)=2559*u/(1-2559*u)`,u32=2^-24 and u64=2^-53,with upward-rounded
-absolute-product bounds;do not demand bit equality on general data or assume
-oneMKL accumulation precision from its input/output type tuple. A short device
-span rejection needs a safe host/test-submit seam;otherwise leave that case
-unqualified. The reviewed recipe is indexed under
-`gdn_fp32_fixture_validation_contract_20261101`;the resource collection stays
-outside Main's context until component results need its specific alternatives.
-
-First isolate resident GEMM at T4096/8192,N6144/10240,K2560 with matched inputs,
-balanced arm order and independent processes. Record checked host elapsed time,
-whole in-order queue boundaries and native returned-event service separately;
-do not assume oneMKL's returned event represents its entire operation. The
-existing Runtime compute queue already enables profiling. Keep at most eight
-outstanding calls,declare a timing-duration floor and keep first use separate.
-This comparison does not include PCIe/dequantization or prove a hardware
-ceiling. Require dequantization and unchanged consumers in the actual dependency
-path before any model A/B or inference adoption.
-
-The independent maintained fixture is now
-`bench/sycl/gdn_projection_fp32_bench.cpp`,controlled by
-`tools/sycl/measure_gdn_projection_fp32.py`;it has not run on GPU yet.
-The first CPU build fails because this SDK's event.wait_and_throw is non-const;
-the two local barrier event handles are corrected before a fresh V2build.
-That V2build passes with724actual compiler inputs and no uncovered host
-linker inputs. All three owned CPU commands close normally. Its independent
-general-data gate now passes:16synchronous rejections cause zero traced kernel
-launches,the two small shapes launch the new kernel twice,and all26larger
-general/cancel/zero/onehot cases pass guards and64FP64 spots each. Maximum
-native/oneMKL absolute difference is0.021484375;maximum fractions of the
-prospective comparator and FP64 bounds are0.0000647485 and0.000362200.
-All four owned processes close normally,38executable providers are observed
-and no fresh GPU fault occurs. This is component numerical evidence,not model
-quality or speed. The original failed build and its exact inputs remain recorded.
-It preserves the original exact fixture and its consumed receipts. The new
-plan adds26general/cancellation/zero/onehot shapes,64FP64 spots per shape,
-16safe synchronous rejections and three fresh resident timing processes.
-Each timing process checks four T4096/8192,N6144/10240 shapes,keeps each shape's
-first calls separate and alternates five64-call batches per arm. Only the first
-shape is first library use in that process. Every steady
-batch must exceed50ms and its empty-control overhead must be at most5%.
-OneMKL remains a comparator;the general-data bounds do not assume its internal
-accumulation from the public type tuple. Full model/task/physical262144 gates
-remain pending. Current engine speed evidence is unchanged.
-
-The first resident-speed cohort stops after its first native process. All four
-shapes complete their checks and timing rows and the child exits0,but the
-controller requires an external UR-loader mapping after removing the validation
-preload. The original gate remains failed,with all68timing rows and checked child
-closure recorded as unqualified evidence;no speed decision is drawn from it.
-This installed libsycl ELF has no DT_NEEDED UR-loader entry and contains private
-ur_lib/ur_loader implementation symbols. A fresh controller-only V2plan therefore
-first checks two small clean-mode shapes and their actual libsycl,forced V2
-adapter and NEO mappings against the unchanged84-provider inventory. Validated
-mode still requires the external loader/preload as well. This changes no native
-source,compiler input,executable,queue or runtime safety setting. The original
-general-data qualification is recovered from Git;the new controller's exact
-reuse revision is explicit before execution. V2then repeats all three fresh
-resident processes with the original timing/precision/eligibility criteria.
-
-The fresh V2clean smoke and all three resident processes now pass their
-provider,precision,closure and final-source checks,with no fresh GPU fault.
-Independent reduction confirms the actual0/1/0arm order and every emitted
-paired sample. All120steady batches pass the original eligibility criteria;
-the shortest is164.307ms. Per-call host medians below are medians of the three
-process medians,each based on five64-call batches;first calls remain separate.
+Each cell below is the median of three process medians,each based on five
+64-call batches. First calls per shape are separate;only the first shape in a
+process is first library use. All tensors are resident;dequantization,PCIe and
+model inference are excluded from this explicitly isolated comparison.
 
 | T | N | Native FP32,ms | oneMKL FP32,ms | Paired native/reference time GM |
 | ---: | ---: | ---: | ---: | ---: |
@@ -222,41 +118,29 @@ process medians,each based on five64-call batches;first calls remain separate.
 | 8192 | 6144 | 6.85227 | 5.17537 | 1.32572 |
 | 8192 | 10240 | 11.70788 | 8.48976 | 1.37868 |
 
-The native128x128policy is29.6..37.9%slower in this resident comparison and
-fails every component follow-up screen. Keep the existing oneMKL producers;
-do not run a model trial or change production dispatch for this candidate.
-Native returned-event service occupies98.09..99.53%of its measured host
-interval,so host submission/wait overhead does not explain the loss. This
-does not distinguish arithmetic from VRAM/cache/SLM limits. Logical compulsory
-tensor bytes and achieved arithmetic rates are recorded;physical traffic,
-occupancy and saturation remain unknown. There is no timed application PCIe
-copy in this resident-only scope. Retrieve the curated resource alternatives
-for a concrete next experiment before retaining or retiring this prototype.
-The model PP/TTFT/TG records and both explicit prefill profiles are unchanged.
+The native128x128policy is29.6..37.9%slower and fails all component follow-up
+screens. Native event service is98.09..99.53%of its host interval;this does not
+identify arithmetic versus VRAM/cache/SLM limits or prove saturation. Physical
+traffic and occupancy remain unknown. No model trial is justified by this
+candidate. The model PP,TTFT,TG and both explicit profiles remain unchanged.
 
-The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
-The existing33554432-half-element scratch is64MiB;their complete dequantized
-weights are50MiB and30MiB,so these shapes do not require N-splitting. Reuse
-that scratch and existing FP32 outputs,without additional global allocations.
-First retain the actual wide128x128/K32 policy:128work-items,eight SG16
-subgroups and256GRF. The research report's four-subgroup description does
-not match this policy's checked4x2subgroup layout.
+Original source,recipes,individual samples,earlier failed observer/build gates
+and their unchanged statuses are recoverable at commit
+`44ca73c50014542057692eac78fc846fca68e15e`,in
+`bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json`.
+The four oneMKL component baselines are indexed in `bench/performance-records.csv`.
+The unused86-line API/kernel addition and ten prototype-only fixtures/controllers
+are removed;both native GEMM files again exactly match f6cea2. The independent
+bounded ProcObserver fix and its six real-child tests remain maintained.
+External prototype retirement is recorded in the compact closed decision.
 
-Use a distinct typed `float*` output contract,checked four-byte spans and
-surface pitches,disjoint registered device owners and the existing in-order
-queue. Runtime and adapter lifetime do not retain borrowed allocations.
-Commit exact source,fixture,recipe,compiler/dependency pins and a finite
-compile-only plan before building. First instantiate the public TLA FP32
-D-copy path and inspect direct FP32 store codegen;the generic selector's
-32-bit store support is source evidence,not successful compiler lowering.
-Do not substitute a16-bit store followed by widening or add a copy kernel.
-After compilation,qualify actual store ownership/tails,guarded outputs,
-numerics and checked owner retirement before clean component timing. Include
-native dequantization and unchanged consumers in the dependency-path comparison.
-Commit model A/B criteria only after the component is eligible. Keep physical
-262144,RESTORE,task/agent and sustained decode gates separate. Before another
-build generation,select the retained current engine and retire the closed
-comparison generation after exact source/recipe and live-consumer checks.
+Next audit the actual GDN3 producer/consumer storage contract and direct oneMKL
+FP16-output support before a new component experiment. A16bit output needs
+range/rounding,typed conv/z loads,ownership and unchanged state/decode handoff
+evidence;do not adopt the slower chunk64 recurrence merely to get16bit storage.
+The curated resource collection supplies conditional ideas,not an authorized
+blind tile sweep. Physical262144model/RESTORE,task/agent and sustained decode
+qualification remain pending.
 
 The first official2026.2replacement used
 [a pinned constructor](../tools/sycl/official_model_sources.py),not the whole

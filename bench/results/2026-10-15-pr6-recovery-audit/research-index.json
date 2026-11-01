@@ -19716,98 +19716,6 @@
     },
     "retired_report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/prefill_two_generation_comparison_contract_20261101.md"
   },
-  "prefill_fp32_projection_tla_contract_20261101": {
-    "classification": "decision_support",
-    "status": "native_Luna_max_reviewed_conditional",
-    "schedulable_now": false,
-    "question": "Does the pinned public TLA adapter support an isolated beta0 large-GDN mixed16-to-FP32 projection endpoint with unchanged consumers, and what exact layout/lifetime/dispatch gates are needed?",
-    "prerequisite_evidence": {
-      "actual_selected_native_source": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
-      "actual_route": "Selected columns4/barriers3,chunk64=0:qkv/gate native_proj and small alpha/beta bf16_proj call oneMKL FP32 output;GDN final projection uses native_proj16 when native16_active. An out16 tile change does not apply to the FP32 producer calls.",
-      "measured_scope": "official_joint_resources_v3 atdc5dcff259eca316e61e7f0aaf00b393e813def7:GDN projection9.3439s/output4.7951s nonexclusive queue intervals;no saturation/slow-library claim.",
-      "prospective_candidate": "Not implemented:prefill-only eligible large beta0 qkv/gate TLA FP32 destination,first existingwide128x128/K32 SG16/256GRF;existing GDN output/HC/MoE/decode unchanged. Shape/GRF variants separate.",
-      "static_research_only": true,
-      "no_missing_hardware_counter_required_for_static_contract": true
-    },
-    "report": ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.md",
-    "report_budget": {
-      "words": [
-        1700,
-        2300
-      ],
-      "maximum_bytes": 18432
-    },
-    "spec": {
-      "sha256": "516c17bf28d3b47dc3d3e68485bc0a24faa099f1504173b6309779609e8d3955",
-      "policy_commit": "14490d9ad61d167f8833f9086a1ea9a024f1d511",
-      "retired_path": ".cache/research/2026-11-01/prefill_fp32_projection_tla_contract_20261101.task.json"
-    },
-    "native_source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
-    "source_sha256": {
-      "src/prefill/prefill.cpp": "925767605ffb597d1318eb165af94537b13605b54e707105f2c52814f1f1a4ce",
-      "src/prefill/sycl/gemm.cpp": "023bc6c5633b7ae58636dc1ba732d7db77514cca98925100e031c0e0d3c7bcd9",
-      "src/prefill/sycl/gemm16.cpp": "8a4885b80ed75edb21a651243a250a53dc5cd31cc07fbfc7e90c98a5ffa6fd1a",
-      "src/prefill/sycl/vllm_xe2/native16.cpp": "a2e42a4095d5c3e13a473af3d81666090f8839136ee6d0fdc5652fabbc5b7357",
-      "src/prefill/sycl/vllm_xe2/native16.hpp": "c818479e94efe270fa233a6120dde27c71fcb67e15b54437003ad3191575f00d",
-      "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
-    },
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "review_model": "native Codex gpt-6-luna max",
-    "retention_consumer": "One prospective mixed16-to-FP32 projection candidate decision after the frozen model cohort closes;retain report only for that decision,not automatic implementation or speed adoption.",
-    "prior_scopes": [
-      "oneMKL_native_work_coverage_20261025",
-      "prefill_adapter_preflight_lifetime_collection_20261101",
-      "sycl_kernel_resource_introspection_20261101",
-      "gdn_runtime_contract_review"
-    ],
-    "orca": {
-      "run": "run_4096847f7211",
-      "task": "task_67609e45489a",
-      "initial_failed_dispatch": "ctx_b0b2526ad828",
-      "dispatch": "ctx_22a8967a0871",
-      "terminal": "term_3703e764-b988-4ab3-984c-e8fdfd1bd53f",
-      "initial_failure": "Verified Codex update prompt before Task input;ESC skipped without installation,then idle GPT-6-Luna high/workspace verified and same-task/same-terminal retry accepted.",
-      "input_accepted": true,
-      "worker_state": "succeeded_released",
-      "worker_done_message": "msg_fa781c193c10",
-      "delivery": "delivery_21464e0162dd",
-      "delivery_acked": true,
-      "exact_worker_observation": "exited",
-      "release_state": "released"
-    },
-    "report_bytes": 13410,
-    "report_sha256": "a5e9776a8f2fe78d2b53d49618d2e7f350f9215467ac0f4a1c10329b1cbed704",
-    "worker_closed": true,
-    "review": {
-      "path": ".cache/research/2026-11-01/review_prefill_fp32_projection_tla_contract_20261101.md",
-      "bytes": 5575,
-      "sha256": "12b01ea850a885f146abd8f1f00a63a766fc72eebf31c179abbc796a2be77189",
-      "model": "gpt-6-luna",
-      "effort": "max",
-      "corrections": [
-        "Adapter borrows runtime,queue and allocation owners;caller retains them through event completion and checked queue drain.",
-        "Selected native16 GDN output projection already uses out16 even when chunk64=0;new FP32 endpoint is limited to eligible qkv/gate producers,not the existing output projection.",
-        "Commit the exact compile-only source and recipe before compilation;float block2D epilogue/codegen remain unproven."
-      ],
-      "main_read_short_digest_only": true
-    },
-    "policy_anchor_content_verified": "AGENTS.md and docs/ARTIFACT_RETENTION.md exactly match the original14490d9ad policy anchor despite later result/index commits.",
-    "next_scope": {
-      "schedulable_now": false,
-      "prerequisites": [
-        "Frozen12-process model cohort closes.",
-        "Main selects a concrete projection candidate,then commits exact compile-only instantiation and recipe."
-      ],
-      "action": "If selected,first compile and verify direct FP32 store/shape/bounds/owner contract;then numerical/progression/codegen and matched timing. No repeated static survey or speed adoption from this report."
-    },
-    "artifact_retirement": {
-      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-projection-and-comparison-research-transactions.json",
-      "sha256": "555ece9bef257d72006af597c35b6d15eb06ce941da0e266bbf5ecad990664dc",
-      "evidence_commit": "7be2ded6778e86fcecc68b928e5c64de61eb908b",
-      "files": 7,
-      "bytes": 13687
-    }
-  },
   "moe_two_job_operand_lifetime_20261101": {
     "classification": "decision_support",
     "status": "native_reviewed_conditional_no_submit_contract_needed",
@@ -19950,197 +19858,6 @@
     "reason": "Current numerical acceptance recipe is curated;Main proceeds with general-data/component fixture. Resource collection is retrieval-only until actual component results need interpretation.",
     "next_review": "After general-input/rejection gate or first matched component timing exposes a distinct question;avoid another generic survey."
   },
-  "gdn_fp32_projection_source_audit_20261101": {
-    "classification": "decision_support",
-    "status": "native_Luna_max_reviewed_conditional",
-    "schedulable_now": false,
-    "question": "Audit the actual new private FP16-input/FP32-output GDN projection endpoint, including public TLA destination ownership, bounds, collectives, borrowed lifetime and unchanged dispatch.",
-    "prerequisites": {
-      "frozen_model_cohort_closed": true,
-      "concrete_implementation_committed": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
-      "compile_plan_committed": "558e599c7252313a3a5195cdc43c3ac353bbde71",
-      "source_sha256": {
-        "src/prefill/sycl/vllm_xe2/native16.hpp": "3a57eabeeb13809ae6d40becf0d157801cc6b1604e4649a85848860ff5d1daaa",
-        "src/prefill/sycl/vllm_xe2/native16.cpp": "85f11b7e9fb7d94c0af6a7e14a0c1e2b28228cf30b44afc715fe3842823f1f24",
-        "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
-      },
-      "report_root_writable": true
-    },
-    "report": ".cache/research/2026-11-01/gdn_fp32_projection_source_audit_20261101.md",
-    "report_budget_bytes": 12288,
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "review_model": "native Codex gpt-6-luna max",
-    "consumer": "First exact-source FP32 GDN producer compile/codegen and bounded device fixture decision.",
-    "review_point": "After first component source/ownership/numerical decision;retain only novel unresolved contract evidence.",
-    "prior_scopes": [
-      "prefill_fp32_projection_tla_contract_20261101",
-      "sycl_kernel_resource_introspection_20261101",
-      "prefill_adapter_preflight_lifetime_collection_20261101"
-    ],
-    "orca": {
-      "run": "run_4096847f7211",
-      "task": "task_960eafa6cb51",
-      "initial_failed_dispatch": "ctx_ebb87633c386",
-      "dispatch": "ctx_4c958f809ac4",
-      "terminal": "term_843f875c-6e49-4866-a784-2da81c85772d",
-      "initial_failure": "Verified pre-task agent-update-prompt;ESC skipped installation,actual idle GPT-6-Luna high/workspace verified,same-task/same-terminal retry accepted.",
-      "input_accepted": true,
-      "turn_started": true,
-      "worker_state": "succeeded_released",
-      "worker_done_message": "msg_426e4b24d941",
-      "delivery": "delivery_b7d3c7af3028",
-      "release_state": "released",
-      "delivery_acked": true,
-      "exact_worker_observation": "exited"
-    },
-    "worker_closed": true,
-    "report_bytes": 8742,
-    "report_sha256": "b5509bca91119bfdc6584a2197ef76e4254642b2e13291b21b64bbe95ce0950c",
-    "native_review_task": "/root/review_gdn_fp32_source_20261101",
-    "native_review_closed": true,
-    "native_review": {
-      "path": ".cache/research/2026-11-01/gdn_fp32_projection_source_audit_20261101.review.json",
-      "bytes": 7229,
-      "sha256": "7874626799148e9fc69e3650a60b9d9d0cd3d02bcf7e09a71055a6b2613cca16",
-      "model": "gpt-6-luna",
-      "effort": "max",
-      "verdict": "conditional_source_contract_supported",
-      "digest": "Queue origin/async-error visibility is a documented caller precondition,not a demonstrated defect.Use same-Runtime queue and retain all borrowed owners through checked completion.Host D-copy ownership proof still required before GPU execution.",
-      "prior_review_correction": {
-        "sha256": "cac4515a245c0b2eded6cf01972b5f89094a0cf69086d8f8374d8d1d5b5a0764",
-        "outcome": "incorrect_TLA_citation_correction_withdrawn",
-        "reason": "Main verified actual dependency SHA256 240a052619e659bc3d694ed37c5be821534ca16a5011f65856b0f3318862d4c1 equals Git87f685;original report cited correct ranges.Review corrected after separate bounded task."
-      }
-    },
-    "transaction_files_retired": true
-  },
-  "gdn_fp32_copy_descriptor_ownership_20261101": {
-    "classification": "decision_support",
-    "status": "native_Luna_max_reviewed_conditional",
-    "schedulable_now": false,
-    "question": "Resolve actual public TLA block2D collective store descriptor/payload ownership representation after host-only coordinate equality failed;derive exact proof over message rectangles without GPU execution.",
-    "prerequisites": {
-      "source_hashes": {
-        "bench/sycl/gdn_projection_fp32.cpp": "9d0da82e9dd493b1339a291a687037d7a3766f6aea0bfef7ad6e15891a735826",
-        "src/prefill/sycl/vllm_xe2/native16.cpp": "85f11b7e9fb7d94c0af6a7e14a0c1e2b28228cf30b44afc715fe3842823f1f24",
-        "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
-      },
-      "actual_host_failure": "official_gdn_fp32_projection_ownership_v2",
-      "host_binary": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership-v2/ownership",
-        "sha256": "02f2ac836d6c370b0dd0e68a7662358d7a1cfdb06b099aae4a24cb8797e5ff4d",
-        "bytes": 50040
-      },
-      "all_commands_closed": true,
-      "FP32_AOT_direct_store_review_passed": true,
-      "GPU_executed": false,
-      "report_root_writable": true
-    },
-    "report": ".cache/research/2026-11-01/gdn_fp32_copy_descriptor_ownership_20261101.md",
-    "report_budget_bytes": 12288,
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "review_model": "native Codex gpt-6-luna max",
-    "consumer": "Correct the current host-only D-copy proof before the first FP32 GDN device fixture.",
-    "prior_scopes": [
-      "gdn_fp32_projection_source_audit_20261101",
-      "prefill_fp32_projection_tla_contract_20261101"
-    ],
-    "retention_review": "After corrected host proof and first guarded device decision;retire superseded proof explanations if source/results suffice.",
-    "worker_closed": true,
-    "orca": {
-      "run": "run_4096847f7211",
-      "task": "task_080257b565ed",
-      "initial_failed_dispatch": "ctx_1e7746017b7e",
-      "dispatch": "ctx_1bef89824dae",
-      "terminal": "term_f981aa5c-80cf-443f-9bc9-bdd672041213",
-      "initial_failure": "Pre-task update prompt verified;ESC skipped installation;actual idle Luna high/workspace verified;retry same task/terminal accepted.",
-      "input_accepted": true,
-      "turn_started": true,
-      "worker_state": "succeeded_released",
-      "worker_done_message": "msg_2f3e0893d8dc",
-      "delivery": "delivery_7fbfb52d2047",
-      "delivery_acked": true,
-      "release_state": "released",
-      "exact_worker_observation": "exited"
-    },
-    "report_bytes": 11756,
-    "report_sha256": "7e8ed257364e0d5a5b7a1c48fd38702a3015ed9d5cc979283caf0d9ae4cb8475",
-    "native_review_task": "/root/review_gdn_fp32_copy_ownership_20261101",
-    "native_review_closed": true,
-    "native_review": {
-      "path": ".cache/research/2026-11-01/gdn_fp32_copy_descriptor_ownership_20261101.review.json",
-      "bytes": 7214,
-      "sha256": "1a011fddd97686909145cbdf97b4c97469ce44a966775ec8c6383810a7357a83",
-      "model": "gpt-6-luna",
-      "effort": "max",
-      "verdict": "conditional_accept_with_required_anchor_extraction_correction",
-      "digest": "Enumerate subgroup-leader nested eight-value D atom fragments;expand one dst.data().coord_ origin per8x16 physical message and match its128 source payload cells.Only16 message descriptors perSG;lane replicas are not independent writers.",
-      "closure_correction": "Review final mentioned an older worker_closed=false index;Main already verified exact execution-host exited/released and ACKed delivery_7fbfb52d2047."
-    },
-    "transaction_files_retired": true
-  },
-  "gdn_fp32_fixture_validation_contract_20261101": {
-    "classification": "decision_support",
-    "status": "native_Luna_max_reviewed_conditional",
-    "schedulable_now": false,
-    "question": "Review the actual guarded device fixture and frozen correctness controller,not another endpoint/queue feasibility audit. Determine what the simple separable exact-product/exact-sum oracle misses (address permutations,value patterns,cancellation/rounding,input/weight immutability,padded tails,exception retirement) and specify a practical independent general-input check before component performance. Compare full oneMKL comparisons,small FP64 spot/reference oracles and analytically bounded accumulations;match the FP16-product/FP32-accumulation contract used in vLLM/SGLang rather than imposing bitwise FP32 or full-model token identity. All finite binary FP16 values are dyadic;distinguish nontrivial accumulation rounding from literally non-dyadic input. Identify actual source defects separately from missing coverage. Keep this one coherent fixture/numerical acceptance review,including rejection tests that can prove no GPU enqueue. Read prior gdn_fp32_projection_source_audit_20261101 and gdn_fp32_copy_descriptor_ownership_20261101 reviews to avoid redoing descriptor ownership. Do not run the code. Give a minimal meaningful case matrix,tolerances justified by arithmetic,how to avoid costly full CPU GEMM,and necessary vs optional gates. Main will implement a fast validator and performance fixture after this report.",
-    "prerequisites": {
-      "concrete_sources_committed": "e40018e330c7baf5740025b274e5fd4c7c2c0115",
-      "source_sha256": {
-        "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_projection_fp32_device.cpp": "979737fae12317a9b4aa937fc0e4ae0c2aa3a9a612482051415460257a302ed8",
-        "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/check_gdn_projection_device.py": "83da50e715516b3266387bb6469265f5e8cc8c5809de0e69bf4954e5230ed559",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/src/prefill/sycl/vllm_xe2/native16.cpp": "85f11b7e9fb7d94c0af6a7e14a0c1e2b28228cf30b44afc715fe3842823f1f24",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/src/prefill/sycl/vllm_xe2/native16.hpp": "3a57eabeeb13809ae6d40becf0d157801cc6b1604e4649a85848860ff5d1daaa"
-      },
-      "first_GPU_smoke_evidence": "84ed58bc151ee4fe8bf79708fb52d61af5f46675",
-      "host_65536_shape_proof_passed": true,
-      "report_root_writable": true
-    },
-    "report": ".cache/research/2026-11-01/gdn_fp32_fixture_validation_contract_20261101.md",
-    "report_budget_bytes": 12288,
-    "worker_model": "Orca Codex gpt-6-luna high",
-    "review_model": "native Codex gpt-6-luna max",
-    "consumer": "Independent fixture/numerical acceptance design for the next current GDN component benchmark.",
-    "review_point": "After native Luna-max curation and the next GDN numerical/performance decision;retire transaction paperwork after closure.",
-    "prior_scopes": [
-      "gdn_fp32_projection_source_audit_20261101",
-      "gdn_fp32_copy_descriptor_ownership_20261101",
-      "sycl_kernel_resource_introspection_20261101"
-    ],
-    "worker_closed": true,
-    "orca": {
-      "run": "run_4096847f7211",
-      "task": "task_6ad08242b55f",
-      "initial_failed_dispatch": "ctx_c1b75c40e97f",
-      "dispatch": "ctx_1981824ace33",
-      "terminal": "term_d50eeb2f-4ecc-428f-9ab5-7d62af2a0fa4",
-      "initial_failure": "Verified pre-task update prompt;ESC skipped installation,sameTask/sameTerminal retry accepted with actual GPT-6-Luna high header.",
-      "input_accepted": true,
-      "turn_started": true,
-      "worker_state": "succeeded_released",
-      "delivery_acked": true,
-      "release_state": "released",
-      "exact_worker_observation": "exited",
-      "delivery": "delivery_a421f80fd4df",
-      "worker_done_message": "msg_7df1fb5cf77d"
-    },
-    "report_bytes": 12129,
-    "report_sha256": "06c7566c3880415491693c8ae06dd53096a1ec524c3913399fbb80c24fd052bc",
-    "native_review_task": "/root/review_gdn_fp32_fixture_contract_20261101",
-    "native_review_closed": true,
-    "native_review": {
-      "path": ".cache/research/2026-11-01/gdn_fp32_fixture_validation_contract_20261101.review.json",
-      "bytes": 5996,
-      "sha256": "3db3ff125f7b6616157a6c70ca4a94db642ed24d86f9633a4b7d8fd1387e03f2"
-    },
-    "short_digest": "The exact periodic oracle is a good smoke but misses general indexing/rounding. The report adds useful seeded, cancellation, FP64, guard and rejection coverage; no numeric source defect is shown. It needs a full-output tolerance, and oneMKL's type tuple does not prove FP32 accumulation. The 18-shape numeric PASS/native exit 0 remains separate from the original /proc observer exit-race failure; Main verifies closure.",
-    "Main_read_collection_body": false,
-    "Main_retrieved_review_fields": [
-      "short_digest",
-      "reviewed_validation_recipe"
-    ],
-    "transaction_files_retired": true
-  },
   "gdn_fp32_tile_resource_envelope_20261101": {
     "classification": "knowledge_collection",
     "status": "native_Luna_max_reviewed_conditional",
@@ -20200,96 +19917,67 @@
     "Main_retrieved_review_fields": [
       "short_digest"
     ],
-    "transaction_files_retired": true
+    "transaction_files_retired": true,
+    "current_retrieval": {
+      "path": ".cache/research/2026-11-01/gdn_fp32_resident_next_decision_20261101.review.json",
+      "sha256": "a2f15f9979b61e42c5b69ef5c2a708bb4913c4ca8c92847348c3aba70fed414f",
+      "source_commit": "44ca73c50014542057692eac78fc846fca68e15e",
+      "short_digest": "Native 128x128 FP32 loses to oneMKL on all four measured shapes (native/reference ratios 1.296–1.379); all 120 steady batches and numerical/fault/ownership/provider gates pass, but every native follow-up gate fails. Native event service is 98.09–99.53% of host interval, so host overhead does not explain the loss; this does not establish compute, memory, occupancy, or saturation. Large FP32 output bytes support a storage hypothesis only. T=1 underfill does not explain the T=4096/8192 timing shapes, which tile M fully. Keep oneMKL selected; no model trial or next component experiment is justified before production call-path and output-contract evidence.",
+      "consumer": "Next actual GDN3 projection-storage contract decision;conditional tile ideas are not schedulable."
+    }
   },
-  "gdn_fp32_resident_fixture_oracle_audit_20261101": {
+  "gdn16_projection_consumer_contract_20261101": {
     "classification": "decision_support",
-    "status": "native_Luna_max_reviewed",
-    "schedulable_now": false,
-    "prerequisites_satisfied": [
-      "Independent maintained fixture/controller committed at4705bea2b14307a48903a4fdd337619900741137",
-      "Original full18 exact gate closed and current",
-      "No worker for these new source-specific scopes"
-    ],
-    "source_commit": "4705bea2b14307a48903a4fdd337619900741137",
-    "report": ".cache/research/2026-11-01/gdn_fp32_resident_fixture_oracle_audit_20261101.md",
-    "inputs": {
-      "bench/sycl/gdn_projection_fp32_bench.cpp": "750fa9ac521941942ee2d4d04936863561708b48b88ba62fb6b3978a30368085",
-      "tools/sycl/measure_gdn_projection_fp32.py": "ebf5eab5cb107aa1e316d6e206cad1a0c9fe86f56b0af274f57533c30f7d3c8a"
+    "status": "eligible_not_started",
+    "schedulable_now": true,
+    "question": "Audit the actual dedicated long-prefill GDN3 QKV/z producer-consumer chain and minimal16bit storage boundary,keeping current GDN3 recurrence,FP32 persistent state,alpha/beta gates,decode handoff and manual TTFT/throughput profiles. Existing chunk64 path has16bit QKV/z but its recurrence is a different rejected performance choice;assess reuse of storage/conv primitives only. Identify precise typed loads,rounding,alignment,arena aliases,owner retirement and required numerical/context checks without implementing. Compare the smallest viable FP16 and BF16 variants against current faster oneMKL FP32 producers.",
+    "source_commit": "b7f3ab8b9dfb8d5b435b95c569673ce8e4cc1622",
+    "source_sha256": {
+      "src/prefill/prefill.cpp": "6e4bc5f157e0636ce7f68bd7bbcdded7c65c96a9b8743ec5acbd0cb282c863d4",
+      "src/prefill/sycl/gemm16.cpp": "1c5841e6cd963b91e7699edd60b79edc783169df3b29d22d36c52f5e2918e478",
+      "src/kernels/sycl/fused_gdn.cpp": "0816408946b0bc65a8246824e85e5d7d95728a4da2e01f340f142c78784b0d4f",
+      "src/prefill/sycl/gdn_chunk64.cpp": "06a67a39911bc384a56ebab66761485831096156599af524e78f4dbcb630870c",
+      "include/strata/prefill/kernels.hpp": "bb58ab7a331be53c81e3531c871baee1c713ef24de0a43000c2ebee57cf3adcc"
     },
+    "prerequisite_evidence": {
+      "commit": "44ca73c50014542057692eac78fc846fca68e15e",
+      "key": "official_gdn_fp32_resident_speed_v2",
+      "actual_fastest": "oneMKL wins all4shapes;all3processes and120steady batches eligible;no model trial for private FP32 kernel",
+      "current_route": "GDN3 with chunk64=0;QKV/z FP32,existing out16 output projection;active production callsites unchanged"
+    },
+    "report": ".cache/research/2026-11-01/gdn16_projection_consumer_contract_20261101.md",
     "report_byte_budget": 10000,
-    "consumer": "Main next general-data/resident timing decision;read only native Luna-max review digest first",
-    "report_sha256": "d922a499dba0203fb923cd15a79a2bc902ca4093624769e34ac3263691b277ee",
-    "report_bytes": 9189,
-    "review": {
-      "path": ".cache/research/2026-11-01/gdn_fp32_resident_fixture_oracle_audit_20261101.review.json",
-      "sha256": "33c50a2778cfcfb2465be60a4b7662f9b4288fca1ea665dd0ffc88d6b51c03d5",
-      "bytes": 5630,
-      "model": "gpt-6-luna",
-      "effort": "max",
-      "verdict": "conditional_accept_with_oracle_scope_correction",
-      "short_digest": "The fixture/source description and finite-half arithmetic are substantially accurate; no implementation defect is demonstrated. The 2*gamma bound is valid for two FP32-accumulation results, but oneMKL's published type table does not establish its accumulation type, so the differential gate and FP64 spot tolerance remain conditional. Preserve the no-enqueue gate: source ordering and unchanged canaries do not independently count submissions. The fixed-K onehot control at 0, 31, 32, and 2559 is a useful targeted addition. Retain only through Main's next numerical and resident timing decision."
-    },
-    "worker": {
-      "task": "task_ad8462cab00f",
-      "initial_failed_dispatch": "ctx_b425801c14b2",
-      "dispatch": "ctx_e225f460227f",
-      "terminal": "term_0a6b097b-a608-4a0f-a3e5-2c78e0083c28",
-      "model": "gpt-6-luna",
-      "effort": "high",
-      "startup_recovery": "Actual update prompt observed;ESC skipped update before Task,retried same Task/terminal;no agent steering.",
-      "turn_started": true,
-      "worker_done_message": "msg_179eb6314c8a",
-      "worker_done_accepted": true,
-      "released": true,
-      "execution_host_status": "exited",
-      "delivery_acknowledged": "delivery_e0ba222b27f5"
-    },
-    "remaining": "Main resident speed comparison;no new audit until a concrete result or changed source requires one."
+    "prior_scope_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "worker_model": "Orca gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "ownership": "Report only;Main implements and serializes all testing. No steering/builds/tests/GPU/process inspection/Git commands or product edits.",
+    "consumer": "Main next prefill-only producer/consumer storage experiment;keep decode and existing oneMKL baseline."
   },
-  "gdn_fp32_resident_timing_contract_audit_20261101": {
+  "oneMKL_half_output_gdn_precision_20261101": {
     "classification": "decision_support",
-    "status": "native_Luna_max_reviewed",
-    "schedulable_now": false,
-    "prerequisites_satisfied": [
-      "Independent maintained fixture/controller committed at4705bea2b14307a48903a4fdd337619900741137",
-      "Original full18 exact gate closed and current",
-      "No worker for these new source-specific scopes"
-    ],
-    "source_commit": "4705bea2b14307a48903a4fdd337619900741137",
-    "report": ".cache/research/2026-11-01/gdn_fp32_resident_timing_contract_audit_20261101.md",
-    "inputs": {
-      "bench/sycl/gdn_projection_fp32_bench.cpp": "750fa9ac521941942ee2d4d04936863561708b48b88ba62fb6b3978a30368085",
-      "tools/sycl/measure_gdn_projection_fp32.py": "ebf5eab5cb107aa1e316d6e206cad1a0c9fe86f56b0af274f57533c30f7d3c8a"
+    "status": "eligible_not_started",
+    "schedulable_now": true,
+    "question": "Research direct GPU half-input/half-output oneMKL GEMM for the actual6144/10240x2560 GDN weights and4096/8192 rows:installed2026.1 header/spec overloads,scalars,accumulation guarantees,range/subnormal handling and backend support. Check actual matching first-party vLLM/SGLang model projection/conv storage contracts from the current index framework source;do not invent a model match or claim runtime overrides observed. Compare direct FP16 output,existing native BF16 output,and FP32 output plus conversion. Decide which is a plausible bounded component experiment and what overflow/accuracy evidence is needed;no source port or execution.",
+    "source_commit": "b7f3ab8b9dfb8d5b435b95c569673ce8e4cc1622",
+    "source_sha256": {
+      "src/prefill/prefill.cpp": "6e4bc5f157e0636ce7f68bd7bbcdded7c65c96a9b8743ec5acbd0cb282c863d4",
+      "src/prefill/sycl/gemm16.cpp": "1c5841e6cd963b91e7699edd60b79edc783169df3b29d22d36c52f5e2918e478",
+      "src/kernels/sycl/fused_gdn.cpp": "0816408946b0bc65a8246824e85e5d7d95728a4da2e01f340f142c78784b0d4f",
+      "src/prefill/sycl/gdn_chunk64.cpp": "06a67a39911bc384a56ebab66761485831096156599af524e78f4dbcb630870c",
+      "include/strata/prefill/kernels.hpp": "bb58ab7a331be53c81e3531c871baee1c713ef24de0a43000c2ebee57cf3adcc"
     },
+    "prerequisite_evidence": {
+      "commit": "44ca73c50014542057692eac78fc846fca68e15e",
+      "key": "official_gdn_fp32_resident_speed_v2",
+      "actual_fastest": "oneMKL wins all4shapes;all3processes and120steady batches eligible;no model trial for private FP32 kernel",
+      "current_route": "GDN3 with chunk64=0;QKV/z FP32,existing out16 output projection;active production callsites unchanged"
+    },
+    "report": ".cache/research/2026-11-01/oneMKL_half_output_gdn_precision_20261101.md",
     "report_byte_budget": 10000,
-    "consumer": "Main next general-data/resident timing decision;read only native Luna-max review digest first",
-    "report_sha256": "8e8643b908be4ca43200c316895af49d3f71e8842bcc4f69ba5cc20b0b8eb025",
-    "report_bytes": 10163,
-    "review": {
-      "path": ".cache/research/2026-11-01/gdn_fp32_resident_timing_contract_audit_20261101.review.json",
-      "sha256": "e7b6f1b84ec39ba7108e409d7af90e2ad32098d8d9fbb6d935ad43d9936033b1",
-      "bytes": 5865,
-      "model": "gpt-6-luna",
-      "effort": "max",
-      "verdict": "useful_decision_support_with_minor_correction",
-      "short_digest": "The resident host-time comparison is symmetric at the API-batch boundary: same resident inputs and in-order profiling queue, 64 calls per batch, eight-call drains, and checked completion. Primary oneMKL/SYCL contracts support the queue and event reasoning; timestamps are not device-busy time. The fixture covers four direct-component shapes, not production dispatch, transfers, model throughput, or saturation. A report sentence understates first-call coverage: every shape has two first_shape_call rows, though only the first shape is first library use. No timing defect was found; emitted-order checks would harden the controller, and the report is 163 bytes over budget."
-    },
-    "worker": {
-      "task": "task_73e9afe3764d",
-      "initial_failed_dispatch": "ctx_14382b34a3d7",
-      "dispatch": "ctx_ff5048e31462",
-      "terminal": "term_8e96f58d-8ec2-49a3-a170-1def7f9bf04b",
-      "model": "gpt-6-luna",
-      "effort": "high",
-      "startup_recovery": "Actual update prompt observed;ESC skipped update before Task,retried same Task/terminal;no agent steering.",
-      "turn_started": true,
-      "worker_done_message": "msg_c0378ca6617a",
-      "worker_done_accepted": true,
-      "released": true,
-      "execution_host_status": "exited",
-      "delivery_acknowledged": "delivery_e0ba222b27f5"
-    },
-    "remaining": "Main resident speed comparison;no new audit until a concrete result or changed source requires one."
+    "prior_scope_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "worker_model": "Orca gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "ownership": "Report only;Main implements and serializes all testing. No steering/builds/tests/GPU/process inspection/Git commands or product edits.",
+    "consumer": "Main next prefill-only producer/consumer storage experiment;keep decode and existing oneMKL baseline."
   }
 }
