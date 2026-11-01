@@ -22,7 +22,7 @@ import compare_prefill_strategies as gdn
 
 model, comparison, shared, build = gdn.model, gdn.comparison, gdn.shared, gdn.build
 P, B, RESULT = gdn.P, gdn.B, gdn.RESULT
-ROOT, KEY = model.gdn16.ROOT / 'mtp16-generation-v1', 'gdn16_mtp16_generation_v1'
+ROOT, KEY = model.gdn16.ROOT / 'mtp16-generation-v2', 'gdn16_mtp16_generation_v2'
 ARMS = ('candidate', 'reference')
 WORKLOADS = ('regular-code', 'varied-prose')
 WORKLOAD_ID = 'current_mtp16_generation_20261102'
@@ -165,8 +165,9 @@ def prepare():
     prior = closed_speed(revision, native)
     contract, manifest = model.python_manifest()
     require(contract == prior['python_contract'] and manifest['selected'] == prior['python_selected'], 'frontend changed')
-    assets = shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
     controls = selfcheck()
+    controls['failed_v1_native_request_replay'] = replay_failed_v1()
+    assets = shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
     ROOT.mkdir(mode=0o700); write(ROOT / 'runtime-inputs.json', providers)
     row = dict(stage='prepared', source_commit=revision, sources=model.pinned_sources(revision),
         binary=native['binaries']['strata'], native_source_commit=native['source_commit'],
@@ -179,6 +180,8 @@ def prepare():
             current_prefill_evidence='90e4f00c76b8d2b6a65bea92104efdfc393ec3d0', new_native_build=False),
         plans=[], processes=[], host_passed=False, passed=False, complete=False, active=False, ownership_closed=True,
         controls=controls, whole_bytes=256 << 20,
+        prior_failure=dict(key='gdn16_mtp16_generation_v1',evidence_commit='8dffe4dbc',
+            correction='Read structured route fields before the semicolon;GPU/RAM headroom prose is outside that schema. Preserve duplicate-key rejection inside it. New processes;V1 remains failed.'),
         budgets=dict(wall=5400, cpu=36000, rss_cap=104 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20),
         plan=dict(question='Do current MTP16 and Q8 routes each complete both thinking-on >=1K long-generation tasks with safe handoff and observed acceptance?',
             order='Two fresh independent processes:candidate then reference;four official warmups then regular-code and varied-prose once each. Commit each process before next.',
@@ -214,7 +217,7 @@ def native_route(text, read):
     def fields(prefix):
         lines=[v for v in text.splitlines() if v.startswith(prefix)]
         require(len(lines)==1,'missing/duplicate native route:'+prefix)
-        pairs=re.findall(r'([A-Za-z_][A-Za-z_0-9-]*)=([^\s;]+)',lines[0])
+        pairs=re.findall(r'([A-Za-z_][A-Za-z_0-9-]*)=([^\s;]+)',lines[0].split(';',1)[0])
         require(len({k for k,_ in pairs})==len(pairs),'duplicate native field')
         return dict(pairs)
     main=fields('strata prefill: layer-major candidate, ');window=fields('strata MoE window configuration: ')
@@ -273,6 +276,23 @@ def native_route(text, read):
         GDN_FP16_calls=len(stored),GDN_FP16_rows=sum(stored),GDN_barriers=3,
         checkpoint_pairs=pairs,windows=len(groups),jobs=int(work['jobs']),restored_dense_layers=48,
         MTP_prefill=model.mtp_route(text,n),physical_resource_saturation_qualified=False)
+
+
+def replay_failed_v1():
+    """The completed real request is a parser fixture,not model qualification."""
+    old = model.gdn16.ROOT / 'mtp16-generation-v1'
+    row = json.loads((old/'record.json').read_text())
+    require(build.committed(RESULT)['gdn16_mtp16_generation_v1']==compact(row)
+            and row['stage']=='failed' and not row['passed'] and not row['complete']
+            and row['diagnosis']['original_owner_error']=="RuntimeError('duplicate native field')",
+            'original failed V1 evidence differs')
+    text=(old/'0/engine.stderr').read_text()
+    headers=list(re.finditer(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*$',text,re.M))
+    require(len(headers)==5 and headers[-1].groups()==('33210','0','33210','2869'),
+            'original completed native request differs')
+    route=native_route(text[headers[-2].end():headers[-1].end()],33210)
+    return dict(passed=True,GPU_executed=False,original_status='failed',
+                log_sha256=digest(old/'0/engine.stderr'),route=route)
 
 
 def official(root,result):
@@ -360,7 +380,8 @@ def run(index):
         entry,_,_=owner.run('bench',plan['command'],env,P,interaction=interact,**row['budgets'])
         outputs=list((root/'bench').glob('*/results.json'))
         if outputs: outcome['samples']=shared.gen.collect_samples(json.loads(outputs[0].read_text())['results'].get('long_generation',{}))
-        require(build.supervision.closed(entry) and entry['exit_code']==0 and len(outputs)==1,'owned official benchmark failed')
+        require(build.supervision.closed(entry) and entry['exit_code']==0 and len(outputs)==1,
+                'owned official benchmark failed: '+entry.get('error','exit/result/closure gate'))
         result=json.loads(outputs[0].read_text());samples,events,journal=official(root,result)
         for sample in samples: comparison.require_valid_client_ttft(sample)
         require(len(windows)==len(samples)==len(live)==2,'long-generation request count')
@@ -408,7 +429,7 @@ def selfcheck():
             f'strata prefill heads: target detached bytes={comparison.TARGET_BYTES} D2H={comparison.TARGET_BYTES} H2D-on-restore={comparison.TARGET_BYTES} source=owned-RAM',
             f'strata prefill heads: draft detached bytes={comparison.DRAFT_BYTES} retained-map-bytes={comparison.MAP_BYTES}',
             'strata prefill dense: phase=bank residency=Bank',
-            f'strata prefill: layer-major candidate, tokens={n} chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total={n*20480} residual_gpu_rows={n} residual_gpu={n*20480} residual_host=0 residual_staging=0 layer_cache=4096',
+            f'strata prefill: layer-major candidate, tokens={n} chunk=8192 residual_dtype=bf16 residual_element_bytes=2 residual_total={n*20480} residual_gpu_rows={n} residual_gpu={n*20480} residual_host=0 residual_staging=0 layer_cache=4096; extra allocations, GPU headroom=536870912, RAM headroom=8589934592',
             'strata prefill: native16 BF16 HC residual/projection IO',
             'strata prefill: GDN columns=4 workgroups=192 lanes=128 barriers=3 epilogue=GPU_FP32_same_order scratch=existing_y',
             f'strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows={n}',
@@ -429,7 +450,8 @@ def selfcheck():
     bad=[good.replace('residual_host=0','residual_host=1'),good.replace('final_drain=checked','final_drain=failed'),
          good.replace('activations=48','activations=47'),good.replace('submitted=8 total=8','submitted=16 total=8',1),
          good.replace('state=fp32;tokens=8192','state=fp32;tokens=8191',1),good.replace('mode=2 cells=','mode=0 cells=',1),
-         good+'\nstrata prefill heads: target detached bytes=1',good.replace('effective_slots=384','effective_slots=128')]
+         good+'\nstrata prefill heads: target detached bytes=1',good.replace('effective_slots=384','effective_slots=128'),
+         good.replace('tokens=33017 chunk=','tokens=33017 tokens=33018 chunk=')]
     for text in bad:
         try: native_route(text,33018)
         except (RuntimeError,ValueError,KeyError): pass
