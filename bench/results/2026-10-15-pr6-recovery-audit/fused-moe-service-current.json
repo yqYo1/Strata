@@ -79368,5 +79368,38 @@
       "files": 261,
       "aggregate_sha256": "4281bb241602f2f2adf654c14ad801059f43b21273607ea442e11eefedeb29e2"
     }
+  },
+  "gdn16_mtp16_host_controls": {
+    "source_commit": "c752528fb1b7af0566e3ef68b834d36f5652a622",
+    "passed": true,
+    "GPU_executed": false,
+    "command": [
+      "timeout",
+      "60s",
+      "python3",
+      "tools/sycl/mtp_prefill.py",
+      "selfcheck"
+    ],
+    "exit_code": 0,
+    "controls": {
+      "valid_policy_route": 1,
+      "invalid_policy_route": 7,
+      "MTP_callback_positive": 3,
+      "MTP_callback_negative": 15,
+      "GDN_storage_positive": 1,
+      "GDN_storage_negative": 3,
+      "original_throughput_positive": 1,
+      "original_throughput_negative": 14,
+      "decision_controls": 3
+    },
+    "limits": "CPU parser and prospective decision controls; no model/native execution or speed qualification. Both32K and117K callback conservation/tails are covered.",
+    "previously_executed_draft_kv": {
+      "original_native_source": "3b4998f326101fa913788fd368e1674b111dea03",
+      "current_native_source": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+      "bytes": 11618,
+      "sha256": "adb434aa53b1ccf6ecafc34785a3470c4cbc449d08386d93f47a62babec3e3a0",
+      "identical": true
+    },
+    "next": "Prepare/commit current-generation32K MTP16 diagnostic,then frontend probes and owned model entry. No clean117K comparison until it passes."
   }
 }

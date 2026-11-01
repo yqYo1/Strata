@@ -370,8 +370,20 @@ Largest named kernel groups include the180long QSA-prefix kernels at26.9761s,
 Requested M2D copy payload is49.9439GB with11.6779s summed service;these are
 not measured PCIe wire bytes or saturation. The legacy coarse family classifier
 also places the two hgemm groups (6.6216s) in other_kernel;use the actual names
-until taxonomy is corrected. The36Q80 prompt-product kernels total7.0359s;
-their exact source/caller role needs a join before selecting a replacement.
+until taxonomy is corrected. The36Q80 prompt-product kernels total7.0359s. Source joins them to the four
+Q8 projections in`Prefill::draft_kv`(embedding,hidden,K,V),whose full11618-byte
+function is identical between the previously executed3b4998f326 and current
+521c1757b native sources(SHA256`adb434aa53b1ccf6ecafc34785a3470c4cbc449d08386d93f47a62babec3e3a0`).
+Its existing`STRATA_MTP_BATCH_F16=1`route dequantizes Q8 weights and uses half
+GEMM. It changes draft-cache values,so decode acceptance/handoff remain separate
+gates. The older32K MTP cohort improved PP but did not qualify decode;it does
+not adopt the setting or supply current-engine speed. The current-generation
+controller now predeclares a traced/validated32K check,then three independent
+117Kpairs/four requests per process,with GDN16on in both arms and only the
+pre-exec MTP selector changed. Both arms use the same nominal callback markers;
+internal needed-row/batch shapes and zero-observer overhead are not claimed.
+CPU route/tail/decision controls pass;the new model check and comparison remain
+pending. No native kernel or decode selection is changed.
 Physical arithmetic/VRAM/PCIe saturation remains unknown. Next compare the
 source/shape-specific opportunities and characterize longer inputs on this
 same validated generation,without attributing a length/configuration change
