@@ -20101,5 +20101,50 @@
       "bytes": 18194,
       "status": "deleted_verified"
     }
+  },
+  "gdn16_typed_consumer_audit_20261101": {
+    "classification": "decision_support",
+    "status": "eligible_not_started",
+    "schedulable_now": true,
+    "question": "Audit the actual new prefill-only gdn_conv_f16 and gdn_recurrence_barriers3_f16 against unchanged FP32 GDN3:typed packed spans,subgroup uniformity,history T=1/2/3 tails,three-barrier hazards,state ownership,raw scratch versus normalized output and decode isolation. Explain required rounded-storage reference tests and real model range/precision limits. Identify concrete bugs or counterexamples,not a generic source tour. Main is writing the compound packed producer/consumer fixture separately;this review does not cover its future bytes.",
+    "prerequisites": {
+      "satisfied": true,
+      "evidence_commit": "2e364baace2314aa31b203b9363034e36f2d8db7",
+      "evidence": "New independently authored typed consumer APIs now committed;prior output-storage speed decision is f540c76c and previous reports are indexed. Source-only review/collection requires no new GPU capability."
+    },
+    "source_commit": "2e364baace2314aa31b203b9363034e36f2d8db7",
+    "source_sha256": {
+      "src/kernels/sycl/fused_gdn.cpp": "606fee98a6ed724936b5eee0d69e99cd9584d5d35e9bc7b27c89100e63f61bfc",
+      "include/strata/prefill/kernels.hpp": "aa5bb841892aacba73943103c955ea0c0c8280ec3affbc01dc3794e661a9b742"
+    },
+    "report": ".cache/research/2026-11-01/gdn16_typed_consumer_audit_20261101.md",
+    "report_byte_budget": 9000,
+    "prior_scope_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "worker_model": "Orca gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "ownership": "Only read source/docs/web and write the single named report;no Git commands,builds,tests,GPU,profilers,process inspection,cleanup,product edits,extra agents or messages to others. Main owns implementation/testing. Do not conduct generic startup Git/job checks.",
+    "consumer": "Main implementation and next packed GDN3 component comparison"
+  },
+  "native_half_conversion_codegen_collection_20261101": {
+    "classification": "knowledge_collection",
+    "status": "eligible_not_started",
+    "schedulable_now": true,
+    "question": "Compare native FP16-bit to FP32 casts and integer bit-decomposition converters on Intel Xe2/SYCL,including subnormals,signed zero,NaNs,infinities,alignment,SPIR-V/LLVM/IGC lowering and compiler floating-point flags. Use primary compiler/runtime/spec source and original technical studies from SIMD/GPU imaging or scientific computing where transferable. Separate instruction/semantic evidence from measured throughput and CPU fallback claims. Discuss which finite discriminating conversion/IR/ISA tests could decide whether the existing software converter is expensive or necessary;do not execute them. Existing historical CUDA conversion failures do not establish a current Intel failure.",
+    "prerequisites": {
+      "satisfied": true,
+      "evidence_commit": "2e364baace2314aa31b203b9363034e36f2d8db7",
+      "evidence": "New independently authored typed consumer APIs now committed;prior output-storage speed decision is f540c76c and previous reports are indexed. Source-only review/collection requires no new GPU capability."
+    },
+    "source_commit": "2e364baace2314aa31b203b9363034e36f2d8db7",
+    "source_sha256": {
+      "include/strata/kernels/f16_bits.hpp": "0f74e6dd832da427b681c9971265a0af1a91198694fdef3654d860b98863fc8c"
+    },
+    "report": ".cache/research/2026-11-01/native_half_conversion_codegen_collection_20261101.md",
+    "report_byte_budget": 12000,
+    "prior_scope_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "worker_model": "Orca gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "ownership": "Only read source/docs/web and write the single named report;no Git commands,builds,tests,GPU,profilers,process inspection,cleanup,product edits,extra agents or messages to others. Main owns implementation/testing. Do not conduct generic startup Git/job checks.",
+    "consumer": "Indexed reusable method collection;Main retrieves only for a concrete conversion-cost question"
   }
 }
