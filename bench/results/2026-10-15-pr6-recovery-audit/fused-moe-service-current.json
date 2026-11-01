@@ -74372,5 +74372,185 @@
       "files": 4,
       "aggregate_sha256": "d6869d40ad715d501266519f16211b4da4d2cba9531217154ad38de958726633"
     }
+  },
+  "gdn16_pipeline_device_v3": {
+    "stage": "prepared",
+    "source_commit": "654bea2a08fd919c502dd273848bfd81d8fa78c9",
+    "native_source_commit": "3a1294459f8a6d0d8a6276188fed39b66c85bb3c",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/gdn-pipeline",
+      "sha256": "85d8c1663c2526e0088bd95880bf8bad2a34819d87cb1817e5ef236cc93632a2",
+      "bytes": 748488
+    },
+    "prerequisite_records": {
+      "build": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/record.json",
+        "sha256": "78a5ba31e23cd9ac948a9fd63a1a56b97ae9b274c7f5cc77bc90d55ef368af3e"
+      }
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+    },
+    "canary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+      "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/runtime-basis.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84,
+      "original_component_source": "83590826a6f77b686ae9ea1b0fbc085ba089ec19",
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+        "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+        "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+        "STRATA_SYCL_SELECT_RADIX4": "1",
+        "STRATA_SYCL_SELECT_CYCLIC": "0",
+        "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original"
+      },
+      "canary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "cases": [
+      {
+        "name": "host-canary",
+        "args": [],
+        "clean": false,
+        "trace": false
+      },
+      {
+        "name": "pipeline-smoke",
+        "args": [
+          "--smoke"
+        ],
+        "clean": false,
+        "trace": true
+      },
+      {
+        "name": "pipeline-general",
+        "args": [
+          "--validate"
+        ],
+        "clean": false,
+        "trace": false
+      }
+    ],
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "budgets": {
+      "wall": 600,
+      "cpu": 2400,
+      "rss_cap": 8589934592,
+      "text_cap": 8388608,
+      "file_cap": 67108864,
+      "total_cap": 100663296
+    },
+    "whole_wall_seconds": 2400,
+    "whole_bytes": 100663296,
+    "plan": {
+      "scope": "Packed resident two-projection+conv+GDN3+RMS/gating component;K2560,C10240,V6144. No model PP,TG,dequantization,PCIe,output projection or physical262144model qualification.",
+      "precision": "Default oneMKL compute mode unset in both arms. Half C uses half1/0 scalars;FP32 C uses float1/0. Typed storage uses SYCL half casts;all65536half promotions and253964signed F32 rounding/subnormal/overflow/NaN cases are checked on GPU before pipeline cases. Non-NaN bits match host RNE exactly,NaN classification only. FP32 control keeps its original software output rounding. FP32 persistent state/history,gates,reductions/accumulation. Passing diagnostics does not establish vendor accumulator type or real-model quality/range.",
+      "numerical": "Whole typed conv matches FP32 conv followed by host RNE. Typed recurrence state/history/final FP16 output match rounded-storage FP32 reference exactly,including1/2/tail splits. 64FP64 packed-producer spots/case bounded by2gamma32*absdot plus final-half-rounding. All finite outputs,guards,immutable inputs. Original FP32 fused-vs-columns smoke bit-exact. 18synchronous no-write geometry/epsilon/null/alias/alignment/host-pointer refusals. FP32-vs-FP16 drift is recorded diagnostically,not an extra-precision adoption criterion.",
+      "timing": "Three fresh processes;two4096/8192-row cases. Alternating/reversed arm order by process/round;first shape calls separate,four warmups,five paired64call batches. State/history resets,allocation,copies,CPU oracles outside timing. Host interval includes complete twoGEMM+conv/history+recurrence/RMS submissions,drain every4calls and final checked wait;no returned-MKL-event whole-operation assumption.",
+      "eligibility": "Each steady batch>=100ms;median of5empty controls<=5%of each batch. No resize/retry. Follow-up requires all3paired independent-process median ratios<1 at both lengths;no minimum percentage gain. Component success alone does not authorize a model trial.",
+      "safety": "Original in-order Runtime;copy offload/direct submission disabled and preexec environment immutable. At most4compound calls before drain. Canary,small traced smoke,warning-only general shapes before separate clean speed processes.",
+      "changed_mechanism": "V1 integer half load/store replaced only in typed16path by SYCL half casts. Old V1 speed gate failed;this new conversion experiment does not authorize model execution.",
+      "retention": "Keep useful samples,numerical maxima and decisions. Retire closed raw logs/traces after extracting names/provenance. Keep selected engine;new component generation has only this imminent comparison consumer."
+    },
+    "controller_inputs": {
+      "files": 40,
+      "aggregate_sha256": "f520fd999c355ac6b27a340e3b0a8abe6f324c61f32554509446d6e1055d1e50"
+    },
+    "native_sources": {
+      "files": 4,
+      "aggregate_sha256": "d6869d40ad715d501266519f16211b4da4d2cba9531217154ad38de958726633"
+    }
   }
 }
