@@ -20102,8 +20102,8 @@
   },
   "gdn3_causal_convolution_gpu_dataflows_20261101": {
     "classification": "knowledge_collection",
-    "status": "eligible_not_started",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "For the causal per-channel temporal convolution in Main's packed GDN3 long-prefill producer-consumer path, establish exact operation and chunk/history semantics from the pinned source and official vLLM/SGLang/FLA paths. Compare direct short-FIR loads, temporal/channel lane mapping, register sliding windows/subgroup shuffles, local-memory tiles with halos, and legal producer-consumer fusion. Account for work, logical traffic, halo reloads, dispatch/synchronization, layout, alignment and live registers; compare original GPU stencil/FIR and scientific-computing studies, limits and counterexamples. Preserve current FP32 recurrence/state and arithmetic contract. No code, cast lowering, Xe2 speed claim, port or adoption proposal.",
     "novelty": "Indexed work covers GDN projection tiling/resources, typed-storage boundaries, recurrent scans, barriers/subgroups and epilogue separation. No dedicated causal-convolution dataflow comparison appears; this asks about the consumer algorithm and producer-to-consumer boundary.",
     "eligibility_evidence": [
@@ -20124,6 +20124,20 @@
       "path": ".cache/research/2026-11-01/gdn_next_collection_scope_review_20261101.json",
       "sha256": "239227eb3b981ba0410b3f016789def9403ce92356d63bc1b2ba8bbde121cebb",
       "bytes": 4647
+    },
+    "execution": {
+      "run": "run_4096847f7211",
+      "task": "task_622c031bc350",
+      "dispatch": "ctx_e76295f4bf21",
+      "terminal": "term_603da847-1fd7-4320-81a6-dfb03d590cb0",
+      "initial_failed_dispatch": "ctx_e4f2d03d14d0",
+      "initial_failure": "agent-update-prompt before Task;ESC skip then same-Task/same-terminal retry",
+      "model_observed": "GPT-6-Luna high",
+      "normal_startup_protections_preserved": true,
+      "prompt_stages": [
+        "input_accepted",
+        "turn_started"
+      ]
     }
   }
 }
