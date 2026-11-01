@@ -69239,5 +69239,204 @@
       "files": 0,
       "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
     }
+  },
+  "official_gdn_fp32_resident_speed_v1": {
+    "stage": "prepared",
+    "source_commit": "54148cc1f64e893e1c97e2845f528e317960b49d",
+    "prerequisite_records": {
+      "build": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/record.json",
+        "sha256": "bf8f257658c0edcc783da57572ce397ab74ab9cd2b318fa1d1f26442a2c4d50f"
+      },
+      "general": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/general-v1/record.json",
+        "sha256": "2cf64460833c237bd692569435e15643530652cad1de3e8ff6ea42d0a806cb1b"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/gdn-fp32-bench",
+      "sha256": "58ff2f256b4bb920a330118e8d821db8c6cd72e2f1c9f75775f8b261a12caffe",
+      "bytes": 2708400
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+    },
+    "canary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+      "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/runtime-basis.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84,
+      "original_component_source": "83590826a6f77b686ae9ea1b0fbc085ba089ec19",
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+        "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+        "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+        "STRATA_SYCL_SELECT_RADIX4": "1",
+        "STRATA_SYCL_SELECT_CYCLIC": "0",
+        "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original"
+      },
+      "canary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "cases": [
+      {
+        "name": "host-canary",
+        "args": [],
+        "trace": false,
+        "clean": false
+      },
+      {
+        "name": "resident-0",
+        "args": [
+          "--bench",
+          "0"
+        ],
+        "trace": false,
+        "clean": true
+      },
+      {
+        "name": "resident-1",
+        "args": [
+          "--bench",
+          "1"
+        ],
+        "trace": false,
+        "clean": true
+      },
+      {
+        "name": "resident-2",
+        "args": [
+          "--bench",
+          "0"
+        ],
+        "trace": false,
+        "clean": true
+      }
+    ],
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "budgets": {
+      "wall": 480,
+      "cpu": 1500,
+      "rss_cap": 6442450944,
+      "text_cap": 8388608,
+      "file_cap": 67108864,
+      "total_cap": 100663296
+    },
+    "whole_wall_seconds": 1800,
+    "whole_bytes": 100663296,
+    "plan": {
+      "scope": "Resident FP16/FP32 GDN component only;not model PP,PCIe,dequantization,decode or physical262144.",
+      "safety": "Same qualified in-order compute queue;copy offload disabled;direct submission disabled;at most eight outstanding GEMMs;checked drain before releasing owners.",
+      "numerical": "General18shapes,cancel4,zero2,onehot2. Finite normal half operands;subnormals/NaNs/infinities excluded. All outputs compare within2*gamma2559(2^-24)*upward(min(maxX*sumW,sumX*maxW));64 FP64 spots per case within(2*gamma32+gamma64)*upward(sumabs/(1-gamma64)). oneMKL is a comparator,not proof of its internal accumulation. Zero/onehot are exact.",
+      "rejection": "Sixteen synchronous invalid-geometry/null/misalignment/overlap rejections;unchanged canaries;zero traced new-kernel launches. Short-span/wrong-context/exception-injection not qualified.",
+      "timing": "Three fresh processes,arm-order0/1/0;four T4096/8192,N6144/10240 shapes. First shape calls separate,two warmups per arm,five alternating paired64-call batches. All setup/copies/numerical checks outside timing. Host interval includes submission,at-most-eight drains and ending barrier. Queue boundary gap may include host starvation;not physical busy. Native event sum separate;no oneMKL event-as-whole-service claim.",
+      "eligibility": "Every steady batch>=50ms;median of five empty-control host times<=5% of every steady batch. Preserve ineligible samples;no batch resizing/retries. General correctness and final guards required. Per-shape follow-up eligible when every independent native/reference median host ratio<1 and all batches eligible;no minimum improvement floor.",
+      "observers": "Correctness:pre-main UR validation,traced small cases,warning-only tails. Timing:remove UR tracing/validation/preload observers before exec,retain all safety settings;parent checks actual maps/environment at100ms intervals.",
+      "optional_queue_timestamps": "Record null if barrier events report SYCL errc::invalid;checked host timing remains authoritative. Other errors fail. Native returned-event profiling must succeed.",
+      "timer_sources": [
+        "https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/supported/sycl_ext_oneapi_enqueue_barrier.asciidoc",
+        "https://github.khronos.org/SYCL_Reference/iface/event.html"
+      ]
+    },
+    "retention": "Keep individual samples,compact numerical maxima,source/runtime/closure and decisions;retire successful raw traces and build logs after evidence commit. Existing exact qualification files stay unchanged.",
+    "controller_inputs": {
+      "files": 45,
+      "aggregate_sha256": "89442fd03b6815aebd106a673a49ce54ee075254f9ad53b7edc451934838bb92"
+    },
+    "native_sources": {
+      "files": 0,
+      "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
   }
 }
