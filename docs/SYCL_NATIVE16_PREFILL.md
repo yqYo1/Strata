@@ -670,17 +670,22 @@ Keep all individual lengths,acceptance,TG,prompt time and TTFT;classify strong
 and weak MTP from observed acceptance in each arm,not workload names. Require
 three paired TG gains per workload without a minimum percentage floor;this
 does not adopt a policy or qualify dedicated117K prefill nonregression.
-The first reference process exposes a controller error:its mandatory resident-
-RAM exchange footer is conditional on`FileExpertSource::complement_ready()`,
-which is inactive for this configured direct-GGUF expert source. The common
-decode-cache hit/lookup footer is present. Leave this process's source and
-configuration frozen through normal closure,record the original failure,then
-commit a new comparison plan using the applicable common footer and check its
-availability during the official warmups before long generation. Do not advance
-to process1 or relabel V1passed. The completed code observation is3900tokens,
-381648.2ms decode and10.2printed TG at33211fresh read;its count/acceptance match
-the earlier reference,but this observation is not a repeated clean gain.
-The prose response and native/fault closure are still pending. A one-off
+The first reference process closes with native0,closed owners,quiet final
+validation output and no fresh fault,but the official benchmark exits1. Code
+emits3900tokens in381648.2ms decode,10.2printed TG at33211fresh read;its count
+and.8402527acceptance match the earlier reference. Prose reaches16384generated
+tokens,48663thinking characters and0answer characters in1959106.5ms;it fails
+the answer-body gate. Its.5921595acceptance also fails the weak-MTP band.
+Keep V1failed and both individual samples;no later process is launched.
+A separate controller defect would fail after that gate:the mandatory resident-
+RAM exchange footer requires`FileExpertSource::complement_ready()`,inactive for
+this configured native-GGUF-backed`ArenaExpertSource`. The common decode-cache
+hit/lookup footer is present. That parser was not reached in this run. Commit
+a new plan with the common footer checked during official warmups,and a new
+versioned,simpler long-prose task. First qualify thinking,answer presence,length
+and observed MTP regime in a separate fresh single-workload pilot;do not waive
+the original answer/MTP criteria or retry V1. Final full-asset/model/adoption
+qualification remains pending. A one-off
 resource check observes the main thread onCPU0,expert workers onCPU1..5 and
 GPU2750MHz;these are placement/clock observations,not saturation or a cause
 of the timing difference. No new GPU fault is inferred from a counter failure.

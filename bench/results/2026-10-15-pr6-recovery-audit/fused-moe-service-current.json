@@ -87702,7 +87702,7 @@
       "STRATA_SNAPSHOT_VERIFY": "1",
       "STRATA_TRACE_ADAPT": "1"
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "c6462b94a273a34a5ea9c7f7055554b665a245ee",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -87907,7 +87907,97 @@
         "environment_sha256": "3702fc85b99b802c30fd7407093156881cafec3697c1686de88a44a03a9636ea"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1472965,
+          "start_ticks": 192179277,
+          "sid": 1472904
+        },
+        "request_routes_checked_before_continue": 2,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 3900,
+            "output_chars": 5496,
+            "reasoning_chars": 4848,
+            "prompt_ms": 61207.1,
+            "prompt_tps": 542.6,
+            "decode_ms": 381648.2,
+            "decode_tps": 10.2,
+            "ttft_s": 61.369,
+            "total_s": 442.879,
+            "drafts_offered": 3324,
+            "drafts_accepted": 2793,
+            "acceptance_rate": 0.8402527075812274,
+            "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+            "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+            "reasoning_sha256": "888405cb3266aa6804871f52a240f58cae981339e116ff6a24d9c8c4f001f7c5",
+            "finish_reason": "stop",
+            "controller_eligible": true,
+            "eligible": true,
+            "ineligible_reasons": [],
+            "client_interval": {
+              "request_begin_monotonic_ns": 1921926267167660,
+              "first_output_monotonic_ns": 1921987635867179,
+              "request_end_monotonic_ns": 1922369146335584
+            }
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33285,
+            "reused_tokens": 0,
+            "generated_tokens": 16384,
+            "output_chars": 0,
+            "reasoning_chars": 48663,
+            "prompt_ms": 52867.6,
+            "prompt_tps": 629.6,
+            "decode_ms": 1959106.5,
+            "decode_tps": 8.4,
+            "ttft_s": 53.094,
+            "total_s": 2011.998,
+            "drafts_offered": 17703,
+            "drafts_accepted": 10483,
+            "acceptance_rate": 0.5921595209851438,
+            "request_sha256": "c3f8e1dad4a5dc11454a5592866a0889e81baeeb7359d62a0852c78345ffc1e6",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "f4fc8567858b264ee6c7515f5a08a3b98c18bf3e01c4357e64091b224bdc4cad",
+            "finish_reason": "length",
+            "controller_eligible": false,
+            "eligible": false,
+            "ineligible_reasons": [
+              "thinking did not leave at least 512 characters of answer body"
+            ],
+            "client_interval": {
+              "request_begin_monotonic_ns": 1922369499529709,
+              "first_output_monotonic_ns": 1922422593521607,
+              "request_end_monotonic_ns": 1924381497808143
+            }
+          }
+        ],
+        "error": "RuntimeError('owned benchmark failed: exit/result/closure gate')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
@@ -87961,6 +88051,18 @@
         "passed": true
       }
     ],
+    "failure_diagnosis": {
+      "original_outcome_preserved": true,
+      "observed_native_exit_code": 0,
+      "observed_benchmark_exit_code": 1,
+      "native_exit_receipt_sha256": "237c7593ed623bf7319569363a84d4cc184e6f9db8dc1993deabb8c7579b8ff9",
+      "native_identity_matches_live_gates": true,
+      "final_validation_log_bytes": 0,
+      "actual_failure": "varied-prose reaches16384generated tokens with48663thinking characters and0answer characters;official benchmark exits1. Both request-route gates completed;normal native0 and no fresh fault. Full final asset/model qualification did not run.",
+      "MTP_classification": "Code acceptance .840252707581;prose .592159520985,so the prose does not meet the <=.40 weak band. No repeated comparison or adoption.",
+      "secondary_controller_defect": "The mandatory resident-RAM exchange footer is inapplicable to this ArenaExpertSource and would fail later;that parser was not reached in this run.",
+      "next": "Preserve V1failed. Commit an applicable common-footer gate checked after warmups and a new versioned,simpler long prose task. Qualify its thinking/answer/count/observed-MTP regime in a separate fresh single-workload pilot before any repeated cohort;do not waive output or MTP requirements."
+    },
     "source_inputs": {
       "files": 265,
       "aggregate_sha256": "d383c55d9d07462c033f77e18f885ebb8b6cf3f338fc63fd912a011a989d8c32"
