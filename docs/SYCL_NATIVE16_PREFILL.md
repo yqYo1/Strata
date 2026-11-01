@@ -237,8 +237,14 @@ The production connection is now authored in`26f33c7a8`:an opt-in half-output
 Gemm entrypoint and typed consumers in native16 layer-major long prefill.
 Default,TTFT,short-input and decode selections remain independent. The full
 557-file source/recipe is frozen at`521c1757b`,with its prepared record committed
-in`cb6ffca7e`. CPU compilation is in progress;no new model/GPU qualification
-is inherited. The source-only integration audit is indexed separately.
+in`cb6ffca7e`. CPU configure/compile/dependency extraction now pass with
+1451actual compiler inputs,29external linker inputs and nine executables;
+all command owners close normally. Engine SHA-256 is
+`c2d48e05cd611292119018464e70677a5ff895f9bf4c68280a668a0748991ed7`;
+the production-wrapper component is
+`7d0fb7492fefd0c5c3874d099c51282b91a787698059b1250d8b3ee45a0196cc`.
+No new model/GPU qualification is inherited. The source-only integration audit
+is indexed separately.
 Qualify actual wrapper costs,allocation ownership,real-model range and decode
 handoff before adoption. The component executable and closed raw output are retired after exact
 original-source/recipe/input recovery from pushed history;retain selected
