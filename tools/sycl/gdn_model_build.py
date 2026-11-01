@@ -38,18 +38,41 @@ def native_inputs(revision):
     return full,native
 
 
-def controls(row):
-    require(base.controls(row['source_commit'],controller=CONTROLLER)==row['controller_inputs'],
+def controls(row, *, reuse_revision=None):
+    changes=('tools/sycl/gdn_model_build.py',) if reuse_revision is not None else ()
+    require(base.controls(row['source_commit'],controller=CONTROLLER,
+            reuse_revision=reuse_revision,controller_changes=changes)==row['controller_inputs'],
             'GDN model build controls changed')
     _,native=native_inputs(row['source_commit'])
     require({n:hashlib.sha256(v).hexdigest() for n,v in native.items()}==row['native_sources'] and
             source.input_pins(row['source_commit'])==row['source_inputs'], 'projected native inputs changed')
 
 
-def allowed_inputs(row):
-    controls(row);current,providers,_=retained.verify()
-    require(current['binaries']==row['retained_binaries'] and current['source_commit']==retained.NATIVE,
-            'selected engine/fixtures changed')
+def allowed_inputs(row, *, retained_parent=True):
+    if retained_parent:
+        controls(row);current,providers,_=retained.verify()
+        require(current['binaries']==row['retained_binaries'] and current['source_commit']==retained.NATIVE,
+                'selected engine/fixtures changed')
+    else:
+        # Reuse this closed generation after its parent executables retire.
+        # Only this committed Python controller differs from the build inputs;
+        # projected native/compiler/link inputs and all nine ELFs still match.
+        revision=base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
+        controls(row,reuse_revision=revision)
+        data=base.committed(RESULT);gate=data['gdn16_model_component_device_v1']
+        require(gate['passed'] and gate['complete'] and not gate['active'] and
+                gate['ownership_closed'] and not gate['fresh_faults'] and
+                all(v['passed'] for v in gate['processes']) and
+                gate['native_source_commit']==row['source_commit'] and
+                gate['binary']==row['binaries'][COMPONENT],
+                'closed same-build production-wrapper qualification required')
+        providers=retained.runtime.inventory(gate['runtime_manifest'])
+        require(retained.runtime.qualified_probe(data,providers)==row['native_validation_probe'] and
+                gate['native_validation_probe']==row['native_validation_probe'],
+                'same-generation qualified native probe changed')
+        require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==row['boot']==gate['boot'] and
+                base.guards.driver_guard()==row['driver']==gate['driver'],
+                'qualified generation boot/driver changed')
     allowed=base.sdk()
     allowed.update(retained.runtime.inventory(row['external_manifest']));allowed.update(providers)
     full,_=native_inputs(row['source_commit'])
@@ -185,7 +208,7 @@ def verify():
     require(base.committed(RESULT)[KEY]==base.compact(row) and row['passed'] and row['stage']=='built-not-executed' and
             row['ownership_closed'] and not row['active'] and all(base.supervision.closed(v) for v in row['commands_executed']),
             'closed complete model build required')
-    allowed=allowed_inputs(row);asset=row['compiled_inputs']
+    allowed=allowed_inputs(row,retained_parent=False);asset=row['compiled_inputs']
     require(digest(asset['path'])==asset['sha256'],'actual compiler map changed')
     found=json.loads(Path(asset['path']).read_text())
     require(len(found)==asset['files'] and all(allowed.get(p)==sha==digest(p) for p,sha in found.items()),
@@ -193,6 +216,10 @@ def verify():
     require(digest(row['compile_database']['path'])==row['compile_database']['sha256'] and
             row['actual_link_inputs']['uncovered_external_inputs']==0 and all(allowed.get(p)==sha==digest(p)
             for p,sha in row['actual_link_inputs']['frozen_inputs'].items()), 'actual compile/link recipe changed')
+    require(not any(Path(p).is_relative_to(retained.ROOT) for p in
+            (*found,*row['actual_link_inputs']['frozen_inputs'],
+             *retained.runtime.inventory(row['external_manifest']))),
+            'current generation still consumes a parent build input')
     require(set(row['binaries'])==set(row['targets']) and all(digest(a['path'])==a['sha256'] and
             Path(a['path']).stat().st_size==a['bytes'] for a in row['binaries'].values()), 'same-build engine/fixtures changed')
     return row

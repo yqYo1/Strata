@@ -543,7 +543,13 @@ not a latency gain at32K,clean speed,sustained decode,task quality or physical
 262144/RESTORE. Both manual strategies work in the same binary. Before another
 native generation,replace the build verifier's actual dependency on the old
 eight ELFs with recovered parent-source evidence,then retire those unused
-executables;do not remove them while`allowed_inputs`still calls`retained.verify`.
+executables. The current-generation verifier now has an explicit committed
+controller-only reuse path: it checks the nine current ELFs,557 projected source
+files,actual compiler/link inputs,packages,boot/driver and same-build component
+runtime evidence without loading parent executables. Its original fresh-build
+path remains strict. Verify this new admission and recover the parent's exact
+source/recipe before retiring its build products;this edit alone is not proof
+that retirement or a new native build completed.
 The adaptive request-boundary source audit and independent Luna review identify
 unchecked refill event records: a failed new record can leave an older completed
 event,allowing RAM exchange before the new H2D source is safe to overwrite.
