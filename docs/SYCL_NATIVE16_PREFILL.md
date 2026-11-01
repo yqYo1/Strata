@@ -134,8 +134,10 @@ are removed;both native GEMM files again exactly match f6cea2. The independent
 bounded ProcObserver fix and its six real-child tests remain maintained.
 External retirement now removes655files/20866682B after exact source/recipe
 recovery. Selected555-source/1449-input/eight-ELF admission passes before and
-after deletion;the engine SHA is unchanged. The path/hash/reason manifest and
-remaining14legacy provenance holds are recorded in the compact closed decision.
+after deletion;the engine SHA is unchanged. The path/hash/reason manifest is
+recorded in the compact closed decision. Its historical fourteen-hold claim
+has no current path-keyed inventory;do not treat that count as verified.
+A bounded Main-owned source/recipe and live-consumer check remains pending.
 
 The output-storage comparison is independently authored at605e73d451b3425fa275e6e917069909d39d8f7c:
 oneMKL half-input/FP32-output,direct FP16-output,and FP32-output plus explicit
@@ -281,6 +283,15 @@ comparison:three independent pairs per length,four requests per process,
 first-use separate and three-subsequent-request median per process. Both arms
 use explicit throughput and three-barrier GDN;only the immutable GDN16storage
 selector differs. Keep64K/117Kplacement families separate for curve analysis.
+The first clean64K request completed prefill and24outputs,but the V1observer
+incorrectly required a trace-only policy line and terminated the owned session.
+The original failed/incomplete result is preserved;its790.5tok/s footer is only
+diagnostic. All owned processes are reaped and no fresh GPU fault was observed.
+Controller61d81697c now requires the always-on actual geometry/native16 headers
+and checks optional policy output for consistency. The five CPU regression tests,
+two positive/twelve negative route controls and captured clean-log replay pass.
+Fresh`gdn16_model_speed_v2`must recheck the original64K scenario before live
+observer resolution;it retains the same engine,arms,workloads and criteria.
 The closed two-generation controller and its now-unused
 `retained_prefill_reference.py`are recoverable at`055c4ee36`;the latter is removed
 from the active tree after its sole caller moved to this same-binary campaign.
