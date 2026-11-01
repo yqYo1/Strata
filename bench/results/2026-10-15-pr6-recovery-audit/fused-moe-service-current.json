@@ -65843,5 +65843,100 @@
       "files": 555,
       "aggregate_sha256": "2854fb62b5e1fc058add1fa49e9d0f9c0a0d9a09e52702f66474d147cdf86bd0"
     }
+  },
+  "official_gdn_fp32_projection_check_v2": {
+    "stage": "prepared",
+    "source_commit": "047fbb451482e6f7b692362fb2233e8f38a7693e",
+    "compiled_source_commit": "2ec130cd6e3d40fc12fe06d5d46a83bf7a6acfc5",
+    "implementation_commit": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
+    "original_build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/record.json",
+      "sha256": "7b3081575a05ce54e98de77f1f9a99591b91eba5d5504ab40ee82469391261c4"
+    },
+    "original_failure": {
+      "key": "official_gdn_fp32_projection_build_v1",
+      "passed": false,
+      "error": "RuntimeError('uncovered/changed actual compiler input')"
+    },
+    "outputs": {
+      "native16.o": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/native16.o",
+        "bytes": 443488,
+        "sha256": "ab7d8a915bfb394074ca6c32aeffc543be0c937f40de117af09f377fe517200b"
+      },
+      "image.o": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/image.o",
+        "bytes": 2033904,
+        "sha256": "c29d95581e0aa99acdc0e4c661fdfb0cbe4109e672635de3b7e7d25449d585b7"
+      },
+      "host.o": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/host.o",
+        "bytes": 305616,
+        "sha256": "4501156d2e8a55ce594a7b05c7039a68bd8624eda186ba38bdfba983dd9b406a"
+      },
+      "device.bin": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device.bin",
+        "bytes": 2005712,
+        "sha256": "57cfe9bf9bb35c663604609c798e6a125552abf4c5bc4224ea9217e3b8836b28"
+      }
+    },
+    "passed": false,
+    "compiler_inputs_attested": false,
+    "plan": {
+      "scope": "Original CPU objects and compiler inputs only;no recompilation or device execution.",
+      "acceptance": "All914 actual inputs must match original native/SDK/provider/dependency Git pins;four objects unchanged.",
+      "correction": "Add the already frozen dependency source maps omitted by V1;do not refresh expected hashes."
+    },
+    "codegen": {
+      "stage": "prepared",
+      "passed": false,
+      "tools": {
+        "/usr/bin/ocloc": "5ec7d3130e6f99a30064e504cd0ad400038779f2e1d8e1f454446aa59d152009",
+        "/usr/lib/x86_64-linux-gnu/libocloc.so": "a575b21fe2774845519492741aa8c8ff762de64dcab91b5e4e2cca8cba7a7d48",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/usr/lib/x86_64-linux-gnu/libiga64.so.2.41.15+0": "30a2e107798ad96bc01595bc51a00956ceb15c6ad57aa281116d80955abbf37d"
+      },
+      "command": [
+        "/usr/bin/ocloc",
+        "disasm",
+        "-file",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device.bin",
+        "-dump",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/codegen/dump"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/tmp",
+        "LD_DEBUG": "libs"
+      },
+      "budgets": {
+        "wall": 120,
+        "cpu": 240,
+        "rss_cap": 2147483648,
+        "text_cap": 4194304,
+        "file_cap": 134217728,
+        "total_cap": 268435456
+      },
+      "scope": "Decode this exact offline AOT image;no GPU execution or numeric/ownership/speed qualification."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "inference_adopted": false,
+    "controller_inputs": {
+      "files": 40,
+      "aggregate_sha256": "0614acf2cd732f23190014c3697528c8d120b3b287cb738e5cdd7dbe34aac37e"
+    },
+    "native_sources": {
+      "files": 555,
+      "aggregate_sha256": "2854fb62b5e1fc058add1fa49e9d0f9c0a0d9a09e52702f66474d147cdf86bd0"
+    }
   }
 }
