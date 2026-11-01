@@ -71125,7 +71125,7 @@
     "next_consumer": "gdn16_pipeline_build_v1 replaces this closed component generation;selected f6cea2eight-ELF engine retained."
   },
   "gdn16_pipeline_device_v1": {
-    "stage": "prepared",
+    "stage": "general-check-passed",
     "source_commit": "2929571c78e90bcbb61a53537f79ae81d8b82493",
     "native_source_commit": "3b05783e84dc69a3f33dd6b50528a01bb5949d96",
     "binary": {
@@ -71267,12 +71267,484 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": false,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        },
+        "environment_sha256": "e9e4c3d8eedf77b9dd6dad2d312b07ac7d708472d0cac13f1b2ab5fb0df4cc82"
+      },
+      {
+        "name": "pipeline-smoke",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 12,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "canonical": [
+            {
+              "kind": "canonical",
+              "T": 1,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 17,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            }
+          ],
+          "packed_producers": [
+            {
+              "kind": "packed_producers",
+              "T": 1,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.04110134751706441,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 17,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06295994908052807,
+              "passed": true
+            }
+          ],
+          "FP32_difference": [
+            {
+              "kind": "FP32_difference",
+              "T": 1,
+              "relative_output_RMS": 0.0003594715658023768,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 5.696434527635574e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 17,
+              "relative_output_RMS": 0.0003960701075227698,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 8.213333785533905e-06,
+              "diagnostic_only": true,
+              "passed": true
+            }
+          ],
+          "trace": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v1/device-v1/pipeline-smoke/ur.trace",
+            "sha256": "9c66f5c564f4e7892852ad032d03338ba2e380475fa480fb7c50243b296b196e",
+            "bytes": 438275,
+            "launches": 94,
+            "per_kernel": {
+              "_ZTSZN4sycl3_V17handler4fillItEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZN4sycl3_V17handler4fillItEEvPvRKT_mEUlNS0_2idILi1EEEE_",
+                "launches": 16
+              },
+              "_ZTSZN4sycl3_V17handler4fillIfEEvPvRKT_mEUlNS0_2idILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZN4sycl3_V17handler4fillIfEEvPvRKT_mEUlNS0_2idILi1EEEE_",
+                "launches": 26
+              },
+              "native_import_1": {
+                "creation": "native_import",
+                "name": "binary_test",
+                "launches": 1
+              },
+              "native_import_2": {
+                "creation": "native_import",
+                "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16",
+                "launches": 2
+              },
+              "_ZTSZZN6strata7kernels12_GLOBAL__N_14convEPKfPfS3_S3_S4_iifiiPvENKUlRN4sycl3_V17handlerEE_clES9_EUlNS7_7nd_itemILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZZN6strata7kernels12_GLOBAL__N_14convEPKfPfS3_S3_S4_iifiiPvENKUlRN4sycl3_V17handlerEE_clES9_EUlNS7_7nd_itemILi1EEEE_",
+                "launches": 5
+              },
+              "_ZTSZN6strata12sycl_backend8for_eachIZNS_7prefill8gdn_convEPfPKfS5_S3_lfPvEUlmE_EEvlS6_T_EUlN4sycl3_V12idILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZN6strata12sycl_backend8for_eachIZNS_7prefill8gdn_convEPfPKfS5_S3_lfPvEUlmE_EEvlS6_T_EUlN4sycl3_V12idILi1EEEE_",
+                "launches": 5
+              },
+              "_ZTSZZN6strata7kernels12_GLOBAL__N_118recurrence_columnsILi4ELb1EfEEvPfPKT1_PKfS8_S3_iPvENKUlRN4sycl3_V17handlerEE_clESD_EUlNSB_7nd_itemILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZZN6strata7kernels12_GLOBAL__N_118recurrence_columnsILi4ELb1EfEEvPfPKT1_PKfS8_S3_iPvENKUlRN4sycl3_V17handlerEE_clESD_EUlNSB_7nd_itemILi1EEEE_",
+                "launches": 5
+              },
+              "_ZTSZZN6strata7prefill12_GLOBAL__N_123gdn_recurrence_separateIfEEvPfPKT_PKfS8_S6_S8_fS3_PtlibPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZZN6strata7prefill12_GLOBAL__N_123gdn_recurrence_separateIfEEvPfPKT_PKfS8_S6_S8_fS3_PtlibPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+                "launches": 5
+              },
+              "native_import_3": {
+                "creation": "native_import",
+                "name": "hgemm_nocopy_tn_4x16_1x1x16",
+                "launches": 2
+              },
+              "_ZTSZZN6strata7prefill12gdn_conv_f16EPfPKtPKfPtlfPvENKUlRN4sycl3_V17handlerEE_clESB_EUlNS9_7nd_itemILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZZN6strata7prefill12gdn_conv_f16EPfPKtPKfPtlfPvENKUlRN4sycl3_V17handlerEE_clESB_EUlNS9_7nd_itemILi1EEEE_",
+                "launches": 5
+              },
+              "_ZTSZN6strata12sycl_backend8for_eachIZNS_7prefill12gdn_conv_f16EPfPKtPKfPtlfPvEUlmE_EEvlS9_T_EUlN4sycl3_V12idILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZN6strata12sycl_backend8for_eachIZNS_7prefill12gdn_conv_f16EPfPKtPKfPtlfPvEUlmE_EEvlS9_T_EUlN4sycl3_V12idILi1EEEE_",
+                "launches": 5
+              },
+              "_ZTSZZN6strata7kernels12_GLOBAL__N_118recurrence_columnsILi4ELb1EtEEvPfPKT1_PKfS8_S3_iPvENKUlRN4sycl3_V17handlerEE_clESD_EUlNSB_7nd_itemILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZZN6strata7kernels12_GLOBAL__N_118recurrence_columnsILi4ELb1EtEEvPfPKT1_PKfS8_S3_iPvENKUlRN4sycl3_V17handlerEE_clESD_EUlNSB_7nd_itemILi1EEEE_",
+                "launches": 5
+              },
+              "_ZTSZZN6strata7prefill12_GLOBAL__N_123gdn_recurrence_separateItEEvPfPKT_PKfS8_S6_S8_fS3_PtlibPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZZN6strata7prefill12_GLOBAL__N_123gdn_recurrence_separateItEEvPfPKT_PKfS8_S6_S8_fS3_PtlibPvENKUlRN4sycl3_V17handlerEE_clESE_EUlNSC_7nd_itemILi1EEEE_",
+                "launches": 5
+              },
+              "native_import_4": {
+                "creation": "native_import",
+                "name": "gemm_f16f16f32_nocopy_tn_16x16_4x2x4",
+                "launches": 4
+              },
+              "_ZTSZZN6strata7kernels12_GLOBAL__N_110recurrenceEPfPKfS4_S4_iS4_S4_S4_S4_fS2_iiiPKibiPvPtENKUlRN4sycl3_V17handlerEE_clESC_EUlNSA_7nd_itemILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZZN6strata7kernels12_GLOBAL__N_110recurrenceEPfPKfS4_S4_iS4_S4_S4_S4_fS2_iiiPKibiPvPtENKUlRN4sycl3_V17handlerEE_clESC_EUlNSA_7nd_itemILi1EEEE_",
+                "launches": 1
+              },
+              "native_import_5": {
+                "creation": "native_import",
+                "name": "hgemm_nocopy_tn_16x16_4x2x4",
+                "launches": 2
+              }
+            },
+            "unmapped": 0
+          }
+        },
+        "environment_sha256": "178d85209e0f6d3b904d7b8042571537debdc9b96649af2ef76cc6537a1fdd8c"
+      },
+      {
+        "name": "pipeline-general",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 109,
+          "permission_denials": 1,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "canonical": [
+            {
+              "kind": "canonical",
+              "T": 1,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 2,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 3,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 127,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 129,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8191,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8192,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 129,
+              "pattern": "zero",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 129,
+              "pattern": "cancel",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 129,
+              "pattern": "onehot",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            }
+          ],
+          "packed_producers": [
+            {
+              "kind": "packed_producers",
+              "T": 1,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.04110134751706441,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 2,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.07404670316468179,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 3,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.04110134751706441,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 127,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.07192825896409887,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 129,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.0607659174712792,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 8191,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.07432145375944618,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 8192,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06816500468783057,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 129,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 129,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 129,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0,
+              "passed": true
+            }
+          ],
+          "FP32_difference": [
+            {
+              "kind": "FP32_difference",
+              "T": 1,
+              "relative_output_RMS": 0.0003594715658023768,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 5.696434527635574e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 2,
+              "relative_output_RMS": 0.00036560392037287653,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 5.472451448440552e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 3,
+              "relative_output_RMS": 0.00037051158245212306,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 5.692010745406151e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 127,
+              "relative_output_RMS": 0.00047940174257879057,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 6.26780092716217e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 129,
+              "relative_output_RMS": 0.00048017971779358137,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 5.661509931087494e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8191,
+              "relative_output_RMS": 0.0005831008928488607,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 8.936040103435516e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8192,
+              "relative_output_RMS": 0.000583111856840239,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 7.227994501590729e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 129,
+              "relative_output_RMS": 0.0003160827243556563,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 2.5261534995711417e-25,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 129,
+              "relative_output_RMS": 0.0003160827243556563,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 2.5261534995711417e-25,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 129,
+              "relative_output_RMS": 0.0003139781039604616,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 1.572479959577322e-07,
+              "diagnostic_only": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "5a8ee8737a05297e42d8b431f656ce3e58e4b4d49fbd1aa1e367b00e1fb451bd"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -71294,6 +71766,20 @@
       "safety": "Original in-order Runtime;copy offload/direct submission disabled and preexec environment immutable. At most4compound calls before drain. Canary,small traced smoke,warning-only general shapes before separate clean speed processes.",
       "retention": "Keep useful samples,numerical maxima and decisions. Retire closed raw logs/traces after extracting names/provenance. Keep selected engine;new component generation has only this imminent comparison consumer."
     },
+    "GPU_execution_requested": true,
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 38,
+    "ordinary_runtime_teardown_qualified": false,
     "controller_inputs": {
       "files": 41,
       "aggregate_sha256": "85cbdec833201bc83ba01a5ed7354d6f8bd700f8582514b2f6f536a78b83037d"
