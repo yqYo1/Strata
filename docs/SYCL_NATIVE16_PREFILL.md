@@ -630,8 +630,41 @@ Compare actual CPU expert work,cache hits,requested refill payload,nested decode
 clocks and end-to-end TG;one diagnostic pair cannot adopt the policy. Its
 controller recovers the closed positive check's original265-file inputs and
 allows only its own declared controller delta,without refreshing native hashes
-or invoking retired wait-plan dependencies. Keep payload/task,other exit paths,
-full256K and repeated independent prefill/decode adoption checks pending.
+or invoking retired wait-plan dependencies. Both fresh processes now close with
+native0,quiet validation,closed owners,no fresh fault and all15final model
+assets hash-matched. All four warmup bodies and the33211-read long request match.
+
+| Diagnostic metric | 8swaps/every1 candidate | 0swaps reference |
+| --- | ---: | ---: |
+| Generated tokens | 3142 | 3900 |
+| Prefill,s | 50.7226 | 51.2435 |
+| Client TTFT,s | 50.937 | 51.375 |
+| TG,generated/decode-second | 15.4270 | 13.5299 |
+| Draft acceptance | 82.1757% | 84.0253% |
+| Decode,ms/window | 224.30 | 259.92 |
+| CPU pool call,ms/window | 79.73 | 112.93 |
+| GPU-reach wait,ms/window | 80.78 | 86.50 |
+| MTP draft,ms/window | 36.48 | 33.59 |
+| Expert-cache hit rate | 42.6% | 10.7% |
+
+The observed TG ratio is1.14021618;the CPU pool-call ratio is0.70601257.
+Candidate908windows/3629target rows have860500unique CPU jobs and999192CPU
+entries;reference1109windows/4433target rows have1482033jobs and1900835entries.
+CPU entries plus cache hits reconcile exactly to lookups in both arms. Logical
+CPU-entry fraction falls89.3317%to57.3615%;these are counts,not time fractions.
+Candidate request swaps submit/commit7264entries and request14861286400H2D bytes;
+8copies are pending at each request boundary. Requested bytes are not measured
+wire traffic;the separate expert-miss copy counter remains0and excludes refills.
+Full-request process CPU is1085.70/1573.26s,including unequal output lengths and
+prefill;do not call this decode-only CPU time. Both answers and thoughts differ,
+with5578/5496answer characters;presence does not adjudicate task quality.
+One diagnostic pair does not establish reproducibility,prefill nonregression,
+physical saturation or adoption. Keep8swaps as the faster development candidate.
+Next freeze repeated opposite-order strong/weak-MTP and independent prefill
+comparisons,then separate remaining GPU kernel service from runtime/event waits
+using a bounded profiler. Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
+36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
+costs. Keep payload/task,other exit paths,full256K and broader adoption pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
