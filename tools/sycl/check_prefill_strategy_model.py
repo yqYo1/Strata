@@ -29,7 +29,8 @@ import gdn_storage_pipeline as gdn16
 P, B, RESULT = build.P, build.B, build.RESULT
 ROOT, KEY, MODE, STRATEGY, READ, ROWS, RUNS = None, None, None, None, 0, 0, 2
 GDN_MODES = {'gdn16-throughput': ('throughput', '1'),
-             'gdn32-throughput': ('throughput', '0'), 'gdn16-ttft': ('ttft', '1')}
+             'gdn32-throughput': ('throughput', '0'), 'gdn16-ttft': ('ttft', '1'),
+             'gdn16-mtp16-throughput': ('throughput', '1')}
 
 
 def configure(mode):
@@ -124,6 +125,8 @@ def prepare():
     if MODE in GDN_MODES:
         env.update(STRATA_SYCL_PREFILL_GDN_FP16=GDN_MODES[MODE][1],
                    STRATA_SYCL_PREFILL_GDN_CHUNK64='0')
+    if MODE == 'gdn16-mtp16-throughput':
+        env.update(STRATA_MTP_BATCH_F16='1', STRATA_SNAPSHOT_VERIFY='1')
     require(not env.get('LD_PRELOAD') and not any('/MistVVK/' in v for v in env.values()),
             'native-only preload and official environment required')
     shared.python_runtime.require_environment(env)
@@ -189,6 +192,8 @@ def prepare():
             'for this named model entry;current official reference and this same-ELF strategy candidate remain for imminent comparisons.')
     if MODE in GDN_MODES:
         row['criteria']+=' New GDN modes require this generation\'s closed device and favorable repeated-speed cohorts plus reviewed source integration. Verify actual per-request FP16-storage dispatch counts when enabled in throughput and absence in TTFT/off. This is the first bounded real-model entry,not activation-range/task-quality qualification;those remain pending along with full-context and sustained decode. No clean-speed inference from this logged diagnostic.'
+    if MODE == 'gdn16-mtp16-throughput':
+        row['criteria']+=' MTP FP16 changes only Prefill::draft_kv projection selection. Require successful batched mode2 callbacks and nominal chunk-cell conservation. The markers do not expose internal needed rows or batch shapes. Cache reuse is disabled; short outputs do not qualify sustained decode or adoption.'
     save(row)
     print('Prepared two frontend probes and two explicit-strategy model entries;commit before execution.', flush=True)
 
@@ -276,6 +281,8 @@ def profile_route(text):
                 and all(v['schedule']=='barriers3' and v['partitions']=='4' and 0<int(v['tokens'])<=8192
                         for v in calls),'actual GDN3 dispatch differs')
         result.update(strategy=STRATEGY,actual_route=policy['route'],GDN3_calls=len(calls),**storage)
+        if MODE == 'gdn16-mtp16-throughput':
+            result['MTP_prefill'] = mtp_route(text, ROWS)
         return result
     require(not any(v in text for v in ('strata prefill heads: target detached ',
         'strata prefill heads: draft detached ','strata mtp: prompt expert phase=',
@@ -288,6 +295,16 @@ def profile_route(text):
             'TTFT did not retain full dense owners through checked cache borrowing')
     return dict(strategy=STRATEGY,actual_route=policy['route'],rows=ROWS,dense_activations=0,**storage,
                 dense_head_MTP_weights_retained=True,cache_loan_retired_and_restored=True)
+
+
+def mtp_route(text, rows):
+    """Successful callback coverage; early-skipped/internal rows remain unknown."""
+    actual = re.findall(r'^strata serve: DRAFT_PREFILL path=(\w+) mode=(\d+) cells=(\d+)$', text, re.M)
+    expected = [('batched', '2', str(min(8192, rows - offset)))
+                for offset in range(0, rows, 8192)]
+    require(actual == expected, 'MTP callback path/mode/chunk-cell coverage differs')
+    return dict(path='batched', placement_mode=2, callbacks=len(actual), nominal_cells=rows,
+                internal_needed_rows_and_shapes_observed=False)
 
 
 def route_controls():
@@ -309,7 +326,16 @@ def route_controls():
         try:storage_route(value)
         except (RuntimeError,ValueError,KeyError):pass
         else:raise RuntimeError('invalid actual GDN storage route accepted')
+    mtp_good=''.join(f'strata serve: DRAFT_PREFILL path=batched mode=2 cells={t}\n' for t in chunks)
+    mtp_route(mtp_good, ROWS)
+    mtp_bad=('', mtp_good+mtp_good, mtp_good.replace('batched','token'),
+             mtp_good.replace('mode=2','mode=0'), mtp_good.replace('cells=8192','cells=8191'))
+    for value in mtp_bad:
+        try:mtp_route(value, ROWS)
+        except RuntimeError:pass
+        else:raise RuntimeError('invalid MTP callback route accepted')
     return dict(passed=True,valid_profile_route=1,invalid_profile_routes=len(bad),
+                MTP_callback_positive=1,MTP_callback_negative=len(mtp_bad),
                 GDN_storage_positive=1,GDN_storage_negative=3 if enabled else 1,GPU_executed=False,
                 original_throughput_progress_controls=original.selfcheck() if STRATEGY=='throughput' else None)
 

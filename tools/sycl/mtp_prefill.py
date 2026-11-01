@@ -1,293 +1,291 @@
 #!/usr/bin/env python3
-"""Main-owned minimal-marker MTP comparison using the existing qualified engine.
+"""Current same-engine MTP prefill Q8/FP16 comparison; repository LICENSE.
 
-The pilot is recoverable from dbea9dd0e, failed diagnostic from b62f673a7 and
-rejected mode0 marker plan from b29ece914. None contributes comparison samples.
+Main-authored from owned exact-input benchmark controls. The closed 32K
+long-generation comparison is recoverable at65fad3a32; it does not qualify
+this native generation or sustained decode. Main owns serialized execution.
 """
-import argparse
 import copy
 import fcntl
 import hashlib
 import json
 import math
 from pathlib import Path
-import re
-import select
-import shutil
 import socket
 import statistics
-import subprocess
 import sys
-import time
 
 sys.dont_write_bytecode = True
-import prefill_status as status
-import production_profile as profiling
-import resource_engine as resources
+import compare_prefill_strategies as gdn
 
-c = status.c
-gen, assets, guards, supervision = c.gen, c.assets, c.guards, c.supervision
-P, B, A = c.P, c.B, c.A
-RESULT = A / 'prefill-mtp-current.json'
-ROOT = B / 'mtp-f16-minimal-marker-v2'
-ORDER = (0, 1, 1, 0, 0, 1)
-PAIRS = ((0, 1), (3, 2), (4, 5))
-WORKLOAD = 'regular-code'
-# QsaState::kv_mode is placement, independently of kv_int8: layer.hpp documents
-# 2 as the drafter ring; mtp.cpp and layer.cpp::kv_plan select it for this window.
-# A fully-resident fallback (0) would change placement and is not this cohort.
-DRAFT_RING_MODE = 2
-ABSENT_OBSERVERS = ('STRATA_TRACE', 'STRATA_DRAFT_TIMING', 'UR_ENABLE_LAYERS',
-                    'LD_PRELOAD', 'STRATA_UR_PROBE_EXPECTED_LOADER')
+model, comparison, shared, build = gdn.model, gdn.comparison, gdn.shared, gdn.build
+P, B, RESULT = gdn.P, gdn.B, gdn.RESULT
+ROOT, KEY = model.gdn16.ROOT / 'mtp16-speed-v1', 'gdn16_mtp16_model_speed_v1'
+READ, RUNS = 117489, 4
+ARMS = ('candidate', 'reference', 'reference', 'candidate', 'candidate', 'reference')
+CASES = [(READ, arm) for arm in ARMS]
+ORDER = [(read, 1) for read, _ in CASES]
+CHANGED = {'tools/sycl/mtp_prefill.py', 'tools/sycl/check_prefill_strategy_model.py'}
+require, digest, write, compact = model.require, model.digest, model.write, model.compact
 
 
-def digest(path):
-    with Path(path).open('rb') as stream:
-        return hashlib.file_digest(stream, 'sha256').hexdigest()
+def save(row):
+    write(ROOT / 'record.json', row)
+    data = json.loads(RESULT.read_text())
+    data[KEY] = compact(row)
+    write(RESULT, data)
 
 
-draft_rows = gen.draft_rows
-request_evidence = gen.request_evidence
+def proof(revision):
+    model.configure('gdn16-mtp16-throughput')
+    native, _, providers = model.proof()
+    data = build.committed(RESULT)
+    probe = json.loads((model.ROOT / 'record.json').read_text())
+    require(data[model.KEY] == compact(probe) and probe['passed'] and probe['complete']
+            and probe['host_passed'] and probe['ownership_closed'] and not probe['active']
+            and probe['binary'] == native['binaries']['strata']
+            and probe['native_source_commit'] == native['source_commit']
+            and probe['outcome']['native_exit_code'] == 0 and not probe['outcome']['fresh_faults']
+            and len(probe['outcome']['routes']) == 2
+            and all(r['GDN_FP16_storage_calls'] == 144
+                    and r['GDN_FP16_storage_tokens'] == 36 * 32768
+                    and r['MTP_prefill']['callbacks'] == 4
+                    and r['MTP_prefill']['nominal_cells'] == 32768
+                    for r in probe['outcome']['routes']), 'closed current GDN16/MTP16 production model check required')
+    prior = json.loads((model.gdn16.ROOT / 'model-speed-v2/record.json').read_text())
+    require(data['gdn16_model_speed_v2'] == compact(prior) and prior['passed'] and prior['complete']
+            and prior['ownership_closed'] and not prior['active']
+            and prior['arms']['candidate']['binary'] == native['binaries']['strata'],
+            'closed same-engine GDN16 speed basis required')
+    recovered = {n: hashlib.sha256(raw).hexdigest()
+                 for n, raw in shared.gen.blobs(P, prior['source_commit'], prior['sources'])}
+    current = model.pinned_sources(revision)
+    require(recovered == prior['sources'] and set(current) == set(recovered)
+            and {n for n in current if current[n] != recovered[n]} == CHANGED,
+            'undeclared benchmark/controller change since closed speed basis')
+    def draft_function(rev):
+        text = shared.gen.git('show', rev + ':src/prefill/prefill.cpp').decode()
+        return text[text.index('bool Prefill::draft_kv('):text.index('bool Prefill::set_peer(')].encode()
+    original = draft_function('3b4998f326101fa913788fd368e1674b111dea03')
+    require(original == draft_function(native['source_commit']), 'previously executed MTP function changed')
+    return native, providers, prior, probe, dict(bytes=len(original), sha256=hashlib.sha256(original).hexdigest())
 
 
-def require_environment(actual, expected):
-    keys = ('STRATA_MTP_BATCH_F16', 'STRATA_SNAPSHOT_VERIFY', 'STRATA_SYCL_PREFILL_SAME_QUEUE',
-            'UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission', 'ZES_ENABLE_SYSMAN')
-    guards.require(all(actual.get(k.encode()) == expected[k].encode() for k in keys)
-        and all(k not in expected and k.encode() not in actual for k in ABSENT_OBSERVERS),
-        'effective minimal-marker native environment differs')
+def native_context(row, plan):
+    require((plan['read'], plan['kernel']) == CASES[plan['index']] and plan['heads'] == 1,
+            'undeclared process/placement')
+    native = row['arms'][plan['kernel']]
+    return dict(binary=native['binary'], native_source_commit=native['native_source_commit'],
+                native_validation_probe=row['native_validation_probe'], boot=row['boot'])
 
 
-def comparison_plan():
-    return dict(order=list(ORDER), pairs=[list(p) for p in PAIRS], workload=WORKLOAD,
-        question='Does existing FP16 GEMM for MTP prefill improve matched long-input PP without hurting sustained decode or draft acceptance?',
-        constants='Same current3b native/eight fixtures, model/tokenizer/expert profile,131072 residentINT8 context,8192 prefill,1256 expert slots,5 CPU workers,spec4; official bench.sh long-generation-only regular-code, thinking enabled,16384 output allowance. Four official warmups then one fresh>=32K request per independent process. Only MTP_BATCH_F16 differs. SNAPSHOT_VERIFY emits one success marker per chunk without an added GPU wait; prompt-cache0/conversation-cache-mib0 exclude its heavy restore branch. Trace, draft timing, UR layers and private preload are absent. Qualified safety settings match.',
-        admission='Before each long HTTP dispatch require all four successful official warmups, native PID/SID/executable/effective environment, successful batched mode2 drafter-ring markers with exact8192/tail callback cell conservation, and no native errors. Mode denotes placement, not storage precision; reject a fully-resident fallback0 to preserve matched placement. Final request must have>=1024 generated tokens including thought plus>=512 answer characters,>=256 offered drafts, complete journal/native/route/ownership/source/model/runtime/fault checks. Stop on first failure; never retry/discard. No old diagnostic or rejected-marker samples enter this cohort.',
-        decisions='All three prefill candidate/base ratios>1 and geomean>1.02 qualifies faster screen; all<1 and geomean<1/1.02 slower screen; otherwise inconclusive. Decode uses1.05 and1/1.05 with the same all-pair direction rule and generation-count ratios within1/1.05..1.05. Otherwise decode is inconclusive. Report acceptance change as candidate effect, never require equal acceptance or text. Nonregression is geomean>=0.98 and each ratio>=0.95 separately for PP and TG. Keep all samples/spreads. Strong-MTP classification requires all acceptance>=0.60. No automatic extra repeats or adoption.',
-        limits='Minimal-marker timing, not a zero-observer/overhead proof. Markers establish the successful batched callback and nominal cell coverage; they do not expose inner r0/needed rows, batch size or kernel dispatch. Fixed-source geometry/dispatch predicates establish the Q8/FP16 family only for work actually needed. Each sample is first long request after four warmups, not subsequent-long steady state. No comparison with old diagnostic TG establishes observer cost or hardware saturation. Weak-MTP,agent-session,task quality,physical262144/session/RESTORE and70TG remain pending.')
+def environment(row, plan):
+    native_context(row, plan)
+    env = comparison.environment(row, plan)
+    env.update(STRATA_SYCL_PREFILL_GDN_BARRIERS3='1', STRATA_SYCL_PREFILL_GDN_FP16='1',
+               STRATA_SYCL_PREFILL_GDN_CHUNK64='0', STRATA_MTP_BATCH_F16=str(int(plan['kernel'] == 'candidate')),
+               STRATA_SNAPSHOT_VERIFY='1')
+    require(env['STRATA_PREFILL_LAYER_MAJOR'] == '1'
+            and env['STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL'] == 'original'
+            and env['STRATA_SYCL_PREFILL_GDN_COLUMNS'] == '4'
+            and not env.get('STRATA_DRAFT_TIMING') and not env.get('STRATA_TRACE')
+            and not env.get('LD_PRELOAD') and env['CUDA_MODULE_LOADING'] == 'EAGER',
+            'selected route or observer envelope differs')
+    return env
 
 
-def invariant(plan):
-    value = copy.deepcopy(dict(config=plan['config'], environment=plan['environment']))
+def invariant(row, plan):
+    value = dict(config=json.loads((Path(plan['root']) / 'config.json').read_text()),
+                 environment=environment(row, plan))
     value['environment']['STRATA_MTP_BATCH_F16'] = '<arm>'
-    return hashlib.sha256(json.dumps(value, sort_keys=True).replace(plan['root'], '<root>').encode()).hexdigest()
+    return hashlib.sha256(json.dumps(value, sort_keys=True).replace(plan['root'], '<process>').encode()).hexdigest()
 
 
-def current(record, full=False):
-    build, proof, preload = status.qualification()
-    guards.require(record['binary'] == build['binary'] and record['qualification'] == proof
-        and record['qualification_preload_reference'] == preload, 'native/preload qualification changed')
-    pins = gen.benchmark_pins(record['source_commit'])
-    guards.require(assets.fingerprint(pins) == record['benchmark_fingerprint'], 'controller/benchmark input changed')
-    original, reference = status.original_plan()
-    guards.require(reference == record['original_configuration'], 'original configuration changed')
-    gen.runtime_assets_unchanged(dict(mode='engine-compare', runtime_asset_delta=original['runtime_asset_delta']))
-    assets.model_pins(record['plans'][0]['config'], original['model_assets'], full=full)
-    for name, sha in original['tokenizer_assets'].items(): guards.require(digest(name) == sha, 'tokenizer changed')
-    for plan in record['plans']:
-        guards.require(invariant(plan) == record['invariant_signature'], 'unexpected arm difference')
-        for path, expected in plan['generated_inputs'].items(): guards.require(digest(path) == expected, 'generated input changed')
-        for flag in ('--prompt-cache', '--conversation-cache-mib'):
-            guards.require(plan['config']['args'][plan['config']['args'].index(flag)+1] == '0',
-                           'minimal marker requires disabled snapshot caches')
-    guards.require(assets.machine_identity() == record['machine_identity'], 'machine changed')
+def request_route(text, plan):
+    # The unchanged GDN path is FP16 in BOTH MTP arms.
+    result = gdn.request_route(text, dict(plan, kernel='candidate'))
+    result.update(executable_arm=plan['kernel'], MTP_projection_FP16=plan['kernel'] == 'candidate',
+                  MTP_prefill=model.mtp_route(text, plan['read'] - 1),
+                  dispatch_proof='Both arms use observed long native16/GDN3 headers and immutable GDN16 selector1. '
+                  'MTP callback markers prove successful batched mode2 and nominal chunk cells. The unchanged '
+                  'draft_kv source and immutable MTP_BATCH_F16 selector determine Q8/FP16 for needed work; '
+                  'internal needed rows, batch shape and individual dispatches are not observed here.')
+    return result
+
+
+validate_model_text = gdn.validate_model_text
+
+
+def decision(processes):
+    require(len(processes) == len(CASES) and all(p['passed'] and p['complete'] and p['ownership_closed']
+            and not p['fresh_faults'] and (p['read'], p['kernel']) == CASES[i]
+            for i, p in enumerate(processes)), 'complete frozen cohort required')
+    require(len({(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes})
+            == len(CASES), 'native process reused')
+    ratios, ttft, speeds, refs = [], [], [], []
+    for offset in (0, 2, 4):
+        pair = {p['kernel']: p for p in processes[offset:offset + 2]}
+        a, b = pair['candidate'], pair['reference']
+        require(all(math.isfinite(p['subsequent_median_ms']) and p['subsequent_median_ms'] > 10000
+                    for p in pair.values()), 'invalid process clock')
+        ratios.append(a['subsequent_median_ms'] / b['subsequent_median_ms'])
+        ttft.append(statistics.median(s['ttft_s'] for s in a['samples'][1:]) /
+                    statistics.median(s['ttft_s'] for s in b['samples'][1:]))
+        speeds.append(READ * 1000 / a['subsequent_median_ms'])
+        refs.append(READ * 1000 / b['subsequent_median_ms'])
+    gm = math.exp(statistics.mean(map(math.log, ratios)))
+    return dict(candidate_over_reference_prompt_time=ratios, geometric_mean_time_ratio=gm,
+                reproducible_prompt_gain=all(v < 1 for v in ratios) and gm < 1,
+                minimum_percentage_gain_required=False, candidate_over_reference_TTFT=ttft,
+                candidate_subsequent_process_pp=speeds, reference_subsequent_process_pp=refs,
+                all_candidate_processes_at_least1000=all(v >= 1000 for v in speeds),
+                inference_adopted=False, sustained_decode_qualified=False,
+                physical262144_qualified=False, physical_resource_saturation_qualified=False)
+
+
+def selfcheck():
+    model.configure('gdn16-mtp16-throughput')
+    controls = model.route_controls()
+    for rows in (32768, 117488):
+        chunks = [min(8192, rows - i) for i in range(0, rows, 8192)]
+        text = ''.join(f'strata serve: DRAFT_PREFILL path=batched mode=2 cells={n}\n' for n in chunks)
+        model.mtp_route(text, rows)
+        for wrong in ('\n'.join(text.splitlines()[:-1]) + '\n', text + text.splitlines()[0] + '\n',
+                      text.replace('batched', 'token'), text.replace('mode=2', 'mode=0'),
+                      text.replace('cells=' + str(chunks[-1]), 'cells=' + str(chunks[-1] - 1))):
+            try: model.mtp_route(wrong, rows)
+            except RuntimeError: pass
+            else: raise RuntimeError('incomplete/changed MTP callback coverage accepted')
+    def item(i):
+        read, arm = CASES[i]
+        return dict(read=read, kernel=arm, passed=True, complete=True, ownership_closed=True,
+                    fresh_faults=[], native_identity=dict(pid=i + 1, start_ticks=i + 100),
+                    subsequent_median_ms=110000 if arm == 'candidate' else 120000,
+                    samples=[dict(ttft_s=130 if arm == 'candidate' else 125) for _ in range(RUNS)])
+    rows = [item(i) for i in range(len(CASES))]
+    good = decision(rows)
+    require(good['reproducible_prompt_gain'] and good['all_candidate_processes_at_least1000']
+            and all(x > 1 for x in good['candidate_over_reference_TTFT']), 'PP/TTFT/target decisions coupled')
+    rows[0]['subsequent_median_ms'] = 120001
+    require(not decision(rows)['reproducible_prompt_gain']
+            and not decision(rows)['all_candidate_processes_at_least1000'], 'one slow pair accepted')
+    rows[0] = item(0)
+    rows[1]['native_identity'] = rows[0]['native_identity']
+    try: decision(rows)
+    except RuntimeError: pass
+    else: raise RuntimeError('duplicate native identity accepted')
+    return dict(passed=True, GPU_executed=False, model_route_controls=controls,
+                additional_callback_positive=2, additional_callback_negative=10, decision_controls=3)
 
 
 def prepare():
-    container = gen.committed(RESULT)
-    guards.require(container['stage'] == 'closed' and container['passed'] and container['ownership_closed']
-        and not container['active'] and 'comparison' not in container and not ROOT.exists(), 'fresh comparison only')
-    build, proof, preload = status.qualification(); original, reference = status.original_plan()
-    source = gen.git('rev-parse', 'HEAD').decode().strip()
-    # Source/benchmark must already be committed, before generating the frozen plan.
-    pins = gen.benchmark_pins(source); ROOT.mkdir(mode=0o700); plans = []
-    baseline = json.loads((P / 'tools/sycl/measurement_environment.json').read_text())['environment']
-    for cohort, arm in enumerate(ORDER):
-        root = ROOT / str(cohort); root.mkdir(mode=0o700)
+    controls = selfcheck()
+    revision = shared.gen.git('rev-parse', 'HEAD').decode().strip()
+    native, providers, prior, probe, source_contract = proof(revision)
+    require(not ROOT.exists() and KEY not in build.committed(RESULT), 'fresh comparison only')
+    contract, manifest = model.python_manifest()
+    require(contract == prior['python_contract'] and manifest['selected'] == prior['python_selected'],
+            'frontend provider differs')
+    assets = shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
+    ROOT.mkdir(mode=0o700)
+    write(ROOT / 'runtime-inputs.json', providers)
+    row = dict(stage='prepared', source_commit=revision,
+        arms={a: dict(binary=native['binaries']['strata'], native_source_commit=native['source_commit']) for a in ARMS},
+        native_validation_probe=prior['native_validation_probe'], configuration=copy.deepcopy(prior['configuration']),
+        environment_template=copy.deepcopy(prior['environment_template']), python_contract=contract,
+        python_selected=manifest['selected'], template=prior['template'], boot=prior['boot'], driver=prior['driver'],
+        model_assets=assets, sources=model.pinned_sources(revision),
+        runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'), sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
+        qualification_reuse=dict(native_source=native['source_commit'], current_MTP16_probe=probe['source_commit'],
+            clean_GDN16_basis=prior['source_commit'], recovered_controller_files=len(prior['sources']),
+            declared_controller_changes=sorted(CHANGED), previously_executed_draft_function=source_contract,
+            scope='Same nine actual ELFs/native inputs/recipe and qualified providers; no new native build. '
+                  'Current two32K traced/validated GDN16/MTP16 entries pass. Broader adoption remains pending.'),
+        plans=[], processes=[], request_hashes={}, controls=controls, host_passed=False, passed=False,
+        complete=False, active=False, ownership_closed=True, inference_adopted=False,
+        whole_bytes=512 << 20, budgets=dict(wall=1800, cpu=5400, rss_cap=104 << 30, text_cap=16 << 20,
+                                          file_cap=16 << 20, total_cap=64 << 20),
+        plan=dict(question='Does existing FP16 draft-KV projection improve current117K long prefill over Q8 with GDN16 fixed?',
+            attribution='Closed current resource profile has36Q80 prompt-product kernels/7.035882796s summed service. '
+                        'draft_kv is unchanged from the previously executed3b function. This is an optimization candidate, '
+                        'not a physical ceiling, warmed cost or predicted end-to-end gain.',
+            order='6fresh processes,3pairs at117489read:candidate/reference,reference/candidate,candidate/reference. '
+                  'Four exact-input thinking-on requests per process;first use separate,subsequent3median is the process unit.',
+            differences='Only immutable STRATA_MTP_BATCH_F16 differs. Both arms fix GDN16on/GDN3,throughput strategy, '
+                        'native16BF16 residuals,131072INT8resident context,8192chunk,128staged slots,checked split, '
+                        'head retirement1,1256decode slots,5workers,spec4,Top-k0,originalDown and qualified runtime safety. '
+                        'Both enable SNAPSHOT_VERIFY for one nominal MTP callback marker per chunk;prompt and conversation '
+                        'caches are0,excluding its heavy verification branch. No trace/draft-timing/API observers.',
+            acceptance='Every existing request/body/actual-token/reuse/thinking/clock/route/provider/owner/native-exit/quiet-validation/fault '
+                       'gate must pass. MTP requires batched mode2 and8192/tail nominal callback conservation. '
+                       'All3paired subsequent prompt-time ratios<1 and GM<1 allow follow-up,without a minimum percentage floor. '
+                       'Judge TTFT separately;1000target requires all3candidate process medians>=1000. '
+                       'Keep all24samples and actual short draft acceptance;no sustained TG or inference adoption.',
+            stopping='Stop on first failed source/provider/owner/clock/route/validation/fault/budget gate. No speed-based early stop, '
+                     'retry,replacement,exclusion or hash refresh. Commit each process before the next;full model hashes before/aftercohort.',
+            limits='Minimal callback-marker timing with identical observers,not zero-observer/overhead proof. '
+                   'Nominal callbacks do not expose internal needed rows,batch size or individual kernels. '
+                   'FP16 changes draft cache values and may change acceptance;decode code/config remain unchanged but handoff and '
+                   'repeated>=1K strong/weak-MTP decode,agent/task quality,TTFT option,physical262144/RESTORE remain separate gates. '
+                   'One117K point does not update a length curve or generalize mixed placement families.',
+            retention='Keep compact individual samples,source/config/qualification/route checks and decisions. '
+                      'Retire successful raw logs,journals and ownership output after closed evidence verification. '
+                      'No new build generation;retain current9ELFs and the named8ELF fallback for remaining qualification.'))
+    for index, (read, arm) in enumerate(CASES):
+        root = ROOT / str(index)
+        root.mkdir(mode=0o700)
         for name in ('tmp', 'cache'): (root / name).mkdir()
-        config = copy.deepcopy(original['config'])
-        config['args'][config['args'].index('--expert-profile') + 1] = str(root / 'expert-profile.bin')
-        config.update(log=str(root / 'engine.stderr'), env={})
-        env = {k: v.replace(original['root'], str(root)) for k, v in original['environment'].items()}
-        for key in ABSENT_OBSERVERS: env.pop(key, None)
-        env.update(STRATA_MEASUREMENT_ROOT=str(root), STRATA_MTP_BATCH_F16=str(arm), STRATA_SNAPSHOT_VERIFY='1',
-            UR_LOG_TRACING='level:warning;flush:warning;output:stderr', TMPDIR=str(root/'tmp'), XDG_CACHE_HOME=str(root/'cache'))
-        for name in ('STRATA_PREFILL_LAYER_MAJOR_PROFILE', 'STRATA_PREFILL_CPU_WAIT_PROFILE',
-                     'STRATA_SYCL_PREFILL_COMMAND_PROFILE', 'STRATA_PREFILL_LAYER_MAJOR_QSA_PROFILE',
-                     'STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE'): env[name] = '0'
-        for name in ('UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD', 'NEOReadDebugKeys', 'EnableDirectSubmission', 'STRATA_SYCL_PREFILL_SAME_QUEUE'):
-            guards.require(env[name] == baseline[name], 'qualified safety changed')
-        require_environment({k.encode(): v.encode() for k, v in env.items()}, env)
-        shutil.copyfile(P / 'data/expert-profile.bin', root / 'expert-profile.bin')
-        guards.require(digest(root/'expert-profile.bin') == original['profile_sha256'], 'expert profile changed')
-        native = dict(binary=build['binary']); generated = {}
-        for path, body in ((root/'config.json', config), (root/'plan.json', native)):
-            path.write_text(json.dumps(body, indent=2)+'\n'); generated[str(path)] = digest(path)
-        generated[str(root/'expert-profile.bin')] = original['profile_sha256']
-        with socket.socket() as sock: sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
-        command = ['/bin/sh', str(P/'bench.sh'), '--config', str(root/'config.json'), '--port', str(port),
-            '--long-generation-only', '--long-generation-workload', WORKLOAD, '--think', '--runs', '1',
-            '--profile-request-gates', '--workload-id', 'mtp_f16_minimal_marker_20261021', '--fail-fast-engine-error',
-            '--ready-timeout', '600', '--out', str(root/'bench')]
-        plans.append(dict(cohort=cohort, arm=arm, root=str(root), config=config, environment=env,
-            generated_inputs=generated, command=command))
-    record = dict(stage='prepared', source_commit=source, build_source_commit=build['source_commit'],
-        binary=build['binary'], qualification=proof, qualification_preload_reference=preload,
-        benchmark_fingerprint=assets.fingerprint(pins), original_configuration=reference, machine_identity=assets.machine_identity(),
-        plan=comparison_plan(), plans=plans, invariant_signature=invariant(plans[0]), processes=[],
-        active=False, ownership_closed=True, passed=False, complete=False, adoption_qualified=False,
-        budgets=dict(wall=2400, cpu=54000, rss_cap=96<<30, text_cap=64<<20, file_cap=64<<20, total_cap=128<<20),
-        retention='Keep individual samples, per-request work/route checks, source/plan/environment and decision. After closure retire normal raw output/caches. Existing native generations/fixtures remain; no rebuild.')
-    current(record, full=True); container['comparison'] = record
-    RESULT.write_text(json.dumps(container, ensure_ascii=False, indent=2)+'\n')
-    print(json.dumps(dict(stage='prepared', order=list(ORDER), new_native_generation=False)))
+        config = copy.deepcopy(row['configuration'])
+        config['log'] = str(root / 'engine.stderr')
+        for flag in ('--prompt-cache', '--conversation-cache-mib'):
+            require(config['args'][config['args'].index(flag) + 1] == '0', 'callback marker requires disabled snapshot caches')
+        write(root / 'config.json', config)
+        write(root / 'plan.json', dict(binary=native['binaries']['strata'], native_validation_probe=row['native_validation_probe']))
+        with socket.socket() as sock:
+            sock.bind(('127.0.0.1', 0))
+            port = sock.getsockname()[1]
+        plan = dict(index=index, kernel=arm, read=read, heads=1, root=str(root),
+            generated={n: digest(root / n) for n in ('config.json', 'plan.json')},
+            command=['/bin/sh', str(P / 'bench.sh'), '--config', str(root / 'config.json'), '--port', str(port),
+                     '--prefill-exact-tokens', str(read), '--think', '--runs', str(RUNS), '--profile-request-gates',
+                     '--workload-id', 'native_mtp16_20261101', '--fail-fast-engine-error', '--ready-timeout', '600',
+                     '--out', str(root / 'bench')])
+        plan['environment_sha256'] = comparison.fingerprint(environment(row, plan))
+        row['plans'].append(plan)
+    row['invariant_signature'] = invariant(row, row['plans'][0])
+    require(all(invariant(row, plan) == row['invariant_signature'] for plan in row['plans']),
+            'undeclared arm difference')
+    save(row)
+    print('Prepared6matched current-engine MTP16/Q8 processes;commit before frontend probes.', flush=True)
 
 
-def summarize(rows):
-    guards.require(len(rows) == 6 and [r['arm'] for r in rows] == list(ORDER)
-        and all(r['passed'] and r['ownership_closed'] for r in rows), 'complete frozen cohort required')
-    guards.require(len({(r['native']['pid'], r['native']['start_ticks']) for r in rows}) == 6, 'native process reused')
-    guards.require(len({(r['request']['request_sha256'], r['request']['read_tokens']) for r in rows}) == 1, 'input mismatch')
-    pp, tg, lengths, acceptance = [], [], [], []
-    for left, right in PAIRS:
-        base, candidate = rows[left]['request'], rows[right]['request']
-        pp.append((candidate['read_tokens']/candidate['prompt_ms'])/(base['read_tokens']/base['prompt_ms']))
-        tg.append((candidate['generated_tokens']/candidate['decode_ms'])/(base['generated_tokens']/base['decode_ms']))
-        lengths.append(candidate['generated_tokens']/base['generated_tokens'])
-        acceptance.append(candidate['acceptance_rate'] - base['acceptance_rate'])
-    geo = lambda values: math.exp(statistics.mean(map(math.log, values)))
-    def decision(values, threshold):
-        return ('candidate_faster_screen' if all(x > 1 for x in values) and geo(values) > threshold else
-                'candidate_slower_screen' if all(x < 1 for x in values) and geo(values) < 1/threshold else 'inconclusive')
-    spread = {str(arm): {key: dict(median=statistics.median(v), minimum=min(v), maximum=max(v), sample_sd=statistics.stdev(v))
-        for key in ('prompt_tps', 'decode_tps', 'acceptance_rate')
-        for v in [[r['request'][key] for r in rows if r['arm'] == arm]]} for arm in (0, 1)}
-    return dict(prefill_ratios=pp, prefill_geomean=geo(pp), prefill_decision=decision(pp, 1.02),
-        decode_ratios=tg, decode_geomean=geo(tg), decode_decision=decision(tg, 1.05) if all(1/1.05 <= x <= 1.05 for x in lengths) else 'inconclusive_generation_length',
-        generation_length_ratios=lengths, acceptance_changes=acceptance,
-        prefill_nonregression=geo(pp)>=0.98 and min(pp)>=0.95, decode_nonregression=geo(tg)>=0.98 and min(tg)>=0.95,
-        strong_MTP_confirmed=all(r['request']['acceptance_rate'] >= .60 for r in rows), spread=spread, adoption_qualified=False)
-
-
-def run(cohort):
-    container = gen.committed(RESULT); record = container['comparison']
-    guards.require(record['stage'] in ('prepared', 'collecting') and len(record['processes']) == cohort
-        and all(r['passed'] for r in record['processes']) and not record['active'] and record['ownership_closed'], 'ordered fresh processes only')
-    current(record, full=cohort == 0); plan = record['plans'][cohort]; root = Path(plan['root'])
-    guards.require(not (root/'record.json').exists(), 'native attempt already exists; no retry')
-    env = plan['environment']; boot = c.read_boot(); driver = guards.driver_guard()
-    before = subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'], text=True, timeout=15)
-    cursor = next(line.split(': ',1)[1] for line in before.splitlines() if line.startswith('-- cursor: '))
-    row = dict(cohort=cohort, arm=plan['arm'], passed=False, ownership_closed=False); owner = None
-    def persist():
-        record['active'] = bool(owner and owner.active is not None)
-        (root/'record.json').write_text(json.dumps(dict(row, active=record['active'], commands=owner.commands if owner else []), indent=2)+'\n')
-    def interact(io, leader):
-        for stage in ('begin', 'end'):
-            while True:
-                line = io.line(1800)
-                if line.startswith('STRATA_PROFILE_GATE '): break
-            guards.require(json.loads(line.removeprefix('STRATA_PROFILE_GATE ')) == dict(stage=stage, phase='long-generation/'+WORKLOAD, run=0), 'request gate differs')
-            if stage == 'begin':
-                native = json.loads((root/'engine-start.json').read_text())['native']; identity = supervision.identity(native['pid'])
-                guards.require(identity and identity['sid'] == leader['pid'] and identity['start_ticks'] == native['start_ticks']
-                    and Path('/proc',str(native['pid']),'exe').resolve() == Path(record['binary']['path']).resolve(), 'native ownership differs')
-                actual = dict(part.split(b'=',1) for part in Path('/proc',str(native['pid']),'environ').read_bytes().split(b'\0') if b'=' in part)
-                require_environment(actual, env)
-                journal, = (root/'bench').glob('*/requests.jsonl')
-                events = [json.loads(line) for line in journal.read_text().splitlines()]
-                guards.require(len(events) == 10 and events[-1]['kind'] == 'start' and events[-1]['phase'] == 'long-generation/'+WORKLOAD, 'warmup/long-start journal extent differs')
-                warm = gen.warmup_reconciliation(events[:-1], workloads=())
-                samples = [e['sample'] for e in events[:-1] if e['kind'] == 'result']
-                guards.require(64 <= samples[0]['read_tokens'] <= 255 and samples[0]['generated_tokens'] > 0, 'small warmup extent differs')
-                text = (root/'engine.stderr').read_text(); row['warmup_work'] = request_evidence(text, samples)
-                guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', text), 'warmup native error')
-                row.update(native=native, successful_warmups=warm['successful_warmups'], effective_environment_verified=True)
-                persist()
-            io.send(b'continue\n')
-        io.proc.stdin.close(); deadline = time.monotonic()+180
-        while not io.exit_watch.poll(0) or not io.eof:
-            io.poll(); guards.require(time.monotonic() < deadline, 'benchmark teardown deadline')
-            if select.select([io.proc.stdout], [], [], .05)[0]: io.read(); io.pending.clear()
-        io.exit(1)
-    owner = supervision.Owner(root/'owned', persist); record['stage'] = 'collecting'; persist()
-    try:
-        entry, _, _ = owner.run('bench', plan['command'], env, P, interaction=interact, **record['budgets'])
-        guards.require(supervision.closed(entry) and entry['exit_code'] == 0, 'owned official benchmark failed')
-        result = json.loads(next((root/'bench').glob('*/results.json')).read_text())
-        suite = result['results']['long_generation']; samples = gen.collect_samples(suite)
-        # Preserve failed/ineligible returned samples before qualification.
-        row['request'] = samples[0] if samples else {}
-        gen.require_complete_generation(suite, samples, (WORKLOAD,))
-        guards.require(samples[0].get('prompt_tps_source') == 'engine' and
-            isinstance(samples[0].get('prompt_ms'), (int, float)) and
-            not isinstance(samples[0]['prompt_ms'], bool) and math.isfinite(samples[0]['prompt_ms'])
-            and samples[0]['prompt_ms'] > 0, 'native prefill clock missing/invalid')
-        guards.require(result['complete'] and not result['results']['failures'], 'official result incomplete')
-        journal, journal_rows = gen.journal_evidence(root)
-        guards.require(journal['valid'] and journal['complete'] and len(journal_rows) == 1
-            and journal_rows[0]['request_sha256'] == samples[0]['request_sha256'], 'official request journal differs')
-        resources.require_journal_binding(samples, journal_rows)
-        warm = gen.warmup_evidence(root, journal)
-        native = json.loads((root/'engine-exit.json').read_text())
-        guards.require(native['exit_code'] == 0 and native['boot_id'] == boot and native['binary'] == record['binary']
-            and native['native'] == row['native'] and native['args'] == ['--serve', *plan['config']['args']], 'native exit/command differs')
-        text = (root/'engine.stderr').read_text(); assets.verify_pool(text, 5)
-        guards.require('native_validation_probe' not in native, 'unexpected timed validation preload')
-        path, = (root/'bench').glob('*/requests.jsonl')
-        events = [json.loads(line) for line in path.read_text().splitlines()]
-        work = request_evidence(text, [e['sample'] for e in events if e['kind'] == 'result'])
-        headers = list(re.finditer(r'^strata serve: prompt .*$', text, re.M))
-        long_text = text[headers[-2].end():headers[-1].start()]
-        cells = samples[0]['read_tokens'] - 1
-        route = re.findall(r'^strata prefill: layer-major candidate, tokens=(\d+) chunk=8192 '
-            r'residual_dtype=bf16 residual_element_bytes=2 residual_total=(\d+) residual_gpu_rows=(\d+) '
-            r'residual_gpu=(\d+) residual_host=0 residual_staging=0 ', long_text, re.M)
-        guards.require(len(route) == 1 and tuple(map(int, route[0])) == (cells, cells*20480, cells, cells*20480)
-            and len(re.findall(r'^strata MoE window configuration: requested_mode=10 effective_mode=10 maximum_rows='
-                + str(cells) + r' mixed_fp16_bytes=0$', long_text, re.M)) == 1,
-            'actual all-GPU BF16/mode10 long route differs')
-        guards.require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called|retirement failed|Strata SYCL cleanup:', text), 'native runtime error')
-        if record['processes']:
-            first = record['processes'][0]['request']
-            guards.require((first['request_sha256'], first['read_tokens']) == (samples[0]['request_sha256'], samples[0]['read_tokens']), 'matched input differs')
-        current(record, full=cohort == 5)
-        row.update(passed=True, long_work=work[-1], actual_GPU_BF16_rows=cells, actual_MoE_mode=10,
-            journal_valid=True, native_exit_code=0, successful_warmups=warm['successful_warmups'])
-    except BaseException as error:
-        row.update(passed=False, error=repr(error))
-        try:
-            journal, samples = gen.journal_evidence(root)
-            if samples: row['request'] = samples[0]
-            row['journal_recovery'] = journal
-        except Exception as recovery: row['journal_recovery_error'] = repr(recovery)
-    row['ownership_closed'] = owner.active is None and all(supervision.closed(e) for e in owner.commands)
-    try:
-        row['fault_probe'] = profiling.fault_evidence(cursor, boot)
-        guards.require(not row['fault_probe']['fresh_faults'] and row['fault_probe']['boot_unchanged']
-            and row['fault_probe']['driver_after'] == driver, 'fresh fault/platform change')
-    except Exception as error: row.update(passed=False, fault_probe_error=repr(error))
-    row['passed'] = bool(row['passed'] and row['ownership_closed']); record['processes'].append(row)
-    record.update(ownership_closed=row['ownership_closed'], passed=all(r['passed'] for r in record['processes']),
-        complete=cohort == 5 or not row['passed'], stage='closed' if cohort == 5 else 'collecting' if row['passed'] else 'failed')
-    if cohort == 5 and record['passed']:
-        try: record['summary'] = summarize(record['processes'])
-        except Exception as error: record.update(passed=False, stage='failed', summary_error=repr(error))
-    persist(); RESULT.write_text(json.dumps(container, ensure_ascii=False, indent=2)+'\n')
-    print(json.dumps(dict(cohort=cohort, arm=plan['arm'], passed=record['passed'], process_passed=row['passed'],
-        ownership_closed=row['ownership_closed'], error=row.get('error', record.get('summary_error')))))
-    return 0 if record['passed'] else 1
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('prepare','run'))
-    parser.add_argument('cohort', nargs='?', type=int, choices=range(6), default=0)
-    args = parser.parse_args()
-    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX|fcntl.LOCK_NB); guards.no_model_owners([])
-        return prepare() if args.action == 'prepare' else run(args.cohort)
+def current(row):
+    require(build.committed(RESULT)[KEY] == compact(row), 'commit exact campaign state')
+    native, providers, _, _, _ = proof(row['source_commit'])
+    require(row['arms'] == {a: dict(binary=native['binaries']['strata'], native_source_commit=native['source_commit']) for a in ARMS},
+            'native generation changed')
+    require(model.pinned_sources(row['source_commit']) == row['sources'], 'frozen model/controller inputs changed')
+    inv = row['runtime_manifest']
+    require(digest(inv['path']) == inv['sha256'] and json.loads(Path(inv['path']).read_text()) == providers
+            and len(providers) == inv['files'], 'provider inventory changed')
+    require(digest(row['template']['path']) == row['template']['sha256']
+            and build.guards.driver_guard() == row['driver'], 'template/platform changed')
+    require(build.supervision.artifact_bytes(ROOT) <= row['whole_bytes'], 'whole output budget')
+    shared.models.model_pins(row['configuration'], row['model_assets'], full=False)
+    contract, manifest = model.python_manifest()
+    require(contract == row['python_contract'] and manifest['selected'] == row['python_selected'], 'frontend provider changed')
+    require(all(invariant(row, plan) == row['invariant_signature'] for plan in row['plans']), 'arm invariant changed')
+    return providers, manifest
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        build.guards.no_model_owners([])
+        args = sys.argv[1:]
+        if args == ['selfcheck']: print(json.dumps(selfcheck()))
+        elif args == ['prepare']: prepare()
+        elif args == ['host']: comparison.host(sys.modules[__name__])
+        elif len(args) == 1 and args[0].isdigit() and int(args[0]) < len(CASES):
+            comparison.run(int(args[0]), sys.modules[__name__])
+        else: raise RuntimeError('mtp_prefill.py selfcheck|prepare|host|INDEX0..5')
