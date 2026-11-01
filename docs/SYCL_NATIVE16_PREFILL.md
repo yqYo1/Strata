@@ -705,6 +705,11 @@ qualify the later after-code history. Check common cache statistics after all
 four official warmups,before long generation. Native DONE precedes its stderr
 footer,so use a bounded5s wait at the paused gate and take offsets from the same
 complete log snapshot. Native source,ELFs and safety settings do not change.
+Initial preparation refuses a changed imported`generation_engine.py`before
+creating a pilot directory or launching GPU work. Restore that helper and its
+test byte-exactly to the closed qualification;keep v5version/order/selection
+checks in the new controller. The native/device gate stays unchanged and the
+failed admission is retained;fresh host/admission checks follow that isolation.
 The v5source's78related host tests finish with77passes and one optional real-
 tokenizer fixture skipped. An initial invocation missing`PYTHONPATH`failed to
 import one test module;the corrected invocation passes without a source/gate

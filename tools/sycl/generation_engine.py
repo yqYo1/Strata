@@ -290,11 +290,8 @@ def collect_samples(generation, maximum_output=16384):
     return sorted(rows, key=lambda r: r.get('order', -1))
 
 
-def require_complete_generation(generation, rows, workloads=('regular-code', 'varied-prose'), *, expected_version=4):
-    # Closed v4 evidence keeps its original gate; new workload bodies require an
-    # explicit controller plan rather than inheriting a floating global version.
-    guards.require(type(expected_version) is int and expected_version in (4, 5) and
-        generation.get('workload_version') == expected_version and generation.get('thinking') is True and
+def require_complete_generation(generation, rows, workloads=('regular-code', 'varied-prose')):
+    guards.require(generation.get('workload_version') == 4 and generation.get('thinking') is True and
         generation.get('reasoning_budget_tokens') == 0 and generation.get('max_tokens') == 16384,
         'unexpected long-generation workload or thinking/output budget')
     guards.require(len(rows) == len(workloads) and

@@ -88103,6 +88103,15 @@
       "invalid_footer_windows_rejected": 5,
       "invalid_source_or_warmup_histories_rejected": 5,
       "disabled_observers_rejected": 4
+    },
+    "prepare_refusal": {
+      "command": "timeout 180s python3 -B tools/sycl/pool_spin.py pilot prepare",
+      "attempt_commit": "ef9f205c03b93313774c1eb232d8b0ee38f2d1a2",
+      "exit_code": 1,
+      "native_executed": false,
+      "pilot_root_created": false,
+      "error": "controller input changed: tools/sycl/generation_engine.py",
+      "next": "Restore generation_engine.py and its test byte-exactly to the closed qualification;keep the v5 metadata/order/selection gate local to the prospective controller. Preserve native qualification and failed admission without hash refresh."
     }
   }
 }

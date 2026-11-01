@@ -33,8 +33,7 @@ DIAGNOSTIC_ROOT = model.adaptive.ROOT / 'cache-generation-v1'
 DIAGNOSTIC_KEY = 'adaptive_cache_generation_v1'
 SOURCE = 'tools/sycl/pool_spin.py'
 CHANGED = {SOURCE, 'tools/long_generation_bench.py', 'tools/strata_bench.py',
-           'tools/test_strata_bench.py', 'tools/sycl/generation_engine.py',
-           'tools/sycl/test_generation_engine.py'}
+           'tools/test_strata_bench.py'}
 WORKLOAD_ID = 'cache_generation_v5_20261102'
 MODE, ROOT, KEY = 'pilot', PILOT_ROOT, PILOT_KEY
 WORKLOADS, ARMS = ('varied-prose',), (('reference', 0),)
@@ -328,10 +327,25 @@ def prepare():
     print(f'Prepared {MODE}: {len(ARMS)}fresh processes/{len(ARMS)*len(WORKLOADS)}long requests;commit before frontend probes.', flush=True)
 
 
+def generation_contract(suite, rows):
+    # Keep the closed native/device controllers' imported v4 helper byte-exact.
+    # This prospective v5 experiment checks its own version/order/selection;
+    # the unchanged shared collector still checks every sample's eligibility.
+    require(suite.get('workload_version') == 5 and suite.get('thinking') is True
+            and suite.get('reasoning_budget_tokens') == 0 and suite.get('max_tokens') == 16384,
+            'unexpected v5 task or thinking/output budget')
+    require(len(rows) == len(WORKLOADS)
+            and [(r.get('workload'), r.get('run'), r.get('order')) for r in rows]
+                == [(name, 0, i) for i, name in enumerate(WORKLOADS)]
+            and all(r.get('controller_eligible') is True for r in rows), 'incomplete/ineligible v5 generation')
+    require(suite.get('diagnostic_subset') is (MODE == 'pilot')
+            and suite.get('selected_workloads') == list(WORKLOADS), 'v5 mode/workload selection differs')
+
+
 def official(root, result):
     suite = result['results']['long_generation']
     rows = shared.gen.collect_samples(suite)
-    shared.gen.require_complete_generation(suite, rows, WORKLOADS, expected_version=5)
+    generation_contract(suite, rows)
     require(result['complete'] and not result['results']['failures'] and result['params']['runs'] == 1
             and result['params']['think'] is True and result['params']['long_generation_only'] is True,
             'incomplete official generation comparison')
@@ -569,6 +583,31 @@ def selfcheck():
         else:
             raise RuntimeError('wrong source/missing warmup statistics accepted')
     clean_observers(hit)
+    suite = dict(workload_version=5, thinking=True, reasoning_budget_tokens=0, max_tokens=16384,
+                 diagnostic_subset=MODE == 'pilot', selected_workloads=list(WORKLOADS))
+    rows = [dict(workload=name, run=0, order=i, controller_eligible=True) for i, name in enumerate(WORKLOADS)]
+    generation_contract(suite, rows)
+    versions = [dict(suite, **patch) for patch in (
+        {'workload_version': 4}, {'thinking': False}, {'reasoning_budget_tokens': 1024},
+        {'max_tokens': 32768}, {'diagnostic_subset': MODE != 'pilot'}, {'selected_workloads': []})]
+    for value in versions:
+        try:
+            generation_contract(value, rows)
+        except RuntimeError:
+            pass
+        else:
+            raise RuntimeError('wrong v5 generation contract accepted')
+    wrong_order, ineligible = copy.deepcopy(rows), copy.deepcopy(rows)
+    wrong_order[-1]['order'] += 1
+    ineligible[-1]['controller_eligible'] = False
+    bad_rows = [rows[:-1], wrong_order, ineligible]
+    for value in bad_rows:
+        try:
+            generation_contract(suite, value)
+        except RuntimeError:
+            pass
+        else:
+            raise RuntimeError('wrong/ineligible v5 request rows accepted')
     observers = ['strata trace:', 'strata GDN storage:', 'strata decode timing:', 'strata serve: ADAPT_']
     for value in observers:
         try:
@@ -579,6 +618,7 @@ def selfcheck():
             raise RuntimeError('diagnostic output accepted as clean timing')
     return dict(passed=True, cache_footer_controls=1, invalid_cache_footers_rejected=len(invalid),
                 invalid_pre_generation_histories_rejected=len(bad_history),
+                invalid_workload_contracts_rejected=len(versions) + len(bad_rows),
                 disabled_observers_rejected=len(observers), GPU_executed=False)
 
 
