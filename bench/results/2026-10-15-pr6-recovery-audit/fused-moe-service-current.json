@@ -68179,5 +68179,160 @@
       "files": 0,
       "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
     }
+  },
+  "official_gdn_fp32_resident_fixture_build_v1": {
+    "stage": "prepared",
+    "source_commit": "9021921d76212ecc39a418132c32581a35aa1328",
+    "original_fixture_recipe": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/record.json",
+      "sha256": "acb4b4f38955619f719f362159b93b83655693093aed81e0416b7a23e8a5e8ee"
+    },
+    "original_native_proof": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/record-v2.json",
+      "sha256": "3caf8734ef88dc2788de31d412f22d1308d4d7a789b4ace6a3ebb32d76086214"
+    },
+    "original_device_proof": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-tails-v2/record.json",
+      "sha256": "ae9daf39f1c27f007a776f4854c74ffdb6c7c0dedaf9a0c1895c8522a8e5a831"
+    },
+    "native_implementation_commit": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
+    "commands": [
+      [
+        "fixture-object",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/src/prefill/sycl/vllm_xe2",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-isystem",
+          "/opt/intel/oneapi/mkl/2026.1/include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-DMKL_ILP64",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/build/fixture-object.o",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_projection_fp32_bench.cpp",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/fixture-object.d"
+        ]
+      ],
+      [
+        "runtime-object",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/build/runtime-object.o",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/src/sycl/runtime.cpp",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/runtime-object.d"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-O3",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fsycl-allow-device-image-dependencies",
+          "-Wl,-t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/build/fixture-object.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/build/runtime-object.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/image.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/host.o",
+          "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+          "-lm",
+          "-ldl",
+          "-lpthread",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/gdn-fp32-bench"
+        ]
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v1/cache"
+    },
+    "budgets": {
+      "wall": 300,
+      "cpu": 900,
+      "rss_cap": 5368709120,
+      "text_cap": 16777216,
+      "file_cap": 268435456,
+      "total_cap": 1073741824
+    },
+    "plan": {
+      "scope": "CPU compile/link only;independent oracle and timing fixture,same AOT generation.",
+      "admission": "Exact production fixture/Runtime flags,actual compiler and host linker inputs pinned;no GPU execution.",
+      "retained": "Selected eight-ELF engine remains fallback;current GDN objects/exact fixture remain qualification inputs. This fixture is the imminent same-generation comparison consumer."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "GPU_executed": false,
+    "controller_inputs": {
+      "files": 45,
+      "aggregate_sha256": "de7ca86b2b8c8b31454f586b7c146e21213c5377756bff2eae4b466f855cf1db"
+    },
+    "native_sources": {
+      "files": 1,
+      "aggregate_sha256": "109aa5aa6e972c19f6d718528dcefd7b3953c6efb76cdfc55caf55b9dc0ec2f4"
+    }
   }
 }
