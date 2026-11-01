@@ -86856,7 +86856,7 @@
       "STRATA_SNAPSHOT_VERIFY": "1",
       "STRATA_TRACE_ADAPT": "1"
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "8c046a319e76b3d1cf71fc450add767ae8ab40de",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -86937,7 +86937,206 @@
         "environment_sha256": "cb71e5e7c2cb240232680d34ab66bc8f7036aed09e3e7b8eaccf2083554b2630"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1353509,
+          "start_ticks": 191867912,
+          "sid": 1353454
+        },
+        "route": {
+          "read_tokens": 33211,
+          "rows": 33210,
+          "GPU_residual_rows": 33210,
+          "ordinary_staged_slots": 384,
+          "split": false,
+          "GDN_FP16_calls": 180,
+          "GDN_FP16_rows": 1195560,
+          "GDN_barriers": 3,
+          "checkpoint_pairs": 2515,
+          "windows": 48,
+          "jobs": 20299,
+          "restored_dense_layers": 48,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 5,
+            "nominal_cells": 33210,
+            "internal_needed_rows_and_shapes_observed": false
+          },
+          "physical_resource_saturation_qualified": false
+        },
+        "prefill_main_cpu": {
+          "cpu_s": 43.789520338,
+          "wall_s": 48.559190679,
+          "known_wait_cpu_s": 25.90561356,
+          "known_wait_wall_s": 25.988110817,
+          "unclassified_cpu_s": 6.904390568,
+          "partition_qualified": true
+        },
+        "request_cpu": {
+          "process_cpu_s": 1085.7,
+          "interval_wall_s": 255.368080767,
+          "process_core_equivalent": 4.251510199470081,
+          "main_thread_cpu_s": 241.87,
+          "common_thread_cpu_s": 1083.37,
+          "stable_threads": 29,
+          "thread_set_unchanged": true,
+          "born_or_reused_threads": 0,
+          "ended_or_reused_threads": 0,
+          "tick_s": 0.01,
+          "snapshot_wall_s": [
+            0.001395638,
+            0.001208535
+          ],
+          "limits": "Native process CPU over the full gated request,including prefill,decode,polling and control. Common-thread sum can omit exited threads;no worker-only,decode-only,arithmetic,DRAM or speed claim."
+        },
+        "decode_dependency_timing": [
+          {
+            "windows": 908,
+            "ms_per_window": {
+              "average_T": 4.0,
+              "tokens_per_window": 3.46,
+              "total": 224.3,
+              "verify": 186.93,
+              "GPU_reach_wait": 80.78,
+              "per_layer_host": 85.13,
+              "plan": 4.21,
+              "activation_quant": 0.4,
+              "jobs": 0.22,
+              "CPU_pool_run": 79.73,
+              "stage": 2.75,
+              "commit_emit": 0.48,
+              "draft": 36.48,
+              "CPU_experts": 19.74,
+              "CPU_entries": 22.93,
+              "VRAM_hits": 17.04,
+              "PCIe": 0.0
+            },
+            "outer_residual_ms_per_window": 0.4099999999999966,
+            "host_nested_residual_ms_per_window": 0.5699999999999932,
+            "work": {
+              "target_windows": 908,
+              "target_rows": 3629,
+              "emitted_tokens": 3142,
+              "target_rows_per_emitted": 1.1549968173138128,
+              "cpu_unique_jobs": 860500,
+              "cpu_entries": 999192,
+              "cpu_unique_jobs_per_emitted": 273.8701464035646,
+              "minimum_NT1_jobs": 721808,
+              "minimum_NT1_job_fraction": 0.8388239395700174,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 9822457036800,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            },
+            "clock_binding": {
+              "absolute_total_difference_ms": 4.2999999999883585,
+              "rounding_bound_ms": 4.59,
+              "average_quantum_ms": 0.01,
+              "DONE_total_quantum_ms": 0.1
+            },
+            "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
+          }
+        ],
+        "adaptive_cache": {
+          "submitted_swaps": 7264,
+          "committed_swaps": 7264,
+          "H2D_requested_bytes": 14861286400,
+          "pending_before": 8,
+          "pending_after": 8,
+          "cache_hits": 742728,
+          "cache_lookups": 1741920,
+          "cache_hit_percent": 42.6,
+          "measured_PCIe_bytes": false,
+          "cache_payload_bitwise_verified": false
+        },
+        "whole_process_cache": {
+          "submitted_swaps": 7352,
+          "committed_swaps": 7344,
+          "pending_swaps": 8,
+          "H2D_requested_bytes": 15040563200
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1353509,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "26aeaa99d2d6cb60651acc2f346f8474e03cc2aac25218e7883a3d51485cb472",
+            "738ff4a81389162a252dc08606163490cce421f2fb5e9dfbd4922a9e7c145894",
+            "b66985b082fec16b35e3c3849b3342f5210b87f6bb9c72cab28e4c0e265b37dd",
+            "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+          ],
+          "valid": true,
+          "journal_sha256": "4fb2a60bd70d47606bf703c6c0afa605f05af524a0ca1229ab16dd3692b1363f"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35520
+        },
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 3142,
+            "output_chars": 5578,
+            "reasoning_chars": 3625,
+            "prompt_ms": 50722.6,
+            "prompt_tps": 654.8,
+            "decode_ms": 203668.7,
+            "decode_tps": 15.4,
+            "ttft_s": 50.937,
+            "total_s": 254.411,
+            "drafts_offered": 2721,
+            "drafts_accepted": 2236,
+            "acceptance_rate": 0.8217567070929805,
+            "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "de807ca1f0fc25333f36f12741aa6e88b13afea2165668c0604bbeef586b4739",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
