@@ -262,10 +262,21 @@ The full wrapper retains4.18%/6.09%less component time. This is not a model
 speedup:weight dequantization,PCIe and output projection are still excluded.
 Model-entry modes now preserve one binary for throughput with GDN FP16 on/off
 and TTFT with the option enabled but the typed long route inactive. They require
-both new component gates and the reviewed eight-file source integration before
-their separate exact32769-token,thinking-on model plan can be prepared.
-Qualify actual wrapper costs,allocation ownership,real-model range and decode
-handoff before adoption. The component executable and closed raw output are retired after exact
+both new component gates and the reviewed eight-file source integration.
+The first GDN16throughput model entry now passes:two current-source frontend
+probes,a73-token chunked warmup,then two exact32769-token thinking-on requests,
+zero prefix reuse and24generated tokens each. Each long request observes
+144typed recurrence calls,32768rows per GDN layer,checked MoE checkpoints and
+restored owners. Packed model-weight dequantization/shared-scratch reuse is now
+exercised by the actual caller. The native process closes with exit0,quiet final
+validation and no fresh driver fault. Logged diagnostics are55.5427s/590.0tok/s
+and46.8973s/698.7tok/s,with client TTFT55.696s/47.031s. These are first-use and
+subsequent requests in one process,not a matched gain or clean speed cohort.
+Short generation exercises handoff but does not qualify sustained decode,
+real-model range/task quality,TTFT-option preservation or physical262144/RESTORE.
+Next compare the same new engine with GDN16on/off at64K/117K,keeping both
+manual strategies and decode unchanged;qualify remaining adoption gates separately.
+The raw-call component executable and closed raw output are retired after exact
 original-source/recipe/input recovery from pushed history;retain selected
 f6cea2as the reference for the next production-wrapper/model generation.
 Physical262144model/RESTORE,task/agent,sustained decode and a current-route
