@@ -468,7 +468,12 @@ knob and20ms default are present. Controller`1d08e837b` passes three CPU
 accounting controls,four rejected windows and a replay of the actual retained
 prefill partition. The fresh plan is frozen from`caa46d5e7` with262source inputs;
 both current frontend probes pass with normal owned closure. The20000us reference
-is the next native process. It measures one33K code
+now closes normally with no fresh fault:33211read/3900generated tokens at13.5tok/s,
+84.03%draft acceptance. Native process CPU is1582.30s over340.5925s(4.6457core
+equivalent);the two endpoint thread sets match. Main-thread prefill accounts
+43.3379CPU seconds over48.0319s,including25.3899CPU seconds in known GPU waits.
+These are diagnostic request totals,not CPU arithmetic or saturation. The0us
+candidate is next. It measures one33K code
 request per process plus four official warmups,read-only request CPU snapshots
 and the existing disjoint main-thread prefill accounting. Lower CPU use alone is
 not a speedup;prefill and decode require independent repeated phase comparisons
