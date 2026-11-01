@@ -76,6 +76,18 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             require_complete_generation(generation, collect_samples(generation))
 
+    def test_new_body_version_requires_explicit_controller_plan(self):
+        generation = dict(workload_version=5, thinking=True, reasoning_budget_tokens=0, max_tokens=16384,
+            workloads={'regular-code': {'requests': [sample()]},
+                       'varied-prose': {'requests': [dict(sample(), order=1)]}})
+        rows = collect_samples(generation)
+        with self.assertRaises(RuntimeError):
+            require_complete_generation(generation, rows)
+        require_complete_generation(generation, rows, expected_version=5)
+        generation['workload_version'] = 4
+        with self.assertRaises(RuntimeError):
+            require_complete_generation(generation, rows, expected_version=5)
+
 
 class NativeClosureEvidence(unittest.TestCase):
     def claim(self):

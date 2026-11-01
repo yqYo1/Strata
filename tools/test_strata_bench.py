@@ -645,17 +645,17 @@ class SplitGenerationTest(unittest.TestCase):
         self.assertEqual(rows[0]["sample"]["input_case"], lg.SPLIT_INPUT_CASE)
         self.assertFalse(rows[0]["sample"]["speed_eligible"])
 
-    def test_default_v4_keeps_its_body_and_eligibility_without_count_preflight(self):
-        suite = bench.Suite("", "", 131072, 1, True, log=lambda _: None, workload_id="not-in-v4-prompt")
+    def test_default_version_keeps_its_body_and_eligibility_without_count_preflight(self):
+        suite = bench.Suite("", "", 131072, 1, True, log=lambda _: None, workload_id="not-in-standard-prompt")
         with patch.object(bench, "count_chat_body_tokens") as count, patch.object(bench, "chat", return_value=response()) as chat:
             suite.run_long_generation()
         count.assert_not_called()
         self.assertEqual(suite.generation_case_metadata(), {})
-        self.assertEqual(suite.out["long_generation"]["workload_version"], 4)
+        self.assertEqual(suite.out["long_generation"]["workload_version"], lg.WORKLOAD_VERSION)
         self.assertEqual(suite.out["long_generation"]["target_input_tokens"], 33792)
         for call in chat.call_args_list:
-            self.assertIn("[long-generation-v4 ", call.args[2][-1]["content"])
-            self.assertNotIn("not-in-v4-prompt", call.args[2][-1]["content"])
+            self.assertIn(f"[long-generation-v{lg.WORKLOAD_VERSION} ", call.args[2][-1]["content"])
+            self.assertNotIn("not-in-standard-prompt", call.args[2][-1]["content"])
 
     def test_split_identity_distinguishes_geometry_and_fixed_nonce(self):
         suite = self.suite();identity = suite.generation_case_metadata()

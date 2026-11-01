@@ -11,9 +11,9 @@ MIN_BODY_CHARS = 512  # presence/substance check, deliberately not a token-count
 MIN_INPUT_TOKENS = 32768
 TARGET_INPUT_TOKENS = 33792  # calibration is approximate; check actual usage afterwards
 MIN_DRAFTS = 256
-WORKLOAD_VERSION = 4
+WORKLOAD_VERSION = 5
 THINKING = True
-STANDARD_INPUT_CASE = "standard-v4-33k"
+STANDARD_INPUT_CASE = "standard-v5-33k"
 SPLIT_INPUT_CASE = "split-v1-96k"
 INPUT_CASES = (STANDARD_INPUT_CASE, SPLIT_INPUT_CASE)
 SPLIT_TARGET_INPUT_TOKENS = 98304
@@ -37,14 +37,14 @@ WORKLOADS = {
         "expected_mtp": "weak",
         "instruction": (
             "日本語で4000字以上の独創的な短編小説を最初から最後まで詳しく書いてください。"
-            "架空の港町『玻璃坂』では、住民の記憶が一日だけ潮汐で交換されます。"
-            "時計師の澪、耳の聞こえない測量士の朔、移住してきた植物学者の凪の三人が、"
-            "町の古い地図に存在しない防波堤をそれぞれ違う目的で探しています。"
-            "最初は三人の別々の視点と異なる文体で情景と会話を描き、途中で同じ出来事の"
-            "解釈が食い違う理由を具体的に示し、最後に矛盾を解消してください。"
-            "潮の匂い、楽器の振動、植物の生態、測量記録など異なる感覚や知識を織り込み、"
-            "ありきたりな表現や同じ言葉の繰り返しを避けてください。箇条書き、構想、要約、"
-            "執筆方針の説明ではなく、小説の本文だけを十分な長さで出力してください。"
+            "舞台は架空の港町の夜市です。旅先で道に迷った一人の時計修理職人が、"
+            "古い方位磁針を売る店主と出会い、見知らぬ人に宛てた手紙を預かります。"
+            "夜市を歩きながら手紙の届け先を探し、夜明けまでに小さな旅を終える物語にしてください。"
+            "主人公の視点で、屋台の食べ物、海辺の天気、町の音や匂い、出会う人との会話を"
+            "具体的に描いてください。主人公が何を感じ、なぜ次の行動を選んだかを、"
+            "出来事の中で自然に伝えてください。複雑な謎や厳密な仕掛けは必要ありません。"
+            "箇条書き、構想、要約、執筆方針の説明ではなく、始まりから結末までの小説本文を"
+            "十分な長さで出力してください。"
         ),
     },
 }

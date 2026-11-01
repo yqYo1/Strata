@@ -1579,7 +1579,7 @@ def main(argv=None) -> int:
                     help="select one diagnostic workload with --long-generation-only; does not qualify the MTP pair")
     ap.add_argument("--long-generation-input-case", choices=long_generation.INPUT_CASES,
                     default=long_generation.STANDARD_INPUT_CASE,
-                    help="input geometry: standard-v4-33k (default), or split-v1-96k with --long-generation-only")
+                    help=f"input geometry: {long_generation.STANDARD_INPUT_CASE} (default), or split-v1-96k with --long-generation-only")
     ap.add_argument("--long-generation-max-tokens", type=int, choices=long_generation.OUTPUT_TOKEN_CHOICES,
                     help="finite output budget including thinking (default 16384); use the same budget in both arms")
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")

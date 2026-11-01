@@ -696,7 +696,15 @@ regions using thread-local state;runtime environment reads,clock sampling,
 stderr output and selected memory queries can still perturb host timing. The
 final decode-summary snapshot/output follows`decode_ms`,and`profile_report()`
 is empty in this SYCL build. These source findings do not explain the slower
-single clean observation;keep the repeated same-envelope comparison next.
+single clean observation. The new controller separates a fresh v5prose-only
+pilot from the later six-process comparison. V5keeps Japanese4000-character
+fiction but simplifies viewpoint/plot constraints;thinking,the16Koutput budget,
+answer/count gates and weak-MTP band remain. The pilot must produce an eligible
+answer with acceptance<=.40before preparing the repeated cohort;it does not
+qualify the later after-code history. Check common cache statistics after all
+four official warmups,before long generation. Native DONE precedes its stderr
+footer,so use a bounded5s wait at the paused gate and take offsets from the same
+complete log snapshot. Native source,ELFs and safety settings do not change.
 After source recovery and admission checks,the prior diagnostic's140raw/JIT
 files totaling25881204bytes and four closed research transactions totaling
 21926bytes are retired. Its record/runtime and two generated config/plan pairs

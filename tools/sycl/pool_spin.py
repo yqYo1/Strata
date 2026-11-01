@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Repeated same-engine adaptive-cache generation comparison; repository LICENSE.
+"""Versioned prose pilot and same-engine cache comparison; repository LICENSE.
 
 Main-authored from the fork's owned benchmark supervision. The completed timing/
 cache diagnostic is recoverable at49170c397; its raw logs have no live consumer.
-Only this controller changes. Native safety settings and the fixed ELF remain.
+Native safety settings and the fixed ELF remain. A failed v4 run is preserved;
+the new task/gates are qualified prospectively before repeated comparison.
 """
 import copy
 import fcntl
@@ -24,17 +25,34 @@ import mtp_prefill as generation
 
 model, comparison, shared, build = generation.model, generation.comparison, generation.shared, generation.build
 P, B, RESULT = generation.P, generation.B, generation.RESULT
-ROOT, KEY = model.adaptive.ROOT / 'cache-generation-speed-v1', 'adaptive_cache_generation_speed_v1'
+PILOT_ROOT = model.adaptive.ROOT / 'cache-generation-speed-v2-pilot'
+PILOT_KEY = 'adaptive_cache_generation_speed_v2_pilot'
+FAILED_ROOT = model.adaptive.ROOT / 'cache-generation-speed-v1'
+FAILED_KEY = 'adaptive_cache_generation_speed_v1'
 DIAGNOSTIC_ROOT = model.adaptive.ROOT / 'cache-generation-v1'
 DIAGNOSTIC_KEY = 'adaptive_cache_generation_v1'
 SOURCE = 'tools/sycl/pool_spin.py'
-WORKLOADS = ('regular-code', 'varied-prose')
-WORKLOAD_ID = 'cpu_idle_wait_code_20261102'
-ARMS = (('reference', 0), ('candidate', 8), ('candidate', 8),
-        ('reference', 0), ('reference', 0), ('candidate', 8))
+CHANGED = {SOURCE, 'tools/long_generation_bench.py', 'tools/strata_bench.py',
+           'tools/test_strata_bench.py', 'tools/sycl/generation_engine.py',
+           'tools/sycl/test_generation_engine.py'}
+WORKLOAD_ID = 'cache_generation_v5_20261102'
+MODE, ROOT, KEY = 'pilot', PILOT_ROOT, PILOT_KEY
+WORKLOADS, ARMS = ('varied-prose',), (('reference', 0),)
 OBSERVERS = ('STRATA_TRACE', 'STRATA_PREFILL_CPU_WAIT_PROFILE', 'STRATA_DECODE_TIMING',
              'STRATA_TRACE_ADAPT', 'STRATA_DRAFT_TIMING', 'STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE')
 require, digest, write, compact = generation.require, generation.digest, generation.write, generation.compact
+
+
+def select_mode(mode):
+    global MODE, ROOT, KEY, WORKLOADS, ARMS
+    require(mode in ('pilot', 'cohort'), 'pilot or cohort required')
+    MODE = mode
+    ROOT = PILOT_ROOT if mode == 'pilot' else model.adaptive.ROOT / 'cache-generation-speed-v2'
+    KEY = PILOT_KEY if mode == 'pilot' else 'adaptive_cache_generation_speed_v2'
+    WORKLOADS = ('varied-prose',) if mode == 'pilot' else ('regular-code', 'varied-prose')
+    ARMS = (('reference', 0),) if mode == 'pilot' else (
+        ('reference', 0), ('candidate', 8), ('candidate', 8),
+        ('reference', 0), ('reference', 0), ('candidate', 8))
 
 
 def save(row):
@@ -62,8 +80,8 @@ def basis(revision):
                  for n, raw in shared.gen.blobs(P, prior['source_commit'], prior['sources'])}
     current = model.pinned_sources(revision)
     require(recovered == prior['sources'] and set(current) == set(recovered)
-            and {n for n in current if current[n] != recovered[n]} == {SOURCE},
-            'only the declared comparison controller may differ from the original model check')
+            and {n for n in current if current[n] != recovered[n]} == CHANGED,
+            'only the declared controller,versioned workload and host evidence/test changes are allowed')
     diagnostic = json.loads((DIAGNOSTIC_ROOT / 'record.json').read_text())
     require(data[DIAGNOSTIC_KEY] == compact(diagnostic)
             and diagnostic['passed'] and diagnostic['complete'] and diagnostic['ownership_closed']
@@ -74,8 +92,22 @@ def basis(revision):
     original = {n: hashlib.sha256(raw).hexdigest()
                 for n, raw in shared.gen.blobs(P, diagnostic['source_commit'], diagnostic['sources'])}
     require(original == diagnostic['sources'] and set(current) == set(original)
-            and {n for n in current if current[n] != original[n]} == {SOURCE},
+            and {n for n in current if current[n] != original[n]} == CHANGED,
             'undeclared delta from the closed diagnostic')
+    failed = json.loads((FAILED_ROOT / 'record.json').read_text())
+    require(data[FAILED_KEY] == compact(failed) and failed['stage'] == 'failed'
+            and not failed['passed'] and not failed['active'] and failed['ownership_closed']
+            and failed['binary'] == prior['binary'] and len(failed['processes']) == 1
+            and failed['failure_diagnosis']['observed_native_exit_code'] == 0
+            and failed['failure_diagnosis']['observed_benchmark_exit_code'] == 1,
+            'preserved closed failed V1 required;no retry or retroactive qualification')
+    if MODE == 'cohort':
+        pilot = json.loads((PILOT_ROOT / 'record.json').read_text())
+        require(data[PILOT_KEY] == compact(pilot) and pilot['passed'] and pilot['complete']
+                and pilot['ownership_closed'] and not pilot['active'] and pilot['stage'] == 'closed'
+                and pilot['binary'] == prior['binary'] and pilot['sources'] == current
+                and pilot['decision'] == pilot_decision(pilot['processes'])
+                and pilot['decision']['cohort_permitted'], 'qualified v5 weak-prose pilot required')
     names = ('src/kernels/cpu/pool.cpp', 'include/strata/kernels/cpu/pool.hpp')
     pool = {n: native['native_sources'][n] for n in names}
     require(all(digest(model.adaptive.ROOT / 'source' / n) == sha for n, sha in pool.items()),
@@ -119,7 +151,8 @@ def current(row):
     require(row['binary'] == prior['binary'] and row['native_source_commit'] == prior['native_source_commit']
             and row['native_validation_probe'] == prior['native_validation_probe']
             and row['model_assets'] == prior['model_assets'] and row['compiled_pool_sources'] == pool
-            and model.pinned_sources(row['source_commit']) == row['sources'], 'frozen source/build differs')
+            and model.pinned_sources(row['source_commit']) == row['sources']
+            and row['plan']['mode'] == MODE, 'frozen source/build/mode differs')
     inv = row['runtime_manifest']
     require(digest(inv['path']) == inv['sha256'] and json.loads(Path(inv['path']).read_text()) == files,
             'runtime inventory differs')
@@ -191,12 +224,39 @@ def route(text, read):
 
 def cache_footer(text):
     hits = re.findall(r'^strata serve: decode expert cache hit rate: ([0-9.]+)% \((\d+) hits / (\d+) lookups\)$', text, re.M)
-    exchanges = re.findall(r'^strata serve: resident RAM: [0-9.]+ GiB of experts in RAM, (\d+) exchanged with the VRAM tier, \d+ blob reads from the file$', text, re.M)
-    require(len(hits) == len(exchanges) == 1, 'missing/duplicate cache/RAM footer')
+    require(len(hits) == 1, 'missing/duplicate common cache footer')
     percent, count, lookups = float(hits[0][0]), int(hits[0][1]), int(hits[0][2])
     require(0 <= count <= lookups and lookups > 0 and math.isfinite(percent)
             and abs(percent - 100 * count / lookups) <= .051, 'cache count/percent differs')
-    return dict(hits=count, lookups=lookups, hit_percent=percent, RAM_exchanges_cumulative=int(exchanges[0]))
+    return dict(hits=count, lookups=lookups, hit_percent=percent)
+
+
+def cache_history(text, expected):
+    require(len(re.findall(r'^strata generate: native pack: .+$', text, re.M)) == 1
+            and len(re.findall(r'^strata generate: expert arena: .+$', text, re.M)) == 1
+            and 'strata generate: experts via mmap ' not in text
+            and 'strata serve: resident RAM:' not in text,
+            'native ArenaExpertSource startup/history differs')
+    lines = [v for v in text.splitlines() if v.startswith('strata serve: decode expert cache hit rate:')]
+    require(len(lines) == expected, 'common cache history count differs before continue')
+    return [cache_footer(v) for v in lines]
+
+
+def cache_boundary(root, expected):
+    # Native DONE is flushed before its stderr footer. Wait only at the paused
+    # frontend gate,outside the reported request clocks,and bind offsets to the
+    # same complete byte snapshot used by the parser.
+    deadline = time.monotonic() + 5
+    while True:
+        raw = (root / 'engine.stderr').read_bytes()
+        text = raw.decode()
+        complete = sum(v.startswith('strata serve: decode expert cache hit rate:')
+                       and v.endswith('\n') for v in text.splitlines(keepends=True))
+        require(complete <= expected, 'extra common cache footer at request boundary')
+        if complete == expected:
+            return raw, cache_history(text, expected)
+        require(time.monotonic() < deadline, 'common cache footer deadline before continue')
+        time.sleep(.01)
 
 
 def clean_observers(text):
@@ -220,21 +280,25 @@ def prepare():
         compiled_pool_sources=pool, runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'),
             sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
         plans=[], processes=[], host_passed=False, passed=False, complete=False, active=False, ownership_closed=True,
-        controls=selfcheck(), whole_bytes=448 << 20,
+        controls=selfcheck(), whole_bytes=(96 if MODE == 'pilot' else 448) << 20,
         budgets=dict(wall=2700, cpu=16200, rss_cap=104 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20),
         qualification_reuse=dict(model_result_key=model.KEY, model_source_commit=prior['source_commit'],
-            original_source_files=len(prior['sources']), controller_only_delta=[SOURCE],
+            original_source_files=len(prior['sources']), host_only_delta=sorted(CHANGED),
             diagnostic_result_key=DIAGNOSTIC_KEY,
-            scope='Fixed nine ELFs/source/recipe,positive next-GEN and injected-record failure qualification retained. Original265-file inputs recovered;only controller delta. Clean observers as in the qualified117K campaign,not inherited repeated speed or inference adoption.'),
-        plan=dict(question='Does8swaps/every1 reproducibly improve sustained code and prose generation over0swaps in the same fixed engine?',
-            motivation='Closed diagnostic:15.427/13.530TG,cache42.6/10.7%,CPU pool79.73/112.93ms/window,GPU reach80.78/86.50. Single pair,unequal output lengths/acceptance,no physical saturation claim.',
-            order='Six fresh processes R/C,C/R,R/C,three adjacent pairs. Each has four official warmups,then regular-code and varied-prose once each. Same fixed workload ID and bodies across processes;code is first long request,prose follows it. Adaptation remains enabled during all candidate warmups/requests;actual resident memberships need not match.',
+            scope='Fixed nine ELFs/source/recipe,positive next-GEN and injected-record failure qualification retained. Original265-file inputs recovered;only declared host source/test changes. Prior v4 workload and failed V1 are not new generation evidence.'),
+        plan=dict(mode=MODE, workload_version=5,
+            question=('Does the simpler v5 long prose produce thought plus >=512answer characters,>=1Kactual tokens and observed acceptance<=.40 in a fresh reference process?'
+                if MODE == 'pilot' else 'Does8swaps/every1 reproducibly improve sustained v5 code and prose generation over0swaps in the same fixed engine?'),
+            motivation='V1failed:16Kthinking-only prose,acceptance.59216. Keep the answer and MTP bands;change the task prospectively. Prior diagnostic cache8/0 had15.427/13.530TG,one pair,not clean/repeated evidence or saturation.',
+            order=('One fresh reference process,four official warmups,then varied-prose only. This checks task feasibility,not the later after-code history or repeated weak class.'
+                if MODE == 'pilot' else 'Six fresh processes R/C,C/R,R/C,three adjacent pairs. Each has four official warmups,then regular-code and varied-prose once each. Same fixed v5 bodies across processes;code first,prose follows. Adaptation stays enabled during all candidate warmups/requests;resident membership may differ.'),
             constants='Same ELF/providers/safety/preload,throughput BF16 HC/GDN16/MTP16,heads1,131072INT8resident,1256cache slots,5workers,spec4,chunk8192,no token graph,caches0,20ms spin,adapt-every1. Only --adapt-swaps0/8 differs;no native build or runtime environment mutation.',
-            observers='Parameter validation/private retained activation preload and nominal MTP callback markers only,matching the prior clean117K envelope. Disable STRATA_TRACE,CPU attribution,DECODE_TIMING,ADAPTTRACE and draft timing. Read-only identity/provider/clock checks occur at request gates outside engine clocks;no profiler or periodic observer.',
-            acceptance='All6processes/12long requests must satisfy source/build/assets/provider/body/route/journal/clock/owner gates,>=32768fresh read,>=1024generated including thinking,>=512answer characters,>=256drafts,normal0,quiet validation,no fresh fault. Actual mode2 callbacks/nominal rows,ordinary BF16/GDN3 bank384 and checked drain,cache/RAM footers must agree. Candidate whole-process resident-RAM exchanges must be positive,reference0;submit/commit/wire bytes are intentionally unobserved. No exact-output or task-quality claim.',
-            decision='Per workload retain all3paired exact TG ratios and geometric mean,process median/min/max,acceptance and lengths. Reproducible gain requires all3candidate/referenceTG>1;no minimum gain floor. Classify code strong only if every sample acceptance>=.60,prose weak only if every sample<=.40,independently per arm. Classification failure does not stop collection. Judge prompt/TTFT separately;this cohort does not qualify dedicated117K prefill nonregression,task/payload,agent,other exits,physical262144/RESTORE or overall adoption.',
+            observers='Parameter validation/private retained activation preload and nominal MTP callback markers only,matching the prior clean117K envelope. Disable STRATA_TRACE,CPU attribution,DECODE_TIMING,ADAPTTRACE and draft timing. Identity/provider/clock checks and a bounded5s stderr-footer wait occur at paused request gates outside reported clocks;no profiler or periodic observer.',
+            acceptance=f'All{len(ARMS)}processes/{len(ARMS)*len(WORKLOADS)}long requests must satisfy source/build/assets/provider/body/route/journal/clock/owner gates,>=32768fresh read,>=1024generated including thinking,>=512answer characters,>=256drafts,normal0,quiet validation,no fresh fault. Actual mode2 callbacks/nominal rows,ordinary BF16/GDN3 bank384 and checked drain must agree. Check native-Arena/common hit/lookups after all4warmups and each long request before continue. This source has no resident-RAM exchange footer;adaptive counts,payload/wire bytes and exact cache membership remain unobserved in clean timing. No exact-output or task-quality claim.',
+            decision=('Permit the fresh repeated cohort only if this eligible prose has observed acceptance<=.40. Otherwise preserve its failed regime decision and choose a new bounded plan;no retries or relabeling. One pilot does not establish a repeated weak class or after-code behavior.'
+                if MODE == 'pilot' else 'Retain all3paired exact TG ratios/geomean,process median/min/max,acceptance and lengths per workload. Reproducible gain requires all3candidate/referenceTG>1;no minimum floor. Code strong only if every sample>=.60,prose weak only if every sample<=.40,per arm. Classification failure does not stop collection. Judge prompt/TTFT separately;dedicated117K prefill,task/payload,agent,other exits,physical262144/RESTORE and adoption remain pending.'),
             stopping='Stop first source/owner/provider/clock/route/validation/fault/budget/sample failure. No retry,exclusion,speed stop or refreshed hashes. Commit each closed process before next;full model hashes before and after cohort.',
-            retention='Keep compact individual samples,cache/RAM counts,actual route summaries and decisions. Successful raw journals/logs/JIT retire after verification;keep record/runtime and generated plans only while admission consumes them. No new engine generation.'))
+            retention='Keep compact individual samples,common cache counts,actual routes and decisions. Raw journals/logs/JIT retire after verification;keep record/runtime and generated plans only while admission consumes them. No new engine generation.'))
     for index, (arm, swaps) in enumerate(ARMS):
         root = ROOT / str(index)
         root.mkdir(mode=0o700)
@@ -254,18 +318,20 @@ def prepare():
                 '--long-generation-only', '--think', '--runs', '1', '--profile-request-gates',
                 '--workload-id', WORKLOAD_ID, '--fail-fast-engine-error', '--ready-timeout', '600',
                 '--out', str(root / 'bench')])
+        if MODE == 'pilot':
+            plan['command'] += ['--long-generation-workload', 'varied-prose']
         plan['environment_sha256'] = comparison.fingerprint(environment(row, plan))
         row['plans'].append(plan)
     row['invariant_signature'] = invariant(row, row['plans'][0])
     require(all(invariant(row, p) == row['invariant_signature'] for p in row['plans']), 'undeclared arm difference')
     save(row)
-    print('Prepared6fresh processes/12long requests;commit before frontend probes.', flush=True)
+    print(f'Prepared {MODE}: {len(ARMS)}fresh processes/{len(ARMS)*len(WORKLOADS)}long requests;commit before frontend probes.', flush=True)
 
 
 def official(root, result):
     suite = result['results']['long_generation']
     rows = shared.gen.collect_samples(suite)
-    shared.gen.require_complete_generation(suite, rows, WORKLOADS)
+    shared.gen.require_complete_generation(suite, rows, WORKLOADS, expected_version=5)
     require(result['complete'] and not result['results']['failures'] and result['params']['runs'] == 1
             and result['params']['think'] is True and result['params']['long_generation_only'] is True,
             'incomplete official generation comparison')
@@ -289,7 +355,23 @@ def official(root, result):
     return rows, events, dict(warm, valid=True, journal_sha256=digest(path))
 
 
+def pilot_decision(processes):
+    require(len(processes) == 1 and processes[0]['passed'] and processes[0]['complete']
+            and processes[0]['ownership_closed'] and processes[0]['kernel'] == 'reference'
+            and processes[0]['adapt_swaps'] == 0 and len(processes[0]['samples']) == 1,
+            'one closed eligible prose reference required')
+    sample, = processes[0]['samples']
+    require(sample['workload'] == 'varied-prose' and sample['controller_eligible'], 'eligible prose required')
+    weak = sample['acceptance_rate'] <= .40
+    return dict(task_sample_eligible=True, observed_acceptance=sample['acceptance_rate'],
+        observed_weak_MTP=weak, cohort_permitted=weak, repeated_MTP_class_qualified=False,
+        inference_adopted=False, physical_resource_saturation_qualified=False,
+        limits='One fresh first-long-request pilot;no after-code history or repeated gain. Keep thinking/answer/length/MTP gates unchanged.')
+
+
 def decision(processes):
+    if MODE == 'pilot':
+        return pilot_decision(processes)
     require(len(processes) == len(ARMS) and all(p['passed'] and p['complete'] and p['ownership_closed']
         and (p['kernel'], p['adapt_swaps']) == ARMS[i] for i, p in enumerate(processes)), 'complete frozen cohort required')
     require(len({(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes}) == len(ARMS),
@@ -370,7 +452,8 @@ def run(index):
                 shared.python_runtime.check_running(entry['pid'], P / 'tools/strata_bench.py', manifest['selected'], env,
                     {v['realpath'] for v in manifest['inventory']['files'].values()}, plan['command'][2:])
                 comparison.require_quiet_validation(root)
-                offsets[stage] = (root / 'engine.stderr').stat().st_size
+                raw, history = cache_boundary(root, 4 + i + (stage == 'end'))
+                offsets[stage] = len(raw)
                 if stage == 'begin':
                     path, = (root / 'bench').glob('*/requests.jsonl')
                     events = [json.loads(v) for v in path.read_text().splitlines()]
@@ -379,15 +462,17 @@ def run(index):
                     shared.gen.warmup_reconciliation(events[:-1], WORKLOADS[:i])
                     prior = [e['sample'] for e in events[:-1] if e['kind'] == 'result']
                     require(all(shared.gen.sample_eligible(v) for v in prior[4:]), 'prior long sample ineligible')
-                    shared.gen.request_evidence((root / 'engine.stderr').read_text(), prior)
+                    shared.gen.request_evidence(raw.decode(), prior)
                 else:
-                    text = (root / 'engine.stderr').read_bytes()[offsets['begin']:offsets['end']].decode()
+                    text = raw[offsets['begin']:offsets['end']].decode()
                     headers = re.findall(r'^strata serve: prompt (\d+) tokens = (\d+) reused \+ (\d+) read[^\n]*, (\d+) generated[^\n]*$', text, re.M)
                     require(len(headers) == 1 and headers[0][1] == '0' and headers[0][0] == headers[0][2],
                             'native long footer differs')
                     clean_observers(text)
                     live.append(route(text, int(headers[0][2])))
-                outcome.update(model_executed=True, native_identity=claim, request_routes_checked_before_continue=len(live))
+                outcome.update(model_executed=True, native_identity=claim,
+                    request_routes_checked_before_continue=len(live),
+                    cache_footers_checked_before_continue=len(history))
                 persist()
                 print(f'Cache speed process{index} swaps={plan["adapt_swaps"]} {name} {stage}', flush=True)
                 io.send(b'continue\n')
@@ -412,7 +497,7 @@ def run(index):
         samples, events, journal = official(root, json.loads(outputs[0].read_text()))
         for sample in samples:
             comparison.require_valid_client_ttft(sample)
-        require(len(windows) == len(samples) == len(live) == 2, 'long-generation request count')
+        require(len(windows) == len(samples) == len(live) == len(WORKLOADS), 'long-generation request count')
         if row['processes']:
             require(journal['request_sha256'] == row['processes'][0]['journal']['request_sha256'], 'paired bodies differ')
         comparison.require_quiet_validation(root)
@@ -427,10 +512,8 @@ def run(index):
         routes = [route(raw[w['begin']:w['end']].decode(), s['read_tokens']) for w, s in zip(windows, samples)]
         require(routes == live, 'live/final route differs')
         cache = [cache_footer(raw[w['begin']:w['end']].decode()) for w in windows]
-        all_exchanges = [int(v) for v in re.findall(r'^strata serve: resident RAM: [0-9.]+ GiB of experts in RAM, (\d+) exchanged with the VRAM tier, \d+ blob reads from the file$', text, re.M)]
-        require(len(all_exchanges) == 6 and all(a <= b for a, b in zip(all_exchanges, all_exchanges[1:]))
-                and (all_exchanges[-1] > 0 if plan['adapt_swaps'] else all_exchanges[-1] == 0),
-                'actual adaptive RAM-exchange history differs')
+        history = cache_history(text, 4 + len(samples))
+        require(history[4:] == cache, 'long-window/common footer history differs')
         current(row)
         if index == len(ARMS) - 1:
             shared.models.model_pins(row['configuration'], row['model_assets'], full=True)
@@ -438,7 +521,7 @@ def run(index):
             'prompt_ms', 'prompt_tps', 'decode_ms', 'decode_tps', 'ttft_s', 'total_s', 'drafts_offered', 'drafts_accepted',
             'acceptance_rate', 'request_sha256', 'output_sha256', 'reasoning_sha256', 'finish_reason', 'controller_eligible')
         outcome.update(complete=True, host_probe_accepted=True, native_exit_code=0, validation=validation,
-            routes=routes, cache=cache, RAM_exchanges_whole_process=all_exchanges[-1], journal=journal,
+            routes=routes, cache=cache, common_cache_footers=len(history), journal=journal,
             native_request_binding=dict(requests=len(binding), draft_cells=sum(v['draft_cells'] for v in binding)),
             samples=[{k: s[k] for k in fields if k in s} for s in samples])
     except BaseException as error:
@@ -463,19 +546,29 @@ def run(index):
 
 def selfcheck():
     hit = 'strata serve: decode expert cache hit rate: 50.0% (5 hits / 10 lookups)\n'
-    ram = 'strata serve: resident RAM: 50.00 GiB of experts in RAM, 8 exchanged with the VRAM tier, 0 blob reads from the file\n'
-    require(cache_footer(hit + ram) == dict(hits=5, lookups=10, hit_percent=50., RAM_exchanges_cumulative=8),
-            'cache/RAM footer control')
-    invalid = [hit, ram, hit + hit + ram, hit.replace('50.0', '49.0') + ram,
-               hit.replace('5 hits', '11 hits') + ram, hit.replace('10 lookups', '0 lookups') + ram]
+    prefix = 'strata generate: native pack: /qualified experts\nstrata generate: expert arena: SYCL ordinary host arena\n'
+    require(cache_footer(hit) == dict(hits=5, lookups=10, hit_percent=50.)
+            and len(cache_history(prefix + hit * 4, 4)) == 4, 'common footer and pre-generation history control')
+    invalid = ['', hit + hit, hit.replace('50.0', '49.0'),
+               hit.replace('5 hits', '11 hits'), hit.replace('10 lookups', '0 lookups')]
     for value in invalid:
         try:
             cache_footer(value)
         except RuntimeError:
             pass
         else:
-            raise RuntimeError('invalid cache/RAM footer accepted')
-    clean_observers(hit + ram)
+            raise RuntimeError('invalid common cache footer accepted')
+    bad_history = [hit * 4, prefix + hit * 3, prefix + hit * 5,
+        prefix + hit * 4 + 'strata serve: resident RAM: unexpected\n',
+        prefix + hit * 4 + 'strata generate: experts via mmap (--mmap-experts)\n']
+    for value in bad_history:
+        try:
+            cache_history(value, 4)
+        except RuntimeError:
+            pass
+        else:
+            raise RuntimeError('wrong source/missing warmup statistics accepted')
+    clean_observers(hit)
     observers = ['strata trace:', 'strata GDN storage:', 'strata decode timing:', 'strata serve: ADAPT_']
     for value in observers:
         try:
@@ -485,6 +578,7 @@ def selfcheck():
         else:
             raise RuntimeError('diagnostic output accepted as clean timing')
     return dict(passed=True, cache_footer_controls=1, invalid_cache_footers_rejected=len(invalid),
+                invalid_pre_generation_histories_rejected=len(bad_history),
                 disabled_observers_rejected=len(observers), GPU_executed=False)
 
 
@@ -495,11 +589,14 @@ if __name__ == '__main__':
         args = sys.argv[1:]
         if args == ['selfcheck']:
             print(json.dumps(selfcheck()))
-        elif args == ['prepare']:
-            prepare()
-        elif args == ['host']:
-            comparison.host(sys.modules[__name__])
-        elif len(args) == 1 and args[0].isdigit() and int(args[0]) < len(ARMS):
-            run(int(args[0]))
         else:
-            raise RuntimeError('pool_spin.py selfcheck|prepare|host|INDEX0..5')
+            require(len(args) == 2, 'pool_spin.py selfcheck | pilot|cohort prepare|host|INDEX')
+            select_mode(args[0])
+            if args[1] == 'prepare':
+                prepare()
+            elif args[1] == 'host':
+                comparison.host(sys.modules[__name__])
+            elif args[1].isdigit() and int(args[1]) < len(ARMS):
+                run(int(args[1]))
+            else:
+                raise RuntimeError('pool_spin.py pilot|cohort prepare|host|INDEX')
