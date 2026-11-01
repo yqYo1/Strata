@@ -66998,7 +66998,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "prepared",
+    "stage": "smoke-passed",
     "source_commit": "f31837203b8f7911ef76d1b2d8f0d4d7c904b75b",
     "cases": [
       {
@@ -67014,13 +67014,64 @@
         "trace": true
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "environment_observed": false,
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        }
+      },
+      {
+        "name": "fp32-smoke",
+        "passed": true,
+        "exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "environment_observed": true,
+        "ownership_closed": true,
+        "details": {
+          "cases": [
+            {
+              "T": 1,
+              "N": 6144,
+              "ldy": 6144,
+              "dyadic_ULP": 0,
+              "guards": "passed",
+              "oneMKL": "passed",
+              "not_FP16_representable_outputs": 3351,
+              "owner_retirement": "passed"
+            },
+            {
+              "T": 129,
+              "N": 10240,
+              "ldy": 10256,
+              "dyadic_ULP": 0,
+              "guards": "passed",
+              "oneMKL": "passed",
+              "not_FP16_representable_outputs": 720465,
+              "owner_retirement": "passed"
+            }
+          ],
+          "kernel_census": {
+            "native_FP32_launches": 2,
+            "all_successful_kernel_launches": 5
+          },
+          "full_device_domain_qualified": false
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
-    "GPU_execution_requested": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
+    "GPU_execution_requested": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -67052,6 +67103,50 @@
       "limits": "No full T1..8192 device coverage,non-dyadic/task/performance/decode/262144/RESTORE qualification."
     },
     "retention": "Keep compact two-case results,trace kernel census and source/runtime identity. Retire successful raw trace/logs after verification;keep useful failure evidence only.",
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 38,
+    "ordinary_runtime_teardown_qualified": false,
+    "command_outcomes": [
+      {
+        "label": "host-canary",
+        "pid": 2791632,
+        "exit_code": 0,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "fp32-smoke",
+        "pid": 2791640,
+        "exit_code": 0,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "errors": [],
+        "cleanup": []
+      }
+    ],
+    "verified_trace": {
+      "sha256": "8fb673518c8b896ba7846100c430970e920fb3520b544739b276a01919e48866",
+      "bytes": 68433,
+      "kernel_census": {
+        "native_FP32_launches": 2,
+        "all_successful_kernel_launches": 5
+      },
+      "consumer": "Completed first-device dispatch/guard/oracle check;raw trace retires after this result commits."
+    },
     "controller_inputs": {
       "files": 43,
       "aggregate_sha256": "614d47a9f0de6f7aebcc134cfbffa0247cdc3b9b7dbbdb5ba054e43bf45f08dc"

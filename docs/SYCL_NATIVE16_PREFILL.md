@@ -122,10 +122,18 @@ rather than treating replicated descriptor anchors as scalar destinations.
 The earlier host compile and equality failures remain recorded. This proves
 coordinate ownership,not accumulator-value composition or hardware tail masking.
 The guarded device fixture source is committed at4ccfb3079 and its production
-runtime/AOT build passes. It has not executed. Next run only the host canary
-and two small traced GPU shapes with the exact FP32 oracle,unchanged oneMKL
-control,guards and checked owner retirement. Full device-domain,non-dyadic,
-model/speed/decode/physical-context qualification remain pending.
+runtime/AOT build passes. The frozen first-device smoke now passes the host
+canary and T1/N6144/ld6144 plus T129/N10240/ld10256. Complete outputs match the
+exact FP32 oracle and unchanged oneMKL control at zero ULP;3351and720465outputs
+respectively cannot be represented in FP16. Input/output guards and checked
+owner retirement pass. The trace observes two actual new-kernel launches out
+of five successful kernel launches. Actual device environment/maps,pre-main
+validation,38observed executable providers,normal process closure and the final
+frozen source/driver checks pass,with no fresh GPU fault. This establishes only
+these two small shapes;full device-domain,non-dyadic,model/speed/decode and
+physical-context qualification remain pending. Next cover both output widths
+through8192rows,invalid admissions and non-dyadic numerics before component
+timing including dequantization and unchanged consumers.
 
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
