@@ -31,8 +31,8 @@ import engine_once
 d, model, build = comparison.shared, comparison.model, comparison.build
 P, B, RESULT = comparison.P, comparison.B, comparison.RESULT
 require, digest, write = comparison.require, comparison.digest, comparison.write
-ROOT = model.gdn16.ROOT/'resource-profile-v1'
-KEY, HOST_KEY = 'gdn16_resource_profile_v1', 'gdn16_resource_profile_host_v1'
+ROOT = model.gdn16.ROOT/'resource-profile-v2'
+KEY, HOST_KEY = 'gdn16_resource_profile_v2', 'gdn16_resource_profile_host_v2'
 READ = 117489
 CHANGED = {'tools/sycl/profile_split.py', 'tools/sycl/test_profile_split.py'}
 # Exact launcher ELF/version, not a floating installed-tool preference.
@@ -328,6 +328,22 @@ def same_environment(actual, expected):
             'profile native startup environment differs')
 
 
+def collector_host_changes(changes, audited):
+    """Admit one reviewed parser-only delta after the older audit's refusal.
+
+    bench_engine's later census extension partitions1..8192job sizes and
+    accepts an explicit117488-row window bound. It does not change collection,
+    native compilation or the default old81920bound. The caller still checks
+    every native generated input,460compiler dependencies,recipe and both ELFs.
+    """
+    expected = copy.deepcopy(audited)
+    for item in expected:
+        if (item['path'], item['current_sha256']) == ('tools/sycl/bench_engine.py',
+                'aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063'):
+            item['current_sha256'] = 'e263b7c8c8ea723576fffa172d762740dc3769a64e03c958188ec5be43de792a'
+    require(changes == expected, 'unreviewed collector source difference')
+
+
 def collector_assets(record):
     """Recheck actual native inputs; keep old controller refusal unchanged."""
     import build_indexed_collector as build
@@ -349,7 +365,7 @@ def collector_assets(record):
         current = digest(P/name)
         if current != original:
             changes.append(dict(path=name, original_sha256=original, current_sha256=current))
-    require(changes == audited['host_only_changes'], 'unreviewed collector source difference')
+    collector_host_changes(changes, audited['host_only_changes'])
     require(build.command(container) == built['command'], 'collector compile recipe changed')
     for name, raw in build.generated().items():
         require(build.tool.sha(raw) == built['generated_sha256'][name] and
@@ -469,6 +485,11 @@ def prepare():
         asset_basis=dict(path=str(comparison.ROOT/'record.json'), sha256=digest(comparison.ROOT/'record.json')),
         qualification_reuse=dict(source_commit=clean['source_commit'], changed_controls=sorted(CHANGED),
             native_recompiled=False, native_inputs=557, actual_compiler_inputs=1451, native_ELFs=9,
+            collector_parser_delta=dict(path='tools/sycl/bench_engine.py',
+                prior_audit_commit='295a6e108f0249dc578f2fbe058a1068ec030d9f',
+                prior_sha256='aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063',
+                current_sha256='e263b7c8c8ea723576fffa172d762740dc3769a64e03c958188ec5be43de792a',
+                scope='Reviewed census-only Python extension;not in460actual collector compiler inputs.'),
             scope='Same native generation/recipe/fixtures/runtime as the closed48-request cohort. '
                   'Only this maintained controller and its CPU rejection tests change. Current fixture '
                   'coverage under the collector is a new required check,not inherited from an older ELF.'),

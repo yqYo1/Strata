@@ -138,6 +138,18 @@ class StatusGates(unittest.TestCase):
 
 
 class StartupGates(unittest.TestCase):
+    def test_collector_reuse_allows_only_the_reviewed_parser_delta(self):
+        old = [dict(path='tools/sycl/bench_engine.py', original_sha256='original',
+            current_sha256='aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063')]
+        current = [dict(old[0], current_sha256='e263b7c8c8ea723576fffa172d762740dc3769a64e03c958188ec5be43de792a')]
+        profile.collector_host_changes(current,old)
+        for wrong in (old, [dict(current[0],current_sha256='unknown')],
+                      [dict(current[0],original_sha256='changed')],
+                      current+[dict(path='native.cpp',original_sha256='a',current_sha256='b')]):
+            with self.assertRaises(RuntimeError):
+                profile.collector_host_changes(wrong,old)
+        self.assertNotEqual(current,old)
+
     def test_missing_mutated_and_extra_startup_variables_are_refused(self):
         expected = dict(ZES_ENABLE_SYSMAN='0', UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD='1')
         profile.same_environment(dict(expected, PWD='/work'), expected)

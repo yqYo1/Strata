@@ -77218,5 +77218,18 @@
     "GPU_executed": false,
     "active": false,
     "ownership_closed": true
+  },
+  "gdn16_resource_profile_v1_preparation_refusal": {
+    "source_commit": "bb7b2f1e13d2cf324d84e157e857a9ccb923f764",
+    "stage": "prepare-refused",
+    "passed": false,
+    "GPU_executed": false,
+    "error": "unreviewed collector source difference",
+    "cause": "tools/sycl/bench_engine.py changed after the older collector source audit:explicit117488-row bound and selectable complete job-size groups. Only this Python helper differs further;generation_engine.py matches its reviewed hash.",
+    "original_collector_audit_commit": "295a6e108f0249dc578f2fbe058a1068ec030d9f",
+    "parser_extension_commit": "561f11312cae5f897aa8de38f1de9631f98f4858",
+    "prior_parser_sha256": "aefdadf94c5580db49cd26002658a62b360557a6bf4ccc0a2de831ac02ed8063",
+    "current_parser_sha256": "e263b7c8c8ea723576fffa172d762740dc3769a64e03c958188ec5be43de792a",
+    "next_action": "Fresh V2controller and rejection tests admit only the reviewed Python delta;original31collector inputs,460actual compiler inputs,generated source,recipe and collector/launcher ELFs still must pass. Original audit and refusal remain unchanged."
   }
 }
