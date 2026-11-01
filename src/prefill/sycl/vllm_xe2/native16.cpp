@@ -20,6 +20,7 @@ using sycl_backend::validate_device_span;
 using sycl_backend::validate_spans;
 static_assert(sizeof(long) == 8, "Pinned TLA block2D payload ABI needs LP64");
 static_assert(sizeof(cutlass::half_t) == 2 && sizeof(cutlass::bfloat16_t) == 2);
+static_assert(sizeof(float) == 4, "GDN FP32 projection requires four-byte float");
 
 size_t mul(size_t a, size_t b) {
   if (b && a > std::numeric_limits<size_t>::max() / b)
@@ -69,6 +70,29 @@ Geometry geometry(const Problem &p, Tile tile) {
   if (mul(mul(gm, gn), threads) > size_t(std::numeric_limits<int>::max()))
     throw std::invalid_argument("Xe2 GEMM: int launch extent limit");
   return {int(p.t), int(p.n), int(p.k), int(ld), xb, wb, yb, gm, gn, threads};
+}
+
+Geometry geometry_gdn_projection_fp32(const GdnProjectionFp32Problem &p) {
+  if (p.t < 1 || p.t > 8192 || (p.n != 10240 && p.n != 6144) ||
+      p.k != 2560 || p.ldy < 0)
+    throw std::invalid_argument("GDN FP32 projection: fixed QKV/gate shape required");
+  const int64_t ld = p.ldy ? p.ldy : p.n;
+  constexpr int64_t surface_max = 0xFFFFFF;
+  // FP32 row pitches are in bytes; the block2D pitch must be 16-byte aligned.
+  if (ld < p.n || ld % 4 || ld > surface_max / 4)
+    throw std::invalid_argument("GDN FP32 projection: invalid output pitch");
+  const size_t xb = mul(mul(size_t(p.t), size_t(p.k)), 2);
+  const size_t wb = mul(mul(size_t(p.n), size_t(p.k)), 2);
+  const size_t rectangle = mul(mul(size_t(p.t), size_t(ld)), 4);
+  if (std::max({xb, wb, rectangle}) > size_t(std::numeric_limits<int>::max()))
+    throw std::invalid_argument("GDN FP32 projection: int coordinate extent limit");
+  // ld>=n makes this sum at most the checked full rectangle. Padding after
+  // the final logical row is not part of the borrowed output span.
+  const size_t yb = mul(mul(size_t(p.t - 1), size_t(ld)), 4) + size_t(p.n) * 4;
+  const size_t gm = size_t(p.t - 1) / 128 + 1, gn = size_t(p.n) / 128;
+  if (mul(mul(gm, gn), 128) > size_t(std::numeric_limits<int>::max()))
+    throw std::invalid_argument("GDN FP32 projection: int launch extent limit");
+  return {int(p.t), int(p.n), int(p.k), int(ld), xb, wb, yb, gm, gn, 128};
 }
 
 
@@ -146,6 +170,7 @@ using TileMMA = typename TiledMMAHelper<MMA_Atom<XE_DPAS_TT<8, float, Input>>,
     Layout<typename ShapePolicy<Policy>::Shape>,
     typename ShapePolicy<Policy>::Subgroups>::TiledMMA;
 template <class Input, class Output, Tile Policy> class DenseKernel;
+class GdnProjectionFp32Kernel;
 template <Tile Policy, bool Capture, ScatterLayout Mapping> class DownScatterKernel;
 template <bool Capture> class SplitDownScatterKernel;
 template <bool Capture> class SplitRowAddressDownKernel;
@@ -805,6 +830,42 @@ sycl::event enqueue(sycl::queue &q, const Problem &p, Geometry g) {
   });
 }
 
+sycl::event enqueue_gdn_projection_fp32(sycl::queue &q,
+                                       const GdnProjectionFp32Problem &p, Geometry g) {
+  using Input = cutlass::half_t;
+  using P = ShapePolicy<Tile::wide_128x128>;
+  using MMA = TileMMA<Input, Tile::wide_128x128>;
+  static_assert(P::threads == 128 && size(typename P::Subgroups{}) == 8);
+  static_assert(decltype(size(MMA{}))::value == P::threads);
+  static_assert(get<0>(MMA{}.tile_mnk()) == 128 && get<1>(MMA{}.tile_mnk()) == 128);
+  static_assert(get<2>(MMA{}.tile_mnk()) == 32);
+  static_assert(std::is_same_v<typename MMA::ValTypeC, float>);
+  static_assert(std::is_same_v<typename MMA::ValTypeD, float>);
+  const auto x = reinterpret_cast<const Input *>(p.x);
+  const auto w = reinterpret_cast<const Input *>(p.w);
+  float *const y = p.y;
+  namespace ex = sycl::ext::oneapi::experimental;
+  namespace ix = sycl::ext::intel::experimental;
+  const ex::properties props{ex::sub_group_size<16>, ix::grf_size<256>};
+  const sycl::range<3> local(1, 1, P::threads);
+  const sycl::range<3> global(g.groups_m, g.groups_n, P::threads);
+  return q.submit([&](sycl::handler &h) {
+    h.parallel_for<GdnProjectionFp32Kernel>(sycl::nd_range<3>(global, local), props,
+                                         [=](sycl::nd_item<3> item) {
+      auto a = make_tensor(make_gmem_ptr(x),
+          make_layout(make_shape(g.t, g.k), make_stride(g.k, _1{})));
+      auto b = make_tensor(make_gmem_ptr(w),
+          make_layout(make_shape(g.n, g.k), make_stride(g.k, _1{})));
+      // The D tensor itself is FP32. TLA selects its 32-bit D-copy; there is
+      // no 16-bit destination fragment, widening step or output-copy kernel.
+      auto d = make_tensor(make_gmem_ptr(y),
+          make_layout(make_shape(g.t, g.n), make_stride(g.ld, _1{})));
+      auto coord = make_coord(int(item.get_group(0)), int(item.get_group(1)), _, 0);
+      derived::xe_gemm_beta0<void, void, void>(a, b, d, coord, MMA{});
+    });
+  });
+}
+
 sycl::event enqueue_dense_down64(sycl::queue &q, const Problem &p, Geometry g) {
   using Input = cutlass::half_t;
   using Output = cutlass::bfloat16_t;
@@ -1126,6 +1187,18 @@ sycl::event Gemm::beta0(const Problem &p, Tile tile) {
   if (p.output == Storage::fp16)
     return select_tile<cutlass::bfloat16_t, cutlass::half_t>(queue_, p, g, tile);
   return select_tile<cutlass::bfloat16_t, cutlass::bfloat16_t>(queue_, p, g, tile);
+}
+
+sycl::event Gemm::gdn_projection_fp32(const GdnProjectionFp32Problem &p) {
+  const auto g = geometry_gdn_projection_fp32(p);
+  if (!has_fp16_)
+    throw std::invalid_argument("GDN FP32 projection: native FP16 required");
+  validate_spans({{p.y, g.yb}}, {{p.x, g.xb}, {p.w, g.wb}}, 64);
+  validate_device_span(p.x, g.xb, queue_);
+  validate_device_span(p.w, g.wb, queue_);
+  validate_device_span(p.y, g.yb, queue_);
+  runtime_.check();
+  return enqueue_gdn_projection_fp32(queue_, p, g);
 }
 
 sycl::event Gemm::gu_swiglu(const GuSwiGLUProblem &p, Tile tile) {
