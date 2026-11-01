@@ -19854,10 +19854,12 @@
     }
   },
   "current_research_scope_admission": {
-    "eligible_scopes": 0,
-    "scopes": [],
-    "reason": "The one newly admitted long-prefill HC-write question is now running. Reuse indexed Q80/MTP and upload-batching methods;other conditional scopes retain prerequisites.",
-    "next_review": "Review scope/depth after this report; continue Main current-generation MTP/length tuning in parallel. Other conditional scopes retain their prerequisites.",
+    "eligible_scopes": 1,
+    "scopes": [
+      "adaptive_expert_cache_request_boundary_20261102"
+    ],
+    "reason": "HC-write collection is reviewed and closed. Broad collections remain covered by prior references;the new finite decision-support audit is the actual current adaptive-copy→next-prefill boundary.",
+    "next_review": "At native Luna-max review of this source audit,before enabling positive swaps;keep Main measurement/implementation moving.",
     "closed_transaction_retirement": {
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-gdn-storage-transactions.json",
       "sha256": "4e0cc2e8c1fd3a331df0300a89134a2f250143e1ef635f26a574a34153ee0f39",
@@ -20776,5 +20778,54 @@
       "recommendation": "none",
       "reason": "This report fills the identified methods gap. Any later performance question needs a committed comparator and actual workload/resource evidence; another broad representation survey would duplicate this result."
     }
+  },
+  "adaptive_expert_cache_request_boundary_20261102": {
+    "classification": "decision_support",
+    "status": "scope_ready",
+    "schedulable_now": true,
+    "finite_question": "On pinned 521c175, trace final serve decode-window adaptive copies into the next valid long-prefill cache loan/restore. Verify event and RAM-source lifetime, host/device residency publication, lease entry/return fences and reader admission. Cover GEN/GENI, next vs last window, STOP/cancel, malformed/error, QUIT and stdin EOF; say which paths prefill, defer safely or fail closed, with concrete counterexamples and runtime-proof limits.",
+    "native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+    "scope_review": {
+      "path": ".cache/research/2026-11-01/adaptive_request_boundary_scope_review_20261102.json",
+      "sha256": "b993a19b71acff10c6ea570f4b982adf9798f2194ff26d27b23e83fa573d61d9",
+      "bytes": 2994,
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "prerequisites": [
+      "Parent reports V2 closed: 15 final model hashes, native result 0, no faults; the 20 ms pool timing is not a hardware-bottleneck claim.",
+      "Pinned /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/source (557 files); record SHA-256 ed574427aa831083993e3050ca65ad6736f5167f943c94f7580c26e2421a87c2; native commit 521c1757b289ab9129378aace21a5f0ffcfb2af5.",
+      "Single B570, native-RAM expert source, production adapt-swaps=0; question is source eligibility for a bounded positive-swap check."
+    ],
+    "source_observation": "There is an explicit apply_pending(true) before prompt setup. Trace its event wait, source exchange, host map and checked device-table publication through prefill loan/restore; do not premise the call is absent.",
+    "prior_reports": [
+      {
+        "path": ".cache/research/2026-10-31/current_expert_cache_loan_contract_20261031.md",
+        "sha256": "6391458bd7ba5a9481026f73bf9abe20caddb1b47d01192087842660f1a0aa8c",
+        "delta": "Tail loan/owners on older joint source; not this request-boundary handoff."
+      },
+      {
+        "path": ".cache/research/2026-10-31/review_cache_scheduler_20261031.md",
+        "sha256": "409fd68fcaac462a223bdd77bfe7696136c24cef04892149e35e0723e4f88544",
+        "delta": "Calls for exact cache census; no current boundary trace."
+      },
+      {
+        "path": ".cache/strata-research/20261020/serve-cache-borrow-admission-report.md",
+        "sha256": "b20d79dd741f2ad5b56dd49913a02424a8cb8809e98f22802ffa47d08fba5a75",
+        "delta": "Older reverse-direction workspace-borrow scope."
+      },
+      {
+        "path": ".cache/research/2026-11-01/native16_hc_residual_write_row_reuse_20261101.md",
+        "sha256": "94fcf849eb4c7d5c1fd99fac6cafaa5cf0d357f7af04b9f99e11f101f4eedb91",
+        "delta": "Same source commit; unrelated native16 write mapping."
+      }
+    ],
+    "report_budget": {
+      "target_bytes": 10240,
+      "hard_max_bytes": 14336
+    },
+    "consumer": "Main's decision to commit a bounded positive --adapt-swaps safety/behavior check, retaining the zero-swaps fallback; source review alone is not adoption.",
+    "next_review": "Native Luna-max review, before planning/enabling positive swaps; retire after that decision unless a named lifecycle fixture needs the detail.",
+    "limits": "Source audit only;no policy adoption or claim that apply_pending is absent. Main owns all implementation/build/test/GPU work."
   }
 }
