@@ -208,6 +208,32 @@ general-data qualification is recovered from Git;the new controller's exact
 reuse revision is explicit before execution. V2then repeats all three fresh
 resident processes with the original timing/precision/eligibility criteria.
 
+The fresh V2clean smoke and all three resident processes now pass their
+provider,precision,closure and final-source checks,with no fresh GPU fault.
+Independent reduction confirms the actual0/1/0arm order and every emitted
+paired sample. All120steady batches pass the original eligibility criteria;
+the shortest is164.307ms. Per-call host medians below are medians of the three
+process medians,each based on five64-call batches;first calls remain separate.
+
+| T | N | Native FP32,ms | oneMKL FP32,ms | Paired native/reference time GM |
+| ---: | ---: | ---: | ---: | ---: |
+| 4096 | 6144 | 3.38746 | 2.61791 | 1.29594 |
+| 4096 | 10240 | 5.92600 | 4.29505 | 1.37942 |
+| 8192 | 6144 | 6.85227 | 5.17537 | 1.32572 |
+| 8192 | 10240 | 11.70788 | 8.48976 | 1.37868 |
+
+The native128x128policy is29.6..37.9%slower in this resident comparison and
+fails every component follow-up screen. Keep the existing oneMKL producers;
+do not run a model trial or change production dispatch for this candidate.
+Native returned-event service occupies98.09..99.53%of its measured host
+interval,so host submission/wait overhead does not explain the loss. This
+does not distinguish arithmetic from VRAM/cache/SLM limits. Logical compulsory
+tensor bytes and achieved arithmetic rates are recorded;physical traffic,
+occupancy and saturation remain unknown. There is no timed application PCIe
+copy in this resident-only scope. Retrieve the curated resource alternatives
+for a concrete next experiment before retaining or retiring this prototype.
+The model PP/TTFT/TG records and both explicit prefill profiles are unchanged.
+
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
 weights are50MiB and30MiB,so these shapes do not require N-splitting. Reuse
