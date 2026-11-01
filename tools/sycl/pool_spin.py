@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Bounded same-engine CPU idle-wait discriminator; repository LICENSE.
+"""Bounded same-engine adaptive decode-cache discriminator; repository LICENSE.
 
-Main-authored from this fork's owned generation supervision. This changes one
-immutable startup setting, not inference math. A code-only diagnostic does not
-qualify clean speed, either MTP category, independent phases or model adoption.
+Main-authored from this fork's owned generation supervision. Closed wait-policy
+experiments are recoverable at b08d91a35. Keep their 20ms default in both arms;
+vary only the adaptive swap count. This diagnostic does not adopt a cache policy.
 """
 import copy
 import fcntl
@@ -24,11 +24,11 @@ import mtp_prefill as generation
 
 model, comparison, shared, build = generation.model, generation.comparison, generation.shared, generation.build
 P, B, RESULT = generation.P, generation.B, generation.RESULT
-ROOT, KEY = model.gdn16.ROOT / 'pool-spin-timing-v2', 'gdn16_pool_spin_timing_v2'
+ROOT, KEY = model.adaptive.ROOT / 'cache-generation-v1', 'adaptive_cache_generation_v1'
 SOURCE = 'tools/sycl/pool_spin.py'
 WORKLOADS = ('regular-code',)
 WORKLOAD_ID = 'cpu_idle_wait_code_20261102'
-ARMS = (('candidate', 200), ('reference', 20000))
+ARMS = (('candidate', 8), ('reference', 0))
 require, digest, write, compact = generation.require, generation.digest, generation.write, generation.compact
 
 
@@ -40,28 +40,32 @@ def save(row):
 
 
 def basis(revision):
-    prior = json.loads((generation.ROOT / 'record.json').read_text())
-    require(prior['passed'] and prior['complete'] and prior['stage'] == 'closed'
+    model.configure('adaptive-positive-throughput')
+    native, _, providers = model.proof()
+    prior = json.loads((model.ROOT / 'record.json').read_text())
+    require(build.committed(RESULT)[model.KEY] == model.compact(prior)
+            and prior['passed'] and prior['complete'] and prior['stage'] == 'closed'
             and prior['ownership_closed'] and not prior['active']
-            and len(prior['processes']) == 2 and all(p['passed'] for p in prior['processes']),
-            'closed two-arm current-engine long-generation diagnostic required')
-    providers, manifest = generation.current(prior)
+            and prior['binary'] == native['binaries']['strata']
+            and prior['native_source_commit'] == native['source_commit']
+            and prior['outcome']['native_exit_code'] == 0 and not prior['outcome']['fresh_faults']
+            and prior['outcome']['adaptive_work']['deferred_next_long_prefill_boundaries'] > 0,
+            'closed fixed-engine positive-swap next-GEN model qualification required')
+    _, manifest = model.python_manifest()
     recovered = {n: hashlib.sha256(raw).hexdigest()
                  for n, raw in shared.gen.blobs(P, prior['source_commit'], prior['sources'])}
     current = model.pinned_sources(revision)
-    require(recovered == prior['sources'] and set(current) - set(recovered) == {SOURCE}
-            and not (set(recovered) - set(current))
-            and all(current[n] == sha for n, sha in recovered.items()),
-            'only the new wait-policy controller may differ from the original diagnostic')
-    # generation.current recovers the complete native constructor, actual
-    # compiler/link inputs and every selected ELF. Record the actual projected
-    # CPU input, which differs from HEAD's observer-enabled source.
-    built = json.loads((model.gdn16.ROOT / 'record.json').read_text())
+    require(recovered == prior['sources'] and set(current) == set(recovered)
+            and {n for n in current if current[n] != recovered[n]} == {SOURCE},
+            'only the repurposed comparison controller may differ from the original model check')
+    # The fixed-generation verifier recovers all native/compiler/link/fixture
+    # inputs. The closed model check supplies its own original 265-file source,
+    # not refreshed hashes or the retired wait campaign's generated plans.
     names = ('src/kernels/cpu/pool.cpp', 'include/strata/kernels/cpu/pool.hpp')
-    pool = {n: built['native_sources'][n] for n in names}
-    require(all(digest(model.gdn16.ROOT / 'source' / n) == sha for n, sha in pool.items()),
+    pool = {n: native['native_sources'][n] for n in names}
+    require(all(digest(model.adaptive.ROOT / 'source' / n) == sha for n, sha in pool.items()),
             'actual compiled pool inputs differ')
-    text = (model.gdn16.ROOT / 'source' / names[0]).read_text()
+    text = (model.adaptive.ROOT / 'source' / names[0]).read_text()
     require('std::getenv("STRATA_POOL_SPIN_US")' in text
             and 'spin_before_sleep_ = std::chrono::microseconds' in text,
             'qualified binary source lacks the immutable startup knob')
@@ -69,25 +73,29 @@ def basis(revision):
 
 
 def environment(row, plan):
-    require((plan['kernel'], plan['spin_us']) == ARMS[plan['index']] and plan['heads'] == 1,
-            'unplanned wait-policy arm')
+    require((plan['kernel'], plan['adapt_swaps']) == ARMS[plan['index']] and plan['heads'] == 1,
+            'unplanned adaptive-cache arm')
     env = comparison.environment(row, plan)
     env.update(STRATA_SYCL_PREFILL_GDN_BARRIERS3='1', STRATA_SYCL_PREFILL_GDN_FP16='1',
                STRATA_SYCL_PREFILL_GDN_CHUNK64='0', STRATA_MTP_BATCH_F16='1',
                STRATA_SNAPSHOT_VERIFY='1', STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1',
-               STRATA_POOL_SPIN_US=str(plan['spin_us']), STRATA_DECODE_TIMING='1')
+               STRATA_POOL_SPIN_US='20000', STRATA_DECODE_TIMING='1', STRATA_TRACE_ADAPT='1')
+    require('STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE' not in env, 'injected failure forbidden in timing')
     return env
 
 
 def invariant(row, plan):
     value = dict(config=json.loads((Path(plan['root']) / 'config.json').read_text()),
                  environment=environment(row, plan))
-    value['environment']['STRATA_POOL_SPIN_US'] = '<arm>'
+    args = value['config']['args']
+    require(args[args.index('--adapt-swaps') + 1] == str(plan['adapt_swaps'])
+            and args[args.index('--adapt-every') + 1] == '1', 'cache configuration differs')
+    args[args.index('--adapt-swaps') + 1] = '<arm>'
     return hashlib.sha256(json.dumps(value, sort_keys=True).replace(plan['root'], '<process>').encode()).hexdigest()
 
 
 def current(row):
-    require(build.committed(RESULT)[KEY] == compact(row), 'commit exact wait-policy state')
+    require(build.committed(RESULT)[KEY] == compact(row), 'commit exact adaptive-cache comparison state')
     prior, files, manifest, pool = basis(row['source_commit'])
     require(row['binary'] == prior['binary'] and row['native_source_commit'] == prior['native_source_commit']
             and row['native_validation_probe'] == prior['native_validation_probe']
@@ -159,6 +167,49 @@ def prefill_cpu_summary(text):
                 unclassified_cpu_s=float(cpu['host']['unclassified_cpu_s']), partition_qualified=cpu['partition_qualified'])
 
 
+def cache_counters(text, maximum):
+    """Conserve queued copies and publication across request boundaries."""
+    submitted = committed = pending = requested = 0
+    for line in text.splitlines():
+        if not line.startswith('strata serve: ADAPT_'): continue
+        m = re.fullmatch(r'strata serve: ADAPT_SUBMIT swaps=(\d+) H2D_requested_bytes=(\d+)', line)
+        if m:
+            count, size = map(int, m.groups())
+            require(0 <= count <= maximum and (count > 0) == (size > 0), 'adaptive copy count/bytes differ')
+            if count:
+                require(pending == 0, 'adaptive source overwritten before publication')
+                pending = count
+            submitted += count; requested += size
+        else:
+            m = re.fullmatch(r'strata serve: ADAPT_COMMIT swaps=(\d+)', line)
+            require(m is not None and int(m[1]) == pending > 0, 'orphan or mismatched adaptive publication')
+            committed += pending; pending = 0
+    require(submitted == committed + pending, 'adaptive conservation differs')
+    return dict(submitted_swaps=submitted, committed_swaps=committed,
+                pending_swaps=pending, H2D_requested_bytes=requested)
+
+
+def cache_request(raw, offsets, maximum):
+    before = cache_counters(raw[:offsets['begin']].decode(), maximum)
+    after = cache_counters(raw[:offsets['end']].decode(), maximum)
+    delta = {k: after[k] - before[k] for k in ('submitted_swaps', 'committed_swaps', 'H2D_requested_bytes')}
+    require(min(delta.values()) >= 0 and before['pending_swaps'] + delta['submitted_swaps'] ==
+            delta['committed_swaps'] + after['pending_swaps'], 'request adaptive boundary differs')
+    if maximum:
+        require(delta['submitted_swaps'] > 0 and delta['committed_swaps'] > 0, 'no positive request cache work')
+    else:
+        require(not any(delta.values()) and before['pending_swaps'] == after['pending_swaps'] == 0,
+                'disabled adaptation performed work')
+    text = raw[offsets['begin']:offsets['end']].decode()
+    hit, = re.findall(r'^strata serve: decode expert cache hit rate: ([0-9.]+)% \((\d+) hits / (\d+) lookups\)$', text, re.M)
+    rate, hits, lookups = float(hit[0]), int(hit[1]), int(hit[2])
+    require(0 <= hits <= lookups and lookups > 0 and abs(100 * hits / lookups - rate) <= .050001,
+            'cache hit-rate conservation differs')
+    return dict(**delta, pending_before=before['pending_swaps'], pending_after=after['pending_swaps'],
+                cache_hits=hits, cache_lookups=lookups, cache_hit_percent=rate,
+                measured_PCIe_bytes=False, cache_payload_bitwise_verified=False)
+
+
 def prepare():
     require(not ROOT.exists() and KEY not in build.committed(RESULT), 'fresh bounded diagnostic only')
     rev = shared.gen.git('rev-parse', 'HEAD').decode().strip()
@@ -166,41 +217,44 @@ def prepare():
     assets = shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
     ROOT.mkdir(mode=0o700); write(ROOT / 'runtime-inputs.json', providers)
     row = {k: copy.deepcopy(prior[k]) for k in ('binary', 'native_source_commit', 'native_validation_probe',
-        'configuration', 'environment_template', 'template', 'boot', 'driver', 'python_contract', 'python_selected')}
+        'configuration', 'template', 'boot', 'driver', 'python_contract', 'python_selected')}
+    row['environment_template'] = copy.deepcopy(prior['environment'])
     row.update(stage='prepared', source_commit=rev, sources=model.pinned_sources(rev), model_assets=assets,
         compiled_pool_sources=pool, runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'),
             sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
         plans=[], processes=[], host_passed=False, passed=False, complete=False, active=False, ownership_closed=True,
         controls=selfcheck(), whole_bytes=192 << 20,
         budgets=dict(wall=1800, cpu=10800, rss_cap=104 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        plan=dict(question='Does a200us idle bound avoid the0us decode penalty,and which existing nested decode wall scopes dominate?',
-            motivation='The closed V1matched3900-token pair reduced whole-request process CPU42.4831% with0us,'
-                'but decode took3.68624% longer. Test an intermediate200us bound,not an assumed optimum. '
-                'The source reads the immutable bound at startup and checks its clock after1024pause iterations.',
-            order='Two fresh processes:200us candidate then explicit20000us reference;four official warmups,then one regular-code request each. Same V1workload ID/body;new observers and fresh plan.',
-            constants='Same qualified nine ELFs,providers,safety settings,throughput native16/GDN16/MTP16,heads1,131072INT8resident context,1256decode slots,5workers,spec4,chunk8192,no token graph,caches0. Only POOL_SPIN_US differs.',
-            observers='Parameter validation,private activation preload,trace/snapshot checks,prefill CPUv4 partition,two read-only /proc CPU snapshots and existing DECODE_TIMING footer. Native timers are already compiled and collected;the flag enables their request footer. No full API trace,profiler or periodic observer. Diagnostic timings include these observers.',
+        qualification_reuse=dict(model_result_key=model.KEY, model_source_commit=prior['source_commit'],
+            original_source_files=len(prior['sources']), controller_only_delta=[SOURCE],
+            scope='Fixed native generation and original265-file model inputs recovered;positive next-GEN and injected-record-failure checks closed. No old generation.current/hash refresh or inherited sustained-decode/clean-speed adoption.'),
+        plan=dict(question='Does adaptive GPU expert-cache placement reduce CPU expert work and net decode time after accounting for refill copies and synchronization?',
+            motivation='The closed same-engine wait diagnostic attributes43.48%of decode wall to the CPU pool call,33.25%to GPU-reach waiting;89.3317%of logical expert entries use CPU. These are not hardware-saturation claims. Wait-bound-only changes slowed decode. The fixed program now passes small submission,injected record failure and positive next-GEN32K lifecycle checks.',
+            order='Two fresh processes:8swaps/every1 candidate then0swaps reference with every1 held fixed;four official warmups,then one regular-code request each. Keep the closed wait-policy workload ID/body. Adaptation is enabled throughout candidate warmup and the measured request;record that history rather than assuming equal resident memberships.',
+            constants='Same fixed nine ELFs,providers,safety settings,throughput native16/GDN16/MTP16,heads1,131072INT8resident context,1256decode slots,5workers,spec4,chunk8192,no token graph,caches0,POOL_SPIN_US20000,adapt-every1. Only --adapt-swaps8/0 differs;no native build or environment mutation.',
+            observers='Parameter validation,private activation preload,trace/snapshot checks,prefill CPUv4 partition,two read-only /proc CPU snapshots,existing DECODE_TIMING footer and adaptive submit/commit logs in both arms. Native timers already compiled;flags enable request footers. No full API trace,profiler or periodic observer. Diagnostic timings include these observers.',
             acceptance='Exact committed source/build/assets/provider/body/native-route/journal/clock/owner gates. '
                 '>=32768fresh input,>=1024actual generated tokens,thinking and>=512answer characters,>=256drafts,normal stream/native0,quiet validation,no fresh fault. '
                 'Require actual fixed-spec4 windows,CPU job/entry conservation,one bound timing/copy footer and rounded-clock conservation against the client. '
-                'Report process CPU across whole request separately from the disjoint main-thread prefill accounting. No exact text requirement.',
+                'Conserve adaptive submit/commit/requested-byte counts across warmup/request boundaries;candidate must perform positive request swaps,reference none. Require one reconciled cache hit-rate footer. Report process CPU across whole request separately from disjoint main-thread prefill accounting. No exact text requirement.',
             decision='One code-only observation per arm is descriptive. Lower CPU alone is not a speedup. '
-                'Freeze clean opposite-order repeated comparisons at both MTP workloads before nonregression or policy adoption. '
-                'Judge prefill and decode independently;global startup policy is an experimental control,not a selected shared phase policy. '
+                'Compare CPU job/entry counts,pool/GPU-wait/draft wall scopes,cache hit rate,requested H2D bytes and end-to-end TG. Output lengths/acceptance can differ;report them. Freeze clean opposite-order repeated comparisons at both MTP workloads before nonregression or cache-policy adoption. '
+                'Judge prefill and decode independently;faster decode does not permit prefill regression. Payload/task,other exits and physical262144 remain pending. '
                 'Nested wall scopes are not additive hardware service;CPU_pool_run includes scheduling/waits and GPU_reach_wait is not GPU arithmetic. '
                 'Use the dominating measured dependency to select the next bounded implementation test,not claim physical saturation.',
             stopping='Stop first source/owner/provider/clock/route/validation/fault/budget/sample failure. No retry,exclusion,speed stop or hash refresh;commit each process before next. Full model hashes before/after.',
-            retention='Keep compact samples,CPU partition aggregates,actual native source/configuration and closure decisions. '
+            retention='Keep compact samples,CPU/cache/timing conservation aggregates,actual native source/configuration and closure decisions. '
                 'Retire successful raw journals/logs after verification. Retain work counts and nested wall summaries,not per-window arrays. '
                 'No new binary generation;existing engine/fallback consumers unchanged.'))
-    for index, (arm, spin) in enumerate(ARMS):
+    for index, (arm, swaps) in enumerate(ARMS):
         root = ROOT / str(index); root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root / part).mkdir()
         config = copy.deepcopy(row['configuration']); config['log'] = str(root / 'engine.stderr')
+        config['args'][config['args'].index('--adapt-swaps') + 1] = str(swaps)
         write(root / 'config.json', config)
         write(root / 'plan.json', dict(binary=row['binary'], native_validation_probe=row['native_validation_probe']))
         with socket.socket() as sock: sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
-        plan = dict(index=index, kernel=arm, spin_us=spin, heads=1, root=str(root),
+        plan = dict(index=index, kernel=arm, adapt_swaps=swaps, heads=1, root=str(root),
             generated={n: digest(root / n) for n in ('config.json', 'plan.json')},
             command=['/bin/sh', str(P / 'bench.sh'), '--config', str(root / 'config.json'), '--port', str(port),
                 '--long-generation-only', '--long-generation-workload', 'regular-code', '--think', '--runs', '1',
@@ -209,7 +263,7 @@ def prepare():
         plan['environment_sha256'] = comparison.fingerprint(environment(row, plan)); row['plans'].append(plan)
     row['invariant_signature'] = invariant(row, row['plans'][0])
     require(all(invariant(row, p) == row['invariant_signature'] for p in row['plans']), 'undeclared arm difference')
-    save(row); print('Prepared two bounded code-only CPU wait-policy processes;commit before execution.', flush=True)
+    save(row); print('Prepared two bounded same-binary adaptive-cache processes;commit before execution.', flush=True)
 
 
 def official(root, result):
@@ -246,7 +300,7 @@ def run(index):
     require(not (root / 'execution.json').exists() and not (root / 'launch.json').exists(), 'existing attempt')
     cursor = next(v.split(': ', 1)[1] for v in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines() if v.startswith('-- cursor: '))
-    outcome, owner = dict(index=index, kernel=plan['kernel'], spin_us=plan['spin_us'], complete=False,
+    outcome, owner = dict(index=index, kernel=plan['kernel'], adapt_swaps=plan['adapt_swaps'], complete=False,
                           passed=False, host_probe_accepted=False, model_executed=False), None
     offsets, snapshots, identities = {}, {}, []
     initial = (time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns())
@@ -292,7 +346,7 @@ def run(index):
                 outcome['prefill_main_cpu'] = prefill_cpu_summary(text)
                 outcome['request_cpu'] = cpu_delta(snapshots['begin'], snapshots['end'])
             outcome.update(model_executed=True, native_identity=claim); persist()
-            print(f'Pool idle process{index} {plan["spin_us"]}us {stage}', flush=True); io.send(b'continue\n')
+            print(f'Adaptive cache process{index} swaps={plan["adapt_swaps"]} {stage}', flush=True); io.send(b'continue\n')
         io.proc.stdin.close(); deadline = time.monotonic() + 180
         while not io.exit_watch.poll(0) or not io.eof:
             io.poll(); require(time.monotonic() < deadline, 'teardown deadline')
@@ -318,6 +372,9 @@ def run(index):
         raw = (root / 'engine.stderr').read_bytes()[offsets['begin']:offsets['end']].decode()
         require(generation.native_route(raw, samples[0]['read_tokens']) == outcome['route'], 'live/final route differs')
         outcome['decode_dependency_timing'] = shared.gen.decode_timing_evidence(raw, samples)
+        all_raw = (root / 'engine.stderr').read_bytes()
+        outcome['adaptive_cache'] = cache_request(all_raw, offsets, plan['adapt_swaps'])
+        outcome['whole_process_cache'] = cache_counters(all_raw.decode(), plan['adapt_swaps'])
         current(row)
         if index == 1: shared.models.model_pins(row['configuration'], row['model_assets'], full=True)
         fields = ('workload', 'read_tokens', 'reused_tokens', 'generated_tokens', 'output_chars', 'reasoning_chars',
@@ -338,9 +395,9 @@ def run(index):
         if row['passed']:
             row['decision'] = dict(diagnostic_complete=True, speed_nonregression_qualified=False, inference_adopted=False,
                 physical_resource_saturation_qualified=False, prefill_decode_independence_qualified=False,
-                next='Inspect actual nested decode wall scopes and work/output differences;select the next bounded component or phase-specific speed comparison. No policy adoption from one diagnostic pair.')
+                next='Compare adaptive cache hit rate,CPU expert work,refill payload,nested wall scopes and actual output/MTP differences. Freeze repeated clean strong/weak-MTP and independent prefill checks before cache-policy adoption;no saturation or wire-traffic claim from requested bytes.')
         save(row)
-    require(outcome['passed'], outcome.get('error', 'wait-policy diagnostic failed'))
+    require(outcome['passed'], outcome.get('error', 'adaptive-cache diagnostic failed'))
     print(json.dumps({k: outcome.get(k) for k in ('index', 'kernel', 'passed', 'complete', 'error')}), flush=True)
 
 
@@ -372,8 +429,28 @@ def selfcheck():
         try: cpu_delta(a, value)
         except RuntimeError: pass
         else: raise RuntimeError('invalid CPU window accepted')
+    submit = 'strata serve: ADAPT_SUBMIT swaps=8 H2D_requested_bytes=16998400\n'
+    commit = 'strata serve: ADAPT_COMMIT swaps=8\n'
+    require(cache_counters(submit + commit + submit, 8) == dict(submitted_swaps=16,
+        committed_swaps=8, pending_swaps=8, H2D_requested_bytes=33996800), 'deferred adaptive counters')
+    hit = 'strata serve: decode expert cache hit rate: 50.0% (5 hits / 10 lookups)\n'
+    window = submit + commit + submit + hit
+    observed = cache_request(window.encode(), dict(begin=len(submit), end=len(window)), 8)
+    require(observed['pending_before'] == observed['pending_after'] == 8
+            and observed['submitted_swaps'] == observed['committed_swaps'] == 8
+            and observed['cache_hit_percent'] == 50, 'warmup-to-request publication accounting')
+    require(cache_request(hit.encode(), dict(begin=0, end=len(hit)), 0)['submitted_swaps'] == 0,
+            'disabled adaptive control')
+    invalid = [commit, submit + submit, submit + commit.replace('=8', '=7'),
+               submit.replace('16998400', '0'), submit.replace('swaps=8', 'swaps=9'),
+               'strata serve: ADAPT_COMMIT malformed\n']
+    for text in invalid:
+        try: cache_counters(text, 8)
+        except RuntimeError: pass
+        else: raise RuntimeError('invalid adaptive ownership history accepted')
     return dict(passed=True, valid_accounting_controls=3, invalid_windows_rejected=len(bad),
-                actual_prefill_partition_replay=True, GPU_executed=False)
+                actual_prefill_partition_replay=True, adaptive_counter_controls=3,
+                invalid_adaptive_histories_rejected=len(invalid), GPU_executed=False)
 
 
 if __name__ == '__main__':
