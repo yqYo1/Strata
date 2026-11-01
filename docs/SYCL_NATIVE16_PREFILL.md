@@ -341,7 +341,8 @@ where the controller expected three. Its numerical/lifecycle message and62
 diagnostic kernels do not override the failed interaction/ownership gate.
 The original failure remains recorded,and no117Kmodel profile ran. The V3
 controller follows the actual two/three-gate protocols and persists owner
-transactions;fresh CPU child-process regression controls precede a new plan.
+transactions. All19CPU controls pass,including actual child-process protocol
+and cleanup cases;the fresh V3plan is prepared.
 V1preparation refused an older collector audit's Python-parser fingerprint;its
 original refusal remains recorded. The reviewed delta only extends the census
 parser's explicit row bound/job groups;all31original collector inputs are
