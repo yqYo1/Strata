@@ -74106,5 +74106,218 @@
     "source_commit": "2e1f3fa0c135e54fd23e93be7c5a3cee97f2fb19",
     "actual_successful_compiler_inputs": 720,
     "selected_engine_unchanged": true
+  },
+  "gdn16_pipeline_build_v3": {
+    "stage": "prepared",
+    "source_commit": "3a1294459f8a6d0d8a6276188fed39b66c85bb3c",
+    "selected_native_source": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
+    "parser_gate_reuse": {
+      "source_commit": "2181e5fb1fc499fca5cba86f419ba865eadf23a1",
+      "test": {
+        "path": "tests/core/test_gdn_storage_trace.py",
+        "sha256": "98d1d20d5a397e5b980d6a0602ac62d2f9d8d2bd41032e5a95ee4bbd90195d0c"
+      },
+      "scope": "Exact CPU test,parser,runner functions,interpreter and unchanged helper inputs;build-root/constants/resolver changes are outside unittest. No new parser test or GPU qualification claimed."
+    },
+    "original_compile_database": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/compile_commands.json",
+      "sha256": "d3f7ecfaa4eae9319111de9fbbe83faa91e72ee8a87bfc55be9d11e7a2bb723a"
+    },
+    "commands": [
+      [
+        "runtime",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/runtime.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/runtime.o",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/src/sycl/runtime.cpp"
+        ]
+      ],
+      [
+        "profile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/profile.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/profile.o",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/src/sycl/command_profile.cpp"
+        ]
+      ],
+      [
+        "kernel",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/kernel.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/kernel.o",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gdn.cpp"
+        ]
+      ],
+      [
+        "fixture",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-isystem",
+          "/opt/intel/oneapi/mkl/2026.1/include",
+          "-DMKL_ILP64",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/fixture.d",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/fixture.o",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_storage_pipeline.cpp"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-O3",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fsycl-allow-device-image-dependencies",
+          "-Wl,-t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/fixture.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/kernel.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/runtime.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/profile.o",
+          "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+          "-lm",
+          "-ldl",
+          "-lpthread",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/build/gdn-pipeline"
+        ]
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-pipeline-v3/cache"
+    },
+    "budgets": {
+      "wall": 300,
+      "cpu": 1000,
+      "rss_cap": 6442450944,
+      "text_cap": 16777216,
+      "file_cap": 268435456,
+      "total_cap": 1073741824
+    },
+    "plan": {
+      "scope": "Packed resident QKV/z oneMKL projections,causal conv,three-barrier recurrence and RMS/gating. No dequantization,PCIe,output projection,model or decode execution.",
+      "native_isolation": "Original decode arithmetic/wrappers and original FP32 prefill conv/fused recurrence verified byte-identical;new typed APIs not selected by model dispatch.",
+      "baseline": "Retain selected555-source/eight-ELF f6cea2engine. Retire closed software-half V1 and old projection fixture first. This generation compares only unchanged FP32 with SYCL-cast typed16;prior software-half rejection stays archived.",
+      "retention": "Current comparison source/recipe and individual useful evidence only;retire closed raw output and extra generation at comparison closure."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "GPU_executed": false,
+    "controller_inputs": {
+      "files": 40,
+      "aggregate_sha256": "f520fd999c355ac6b27a340e3b0a8abe6f324c61f32554509446d6e1055d1e50"
+    },
+    "native_sources": {
+      "files": 4,
+      "aggregate_sha256": "d6869d40ad715d501266519f16211b4da4d2cba9531217154ad38de958726633"
+    }
   }
 }
