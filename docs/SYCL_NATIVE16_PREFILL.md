@@ -116,7 +116,12 @@ member disassembly shows16static32-bit block2D stores reading FP32 DPAS
 accumulator registers directly,without FP16/BF16 conversion after the final
 DPAS. SIMD16,256GRF and two barriers are codegen observations,not occupancy
 measurements. Host D-copy ownership and guarded device/numerical validation
-remain pending;no inference speed or adoption is established.
+remain pending;no inference speed or adoption is established. The host-only
+fixture compiles after supplying the SDK include root,but its subgroup
+accumulator/payload/destination equality fails. Preserve that failure and
+resolve collective descriptor-anchor versus scalar-cell semantics before any
+GPU launch. The guarded device fixture source is committed at4ccfb3079;
+its CPU build does not permit GPU execution or bypass the ownership gate.
 
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
