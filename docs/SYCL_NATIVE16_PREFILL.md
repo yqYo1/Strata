@@ -47,7 +47,7 @@ requests:three reversed-order candidate/reference pairs per65537/117489read
 length,first use separate from each process's subsequent-three median. Both
 arms use head retention at64K and retirement at117K,from prior per-length
 measurements;this is manual benchmark configuration,not an automatic threshold.
-The first ten processes close normally with all40actual-route checks,quiet
+The first eleven processes close normally with all44actual-route checks,quiet
 final validation and no fresh fault. All residual rows remain on GPU;64Kuses
 384expert slots and ordinary accumulation,117Kuses128slots and checked split.
 The following PP/TTFT medians use each process's three subsequent requests;
@@ -66,12 +66,14 @@ are3.5984%/2.3935%in the first pairs and1.7611%/2.2259%in the second pairs.
 Both second pairs' first-use
 PP is slower in the candidate. First-use client TTFT is94.096/93.413s at64K
 and138.850/138.459s at117K,candidate/reference. Both first-use and subsequent
-samples remain in the result. Ten of12processes are complete. All three64K
+samples remain in the result. Eleven of12processes are complete. All three64K
 prompt-time ratios are below1,with geometric mean0.98253882. The third pair
 differs by only3.0ms over81.7s and its candidate TTFT is0.072s slower;do not
 claim a resolved0.0037%gain from that pair. Its first-use TTFT is90.983/91.368s,
-candidate/reference. The third117K pair and final whole-cohort checks remain
-pending;there is no adoption or1000target qualification.
+candidate/reference. The third117K candidate closes at852.1tok/s first use
+and911.7tok/s subsequent median,with client TTFT138.084/129.073s. Its matched
+reference and final whole-cohort checks remain pending;there is no adoption
+or1000target qualification.
 Each request must pass its actual route check before the next request proceeds.
 Reference admission directly recovers its554native source and1447compiler
 inputs plus seven ELFs;the retired ancestor executable is not required. The
