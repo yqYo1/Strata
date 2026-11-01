@@ -290,7 +290,7 @@ diagnostic. All owned processes are reaped and no fresh GPU fault was observed.
 Controller61d81697c now requires the always-on actual geometry/native16 headers
 and checks optional policy output for consistency. The five CPU regression tests,
 two positive/twelve negative route controls and captured clean-log replay pass.
-Fresh`gdn16_model_speed_v2`passes two64Kpairs and the first117Kpair:all24request
+Fresh`gdn16_model_speed_v2`passes two pairs at both lengths:all32request
 gates,quiet final validation,native exits0,closed ownership and no fresh faults.
 Each value below is one process's median of three subsequent requests;first
 use is separate. Individual samples remain in the compact result,and these
@@ -301,13 +301,15 @@ preliminary milestones are indexed in the performance CSV.
 | 65537 | 1,FP16 | 900.5242 / 890.9083 | 0.98932193 | 72.917 / 73.703 |
 | 65537 | 2,reference | 900.6393 / 886.5540 | 0.98436082 | 72.914 / 74.068 |
 | 117489 | 1,FP16 | 983.9043 / 977.5028 | 0.99349380 | 119.581 / 120.364 |
+| 117489 | 2,reference | 984.4641 / 976.9834 | 0.99240127 | 119.522 / 120.426 |
 
 Both64Kpairs favor FP16,by1.0678%/1.5639%less prompt time;their time-ratio
-geometric mean is0.98683826. The first117Kpair measures0.6506%less time.
-First use at64Kfavors different arms in the two pairs;all first-use timings
+geometric mean is0.98683826. The117Kpairs measure0.6506%/0.7599%less time,
+with geometric mean0.99294738. First use favors different arms across pairs
+at both lengths;all first-use timings
 remain separate in the result. The frozen three-pair reproducibility criterion
 and1000target are still pending. Continue the same engine,arms,workloads and
-criteria,next117Kreference first. The observer bug is resolved by the original
+criteria,next64KFP16first. The observer bug is resolved by the original
 live scenario.
 After original-source recovery and result verification,the failed V1root's
 96files/12432288B are retired;its original failed status and compact diagnosis
