@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Matched retained-official versus same-binary-policy/GDN3 long prefill.
+"""Matched production GDN16 on/off long prefill in the same binary.
 
 Main-authored from this fork's owned benchmark controls; repository LICENSE.
-The executable generations differ. This measures the resulting production
-candidate, not an isolated attribution of every difference to GDN barriers.
+Reuse the owned benchmark/route checks; the original two-generation campaign
+is recoverable at055c4ee36. Main owns every serialized model process.
 """
 import copy
 import fcntl
@@ -19,17 +19,16 @@ import sys
 sys.dont_write_bytecode = True
 import check_prefill_strategy_model as model
 import prefill_resources as original
-import retained_prefill_reference as reference_inputs
 
 comparison, shared, build = model.comparison, model.shared, model.build
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT, KEY = B / 'official-prefill-strategy-speed-v1', 'official_prefill_strategy_speed_v1'
+ROOT, KEY = model.gdn16.ROOT/'model-speed-v1', 'gdn16_model_speed_v1'
 READS, RUNS = (65537, 117489), 4
 ARMS = ('candidate', 'reference', 'reference', 'candidate', 'candidate', 'reference')
 CASES = [(read, arm) for pair in range(3) for read in READS for arm in ARMS[2*pair:2*pair+2]]
 ORDER = [(read, int(read == 117489)) for read, _ in CASES]
-CHANGED = {'tools/sycl/compare_official_prefill.py'}
-ADDED = {'tools/sycl/compare_prefill_strategies.py', 'tools/sycl/retained_prefill_reference.py'}
+CHANGED = {'tools/sycl/compare_prefill_strategies.py'}
+RETIRED = {'tools/sycl/retained_prefill_reference.py'}
 require, digest, write = model.require, model.digest, model.write
 compact = model.compact
 
@@ -41,45 +40,22 @@ def save(row):
 
 
 def proof(revision):
+    model.configure('gdn16-throughput')
     candidate, _, providers = model.proof()
-    baseline = reference_inputs.verify(candidate, providers, revision)
-    require(candidate['boot'] == baseline['boot'] and
-            candidate['driver'] == baseline['driver'], 'matched native runtime/platform required')
-    data = build.committed(RESULT)
-    require(data['official_row64_model_v2']['passed'] and data['official_row64_model_v2']['complete']
-            and data['official_row64_model_v2']['ownership_closed'] and
-            not data['official_row64_model_v2']['active'], 'closed original model reference required')
-    for key, read, heads in (('official_row64_model_v2', 117489, 1), ('official_joint_speed_v1', 65537, 0)):
-        prior = data[key]
-        require(prior['passed'] and prior['complete'] and prior['ownership_closed'] and not prior['active']
-                and prior['binary'] == baseline['binaries']['strata'] and
-                prior['native_source_commit'] == baseline['source_commit'], 'reference model generation differs')
-        points = [p for p in prior['processes'] if p['read'] == read and p['heads'] == heads and
-                  p.get('kernel', 'original') == 'original']
-        require(len(points) == 3 and all(p['passed'] and p['complete'] and p['ownership_closed']
-                and not p['fresh_faults'] and p['native_exit_code'] == 0 and len(p['routes']) == RUNS and
-                all(r['residual_gpu_rows'] == read-1 and r['residual_host_bytes'] == 0 and
-                    r['prefill_slots'] == (128 if heads else 384) and r['split'] == bool(heads)
-                    for r in p['routes']) for p in points), 'reference per-length route evidence differs')
-    qualified = {}
-    for strategy in ('ttft', 'throughput'):
-        key = 'official_prefill_strategy_' + strategy + '_model_v1'
-        row = json.loads((model.candidate.ROOT / ('model-' + strategy + '-v1') / 'record.json').read_text())
-        require(compact(row) == data[key] and row['passed'] and row['complete'] and row['host_passed']
-                and row['ownership_closed'] and not row['active'] and row['binary'] == candidate['binaries']['strata']
-                and row['native_source_commit'] == candidate['source_commit']
-                and row['outcome']['native_exit_code'] == 0 and not row['outcome']['fresh_faults']
-                and len(row['outcome']['routes']) == len(row['outcome']['samples']) == 2,
-                'same-generation two-strategy model qualification required')
-        recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
-                     shared.gen.blobs(P, row['source_commit'], row['sources'])}
-        require(recovered == row['sources'], 'original model controller recovery failed')
-        current = model.pinned_sources(revision)
-        require(set(current) - set(recovered) == ADDED and not (set(recovered) - set(current))
-                and {n for n in recovered if recovered[n] != current[n]} == CHANGED,
-                'undeclared model/controller change')
-        qualified[strategy] = row
-    return candidate, baseline, providers, qualified
+    row=json.loads((model.ROOT/'record.json').read_text());data=build.committed(RESULT)
+    require(compact(row)==data[model.KEY] and row['passed'] and row['complete'] and row['host_passed'] and
+            row['ownership_closed'] and not row['active'] and row['binary']==candidate['binaries']['strata'] and
+            row['native_source_commit']==candidate['source_commit'] and row['outcome']['native_exit_code']==0 and
+            not row['outcome']['fresh_faults'] and len(row['outcome']['routes'])==len(row['outcome']['samples'])==2 and
+            all(v['GDN_FP16_storage_calls']==144 and v['GDN_FP16_storage_tokens']==36*32768
+                for v in row['outcome']['routes']), 'closed actual production GDN16 model entry required')
+    recovered={n:hashlib.sha256(raw).hexdigest() for n,raw in shared.gen.blobs(P,row['source_commit'],row['sources'])}
+    require(recovered==row['sources'],'original model controller recovery failed')
+    current=model.pinned_sources(revision)
+    require(not(set(current)-set(recovered)) and set(recovered)-set(current)==RETIRED and
+            {n for n in current if current[n]!=recovered[n]}==CHANGED,
+            'undeclared controller change or retirement')
+    return candidate,candidate,providers,dict(throughput=row)
 
 
 def native_context(row, plan):
@@ -93,7 +69,8 @@ def native_context(row, plan):
 def environment(row, plan):
     native_context(row, plan)
     env = comparison.environment(row, plan)
-    env['STRATA_SYCL_PREFILL_GDN_BARRIERS3'] = str(int(plan['kernel'] == 'candidate'))
+    env['STRATA_SYCL_PREFILL_GDN_BARRIERS3'] = '1'
+    env['STRATA_SYCL_PREFILL_GDN_FP16'] = str(int(plan['kernel'] == 'candidate'))
     require(env['STRATA_PREFILL_LAYER_MAJOR'] == '1' and
             env['STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL'] == 'original' and
             env['STRATA_SYCL_PREFILL_GDN_COLUMNS'] == '4' and
@@ -106,22 +83,31 @@ def environment(row, plan):
 def gdn_selection(text, arm):
     require(arm in ('candidate', 'reference'), 'unknown executable arm')
     expected = ('strata prefill: GDN columns=4 workgroups=192 lanes=128'
-                + (' barriers=3' if arm == 'candidate' else '')
+                + ' barriers=3'
                 + ' epilogue=GPU_FP32_same_order scratch=existing_y')
     choices = [v for v in text.splitlines() if v.startswith('strata prefill: GDN columns=')]
-    require(choices == [expected], 'actual generation-specific GDN selection differs')
+    require(choices == [expected], 'actual GDN3 schedule selection differs')
+
+
+def native16_route(text,read):
+    policies=[dict(re.findall(r'(\w+)=([^\s;]+)',v)) for v in text.splitlines()
+              if v.startswith('strata prefill policy: ')]
+    require(len(policies)==1 and policies[0]==dict(requested='throughput',route='layer-major',
+            tokens=str(read-1),chunk='8192') and
+            len([v for v in text.splitlines() if v.startswith('strata prefill: native16 BF16 HC ')])==1,
+            'actual native16 throughput route differs')
 
 
 def request_route(text, plan):
     result = comparison.route(text, plan['read'], plan['heads'])
     gdn_selection(text, plan['kernel'])
+    native16_route(text,plan['read'])
     require(result['residual_gpu_rows'] == plan['read'] - 1
             and result['residual_host_bytes'] == 0, 'actual GDN/full-residency route differs')
     # The legacy parser's field counts one routing-index map, not weights.
     result['requested_one_routing_map_H2D_bytes'] = result.pop('requested_dequant_H2D_bytes')
-    result.update(executable_arm=plan['kernel'], GDN_barriers=3 if plan['kernel'] == 'candidate' else 5,
-                  prefill_strategy='throughput' if plan['kernel'] == 'candidate' else 'legacy-layer-major',
-                  dispatch_proof='Per-request production header plus recovered native source/recipe and immutable selector;no per-launch count claimed.')
+    result.update(executable_arm=plan['kernel'],GDN_barriers=3,GDN_FP16_storage=plan['kernel']=='candidate',
+                  prefill_strategy='throughput',dispatch_proof='Observed per-request native16 long route and GDN3 header plus frozen same-binary branch and observed immutable preexec GDN_FP16 selector;prior traced model confirms typed dispatch. No per-launch count in clean timing.')
     return result
 
 
@@ -162,16 +148,24 @@ def decision(processes):
 
 def selfcheck():
     result = dict(route=comparison.selfcheck(), finalization=original.finalization_controls())
+    good='strata prefill policy: requested=throughput route=layer-major tokens=65536 chunk=8192\nstrata prefill: native16 BF16 HC residual/projection IO\n'
+    native16_route(good,65537)
+    for wrong in ('',good+good,good.replace('throughput','ttft'),good.replace('tokens=65536','tokens=65535'),
+                  good.replace('chunk=8192','chunk=0'),good.replace('native16 BF16 HC','FP32 HC')):
+        try:native16_route(wrong,65537)
+        except RuntimeError:pass
+        else:raise RuntimeError('invalid native16 actual route accepted')
+    result['native16_route']=dict(positive=1,negative=6)
     base = 'strata prefill: GDN columns=4 workgroups=192 lanes=128'
     tail = ' epilogue=GPU_FP32_same_order scratch=existing_y'
-    for arm, header in [('reference', base+tail), ('candidate', base+' barriers=3'+tail)]:
+    for arm, header in [('reference', base+' barriers=3'+tail), ('candidate', base+' barriers=3'+tail)]:
         gdn_selection(header, arm)
         for wrong in ('', header+'\n'+header, header.replace('columns=4', 'columns=2'),
-                      base+' barriers=5'+tail, base+(' barriers=3' if arm == 'reference' else '')+tail):
+                      base+' barriers=5'+tail, base+tail):
             try: gdn_selection(wrong, arm)
             except RuntimeError: pass
             else: raise RuntimeError('invalid generation-specific GDN route accepted')
-    result['GDN_selection'] = dict(generation_specific_headers_accepted=2, invalid_or_wrong_generation_rejected=10)
+    result['GDN_selection'] = dict(same_binary_GDN3_headers_accepted=2,invalid_headers_rejected=10)
     def process(i):
         read, arm = CASES[i]
         return dict(read=read, kernel=arm, passed=True, complete=True, ownership_closed=True,
@@ -206,27 +200,27 @@ def prepare():
         environment_template=env, python_contract=contract, python_selected=manifest['selected'],
         template=prior['template'], boot=prior['boot'], driver=prior['driver'],
         runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'), sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
-        qualification_reuse=dict(component_and_both_model_routes=True, changed_controls=sorted(CHANGED),
-            added_controls=sorted(ADDED), native_recompiled=False, current_source_and_recipe_checked=True,
-            reference_admission='Direct554source/1447actual compiler-input/seven-ELF proof using identical freshly verified SDK/external/provider inputs;retired ancestor ELF is not a build or runtime input.'),
+        qualification_reuse=dict(component_and_throughput_model_route=True,changed_controls=sorted(CHANGED),
+            retired_controls=sorted(RETIRED),native_recompiled=False,current_source_and_recipe_checked=True,
+            reference_admission='Same557-source/1451actual compiler-input/nine-ELF generation in both arms;old FP32 production path exercised by component control and preserved native source. No alternate engine or retired ancestor fixture required.',
+            pending='New option in TTFT/short and repeated sustained decode,task/range and physical-context/RESTORE are separate adoption gates.'),
         plans=[], processes=[], request_hashes={}, controls=checks, host_passed=False,
         passed=False, complete=False, active=False, ownership_closed=True, inference_adopted=False,
         whole_bytes=800 << 20, budgets=dict(wall=1800, cpu=5400, rss_cap=104 << 30, text_cap=16 << 20,
             file_cap=16 << 20, total_cap=64 << 20),
-        plan=dict(question='Does the qualified same-binary-policy/GDN3 candidate improve long prefill and client TTFT over the retained official engine?',
+        plan=dict(question='Does production GDN16 storage improve long prefill and client TTFT over the preserved FP32 GDN route in this exact same engine?',
             order='12fresh processes:3paired comparisons per64K/117K length,interleaved lengths;candidate/reference,reference/candidate,candidate/reference. Four exact-input thinking-on fresh requests each;first use separate,median of subsequent3 is the process unit.',
             placement='Same per-length config in both arms:head retirement0at64K,1at117K,chosen from closed official_joint_speed_v1. Manual benchmark settings,not an automatic threshold. Full GPU BF16 residuals,384staged slots/ordinary64K,128staged slots/checked split117K. Same1256decode slots,5workers,spec4,8192chunk,131072INT8resident context,Top-k0,originalDown,qualified immutable runtime safety.',
-            differences='Two exact retained ELF generations,policy selector and3-versus5GDN barriers. Candidate explicit CLIthroughput;reference legacy layer-major startup selection. No clean model speed inherited from component or diagnostic results;not an isolated causal GDN attribution.',
+            differences='One exact engine and identical per-length settings. Only STRATA_SYCL_PREFILL_GDN_FP16 differs:1candidate,0reference,set before exec and immutable. Both request explicit throughput,native16 BF16 main tensors and3GDN barriers. This measures the complete storage/producer/consumer mechanism including dequantization and routing effects,not just the resident component. No clean model speed inherited.',
             acceptance='Every request must satisfy all existing sample,body/actual tokens/reuse,thinking,clock,owner,provider,quiet-final-validation,native-exit and fault checks. Actual per-request GDN schedule,full-GPU placement,bank/split drain/guard and head-retirement choice must match. Keep all48individual samples. All3paired warmed prompt-time ratios<1 and geometric mean<1 allow follow-up at that length,no minimum percentage. TTFT judged separately.1000target separately requires all3candidate process medians>=1000at a length>=64K. No sustained TG/adoption from24outputs.',
             stopping='Check actual routes at every end gate before allowing the next request;stop immediately on detected source,provider,owner,clock,route,validation,fault or budget failure. Validate all sample eligibility when the final benchmark result is available;failure prevents the next process. No speed-based stop,rerun,replacement,exclusion or hash refresh. Commit each process before the next. Full model hashes before/after cohort,identities throughout.',
-            limits='Neither strategy globally wins without length/latency measurements. No automatic length selection,sustained decode,agent/task,physical262144/RESTORE qualification or resource saturation claim. Both useful profiles remain available in candidate ELF.',
+            limits='Two lengths have different placement and split geometry;do not fit one physical fixed-plus-linear law across them. Use this matched curve as per-route points,then collect an unfit same-route length before generalizing. No automatic length selection,sustained decode,agent/task/range,physical262144/RESTORE qualification or resource saturation claim. Both manual strategies remain available;TTFT option-preservation qualification is pending.',
             retention='Compact individual samples,route conservation,source/config and decisions. Retire verified successful raw logs,journals,JIT and ownership output at closure;keep both retained generations for this named comparison and remaining phase gates.'))
     for index, (read, arm) in enumerate(CASES):
         root = ROOT / str(index); root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root / part).mkdir()
         config = copy.deepcopy(row['configuration']); config['log'] = str(root / 'engine.stderr')
         args = config['args']; require(args[-2:] == ['--prefill-strategy', 'throughput'], 'qualified explicit strategy missing')
-        if arm == 'reference': config['args'] = args[:-2]
         native = row['arms'][arm]
         write(root / 'config.json', config); write(root / 'plan.json', dict(binary=native['binary'], native_validation_probe=row['native_validation_probe']))
         with socket.socket() as sock: sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
@@ -236,7 +230,7 @@ def prepare():
                 '--prefill-exact-tokens', str(read), '--think', '--runs', str(RUNS), '--profile-request-gates',
                 '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')])
         plan['environment_sha256'] = comparison.fingerprint(environment(row, plan)); row['plans'].append(plan)
-    save(row); print('Prepared12matched two-generation64K/117K processes;commit before host probes.', flush=True)
+    save(row); print('Prepared12matched same-binary GDN16on/off64K/117K processes;commit before host probes.', flush=True)
 
 
 def current(row):

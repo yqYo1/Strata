@@ -276,6 +276,14 @@ Short generation exercises handoff but does not qualify sustained decode,
 real-model range/task quality,TTFT-option preservation or physical262144/RESTORE.
 Next compare the same new engine with GDN16on/off at64K/117K,keeping both
 manual strategies and decode unchanged;qualify remaining adoption gates separately.
+The maintained`compare_prefill_strategies.py`now targets that single-variable
+comparison:three independent pairs per length,four requests per process,
+first-use separate and three-subsequent-request median per process. Both arms
+use explicit throughput and three-barrier GDN;only the immutable GDN16storage
+selector differs. Keep64K/117Kplacement families separate for curve analysis.
+The closed two-generation controller and its now-unused
+`retained_prefill_reference.py`are recoverable at`055c4ee36`;the latter is removed
+from the active tree after its sole caller moved to this same-binary campaign.
 The raw-call component executable and closed raw output are retired after exact
 original-source/recipe/input recovery from pushed history;retain selected
 f6cea2as the reference for the next production-wrapper/model generation.
