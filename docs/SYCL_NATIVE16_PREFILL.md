@@ -243,8 +243,13 @@ all command owners close normally. Engine SHA-256 is
 `c2d48e05cd611292119018464e70677a5ff895f9bf4c68280a668a0748991ed7`;
 the production-wrapper component is
 `7d0fb7492fefd0c5c3874d099c51282b91a787698059b1250d8b3ee45a0196cc`.
-No new model/GPU qualification is inherited. The source-only integration audit
-is indexed separately.
+The fresh production-wrapper device cohort now passes its host canary,traced
+T1/T17smoke and ten general/pattern cases:the same conversion corpus,rounded
+storage/state/history/output,FP64producer spots,guards,18GDN and15vendor-wrapper
+no-write refusals per non-benchmark process. Validation is quiet,actual providers
+match,all three process owners close and no fresh driver fault appears. This
+qualifies the component only;model and clean speed checks remain pending.
+The source-only integration audit is indexed separately.
 Qualify actual wrapper costs,allocation ownership,real-model range and decode
 handoff before adoption. The component executable and closed raw output are retired after exact
 original-source/recipe/input recovery from pushed history;retain selected
