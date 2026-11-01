@@ -24,17 +24,21 @@ import official_model_entry as original
 import compare_official_prefill as comparison
 import prefill_exact_checks as shared
 import engine_once
+import gdn_storage_pipeline as gdn16
 
 P, B, RESULT = build.P, build.B, build.RESULT
 ROOT, KEY, MODE, STRATEGY, READ, ROWS, RUNS = None, None, None, None, 0, 0, 2
+GDN_MODES = {'gdn16-throughput': ('throughput', '1'),
+             'gdn32-throughput': ('throughput', '0'), 'gdn16-ttft': ('ttft', '1')}
 
 
 def configure(mode):
     global ROOT, KEY, MODE, STRATEGY, READ, ROWS
-    require(mode in ('ttft','throughput'),'choose ttft|throughput')
-    MODE=mode;STRATEGY=mode
+    require(mode in ('ttft','throughput',*GDN_MODES),'choose a declared strategy/GDN mode')
+    MODE=mode;STRATEGY=GDN_MODES[mode][0] if mode in GDN_MODES else mode
     READ=32769;ROWS=READ-1
-    ROOT=candidate.ROOT/('model-'+mode+'-v1');KEY='official_prefill_strategy_'+mode+'_model_v1'
+    ROOT=(gdn16.ROOT if mode in GDN_MODES else candidate.ROOT)/('model-'+mode+'-v1')
+    KEY=('gdn16_model_entry_' if mode in GDN_MODES else 'official_prefill_strategy_')+mode+'_model_v1'
 
 
 def pinned_sources(revision):
@@ -59,6 +63,26 @@ def save(row):
 
 
 def proof():
+    if MODE in GDN_MODES:
+        built=gdn16.built_module.verify();data=build.committed(RESULT)
+        rows=[]
+        for key,folder in ((gdn16.CHECK,'component-device-v1'),(gdn16.SPEED,'component-speed-v1')):
+            row=json.loads((gdn16.ROOT/folder/'record.json').read_text())
+            require(data[key]==build.compact(row) and row['passed'] and row['complete'] and
+                    row['ownership_closed'] and not row['active'] and not row['fresh_faults'] and
+                    row['binary']==built['binaries'][gdn16.built_module.COMPONENT] and
+                    row['native_source_commit']==built['source_commit'],
+                    'closed same-build production-wrapper component qualification required')
+            gdn16.controls(row);rows.append(row)
+        require(all(v['follow_up_eligible'] for v in rows[1]['component_decisions']) and
+                [v['T'] for v in rows[1]['component_decisions']]==[4096,8192],
+                'both prospective production-wrapper speed screens must pass')
+        audit=shared.runtime.validation.committed(shared.runtime.validation.INDEX,
+            ('gdn16_model_integration_contract_audit_20261101',))
+        require(audit['main_source_gate_passed'] and audit['source_commit']==built['source_commit'] and
+                all(built['native_sources'].get(n)==sha for n,sha in audit['source_sha256'].items()),
+                'reviewed actual projected integration source required')
+        return built,rows[0],gdn16.retained.runtime.inventory(rows[0]['runtime_manifest'])
     gate=json.loads((component.ROOT/'record.json').read_text())
     built,_,files=component.current(gate)
     require(gate['passed'] and gate['complete'] and gate['ownership_closed'] and not gate['active']
@@ -97,6 +121,9 @@ def prepare():
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'validation.log'),
         UR_LOG_LOADER='level:warning;flush:warning;output:stderr',
         UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr')
+    if MODE in GDN_MODES:
+        env.update(STRATA_SYCL_PREFILL_GDN_FP16=GDN_MODES[MODE][1],
+                   STRATA_SYCL_PREFILL_GDN_CHUNK64='0')
     require(not env.get('LD_PRELOAD') and not any('/MistVVK/' in v for v in env.values()),
             'native-only preload and official environment required')
     shared.python_runtime.require_environment(env)
@@ -160,6 +187,8 @@ def prepare():
         retention='Compact host/progress/route/latency and failure evidence only;successful full journals,API/polling '
             'and debug output retire after verification. Runtime manifest replaces the consumed component inventory '
             'for this named model entry;current official reference and this same-ELF strategy candidate remain for imminent comparisons.')
+    if MODE in GDN_MODES:
+        row['criteria']+=' New GDN modes require this generation\'s closed device and favorable repeated-speed cohorts plus reviewed source integration. Verify actual per-request FP16-storage dispatch counts when enabled in throughput and absence in TTFT/off. This is the first bounded real-model entry,not activation-range/task-quality qualification;those remain pending along with full-context and sustained decode. No clean-speed inference from this logged diagnostic.'
     save(row)
     print('Prepared two frontend probes and two explicit-strategy model entries;commit before execution.', flush=True)
 
@@ -226,8 +255,19 @@ def requested_route(text):
     return fields
 
 
+def storage_route(text):
+    """Actual typed recurrence markers, rather than an environment-only claim."""
+    tokens=[int(v) for v in re.findall(r'^strata GDN storage: fp16;state=fp32;tokens=(\d+)$',text,re.M)]
+    enabled=MODE in GDN_MODES and GDN_MODES[MODE]==('throughput','1')
+    require((len(tokens)==36*((ROWS+8191)//8192) and sum(tokens)==36*ROWS and
+             all(0<t<=8192 for t in tokens)) if enabled else not tokens,
+            'actual GDN FP16-storage dispatch differs')
+    return dict(GDN_FP16_storage_calls=len(tokens),GDN_FP16_storage_tokens=sum(tokens))
+
+
 def profile_route(text):
     policy=requested_route(text)
+    storage=storage_route(text)
     if STRATEGY=='throughput':
         result=original.progress(text)
         calls=[dict(re.findall(r'(\w+)=([^\s;]+)',v)) for v in text.splitlines()
@@ -235,7 +275,7 @@ def profile_route(text):
         require(len(calls)==36*((ROWS+8191)//8192) and sum(int(v['tokens']) for v in calls)==36*ROWS
                 and all(v['schedule']=='barriers3' and v['partitions']=='4' and 0<int(v['tokens'])<=8192
                         for v in calls),'actual GDN3 dispatch differs')
-        result.update(strategy=STRATEGY,actual_route=policy['route'],GDN3_calls=len(calls))
+        result.update(strategy=STRATEGY,actual_route=policy['route'],GDN3_calls=len(calls),**storage)
         return result
     require(not any(v in text for v in ('strata prefill heads: target detached ',
         'strata prefill heads: draft detached ','strata mtp: prompt expert phase=',
@@ -246,7 +286,7 @@ def profile_route(text):
     require([v['phase'] for v in states]==['retired','cache-loan','restored']
             and all(v['residency']=='Full' and v['activations']=='0' for v in states),
             'TTFT did not retain full dense owners through checked cache borrowing')
-    return dict(strategy=STRATEGY,actual_route=policy['route'],rows=ROWS,dense_activations=0,
+    return dict(strategy=STRATEGY,actual_route=policy['route'],rows=ROWS,dense_activations=0,**storage,
                 dense_head_MTP_weights_retained=True,cache_loan_retired_and_restored=True)
 
 
@@ -261,7 +301,16 @@ def route_controls():
         try:requested_route(value)
         except (RuntimeError,ValueError,KeyError):pass
         else:raise RuntimeError('invalid actual profile route accepted')
-    return dict(passed=True,valid_profile_route=1,invalid_profile_routes=len(bad),GPU_executed=False,
+    chunks=[min(8192,ROWS-offset) for offset in range(0,ROWS,8192)]
+    typed=''.join(f'strata GDN storage: fp16;state=fp32;tokens={t}\n' for _ in range(36) for t in chunks)
+    enabled=MODE in GDN_MODES and GDN_MODES[MODE]==('throughput','1')
+    storage_route(typed if enabled else '')
+    for value in ((typed.rsplit('\n',2)[0]+'\n',typed+typed,typed.replace('tokens=8192','tokens=8193')) if enabled else (typed,)):
+        try:storage_route(value)
+        except (RuntimeError,ValueError,KeyError):pass
+        else:raise RuntimeError('invalid actual GDN storage route accepted')
+    return dict(passed=True,valid_profile_route=1,invalid_profile_routes=len(bad),
+                GDN_storage_positive=1,GDN_storage_negative=3 if enabled else 1,GPU_executed=False,
                 original_throughput_progress_controls=original.selfcheck() if STRATEGY=='throughput' else None)
 
 
@@ -374,8 +423,8 @@ def run():
 
 
 if __name__=='__main__':
-    require(len(sys.argv)==3 and sys.argv[1] in ('ttft','throughput') and
-            sys.argv[2] in ('prepare','host','run'),'use ttft|throughput prepare|host|run')
+    require(len(sys.argv)==3 and sys.argv[1] in ('ttft','throughput',*GDN_MODES) and
+            sys.argv[2] in ('prepare','host','run'),'use a declared strategy/GDN mode and prepare|host|run')
     configure(sys.argv[1])
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);build.guards.no_model_owners([])

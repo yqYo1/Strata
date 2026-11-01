@@ -20170,7 +20170,7 @@
   },
   "gdn16_model_integration_contract_audit_20261101": {
     "classification": "decision_support",
-    "status": "running_source_only",
+    "status": "reviewed_indexed_decision_support",
     "schedulable_now": false,
     "question": "Audit the newly integrated production half-output Gemm, shared dequantization scratch and arena views, native16 long-prefill dispatch and prefill/decode handoff. Identify concrete contract violations or untested requirements; do not repeat standalone typed-kernel or algorithm surveys.",
     "novelty": "The prior typed-consumer report predates the new Gemm::f16_vendor_out16 API, shared-arena carve and production prefill caller. These are new committed source connections,not a request to resurvey the old component.",
@@ -20214,6 +20214,40 @@
         "turn_started"
       ],
       "normal_startup_permissions_preserved": true
+    },
+    "report_sha256": "b65a7b0ff78776937b17621b6935335fc2140df3e500564b53a6fbd74ad9c8f6",
+    "report_bytes": 9371,
+    "native_review": {
+      "path": ".cache/research/2026-11-01/gdn16_model_integration_contract_audit_20261101.native-review.json",
+      "sha256": "8a3733d95118cc269db90beea85fb7360a5c54ec8de24a303e85779f2034750b",
+      "bytes": 3679,
+      "model": "gpt-6-luna",
+      "effort": "max"
+    },
+    "main_source_gate_passed": true,
+    "main_decision": "Source audit only:all eight actual projected source hashes match;no structural blocker found in producer argument/span checks,same-queue scratch ordering,arena sizing/lease or long-prefill-only selection. This admits preparation of a separately committed bounded model-entry plan after actual-wrapper device and repeated-speed gates;it does not qualify model numerics,range,task quality,decode or context.",
+    "evidence_limits": [
+      "The report described fixture coverage;it did not establish a passed device run. Main has separately closed the actual-wrapper device cohort at90d64f507.",
+      "Standalone packed producers do not exercise production packed-weight dequantization/scratch reuse;the model entry must exercise that path.",
+      "The official half GEMM API table is not proof of the installed vendor accumulator or native ISA. Actual component evidence remains distinct from model evidence."
+    ],
+    "retrieval_sections": [
+      "Vendor producer boundary",
+      "Shared dequant scratch and queue order",
+      "Arena sizing and lifetime",
+      "Selection and preserved paths"
+    ],
+    "worker_closed": {
+      "worker_state": "succeeded",
+      "dispatch_status": "completed",
+      "observation": "exited",
+      "released": true,
+      "delivery": "delivery_5137a9cb1ff0",
+      "acknowledged": true
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisite": "A concrete new issue from model range/handoff or stage/resource evidence;do not repeat the source audit."
     }
   }
 }
