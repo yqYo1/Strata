@@ -714,8 +714,9 @@ with76passes and one optional real-tokenizer fixture skipped. The controller
 rejects5invalid footer windows,5wrong-source/missing-warmup histories,9wrong
 workload contracts and4disabled-observer strings,without GPU execution.
 Source7faf03320passes fresh native/admission and all15model-asset hash checks,
-and prepares one prose-only reference pilot. Its fresh frontend probes and
-actual generation remain pending;the repeated cohort is not yet eligible.
+and prepares one prose-only reference pilot. Fresh benchmark-definition and
+server-loopback probes pass. Actual generation remains pending;the repeated
+cohort is not yet eligible.
 After original265-file source recovery from pushed history,the closed V1and
 prior cache diagnostic retire95more files totaling12419188bytes,including raw/
 JIT output,unused generated plans/runtime copies and the completed observer
