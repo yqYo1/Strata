@@ -107,8 +107,16 @@ generic `Gemm::native` dispatch or decode. Keep the existing oneMKL producer
 as the control selected before runtime initialization. The private FP32 endpoint is committed at
 e618f3466432dca7ee7435a399e7eb92ecfc06c3;production dispatch is unchanged.
 The555-source compile-only plan uses the exact production translation-unit
-flags and separate BMG G21 AOT link. Compilation,codegen and device validation
-are pending;no inference speed or adoption is established.
+flags and separate BMG G21 AOT link. All four CPU commands exit0. V1fails
+post-build input bookkeeping because its allowed map omits the already pinned
+TLA dependencies;the failure remains recorded. V2attests914actual inputs and
+four unchanged objects without recompilation. The AOT container has three
+concatenated ELF images;only its second image contains the new kernel. Exact
+member disassembly shows16static32-bit block2D stores reading FP32 DPAS
+accumulator registers directly,without FP16/BF16 conversion after the final
+DPAS. SIMD16,256GRF and two barriers are codegen observations,not occupancy
+measurements. Host D-copy ownership and guarded device/numerical validation
+remain pending;no inference speed or adoption is established.
 
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
