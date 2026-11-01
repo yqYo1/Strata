@@ -19947,20 +19947,9 @@
   },
   "current_research_scope_admission": {
     "eligible_scopes": 1,
-    "reason": "Cohort closed and concrete FP32 endpoint committed;source-level safety audit is newly eligible.",
-    "selected_scope": "gdn_fp32_projection_source_audit_20261101",
-    "prerequisites": {
-      "frozen_model_cohort_closed": true,
-      "concrete_implementation_committed": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
-      "compile_plan_committed": "558e599c7252313a3a5195cdc43c3ac353bbde71",
-      "source_sha256": {
-        "src/prefill/sycl/vllm_xe2/native16.hpp": "3a57eabeeb13809ae6d40becf0d157801cc6b1604e4649a85848860ff5d1daaa",
-        "src/prefill/sycl/vllm_xe2/native16.cpp": "85f11b7e9fb7d94c0af6a7e14a0c1e2b28228cf30b44afc715fe3842823f1f24",
-        "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
-      },
-      "report_root_writable": true
-    },
-    "next_review": "After exact first compile/codegen outcome or this source audit closes."
+    "selected_scope": "gdn_fp32_copy_descriptor_ownership_20261101",
+    "reason": "The actual host ownership fixture exposed a new descriptor/payload representation question,explicitly eligible after the previous source review.",
+    "next_review": "After this bounded source investigation and corrected Main-owned host proof."
   },
   "gdn_fp32_projection_source_audit_20261101": {
     "classification": "decision_support",
@@ -20024,5 +20013,38 @@
         "reason": "Main verified actual dependency SHA256 240a052619e659bc3d694ed37c5be821534ca16a5011f65856b0f3318862d4c1 equals Git87f685;original report cited correct ranges.Review corrected after separate bounded task."
       }
     }
+  },
+  "gdn_fp32_copy_descriptor_ownership_20261101": {
+    "classification": "decision_support",
+    "status": "admitted_not_started",
+    "schedulable_now": true,
+    "question": "Resolve actual public TLA block2D collective store descriptor/payload ownership representation after host-only coordinate equality failed;derive exact proof over message rectangles without GPU execution.",
+    "prerequisites": {
+      "source_hashes": {
+        "bench/sycl/gdn_projection_fp32.cpp": "9d0da82e9dd493b1339a291a687037d7a3766f6aea0bfef7ad6e15891a735826",
+        "src/prefill/sycl/vllm_xe2/native16.cpp": "85f11b7e9fb7d94c0af6a7e14a0c1e2b28228cf30b44afc715fe3842823f1f24",
+        "src/prefill/sycl/vllm_xe2/xe_gemm_bsd.hpp": "84fb1251c2f9f93bd7774fb2a5a6c928df9ac8e86d1c7f6cf1a6cec058403fa6"
+      },
+      "actual_host_failure": "official_gdn_fp32_projection_ownership_v2",
+      "host_binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership-v2/ownership",
+        "sha256": "02f2ac836d6c370b0dd0e68a7662358d7a1cfdb06b099aae4a24cb8797e5ff4d",
+        "bytes": 50040
+      },
+      "all_commands_closed": true,
+      "FP32_AOT_direct_store_review_passed": true,
+      "GPU_executed": false,
+      "report_root_writable": true
+    },
+    "report": ".cache/research/2026-11-01/gdn_fp32_copy_descriptor_ownership_20261101.md",
+    "report_budget_bytes": 12288,
+    "worker_model": "Orca Codex gpt-6-luna high",
+    "review_model": "native Codex gpt-6-luna max",
+    "consumer": "Correct the current host-only D-copy proof before the first FP32 GDN device fixture.",
+    "prior_scopes": [
+      "gdn_fp32_projection_source_audit_20261101",
+      "prefill_fp32_projection_tla_contract_20261101"
+    ],
+    "retention_review": "After corrected host proof and first guarded device decision;retire superseded proof explanations if source/results suffice."
   }
 }
