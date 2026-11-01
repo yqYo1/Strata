@@ -431,13 +431,17 @@ and runtime inventories. After original-source recovery and evidence checks,
 the400382791-byte timeline;the compact retirement entry records path/hash/reason.
 The unchanged source/native admission passes after deletion without GPU execution.
 Current9ELFs and the8ELF TTFT-option fallback remain;legacy provenance holds
-are separate and are not reported retired. The current-engine long-generation
-diagnostic has a committed two-process plan,passing host definition probes and
-four valid/eight rejected variable-shape route controls. It uses both standard
-33K workloads,thinking on and a16384-output cap;only the MTP16 selector differs.
-Require >=1K generated tokens and a substantive answer in each request. Native
-execution is next;one sample per workload/arm cannot qualify sustained-decode
-nonregression,observed strong/weak-MTP classes or inference adoption.
+are separate and are not reported retired. The first current-engine generation
+pilot stops at its end gate after a33210-read/2869-output native request:the
+new parser mistakes GPU/RAM headroom prose for duplicate structured fields.
+V1remains failed;its owned session is empty and reaped,with no fresh fault,but
+normal native exit and a complete client journal are unqualified. V2delimits
+the structured fields before the semicolon and passes that real-request CPU
+replay plus four valid/nine rejected route controls. Its fresh two-process plan
+uses both standard33K workloads,thinking on and a16384-output cap;only MTP16
+differs. Require >=1K generated tokens and a substantive answer in each request.
+Frontend/native checks remain next;one sample per workload/arm cannot qualify
+sustained-decode nonregression,strong/weak-MTP classes or inference adoption.
 The earlier GDN16on/off cohort's raw output is retired after recovering its
 261source inputs from pushed history. Keep its qualification record and runtime
 inventory for the next profile;the unchanged admission passes after deletion.
