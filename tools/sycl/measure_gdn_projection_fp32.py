@@ -22,8 +22,8 @@ import check_gdn_projection_device as qualified
 image, base, runtime = qualified.image, qualified.base, qualified.runtime
 require, digest, write = base.require, base.digest, base.write
 RESULT = base.RESULT
-ROOT = image.ROOT / 'resident-bench-v1'
-BUILD_KEY = 'official_gdn_fp32_resident_fixture_build_v1'
+ROOT = image.ROOT / 'resident-bench-v2'
+BUILD_KEY = 'official_gdn_fp32_resident_fixture_build_v2'
 CHECK_KEY = 'official_gdn_fp32_general_check_v1'
 SPEED_KEY = 'official_gdn_fp32_resident_speed_v1'
 FIXTURE = 'bench/sycl/gdn_projection_fp32_bench.cpp'

@@ -162,13 +162,13 @@ struct Case {
 void timed(Case &c, bool native, int count, const char *phase, int sample, bool empty=false) {
   auto &q=c.rt->compute(); q.wait_and_throw(); c.rt->check();
   std::vector<sycl::event> events; events.reserve(count);
-  const auto begin=q.ext_oneapi_submit_barrier(); begin.wait_and_throw(); c.rt->check();
+  auto begin=q.ext_oneapi_submit_barrier(); begin.wait_and_throw(); c.rt->check();
   const auto start=std::chrono::steady_clock::now();
   for(int i=0;i<count;++i) {
     if(!empty) events.push_back(c.launch(native));
     if((i+1)%8==0) { q.wait_and_throw(); c.rt->check(); }
   }
-  const auto end=q.ext_oneapi_submit_barrier(); end.wait_and_throw(); q.wait_and_throw(); c.rt->check();
+  auto end=q.ext_oneapi_submit_barrier(); end.wait_and_throw(); q.wait_and_throw(); c.rt->check();
   const double wall=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count();
   bool queue_profile=true; double interval=0.;
   try {

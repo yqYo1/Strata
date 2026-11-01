@@ -68181,7 +68181,7 @@
     }
   },
   "official_gdn_fp32_resident_fixture_build_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "9021921d76212ecc39a418132c32581a35aa1328",
     "original_fixture_recipe": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/record.json",
@@ -68326,6 +68326,7 @@
     "ownership_closed": true,
     "passed": false,
     "GPU_executed": false,
+    "error": "RuntimeError(\"fixture-object failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_projection_fp32_bench.cpp:165:57: error: no matching member function for call to 'wait_and_throw'\\n  165 |   const auto begin=q.ext_oneapi_submit_barrier(); begin.wait_and_throw(); c.rt->check();\\n      |                                                   ~~~~~~^~~~~~~~~~~~~~\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/event.hpp:106:8: note: candidate function not viable: 'this' argument has type 'const event', but method is not marked const\\n  106 |   void wait_and_throw();\\n      |        ^\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/event.hpp:115:15: note: candidate function not viable: requires single argument 'EventList', but no arguments were provided\\n  115 |   static void wait_and_throw(const std::vector<event> &EventList);\\n      |               ^              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_projection_fp32_bench.cpp:171:53: error: no matching member function for call to 'wait_and_throw'\\n  171 |   const auto end=q.ext_oneapi_submit_barrier(); end.wait_and_throw(); q.wait_and_throw(); c.rt->check();\\n      |                                                 ~~~~^~~~~~~~~~~~~~\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/event.hpp:106:8: note: candidate function not viable: 'this' argument has type 'const event', but method is not marked const\\n  106 |   void wait_and_throw();\\n      |        ^\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/event.hpp:115:15: note: candidate function not viable: requires single argument 'EventList', but no arguments were provided\\n  115 |   static void wait_and_throw(const std::vector<event> &EventList);\\n      |               ^              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n2 errors generated.\\n\")",
     "controller_inputs": {
       "files": 45,
       "aggregate_sha256": "de7ca86b2b8c8b31454f586b7c146e21213c5377756bff2eae4b466f855cf1db"

@@ -169,7 +169,10 @@ path before any model A/B or inference adoption.
 
 The independent maintained fixture is now
 `bench/sycl/gdn_projection_fp32_bench.cpp`,controlled by
-`tools/sycl/measure_gdn_projection_fp32.py`;it is not built or run yet.
+`tools/sycl/measure_gdn_projection_fp32.py`;it has not run on GPU yet.
+The first CPU build fails because this SDK's event.wait_and_throw is non-const;
+the two local barrier event handles are corrected before a fresh V2build.
+The original failed build and its exact inputs remain recorded.
 It preserves the original exact fixture and its consumed receipts. The new
 plan adds26general/cancellation/zero/onehot shapes,64FP64 spots per shape,
 16safe synchronous rejections and three fresh resident timing processes.
