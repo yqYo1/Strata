@@ -12,7 +12,7 @@ import retained_prefill_candidate as retained
 P, B = retained.P, retained.B
 base, require = retained.base, retained.require
 BEFORE = 'ccba29e0a9f7add85807168858d5d7c7ee659a8b'
-TYPED_BEFORE = '409e5951f'
+TYPED_BEFORE = '409e5951faccd5fc146c0d7660a4380e4d8905e4'
 TYPED = '3a1294459f8a6d0d8a6276188fed39b66c85bb3c'
 DELTA = ('include/strata/prefill/gemm.hpp', 'src/prefill/sycl/gemm.cpp',
          'src/prefill/prefill.cpp')

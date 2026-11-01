@@ -1,238 +1,47 @@
 #!/usr/bin/env python3
-"""Main-owned packed GDN3 producer/consumer comparison; repository LICENSE.
+"""Main-owned production-wrapper GDN3 qualification. Repository LICENSE (MIT).
 
-CPU build and finite GPU cohorts are distinct committed stages. Production
-dispatch remains unchanged. Reuse qualified supervision/provider code, not old
-prototype executable bytes or implicit current-HEAD source labels.
+The same complete source/build supplies the engine and this fixture. Keep GPU
+component evidence separate from model PP,range,handoff and context adoption.
 """
-import ast
 import copy
 import fcntl
 import hashlib
 import json
 from pathlib import Path
 import select
-import shlex
 import statistics
 import subprocess
 import sys
 import time
 
 sys.dont_write_bytecode = True
-import retained_prefill_candidate as retained
+import gdn_model_build as built_module
 import kernel_trace
 import proc_observer
 import runtime_probe as runtime
 import ur_validation as validation
 
-base, P, B, RESULT = retained.base, retained.P, retained.B, retained.RESULT
-require, digest, write = base.require, base.digest, base.write
-ROOT = B / 'gdn16-pipeline-v3'
-BUILD, CHECK, SPEED = 'gdn16_pipeline_build_v3', 'gdn16_pipeline_device_v3', 'gdn16_pipeline_speed_v3'
-CAST = 'include/strata/prefill/detail/gdn_storage_casts.hpp'
-HOST_KEY, HOST_TEST = 'gdn_kernel_trace_host_v4', 'tests/core/test_gdn_storage_trace.py'
-FIXTURE, KERNEL, HEADER = ('bench/sycl/gdn_storage_pipeline.cpp',
-    'src/kernels/sycl/fused_gdn.cpp', 'include/strata/prefill/kernels.hpp')
-CONTROLLER = Path(__file__).resolve()
+built=built_module
+retained= built.retained
+base,P,B,RESULT=retained.base,retained.P,retained.B,retained.RESULT
+require,digest,write=base.require,base.digest,base.write
+ROOT=built.ROOT
+BUILD,CHECK,SPEED=built.KEY,'gdn16_model_component_device_v1','gdn16_model_component_speed_v1'
+CONTROLLER=Path(__file__).resolve()
 
 
-def save(root, key, row):
-    write(root / 'record.json', row)
-    data = json.loads(RESULT.read_text()); data[key] = base.compact(row); write(RESULT, data)
+def save(root,key,row):
+    write(root/'record.json',row)
+    data=json.loads(RESULT.read_text());data[key]=base.compact(row);write(RESULT,data)
 
 
 def controls(row):
-    require(base.controls(row['source_commit'], controller=CONTROLLER) == row['controller_inputs'],
-            'frozen pipeline controller changed')
-    for name, sha in row['native_sources'].items():
-        raw = base.basis.build.git(P, 'show', row['source_commit'] + ':' + name)
-        require(hashlib.sha256(raw).hexdigest() == sha == digest(P / name), 'native input changed: ' + name)
-
-
-def allowed_inputs(revision):
-    original, providers, _ = retained.verify()
-    allowed = base.sdk()
-    allowed.update(retained.runtime.inventory(original['external_manifest'])); allowed.update(providers)
-    asset = original['compiled_inputs']; require(digest(asset['path']) == asset['sha256'], 'selected input map changed')
-    allowed.update(json.loads(Path(asset['path']).read_text()))
-    for name, sha in original['native_sources'].items():
-        path = (retained.ROOT / 'source' / name).resolve()
-        require(digest(path) == sha, 'selected native source changed'); allowed[str(path)] = sha
-    names = base.basis.build.git(P, 'ls-tree', '-rz', '--name-only', revision, '--', 'include', FIXTURE, KERNEL).decode().split('\0')
-    for name, raw in base.basis.build.blobs(P, revision, [n for n in names if n]):
-        path = P / name; sha = hashlib.sha256(raw).hexdigest()
-        require(digest(path) == sha, 'commit exact project compiler input: ' + name); allowed[str(path.resolve())] = sha
-    return original, allowed
-
-
-def host_check():
-    require(HOST_KEY not in base.committed(RESULT), 'one fresh host parser gate')
-    root = B / 'gdn-kernel-trace-host-v4'
-    require(not root.exists(), 'host parser gate already exists'); root.mkdir(mode=0o700)
-    revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
-    raw = base.basis.build.git(P, 'show', revision + ':' + HOST_TEST)
-    require(raw == (P / HOST_TEST).read_bytes(), 'commit exact parser test')
-    python = str(Path(sys.executable).resolve())
-    row = dict(stage='prepared', source_commit=revision, native_sources={},
-        controller_inputs=base.controls(revision, controller=CONTROLLER),
-        test=dict(path=HOST_TEST, sha256=hashlib.sha256(raw).hexdigest()),
-        interpreter=dict(path=python, sha256=digest(python)),
-        command=[python, '-B', '-m', 'unittest', 'discover', '-s', 'tests/core', '-p', 'test_gdn_storage_trace.py', '-v'],
-        environment=dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8', PYTHONDONTWRITEBYTECODE='1'),
-        active=False, ownership_closed=True, passed=False, GPU_executed=False, commands_executed=[])
-    owner = None
-    try:
-        owner = base.supervision.Owner(root / 'owned')
-        entry, out, err = owner.run('parser-tests', row['command'], row['environment'], P,
-            wall=30, cpu=30, rss_cap=1<<30, text_cap=1<<20, file_cap=1<<20, total_cap=2<<20)
-        output = out.read_text() + err.read_text()
-        require(base.supervision.closed(entry) and entry['exit_code'] == 0 and 'Ran 6 tests' in output and '\nOK\n' in output,
-                'six parser regression tests failed: ' + output[-2000:])
-        controls(row); require(digest(P/HOST_TEST) == row['test']['sha256'], 'parser test changed')
-        row.update(stage='host-tests-passed', passed=True, tests=6)
-    except BaseException as error:
-        row.update(stage='failed', error=repr(error))
-    finally:
-        row.update(active=bool(owner and owner.active), commands_executed=owner.commands if owner else [],
-            ownership_closed=bool(owner and all(base.supervision.closed(v) for v in owner.commands)))
-        require(owner is None or owner.active is None, 'host test ownership unresolved'); save(root, HOST_KEY, row)
-    print(json.dumps({k:row.get(k) for k in ('stage','passed','tests','error')}), flush=True)
-    require(row['passed'], 'parser host gate failed')
-
-
-def prepare_build():
-    require(BUILD not in base.committed(RESULT) and not ROOT.exists(), 'one fresh pipeline build')
-    revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
-    original, _ = allowed_inputs(revision)
-    previous = base.committed(RESULT)['official_gdn_storage_speed_v1']
-    require(previous['passed'] and previous['complete'] and previous['ownership_closed'] and
-            all(v['follow_up_eligible'] for v in previous['component_decisions']), 'direct-half follow-up not eligible')
-    retirement = base.committed(RESULT)['gdn16_software_pipeline_retirement']
-    require(retirement['source_recipe_recovered'] and retirement['deleted_verified'] and
-            not Path(retirement['retired_binary']['path']).exists(), 'retire recovered V1 component first')
-    failed_ir = base.committed(RESULT)['gdn16_optional_ir_build_retirement']
-    require(failed_ir['source_recipe_recovered'] and failed_ir['deleted_verified'] and
-            not (B/'gdn16-pipeline-v2').exists(), 'retire closed optional-IR build first')
-    host_path = B/'gdn-kernel-trace-host-v4/record.json'
-    host = json.loads(host_path.read_text())
-    require(base.committed(RESULT)[HOST_KEY] == base.compact(host), 'committed full parser record required')
-    # Reuse only the same CPU parser/test. The changed build resolver is not
-    # executed by unittest; preserve its original measured controller identity.
-    name = str(CONTROLLER.relative_to(P))
-    original_host = base.basis.build.git(P, 'show', host['source_commit'] + ':' + name)
-    current_host = CONTROLLER.read_bytes()
-    def runner_functions(raw):
-        text = raw.decode()
-        return {n.name:ast.get_source_segment(text,n) for n in ast.parse(text).body
-                if isinstance(n,ast.FunctionDef) and n.name in ('save','controls','host_check')}
-    require(hashlib.sha256(original_host).hexdigest() == host['controller_inputs'][name] and
-            len(runner_functions(original_host)) == 3 and
-            runner_functions(original_host) == runner_functions(current_host), 'CPU parser runner changed')
-    require(all(n == name or digest(P/n) == sha for n,sha in host['controller_inputs'].items()),
-            'CPU parser dependency changed')
-    require(host['passed'] and host['ownership_closed'] and not host['active'] and host['tests']==6 and
-            all(base.supervision.closed(v) for v in host['commands_executed']) and
-            digest(host['interpreter']['path']) == host['interpreter']['sha256'] and
-            digest(P/HOST_TEST)==host['test']['sha256'], 'current parser host gate required')
-    old = base.basis.build.git(P, 'show', retained.NATIVE + ':' + KERNEL)
-    new = (P / KERNEL).read_bytes(); seam = b'// Main-authored scheduling variant'
-    require(old[:old.index(seam)] == new[:new.index(seam)].replace(b'#include <type_traits>\n', b'').replace(
-        b'#include \"strata/prefill/detail/gdn_storage_casts.hpp\"\n', b''),
-            'decode conv/recurrence arithmetic changed')
-    begin, end = b'} // namespace\nvoid fused_gdn_conv_l2', b'} // namespace strata::kernels'
-    require(old[old.index(begin):old.index(end)] == new[new.index(begin):new.index(end)], 'decode wrappers changed')
-    begin, end = b'void gdn_conv(float', b'namespace {\n'
-    require(old[old.index(begin):old.index(end, old.index(begin))] ==
-            new[new.index(begin):new.index(b'namespace {\ntemplate <class Input>', new.index(begin))],
-            'original prefill conv/fused recurrence changed')
-    commands = json.loads((retained.ROOT / 'build/compile_commands.json').read_text()); build = ROOT / 'build'
-    steps = []
-    for label, name in [('runtime', 'src/sycl/runtime.cpp'), ('profile', 'src/sycl/command_profile.cpp'),
-                         ('kernel', KERNEL), ('fixture', FIXTURE)]:
-        basis_name = KERNEL if label in ('kernel', 'fixture') else name
-        matches = [v for v in commands if v['file'] == str(retained.ROOT / 'source' / basis_name) and
-            (label not in ('kernel','fixture') or '-o CMakeFiles/strata_kernels.dir/' in v['command'])]
-        require(len(matches)==1, 'one original compile command required')
-        command = shlex.split(matches[0]['command']); require(command[0] == base.COMPILER, 'original compiler changed')
-        flags = command[1:command.index('-o')]
-        source = retained.ROOT / 'source' / name if label in ('runtime', 'profile') else P / name
-        if label in ('kernel', 'fixture'): flags = ['-I' + str(P / 'include'), *flags]
-        if label == 'fixture': flags += ['-isystem', '/opt/intel/oneapi/mkl/2026.1/include', '-DMKL_ILP64']
-        steps.append([label, [base.COMPILER, *flags, '-MD', '-MF', str(build / (label + '.d')),
-            '-o', str(build / (label + '.o')), '-c', str(source)]])
-    mkl = Path('/opt/intel/oneapi/mkl/2026.1/lib')
-    libraries = [str(mkl / n) for n in ('libmkl_sycl_blas.so', 'libmkl_intel_ilp64.so', 'libmkl_sequential.so', 'libmkl_core.so')]
-    steps.append(['compile', [base.COMPILER, '-O3', '-fsycl', '-fsycl-id-queries-range=size_t',
-        '-fsycl-allow-device-image-dependencies', '-Wl,-t', *[str(build / (n + '.o')) for n in ('fixture','kernel','runtime','profile')],
-        '-Wl,-rpath=' + str(mkl), *libraries, '-lm', '-ldl', '-lpthread', '-o', str(build / 'gdn-pipeline')]])
-    ROOT.mkdir(mode=0o700)
-    for name in ('build', 'tmp', 'cache'): (ROOT / name).mkdir()
-    row = dict(stage='prepared', source_commit=revision, controller_inputs=base.controls(revision,controller=CONTROLLER),
-        native_sources={n:digest(P/n) for n in (FIXTURE,KERNEL,HEADER,CAST)}, selected_native_source=retained.NATIVE,
-        parser_gate_reuse=dict(source_commit=host['source_commit'],test=host['test'],scope='Exact CPU test,parser,runner functions,interpreter and unchanged helper inputs;build-root/constants/resolver changes are outside unittest. No new parser test or GPU qualification claimed.'),
-        original_compile_database=dict(path=str(retained.ROOT/'build/compile_commands.json'),sha256=digest(retained.ROOT/'build/compile_commands.json')),
-        commands=steps,environment=dict(original['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
-        budgets=dict(wall=300,cpu=1000,rss_cap=6<<30,text_cap=16<<20,file_cap=256<<20,total_cap=1<<30),
-        plan=dict(scope='Packed resident QKV/z oneMKL projections,causal conv,three-barrier recurrence and RMS/gating. No dequantization,PCIe,output projection,model or decode execution.',
-            native_isolation='Original decode arithmetic/wrappers and original FP32 prefill conv/fused recurrence verified byte-identical;new typed APIs not selected by model dispatch.',
-            baseline='Retain selected555-source/eight-ELF f6cea2engine. Retire closed software-half V1 and old projection fixture first. This generation compares only unchanged FP32 with SYCL-cast typed16;prior software-half rejection stays archived.',
-            retention='Current comparison source/recipe and individual useful evidence only;retire closed raw output and extra generation at comparison closure.'),
-        active=False,ownership_closed=True,passed=False,GPU_executed=False,commands_executed=[])
-    controls(row); save(ROOT,BUILD,row); print('Prepared CPU-only pipeline recipe;commit before build.',flush=True)
-
-
-def build():
-    row = json.loads((ROOT/'record.json').read_text())
-    require(base.committed(RESULT)[BUILD] == base.compact(row) and row['stage']=='prepared' and
-            not (ROOT/'owned-build').exists(), 'one frozen fresh build')
-    controls(row); _,allowed = allowed_inputs(row['source_commit']); owner=None
-    require(digest(row['original_compile_database']['path']) == row['original_compile_database']['sha256'], 'recipe changed')
-    require(not Path(base.committed(RESULT)['official_gdn_storage_fixture_build_v1']['binary']['path']).exists(),
-            'retire closed old component generation before another build')
-    def monitor(io,entry):
-        while not io.exit_watch.poll(0) or not io.eof:
-            io.poll(); require(base.supervision.artifact_bytes(ROOT)<=row['budgets']['total_cap'],'build byte budget')
-            if select.select([io.proc.stdout],[],[],.02)[0]: io.read();io.pending.clear()
-        io.exit(1)
-    try:
-        owner=base.supervision.Owner(ROOT/'owned-build')
-        for label,argv in row['commands']:
-            entry,out,err=owner.run(label,argv,row['environment'],ROOT,interaction=monitor,**row['budgets'])
-            require(base.supervision.closed(entry) and entry['exit_code']==0,
-                    label+' failed: '+(out.read_text(errors='replace')+err.read_text(errors='replace'))[-6000:])
-        found=set()
-        for label in ('runtime','profile','kernel','fixture'):
-            for line in (ROOT/'build'/(label+'.d')).read_text().replace('\\\n','').splitlines():
-                if not line.strip(): continue
-                left,colon,right=line.partition(':'); require(colon and left.strip(),'invalid depfile')
-                found.update(str((ROOT/p).resolve()) for p in shlex.split(right))
-        require(all(allowed.get(p)==digest(p) for p in found),'unfrozen actual compiler input')
-        write(ROOT/'compiler-inputs.json',{p:allowed[p] for p in sorted(found)})
-        row['actual_compiler_inputs']=dict(path=str(ROOT/'compiler-inputs.json'),sha256=digest(ROOT/'compiler-inputs.json'),files=len(found),uncovered=0)
-        row['actual_link_inputs']=base.traced_link_inputs(allowed,ROOT)
-        binary=ROOT/'build/gdn-pipeline'
-        row.update(stage='built-not-executed',passed=True,binary=dict(path=str(binary),sha256=digest(binary),bytes=binary.stat().st_size))
-        retained.verify()
-    except BaseException as error: row.update(stage='failed',passed=False,error=repr(error))
-    finally:
-        row.update(active=bool(owner and owner.active),commands_executed=owner.commands if owner else [],
-                   ownership_closed=bool(owner and all(base.supervision.closed(v) for v in owner.commands)))
-        require(owner is None or owner.active is None,'build ownership unresolved'); save(ROOT,BUILD,row)
-    print(json.dumps({k:row.get(k) for k in ('stage','passed','error')}),flush=True); require(row['passed'],'pipeline build failed')
-
-
-def verify():
-    row=json.loads((ROOT/'record.json').read_text())
-    require(base.committed(RESULT)[BUILD]==base.compact(row) and row['passed'] and row['stage']=='built-not-executed' and
-            row['ownership_closed'] and not row['active'] and all(base.supervision.closed(v) for v in row['commands_executed']), 'closed build required')
-    controls(row); _,allowed=allowed_inputs(row['source_commit']); asset=row['actual_compiler_inputs']
-    require(digest(asset['path'])==asset['sha256'],'actual input map changed')
-    found=json.loads(Path(asset['path']).read_text())
-    require(len(found)==asset['files'] and all(allowed.get(p)==sha==digest(p) for p,sha in found.items()),'actual compiler inputs changed')
-    require(row['actual_link_inputs']['uncovered_external_inputs']==0 and all(allowed.get(p)==sha==digest(p)
-        for p,sha in row['actual_link_inputs']['frozen_inputs'].items()),'link inputs changed')
-    asset=row['binary']; require(digest(asset['path'])==asset['sha256'] and Path(asset['path']).stat().st_size==asset['bytes'],'binary changed')
-    return row
+    require(base.controls(row['source_commit'],controller=CONTROLLER)==row['controller_inputs'],
+            'production-wrapper cohort controls changed')
+    _,native=built_module.native_inputs(row['native_source_commit'])
+    require({n:hashlib.sha256(v).hexdigest() for n,v in native.items()}==row['native_sources'],
+            'frozen production model/fixture source changed')
 
 
 def cases(speed):
@@ -243,34 +52,37 @@ def cases(speed):
 
 
 def prerequisites(speed):
-    built=verify(); data=base.committed(RESULT); refs=dict(build=dict(path=str(ROOT/'record.json'),sha256=digest(ROOT/'record.json')))
+    model=built.verify();data=base.committed(RESULT)
+    refs=dict(build=dict(path=str(ROOT/'record.json'),sha256=digest(ROOT/'record.json')))
+    binary=model['binaries'][built.COMPONENT]
     if speed:
-        device=json.loads((ROOT/'device-v3/record.json').read_text())
+        path=ROOT/'component-device-v1/record.json';device=json.loads(path.read_text())
         require(data[CHECK]==base.compact(device) and device['passed'] and device['complete'] and
                 device['ownership_closed'] and not device['active'] and not device['fresh_faults'] and
-                device['binary']==built['binary'],'same-build closed device cohort required')
-        controls(device); refs['device']=dict(path=str(ROOT/'device-v3/record.json'),sha256=digest(ROOT/'device-v3/record.json'))
-    gate=data['official_prefill_strategies_device_v2']; return built,refs,gate,retained.runtime.inventory(gate['runtime_manifest'])
+                device['binary']==binary,'same-build production-wrapper qualification required')
+        controls(device);refs['device']=dict(path=str(path),sha256=digest(path))
+    gate=data['official_prefill_strategies_device_v2']
+    return model,refs,gate,retained.runtime.inventory(gate['runtime_manifest'])
 
 
 def prepare_run(speed):
-    key,root=(SPEED,ROOT/'speed-v3') if speed else (CHECK,ROOT/'device-v3')
+    key,root=(SPEED,ROOT/'component-speed-v1') if speed else (CHECK,ROOT/'component-device-v1')
     require(key not in base.committed(RESULT) and not root.exists(),'one fresh cohort')
     built,refs,gate,_=prerequisites(speed); root.mkdir(mode=0o700)
     revision=base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
     row=dict(stage='prepared',source_commit=revision,controller_inputs=base.controls(revision,controller=CONTROLLER),
-        native_sources=built['native_sources'],native_source_commit=built['source_commit'],binary=built['binary'],
+        native_sources=built['native_sources'],native_source_commit=built['source_commit'],binary=built['binaries'][built_module.COMPONENT],
         prerequisite_records=refs,**{k:gate[k] for k in ('environment','canary','native_validation_probe','runtime_manifest','boot','driver')},
         cases=cases(speed),processes=[],active=False,ownership_closed=True,passed=False,complete=False,
         GPU_executed=False,model_executed=False,inference_adopted=False,commands_executed=[],
         budgets=dict(wall=600,cpu=2400,rss_cap=8<<30,text_cap=8<<20,file_cap=64<<20,total_cap=96<<20),whole_wall_seconds=2400,whole_bytes=96<<20,
-        plan=dict(scope='Packed resident two-projection+conv+GDN3+RMS/gating component;K2560,C10240,V6144. No model PP,TG,dequantization,PCIe,output projection or physical262144model qualification.',
+        plan=dict(scope='Actual production Gemm FP32/FP16 wrappers plus packed resident two-projection+conv+GDN3+RMS/gating component;K2560,C10240,V6144. No model PP,TG,dequantization,PCIe,output projection or physical262144model qualification.',
             precision='Default oneMKL compute mode unset in both arms. Half C uses half1/0 scalars;FP32 C uses float1/0. Typed storage uses SYCL half casts;all65536half promotions and253964signed F32 rounding/subnormal/overflow/NaN cases are checked on GPU before pipeline cases. Non-NaN bits match host RNE exactly,NaN classification only. FP32 control keeps its original software output rounding. FP32 persistent state/history,gates,reductions/accumulation. Passing diagnostics does not establish vendor accumulator type or real-model quality/range.',
-            numerical='Whole typed conv matches FP32 conv followed by host RNE. Typed recurrence state/history/final FP16 output match rounded-storage FP32 reference exactly,including1/2/tail splits. 64FP64 packed-producer spots/case bounded by2gamma32*absdot plus final-half-rounding. All finite outputs,guards,immutable inputs. Original FP32 fused-vs-columns smoke bit-exact. 18synchronous no-write geometry/epsilon/null/alias/alignment/host-pointer refusals. FP32-vs-FP16 drift is recorded diagnostically,not an extra-precision adoption criterion.',
+            numerical='Whole typed conv matches FP32 conv followed by host RNE. Typed recurrence state/history/final FP16 output match rounded-storage FP32 reference exactly,including1/2/tail splits. 64FP64 packed-producer spots/case bounded by2gamma32*absdot plus final-half-rounding. All finite outputs,guards,immutable inputs. Original FP32 fused-vs-columns smoke bit-exact. 18synchronous GDN geometry/epsilon/null/alias/alignment/host-pointer refusals plus15production vendor-wrapper shape/overflow/null/alias/alignment/device-span/initialization no-write refusals. FP32-vs-FP16 drift is recorded diagnostically,not an extra-precision adoption criterion.',
             timing='Three fresh processes;two4096/8192-row cases. Alternating/reversed arm order by process/round;first shape calls separate,four warmups,five paired64call batches. State/history resets,allocation,copies,CPU oracles outside timing. Host interval includes complete twoGEMM+conv/history+recurrence/RMS submissions,drain every4calls and final checked wait;no returned-MKL-event whole-operation assumption.',
             eligibility='Each steady batch>=100ms;median of5empty controls<=5%of each batch. No resize/retry. Follow-up requires all3paired independent-process median ratios<1 at both lengths;no minimum percentage gain. Component success alone does not authorize a model trial.',
             safety='Original in-order Runtime;copy offload/direct submission disabled and preexec environment immutable. At most4compound calls before drain. Canary,small traced smoke,warning-only general shapes before separate clean speed processes.',
-            changed_mechanism='V1 integer half load/store replaced only in typed16path by SYCL half casts. Old V1 speed gate failed;this new conversion experiment does not authorize model execution.',
+            changed_mechanism='Raw oneMKL producer calls replaced with actual production Gemm wrappers in both arms;new full model generation also contains opt-in long-prefill caller/arena integration. Prior raw-MKL speed gate passed;this cohort must verify real wrapper cost before any model execution.',
             retention='Keep useful samples,numerical maxima and decisions. Retire closed raw logs/traces after extracting names/provenance. Keep selected engine;new component generation has only this imminent comparison consumer.'))
     save(root,key,row); print('Prepared '+key+';commit before GPU execution.',flush=True)
 
@@ -293,13 +105,15 @@ def analyze(case,stdout,folder,pid):
     producer=[v for v in rows if v['kind']=='packed_producers']
     require([v['T'] for v in producer]==[t for t,_ in expected] and all(v['FP64_spots']==64 and
             0<=v['max_bound_fraction']<=1 for v in producer),'packed producer coverage differs')
-    require(len(rows)==(49 if bench else 9 if smoke else 32),'unexpected result rows')
+    require(len(rows)==(49 if bench else 10 if smoke else 33),'unexpected result rows')
     conversion=[v for v in rows if v['kind']=='conversion']
     require(conversion==[dict(kind='conversion',half_inputs=65536,float_inputs=253964,finite_bits_exact=True,nan_classes=True,passed=True)],'complete conversion corpus required')
     result=dict(conversion=conversion[0],canonical=canonical,packed_producers=producer,
         FP32_difference=[v for v in rows if v['kind']=='FP32_difference'])
     if not bench:
         require([v['cases'] for v in rows if v['kind']=='rejection']==[18],'no-write refusal coverage differs')
+        require([v['cases'] for v in rows if v['kind']=='vendor_rejection']==[15],'vendor wrapper refusal coverage differs')
+        result['vendor_rejections']=15
         require(len([v for v in rows if v['kind']=='legacy'])==(1 if smoke else 0),'legacy check differs')
     else:
         timing=[v for v in rows if v['kind']=='timing']; require(len(timing)==38,'timing coverage differs')
@@ -337,10 +151,10 @@ def decisions(row):
 
 
 def run(speed):
-    key,root=(SPEED,ROOT/'speed-v3') if speed else (CHECK,ROOT/'device-v3'); row=json.loads((root/'record.json').read_text())
+    key,root=(SPEED,ROOT/'component-speed-v1') if speed else (CHECK,ROOT/'component-device-v1'); row=json.loads((root/'record.json').read_text())
     require(base.committed(RESULT)[key]==base.compact(row) and row['stage']=='prepared' and not (root/'owned').exists(),'one frozen fresh cohort')
     controls(row);built,refs,gate,providers=prerequisites(speed)
-    require(row['binary']==built['binary'] and row['prerequisite_records']==refs and row['cases']==cases(speed) and
+    require(row['binary']==built['binaries'][built_module.COMPONENT] and row['prerequisite_records']==refs and row['cases']==cases(speed) and
             all(row[k]==gate[k] for k in ('environment','canary','native_validation_probe','runtime_manifest','boot','driver')),'cohort envelope changed')
     frozen,owner,active,mapped_all=copy.deepcopy(row),None,None,set()
     cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if v.startswith('-- cursor: '))
@@ -411,13 +225,13 @@ def run(speed):
 
 
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('host-check','prepare-build','build','verify','prepare-check','check','prepare-speed','speed'),'use host-check|prepare-build|build|verify|prepare-check|check|prepare-speed|speed')
+    modes=('prepare-build','build','verify','prepare-check','check','prepare-speed','speed')
+    require(len(sys.argv)==2 and sys.argv[1] in modes,'use '+'|'.join(modes))
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);base.guards.no_model_owners([])
         mode=sys.argv[1]
-        if mode=='host-check':host_check()
-        elif mode=='prepare-build':prepare_build()
-        elif mode=='build':build()
-        elif mode=='verify':print(json.dumps(dict(binary=verify()['binary'],GPU_executed=False)))
+        if mode=='prepare-build':built_module.prepare()
+        elif mode=='build':built_module.build()
+        elif mode=='verify':print(json.dumps(dict(binaries=built_module.verify()['binaries'],GPU_executed=False)))
         elif mode.startswith('prepare-'):prepare_run(mode=='prepare-speed')
         else:run(mode=='speed')
