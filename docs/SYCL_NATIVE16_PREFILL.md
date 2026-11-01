@@ -149,9 +149,11 @@ actual GDN3 QKV/z consumer boundary and the vendor overloads. FP16 C uses FP16
 alpha/beta;FP32 C uses FP32 scalars. A declaration does not establish device
 support,accumulation,rounding or model quality. The compiled fixture currently
 uses the production-style default compute mode,which the installed header maps
-to`unset`;make the default-versus-explicit-standard choice prospective before
-GPU testing. The fixture's bounded finite-input FP32-plus-half-rounding oracle
-is a diagnostic criterion,not proof of the vendor accumulator type.
+to`unset`. The new measurement controller prospectively chooses this same
+default in all three arms to observe the actual vendor API;explicit-standard
+behavior remains a separately scoped question. The bounded finite-input
+FP32-plus-half-rounding oracle is a diagnostic criterion,not proof of the vendor
+accumulator type or model quality.
 
 Next qualify a bounded traced direct-output smoke,then general shapes and a
 clean repeated component comparison. Native BF16 producers are a separate
