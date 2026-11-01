@@ -65684,7 +65684,43 @@
     },
     "reference_retirement": {
       "complete": false,
-      "next": "Recover032source/f640recipe,retire seven obsolete ELFs/build outputs;keep consumed manifests."
+      "status": "recovery_verified_deletion_planned",
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-closed-official-joint-generation.json",
+        "sha256": "a44abf2787fc7b2d52ca6a1b4e70ce063acddb888fe87de3538777aa7330ec0a",
+        "files": 741,
+        "bytes": 155739663
+      },
+      "source_recovery": {
+        "verified_at": "2026-11-01T01:25:54Z",
+        "source_commit": "032f4f8a535d857aaa2b5e8123e6662c26554571",
+        "original_recipe_commit": "f6407063f0a94d29c8b36ac361ec1c0b8c78f1e8",
+        "original_recipe_fields": [
+          "compiler",
+          "sdk",
+          "external_manifest",
+          "host_link_inputs",
+          "packages",
+          "dependencies",
+          "environment",
+          "configure_argv",
+          "targets",
+          "generated_expected",
+          "boot",
+          "driver"
+        ],
+        "native_files": 554,
+        "actual_compiler_inputs": 1447,
+        "binaries": 7,
+        "original_source_recipe_reachable_from": "origin/feature/sycl",
+        "GPU_executed": false,
+        "source_recovery_passed": true
+      },
+      "kept_consumed_manifests": {
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/external-inputs.json": "dbe84857b1896fda5b386e2741094cf142b1c2130f84c6eb919d1c560bfcfead",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/component-checks-v1/runtime-inputs.json": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+      },
+      "next": "Commit this decision;delete only manifest-listed bytes under owned lock;verify selected eight-ELF admission after deletion."
     },
     "original_compile_database": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/compile_commands.json",
