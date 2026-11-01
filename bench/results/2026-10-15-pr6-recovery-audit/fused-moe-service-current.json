@@ -66735,7 +66735,7 @@
     }
   },
   "official_gdn_fp32_projection_ownership_v3": {
-    "stage": "prepared",
+    "stage": "host-ownership-passed",
     "source_commit": "e42a6ef4cd22627f17927816811413f8ea501a36",
     "compiled_native_implementation": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
     "image_proof": {
@@ -66803,8 +66803,68 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
+    "passed": true,
     "GPU_executed": false,
+    "actual_compiler_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership-v3/compiler-inputs.json",
+      "sha256": "4e182799698a54912171a15c8268408acd069b8d9f36b01ff1eefaa302d8b0ff",
+      "files": 899,
+      "uncovered": 0
+    },
+    "link_inputs": {
+      "frozen_inputs": {
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f"
+      },
+      "owned_build_or_compiler_products": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership-v3/tmp/icpx-a1d9313130/gdn_projection_fp32-1d3b86.o"
+      ],
+      "uncovered_external_inputs": 0,
+      "scope": "Observed GNU ld -t input paths;private generated objects are owned outputs,not external source evidence."
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/ownership-v3/ownership",
+      "sha256": "d80b2d820291f95a37d133322d02c444759d024bf1705e60cd9ab2a061e1582d",
+      "bytes": 54136
+    },
+    "result": {
+      "ownership": "passed",
+      "tile_cells": 16384,
+      "subgroups": 8,
+      "subgroup_size": 16,
+      "copy_bits": 32,
+      "atom_height": 8,
+      "atom_width": 16,
+      "checked_shapes": 65536,
+      "T_min": 1,
+      "T_max": 8192,
+      "GPU_submissions": 0,
+      "messages_per_subgroup": 16,
+      "payload_values_per_lane_message": 8,
+      "accumulator_payload_values_validated": false,
+      "hardware_tail_masking_executed": false,
+      "physical262144_qualified": false
+    },
     "controller_inputs": {
       "files": 41,
       "aggregate_sha256": "c7fd808642e9da8941085795336f4626ca24236204706fbf8e0e8ce187183e30"
