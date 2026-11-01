@@ -52,11 +52,17 @@ def verify():
         require(path.is_file() and not path.is_symlink() and path.read_bytes() == raw,
                 'retained native source changed: ' + name)
         allowed[str(path.resolve())] = row['native_sources'][name]
-    require(full['dependencies'] == row['dependencies'], 'dependency recipe differs')
+    # The recoverable source receipt holds every dependency hash; the build
+    # recipe stores its compact descriptor. Check both representations.
+    descriptors = [{k: v for k, v in group.items() if k != 'source_sha256'}
+                   for group in full['dependencies']]
+    require(descriptors == row['dependencies'], 'dependency recipe differs')
     for group in full['dependencies']:
         found = {n: hashlib.sha256(raw).hexdigest() for n, raw in base.basis.build.blobs(
             Path(group['root']), group['revision'], group['source_sha256'])}
-        require(found == group['source_sha256'], 'dependency Git recovery differs')
+        require(found == group['source_sha256'] and len(found) == group['count'] and
+                hashlib.sha256(json.dumps(found, sort_keys=True).encode()).hexdigest() ==
+                group['aggregate_sha256'], 'dependency Git recovery differs')
         for name, sha in found.items():
             path = (Path(group['root']) / name).resolve()
             require(digest(path) == sha, 'installed dependency changed: ' + str(path))
