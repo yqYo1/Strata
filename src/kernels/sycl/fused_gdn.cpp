@@ -4,6 +4,7 @@
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/verify_kernels.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/prefill/detail/gdn_storage_casts.hpp"
 #include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <cmath>
@@ -176,7 +177,9 @@ void recurrence(float *state, const float *q, const float *k, const float *v,
 // its complete128-row state, so partitions never communicate during the scan.
 // RMS is the only cross-column operation and runs after the ordered scan.
 inline float stored_value(float value) { return value; }
-inline float stored_value(uint16_t bits) { return f32_from_f16(bits); }
+inline float stored_value(uint16_t bits) {
+  return strata::prefill::detail::gdn_half_load(bits);
+}
 
 template <int Partitions, bool SplitReductions = false, class Input = float>
 void recurrence_columns(float *state, const Input *h, const float *gate,
@@ -351,7 +354,8 @@ void gdn_conv_f16(float *history, const uint16_t *qkv, const float *w,
   for (auto span : outputs) validate_device_span(span.pointer, span.bytes, queue);
   for (auto span : inputs) validate_device_span(span.pointer, span.bytes, queue);
   const auto device = queue.get_device();
-  strata::kernels::dims(device.get_info<sycl::info::device::max_work_group_size>() >= 128 &&
+  strata::kernels::dims(device.has(sycl::aspect::fp16) &&
+      device.get_info<sycl::info::device::max_work_group_size>() >= 128 &&
       device.get_info<sycl::info::device::max_work_item_sizes<1>>()[0] >= 128 &&
       device.get_info<sycl::info::device::local_mem_size>() >= 4 * sizeof(float));
   const auto subgroups = device.get_info<sycl::info::device::sub_group_sizes>();
@@ -366,9 +370,9 @@ void gdn_conv_f16(float *history, const uint16_t *qkv, const float *w,
           for (size_t j = 0; j < 3; ++j) {
             const size_t src = t + j;
             value[j] = src < 3 ? history[c * 3 + src] :
-                strata::kernels::f32_from_f16(qkv[(src - 3) * C + c]);
+                detail::gdn_half_load(qkv[(src - 3) * C + c]);
           }
-          value[3] = strata::kernels::f32_from_f16(qkv[t * C + c]);
+          value[3] = detail::gdn_half_load(qkv[t * C + c]);
           float sum = value[0] * w[c * 4];
           for (size_t j = 1; j < 4; ++j) sum = sycl::fma(value[j], w[c * 4 + j], sum);
           float y = sum / (1.f + sycl::exp(-sum));
@@ -378,7 +382,7 @@ void gdn_conv_f16(float *history, const uint16_t *qkv, const float *w,
             it.barrier(sycl::access::fence_space::local_space);
             y *= sycl::rsqrt(((partial[0] + partial[1]) + partial[2]) + partial[3] + eps);
           }
-          out[t * C + c] = strata::kernels::f16_from_f32(y);
+          out[t * C + c] = detail::gdn_half_store(y);
         });
   });
   finish(stream, event);
@@ -389,7 +393,7 @@ void gdn_conv_f16(float *history, const uint16_t *qkv, const float *w,
     for (int j = 0; j < 3; ++j) {
       const int64_t t = T - 3 + j;
       value[j] = t < 0 ? history[c * 3 + size_t(t + 3)] :
-          strata::kernels::f32_from_f16(qkv[size_t(t) * C + c]);
+          detail::gdn_half_load(qkv[size_t(t) * C + c]);
     }
     for (size_t j = 0; j < 3; ++j) history[c * 3 + j] = value[j];
   });
@@ -462,6 +466,7 @@ void gdn_recurrence_separate(float *state, const Input *h, const float *gate,
       std::fprintf(stderr, "strata GDN storage: fp16;state=fp32;tokens=%lld\n", (long long)T);
   }
   if constexpr (!std::is_same_v<Input, float>) {
+    strata::kernels::dims(device.has(sycl::aspect::fp16));
     strata::kernels::dims(partitions == 4 && split_reductions);
     strata::kernels::recurrence_columns<4, true>(state, h, gate, beta, y, int(T), stream);
   } else if (split_reductions) {
@@ -490,8 +495,12 @@ void gdn_recurrence_separate(float *state, const Input *h, const float *gate,
           const float ss = ((part[0] + part[1]) + part[2]) + part[3];
           const float value = ((oc * sycl::rsqrt(ss / 128.f + eps)) * gamma[col]) *
                              (1.f / (1.f + sycl::exp(-strata::kernels::stored_value(z[idx]))));
-          if constexpr (std::is_same_v<Input, float>) y[idx] = value;
-          y16[idx] = strata::kernels::f16_from_f32(value);
+          if constexpr (std::is_same_v<Input, float>) {
+            y[idx] = value;
+            y16[idx] = strata::kernels::f16_from_f32(value);
+          } else {
+            y16[idx] = detail::gdn_half_store(value);
+          }
         });
   });
   finish(stream, event);

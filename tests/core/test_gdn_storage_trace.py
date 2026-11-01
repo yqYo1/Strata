@@ -4,7 +4,7 @@ import sys
 import unittest
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
-from measure_gdn_storage import launch_census
+from kernel_trace import launch_census
 
 NATIVE = '<--- urKernelCreateWithNativeHandle(.hNativeKernel = 0x11, .hContext = 0x12, .hProgram = 0x13, .phKernel = 0x14 (0x15)) -> UR_RESULT_SUCCESS;'
 NAMED = '<--- urKernelCreate(.hProgram = 0x13, .pKernelName = 0x16 (_ZTS_convert), .phKernel = 0x14 (0x17)) -> UR_RESULT_SUCCESS;'

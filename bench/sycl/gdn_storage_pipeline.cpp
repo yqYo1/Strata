@@ -2,6 +2,7 @@
 // No XeStrata source; no model dispatch, decode or physical-context claim.
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/prefill/detail/gdn_storage_casts.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <oneapi/mkl/blas.hpp>
 #include <algorithm>
@@ -11,6 +12,7 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -64,6 +66,53 @@ template<class T> struct Buffer {
 };
 template<class T> void exact(const std::vector<T> &a,const std::vector<T> &b,const char *why) {
   need(a.size()==b.size()&&std::memcmp(a.data(),b.data(),a.size()*sizeof(T))==0,why);
+}
+void conversion_corpus(const std::shared_ptr<s::Runtime> &rt) {
+  std::vector<uint16_t> half(65536);
+  for(size_t i=0;i<half.size();++i)half[i]=uint16_t(i);
+  std::vector<float> values;values.reserve(253964);
+  auto both_signs=[&](float value) { values.push_back(value);values.push_back(-value); };
+  const float inf=std::numeric_limits<float>::infinity();
+  for(uint16_t h=0;h<0x7bff;++h) {
+    const float a=f32_from_f16(h),b=f32_from_f16(uint16_t(h+1)),mid=(a+b)*.5f;
+    for(float value:{a,mid,std::nextafter(mid,-inf),std::nextafter(mid,inf)})both_signs(value);
+  }
+  for(float value:{65504.f,65520.f,std::nextafter(65520.f,-inf),std::nextafter(65520.f,inf),
+      65536.f,std::numeric_limits<float>::max(),std::numeric_limits<float>::denorm_min(),
+      std::numeric_limits<float>::min(),inf,std::numeric_limits<float>::quiet_NaN()})both_signs(value);
+  need(values.size()==253964,"conversion corpus extent");
+  Buffer<uint16_t> input_half(rt,half.size()),output_half(rt,values.size());
+  Buffer<float> input_float(rt,values.size()),output_float(rt,half.size());
+  CheckedDrain drain{*rt};input_half.set(half);input_float.set(values);
+  const auto *h=input_half.data();auto *f=output_float.data();
+  rt->compute().parallel_for(sycl::range<1>(half.size()),[=](sycl::id<1> i) {
+    f[i]=p::detail::gdn_half_load(h[i]);
+  });
+  const auto *a=input_float.data();auto *b=output_half.data();
+  rt->compute().parallel_for(sycl::range<1>(values.size()),[=](sycl::id<1> i) {
+    b[i]=p::detail::gdn_half_store(a[i]);
+  });
+  rt->wait();const auto promoted=output_float.get();const auto rounded=output_half.get();
+  for(size_t i=0;i<half.size();++i) {
+    const float expected=f32_from_f16(half[i]);
+    uint32_t want=0,got=0;std::memcpy(&want,&expected,4);std::memcpy(&got,&promoted[i],4);
+    if(std::isnan(expected)?!std::isnan(promoted[i]):want!=got)
+      throw std::runtime_error("half-load mismatch;input_bits="+std::to_string(i)+
+          ";expected_f32_bits="+std::to_string(want)+";actual="+std::to_string(got));
+  }
+  for(size_t i=0;i<values.size();++i) {
+    const uint16_t want=f16_from_f32(values[i]),got=rounded[i];
+    const bool nan=(got&0x7c00)==0x7c00&&(got&0x03ff)!=0;
+    if(std::isnan(values[i])?!nan:want!=got) {
+      uint32_t bits=0;std::memcpy(&bits,&values[i],4);
+      throw std::runtime_error("half-store mismatch;case="+std::to_string(i)+
+          ";input_f32_bits="+std::to_string(bits)+";expected_half_bits="+std::to_string(want)+
+          ";actual="+std::to_string(got));
+    }
+  }
+  input_half.immutable(half);input_float.immutable(values);drain.finish();
+  std::cout<<"{\"kind\":\"conversion\",\"half_inputs\":65536,\"float_inputs\":253964,"
+      "\"finite_bits_exact\":true,\"nan_classes\":true,\"passed\":true}\n"<<std::flush;
 }
 uint32_t mix(uint32_t h) {
   h^=h>>16;h*=0x7feb352du;h^=h>>15;h*=0x846ca68bu;return h^(h>>16);
@@ -308,6 +357,7 @@ int main(int argc,char **argv) {
     auto rt=std::make_shared<s::Runtime>(0);
     need(rt->device().is_gpu()&&rt->device().has(sycl::aspect::fp16),"GPU FP16 required");
     need(rt->compute().has_property<sycl::property::queue::in_order>(),"in-order compute required");
+    conversion_corpus(rt);
     if(mode=="--smoke") { run(rt,1,"general");run(rt,17,"general"); }
     else if(mode=="--validate") {
       for(int t:{1,2,3,127,129,8191,8192})run(rt,t,"general");
