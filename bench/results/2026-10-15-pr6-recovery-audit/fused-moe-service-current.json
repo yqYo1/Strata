@@ -73050,7 +73050,7 @@
     }
   },
   "gdn16_model_speed_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "1a8c38770094d25f364835dcf8bab1a1d3b306bd",
     "arms": {
       "candidate": {
@@ -73685,7 +73685,42 @@
         "environment_sha256": "0ef6e9d0029d86cc8f7eaab0899555ae22073995c4a5e32c9075e0ba2b93da18"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 65537,
+        "heads": 0,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "candidate",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/build/strata",
+          "sha256": "c2d48e05cd611292119018464e70677a5ff895f9bf4c68280a668a0748991ed7",
+          "bytes": 24049808
+        },
+        "native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+        "native_identity": {
+          "pid": 3663973,
+          "start_ticks": 187062106,
+          "sid": 3663926
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "controls": {
       "route": {
@@ -73720,7 +73755,7 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "inference_adopted": false,
     "whole_bytes": 838860800,
     "budgets": {
@@ -73768,5 +73803,48 @@
     "current_nine_binaries_retained": true,
     "required_records_retained": true,
     "remaining": "14older provenance holds are unchanged;no global cleanup claim. New model-speed-v1 plan and all model/source/runtime assets are untouched."
+  },
+  "gdn16_model_speed_v1_failure_diagnosis": {
+    "original_campaign": "gdn16_model_speed_v1",
+    "original_status": "failed/incomplete;ownership validation false preserved",
+    "source_commit": "1a8c38770094d25f364835dcf8bab1a1d3b306bd",
+    "native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+    "actual_error": "RuntimeError('actual native16 throughput route differs')",
+    "site": "compare_official_prefill.interact -> compare_prefill_strategies.request_route -> native16_route",
+    "cause": "New route observer required STRATA_TRACE-only policy output in clean mode,which intentionally removes STRATA_TRACE. Actual native16 long-route headers were present;no engine failure was observed before the observer terminated the owned session.",
+    "evidence": {
+      "trace_only_policy_lines": 0,
+      "actual_layer_major_lines": 1,
+      "actual_native16_lines": 1,
+      "native_footer": "strata serve: prompt 65537 tokens = 0 reused + 65537 read in 82911 ms (790.5 tok/s), 24 generated in 1833 ms (13.1 tok/s), drafts accepted 16 of 21, 0 checkpoints",
+      "fresh_faults": []
+    },
+    "cleanup": {
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "survivors": [],
+      "owner_active": false,
+      "original_observation_complete": false,
+      "note": "Physical cleanup verified;original failed observation/ownership-validation result is not relabeled."
+    },
+    "red_regression": {
+      "source_commit": "c4f1cb49b03a9989b86d86c08ab6b65993061af6",
+      "command": [
+        "/usr/bin/timeout",
+        "30s",
+        "/usr/bin/python3",
+        "-B",
+        "tests/core/test_native16_prefill_route.py"
+      ],
+      "test_sha256": "650bbaa15dffce86694879e7ccf1646f1c208d5d636d13afd5f3a41027723c71",
+      "interpreter_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "exit_code": 1,
+      "tests": 5,
+      "failures": 5,
+      "errors": 1,
+      "GPU_executed": false
+    },
+    "next": "Use always-on actual geometry and native16 output;optional policy logging must agree when present. Commit fix and a fresh v2comparison plan;do not continue or retry the failed v1campaign. Engine/source/ELFs and safety settings remain unchanged.",
+    "diagnostic_consumer": "Main CPU regression and first fresh v2case;keep one original error/session/engine excerpt until that repro is resolved.790.5tok/s native footer is diagnostic only,not an eligible benchmark sample."
   }
 }
