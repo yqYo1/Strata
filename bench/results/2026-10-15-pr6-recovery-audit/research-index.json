@@ -19854,10 +19854,12 @@
     }
   },
   "current_research_scope_admission": {
-    "eligible_scopes": 0,
-    "scopes": [],
-    "reason": "The old oneMKL scope is closed;current resource/dispatch scopes keep their own unmet prerequisites. A separate native Luna-max review found no novel knowledge-collection scope in ten sampled general SYCL/GPU/ASIC references;missing stage attribution did not rule out knowledge collection.",
-    "next_review": "Continue recurring eligibility checks when current model/resource evidence or a concrete new general-method question exposes a gap. Reuse the indexed references;do not redispatch their already covered questions.",
+    "eligible_scopes": 1,
+    "scopes": [
+      "native16_hc_residual_write_row_reuse_20261101"
+    ],
+    "reason": "Closed current117K resource profile supplies a new main-prefill HC-write mapping question. Native Luna-max overlap review admits only this scope; Q80/MTP and upload batching reuse indexed methods.",
+    "next_review": "Review scope/depth after this report; continue Main current-generation MTP/length tuning in parallel. Other conditional scopes retain their prerequisites.",
     "closed_transaction_retirement": {
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-gdn-storage-transactions.json",
       "sha256": "4e0cc2e8c1fd3a331df0300a89134a2f250143e1ef635f26a574a34153ee0f39",
@@ -20471,5 +20473,54 @@
       "digest": "Report needs reader-map corrections:profile_split equality scope,live build/device and request-hash predicates,and Down-builder key collision. Archived-row access is acceptable only when verified archived values still reach all existing predicates. No compaction is currently eligible."
     },
     "next": "After cohort closure,Main checks the identified reader corrections before changing consumers;preserve all existing qualification predicates and original results."
+  },
+  "native16_hc_residual_write_row_reuse_20261101": {
+    "id": "native16_hc_residual_write_row_reuse_20261101",
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "novelty": "Prior mtp_mhc_small_operator_gpu_methods_20261022 covers MTP projections/mixing, not this main-prefill native16::write mapping or repeated injection-gate evaluation. Reuse its operation-order contract and semantic correction: Strata HC is not the paper’s Sinkhorn Manifold-Constrained HC.",
+    "prior_retrieval": {
+      "report_sha256": "ca17f2f08c0ea340ce4ca0c742338427fcf716e3bfff713f86fb25f59b8d4848",
+      "review_sha256": "972f51742ed1195e354eeca31d5bd7606a75509886fbd139227c5cca1731f642",
+      "sections": [
+        "Actual shapes, state and numerical order",
+        "Method families and where they fit",
+        "Regime comparison and evidence boundary",
+        "Provenance, license and retrieval"
+      ]
+    },
+    "finite_question": "At pinned T=117488,N=2560,HC=4, compare flat scalar mapping with per-(row,HC) vector/subgroup mapping and subgroup gate reuse; assess separate FP32 gate precompute including added launch/workspace. Count duplicate sigmoid/index work and logical bytes, preserve FP32 FMA then BF16 RNE, and check exact-revision SGLang/vLLM for an equivalent write (or report none).",
+    "source_pins": [
+      {
+        "path": "src/prefill/sycl/native16.cpp",
+        "checkout_sha256": "71a487d8e4f386cb12373490542d4446fef5abaea832b1819df4fc0aed49fafa"
+      },
+      {
+        "path": "src/prefill/prefill.cpp",
+        "checkout_sha256": "79e08eb7e303b6a02c380edea92ccb0312df942469e90dc22775bfb398cd3ead"
+      },
+      {
+        "path": "src/prefill/moe_window.inc",
+        "checkout_sha256": "cd30f4d7a5f1d5c0558684bf9468786139852a90cc42e283e56be3aca39991a2"
+      },
+      {
+        "path": "include/strata/prefill/native16.hpp",
+        "checkout_sha256": "d54c3ae3cf2b62cff0aa5582534cd3d4ba7f9448fd472fa297af88fdcd412adc"
+      }
+    ],
+    "source_contract": "native16.cpp write() maps one work item to each R[T,4,2560] element, repeats gate=2*sigmoid(inj/4) across 2560 features per stream, then stores BF16(fma(BF16(bo),gate,BF16(R))) with FP32 operands/accumulation. Profile family count matches2 calls*48 layers*15 chunks; use prefill.cpp's callsite and verify dispatch against the pinned route.",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/native16_hc_residual_write_row_reuse_20261101.md",
+    "acceptance_limits": "Reconcile hashes/callsite; compare rounding, ownership/tails, broadcast, register/launch/workspace costs and counterexamples. Pin/license external source before implementation use; no XeStrata. Profile service is attribution only.",
+    "prerequisites_met": [
+      "Closed117489-read profile has actual source-family census and 8192 chunks; no saturation claim required.",
+      "Current profile pins native revision521c1757b and the exact native16::write source/callsite bytes are identified below.",
+      "Relevant MTP report and review are indexed and section-pinned for retrieval."
+    ],
+    "status": "approved_pending_dispatch",
+    "source_commit": "65fad3a32c7a607a79732482a22f29d3c01882c8",
+    "native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+    "review_sha256": "eb404a844a228819f4ebcad684b97300be678c3f79c76fd5dc80940d04bcccd7",
+    "review_model": "gpt-6-luna max native Codex",
+    "main_read_policy": "Read native Luna-max operational digest, then only sections answering a concrete implementation question. No automatic report retention."
   }
 }
