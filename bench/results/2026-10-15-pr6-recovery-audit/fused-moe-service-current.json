@@ -66793,5 +66793,215 @@
       "files": 1,
       "aggregate_sha256": "085d00b4b3e6fbfd79ddf8f15303ec4c4a23f712dca6b332d62793407aa8ab02"
     }
+  },
+  "official_gdn_storage_speed_v1": {
+    "stage": "prepared",
+    "source_commit": "e39bd56bc3fea4125bbb7f2f02a80fc1f21196c8",
+    "prerequisite_records": {
+      "build": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/record.json",
+        "sha256": "33989cb551e6ad29741f5e7ea618cde2fade34636a8f0d9285b7d5b45c0c41c5"
+      },
+      "host_parser": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/parser-host-v1/record.json",
+        "sha256": "430da14592eb058ef9508d17da186aed134d393455c0dde03d675dbf495e1ff9"
+      },
+      "device": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/device-v2/record.json",
+        "sha256": "ffa783546dc922d362100c2df6d58bf8547eca523b72daa6e9b93ecca34d1f0a"
+      }
+    },
+    "native_source_commit": "605e73d451b3425fa275e6e917069909d39d8f7c",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/build/gdn-storage",
+      "sha256": "efadedcaec374e5e4e112e936c6e43f9e7d19bd98b6f3e181b503a030ac63200",
+      "bytes": 455104
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so"
+    },
+    "canary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+      "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/runtime-basis.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84,
+      "original_component_source": "83590826a6f77b686ae9ea1b0fbc085ba089ec19",
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+        "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+        "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+        "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+        "STRATA_SYCL_SELECT_RADIX4": "1",
+        "STRATA_SYCL_SELECT_CYCLIC": "0",
+        "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+        "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original"
+      },
+      "canary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+        "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "cases": [
+      {
+        "name": "host-canary",
+        "args": [],
+        "clean": false,
+        "trace": false
+      },
+      {
+        "name": "clean-smoke",
+        "args": [
+          "--smoke"
+        ],
+        "clean": true,
+        "trace": false
+      },
+      {
+        "name": "resident-0",
+        "args": [
+          "--bench",
+          "0"
+        ],
+        "clean": true,
+        "trace": false
+      },
+      {
+        "name": "resident-1",
+        "args": [
+          "--bench",
+          "1"
+        ],
+        "clean": true,
+        "trace": false
+      },
+      {
+        "name": "resident-2",
+        "args": [
+          "--bench",
+          "2"
+        ],
+        "clean": true,
+        "trace": false
+      }
+    ],
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "budgets": {
+      "wall": 480,
+      "cpu": 1500,
+      "rss_cap": 6442450944,
+      "text_cap": 8388608,
+      "file_cap": 67108864,
+      "total_cap": 100663296
+    },
+    "whole_wall_seconds": 1800,
+    "whole_bytes": 100663296,
+    "plan": {
+      "scope": "Resident half-input oneMKL output-storage component only;not model PP,decode,PCIe,dequantization or physical262144.",
+      "compute_mode": "Intentionally preserve production-style default compute_mode::unset in all three arms. FP16 C has exact half1/0 scalars;FP32 C has exact float1/0. This tests actual vendor default dispatch,not explicit-standard behavior or a guaranteed accumulator type. A separate prospective standard-mode variant is conditional on evidence,not required to observe this default API.",
+      "numerical": "18general shapes plus4cancel,2zero,2onehot. All outputs finite,inputs/padding/guards unchanged. Bounded normal half inputs certify absolute dot sum<65504. Compare direct half to FP32 within2gamma32*Sbar plus half-round bound;64FP64 spots/case include final half rounding. This diagnostic is not model quality,subnormal/NaN/Inf coverage or a vendor-accumulator proof.",
+      "consumers": "Only typed fixture output readers run. Production FP32 conv/z consumers,BF16 producer alternatives and GDN3/decode handoff remain outside this isolated comparison and mandatory before model adoption.",
+      "safety": "Original in-order runtime and checked drain;copy offload/direct submission disabled;at most8GEMMs outstanding;no environment mutation after exec.",
+      "timing": "Three fresh resident processes,start orders0/1/2;four4096/8192x6144/10240,K2560 shapes. First per-shape calls separate,six warmups,five rotated3-arm128-call batches. Copies,allocation,setup and validation outside timing. Checked host interval includes submission,8-call drains and final wait;no returned-MKL-event-as-whole-service assumption.",
+      "eligibility": "Every steady batch>=100ms;median of5empty controls<=5%of every batch. No resizing or retry. Per-shape16bit follow-up requires all3independent median ratios<1 against each control;no arbitrary minimum gain. A component pass never directly authorizes a model trial.",
+      "providers": "Use original84provider inventory. Clean mode removes observers before exec but requires actual libsycl,V2adapter,NEO maps;validated mode also requires preload/external URloader. Poll100ms with bounded /proc exit grace and positive pidfd retirement.",
+      "tracing": "Pre-main validation canary,small traced smoke,warning-only general cohort. Record successful kernel creations/launch counts;names are evidence of dispatched kernels,not accumulator/range guarantees.",
+      "retention": "Preserve individual speed samples,numeric maxima,source/runtime/closure and decisions. Retire successful full traces and closed raw logs after compact evidence verification.",
+      "layout": "All fixture rows use ldy=N+16 guards in both32/16bit controls. This isolates padded resident output storage;packed production layout and typed GDN3 consumers need their own qualification before adoption."
+    },
+    "controller_inputs": {
+      "files": 40,
+      "aggregate_sha256": "16dd6fee84cb7274feb0a468f02759f7e7fe95b3dbca477b22584723d38cd4e9"
+    },
+    "native_sources": {
+      "files": 1,
+      "aggregate_sha256": "085d00b4b3e6fbfd79ddf8f15303ec4c4a23f712dca6b332d62793407aa8ab02"
+    }
   }
 }
