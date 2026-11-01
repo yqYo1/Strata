@@ -68337,7 +68337,7 @@
     }
   },
   "official_gdn_fp32_resident_fixture_build_v2": {
-    "stage": "prepared",
+    "stage": "built-not-executed",
     "source_commit": "31edf0ba2c61bc196cb5c72c0c879b46ac32189f",
     "original_fixture_recipe": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/record.json",
@@ -68480,8 +68480,61 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
+    "passed": true,
     "GPU_executed": false,
+    "actual_compiler_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/compiler-inputs.json",
+      "sha256": "fb166434f1c0f14b1850d9d0ba6fd52f7515f79536de99ff133081474f62adac",
+      "files": 724,
+      "uncovered": 0
+    },
+    "actual_link_inputs": {
+      "frozen_inputs": {
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-devicelib-host.a": "770b0944b181690a21d78a0cb2e1d091d38b3caa209e185e276a943dea7bd8e9",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f"
+      },
+      "owned_build_or_compiler_products": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/tmp/icpx-fedb23cd26/fixture-object-86d248.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/tmp/icpx-fedb23cd26/gdn-fp32-bench-wrapper-c0e1b2.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/tmp/icpx-fedb23cd26/host-47c9a1.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/tmp/icpx-fedb23cd26/image-6dce43.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/tmp/icpx-fedb23cd26/runtime-object-f13c1e.o"
+      ],
+      "uncovered_external_inputs": 0,
+      "scope": "Observed GNU ld -t input paths;private generated objects are owned outputs,not external source evidence."
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/resident-bench-v2/gdn-fp32-bench",
+      "sha256": "58ff2f256b4bb920a330118e8d821db8c6cd72e2f1c9f75775f8b261a12caffe",
+      "bytes": 2708400
+    },
     "controller_inputs": {
       "files": 45,
       "aggregate_sha256": "89442fd03b6815aebd106a673a49ce54ee075254f9ad53b7edc451934838bb92"
