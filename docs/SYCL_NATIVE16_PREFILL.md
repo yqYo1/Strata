@@ -660,9 +660,23 @@ prefill;do not call this decode-only CPU time. Both answers and thoughts differ,
 with5578/5496answer characters;presence does not adjudicate task quality.
 One diagnostic pair does not establish reproducibility,prefill nonregression,
 physical saturation or adoption. Keep8swaps as the faster development candidate.
-Next freeze repeated opposite-order strong/weak-MTP and independent prefill
-comparisons,then separate remaining GPU kernel service from runtime/event waits
-using a bounded profiler. Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
+The next comparison is frozen at`c6462b94a`:six fresh processes in0/8,8/0,0/8
+swap order,each with four official warmups followed by regular-code and
+varied-prose once. The same fixed native generation and request bodies are
+used. Both fresh frontend probes pass. Parameter validation,private retained
+activation preload and nominal MTP callback markers remain;detailed trace,
+CPU attribution,decode clocks and adaptive-copy logs are disabled for speed.
+Keep all individual lengths,acceptance,TG,prompt time and TTFT;classify strong
+and weak MTP from observed acceptance in each arm,not workload names. Require
+three paired TG gains per workload without a minimum percentage floor;this
+does not adopt a policy or qualify dedicated117K prefill nonregression.
+After source recovery and admission checks,the prior diagnostic's140raw/JIT
+files totaling25881204bytes and four closed research transactions totaling
+21926bytes are retired. Its record/runtime and two generated config/plan pairs
+remain while qualification consumes them. No new engine generation is created.
+Next complete the repeated comparison and independent prefill checks,then
+separate remaining GPU kernel service from runtime/event waits with a bounded
+UnitTrace capture. Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
 36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
 costs. Keep payload/task,other exit paths,full256K and broader adoption pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
