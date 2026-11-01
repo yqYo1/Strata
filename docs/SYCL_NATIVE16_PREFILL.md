@@ -132,7 +132,10 @@ The four oneMKL component baselines are indexed in `bench/performance-records.cs
 The unused86-line API/kernel addition and ten prototype-only fixtures/controllers
 are removed;both native GEMM files again exactly match f6cea2. The independent
 bounded ProcObserver fix and its six real-child tests remain maintained.
-External prototype retirement is recorded in the compact closed decision.
+External retirement now removes655files/20866682B after exact source/recipe
+recovery. Selected555-source/1449-input/eight-ELF admission passes before and
+after deletion;the engine SHA is unchanged. The path/hash/reason manifest and
+remaining14legacy provenance holds are recorded in the compact closed decision.
 
 Next audit the actual GDN3 producer/consumer storage contract and direct oneMKL
 FP16-output support before a new component experiment. A16bit output needs
