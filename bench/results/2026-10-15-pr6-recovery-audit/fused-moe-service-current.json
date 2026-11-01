@@ -73785,5 +73785,13 @@
       "files": 0,
       "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
     }
+  },
+  "gdn16_pipeline_recipe_preparation_v2": {
+    "stage": "failed-before-build",
+    "source_commit": "770cfba384ed8aa37cf9d20be310752eaf9de7bf",
+    "error": "RuntimeError: frozen pipeline controller changed",
+    "cause": "prepare_build passed compact host-result input descriptors to controls instead of the exact external full host record. No ROOT/build was created. Correct reader verifies full record against committed compact record first;new host cohort v4 preserves original v3 pass.",
+    "GPU_executed": false,
+    "build_executed": false
   }
 }

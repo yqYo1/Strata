@@ -29,7 +29,7 @@ require, digest, write = base.require, base.digest, base.write
 ROOT = B / 'gdn16-pipeline-v2'
 BUILD, CHECK, SPEED = 'gdn16_pipeline_build_v2', 'gdn16_pipeline_device_v2', 'gdn16_pipeline_speed_v2'
 CAST = 'include/strata/prefill/detail/gdn_storage_casts.hpp'
-HOST_KEY, HOST_TEST = 'gdn_kernel_trace_host_v3', 'tests/core/test_gdn_storage_trace.py'
+HOST_KEY, HOST_TEST = 'gdn_kernel_trace_host_v4', 'tests/core/test_gdn_storage_trace.py'
 FIXTURE, KERNEL, HEADER = ('bench/sycl/gdn_storage_pipeline.cpp',
     'src/kernels/sycl/fused_gdn.cpp', 'include/strata/prefill/kernels.hpp')
 CONTROLLER = Path(__file__).resolve()
@@ -66,7 +66,7 @@ def allowed_inputs(revision):
 
 def host_check():
     require(HOST_KEY not in base.committed(RESULT), 'one fresh host parser gate')
-    root = B / 'gdn-kernel-trace-host-v3'
+    root = B / 'gdn-kernel-trace-host-v4'
     require(not root.exists(), 'host parser gate already exists'); root.mkdir(mode=0o700)
     revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     raw = base.basis.build.git(P, 'show', revision + ':' + HOST_TEST)
@@ -109,7 +109,10 @@ def prepare_build():
     retirement = base.committed(RESULT)['gdn16_software_pipeline_retirement']
     require(retirement['source_recipe_recovered'] and retirement['deleted_verified'] and
             not Path(retirement['retired_binary']['path']).exists(), 'retire recovered V1 component first')
-    host = base.committed(RESULT)[HOST_KEY]; controls(host)
+    host_path = B/'gdn-kernel-trace-host-v4/record.json'
+    host = json.loads(host_path.read_text())
+    require(base.committed(RESULT)[HOST_KEY] == base.compact(host), 'committed full parser record required')
+    controls(host)
     require(host['passed'] and host['ownership_closed'] and not host['active'] and host['tests']==6 and
             digest(P/HOST_TEST)==host['test']['sha256'], 'current parser host gate required')
     old = base.basis.build.git(P, 'show', retained.NATIVE + ':' + KERNEL)
