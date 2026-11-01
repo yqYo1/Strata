@@ -20170,8 +20170,8 @@
   },
   "gdn16_model_integration_contract_audit_20261101": {
     "classification": "decision_support",
-    "status": "eligible_not_started",
-    "schedulable_now": true,
+    "status": "running_source_only",
+    "schedulable_now": false,
     "question": "Audit the newly integrated production half-output Gemm, shared dequantization scratch and arena views, native16 long-prefill dispatch and prefill/decode handoff. Identify concrete contract violations or untested requirements; do not repeat standalone typed-kernel or algorithm surveys.",
     "novelty": "The prior typed-consumer report predates the new Gemm::f16_vendor_out16 API, shared-arena carve and production prefill caller. These are new committed source connections,not a request to resurvey the old component.",
     "eligibility_evidence": [
@@ -20199,6 +20199,21 @@
       "gdn16_typed_consumer_audit_20261101",
       "gdn16_projection_consumer_contract_20261101",
       "gdn3_causal_convolution_gpu_dataflows_20261101"
-    ]
+    ],
+    "task": "task_9bf6741e7474",
+    "dispatch": "ctx_6c5157c7b4d2",
+    "terminal": "term_20eee108-0cec-43d9-b27d-5ce981292272",
+    "startup": {
+      "initial_dispatch": "ctx_ecb81e5da3a7",
+      "failed_stage": "agent_readiness",
+      "reason": "agent-update-prompt;skipped without installing;retried same Task/terminal",
+      "effective_model": "gpt-6-luna",
+      "effective_effort": "high",
+      "prompt_stages": [
+        "input_accepted",
+        "turn_started"
+      ],
+      "normal_startup_permissions_preserved": true
+    }
   }
 }
