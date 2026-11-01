@@ -167,6 +167,19 @@ This comparison does not include PCIe/dequantization or prove a hardware
 ceiling. Require dequantization and unchanged consumers in the actual dependency
 path before any model A/B or inference adoption.
 
+The independent maintained fixture is now
+`bench/sycl/gdn_projection_fp32_bench.cpp`,controlled by
+`tools/sycl/measure_gdn_projection_fp32.py`;it is not built or run yet.
+It preserves the original exact fixture and its consumed receipts. The new
+plan adds26general/cancellation/zero/onehot shapes,64FP64 spots per shape,
+16safe synchronous rejections and three fresh resident timing processes.
+Each timing process checks four T4096/8192,N6144/10240 shapes,keeps first
+shape calls separate and alternates five64-call batches per arm. Every steady
+batch must exceed50ms and its empty-control overhead must be at most5%.
+OneMKL remains a comparator;the general-data bounds do not assume its internal
+accumulation from the public type tuple. Full model/task/physical262144 gates
+remain pending. Current engine speed evidence is unchanged.
+
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
 weights are50MiB and30MiB,so these shapes do not require N-splitting. Reuse
