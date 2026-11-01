@@ -550,6 +550,13 @@ runtime evidence without loading parent executables. Its original fresh-build
 path remains strict. Verify this new admission and recover the parent's exact
 source/recipe before retiring its build products;this edit alone is not proof
 that retirement or a new native build completed.
+The new admission's three CPU checks pass,including simulated fixture/compiler
+map changes being rejected and the old parent verifier being unavailable.
+After recovering the original555-file parent source,its controls and1449actual
+compiler inputs from pushed history,737build/source/log files totaling156121011B
+are retired,including all eight old ELFs and their object/library products.
+Current nine-ELF admission passes after actual deletion. Parent metadata remains
+only until the next fixed-source builder recipe is pinned;review it at prepare.
 The adaptive request-boundary source audit and independent Luna review identify
 unchecked refill event records: a failed new record can leave an older completed
 event,allowing RAM exchange before the new H2D source is safe to overwrite.
@@ -559,11 +566,19 @@ checked teardown. Successful event completion still precedes RAM exchange and
 residency publication. This fix is source-only,not built or GPU-qualified;the
 selected executable and its zero-swap configuration are unchanged. No observed
 GPU fault is attributed to this error path. Before positive-swap testing,replace
-the obsolete parent-binary verifier dependency,build the fixed source and use
+the obsolete parent-binary verifier dependency (now closed),build the fixed source and use
 bounded validation for deferred final-window copies,next GEN/GENI prefill,
 invalid input,QUIT/EOF and partial-submit/error teardown. Compare positive swaps
 against zero using matched long generation,then verify independent prefill and
 decode performance;do not infer a gain from source review.
+The fixed source also adds opt-in serve swap/publication and requested-H2D-byte
+logging via`STRATA_TRACE_ADAPT`. The diagnostic-only preexec setting
+`STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE=1`passes a null event on the second refill
+record through the real compatibility API,leaving the old completed event intact
+after new copies are queued. This plans an actual error-propagation/teardown
+check without intentionally faulting the GPU;it has not run. Neither diagnostic
+is enabled by default,requested bytes are not measured PCIe traffic,and no
+positive-swap performance or lifecycle qualification follows from these edits.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.

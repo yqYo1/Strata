@@ -84871,5 +84871,50 @@
       "files": 262,
       "aggregate_sha256": "0c4602046cde3ab73b48dae271b75e0bc98073812c17c2f8d7cbc4fd0ceaaaf0"
     }
+  },
+  "gdn16_parent_build_retirement": {
+    "stage": "retired-current-admission-passed",
+    "controller_commit": "2c81bf12948bcf5c825e848dc20cc393d82afb28",
+    "parent_native_source_commit": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
+    "original_inputs_recovered": true,
+    "original_source_files": 555,
+    "original_controller_files": 37,
+    "actual_compiler_inputs": 1449,
+    "retired_binaries": 8,
+    "retired_files": 737,
+    "retired_bytes": 156121011,
+    "deleted_verified": true,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261102-prefill-parent.json",
+      "sha256": "55f97e8ec3ed6685bedd557e6d18650d524088121e6b2a6d43bf7c45870bc1f4",
+      "bytes": 324685
+    },
+    "selected_native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+    "current_admission_after_deletion": true,
+    "admission_tests": {
+      "source_commit": "2c81bf12948bcf5c825e848dc20cc393d82afb28",
+      "command": "python3 -B -m unittest discover -s tools/sycl -p test_gdn_model_build.py -v",
+      "tests": 3,
+      "exit_code": 0
+    },
+    "controller_reuse_changes": [
+      "tools/sycl/gdn_model_build.py"
+    ],
+    "scope": "CPU-only source/recipe/binary admission;no GPU run,new build,model qualification or inference adoption.",
+    "retained_parent_metadata": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1",
+      "consumer": "Next fixed-source builder admission and retirement reconciliation only;no parent executable or source-tree consumer.",
+      "next_review": "At the next builder prepare boundary;remove unused records once its recipe is pinned."
+    },
+    "legacy_provenance_holds_unchanged": true,
+    "selected_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/record.json",
+      "sha256": "ed574427aa831083993e3050ca65ad6736f5167f943c94f7580c26e2421a87c2"
+    },
+    "selected_engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/build/strata",
+      "sha256": "c2d48e05cd611292119018464e70677a5ff895f9bf4c68280a668a0748991ed7",
+      "bytes": 24049808
+    }
   }
 }

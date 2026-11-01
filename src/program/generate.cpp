@@ -560,6 +560,28 @@ bool refill_blocking() {
 
 using Clock = std::chrono::steady_clock;
 
+// Opt-in diagnostic: fail a second refill record through the real compatibility
+// API, after the caller has already queued its copies. The old event remains
+// intact, exercising the stale-event error path without faulting the device.
+cudaError_t record_adaptive_refill(cudaEvent_t event, cudaStream_t stream, size_t& records) {
+#ifdef STRATA_ENABLE_SYCL
+    static const bool inject = [] {
+        const char* value = std::getenv("STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    if (inject) {
+        ++records;
+        const cudaError_t status = cudaEventRecord(records == 2 ? nullptr : event, stream);
+        std::fprintf(stderr, "strata: ADAPT_RECORD_DIAGNOSTIC ordinal=%zu injected=%d status=%d\n",
+                     records, int(records == 2), int(status));
+        return status;
+    }
+#else
+    (void) records;
+#endif
+    return cudaEventRecord(event, stream);
+}
+
 // The resident RAM mode and the adaptive tier.  A swap copies `in` (held in RAM) into the slot of `out` (held only
 // by that slot).  Before the slot is overwritten, `out`'s bytes are copied back from it into an exchange buffer, so
 // the CPU computes `out` from RAM while the swap is in flight; when the swap has landed, `commit_exchanges` moves
@@ -5592,6 +5614,8 @@ int main(int argc, char** argv) {
             std::fprintf(stderr, "strata serve: cannot create the refill event\n");
             return 1;
         }
+        size_t adapt_records = 0;
+        const bool trace_adapt = std::getenv("STRATA_TRACE_ADAPT") != nullptr;
         auto apply_pending = [&](bool wait, std::string& e) -> bool {
 #ifdef STRATA_ENABLE_SYCL
             // Commit scheduled refills at a fixed window boundary. Otherwise
@@ -5612,10 +5636,14 @@ int main(int argc, char** argv) {
                     if (stage_status != cudaSuccess) { e = "stage adaptive refill completion failed"; return false; }
                 }
             for (auto& st : stages) st->adapt_live = false;
+            const size_t completed = pending.size();
             src.commit_exchanges();   // the resident RAM mode: the evicted experts take their places in RAM
             for (const auto& [i, slot] : pending) host_res[(size_t) i] = slot;
             pending.clear();
-            return res_upload("serve adaptive refill", e);
+            const bool published = res_upload("serve adaptive refill", e);
+            if (published && trace_adapt)
+                std::fprintf(stderr, "strata serve: ADAPT_COMMIT swaps=%zu\n", completed);
+            return published;
         };
         // the VRAM tier follows the conversation (the same rule as the speculative loop below)
         auto adapt = [&]() -> bool {
@@ -5665,7 +5693,7 @@ int main(int argc, char** argv) {
             }
             // A previous successful record must not publish these new copies.
             // Failure exits through checked teardown while their owners live.
-            if (!swaps.empty() && cudaEventRecord(adapt_ev, adapt_stream) != cudaSuccess) {
+            if (!swaps.empty() && record_adaptive_refill(adapt_ev, adapt_stream, adapt_records) != cudaSuccess) {
                 std::fprintf(stderr, "strata serve: cannot record the adaptive refill event\n");
                 return false;
             }
@@ -5673,11 +5701,17 @@ int main(int argc, char** argv) {
             for (auto& st : stages)
                 if (st->adapt_live) {
                     const strata::core::OnDevice on(st->dev);
-                    if (cudaEventRecord(st->adapt_ev, st->adapt_stream) != cudaSuccess) {
+                    if (record_adaptive_refill(st->adapt_ev, st->adapt_stream, adapt_records) != cudaSuccess) {
                         std::fprintf(stderr, "strata serve: cannot record the stage adaptive refill event\n");
                         return false;
                     }
                 }
+            if (trace_adapt) {
+                uint64_t bytes = 0;
+                for (const Swap& s : swaps) bytes += strata::kernels::cpu::expert_layout().blob_bytes(s.layer);
+                std::fprintf(stderr, "strata serve: ADAPT_SUBMIT swaps=%zu H2D_requested_bytes=%llu\n",
+                             swaps.size(), (unsigned long long) bytes);
+            }
             // #477: the routing counted since the start (each count adds up to 1 / (1 - --adapt-decay) over its
             // decays: the sum is proportional to the routing itself) - only with --expert-profile-save, else `heat`
             // is empty
@@ -7699,6 +7733,7 @@ int main(int argc, char** argv) {
             return 1;
         }
         int64_t adapt_rounds = 0;
+        size_t adapt_records = 0;
         auto apply_pending = [&](bool wait, std::string& e) -> bool {
             if (pending.empty()) return true;
 #ifdef STRATA_ENABLE_SYCL
@@ -7774,7 +7809,7 @@ int main(int argc, char** argv) {
             }
             // Keep pending residency unpublished if this record fails, even
             // when adapt_ev still describes an earlier completed refill.
-            if (!swaps.empty() && cudaEventRecord(adapt_ev, adapt_stream) != cudaSuccess) {
+            if (!swaps.empty() && record_adaptive_refill(adapt_ev, adapt_stream, adapt_records) != cudaSuccess) {
                 std::fprintf(stderr, "strata generate: cannot record the adaptive refill event\n");
                 return false;
             }
