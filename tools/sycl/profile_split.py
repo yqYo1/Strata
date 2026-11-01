@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Bounded current-source attribution of the original split prefill policy.
+"""Bounded attribution of the qualified GDN16 long-prefill generation.
 
 Repository LICENSE. Main-authored from this fork's owned comparison and
 archived f9f3d12 profile controller; no XeStrata implementation input.
 This observes service and host partitions, not physical resource saturation.
 """
 import collections
+import copy
 import fcntl
+import hashlib
 import json
 import math
 import os
@@ -15,21 +17,24 @@ import re
 import secrets
 import select
 import socket
+import statistics
 import struct
 import subprocess
 import sys
 import time
 
 sys.dont_write_bytecode = True
-import compare_selected_split as comparison
+import compare_prefill_strategies as comparison
+import compare_moe_down as down
 import engine_once
 
-d, down = comparison.d, comparison.down
+d, model, build = comparison.shared, comparison.model, comparison.build
 P, B, RESULT = comparison.P, comparison.B, comparison.RESULT
 require, digest, write = comparison.require, comparison.digest, comparison.write
-ROOT = B/'split-resource-profile-v2'
-KEY, FRONTEND = 'split_resource_profile_v2', 'split_resource_frontend_v2'
-HOST_KEY = 'split_resource_host_checks_v2'
+ROOT = model.gdn16.ROOT/'resource-profile-v1'
+KEY, HOST_KEY = 'gdn16_resource_profile_v1', 'gdn16_resource_profile_host_v1'
+READ = 117489
+CHANGED = {'tools/sycl/profile_split.py', 'tools/sycl/test_profile_split.py'}
 # Exact launcher ELF/version, not a floating installed-tool preference.
 UNITRACE_VERSION = '2.4.1 (4b6d74294cdc72766c00a9211fe2e4261ee94244)'
 
@@ -224,7 +229,7 @@ def status_summary(log):
 
 def analyze():
     record = d.runtime.validation.committed(RESULT)
-    scope = record['moe_down_model']
+    scope = record
     row = json.loads((ROOT/'record.json').read_text())
     require(comparison.compact(row) == scope[KEY] and row['stage'] == 'closed' and row['passed'] and
             row['complete'] and row['ownership_closed'] and not row['active'], 'closed unchanged profile required')
@@ -245,15 +250,17 @@ def analyze():
     repeated = trace_summary(events, native['pid'], observed['request_raw_begin_ns'], observed['request_raw_end_ns'])
     require(all(observed['capture'][k] == v for k,v in repeated.items()), 'original trace reduction differs')
     result = family_summary(events, observed['request_raw_begin_ns'], observed['request_raw_end_ns'])
-    text = Path(plan['native_log']['path']).read_text()
+    raw = Path(plan['native_log']['path']).read_bytes()
+    begin, end = plan['native_log']['request_extent']
+    text = raw[begin:end].decode()
     status = status_summary(text)
-    require(status['scopes'] == observed['route']['work']['windows'] == 48, 'status/window counts differ')
+    require(status['scopes'] == observed['route']['windows'] == 48, 'status/window counts differ')
     gu = re.findall(r'^strata MoE GU fusion: fused_jobs=(\d+) fused_rows=\d+ separate_jobs=\d+ min_rows=2334$', text, re.M)
     require(len(gu) == 1, 'one GU dispatch count required')
     families = {r['name']:r for r in result['families']}
     result['fused_dispatch_reconciliation'] = dict(gu_expected=int(gu[0]),
         gu_observed=families.get('native16_gu_fused', {}).get('count', 0),
-        down_expected=observed['route']['down_fused_jobs'],
+        down_expected=observed['route']['fused_down_jobs'],
         down_observed=families.get('native16_down_fused', {}).get('count', 0))
     counts = result['fused_dispatch_reconciliation']
     result['fused_dispatch_reconciliation']['matched'] = bool(
@@ -272,10 +279,28 @@ def analyze():
     require(counts['matched'], 'observed fused kernels do not reconcile with source dispatch counters')
 
 
-def profile_environment(root, rt):
-    env = comparison.environment(root, rt, 'split')
+def environment(row, plan):
+    env = comparison.environment(row, plan)
     env.update(STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1')
     return env
+
+
+def profile_environment(root, row):
+    return environment(row, dict(row['plans'][0], root=str(root)))
+
+
+def storage_route(text):
+    tokens = [int(v) for v in re.findall(
+        r'^strata GDN storage: fp16;state=fp32;tokens=(\d+)$', text, re.M)]
+    chunks = [8192]*(READ//8192)+[(READ-1)%8192]
+    require(tokens == chunks*36, 'actual typed GDN recurrence extents differ')
+    return dict(GDN_FP16_storage_calls=len(tokens), GDN_FP16_storage_tokens=sum(tokens))
+
+
+def save(row):
+    write(ROOT/'record.json', row)
+    data = json.loads(RESULT.read_text()); data[KEY] = comparison.compact(row)
+    write(RESULT, data)
 
 
 def profile_target_environment(row, env, profiling):
@@ -349,104 +374,178 @@ def collector_assets(record):
 
 
 def profiling(root, assets):
-    return dict(mode='trace', **assets, session='StrataSplit'+secrets.token_hex(12),
+    return dict(mode='trace', **assets, session='StrataPrefill'+secrets.token_hex(12),
         environment=dict(UNITRACE_SystemTime='1', UNITRACE_FollowChildProcess='1',
                          UNITRACE_TraceOutputDir=str(root/'trace'), LD_DEBUG='libs'))
 
 
+def clean_basis(revision):
+    model.configure('gdn16-throughput')
+    built, _, providers = model.proof()
+    data = build.committed(RESULT)
+    clean = json.loads((comparison.ROOT/'record.json').read_text())
+    require(comparison.compact(clean) == data[comparison.KEY] and clean['stage'] == 'closed' and
+            clean['passed'] and clean['complete'] and clean['ownership_closed'] and not clean['active'] and
+            clean['decision'] == comparison.decision(clean['processes']) and
+            all(v['reproducible_prompt_gain'] for v in clean['decision']['lengths'].values()),
+            'closed unchanged three-pair GDN16 cohort required')
+    require(all(p['binary'] == built['binaries']['strata'] and
+            p['native_source_commit'] == built['source_commit'] and p['native_exit_code'] == 0
+            for p in clean['processes']), 'clean cohort native generation differs')
+    recovered = {n:hashlib.sha256(raw).hexdigest() for n,raw in
+                 d.gen.blobs(P, clean['source_commit'], clean['sources'])}
+    require(recovered == clean['sources'], 'clean controller source cannot be recovered')
+    current = model.pinned_sources(revision)
+    require(current.keys() == recovered.keys() and
+            {n for n in current if current[n] != recovered[n]} == CHANGED,
+            'undeclared profile controller/test change')
+    require(build.guards.driver_guard() == clean['driver'] and
+            Path('/proc/sys/kernel/random/boot_id').read_text().strip() == clean['boot'],
+            'clean platform/boot differs')
+    contract, manifest = model.python_manifest()
+    require(contract == clean['python_contract'] and manifest['selected'] == clean['python_selected'],
+            'qualified frontend provider changed')
+    return data, built, clean, providers, manifest, current
+
+
+def host_checks():
+    require(not ROOT.exists() and HOST_KEY not in build.committed(RESULT), 'fresh host checks only')
+    revision = d.gen.git('rev-parse', 'HEAD').decode().strip()
+    _, _, _, _, _, sources = clean_basis(revision)
+    ROOT.mkdir(mode=0o700)
+    owner = build.supervision.Owner(ROOT/'host-checks')
+    command = [sys.executable, '-B', str(P/'tools/sycl/test_profile_split.py')]
+    entry, out, err = owner.run('tests', command, dict(os.environ, PYTHONDONTWRITEBYTECODE='1'), P,
+        wall=45, cpu=30, rss_cap=512<<20, text_cap=512<<10, file_cap=2<<20, total_cap=8<<20)
+    result = re.findall(r'^Ran (\d+) tests? in ', err.read_text(), re.M)
+    passed = bool(build.supervision.closed(entry) and entry['exit_code'] == 0 and len(result) == 1 and
+                  int(result[0]) >= 15 and err.read_text().rstrip().endswith('OK'))
+    row = dict(source_commit=revision, sources={n:sources[n] for n in sorted(CHANGED)},
+        interpreter=dict(path=sys.executable, sha256=digest(sys.executable)), command=command,
+        tests=int(result[0]) if len(result) == 1 else None, passed=passed, GPU_executed=False,
+        active=bool(owner.active), ownership_closed=owner.active is None and
+            all(build.supervision.closed(c) for c in owner.commands))
+    data = json.loads(RESULT.read_text()); data[HOST_KEY] = row; write(RESULT, data)
+    require(passed and row['ownership_closed'], 'profile host rejection controls failed')
+    print(json.dumps(row), flush=True)
+
+
 def prepare():
-    record, scope, built, _, rt = comparison.native()
-    continuation = scope[comparison.CONT_KEY]
-    require(continuation['passed'] and continuation['complete'] and continuation['ownership_closed'] and
-            not continuation['active'], 'candidate continuation must close first')
-    host, _ = down.frontend(root=ROOT, key=FRONTEND)
-    checks = scope[HOST_KEY]
-    require(checks['passed'] and all(digest(P/n) == v for n, v in checks['sources'].items()),
-            'current profile host controls required')
-    require(KEY not in scope and not (ROOT/'record.json').exists(), 'fresh profile only')
-    assets = collector_assets(record)
-    roots = [ROOT/'prefix', ROOT/'model']
+    revision = d.gen.git('rev-parse', 'HEAD').decode().strip()
+    data, built, clean, providers, manifest, sources = clean_basis(revision)
+    checks = data[HOST_KEY]
+    require(checks['passed'] and checks['ownership_closed'] and not checks['active'] and
+            checks['sources'] == {n:sources[n] for n in sorted(CHANGED)}, 'current host controls required')
+    require(KEY not in data and ROOT.exists() and not (ROOT/'record.json').exists(), 'fresh profile only')
+    assets = collector_assets(data)
+    roots = [ROOT/n for n in ('prefix', 'model', 'fixture-submission', 'fixture-native')]
     for root in roots:
         require(not root.exists(), 'fresh private profile roots required')
         root.mkdir(mode=0o700)
-        for part in ('tmp', 'cache', 'trace'):
-            (root/part).mkdir()
-    prefix, model = roots
-    probe = down.native_probe(rt)
-    config = down.configuration(model)
-    source = json.loads((comparison.ROOT/'record.json').read_text())
-    model_assets = d.models.model_pins(config, source['model_assets'])
-    prof = profiling(model, assets)
-    native_plan = dict(binary=built['binaries']['strata'], native_validation_probe=probe, native_profile=prof)
-    write(model/'config.json', config)
-    write(model/'plan.json', native_plan)
+        for part in ('tmp', 'cache', 'trace'): (root/part).mkdir()
+    prefix, root, *fixtures = roots
+    plan = {k:clean['plans'][2][k] for k in ('index','read','heads','kernel')}
+    plan['root'] = str(root)
+    require((plan['index'],plan['read'],plan['heads'],plan['kernel']) == (2,READ,1,'candidate'),
+            'closed117K candidate geometry changed')
+    config = copy.deepcopy(clean['configuration']); config.update(log=str(root/'engine.stderr'), env={})
+    prof = profiling(root, assets)
+    write(root/'config.json', config)
+    write(root/'plan.json', dict(binary=built['binaries']['strata'],
+        native_validation_probe=clean['native_validation_probe'], native_profile=prof))
+    write(ROOT/'runtime-inputs.json', providers)
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
-    command = ['/bin/sh', str(P/'bench.sh'), '--config', str(model/'config.json'), '--port', str(port),
-        '--prefill-exact-tokens', str(comparison.EXACT), '--think', '--runs', '1', '--profile-request-gates',
+    command = ['/bin/sh', str(P/'bench.sh'), '--config', str(root/'config.json'), '--port', str(port),
+        '--prefill-exact-tokens', str(READ), '--think', '--runs', '1', '--profile-request-gates',
         '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600',
-        '--out', str(model/'bench')]
-    clean = [p['samples'][0]['prompt_ms'] for p in scope[comparison.KEY]['processes'] if p['arm'] == 'split']
-    require(len(clean) == 3 and all(math.isfinite(v) and v > 0 for v in clean), 'clean first-use basis missing')
-    env_binary = Path('/usr/bin/env')
-    row = dict(stage='prepared', source_commit=host['source_commit'], sources=host['sources'],
-        model_assets=model_assets, asset_basis=dict(path=str(comparison.ROOT/'record.json'),
-            sha256=digest(comparison.ROOT/'record.json')), runtime_sha256=digest(d.runtime.RESULT), boot=rt['boot'],
-        binary=built['binaries']['strata'], native_source_commit=built['source_commit'], native_validation_probe=probe,
-        native_profile=prof, prefix_profile=profiling(prefix, assets), prefix_binary=dict(path=str(env_binary),
-            sha256=digest(env_binary), bytes=env_binary.stat().st_size), command=command,
-        profile=dict(path=str(P/'data/expert-profile.bin'), sha256=digest(P/'data/expert-profile.bin')),
-        generated={n:digest(model/n) for n in ('config.json', 'plan.json')},
-        environment_sha256=down.fingerprint(profile_environment(model, rt)),
-        request_sha256=scope[comparison.KEY]['request_sha256'][0],
-        clean_first_use_ms=clean, maximum_observer_ratio=1.15,
+        '--out', str(root/'bench')]
+    first = [p['samples'][0]['prompt_ms'] for p in clean['processes']
+             if p['read'] == READ and p['kernel'] == 'candidate']
+    require(len(first) == 3 and all(math.isfinite(v) and v > 0 for v in first), 'clean first-use basis missing')
+    fixture = built['binaries']['sycl_submission_test']
+    row = dict(stage='prepared', source_commit=revision, sources=sources, host_checks=checks,
+        model_assets=clean['model_assets'], configuration=config,
+        asset_basis=dict(path=str(comparison.ROOT/'record.json'), sha256=digest(comparison.ROOT/'record.json')),
+        qualification_reuse=dict(source_commit=clean['source_commit'], changed_controls=sorted(CHANGED),
+            native_recompiled=False, native_inputs=557, actual_compiler_inputs=1451, native_ELFs=9,
+            scope='Same native generation/recipe/fixtures/runtime as the closed48-request cohort. '
+                  'Only this maintained controller and its CPU rejection tests change. Current fixture '
+                  'coverage under the collector is a new required check,not inherited from an older ELF.'),
+        runtime_manifest=dict(path=str(ROOT/'runtime-inputs.json'), sha256=digest(ROOT/'runtime-inputs.json'), files=len(providers)),
+        boot=clean['boot'], driver=clean['driver'], binary=built['binaries']['strata'],
+        native_source_commit=built['source_commit'], native_validation_probe=clean['native_validation_probe'],
+        arms=clean['arms'], plans=[plan], environment_template=clean['environment_template'],
+        python_contract=clean['python_contract'], python_selected=clean['python_selected'], template=clean['template'],
+        native_profile=prof, prefix_profile=profiling(prefix, assets),
+        prefix_binary=dict(path='/usr/bin/env', sha256=digest('/usr/bin/env'), bytes=Path('/usr/bin/env').stat().st_size),
+        fixture_cases=[dict(name=name, root=str(folder), binary=fixture, argument='--'+name,
+            expected_kernels=count, profile=profiling(folder, assets))
+            for name,folder,count in zip(('submission','native'),fixtures,(606,62))],
+        command=command, generated={n:digest(root/n) for n in ('config.json','plan.json')},
+        request_sha256=clean['request_hashes'][str(READ)][0], clean_first_use_ms=first, maximum_observer_ratio=1.15,
         budgets=dict(wall=1800, cpu=7200, rss_cap=104<<30, text_cap=64<<20,
                      file_cap=1024<<20, total_cap=1536<<20),
-        plan=dict(question='Which GPU kernels/copies and disjoint main-thread CPU/wait regions dominate the current117K split request?',
-            constants='One117489-read/zero-reuse request,117488BF16GPU rows,128prefill slots/48windows,'
-                '8192chunks,1256decode slots,5workers,spec4,INT8 resident131072context and original Down. '
-                'Same body as the clean cohort request0;thinking and<=24outputs.',
-            observers='Exact indexed UnitTrace assets,non-counter trace;quiet parameter validation,STRATA_TRACE1 '
-                'and existing CPU_WAIT_PROFILE1. Command-service profiling stays off. CPU-only prefix/environment '
-                'probe must pass and be committed before the single model process.',
-            acceptance='Exact source/runtime/assets/owner/device/env/route/body/count/clock checks,valid CPUv4 '
-                'partition,unique GPU/host-source IDs and contained raw-clock services,normal closure,quiet '
-                'validation and no fresh fault. Report first-use prompt-time ratio against median of3clean '
-                'first-use samples;ratio<=1.15 is required to use this observation for tuning selection.',
-            raw_budget_reason='Whole-request host/device identity and service joins require the complete temporary '
-                'timeline. Prior32K trace used266967750bytes;117K may exceed512MiB. Bound timeline at1GiB '
-                'and job total1.5GiB;Main extracts aggregates and retires raw output at attribution closure.',
-            limits='Attribution only. No exact native prefill endpoint,complete graph dependency,physical '
-                'PCIe/DRAM bytes,hardware saturation,clean speed,decode/task/agent/full262144 or adoption claim.',
-            stopping='First admission/owner/source/validation/fault/budget/body/route/count/clock/overhead failure '
-                'stops;no retry,hash refresh,replacement or changed threshold. Discard a failed session.'),
-        complete=False, passed=False, active=False, ownership_closed=True)
-    write(ROOT/'record.json', row)
-    scope[KEY] = comparison.compact(row)
-    write(RESULT, record)
-    print('Prepared prefix-first current-source profile;commit before CPU probe.', flush=True)
+        plan=dict(question='Which GPU kernels/copies and disjoint main-thread CPU/wait regions dominate the qualified117K GDN16 request?',
+            constants='One117489-read/zero-reuse thinking-on request,117488BF16GPU rows,128expert slots/48windows,'
+                '8192chunks,1256decode slots,5workers,spec4,INT8 resident131072context,originalDown,GDN3/FP16. '
+                'Identical body to clean candidate request0;<=24outputs.',
+            observers='Exact indexed UnitTrace assets,non-counter whole-request trace;quiet parameter validation,'
+                'STRATA_TRACE1 and existing CPU_WAIT_PROFILE1. Command-service profiling stays off. '
+                'Two current frontend probes and CPU-only prefix/environment probe,then the same-build '
+                'submission606/native-graph62 kernel fixtures must pass and be committed before the model.',
+            acceptance='Exact source/runtime/assets/owner/device/env/route/body/count/clock checks;valid CPUv4 '
+                'partition and typed GDN extents;unique GPU/host IDs,contained raw-clock services,normal closure,'
+                'quiet validation and no fresh fault. Profile first-use prompt time/median of3clean first-use '
+                'times must be<=1.15 for attribution-based tuning selection. Counts and durations never prove saturation.',
+            raw_budget_reason='Whole-request host/device identity and service joins require the temporary full timeline. '
+                'Prior32K trace266967750bytes;117K may exceed512MiB. Bound one timeline at1GiB,total1.5GiB;'
+                'extract useful aggregates and retire raw output at attribution closure.',
+            limits='Attribution only;includes<=24decode outputs. No exact prefill endpoint,complete graph critical path,'
+                'physical PCIe/DRAM traffic,hardware saturation,clean speed,sustainedTG,task/agent,full262144 or adoption.',
+            stopping='Stop at first admission/owner/source/validation/fault/budget/body/route/count/clock/overhead failure;'
+                'no retries,hash refresh or threshold changes.'),
+        host_passed=False, complete=False, passed=False, active=False, ownership_closed=True)
+    row['environment_sha256'] = down.fingerprint(profile_environment(root, row))
+    save(row)
+    print('Prepared current GDN16 prefix/fixture-first profile;commit before frontend probes.', flush=True)
+
+
+def current(row):
+    require(build.committed(RESULT)[KEY] == comparison.compact(row), 'commit exact profile state')
+    _, built, clean, providers, manifest, sources = clean_basis(row['source_commit'])
+    require(row['sources'] == sources and row['binary'] == built['binaries']['strata'] and
+            row['native_source_commit'] == built['source_commit'] and row['boot'] == clean['boot'] and
+            row['driver'] == clean['driver'] and row['arms'] == clean['arms'] and
+            row['environment_template'] == clean['environment_template'] and
+            row['native_validation_probe'] == clean['native_validation_probe'], 'profile native/runtime differs')
+    expected_plan = {k:clean['plans'][2][k] for k in ('index','read','heads','kernel')}
+    require(row['plans'] == [dict(expected_plan,root=str(ROOT/'model'))] and
+            row['host_checks'] == build.committed(RESULT)[HOST_KEY] and
+            row['configuration'] == dict(clean['configuration'],log=str(ROOT/'model/engine.stderr'),env={}),
+            'profile workload or checked controls differ')
+    assets = collector_assets(build.committed(RESULT))
+    require(all(row['native_profile'][k] == v == row['prefix_profile'][k] for k,v in assets.items()) and
+            all(all(case['profile'][k] == v for k,v in assets.items()) and
+                case['binary'] == built['binaries']['sycl_submission_test']
+                for case in row['fixture_cases']), 'profile collector or same-build fixture differs')
+    inv = row['runtime_manifest']
+    require(digest(inv['path']) == inv['sha256'] and json.loads(Path(inv['path']).read_text()) == providers and
+            len(providers) == inv['files'] and digest(row['asset_basis']['path']) == row['asset_basis']['sha256'] and
+            digest(row['prefix_binary']['path']) == row['prefix_binary']['sha256'] and
+            digest(row['template']['path']) == row['template']['sha256'], 'profile provider/basis changed')
+    require(all(digest(ROOT/'model'/n) == v for n,v in row['generated'].items()) and
+            down.fingerprint(profile_environment(ROOT/'model',row)) == row['environment_sha256'],
+            'profile generated inputs/environment changed')
+    d.models.model_pins(row['configuration'], row['model_assets'], full=False)
+    return providers, manifest
 
 
 def basis():
-    record, scope, built, _, rt = comparison.native()
-    host, manifest = down.frontend(root=ROOT, key=FRONTEND)
     row = json.loads((ROOT/'record.json').read_text())
-    require(comparison.compact(row) == scope[KEY] and row['sources'] == host['sources'] and
-            d.pins(row['source_commit']) == row['sources'], 'profile source/record differs')
-    assets = collector_assets(record)
-    require(row['binary'] == built['binaries']['strata'] and row['native_source_commit'] == built['source_commit'] and
-            row['runtime_sha256'] == digest(d.runtime.RESULT) and row['boot'] == rt['boot'] and
-            row['native_validation_probe'] == down.native_probe(rt), 'profile native/runtime changed')
-    require(all(row['native_profile'][k] == v == row['prefix_profile'][k] for k, v in assets.items()),
-            'profile asset selection differs')
-    require(digest(row['prefix_binary']['path']) == row['prefix_binary']['sha256'] and
-            digest(row['asset_basis']['path']) == row['asset_basis']['sha256'] and
-            digest(row['profile']['path']) == row['profile']['sha256'], 'profile asset/basis changed')
-    require(all(digest(ROOT/'model'/n) == v for n, v in row['generated'].items()) and
-            down.fingerprint(profile_environment(ROOT/'model', rt)) == row['environment_sha256'],
-            'profile generated input/environment changed')
-    d.models.model_pins(json.loads((ROOT/'model/config.json').read_text()), row['model_assets'])
-    return record, scope, row, rt, manifest
+    providers, manifest = current(row)
+    record = build.committed(RESULT)
+    return record, record, row, dict(boot=row['boot'],driver=row['driver'],runtime_files=providers), manifest
 
 
 def cursor():
@@ -458,11 +557,12 @@ def cursor():
 
 def prefix():
     record, scope, row, rt, _ = basis()
-    require(row['stage'] == 'prepared' and 'prefix' not in row, 'fresh committed prefix only')
+    require(row['stage'] == 'ready' and row['host_passed'] and 'prefix' not in row,
+            'current frontend probes and fresh committed prefix required')
     root = ROOT/'prefix'
     prof = row['prefix_profile']
     require(not session_path(prof['session']).exists(), 'preexisting prefix session')
-    env = profile_environment(root, rt)
+    env = profile_environment(root, row)
     target = profile_target_environment(row, env, prof)
     start_cursor = cursor()
     outcome = dict(complete=False, passed=False, host_probe_accepted=False, native_engine_executed=False)
@@ -511,15 +611,116 @@ def prefix():
     require(outcome['passed'], 'prefix did not qualify;no model launch')
 
 
+def check_fixtures():
+    _, _, row, rt, _ = basis()
+    require(row['stage'] == 'prefix-passed' and row['prefix']['passed'] and
+            'fixtures' not in row, 'committed prefix and fresh same-build fixtures required')
+    owner, controllers, cells = None, [], []
+    outcome = dict(complete=False, passed=False, host_probe_accepted=False)
+    start_cursor = cursor()
+    try:
+        owner = build.supervision.Owner(ROOT/'fixture-owned')
+        for case in row['fixture_cases']:
+            root, prof = Path(case['root']), case['profile']
+            require(not session_path(prof['session']).exists(), 'preexisting fixture session')
+            controls = build.supervision.Owner(root/'controls'); controllers.append(controls)
+            env = profile_environment(root, row)
+            env.update(STRATA_TEST_MAIN_GATES='1',
+                UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+                UR_LOG_TRACING='level:info;flush:info;output:file,'+str(root/'ur.trace'))
+            target = profile_target_environment(row, env, prof)
+            cell, mapped, bounds = dict(name=case['name']), set(), {}
+            def control(action, expected=None):
+                entry, _, _ = controls.run(action, [prof['launcher']['path'], '--'+action, prof['session']],
+                    env, root, wall=15, cpu=15, rss_cap=2<<30, text_cap=1<<20,
+                    file_cap=64<<20, total_cap=256<<20)
+                require(build.supervision.closed(entry) and entry['exit_code'] == 0, 'fixture session control failed')
+                if expected is not None: session_state(prof['session'], expected)
+            def interact(io, entry):
+                for phase in ('before-runtime', 'runtime-ready', 'before-exit'):
+                    while True:
+                        line = io.line(45)
+                        if line.startswith('COMPONENT_READY '): break
+                    require(line == 'COMPONENT_READY '+phase, 'fixture gate order differs')
+                    actual = dict(v.split('=',1) for v in Path('/proc',str(entry['pid']),'environ').read_text().split('\0') if '=' in v)
+                    same_environment(actual, expected_target_environment(row,env,prof))
+                    require(Path('/proc',str(entry['pid']),'exe').resolve() == Path(case['binary']['path']).resolve(),
+                            'fixture native executable differs')
+                    seen = d.runtime.executable_mappings(Path('/proc',str(entry['pid']),'maps').read_text())
+                    require(seen <= set(rt['runtime_files']) | {str(Path(case['binary']['path']).resolve()),
+                            str(Path(prof['collector']['path']).resolve())}, 'fixture provider differs')
+                    mapped.update(seen)
+                    if phase == 'before-runtime':
+                        session_state(prof['session'],1)
+                        bounds['begin'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+                        control('resume',0)
+                    else:
+                        cell['physical_device'] = down.device.device.live_device(entry['pid'],
+                            'Intel(R) Arc(TM) B570 Graphics',down.device.device.device_inventory(rt),rt)
+                    if phase == 'before-exit':
+                        bounds['end'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+                        control('pause',1)
+                    io.send(b'X')
+                io.proc.stdin.close()
+                deadline = time.monotonic()+45
+                while not io.exit_watch.poll(0) or not io.eof:
+                    io.poll(); require(time.monotonic()<deadline, 'fixture teardown deadline')
+                    if select.select([io.proc.stdout],[],[],.05)[0]: io.read(); io.pending.clear()
+                io.exit(1)
+            try:
+                command = engine_once.profile_command(prof,[case['binary']['path'],case['argument']])
+                entry,out,err = owner.run(case['name'],command,target,P,interaction=interact,
+                    wall=180,cpu=120,rss_cap=4<<30,text_cap=32<<20,file_cap=64<<20,total_cap=256<<20)
+                require(build.supervision.closed(entry) and entry['exit_code']==0,'same-build fixture failed')
+                text = err.read_text()
+                activation = d.runtime.validation.preload_evidence(text,entry['pid'])
+                require(activation['loader']==row['native_validation_probe']['loader']['path'] and
+                        not any(v in text for v in ('UR_RESULT_ERROR_','ZE_RESULT_ERROR_','[WARNING]','[ERROR]')),
+                        'fixture validation/collector error')
+                require(not (root/'validation.log').exists() or (root/'validation.log').stat().st_size==0,
+                        'fixture validation warning/error')
+                marker = 'fixture_status=PASS mode=submission' if case['name']=='submission' else 'and lifecycle passed'
+                require(marker in out.read_text() and {row['native_validation_probe']['library']['path'],
+                        row['native_validation_probe']['loader']['path'],prof['collector']['path'],env['ZE_ENABLE_ALT_DRIVERS']} <= mapped,
+                        'fixture numerical/guard/teardown or provider proof missing')
+                traces = list((root/'trace').rglob('*.json'));require(len(traces)==1,'one fixture trace required')
+                trace = trace_summary(json.loads(traces[0].read_text())['traceEvents'],entry['pid'],bounds['begin'],bounds['end'])
+                require(trace['operation_counts'].get('kernel')==case['expected_kernels'],'fixture GPU execution count differs')
+                cell.update(passed=True,native_exit_code=0,expected_kernels=case['expected_kernels'],
+                    observed_kernels=trace['operation_counts']['kernel'],GPU_events=trace['gpu_events'],
+                    native_PID=entry['pid'],validation=activation,all_native_host_sources=True,unique_gpu_ids=True,
+                    timeline_sha256=digest(traces[0]),timeline_bytes=traces[0].stat().st_size)
+                cells.append(cell)
+            finally:
+                if owner.active is None and session_path(prof['session']).exists(): control('stop')
+                require(not session_path(prof['session']).exists(),'fixture session remains')
+            print('Current collector fixture passed: '+case['name'],flush=True)
+        current(row)
+        outcome.update(complete=True,host_probe_accepted=True,cells=cells)
+    except BaseException as error:
+        outcome.update(error=repr(error),cells=cells)
+    finally:
+        if owner: d.runtime.validation.finish(outcome,owner,start_cursor,row['boot'])
+        controls_closed = all(c.active is None and all(build.supervision.closed(v) for v in c.commands) for c in controllers)
+        outcome['passed'] = bool(outcome.get('passed') and outcome['complete'] and len(cells)==2 and controls_closed)
+        outcome['ownership_closed'] = bool(outcome.get('ownership_closed') and controls_closed)
+        row.update(fixtures=outcome,stage='fixtures-passed' if outcome['passed'] else 'failed',
+            active=bool((owner and owner.active) or any(c.active for c in controllers)),
+            ownership_closed=outcome['ownership_closed'])
+        save(row)
+    print(json.dumps(outcome),flush=True)
+    require(outcome['passed'],'current collector fixtures did not qualify;no model launch')
+
+
 def run():
     record, scope, row, rt, manifest = basis()
-    require(row['stage'] == 'prefix-passed' and row['prefix']['passed'] and
+    require(row['stage'] == 'fixtures-passed' and row['prefix']['passed'] and row['fixtures']['passed'] and
             'observation' not in row, 'committed passing prefix and fresh model required')
     root = ROOT/'model'
     prof = row['native_profile']
     require(not session_path(prof['session']).exists() and not (root/'execution.json').exists(),
             'preexisting model/session;no retry')
-    env = profile_environment(root, rt)
+    env = profile_environment(root, row)
     outcome = dict(complete=False, passed=False, host_probe_accepted=False,
         clean_speed=False, adoption_qualified=False, hardware_saturation_known=False)
     start_cursor = cursor()
@@ -582,7 +783,7 @@ def run():
                 control('resume', 0)
                 outcome.update(clock_begin=clock_pair(),
                                request_raw_begin_ns=time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
-            print('Split resource request0 '+stage, flush=True)
+            print('GDN16 resource request0 '+stage, flush=True)
             io.send(b'continue\n')
         io.proc.stdin.close()
         deadline = time.monotonic()+180
@@ -606,7 +807,7 @@ def run():
         require(all(sample.get(k) is True for k in ('ok', 'eligible', 'stream_complete', 'thinking_requested', 'reasoning_observed')) and
                 sample['request_sha256'] == preflight['body_sha256'] == row['request_sha256'] and
                 preflight['counted_input_tokens'] == sample['actual_prompt_tokens'] ==
-                sample['actual_read_tokens'] == comparison.EXACT and sample['actual_reused_tokens'] == 0 and
+                sample['actual_read_tokens'] == READ and sample['actual_reused_tokens'] == 0 and
                 1 <= sample['generated_tokens'] <= 24 and sample['prompt_tps_source'] == 'engine' and
                 type(sample['prompt_ms']) in (int, float) and math.isfinite(sample['prompt_ms']) and
                 sample['prompt_ms'] > 10000, 'profile body/count/clock differs')
@@ -622,7 +823,8 @@ def run():
                     'teardown uncertain', '[WARNING]', '[ERROR]')), 'profile policy/runtime/collector warning')
         proof = d.runtime.validation.preload_evidence(text, end['native']['pid'])
         part = raw[extent['begin']:extent['end']].decode()
-        route = down.route_samples(part, 1)[0]
+        route = comparison.request_route(part,row['plans'][0])
+        route.update(storage_route(part))
         cpu = d.gen.common.extract_cpu_observers(part, 4)
         traces = list((root/'trace').rglob('*.json'))
         require(len(traces) == 1, 'one complete profile timeline required')
@@ -630,12 +832,18 @@ def run():
         capture = trace_summary(value['traceEvents'], end['native']['pid'],
             outcome['request_raw_begin_ns'], outcome['request_raw_end_ns'])
         capture.update(timeline_sha256=digest(traces[0]), timeline_bytes=traces[0].stat().st_size)
-        median = comparison.statistics.median(row['clean_first_use_ms'])
+        median = statistics.median(row['clean_first_use_ms'])
         ratio = sample['prompt_ms']/median
         outcome.update(sample=sample, route=route, cpu_partition=cpu, capture=capture,
             observer_time_ratio=ratio, observer_cost_qualified=ratio <= row['maximum_observer_ratio'],
             native_exit_code=0, validation=proof)
         require(outcome['observer_cost_qualified'], 'profile observer exceeded frozen time ratio')
+        d.models.model_pins(row['configuration'],row['model_assets'],full=True)
+        row['analysis_plan'] = dict(host_checks=row['host_checks'],
+            sources={n:row['sources'][n] for n in sorted(CHANGED)},
+            timeline=dict(path=str(traces[0]),sha256=digest(traces[0]),bytes=traces[0].stat().st_size),
+            native_log=dict(path=str(root/'engine.stderr'),sha256=digest(root/'engine.stderr'),
+                bytes=(root/'engine.stderr').stat().st_size,request_extent=[extent['begin'],extent['end']]))
         outcome.update(complete=True, host_probe_accepted=True)
     except BaseException as error:
         outcome.update(error=repr(error), complete=False, host_probe_accepted=False)
@@ -664,24 +872,27 @@ def run():
         write(RESULT, record)
     print(json.dumps({k:outcome.get(k) for k in ('passed', 'complete', 'ownership_closed',
         'fresh_faults', 'observer_time_ratio', 'error')}), flush=True)
-    require(outcome['passed'], 'current split resource attribution did not qualify')
+    require(outcome['passed'], 'current GDN16 resource attribution did not qualify')
 
 
 if __name__ == '__main__':
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        build.guards.no_model_owners([])
         args = sys.argv[1:]
-        if args == ['prepare-frontend']:
-            comparison.native(); down.prepare_frontend(ROOT, FRONTEND)
+        if args == ['selfcheck']:
+            host_checks()
         elif args == ['frontend']:
-            comparison.native(); down.run_frontend(ROOT, FRONTEND)
+            comparison.comparison.host(sys.modules[__name__])
         elif args == ['prepare']:
             prepare()
         elif args == ['prefix']:
             prefix()
+        elif args == ['fixtures']:
+            check_fixtures()
         elif args == ['run']:
             run()
         elif args == ['analyze']:
             analyze()
         else:
-            raise RuntimeError('prepare-frontend|frontend|prepare|prefix|run|analyze')
+            raise RuntimeError('selfcheck|prepare|frontend|prefix|fixtures|run|analyze')

@@ -175,5 +175,35 @@ class StartupGates(unittest.TestCase):
                 profile.session_path(value)
 
 
+class TypedGdnRouteGates(unittest.TestCase):
+    def setUp(self):
+        self.chunks = [8192]*14+[2800]
+
+    def text(self, tokens):
+        return ''.join('strata GDN storage: fp16;state=fp32;tokens='+str(t)+'\n'
+                       for t in tokens)
+
+    def test_all_layers_and_final_partial_chunk_are_accounted(self):
+        result = profile.storage_route(self.text(self.chunks*36))
+        self.assertEqual(result['GDN_FP16_storage_calls'], 540)
+        self.assertEqual(result['GDN_FP16_storage_tokens'], 36*117488)
+
+    def test_missing_duplicate_and_equal_sum_wrong_extents_are_refused(self):
+        full = self.chunks*36
+        same_sum = list(full)
+        same_sum[0] -= 1
+        same_sum[-1] += 1
+        for tokens in (full[:-1], full+self.chunks, same_sum, list(reversed(full))):
+            with self.subTest(length=len(tokens)), self.assertRaises(RuntimeError):
+                profile.storage_route(self.text(tokens))
+
+    def test_wrong_storage_or_recurrent_state_is_refused(self):
+        full = self.text(self.chunks*36)
+        for text in ('', full.replace('fp16;', 'fp32;'),
+                     full.replace('state=fp32', 'state=fp16')):
+            with self.assertRaises(RuntimeError):
+                profile.storage_route(text)
+
+
 if __name__ == '__main__':
     unittest.main()
