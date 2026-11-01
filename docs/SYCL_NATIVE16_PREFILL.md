@@ -382,8 +382,13 @@ controller now predeclares a traced/validated32K check,then three independent
 117Kpairs/four requests per process,with GDN16on in both arms and only the
 pre-exec MTP selector changed. Both arms use the same nominal callback markers;
 internal needed-row/batch shapes and zero-observer overhead are not claimed.
-CPU route/tail/decision controls pass;the new model check and comparison remain
-pending. No native kernel or decode selection is changed.
+CPU route/tail/decision controls pass. The new same-engine32K check now passes
+both thinking-on requests and24outputs each,with144typed GDN calls and four
+successful mode2 MTP callbacks per request. Native exit0,quiet final validation,
+closed owners,full model hashes and no fresh fault pass. Logged PP666.2/825.3
+and client TTFT49.309/39.841s are first/subsequent diagnostic observations,not
+matched clean speed. The117Kcomparison is next. No native kernel or decode
+selection is changed.
 Physical arithmetic/VRAM/PCIe saturation remains unknown. Next compare the
 source/shape-specific opportunities and characterize longer inputs on this
 same validated generation,without attributing a length/configuration change
