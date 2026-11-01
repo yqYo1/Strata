@@ -20779,7 +20779,7 @@
   },
   "adaptive_expert_cache_request_boundary_20261102": {
     "classification": "decision_support",
-    "status": "fixed_source_built_single_gpu_review_passed_runtime_checks_pending",
+    "status": "fixed_source_device_passed_injected_model_gate_pending",
     "schedulable_now": false,
     "finite_question": "On pinned 521c175, trace final serve decode-window adaptive copies into the next valid long-prefill cache loan/restore. Verify event and RAM-source lifetime, host/device residency publication, lease entry/return fences and reader admission. Cover GEN/GENI, next vs last window, STOP/cancel, malformed/error, QUIT and stdin EOF; say which paths prefill, defer safely or fail closed, with concrete counterexamples and runtime-proof limits.",
     "native_source_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
@@ -20858,9 +20858,10 @@
       "built": true,
       "runtime_qualified": false,
       "positive_swaps_adopted": false,
-      "next_check": "Two fresh bounded device cases with exact source/compiler/ELF component reuse,then injected second-record failure and positive-swap next-GEN prefill lifecycle checks.",
+      "next_check": "Bounded real-model injected second-record failure,then positive-swap next-GEN prefill lifecycle checks before long-generation comparisons.",
       "native_recipe_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
-      "engine_sha256": "bdba183e582c6b6bdcaa923d37b5d6282e834166a7b40b10f84b35d08efc310e"
+      "engine_sha256": "bdba183e582c6b6bdcaa923d37b5d6282e834166a7b40b10f84b35d08efc310e",
+      "device_fixture_runtime_qualified": true
     },
     "fixed_source_review": {
       "sha256": "d9900e0a21e52e834ff0c053fb40ef8fa51955059bd620c07cc79a79f4db51ec",

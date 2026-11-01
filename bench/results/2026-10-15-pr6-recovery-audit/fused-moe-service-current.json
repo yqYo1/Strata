@@ -85510,7 +85510,7 @@
     }
   },
   "adaptive_cache_device_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "bb64a5ce97be9fd5339779c6d68f204902d1216c",
     "native_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
     "build_record": {
@@ -85627,12 +85627,90 @@
         "gated": true
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "native_exit_code": 0,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+          "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+        },
+        "validation": {
+          "pid": 1197525,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "observed_provider_count": 0,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "details": {
+          "host_only": true
+        }
+      },
+      {
+        "name": "submission",
+        "passed": true,
+        "native_exit_code": 0,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/build/sycl_submission_test",
+          "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+          "bytes": 343384
+        },
+        "validation": {
+          "pid": 1197531,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "observed_provider_count": 34,
+        "proc_observation": {
+          "successful_samples": 1,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "details": {
+          "queued_kernels": [
+            1,
+            119,
+            120,
+            121,
+            241
+          ],
+          "host_roundtrips": 3,
+          "gates": [
+            "before-runtime",
+            "runtime-ready",
+            "before-exit"
+          ]
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "ordinary_runtime_teardown_qualified": false,
@@ -85651,6 +85729,17 @@
       "contract": "All eight fixture ELFs and relevant native/compiler/link inputs match the qualified generation;reuse the unchanged component evidence. Fresh runtime submission check precedes the changed engine program. One B570 only;no multi-GPU-stage retirement claim.",
       "safety": "Immutable qualified copy-offload/direct-submission avoidance and queue settings;private activation preload held until OS exit. No model load,reset or deliberate device fault.",
       "retention": "Keep case outcomes,numerical coverage/maxima,source/ELF identity and fault/closure evidence. Retire successful API trace,logs and duplicate kernel rows after verification. Current nine-ELF fallback remains until model/lifecycle checks."
+    },
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
     },
     "controller_inputs": {
       "files": 42,

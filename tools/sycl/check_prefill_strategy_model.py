@@ -25,12 +25,21 @@ import compare_official_prefill as comparison
 import prefill_exact_checks as shared
 import engine_once
 import gdn_storage_pipeline as gdn16
+import adaptive_cache_model as adaptive
+import adaptive_cache_device as adaptive_device
+import proc_observer
 
 P, B, RESULT = build.P, build.B, build.RESULT
 ROOT, KEY, MODE, STRATEGY, READ, ROWS, RUNS = None, None, None, None, 0, 0, 2
 GDN_MODES = {'gdn16-throughput': ('throughput', '1'),
              'gdn32-throughput': ('throughput', '0'), 'gdn16-ttft': ('ttft', '1'),
              'gdn16-mtp16-throughput': ('throughput', '1')}
+ADAPTIVE_MODES = {'adaptive-throughput': ('throughput', '1'),
+    'adaptive-ttft': ('ttft', '1'), 'adaptive-fault-throughput': ('throughput', '1'),
+    'adaptive-positive-throughput': ('throughput', '1')}
+GDN_MODES.update(ADAPTIVE_MODES)
+MTP16_MODES = {'gdn16-mtp16-throughput', 'adaptive-throughput',
+    'adaptive-fault-throughput', 'adaptive-positive-throughput'}
 
 
 def configure(mode):
@@ -38,8 +47,9 @@ def configure(mode):
     require(mode in ('ttft','throughput',*GDN_MODES),'choose a declared strategy/GDN mode')
     MODE=mode;STRATEGY=GDN_MODES[mode][0] if mode in GDN_MODES else mode
     READ=32769;ROWS=READ-1
-    ROOT=(gdn16.ROOT if mode in GDN_MODES else candidate.ROOT)/('model-'+mode+'-v1')
-    KEY=('gdn16_model_entry_' if mode in GDN_MODES else 'official_prefill_strategy_')+mode+'_model_v1'
+    ROOT=(adaptive.ROOT if mode in ADAPTIVE_MODES else gdn16.ROOT if mode in GDN_MODES else candidate.ROOT)/('model-'+mode+'-v1')
+    KEY=('adaptive_cache_model_entry_' if mode in ADAPTIVE_MODES else
+         'gdn16_model_entry_' if mode in GDN_MODES else 'official_prefill_strategy_')+mode+'_model_v1'
 
 
 def pinned_sources(revision):
@@ -64,6 +74,25 @@ def save(row):
 
 
 def proof():
+    if MODE in ADAPTIVE_MODES:
+        gate=json.loads((adaptive_device.ROOT/'record.json').read_text())
+        built,providers=adaptive_device.current(gate)
+        require(gate['passed'] and gate['complete'] and gate['ownership_closed'] and not gate['active'] and
+                not gate['fresh_faults'] and [v['name'] for v in gate['processes']]==['host-canary','submission'] and
+                all(v['passed'] and v['native_exit_code']==0 for v in gate['processes']),
+                'closed fixed-source fresh-device qualification required')
+        audit=shared.runtime.validation.committed(shared.runtime.validation.INDEX,
+            ('adaptive_expert_cache_request_boundary_20261102',))
+        require(audit['implementation']['built'] and audit['implementation']['native_recipe_commit']==built['source_commit'] and
+                audit['fixed_source_review']['reviewed_program_sha256']==built['native_sources'][adaptive.PROGRAM],
+                'reviewed actual single-GPU fixed program required')
+        if MODE=='adaptive-positive-throughput':
+            key='adaptive_cache_model_entry_adaptive-fault-throughput_model_v1'
+            previous=build.committed(RESULT)[key]
+            require(previous['passed'] and previous['complete'] and previous['ownership_closed'] and not previous['active'] and
+                    previous['binary']==built['binaries']['strata'] and previous['outcome']['expected_record_failure_qualified'],
+                    'qualify the actual second-record failure before positive-swap lifecycle entry')
+        return built,gate,providers
     if MODE in GDN_MODES:
         built=gdn16.built_module.verify();data=build.committed(RESULT)
         rows=[]
@@ -125,8 +154,12 @@ def prepare():
     if MODE in GDN_MODES:
         env.update(STRATA_SYCL_PREFILL_GDN_FP16=GDN_MODES[MODE][1],
                    STRATA_SYCL_PREFILL_GDN_CHUNK64='0')
-    if MODE == 'gdn16-mtp16-throughput':
+    if MODE in MTP16_MODES:
         env.update(STRATA_MTP_BATCH_F16='1', STRATA_SNAPSHOT_VERIFY='1')
+    if MODE in ('adaptive-fault-throughput','adaptive-positive-throughput'):
+        env['STRATA_TRACE_ADAPT']='1'
+    if MODE=='adaptive-fault-throughput':
+        env['STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE']='1'
     require(not env.get('LD_PRELOAD') and not any('/MistVVK/' in v for v in env.values()),
             'native-only preload and official environment required')
     shared.python_runtime.require_environment(env)
@@ -135,6 +168,10 @@ def prepare():
     args = config['args']
     require('--prefill-strategy' not in args,'unexpected inherited strategy override')
     args.extend(['--prefill-strategy',STRATEGY])
+    if MODE in ('adaptive-fault-throughput','adaptive-positive-throughput'):
+        args[args.index('--adapt-swaps')+1]='8'
+        require('--adapt-every' not in args,'unexpected inherited adaptation interval')
+        args.extend(['--adapt-every','1'])
     require(build.basis.split.blob(build.basis.split.BASE, 'data/expert-profile.bin') ==
             (P / 'data/expert-profile.bin').read_bytes(), 'selected original expert profile changed')
     args[args.index('--expert-profile') + 1] = str(P / 'data/expert-profile.bin')
@@ -190,10 +227,17 @@ def prepare():
         retention='Compact host/progress/route/latency and failure evidence only;successful full journals,API/polling '
             'and debug output retire after verification. Runtime manifest replaces the consumed component inventory '
             'for this named model entry;current official reference and this same-ELF strategy candidate remain for imminent comparisons.')
-    if MODE in GDN_MODES:
+    if MODE in ADAPTIVE_MODES:
+        row['criteria']+=' Fixed program only;all eight unchanged fixtures,nonprogram native source and normalized compiler/link recipe match the qualified generation. Fresh host-canary/submission passes;no new model qualification is inherited. Single GPU,scratch lease enabled,immutable safety settings. Short outputs are not sustained-decode evidence.'
+        row['retention']='Keep compact model/lifecycle outcomes and source/binary/runtime identities. Retire successful traces,journals,JIT and expected-error output after evidence verification. Keep selected nine-ELF fallback and fixed nine-ELF candidate only for this imminent qualification/comparison;review and retire the extra generation at closure.'
+    elif MODE in GDN_MODES:
         row['criteria']+=' New GDN modes require this generation\'s closed device and favorable repeated-speed cohorts plus reviewed source integration. Verify actual per-request FP16-storage dispatch counts when enabled in throughput and absence in TTFT/off. This is the first bounded real-model entry,not activation-range/task-quality qualification;those remain pending along with full-context and sustained decode. No clean-speed inference from this logged diagnostic.'
-    if MODE == 'gdn16-mtp16-throughput':
-        row['criteria']+=' MTP FP16 changes only Prefill::draft_kv projection selection. Require successful batched mode2 callbacks and nominal chunk-cell conservation. The markers do not expose internal needed rows or batch shapes. Cache reuse is disabled; short outputs do not qualify sustained decode or adoption.'
+    if MODE in MTP16_MODES:
+        row['criteria']+=' MTP FP16 changes only Prefill::draft_kv projection selection. Require successful batched mode2 callbacks and nominal chunk-cell conservation. The markers do not expose internal needed rows or batch shapes. Prompt/conversation reuse is disabled; short outputs do not qualify sustained decode or adoption.'
+    if MODE=='adaptive-fault-throughput':
+        row['criteria']='Expected-failure diagnostic,not a speed or successful-generation run. Use the official bench.sh thinking workload and its ordinary warmup;the injected failure may occur before any long request. Require two actual refill record attempts:ordinal1 succeeds and is committed,ordinal2 returns a nonzero real compatibility-API status after copies were queued. Native and benchmark must exit nonzero normally;no later ADAPT_COMMIT/prefill,DONE or retry. Require the source-qualified return/checked-teardown path,absence of fail-stop/termination/runtime errors,quiet parameter validation,matched native environment/provider/identity,closed owners,no fresh fault and all final model hashes. This does not emulate valid-handle provider failure or directly measure DMA completion.'
+    if MODE=='adaptive-positive-throughput':
+        row['criteria']+=' Additionally require observed positive submits/commits and an actual final-window pending swap committed between a completed request and the next long GEN prefill. Conserve submit/commit counts and report terminal unpublished copies separately;QUIT may drain without publishing them. Source/runtime progress does not establish byte-exact cache payload or task quality;those remain pending before adoption.'
     save(row)
     print('Prepared two frontend probes and two explicit-strategy model entries;commit before execution.', flush=True)
 
@@ -281,7 +325,7 @@ def profile_route(text):
                 and all(v['schedule']=='barriers3' and v['partitions']=='4' and 0<int(v['tokens'])<=8192
                         for v in calls),'actual GDN3 dispatch differs')
         result.update(strategy=STRATEGY,actual_route=policy['route'],GDN3_calls=len(calls),**storage)
-        if MODE == 'gdn16-mtp16-throughput':
+        if MODE in MTP16_MODES:
             result['MTP_prefill'] = mtp_route(text, ROWS)
         return result
     require(not any(v in text for v in ('strata prefill heads: target detached ',
@@ -340,7 +384,130 @@ def route_controls():
                 original_throughput_progress_controls=original.selfcheck() if STRATEGY=='throughput' else None)
 
 
+def adaptive_progress(text):
+    pattern=r'^strata serve: ADAPT_(SUBMIT swaps=(\d+) H2D_requested_bytes=(\d+)|COMMIT swaps=(\d+))$'
+    events=list(re.finditer(pattern,text,re.M));pending=0;submits=commits=payload=0
+    for event in events:
+        if event[4] is not None:
+            count=int(event[4]);require(count==pending>0,'adaptive publication does not match pending copies')
+            commits+=count;pending=0
+        else:
+            count,size=int(event[2]),int(event[3])
+            require(0<=count<=8 and (size>0)==(count>0),'adaptive submit count/byte evidence differs')
+            if count:
+                require(pending==0,'overlapping adaptive batches');pending=count
+            submits+=count;payload+=size
+    require(submits>0 and commits>0 and submits==commits+pending,'positive adaptive work required')
+    footers=list(re.finditer(r'^strata serve: prompt \d+ tokens = \d+ reused \+ \d+ read[^\n]*$',text,re.M))
+    boundaries=0
+    for footer in footers[:-1]:
+        previous=[v for v in events if v.end()<footer.start()]
+        later=text[footer.end():]
+        policy=re.search(r'^strata prefill policy: .*tokens=32768\b',later,re.M)
+        if not previous or policy is None:continue
+        last=previous[-1]
+        if last[2] is not None and int(last[2])>0 and re.search(
+                r'^strata serve: ADAPT_COMMIT swaps='+last[2]+r'$',later[:policy.start()],re.M):
+            boundaries+=1
+    require(boundaries>0,'no observed deferred final-window copy before the next long GEN prefill')
+    return dict(submitted_swaps=submits,committed_swaps=commits,terminal_unpublished_swaps=pending,
+        H2D_requested_bytes=payload,deferred_next_long_prefill_boundaries=boundaries,
+        measured_PCIe_bytes=False,cache_payload_bitwise_verified=False)
+
+
+def run_fault():
+    row=json.loads((ROOT/'record.json').read_text());files,manifest=current(row)
+    require(MODE=='adaptive-fault-throughput' and row['stage']=='frontend-qualified' and row['host_passed'] and
+            not (ROOT/'owned').exists(),'fresh frontend-qualified expected-failure diagnostic only')
+    cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(
+        ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if v.startswith('-- cursor: '))
+    owner=None;outcome=dict(complete=False,host_probe_accepted=False,model_executed=False,
+        expected_record_failure_qualified=False);mapped=set();claims=[];observer=proc_observer.ProcObserver()
+    def persist():write(ROOT/'execution.json',dict(outcome,active=bool(owner and owner.active),commands=owner.commands if owner else []))
+    def monitor(io,entry):
+        next_sample=0.
+        def observe():
+            if not (ROOT/'engine-start.json').exists():return
+            claim=json.loads((ROOT/'engine-start.json').read_text())['native'];pid=claim['pid']
+            identity=build.supervision.identity(pid)
+            if identity is None:raise ProcessLookupError('retiring native')
+            require(identity['start_ticks']==claim['start_ticks'] and identity['sid']==entry['pid'] and
+                    str(Path('/proc',str(pid),'exe').resolve())==row['binary']['path'],'native identity differs')
+            expected=engine_once.native_environment(row,row['environment'])
+            actual=dict(v.split(b'=',1) for v in Path('/proc',str(pid),'environ').read_bytes().split(b'\0') if b'=' in v)
+            require(all(actual.get(k.encode())==v.encode() for k,v in expected.items()) and
+                    set(actual)-{k.encode() for k in expected}<={b'PWD',b'OLDPWD',b'SHLVL',b'_'},'native environment differs')
+            seen=shared.runtime.executable_mappings(Path('/proc',str(pid),'maps').read_text())
+            require(seen<=set(files)|{row['binary']['path']},'unplanned native provider')
+            shared.python_runtime.check_running(entry['pid'],P/'tools/strata_bench.py',manifest['selected'],
+                row['environment'],{v['realpath'] for v in manifest['inventory']['files'].values()},row['command'][2:])
+            mapped.update(seen);claims.append(claim);outcome['model_executed']=True
+        while not io.exit_watch.poll(0) or not io.eof:
+            io.poll()
+            if time.monotonic()>=next_sample:
+                observer.sample(observe,lambda:bool(io.exit_watch.poll(0)));next_sample=time.monotonic()+.1
+            if select.select([io.proc.stdout],[],[],.02)[0]:
+                io.read()
+                while b'\n' in io.pending:
+                    line,_,tail=io.pending.partition(b'\n');io.pending[:]=tail
+                    if line.startswith(b'STRATA_PROFILE_GATE '):
+                        gate=json.loads(line[len(b'STRATA_PROFILE_GATE '):])
+                        require(gate['phase']=='prefill-only' and gate['stage'] in ('begin','end') and
+                                gate['run'] in (0,1),'unexpected diagnostic request gate')
+                        io.send(b'continue\n')
+                if io.eof:io.pending.clear()
+        io.proc.stdin.close();io.exit(1)
+    try:
+        owner=build.supervision.Owner(ROOT/'owned',persist)
+        entry,_,_=owner.run('bench',row['command'],row['environment'],P,interaction=monitor,**row['budgets'])
+        require(build.supervision.closed(entry) and entry['exit_code']!=0,'expected benchmark failure missing')
+        start=json.loads((ROOT/'engine-start.json').read_text());end=json.loads((ROOT/'engine-exit.json').read_text())
+        require(set(start)=={'binary','args','boot_id','native','wrapper','native_validation_probe'} and
+                start['binary']==row['binary'] and start['args']==['--serve',*row['configuration']['args']] and
+                start['boot_id']==row['boot'] and start['native_validation_probe']==row['native_validation_probe'] and
+                end==dict(start,exit_code=1),'expected native failure/identity differs')
+        require(claims and all(v==start['native'] for v in claims) and
+                all(v['sid']==entry['pid'] for v in (start['native'],start['wrapper'])) and
+                start['native']['pid']!=start['wrapper']['pid'],'native ownership evidence incomplete')
+        text=(ROOT/'engine.stderr').read_text()
+        actual=list(re.finditer(r'^strata: ADAPT_RECORD_DIAGNOSTIC ordinal=(\d+) injected=(\d+) status=(\d+)$',text,re.M))
+        require(len(actual)==2 and actual[0].groups()==('1','0','0') and (actual[1][1],actual[1][2])==('2','1') and
+                int(actual[1][3])!=0,'two actual record attempts and second API failure required')
+        between=text[actual[0].end():actual[1].start()];tail=text[actual[1].end():]
+        require(re.search(r'^strata serve: ADAPT_SUBMIT swaps=[1-8] H2D_requested_bytes=[1-9]\d*$',between,re.M) and
+                re.search(r'^strata serve: ADAPT_COMMIT swaps=[1-8]$',between,re.M) and
+                'strata serve: cannot record the adaptive refill event' in tail and
+                not re.search(r'^strata (?:serve: ADAPT_COMMIT|prefill policy:|serve: prompt )',tail,re.M),
+                'stale-event error propagated after publication/prefill or old completion not established')
+        require(not any(s in text for s in ('Strata SYCL cleanup:','UR_RESULT_ERROR_','ZE_RESULT_ERROR_',
+                'terminate called','teardown uncertain')),'unexpected failure/fail-stop')
+        comparison.require_quiet_validation(ROOT)
+        activation=shared.runtime.validation.preload_evidence(text,start['native']['pid'])
+        required={row['native_validation_probe']['loader']['path'],row['native_validation_probe']['library']['path'],
+            row['environment']['ZE_ENABLE_ALT_DRIVERS'],row['environment']['UR_ADAPTERS_FORCE_LOAD']}
+        require(required<=mapped and activation['loader']==row['native_validation_probe']['loader']['path'],
+                'actual native validation/provider evidence incomplete')
+        current(row);assets=shared.models.model_pins(row['configuration'],row['model_assets'],full=True)
+        outcome.update(complete=True,host_probe_accepted=True,expected_record_failure_qualified=True,
+            native_exit_code=1,benchmark_exit_code=entry['exit_code'],native_identity=start['native'],validation=activation,
+            actual_record_attempts=2,first_record_committed_before_failure=True,no_publication_or_prefill_after_failure=True,
+            checked_teardown_evidence='Source-qualified normal return and absent fail-stop diagnostic with closed native/session;no direct DMA timeline or valid-handle provider failure claim.',
+            final_model_hashes=len(assets),proc_observation=observer.summary(),observed_provider_count=len(mapped),
+            clean_speed_qualified=False,sustained_decode_qualified=False,physical262144_qualified=False)
+    except BaseException as error:outcome['error']=repr(error)
+    finally:
+        if owner:shared.runtime.validation.finish(outcome,owner,cursor,row['boot'])
+        if outcome.get('driver_after')!=row['driver']:outcome['passed']=False
+        outcome['passed']=bool(outcome.get('passed') and outcome['complete'])
+        row.update(stage='closed' if outcome['passed'] else 'failed',passed=outcome['passed'],complete=outcome['complete'],
+            model_executed=outcome['model_executed'],outcome=outcome,active=bool(owner and owner.active),ownership_closed=outcome.get('ownership_closed',False))
+        save(row)
+    require(row['passed'],outcome.get('error','expected-record-failure diagnostic failed'))
+    print('Expected second-record failure propagated with closed owners and no fresh fault.',flush=True)
+
+
 def run():
+    if MODE=='adaptive-fault-throughput':return run_fault()
     row = json.loads((ROOT / 'record.json').read_text())
     files, manifest = current(row)
     require(row['stage'] == 'frontend-qualified' and row['host_passed'] and not (ROOT / 'owned').exists(), 'fresh frontend-qualified model only')
@@ -427,6 +594,7 @@ def run():
         require(validation['loader'] == row['native_validation_probe']['loader']['path'] and
                 not any(s in text for s in ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'terminate called', 'teardown uncertain')), 'native runtime error')
         routes = [profile_route(raw_text[w['begin']:w['end']].decode()) for w in log_windows]
+        if MODE=='adaptive-positive-throughput':outcome['adaptive_work']=adaptive_progress(text)
         shared.models.model_pins(row['configuration'], row['model_assets'], full=True)
         outcome.update(complete=True, host_probe_accepted=True, native_exit_code=0, routes=routes, validation=validation,
             samples=[{k: sample[k] for k in ('actual_read_tokens', 'actual_reused_tokens', 'prompt_ms', 'prompt_tps',

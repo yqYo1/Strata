@@ -598,6 +598,19 @@ two fresh host-canary/traced-submission cases and reuse only the unchanged
 component evidence after exact source/recipe/fixture checks. Keep the current521c175nine-ELF generation as the validated fallback
 until the replacement's small device/model/lifecycle checks complete;compilation
 and the parallel source review do not establish model or performance adoption.
+The fresh host-only canary and traced submission check both pass with normal
+native0,quiet parameter validation,closed owners and no fresh fault. The latter
+covers explicit/default/cross-queue events,ordinary-RAM copy lifetime,guards and
+queued1/119/120/121/241-kernel completion. Original packed-GDN/component evidence
+is reused only after eight identical fixture hashes,556unchanged nonprogram
+native files,236matching normalized compile units and identical external link
+inputs are verified. No changed engine-program model run has completed yet.
+Next use the maintained model-entry controller's injected-failure mode before
+its positive-swap mode. The expected native1 is a diagnostic success only if
+the second actual record fails after an earlier record was committed,and no
+later publication/prefill or cleanup fail-stop occurs;it is not successful
+generation or speed evidence. Keep full256K,task/agent and repeated independent
+prefill/decode adoption checks pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
