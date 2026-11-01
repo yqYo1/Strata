@@ -20170,7 +20170,7 @@
   },
   "gdn16_model_integration_contract_audit_20261101": {
     "classification": "decision_support",
-    "status": "reviewed_indexed_decision_support",
+    "status": "closed_source_gate_retained",
     "schedulable_now": false,
     "question": "Audit the newly integrated production half-output Gemm, shared dequantization scratch and arena views, native16 long-prefill dispatch and prefill/decode handoff. Identify concrete contract violations or untested requirements; do not repeat standalone typed-kernel or algorithm surveys.",
     "novelty": "The prior typed-consumer report predates the new Gemm::f16_vendor_out16 API, shared-arena carve and production prefill caller. These are new committed source connections,not a request to resurvey the old component.",
@@ -20191,9 +20191,7 @@
       "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
       "bench/sycl/gdn_storage_pipeline.cpp": "3a7f0948c815ac455218dd9673e5a67863b8d101d4d98dc9a438c70ad1726d12"
     },
-    "report": ".cache/research/2026-11-01/gdn16_model_integration_contract_audit_20261101.md",
-    "report_byte_budget": 11500,
-    "consumer": "Main before the first real-model range/handoff qualification;native Luna-max report review first.",
+    "consumer": "Imminent same-binary comparison consumes the compact reviewed source gate and eight source hashes;full audit question is closed.",
     "required_model": "gpt-6-luna high",
     "prior_reports": [
       "gdn16_typed_consumer_audit_20261101",
@@ -20218,11 +20216,11 @@
     "report_sha256": "b65a7b0ff78776937b17621b6935335fc2140df3e500564b53a6fbd74ad9c8f6",
     "report_bytes": 9371,
     "native_review": {
-      "path": ".cache/research/2026-11-01/gdn16_model_integration_contract_audit_20261101.native-review.json",
       "sha256": "8a3733d95118cc269db90beea85fb7360a5c54ec8de24a303e85779f2034750b",
       "bytes": 3679,
       "model": "gpt-6-luna",
-      "effort": "max"
+      "effort": "max",
+      "body_retired": true
     },
     "main_source_gate_passed": true,
     "main_decision": "Source audit only:all eight actual projected source hashes match;no structural blocker found in producer argument/span checks,same-queue scratch ordering,arena sizing/lease or long-prefill-only selection. This admits preparation of a separately committed bounded model-entry plan after actual-wrapper device and repeated-speed gates;it does not qualify model numerics,range,task quality,decode or context.",
@@ -20248,20 +20246,21 @@
     "next_scope": {
       "schedulable_now": false,
       "prerequisite": "A concrete new issue from model range/handoff or stage/resource evidence;do not repeat the source audit."
-    }
+    },
+    "report_body_retired": true
   },
   "prefill_resource_next_scope_review_20261101": {
     "classification": "review_metadata",
     "status": "reviewed_conditional_scopes",
     "schedulable_now": false,
     "review": {
-      "path": ".cache/research/2026-11-01/prefill_resource_next_scope_review_20261101.json",
       "sha256": "8efc807cc80b8655456444937123cb7600660ee0022b521a91fa0b1529e6299d",
       "bytes": 8310,
       "model": "gpt-6-luna",
-      "effort": "max"
+      "effort": "max",
+      "body_retired": true
     },
-    "source_basis": "projected GDN16 source521c1757b over selected f6cea2;actual-wrapper speed now closed separately at3349c96c1;first model entry pending",
+    "source_basis": "projected GDN16 source521c1757b;production-wrapper speed closed at3349c96c1 and first model entry atd4e3e313e;current hardware-resource attribution remains pending",
     "consumer": "Main next model-route/resource decision after the GDN entry",
     "retrieve_for_decision": [
       {
@@ -20291,7 +20290,7 @@
           "Separate CPU compute, submission, GPU wait/poll, device service and request wall; define bounds/lifetime/numerical contract for any candidate."
         ],
         "schedulable_now": false,
-        "evidence": "Wrapper speed run is active; model entry has not run and limiting resource is unknown. Existing reports cover generic grouping/traffic methods, so only a measured current-source delta is nonduplicative."
+        "evidence": "Wrapper timing and32Kmodel entry are now closed. Current model progress proves jobs/routes,but no matched resource profile or new source-specific candidate has yet selected this research;keep its remaining prerequisites pending."
       },
       {
         "id": "current_stage_hardware_limit_classification",
@@ -20302,9 +20301,60 @@
           "Keep unsupported physical counters/compute ceilings unknown rather than inferring a roofline."
         ],
         "schedulable_now": false,
-        "evidence": "No model-entry or physical-resource evidence exists yet; current reports already cover general byte accounting, B570 limits and PTI service/gap interpretation. A broad survey would duplicate them."
+        "evidence": "Wrapper timing and32Kmodel entry are now closed. Current model progress proves jobs/routes,but no matched resource profile or new source-specific candidate has yet selected this research;keep its remaining prerequisites pending."
       }
     ],
-    "limits": "No physical resource is inferred from stage percentage or a busy CPU core. Do not start another broad survey while its concrete measurement prerequisites are missing. Existing faster owned paths remain eligible without a complete hardware-ceiling inventory."
+    "limits": "No physical resource is inferred from stage percentage or a busy CPU core. Do not start another broad survey while its concrete measurement prerequisites are missing. Existing faster owned paths remain eligible without a complete hardware-ceiling inventory.",
+    "retrieval_sources": [
+      {
+        "id": "moe_grouped_decision",
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-grouped-native16-feasibility.md",
+        "sha256": "b950cb6a6f31935cef0f279d109a5bd6785f5646935e42fceed2b7c428bdc5a4",
+        "sections": [
+          "Finding",
+          "Reached path, launches and lifetimes",
+          "Alternatives and counterevidence",
+          "Smallest meaningful experiment and gates"
+        ]
+      },
+      {
+        "id": "moe_native16_traffic_scope",
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/moe-native16-traffic-accounting.md",
+        "sha256": "5a7e132b5fd5503a01d587c9d89babf183a5c2fe2344bd8511fee173393accca",
+        "sections": [
+          "Executive findings",
+          "Configured path",
+          "Formula ledger",
+          "Why no single total is a physical traffic estimate",
+          "Alternatives and exact bytes they could remove",
+          "Evidence limits",
+          "Eligibility and next evidence"
+        ]
+      },
+      {
+        "id": "current_operation_ceiling_scope",
+        "path": "/home/yayoi/.local/state/strata-sycl/artifact-retention-audit-20261018/research-wave-20261018/current-operation-ceilings.md",
+        "sha256": "d38d995cb764e4baa1ae5cf609facb977b5ed801cb44716adf4b268f9eee4ed3",
+        "sections": [
+          "Findings",
+          "MoE operations and tensors",
+          "MoE bytes: separate request, tensor and hardware ledgers",
+          "Intel ceilings and limits",
+          "Three measurements with decision value"
+        ]
+      },
+      {
+        "id": "official_unitrace_fused_moe_contract_20261101",
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-01/official_unitrace_fused_moe_contract_20261101.md",
+        "sha256": "b4f338040f7c5dcfa49099c83de9ea0c28df798dce077278b634615ba0998e26",
+        "sections": [
+          "Decision",
+          "Existing contracts to carry forward",
+          "Coverage choices",
+          "Small versus large MoE: required join and honest limits",
+          "Prioritized next qualifications"
+        ]
+      }
+    ]
   }
 }
