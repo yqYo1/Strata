@@ -492,6 +492,40 @@ bounded comparison with an intermediate wait bound. Determine wake/scheduling,
 CPU-expert and GPU-reach costs before choosing the next implementation change.
 Prefill and decode still require independent repeated phase comparisons before
 selecting a wait policy;lower CPU use alone is not a speedup.
+The next same-engine timing comparison,controller`2a740b9c0`,is also closed.
+Its plan is frozen from`6508753e2`:200us candidate first,then20000us reference,
+both with the existing decode footer enabled. Three offline footer tests pass.
+Both native processes exit0 with quiet validation,closed owners,no fresh fault
+and all15final model hashes passing. Both emit the same3900tokens and answer/
+reasoning hashes from33211fresh input,with1109target windows,4433target rows,
+1482033unique CPU jobs and1900835CPU entries. The actual entry fraction routed
+to CPU is89.3317%;at least71.7414%of CPU jobs have NT1. These are work counts,
+not traffic or time fractions.
+
+| Diagnostic metric | 200us candidate | 20000us reference |
+| --- | ---: | ---: |
+| Prefill,s | 50.5317 | 52.1399 |
+| Decode,s | 297.7347 | 289.0009 |
+| TG,tok/s | 13.1 | 13.5 |
+| Whole-request process CPU,s | 976.07 | 1578.25 |
+| Total decode,ms/window | 268.47 | 260.60 |
+| CPU pool call,ms/window | 120.85 | 113.31 |
+| GPU-reach wait,ms/window | 86.91 | 86.64 |
+| MTP draft,ms/window | 33.62 | 33.62 |
+
+200us reduces process CPU38.1549%but decode takes3.02207%longer. Its pool-call
+scope adds7.54ms of the7.87ms/window difference;this does not isolate wake calls
+from scheduling or arithmetic. Do not select200us or dismiss the decrease.
+The reference's pool-call,GPU-reach and draft scopes are43.48%,33.25%and12.90%
+of decode wall. The pool includes GU,hidden quantization,Down and synchronization;
+GPU-reach includes event/runtime waiting and is not a GPU compute timer.
+Nested scopes are not additive hardware costs. No arithmetic,VRAM,DRAM or PCIe
+saturation is established. The expert-copy counter is zero in thispcie0route;
+it does not count all bus traffic. This pair does not qualify repeated clean
+speed,task quality or adoption. Stop idle-bound-only tuning. Next audit the
+existing adaptive expert-cache path,including ownership and prefill restore,
+before a bounded trial that reduces the measured CPU expert work. Keep the
+current20ms decode default and the faster long-prefill development path.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
