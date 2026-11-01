@@ -9,6 +9,7 @@ from measure_gdn_storage import launch_census
 NATIVE = '<--- urKernelCreateWithNativeHandle(.hNativeKernel = 0x11, .hContext = 0x12, .hProgram = 0x13, .phKernel = 0x14 (0x15)) -> UR_RESULT_SUCCESS;'
 NAMED = '<--- urKernelCreate(.hProgram = 0x13, .pKernelName = 0x16 (_ZTS_convert), .phKernel = 0x14 (0x17)) -> UR_RESULT_SUCCESS;'
 LAUNCH = '<--- urEnqueueKernelLaunchWithArgsExp(.hQueue = 0x18, .hKernel = {}, .workDim = 3) -> UR_RESULT_SUCCESS;'
+QUERY = '<--- urKernelGetInfo(.hKernel = 0x15, .propName = UR_KERNEL_INFO_FUNCTION_NAME, .propSize = 37, .pPropValue = 0x19 (gemm_f16f16f32_nocopy_tn_4x16_1x1x16), .pPropSizeRet = nullptr) -> UR_RESULT_SUCCESS;'
 
 
 class TraceProvenance(unittest.TestCase):
@@ -26,6 +27,16 @@ class TraceProvenance(unittest.TestCase):
         row = launch_census('\n'.join((NATIVE,LAUNCH.format('0x15'),
             NATIVE.replace('0x11','0x21'),LAUNCH.format('0x15'),LAUNCH.format('0x15'))))
         self.assertEqual([v['launches'] for v in row['per_kernel'].values()],[1,2])
+
+    def test_existing_function_query_names_prior_launch(self):
+        row = launch_census('\n'.join((NATIVE,LAUNCH.format('0x15'),QUERY)))
+        self.assertEqual(row['per_kernel']['native_import_1']['name'],'gemm_f16f16f32_nocopy_tn_4x16_1x1x16')
+
+    def test_size_only_or_failed_query_does_not_invent_name(self):
+        size_only = QUERY.replace('.pPropValue = 0x19 (gemm_f16f16f32_nocopy_tn_4x16_1x1x16)', '.pPropValue = nullptr')
+        for query in (size_only,QUERY.replace('UR_RESULT_SUCCESS','UR_RESULT_ERROR_UNKNOWN')):
+            row = launch_census('\n'.join((NATIVE,query,LAUNCH.format('0x15'))))
+            self.assertIsNone(row['per_kernel']['native_import_1']['name'])
 
     def test_unknown_and_failed_provenance_refuse(self):
         for text in (LAUNCH.format('0x15'),

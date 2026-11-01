@@ -27,7 +27,8 @@ base, P, B, RESULT = built.base, built.P, built.B, built.RESULT
 require, digest, write = base.require, base.digest, base.write
 CONTROLLER = Path(__file__).resolve()
 CHECK_KEY, SPEED_KEY = 'official_gdn_storage_device_v2', 'official_gdn_storage_speed_v1'
-HOST_KEY = 'gdn_storage_trace_parser_host_v1'
+HOST_KEY = 'gdn_storage_trace_parser_host_v2'
+HOST_ROOT = built.ROOT / 'parser-host-v2'
 HOST_TEST = 'tests/core/test_gdn_storage_trace.py'
 ARMS = ('oneMKL32', 'oneMKL16', 'oneMKL32_convert16')
 
@@ -65,7 +66,7 @@ def prerequisites(speed):
     failed = data['official_gdn_storage_device_v1']
     require(failed['stage'] == 'failed' and not failed['passed'] and failed['ownership_closed'] and
             failed['failure_analysis']['native_exit_code'] == 0, 'preserve original observer refusal')
-    host = json.loads((built.ROOT/'parser-host-v1/record.json').read_text())
+    host = json.loads((HOST_ROOT/'record.json').read_text())
     require(data[HOST_KEY] == base.compact(host) and host['passed'] and host['ownership_closed'] and
             not host['active'] and not host['GPU_executed'],
             'closed native-import parser host gate required')
@@ -73,8 +74,7 @@ def prerequisites(speed):
                  base.basis.build.blobs(P,host['source_commit'],host['controller_inputs'])}
     require(recovered == host['controller_inputs'] and all(digest(P/n) == sha for n,sha in recovered.items()),
             'host-tested parser inputs changed')
-    refs['host_parser'] = dict(path=str(built.ROOT/'parser-host-v1/record.json'),
-                              sha256=digest(built.ROOT/'parser-host-v1/record.json'))
+    refs['host_parser'] = dict(path=str(HOST_ROOT/'record.json'),sha256=digest(HOST_ROOT/'record.json'))
     if speed:
         key, root = paths(False); row = json.loads((root / 'record.json').read_text())
         require(base.committed(RESULT)[key] == base.compact(row) and row['passed'] and row['complete']
@@ -129,6 +129,13 @@ def launch_census(text):
             v = re.search(r'\.hNativeKernel = (0x[0-9a-f]+).*?\.phKernel = .*?\((0x[0-9a-f]+)\)', line)
             if v:
                 serial += 1; handles[v[2]] = ('native_import_' + str(serial), 'native_import', None)
+        elif '<--- urKernelGetInfo(' in line and 'UR_KERNEL_INFO_FUNCTION_NAME' in line:
+            handle = re.search(r'\.hKernel = (0x[0-9a-f]+)', line)
+            value = re.search(r'\.pPropValue = 0x[0-9a-f]+ \(([^()]+)\)', line)
+            if handle and value and handle[1] in handles:
+                label, origin, _ = handles[handle[1]]
+                handles[handle[1]] = (label, origin, value[1])
+                if label in launches: launches[label]['name'] = value[1]
         if not re.search(r'<--- urEnqueueKernelLaunch(?:WithArgsExp|CustomExp)?\(', line): continue
         v = re.search(r'\.hKernel = (0x[0-9a-f]+)', line)
         if not v or v[1] not in handles: unmapped += 1; continue
@@ -141,7 +148,7 @@ def launch_census(text):
 
 def host_check():
     require(HOST_KEY not in base.committed(RESULT), 'one fresh host parser gate only')
-    root = built.ROOT / 'parser-host-v1'; require(not root.exists(), 'host gate already exists'); root.mkdir()
+    root = HOST_ROOT; require(not root.exists(), 'host gate already exists'); root.mkdir()
     revision = base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
     pins = base.controls(revision,controller=CONTROLLER)
     raw = base.basis.build.git(P,'show',revision+':'+HOST_TEST)
@@ -153,13 +160,20 @@ def host_check():
     row = dict(source_commit=revision,controller_inputs=pins,native_sources={},command=command,
         interpreter=dict(path=python,sha256=digest(python)),environment=env,active=False,passed=False,
         ownership_closed=True,GPU_executed=False,commands_executed=[])
+    trace = built.ROOT / 'device-v2/storage-smoke/ur.trace'
+    row['prior_trace_input'] = dict(path=str(trace),sha256=digest(trace),bytes=trace.stat().st_size,
+        source='Closed device V2small smoke,not a new GPU execution.')
     owner = base.supervision.Owner(root/'owned')
     entry,out,err = owner.run('parser-tests',command,env,P,wall=30,cpu=30,rss_cap=1<<30,
         text_cap=1<<20,file_cap=1<<20,total_cap=2<<20)
     text = out.read_text()+err.read_text()
-    row.update(passed=base.supervision.closed(entry) and entry['exit_code']==0 and 'Ran 4 tests' in text and '\nOK\n' in text,
+    row.update(passed=base.supervision.closed(entry) and entry['exit_code']==0 and 'Ran 6 tests' in text and '\nOK\n' in text,
         ownership_closed=owner.active is None and base.supervision.closed(entry),commands_executed=owner.commands,
-        result='4native/named/import-reuse/unknown-or-failed-provenance tests',output_excerpt=text[-2000:])
+        result='6native/named/import-reuse/name-query/unknown-or-failed-provenance tests',output_excerpt=text[-2000:])
+    require(digest(trace) == row['prior_trace_input']['sha256'], 'offline trace input changed')
+    row['prior_trace_census'] = launch_census(trace.read_text())
+    row['passed'] = row['passed'] and row['prior_trace_census']['launches'] == 9 and all(
+        v['name'] is not None for v in row['prior_trace_census']['per_kernel'].values())
     save(root,HOST_KEY,row)
     require(row['passed'], 'parser host gate failed')
     print('Passed native-import parser host gate;GPU_executed=false.',flush=True)
