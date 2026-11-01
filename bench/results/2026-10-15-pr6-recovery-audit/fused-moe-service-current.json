@@ -71790,7 +71790,7 @@
     }
   },
   "gdn16_pipeline_speed_v1": {
-    "stage": "prepared",
+    "stage": "resident-speed-closed",
     "source_commit": "178058329d3b816955b771d3c9146b19ded53c8b",
     "native_source_commit": "3b05783e84dc69a3f33dd6b50528a01bb5949d96",
     "binary": {
@@ -71955,12 +71955,1661 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": false,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        },
+        "environment_sha256": "4cabbede18d5c1fab0f0afa2149274e9bd5933e7d66f5e3ed5d195695e1359a3"
+      },
+      {
+        "name": "clean-smoke",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 12,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "canonical": [
+            {
+              "kind": "canonical",
+              "T": 1,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 17,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            }
+          ],
+          "packed_producers": [
+            {
+              "kind": "packed_producers",
+              "T": 1,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.04110134751706441,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 17,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06295994908052807,
+              "passed": true
+            }
+          ],
+          "FP32_difference": [
+            {
+              "kind": "FP32_difference",
+              "T": 1,
+              "relative_output_RMS": 0.0003594715658023768,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 5.696434527635574e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 17,
+              "relative_output_RMS": 0.0003960701075227698,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 8.213333785533905e-06,
+              "diagnostic_only": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "5c05fd39cef22034d70837ebef9bdc1df4967b67553ce48f55967ca37f4a4a94"
+      },
+      {
+        "name": "resident-0",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 422,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "canonical": [
+            {
+              "kind": "canonical",
+              "T": 4096,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 4096,
+              "pattern": "general",
+              "repeats": 64,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8192,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8192,
+              "pattern": "general",
+              "repeats": 64,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            }
+          ],
+          "packed_producers": [
+            {
+              "kind": "packed_producers",
+              "T": 4096,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06615523374826397,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 8192,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06816500468783057,
+              "passed": true
+            }
+          ],
+          "FP32_difference": [
+            {
+              "kind": "FP32_difference",
+              "T": 4096,
+              "relative_output_RMS": 0.0005810189573550086,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 8.49459320306778e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 4096,
+              "relative_output_RMS": 0.0005876178563218563,
+              "max_output_abs": 0.00025177001953125,
+              "max_state_abs": 8.49459320306778e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8192,
+              "relative_output_RMS": 0.000583111856840239,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 7.227994501590729e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8192,
+              "relative_output_RMS": 0.0005864244635976799,
+              "max_output_abs": 0.0003662109375,
+              "max_state_abs": 7.227994501590729e-06,
+              "diagnostic_only": true,
+              "passed": true
+            }
+          ],
+          "timing": [
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 468.674376,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 32.352009,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 66.082674,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 70.791715,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 0.004679,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 0.004678,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 0.004639,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 0.004649,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 0.004699,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 1047.179342,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 1136.74803,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 1133.034484,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 1049.036099,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 1047.663201,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 1135.744918,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 1133.154479,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 1047.90661,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 1050.24786,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 1133.089435,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 42.460531,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 45.677021,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 138.776431,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 140.587763,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 0.004939,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 0.004829,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 0.004799,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 0.004879,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 0.004789,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 2115.352254,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 2251.770051,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 2250.374009,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 2115.453883,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 2117.473857,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 2252.914001,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 2251.821652,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 2117.048613,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 2118.220429,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 2251.363175,
+              "passed": true,
+              "eligible": true
+            }
+          ]
+        },
+        "environment_sha256": "fea270d88408300404e3a2d1c834a31ab82419c95b59ea2ed99098188daff604"
+      },
+      {
+        "name": "resident-1",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 422,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "canonical": [
+            {
+              "kind": "canonical",
+              "T": 4096,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 4096,
+              "pattern": "general",
+              "repeats": 64,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8192,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8192,
+              "pattern": "general",
+              "repeats": 64,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            }
+          ],
+          "packed_producers": [
+            {
+              "kind": "packed_producers",
+              "T": 4096,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06615523374826397,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 8192,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06816500468783057,
+              "passed": true
+            }
+          ],
+          "FP32_difference": [
+            {
+              "kind": "FP32_difference",
+              "T": 4096,
+              "relative_output_RMS": 0.0005810189573550086,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 8.49459320306778e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 4096,
+              "relative_output_RMS": 0.0005876178563218563,
+              "max_output_abs": 0.00025177001953125,
+              "max_state_abs": 8.49459320306778e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8192,
+              "relative_output_RMS": 0.000583111856840239,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 7.227994501590729e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8192,
+              "relative_output_RMS": 0.0005864244635976799,
+              "max_output_abs": 0.0003662109375,
+              "max_state_abs": 7.227994501590729e-06,
+              "diagnostic_only": true,
+              "passed": true
+            }
+          ],
+          "timing": [
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 500.937241,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 30.183342,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 70.953559,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 65.36441,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 0.004649,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 0.004569,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 0.004689,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 0.004549,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 0.004539,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 1135.788731,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 1047.347277,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 1050.688401,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 1133.209291,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 1134.677867,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 1048.551054,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 1047.560988,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 1137.356824,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 1133.244937,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 1050.542735,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 50.857159,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 41.906898,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 142.499734,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 131.965308,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 0.00494,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 0.004929,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 0.004929,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 0.004739,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 0.004809,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 2251.505921,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 2115.782573,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 2115.405,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 2251.651101,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 2251.594313,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 2114.893294,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 2114.261452,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 2252.396351,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 2251.937926,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 2116.803629,
+              "passed": true,
+              "eligible": true
+            }
+          ]
+        },
+        "environment_sha256": "c82372707ca0e73e72133d39d1f1e5783cd80fbc0c5a0f0d62192e69c22768cb"
+      },
+      {
+        "name": "resident-2",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 421,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "canonical": [
+            {
+              "kind": "canonical",
+              "T": 4096,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 4096,
+              "pattern": "general",
+              "repeats": 64,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8192,
+              "pattern": "general",
+              "repeats": 1,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": true,
+              "guards": true,
+              "passed": true
+            },
+            {
+              "kind": "canonical",
+              "T": 8192,
+              "pattern": "general",
+              "repeats": 64,
+              "exact_rounded_storage_state_history_output": true,
+              "split_1_2_tail": false,
+              "guards": true,
+              "passed": true
+            }
+          ],
+          "packed_producers": [
+            {
+              "kind": "packed_producers",
+              "T": 4096,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06615523374826397,
+              "passed": true
+            },
+            {
+              "kind": "packed_producers",
+              "T": 8192,
+              "FP64_spots": 64,
+              "max_bound_fraction": 0.06816500468783057,
+              "passed": true
+            }
+          ],
+          "FP32_difference": [
+            {
+              "kind": "FP32_difference",
+              "T": 4096,
+              "relative_output_RMS": 0.0005810189573550086,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 8.49459320306778e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 4096,
+              "relative_output_RMS": 0.0005876178563218563,
+              "max_output_abs": 0.00025177001953125,
+              "max_state_abs": 8.49459320306778e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8192,
+              "relative_output_RMS": 0.000583111856840239,
+              "max_output_abs": 0.00048828125,
+              "max_state_abs": 7.227994501590729e-06,
+              "diagnostic_only": true,
+              "passed": true
+            },
+            {
+              "kind": "FP32_difference",
+              "T": 8192,
+              "relative_output_RMS": 0.0005864244635976799,
+              "max_output_abs": 0.0003662109375,
+              "max_state_abs": 7.227994501590729e-06,
+              "diagnostic_only": true,
+              "passed": true
+            }
+          ],
+          "timing": [
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 460.053626,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 37.702978,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 65.435573,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 70.817392,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 0.004648,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 0.004619,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 0.004528,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 0.004659,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 0.004698,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 1047.48688,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 1135.251608,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 1133.138527,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 1048.868392,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 1049.44064,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 1133.010755,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 1136.448903,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 1047.351834,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 1053.205712,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 1133.19392,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 42.903855,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "first_shape_call",
+              "round": -1,
+              "calls": 1,
+              "host_ms": 46.538804,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 132.374828,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "warmup",
+              "round": -1,
+              "calls": 4,
+              "host_ms": 140.778349,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 0.004849,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 0.004899,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 0.004799,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 0.004819,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "empty",
+              "phase": "timer_control",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 0.004869,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 2115.292962,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 0,
+              "calls": 64,
+              "host_ms": 2251.208078,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 2251.484088,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 1,
+              "calls": 64,
+              "host_ms": 2115.52701,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 2117.824788,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 2,
+              "calls": 64,
+              "host_ms": 2252.591891,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 2252.543921,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 3,
+              "calls": 64,
+              "host_ms": 2116.11295,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP32",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 2114.400233,
+              "passed": true,
+              "eligible": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "arm": "FP16",
+              "phase": "steady",
+              "round": 4,
+              "calls": 64,
+              "host_ms": 2251.110147,
+              "passed": true,
+              "eligible": true
+            }
+          ]
+        },
+        "environment_sha256": "57b77b258657d5cc9da19f31c4d6ad500a5d81b061592f320fe88b129591fc50"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -71982,6 +73631,90 @@
       "safety": "Original in-order Runtime;copy offload/direct submission disabled and preexec environment immutable. At most4compound calls before drain. Canary,small traced smoke,warning-only general shapes before separate clean speed processes.",
       "retention": "Keep useful samples,numerical maxima and decisions. Retire closed raw logs/traces after extracting names/provenance. Keep selected engine;new component generation has only this imminent comparison consumer."
     },
+    "GPU_execution_requested": true,
+    "component_decisions": [
+      {
+        "T": 4096,
+        "process_medians": [
+          {
+            "process": "resident-0",
+            "milliseconds": {
+              "FP32": 16.37354078125,
+              "FP16": 17.705538734375
+            },
+            "ratio": 1.0813506358166785,
+            "eligible": true
+          },
+          {
+            "process": "resident-1",
+            "milliseconds": {
+              "FP32": 16.38361021875,
+              "FP16": 17.729341671875
+            },
+            "ratio": 1.082138883625594,
+            "eligible": true
+          },
+          {
+            "process": "resident-2",
+            "milliseconds": {
+              "FP32": 16.388568625,
+              "FP16": 17.706155
+            },
+            "ratio": 1.0803966719210658,
+            "eligible": true
+          }
+        ],
+        "paired_geomean_time_ratio": 1.0812951624788543,
+        "follow_up_eligible": false
+      },
+      {
+        "T": 8192,
+        "process_medians": [
+          {
+            "process": "resident-0",
+            "milliseconds": {
+              "FP32": 33.078884578125,
+              "FP16": 35.183907046875
+            },
+            "ratio": 1.0636364404542844,
+            "eligible": true
+          },
+          {
+            "process": "resident-1",
+            "milliseconds": {
+              "FP32": 33.053203125,
+              "FP16": 35.182048453125
+            },
+            "ratio": 1.0644066270997752,
+            "eligible": true
+          },
+          {
+            "process": "resident-2",
+            "milliseconds": {
+              "FP32": 33.05510953125,
+              "FP16": 35.179438875
+            },
+            "ratio": 1.0642662926813684,
+            "eligible": true
+          }
+        ],
+        "paired_geomean_time_ratio": 1.0641030673619156,
+        "follow_up_eligible": false
+      }
+    ],
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 36,
+    "ordinary_runtime_teardown_qualified": false,
     "controller_inputs": {
       "files": 41,
       "aggregate_sha256": "85cbdec833201bc83ba01a5ed7354d6f8bd700f8582514b2f6f536a78b83037d"
