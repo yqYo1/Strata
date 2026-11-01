@@ -137,13 +137,31 @@ recovery. Selected555-source/1449-input/eight-ELF admission passes before and
 after deletion;the engine SHA is unchanged. The path/hash/reason manifest and
 remaining14legacy provenance holds are recorded in the compact closed decision.
 
-Next audit the actual GDN3 producer/consumer storage contract and direct oneMKL
-FP16-output support before a new component experiment. A16bit output needs
-range/rounding,typed conv/z loads,ownership and unchanged state/decode handoff
-evidence;do not adopt the slower chunk64 recurrence merely to get16bit storage.
-The curated resource collection supplies conditional ideas,not an authorized
-blind tile sweep. Physical262144model/RESTORE,task/agent and sustained decode
-qualification remain pending.
+The next storage comparison is independently authored at605e73d451b3425fa275e6e917069909d39d8f7c:
+oneMKL half-input/FP32-output,direct FP16-output,and FP32-output plus explicit
+FP16 conversion. Its CPU-only build recipe1cabcae5e is frozen before compilation;
+compile/link and actual input accounting pass. This is a new component fixture,
+not a production implementation or GPU result. The selected eight-ELF engine
+is checked unchanged before and after the build.
+
+Two bounded Orca Luna reports and native Luna max reviews now identify the
+actual GDN3 QKV/z consumer boundary and the vendor overloads. FP16 C uses FP16
+alpha/beta;FP32 C uses FP32 scalars. A declaration does not establish device
+support,accumulation,rounding or model quality. The compiled fixture currently
+uses the production-style default compute mode,which the installed header maps
+to`unset`;make the default-versus-explicit-standard choice prospective before
+GPU testing. The fixture's bounded finite-input FP32-plus-half-rounding oracle
+is a diagnostic criterion,not proof of the vendor accumulator type.
+
+Next qualify a bounded traced direct-output smoke,then general shapes and a
+clean repeated component comparison. Native BF16 producers are a separate
+producer variant,not a pure output-storage toggle. Current production conv/z
+consumers still take FP32;typed16bit consumers,range/rounding,arena ownership,
+unchanged FP32 state and decode handoff need their own checks before model trials.
+Do not adopt the slower chunk64 recurrence merely to obtain16bit storage.
+The curated resource collection supplies conditional ideas,not a blind tile
+sweep. Physical262144model/RESTORE,task/agent,sustained decode and a current-route
+length/time refit remain pending. PP/TTFT and both manual profiles are unchanged.
 
 The first official2026.2replacement used
 [a pinned constructor](../tools/sycl/official_model_sources.py),not the whole
