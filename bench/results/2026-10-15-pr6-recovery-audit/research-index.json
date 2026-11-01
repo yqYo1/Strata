@@ -20027,6 +20027,27 @@
         "remaining": "Remove unsupported vLLM statements or pin matching immutable evidence;remove the leftover verify-hash marker.Then obtain a fresh native review before retrieval."
       },
       "next_action": "Fresh bounded report-only citation correction;no implementation or GPU qualification implied."
+    },
+    "citation_correction_task": {
+      "classification": "knowledge_collection_correction",
+      "status": "ready",
+      "schedulable_now": true,
+      "prerequisites": {
+        "prior_Orca_closed": true,
+        "native_rereview_closed": true,
+        "input_report_sha256": "a1129a459a846b71b912e3bc7c13adefd7fc0e151b81c4e294b33c43b5ab471e",
+        "review_sha256": "823f9398668e06d7a8378788fc82f9753b9b4576c21b6e0ab1fa2f05b2fe08b7"
+      },
+      "spec": {
+        "path": ".cache/research/2026-11-01/layer_scoped_kv_citation_correction_20261101.task.txt",
+        "sha256": "a1db7136af2da0c4210db87fdabaa9bd2c4e03fa559b387b6555a6fe39a53c73"
+      },
+      "report": ".cache/research/2026-11-01/layer_scoped_kv_residency_collection_20261101.citation-corrected.md",
+      "report_budget_bytes": 16000,
+      "worker_model": "gpt-6-luna high via Orca",
+      "review_model": "native Codex gpt-6-luna max",
+      "consumer": "One final citation-only native review;retire superseded report variants/transactions after accepted correction.",
+      "main_reads_body_on_arrival": false
     }
   }
 }
