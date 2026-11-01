@@ -20104,7 +20104,7 @@
   },
   "gdn16_typed_consumer_audit_20261101": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed_race_claim_corrected",
     "schedulable_now": false,
     "question": "Audit the actual new prefill-only gdn_conv_f16 and gdn_recurrence_barriers3_f16 against unchanged FP32 GDN3:typed packed spans,subgroup uniformity,history T=1/2/3 tails,three-barrier hazards,state ownership,raw scratch versus normalized output and decode isolation. Explain required rounded-storage reference tests and real model range/precision limits. Identify concrete bugs or counterexamples,not a generic source tour. Main is writing the compound packed producer/consumer fixture separately;this review does not cover its future bytes.",
     "prerequisites": {
@@ -20136,12 +20136,30 @@
         "input_accepted",
         "turn_started"
       ],
-      "normal_startup_protections_preserved": true
-    }
+      "normal_startup_protections_preserved": true,
+      "outcome": "succeeded",
+      "terminal_release": "released",
+      "terminal_observation": "exited",
+      "delivery_acknowledged": "delivery_da2954df425e"
+    },
+    "report_asset": {
+      "bytes": 8239,
+      "sha256": "4bb35e47222418a0333d46c4d8a324d54a3adc60085b258da6ebbe6a779464e0"
+    },
+    "report_body_read_by_Main": false,
+    "review_asset": {
+      "path": ".cache/research/2026-11-01/gdn16_typed_consumer_audit_20261101.review.json",
+      "bytes": 7290,
+      "sha256": "2c4a95165547d6c88d7a5d5228d51eb2c30d6d3d9f46179334e140d9ae93f410",
+      "model": "native Codex gpt-6-luna max"
+    },
+    "review_digest": "Central missing-barrier claim is false positive. Prior q/k reads complete before output-publication barrier;prior output-red reads complete before next-token q/k-publication barrier,and KV/output scratch are distinct. No race-specific extra barrier required in FP32 or FP16. Typed storage/history-tail/raw-output/range analysis remains useful.",
+    "next_action": "Proceed with packed typed-consumer fixture and rounded-storage reference;real GPU results,model range/quality and full-context/decode qualification remain mandatory.",
+    "retention_review": "Keep corrected short boundary/ordering contract for imminent compound comparison. Reassess report body after component decision;do not preserve the incorrect race claim without this correction."
   },
   "native_half_conversion_codegen_collection_20261101": {
     "classification": "knowledge_collection",
-    "status": "running",
+    "status": "completed_native_review_pending",
     "schedulable_now": false,
     "question": "Compare native FP16-bit to FP32 casts and integer bit-decomposition converters on Intel Xe2/SYCL,including subnormals,signed zero,NaNs,infinities,alignment,SPIR-V/LLVM/IGC lowering and compiler floating-point flags. Use primary compiler/runtime/spec source and original technical studies from SIMD/GPU imaging or scientific computing where transferable. Separate instruction/semantic evidence from measured throughput and CPU fallback claims. Discuss which finite discriminating conversion/IR/ISA tests could decide whether the existing software converter is expensive or necessary;do not execute them. Existing historical CUDA conversion failures do not establish a current Intel failure.",
     "prerequisites": {
@@ -20172,7 +20190,16 @@
         "input_accepted",
         "turn_started"
       ],
-      "normal_startup_protections_preserved": true
-    }
+      "normal_startup_protections_preserved": true,
+      "outcome": "succeeded",
+      "terminal_release": "released",
+      "terminal_observation": "exited",
+      "delivery_acknowledged": "delivery_da2954df425e"
+    },
+    "report_asset": {
+      "bytes": 11838,
+      "sha256": "f7ed404ac8263a1f6047f1ee5863fd77f7a793bdff6f3f722779c2b1edcb4d42"
+    },
+    "report_body_read_by_Main": false
   }
 }
