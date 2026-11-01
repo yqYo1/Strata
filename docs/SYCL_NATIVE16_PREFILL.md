@@ -194,15 +194,27 @@ trace:successful function-name query values were already present. These small
 smoke dispatches do not identify the larger timed shapes,accumulator type,
 per-launch device service or hardware counters;those remain unmeasured.
 
-Next qualify packed-layout FP16 producers with typed conv/history/z consumers
-as a compound GDN3 path. Native BF16 producers are a separate producer variant,
-not a pure output-storage toggle. Current production conv/z consumers still
-take FP32;typed16bit consumers,range/rounding,arena ownership,unchanged FP32
-state and decode handoff need their own checks before model trials.
-Do not adopt the slower chunk64 recurrence merely to obtain16bit storage.
-The curated resource collection supplies conditional ideas,not a blind tile
-sweep. Physical262144model/RESTORE,task/agent,sustained decode and a current-route
-length/time refit remain pending. PP/TTFT and both manual profiles are unchanged.
+The packed-layout typed-consumer V1 comparison is now closed. The new half
+QKV/conv/z storage retains FP32 history,persistent state,gates and local math.
+Its component numerical/bounds/tail checks pass,but the complete resident
+projection+conv+GDN3+RMS chain is slower in all three independent processes:
+paired time ratios are1.081295 at4096rows and1.064103 at8192rows. Neither length
+passes its follow-up screen. Evidence and individual samples are preserved at
+`540d3f8e0babb78d67c06220560b0a35e1a5a895`,key`gdn16_pipeline_speed_v1`;
+these are component times,not model PP. No model dispatch or decode changed.
+The closed component generation is retired after original-source/recipe recovery;
+selected f6cea2and its eight ELFs remain unchanged.
+
+Next replace only the typed path's integer half conversion helpers with SYCL
+half casts,keeping the FP32 control and three-barrier schedule. Before timing,
+check all65536half bit patterns and float rounding-boundary/subnormal/overflow
+cases on the actual GPU. This is a conversion-cost hypothesis,not evidence of
+arithmetic or VRAM saturation. Compare the entire packed component again in
+three fresh processes;the prior rejected software-half result remains intact.
+Only a successful component decision permits planning production integration.
+Model range,arena ownership,decode handoff,physical262144model/RESTORE,
+task/agent,sustained decode and a current-route length/time refit remain pending.
+PP/TTFT and both manual profiles are unchanged.
 
 The first official2026.2replacement used
 [a pinned constructor](../tools/sycl/official_model_sources.py),not the whole
