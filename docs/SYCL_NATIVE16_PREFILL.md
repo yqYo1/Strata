@@ -387,17 +387,32 @@ both thinking-on requests and24outputs each,with144typed GDN calls and four
 successful mode2 MTP callbacks per request. Native exit0,quiet final validation,
 closed owners,full model hashes and no fresh fault pass. Logged PP666.2/825.3
 and client TTFT49.309/39.841s are first/subsequent diagnostic observations,not
-matched clean speed. The117Kcomparison now has two normally closed MTP16processes. Their
-subsequent-request process medians are1043.3617/1049.4353tok/s with client
-TTFT112.776s/112.145s. Matched Q8controls are983.7602/980.9363tok/s and
-119.600s/119.949s. Paired prompt-time ratios are0.94287544/0.93472781
-(5.7125%/6.5272%less time). All four normal process exits,quiet final
-validation,source/provider/route/owner checks and no fresh faults pass.
-First use remains separate:the candidate first requests print969.0/797.1tok/s;
-this does not establish a general first-use TTFT improvement. The first
-candidate observation is indexed separately in the CSV. The final pair remains,
-so frozen paired-gain and repeated1000target decisions are pending. No native
-kernel or decode selection is changed. Initial117K preparation refuses two unlisted Python
+matched clean speed. The117Kcomparison is now closed:all6fresh processes and24requests pass,
+with normal native exits,quiet final validation,source/provider/route/owner
+checks,no fresh faults and all15model assets hash-matched after the cohort.
+Each PP/TTFT below is one process's median of three subsequent requests.
+
+| Pair,first arm | FP16/Q8 PP,tok/s | Prompt-time ratio | FP16/Q8 client TTFT,s |
+| --- | ---: | ---: | ---: |
+| 1,FP16 | 1043.3617 / 983.7602 | 0.94287544 | 112.776 / 119.600 |
+| 2,Q8 | 1049.4353 / 980.9363 | 0.93472781 | 112.145 / 119.949 |
+| 3,FP16 | 1046.0957 / 984.3091 | 0.94093593 | 112.486 / 119.533 |
+
+All three prompt-time ratios and TTFT ratios favor FP16. The prompt-time
+geometric mean is0.93950663(6.0493%less time),passing the prospective
+reproducible-gain screen without a percentage floor. All three candidate
+process medians exceed1000tok/s:the117489-read warmed-prefill target is met.
+Median of process medians is1046.0957tok/s,112.3119s prefill and112.486s
+client TTFT;Q8is983.7602tok/s,119.4285s and119.600s. The nine candidate
+subsequent requests peak at1050.8113tok/s. Individual samples are retained.
+First use stays separate:candidate PP prints969.0/797.1/958.2tok/s and
+TTFT121.421/147.662/122.786s;Q8TTFT is128.992/128.680/128.608s.
+A universal first-use TTFT gain is not established. No native kernel or decode
+selection changed. Select MTP16 with GDN16 for the next development/model check,
+while full adoption remains pending >=1K strong/weak-MTP generation and decode
+preservation,agent/task,TTFT-option and physical262144/RESTORE. This one length
+does not update the input-length/time curve or qualify resource saturation.
+Initial117K preparation refuses two unlisted Python
 observer-controller changes before any GPU work or output-root creation. Its
 failed result remains. The V2admission recovers the original qualified profile
 and model-probe controllers,requiring the exact two observer hashes and only
@@ -407,10 +422,12 @@ Physical arithmetic/VRAM/PCIe saturation remains unknown. Next compare the
 source/shape-specific opportunities and characterize longer inputs on this
 same validated generation,without attributing a length/configuration change
 to a kernel speedup. Keep first-use,subsequent-request and per-placement curves
-distinct,and retain the current clean900.5242/984.4641tok/s references.
-The closed cohort's raw output is retired after recovering its261source inputs
-from pushed history. Keep its full qualification record and runtime inventory
-for the next profile;the unchanged admission passes after deletion.
+distinct. Keep900.5242tok/s at64K with MTPQ8 as the earlier length reference;
+the new117K MTP16development reference is1046.0957tok/s,while984.4641is the
+earlier117K MTPQ8 result. Broader inference adoption remains unqualified.
+The earlier GDN16on/off cohort's raw output is retired after recovering its
+261source inputs from pushed history. Keep its qualification record and runtime
+inventory for the next profile;the unchanged admission passes after deletion.
 After original-source recovery and result verification,the failed V1root's
 96files/12432288B are retired;its original failed status and compact diagnosis
 remain committed. Current V2admission passes after deletion.
