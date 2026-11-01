@@ -709,12 +709,13 @@ Initial preparation refuses a changed imported`generation_engine.py`before
 creating a pilot directory or launching GPU work. Restore that helper and its
 test byte-exactly to the closed qualification;keep v5version/order/selection
 checks in the new controller. The native/device gate stays unchanged and the
-failed admission is retained;fresh host/admission checks follow that isolation.
-The v5source's78related host tests finish with77passes and one optional real-
-tokenizer fixture skipped. An initial invocation missing`PYTHONPATH`failed to
-import one test module;the corrected invocation passes without a source/gate
-change. The controller rejects5invalid footer windows,5wrong-source/missing-
-warmup histories and4disabled-observer strings,without GPU execution.
+failed admission is retained. After isolation,the77related host tests finish
+with76passes and one optional real-tokenizer fixture skipped. The controller
+rejects5invalid footer windows,5wrong-source/missing-warmup histories,9wrong
+workload contracts and4disabled-observer strings,without GPU execution.
+Source7faf03320passes fresh native/admission and all15model-asset hash checks,
+and prepares one prose-only reference pilot. Its fresh frontend probes and
+actual generation remain pending;the repeated cohort is not yet eligible.
 After original265-file source recovery from pushed history,the closed V1and
 prior cache diagnostic retire95more files totaling12419188bytes,including raw/
 JIT output,unused generated plans/runtime copies and the completed observer
