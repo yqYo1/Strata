@@ -20102,7 +20102,7 @@
   },
   "gdn3_causal_convolution_gpu_dataflows_20261101": {
     "classification": "knowledge_collection",
-    "status": "running",
+    "status": "reviewed_indexed_collection",
     "schedulable_now": false,
     "question": "For the causal per-channel temporal convolution in Main's packed GDN3 long-prefill producer-consumer path, establish exact operation and chunk/history semantics from the pinned source and official vLLM/SGLang/FLA paths. Compare direct short-FIR loads, temporal/channel lane mapping, register sliding windows/subgroup shuffles, local-memory tiles with halos, and legal producer-consumer fusion. Account for work, logical traffic, halo reloads, dispatch/synchronization, layout, alignment and live registers; compare original GPU stencil/FIR and scientific-computing studies, limits and counterexamples. Preserve current FP32 recurrence/state and arithmetic contract. No code, cast lowering, Xe2 speed claim, port or adoption proposal.",
     "novelty": "Indexed work covers GDN projection tiling/resources, typed-storage boundaries, recurrent scans, barriers/subgroups and epilogue separation. No dedicated causal-convolution dataflow comparison appears; this asks about the consumer algorithm and producer-to-consumer boundary.",
@@ -20137,7 +20137,33 @@
       "prompt_stages": [
         "input_accepted",
         "turn_started"
-      ]
+      ],
+      "outcome": "succeeded",
+      "terminal_release": "released",
+      "terminal_observation": "exited",
+      "delivery_acknowledged": "delivery_94ee020ded28",
+      "native_review": "/root/review_causal_convolution_collection_20261101",
+      "native_review_complete": true
+    },
+    "report_asset": {
+      "bytes": 10963,
+      "sha256": "d8e2b6946556d9398549c1cdff2d43f8feca93266ae94c83f6d732d5dd6af5bb"
+    },
+    "review_asset": {
+      "path": ".cache/research/2026-11-01/gdn3_causal_convolution_gpu_dataflows_20261101.review.json",
+      "bytes": 7371,
+      "sha256": "fc025923a791de9e220ebb4f7e9a0d68d06a208c613833c97930ca62b96a5deb"
+    },
+    "report_body_read_by_Main": false,
+    "review_digest": "Retain dedicated causal4tap-convolution reference. Correct operation accounting to1multiply+3FP32 FMAs/output. FLA fusion is Q/K/V convolution after projection,not a demonstrated GEMM epilogue. QKV/H channel accesses coalesce;tap weights have stride4 channel access with unknown physical traffic. First-party main branches are mutable,not immutable runtime equivalence.",
+    "retrieval_sections": [
+      "Pinned operation and state",
+      "Work and traffic accounting",
+      "Official patterns and transfer limits"
+    ],
+    "next_research_eligibility": {
+      "schedulable_now": false,
+      "prerequisite": "Review actual stage/resource attribution after closed compound timing;no duplicate collection or half-ISA review without its artifacts."
     }
   }
 }

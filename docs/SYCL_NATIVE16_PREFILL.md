@@ -205,16 +205,42 @@ these are component times,not model PP. No model dispatch or decode changed.
 The closed component generation is retired after original-source/recipe recovery;
 selected f6cea2and its eight ELFs remain unchanged.
 
-Next replace only the typed path's integer half conversion helpers with SYCL
-half casts,keeping the FP32 control and three-barrier schedule. Before timing,
-check all65536half bit patterns and float rounding-boundary/subnormal/overflow
-cases on the actual GPU. This is a conversion-cost hypothesis,not evidence of
-arithmetic or VRAM saturation. Compare the entire packed component again in
-three fresh processes;the prior rejected software-half result remains intact.
-Only a successful component decision permits planning production integration.
-Model range,arena ownership,decode handoff,physical262144model/RESTORE,
-task/agent,sustained decode and a current-route length/time refit remain pending.
-PP/TTFT and both manual profiles are unchanged.
+The replacement uses SYCL half casts only in the typed path,with the same
+FP32 control and three-barrier schedule. Native source
+`3a1294459f8a6d0d8a6276188fed39b66c85bb3c`,binary SHA-256
+`85d8c1663c2526e0088bd95880bf8bad2a34819d87cb1817e5ef236cc93632a2`.
+All65536half promotions and253964signed float rounding/subnormal/overflow/NaN
+cases pass on this GPU:non-NaN bits match the host converter exactly,NaN
+classification is preserved. The12component cases pass rounded-state/history/
+output checks,1/2/tail splits,guards and36synchronous no-write refusals across
+smoke/general. Default oneMKL accumulation guarantees and model range remain
+separate questions. Optional device-IR output was refused by the CPU compiler;
+its failed V2recipe is preserved. No installed native ISA claim follows.
+
+The closed V3speed cohort has three fresh processes,five alternating64-call
+batches per arm/length. All60steady batches are eligible;all numerical,provider,
+source,ownership and fresh-fault checks pass. Intervals below are the median of
+three process medians;ratios are the paired process geometric mean.
+
+| Rows T | FP32,ms | SYCL-cast FP16,ms | FP16/FP32 time GM |
+| ---: | ---: | ---: | ---: |
+| 4096 | 16.34054 | 15.64189 | 0.957553 |
+| 8192 | 33.06911 | 31.04379 | 0.938721 |
+
+The typed path takes4.24%and6.13%less time in this resident packed component,
+excluding dequantization,PCIe,output projection and model execution. Both
+lengths pass their prospective component follow-up screen. The prior slower
+software-half result remains rejected. This does not establish model PP,
+physical resource saturation,quality or inference adoption.
+
+Next integrate the checked producer/typed consumers into the production Gemm
+entrypoint and dedicated throughput-prefill caller,keeping the TTFT and decode
+routes independent. Qualify actual wrapper costs,allocation ownership,real-model
+range and decode handoff before adoption. Retire the component executable before
+creating the next model generation;retain selected f6cea2as the reference.
+Physical262144model/RESTORE,task/agent,sustained decode and a current-route
+length/time refit remain pending. Model PP/TTFT and both manual profiles are
+unchanged.
 
 The first official2026.2replacement used
 [a pinned constructor](../tools/sycl/official_model_sources.py),not the whole
