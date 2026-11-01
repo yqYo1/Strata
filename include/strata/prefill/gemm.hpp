@@ -41,6 +41,16 @@ public:
              float beta = 0.0f);
 
 #if defined(STRATA_ENABLE_SYCL)
+    /// Dedicated prefill vendor product: FP16 X/W -> FP16 Y, overwrite only.
+    /// This is the oneMKL default compute mode (unset), not the native16
+    /// backend selector below; no accumulator type is promised by this API.
+    /// ldy=0 means N; otherwise ldy>=N. Positive dimensions, nonoverlapping
+    /// 2-byte-aligned registered device spans in this in-order queue's domain.
+    /// No explicit FP32 tensor or Strata temporary. The caller retains all
+    /// buffers until checked stream completion. No conversion/fallback path.
+    void f16_vendor_out16(const uint16_t* X, const uint16_t* W, uint16_t* Y,
+                          int64_t T, int64_t N, int64_t K, int64_t ldy = 0);
+
     /// SYCL native matrix units: X[T,K] . W[N,K]^T -> 16-bit Y[T,N].
     /// Inputs/weights share the named format; output_bf16 chooses Y's format.
     /// Accumulator and beta epilogue are FP32; one final RNE output rounding.

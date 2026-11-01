@@ -2,9 +2,9 @@
 // No XeStrata source; no model dispatch, decode or physical-context claim.
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/prefill/kernels.hpp"
+#include "strata/prefill/gemm.hpp"
 #include "strata/prefill/detail/gdn_storage_casts.hpp"
 #include "strata/sycl/runtime.hpp"
-#include <oneapi/mkl/blas.hpp>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -134,7 +134,7 @@ struct Trial {
       :state(rt,ST),history(rt,C*3),raw(rt,size_t(t)*V),out(rt,size_t(t)*V) {}
 };
 struct Case {
-  std::shared_ptr<s::Runtime> rt; int t; std::string pattern;
+  std::shared_ptr<s::Runtime> rt; p::Gemm gemm; int t; std::string pattern;
   std::vector<uint16_t> x,wq,wz;
   std::vector<float> weights,gates,betas,gamma,initial,history;
   Buffer<uint16_t> X,WQ,WZ,Q16,Z16,H16;
@@ -147,6 +147,9 @@ struct Case {
        Z16(rt,size_t(t)*V),H16(rt,size_t(t)*C),W(rt,weights.size()),G(rt,gates.size()),
        B(rt,betas.size()),N(rt,gamma.size()),Q32(rt,size_t(t)*C),Z32(rt,size_t(t)*V),
        H32(rt,size_t(t)*C),reference(rt,t),candidate(rt,t) {
+    std::string error;
+    if(!gemm.init_external(&rt->compute(),nullptr,0,nullptr,0,error))
+      throw std::runtime_error(error);
     for(size_t i=0;i<x.size();++i) {
       const size_t column=i%K,row=i/K;
       float value=dyadic(kind=="cancel"?row*K+column/2:i,0x31415926u,512);
@@ -173,20 +176,12 @@ struct Case {
   }
   void reset(Trial &a) { a.state.set(initial);a.history.set(history); }
   void project(bool half) {
-    auto &q=rt->compute();using oneapi::mkl::transpose;
-    const auto *a=reinterpret_cast<const sycl::half *>(X.data());
     if(half) {
-      oneapi::mkl::blas::row_major::gemm(q,transpose::nontrans,transpose::trans,t,C,K,
-          sycl::half(1),a,K,reinterpret_cast<const sycl::half *>(WQ.data()),K,sycl::half(0),
-          reinterpret_cast<sycl::half *>(Q16.data()),C);
-      oneapi::mkl::blas::row_major::gemm(q,transpose::nontrans,transpose::trans,t,V,K,
-          sycl::half(1),a,K,reinterpret_cast<const sycl::half *>(WZ.data()),K,sycl::half(0),
-          reinterpret_cast<sycl::half *>(Z16.data()),V);
+      gemm.f16_vendor_out16(X.data(),WQ.data(),Q16.data(),t,C,K);
+      gemm.f16_vendor_out16(X.data(),WZ.data(),Z16.data(),t,V,K);
     } else {
-      oneapi::mkl::blas::row_major::gemm(q,transpose::nontrans,transpose::trans,t,C,K,
-          1.f,a,K,reinterpret_cast<const sycl::half *>(WQ.data()),K,0.f,Q32.data(),C);
-      oneapi::mkl::blas::row_major::gemm(q,transpose::nontrans,transpose::trans,t,V,K,
-          1.f,a,K,reinterpret_cast<const sycl::half *>(WZ.data()),K,0.f,Z32.data(),V);
+      gemm.f16(X.data(),WQ.data(),Q32.data(),t,C,K);
+      gemm.f16(X.data(),WZ.data(),Z32.data(),t,V,K);
     }
   }
   void consume16(int rows,int offset=0) {
@@ -316,6 +311,23 @@ struct Case {
     exact(candidate.state.get(),state,"rejection wrote state");exact(candidate.history.get(),hist,"rejection wrote history");
     exact(candidate.out.get(),output,"rejection wrote output");exact(H16.get(),h,"rejection wrote conv output");
     std::cout<<"{\"kind\":\"rejection\",\"cases\":"<<count<<",\"synchronous_no_write\":true,\"passed\":true}\n";
+    const auto projected=Q16.get();
+    for(int mode=0;mode<15;++mode) {
+      p::Gemm empty;uint16_t host=0;bool refused=false;
+      try {
+        (mode==0?empty:gemm).f16_vendor_out16(
+            mode==8?nullptr:mode==13?&host:X.data(),mode==9?nullptr:WQ.data(),
+            mode==10?nullptr:mode==11?X.data():mode==12?
+              reinterpret_cast<uint16_t*>(reinterpret_cast<char*>(Q16.data())+1):
+              mode==14?Q16.data()+2*Pad:Q16.data(),
+            mode==1?0:mode==2?-1:mode==3?std::numeric_limits<int64_t>::max():1,
+            mode==4?0:int64_t(C),mode==5?0:int64_t(K),mode==6?int64_t(C-1):mode==7?-1:int64_t(C));
+      } catch(const std::invalid_argument &) { refused=true; }
+        catch(const std::out_of_range &) { refused=true; }
+      need(refused,"invalid vendor FP16 product accepted");rt->wait();
+    }
+    exact(Q16.get(),projected,"rejection wrote projected output");immutable();
+    std::cout<<"{\"kind\":\"vendor_rejection\",\"cases\":15,\"synchronous_no_write\":true,\"passed\":true}\n";
   }
 };
 void timing(Case &c,int arm,int count,const char *phase,int round,bool empty=false) {

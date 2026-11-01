@@ -608,3 +608,8 @@ if(STRATA_SYCL_TESTS)
   add_test(NAME sycl_moe COMMAND sycl_moe_test)
   set_tests_properties(sycl_moe PROPERTIES TIMEOUT 90)
 endif()
+
+# Main-owned production-wrapper GDN storage qualification (repository LICENSE).
+add_executable(sycl_gdn_storage_pipeline_bench EXCLUDE_FROM_ALL bench/sycl/gdn_storage_pipeline.cpp)
+target_link_libraries(sycl_gdn_storage_pipeline_bench PRIVATE strata_prefill)
+target_compile_options(sycl_gdn_storage_pipeline_bench PRIVATE -fno-fast-math -ffp-contract=off)
