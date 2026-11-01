@@ -85508,5 +85508,153 @@
       "files": 557,
       "aggregate_sha256": "003568da325338da520e6a4e66663fc1fd18df94423f1427ad41e6bbcca0ce2c"
     }
+  },
+  "adaptive_cache_device_v1": {
+    "stage": "prepared",
+    "source_commit": "bb64a5ce97be9fd5339779c6d68f204902d1216c",
+    "native_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+    "build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/record.json",
+      "sha256": "af3d54aeee9b3c8f04435f2579fa8b416b0dfde879a7fecaeab17a2c8cef8a7a"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "fixture_reuse": {
+      "original_native_commit": "521c1757b289ab9129378aace21a5f0ffcfb2af5",
+      "current_native_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+      "original_inputs_recovered": true,
+      "unchanged_fixture_count": 8,
+      "unchanged_nonprogram_source_files": 556,
+      "compiled_units": 236,
+      "normalized_compile_recipe_sha256": "6fc36c6c8d97dbb3badaec0bc1e4d675fb459db4d038e20c054177b2744fd807",
+      "actual_compiler_content_changes": [
+        "src/program/generate.cpp"
+      ],
+      "actual_link_inputs_equal": true,
+      "configure_and_build_environment_equal": true,
+      "all_fixture_ELFs_byte_identical": true,
+      "qualified_component_evidence": {
+        "commit": "bb64a5ce97be9fd5339779c6d68f204902d1216c",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+        "entries": {
+          "gdn16_model_component_device_v1": "16135cfc8c1e69d1f4932dfc4deb9ad54bbfa0b89b30978c88571157b2dc0f11",
+          "gdn16_model_component_speed_v1": "4d6a88e7d8b06a9e4ce2c277faa4f4f613ad0bb1c8695dde43e90caccf31ed55"
+        }
+      },
+      "scope": "Reuse unchanged component evidence only;new program/model/prefill-to-decode/lifecycle and performance checks remain."
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-model-v1/cache",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PREFILL_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_FUSED_COMMAND_PROFILE": "0",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "OMP_NUM_THREADS": "1"
+    },
+    "cases": [
+      {
+        "name": "host-canary",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/canary",
+          "sha256": "7903f47691309444cce238d6a0a6fe716f7c668d80a6e2ff3d5cfe21c7dcbfd0"
+        },
+        "args": [],
+        "trace": false,
+        "gated": false
+      },
+      {
+        "name": "submission",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/build/sycl_submission_test",
+          "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+          "bytes": 343384
+        },
+        "args": [
+          "--submission"
+        ],
+        "trace": true,
+        "gated": true
+      }
+    ],
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "ordinary_runtime_teardown_qualified": false,
+    "budgets": {
+      "wall": 600,
+      "cpu": 2400,
+      "rss_cap": 8589934592,
+      "text_cap": 8388608,
+      "file_cap": 67108864,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 67108864,
+    "whole_wall_seconds": 1800,
+    "plan": {
+      "order": "Host-only preload canary,then small traced explicit/default/cross-queue copy and numerical/lifecycle submission fixture. Stop on first failure;no retries.",
+      "contract": "All eight fixture ELFs and relevant native/compiler/link inputs match the qualified generation;reuse the unchanged component evidence. Fresh runtime submission check precedes the changed engine program. One B570 only;no multi-GPU-stage retirement claim.",
+      "safety": "Immutable qualified copy-offload/direct-submission avoidance and queue settings;private activation preload held until OS exit. No model load,reset or deliberate device fault.",
+      "retention": "Keep case outcomes,numerical coverage/maxima,source/ELF identity and fault/closure evidence. Retire successful API trace,logs and duplicate kernel rows after verification. Current nine-ELF fallback remains until model/lifecycle checks."
+    },
+    "controller_inputs": {
+      "files": 42,
+      "aggregate_sha256": "db2a2b7cc3dd4ed59be901dcb6b3d8ff8b57c76856f331e8e919ac97c3bc65c8"
+    }
   }
 }
