@@ -335,14 +335,20 @@ the next change;64K384-slot ordinary and117K128-slot split routes cannot share
 an assumed physical fixed-plus-linear model. Broader task/agent,TTFT-option,
 sustained decode and physical262144model/RESTORE gates remain pending;24outputs
 per request qualify none of those by themselves.
-The current resource-profile V2plan is prepared after17CPU rejection controls.
+The resource-profile V2frontend/prefix and606-kernel submission checks pass,but
+its native-graph observer fails at EOF:the fixture has two admission gates,
+where the controller expected three. Its numerical/lifecycle message and62
+diagnostic kernels do not override the failed interaction/ownership gate.
+The original failure remains recorded,and no117Kmodel profile ran. The V3
+controller follows the actual two/three-gate protocols and persists owner
+transactions;fresh CPU child-process regression controls precede a new plan.
 V1preparation refused an older collector audit's Python-parser fingerprint;its
 original refusal remains recorded. The reviewed delta only extends the census
 parser's explicit row bound/job groups;all31original collector inputs are
 recovered,and460actual compiler inputs,generated code,recipe and both tool ELFs
-are checked unchanged. No new native build is claimed. Execute the current
-frontend/prefix probes and same-build606-launch submission/62-launch native-graph
-fixtures before the single controlled117Kmodel request. Hardware-resource
+are checked unchanged. No new native build is claimed. After the19CPU controls,
+execute fresh frontend/prefix probes and same-build606-launch submission/62-launch
+native-graph fixtures before the single controlled117Kmodel request. Hardware-resource
 attribution and observer cost remain unqualified until that request closes.
 The closed cohort's raw output is retired after recovering its261source inputs
 from pushed history. Keep its full qualification record and runtime inventory

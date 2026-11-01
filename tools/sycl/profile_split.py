@@ -31,8 +31,8 @@ import engine_once
 d, model, build = comparison.shared, comparison.model, comparison.build
 P, B, RESULT = comparison.P, comparison.B, comparison.RESULT
 require, digest, write = comparison.require, comparison.digest, comparison.write
-ROOT = model.gdn16.ROOT/'resource-profile-v2'
-KEY, HOST_KEY = 'gdn16_resource_profile_v2', 'gdn16_resource_profile_host_v2'
+ROOT = model.gdn16.ROOT/'resource-profile-v3'
+KEY, HOST_KEY = 'gdn16_resource_profile_v3', 'gdn16_resource_profile_host_v3'
 READ = 117489
 CHANGED = {'tools/sycl/profile_split.py', 'tools/sycl/test_profile_split.py'}
 # Exact launcher ELF/version, not a floating installed-tool preference.
@@ -435,7 +435,7 @@ def host_checks():
         wall=45, cpu=30, rss_cap=512<<20, text_cap=512<<10, file_cap=2<<20, total_cap=8<<20)
     result = re.findall(r'^Ran (\d+) tests? in ', err.read_text(), re.M)
     passed = bool(build.supervision.closed(entry) and entry['exit_code'] == 0 and len(result) == 1 and
-                  int(result[0]) >= 15 and err.read_text().rstrip().endswith('OK'))
+                  int(result[0]) == 19 and err.read_text().rstrip().endswith('OK'))
     row = dict(source_commit=revision, sources={n:sources[n] for n in sorted(CHANGED)},
         interpreter=dict(path=sys.executable, sha256=digest(sys.executable)), command=command,
         tests=int(result[0]) if len(result) == 1 else None, passed=passed, GPU_executed=False,
@@ -632,6 +632,29 @@ def prefix():
     require(outcome['passed'], 'prefix did not qualify;no model launch')
 
 
+def fixture_protocol(io, entry, mode, admit):
+    """Use the committed fixture's two graph gates or three submission gates."""
+    require(mode in ('submission','native'), 'unknown fixture protocol')
+    phases = ('before-runtime','runtime-ready') + (('before-exit',) if mode == 'submission' else ())
+    for phase in phases:
+        while True:
+            line = io.line(45)
+            if line.startswith('COMPONENT_READY '): break
+        require(line == 'COMPONENT_READY '+phase, 'fixture gate order differs')
+        admit(phase,entry)
+        io.send(b'X')
+    io.proc.stdin.close()
+    deadline = time.monotonic()+45
+    while not io.exit_watch.poll(0) or not io.eof:
+        io.poll(); require(time.monotonic()<deadline, 'fixture teardown deadline')
+        if select.select([io.proc.stdout],[],[],.05)[0]:
+            io.read()
+            while b'\n' in io.pending:
+                line,_,tail = io.pending.partition(b'\n'); io.pending[:] = tail
+                require(not line.startswith(b'COMPONENT_READY '), 'unexpected extra fixture gate')
+    io.pending.clear(); io.exit(1)
+
+
 def check_fixtures():
     _, _, row, rt, _ = basis()
     require(row['stage'] == 'prefix-passed' and row['prefix']['passed'] and
@@ -639,12 +662,17 @@ def check_fixtures():
     owner, controllers, cells = None, [], []
     outcome = dict(complete=False, passed=False, host_probe_accepted=False)
     start_cursor = cursor()
+    def persist():
+        write(ROOT/'fixture-execution.json',dict(cells=cells,
+            commands=owner.commands if owner else [],
+            controls=[v for c in controllers for v in c.commands],
+            active=bool((owner and owner.active) or any(c.active for c in controllers))))
     try:
-        owner = build.supervision.Owner(ROOT/'fixture-owned')
+        owner = build.supervision.Owner(ROOT/'fixture-owned',persist)
         for case in row['fixture_cases']:
             root, prof = Path(case['root']), case['profile']
             require(not session_path(prof['session']).exists(), 'preexisting fixture session')
-            controls = build.supervision.Owner(root/'controls'); controllers.append(controls)
+            controls = build.supervision.Owner(root/'controls',persist); controllers.append(controls)
             env = profile_environment(root, row)
             env.update(STRATA_TEST_MAIN_GATES='1',
                 UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
@@ -658,11 +686,7 @@ def check_fixtures():
                 require(build.supervision.closed(entry) and entry['exit_code'] == 0, 'fixture session control failed')
                 if expected is not None: session_state(prof['session'], expected)
             def interact(io, entry):
-                for phase in ('before-runtime', 'runtime-ready', 'before-exit'):
-                    while True:
-                        line = io.line(45)
-                        if line.startswith('COMPONENT_READY '): break
-                    require(line == 'COMPONENT_READY '+phase, 'fixture gate order differs')
+                def admit(phase,entry):
                     actual = dict(v.split('=',1) for v in Path('/proc',str(entry['pid']),'environ').read_text().split('\0') if '=' in v)
                     same_environment(actual, expected_target_environment(row,env,prof))
                     require(Path('/proc',str(entry['pid']),'exe').resolve() == Path(case['binary']['path']).resolve(),
@@ -681,18 +705,16 @@ def check_fixtures():
                     if phase == 'before-exit':
                         bounds['end'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
                         control('pause',1)
-                    io.send(b'X')
-                io.proc.stdin.close()
-                deadline = time.monotonic()+45
-                while not io.exit_watch.poll(0) or not io.eof:
-                    io.poll(); require(time.monotonic()<deadline, 'fixture teardown deadline')
-                    if select.select([io.proc.stdout],[],[],.05)[0]: io.read(); io.pending.clear()
-                io.exit(1)
+                fixture_protocol(io,entry,case['name'],admit)
+                if case['name']=='native':
+                    bounds['end'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+                    control('pause',1)
             try:
                 command = engine_once.profile_command(prof,[case['binary']['path'],case['argument']])
                 entry,out,err = owner.run(case['name'],command,target,P,interaction=interact,
                     wall=180,cpu=120,rss_cap=4<<30,text_cap=32<<20,file_cap=64<<20,total_cap=256<<20)
-                require(build.supervision.closed(entry) and entry['exit_code']==0,'same-build fixture failed')
+                require(build.supervision.closed(entry) and entry['exit_code']==0,
+                        'same-build fixture failed: '+str(entry.get('error',entry.get('exit_code'))))
                 text = err.read_text()
                 activation = d.runtime.validation.preload_evidence(text,entry['pid'])
                 require(activation['loader']==row['native_validation_probe']['loader']['path'] and
@@ -722,6 +744,10 @@ def check_fixtures():
         outcome.update(error=repr(error),cells=cells)
     finally:
         if owner: d.runtime.validation.finish(outcome,owner,start_cursor,row['boot'])
+        outcome['processes'] = [{k:v for k,v in entry.items() if k in
+            ('label','pid','direct_identity','exit_code','error','errors','observation_complete',
+             'direct_child_reaped','session_empty','session_anchored','survivors','cleanup')}
+            for entry in owner.commands] if owner else []
         controls_closed = all(c.active is None and all(build.supervision.closed(v) for v in c.commands) for c in controllers)
         outcome['passed'] = bool(outcome.get('passed') and outcome['complete'] and len(cells)==2 and controls_closed)
         outcome['ownership_closed'] = bool(outcome.get('ownership_closed') and controls_closed)

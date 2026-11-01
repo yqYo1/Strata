@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Host rejection controls for owned split resource attribution."""
 import copy
+from pathlib import Path
+import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -215,6 +218,43 @@ class TypedGdnRouteGates(unittest.TestCase):
                      full.replace('state=fp32', 'state=fp16')):
             with self.assertRaises(RuntimeError):
                 profile.storage_route(text)
+
+
+class FixtureProtocolGates(unittest.TestCase):
+    def run_fixture(self, mode, third):
+        with tempfile.TemporaryDirectory() as temporary:
+            owner = profile.build.supervision.Owner(Path(temporary)/'owned')
+            phases = ['before-runtime','runtime-ready']+(['before-exit'] if third else [])
+            program = ('import sys\n'
+                'for phase in '+repr(phases)+':\n'
+                ' print("COMPONENT_READY "+phase,flush=True)\n'
+                ' assert sys.stdin.buffer.read(1)==b"X"\n'
+                'print("and lifecycle passed",flush=True)\n')
+            seen = []
+            def interact(io,entry):
+                profile.fixture_protocol(io,entry,mode,lambda phase,_:seen.append(phase))
+            entry,out,_ = owner.run('protocol',[sys.executable,'-u','-c',program],
+                dict(PATH='/usr/bin:/bin'),Path(temporary),interaction=interact,
+                wall=15,cpu=10,rss_cap=256<<20,text_cap=1<<20,file_cap=2<<20,total_cap=4<<20)
+            self.assertIsNone(owner.active)
+            self.assertTrue(entry['direct_child_reaped'])
+            self.assertTrue(entry['session_empty'])
+            return entry,seen,out.read_text()
+
+    def test_actual_two_graph_and_three_submission_gates_close_normally(self):
+        for mode,third in (('native',False),('submission',True)):
+            with self.subTest(mode=mode):
+                entry,seen,text = self.run_fixture(mode,third)
+                self.assertTrue(profile.build.supervision.closed(entry),entry)
+                self.assertEqual(entry['exit_code'],0)
+                self.assertEqual(len(seen),3 if third else 2)
+                self.assertIn('and lifecycle passed',text)
+
+    def test_unexpected_third_graph_gate_is_rejected_and_child_retired(self):
+        entry,seen,_ = self.run_fixture('native',True)
+        self.assertFalse(profile.build.supervision.closed(entry))
+        self.assertEqual(len(seen),2)
+        self.assertIn('unexpected extra fixture gate',entry['error'])
 
 
 if __name__ == '__main__':

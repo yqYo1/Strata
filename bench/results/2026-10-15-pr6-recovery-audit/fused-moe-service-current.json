@@ -77254,7 +77254,7 @@
     "ownership_closed": true
   },
   "gdn16_resource_profile_v2": {
-    "stage": "prefix-passed",
+    "stage": "failed",
     "source_commit": "8504dec481e60aa0f7a8ac273a4578cb0c5240f6",
     "host_checks": {
       "source_commit": "302a1449903304ac557ef93e7d055fccd5c1b1ae",
@@ -77699,7 +77699,7 @@
     "complete": false,
     "passed": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "environment_sha256": "62fbf2a8de25784818338dfa27bffeeff5dfb7ae7d181937cad479db937064a4",
     "host_results": [
       {
@@ -77743,9 +77743,99 @@
         "devcoredump": false
       }
     },
+    "fixtures": {
+      "complete": false,
+      "passed": false,
+      "host_probe_accepted": false,
+      "error": "RuntimeError('same-build fixture failed')",
+      "cells": [
+        {
+          "name": "submission",
+          "physical_device": {
+            "name": "Intel(R) Arc(TM) B570 Graphics",
+            "pci": "0000:05:00.0",
+            "driver": "xe",
+            "matching_DRM_descriptors": 1
+          },
+          "passed": true,
+          "native_exit_code": 0,
+          "expected_kernels": 606,
+          "observed_kernels": 606,
+          "GPU_events": 680,
+          "native_PID": 4144415,
+          "validation": {
+            "pid": 4144415,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "all_native_host_sources": true,
+          "unique_gpu_ids": true,
+          "timeline_sha256": "15397eeb446e27701ff501d49866888bb1ac7853d2a279ed664150ef38a8af4f",
+          "timeline_bytes": 976481
+        }
+      ],
+      "ownership_closed": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
     "source_inputs": {
       "files": 261,
       "aggregate_sha256": "3345658eae7908b56d94abdb6c589d6ee92ceea7cc2ba805e42005a0656a0175"
     }
+  },
+  "gdn16_resource_profile_v2_failure_diagnosis": {
+    "source_commit": "3f946f2e404aab86a2702aa63b06152cb2902a85",
+    "original_passed": false,
+    "original_ownership_closed": false,
+    "original_status_unchanged": true,
+    "cause": "The observer required before-exit for both CLI modes. tests/sycl/compat.cpp emits that third gate only for --submission;--native emits two gates and then finishes. The native stdout contains the numerical/lifecycle pass and its diagnostic trace contains62kernels,but the callback waits for a nonexistent third line and fails at EOF.",
+    "closure_check": {
+      "native_PIDs_absent": [
+        4144415,
+        4144452
+      ],
+      "sessions_removed": true,
+      "live_GPU_or_model_jobs_observed": false,
+      "limits": "Post-failure absence check only;does not rewrite the original failed ownership/interaction gate or recover its unpersisted exit entry."
+    },
+    "diagnostic_only": {
+      "submission_qualified_kernels": 606,
+      "native_unqualified_kernels": 62,
+      "native_validation_log_bytes": 0,
+      "payloads": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/resource-profile-v2/fixture-owned/native.stdout",
+          "sha256": "6acd78c18ea1ddb8b54c5c9601bcc878ecd7406442409c6035f9c8ca76794210",
+          "bytes": 141
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/resource-profile-v2/fixture-owned/native.stderr",
+          "sha256": "2462a4ee4296aae3ed66ca6f355b90784f69cd68e21d05b81dfae292b82f972a",
+          "bytes": 41448
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gdn16-model-v1/resource-profile-v2/fixture-native/trace/sycl_submission.4144452.json",
+          "sha256": "b098478f5570c45ac2b2493d2229e0733d34a5c9514e726a2cff52b8c1fe39db",
+          "bytes": 306120
+        }
+      ]
+    },
+    "next_action": "V3records owner transactions during execution and uses the actual two/three-gate protocols. CPU child-process regression controls precede a fresh committed fixture/model plan;the V2failure remains failed.",
+    "retention": "One representative diagnostic for this observer EOF mechanism;retire raw output after V3passes the original native-graph scenario."
   }
 }
