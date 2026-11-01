@@ -115,13 +115,17 @@ concatenated ELF images;only its second image contains the new kernel. Exact
 member disassembly shows16static32-bit block2D stores reading FP32 DPAS
 accumulator registers directly,without FP16/BF16 conversion after the final
 DPAS. SIMD16,256GRF and two barriers are codegen observations,not occupancy
-measurements. Host D-copy ownership and guarded device/numerical validation
-remain pending;no inference speed or adoption is established. The host-only
-fixture compiles after supplying the SDK include root,but its subgroup
-accumulator/payload/destination equality fails. Preserve that failure and
-resolve collective descriptor-anchor versus scalar-cell semantics before any
-GPU launch. The guarded device fixture source is committed at4ccfb3079;
-its CPU build does not permit GPU execution or bypass the ownership gate.
+measurements. The corrected host-only D-copy proof now passes65536shape/pitch
+combinations:all T1..8192,both output widths,and four pitches. It enumerates
+one8x16collective write rectangle per descriptor and128unique payload cells,
+rather than treating replicated descriptor anchors as scalar destinations.
+The earlier host compile and equality failures remain recorded. This proves
+coordinate ownership,not accumulator-value composition or hardware tail masking.
+The guarded device fixture source is committed at4ccfb3079 and its production
+runtime/AOT build passes. It has not executed. Next run only the host canary
+and two small traced GPU shapes with the exact FP32 oracle,unchanged oneMKL
+control,guards and checked owner retirement. Full device-domain,non-dyadic,
+model/speed/decode/physical-context qualification remain pending.
 
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
