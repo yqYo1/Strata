@@ -566,10 +566,9 @@ event,allowing RAM exchange before the new H2D source is safe to overwrite.
 The maintained source now checks main/stage records in serve and standalone
 generation and propagates failure,including the standalone EOS branch,through
 checked teardown. Successful event completion still precedes RAM exchange and
-residency publication. This fix is source-only,not built or GPU-qualified;the
-selected executable and its zero-swap configuration are unchanged. No observed
-GPU fault is attributed to this error path. Before positive-swap testing,replace
-the obsolete parent-binary verifier dependency (now closed),build the fixed source and use
+residency publication. No observed GPU fault is attributed to this error path.
+The fixed build and small device checks below pass;the selected zero-swap
+fallback is unchanged and real-model qualification remains pending. Use
 bounded validation for deferred final-window copies,next GEN/GENI prefill,
 invalid input,QUIT/EOF and partial-submit/error teardown. Compare positive swaps
 against zero using matched long generation,then verify independent prefill and
@@ -582,7 +581,7 @@ after new copies are queued. This plans an actual error-propagation/teardown
 check without intentionally faulting the GPU;it has not run. Neither diagnostic
 is enabled by default,requested bytes are not measured PCIe traffic,and no
 positive-swap performance or lifecycle qualification follows from these edits.
-The next nine-ELF generation is prepared by`tools/sycl/adaptive_cache_model.py`
+The fixed nine-ELF generation is constructed by`tools/sycl/adaptive_cache_model.py`
 at`20f2a971b5fa3c0b2c65ab08712c32febb894f93`,using the same557-file projection
 with only`src/program/generate.cpp`changed by the reversible fix/diagnostic delta
 `5465f65d0`to`f8f632341`. Source/compiler/runtime/configuration are pinned before
@@ -601,7 +600,10 @@ and the parallel source review do not establish model or performance adoption.
 The fresh host-only canary and traced submission check both pass with normal
 native0,quiet parameter validation,closed owners and no fresh fault. The latter
 covers explicit/default/cross-queue events,ordinary-RAM copy lifetime,guards and
-queued1/119/120/121/241-kernel completion. Original packed-GDN/component evidence
+queued1/119/120/121/241-kernel completion. Its actual trace contains606launches,
+three kernel families and no unmapped launch. Closed build/device raw output
+(17files,7846247B) is retired after source recovery and compact evidence checks.
+Original packed-GDN/component evidence
 is reused only after eight identical fixture hashes,556unchanged nonprogram
 native files,236matching normalized compile units and identical external link
 inputs are verified. No changed engine-program model run has completed yet.
