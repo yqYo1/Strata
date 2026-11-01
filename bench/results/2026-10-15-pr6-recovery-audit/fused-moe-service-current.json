@@ -65684,7 +65684,7 @@
     },
     "reference_retirement": {
       "complete": false,
-      "status": "recovery_verified_deletion_planned",
+      "status": "deleted_metadata_restored_pending_recheck",
       "manifest": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261101-closed-official-joint-generation.json",
         "sha256": "a44abf2787fc7b2d52ca6a1b4e70ce063acddb888fe87de3538777aa7330ec0a",
@@ -65718,9 +65718,27 @@
       },
       "kept_consumed_manifests": {
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/external-inputs.json": "dbe84857b1896fda5b386e2741094cf142b1c2130f84c6eb919d1c560bfcfead",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/component-checks-v1/runtime-inputs.json": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/component-checks-v1/runtime-inputs.json": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/runtime-basis.json": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
       },
-      "next": "Commit this decision;delete only manifest-listed bytes under owned lock;verify selected eight-ELF admission after deletion."
+      "next": "Verify selected eight-ELF admission after exact metadata recovery;do not compile yet.",
+      "post_retirement_checks": [
+        {
+          "outcome": "failed",
+          "GPU_executed": false,
+          "reason": "Selected 21-case gate runtime_manifest reads old runtime-basis.json in addition to the two identified manifests;it was removed.Original failure retained."
+        },
+        {
+          "outcome": "metadata_restored_exact",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/runtime-basis.json",
+          "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+          "bytes": 11030,
+          "source": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/component-checks-v1/runtime-inputs.json",
+          "recorded_hash_unchanged": true
+        }
+      ],
+      "actual_final_removed_files": 740,
+      "actual_final_removed_bytes": 155728633
     },
     "original_compile_database": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-strategies-v1/build/compile_commands.json",
