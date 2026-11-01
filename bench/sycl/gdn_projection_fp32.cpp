@@ -36,7 +36,8 @@ void ownership() {
   auto d = tensor(128, 10240, 10256);
   auto copy = get_block_2d_copy_D<void>(mma, d);
   using Op = typename decltype(copy)::CopyOp;
-  static_assert(Op::CopyBits == 32 && sizeof(typename decltype(copy)::ValType) == 4);
+  static_assert(Op::CopyBits == 32 && Op::AtomHeight == 8 && Op::AtomWidth == 16 &&
+                sizeof(typename decltype(copy)::ValType) == 4);
   auto identity = make_identity_tensor(shape(d));
   auto tile = local_tile(identity, mma.tile_mnk(), make_coord(0, 0, 0), Step<_1, _1, X>{});
   std::array<int, 128 * 128> source{}, destination{}, accumulated{};
@@ -50,16 +51,50 @@ void ownership() {
     std::array<int, 128 * 128> subgroup_source{}, subgroup_destination{}, subgroup_accumulated{};
     for (int lane = 0; lane < 16; ++lane) {
       const int thread = sg * 16 + lane;
-      auto s = copy.get_slice(thread).partition_S(tile);
       auto a = mma.get_slice(thread).partition_C(tile);
-      for (int i = 0; i < size(s); ++i) { ++source[index(s(i))]; ++subgroup_source[index(s(i))]; }
       for (int i = 0; i < size(a); ++i) { ++accumulated[index(a(i))]; ++subgroup_accumulated[index(a(i))]; }
     }
-    // The destination layout is replicated across the16 lanes. One block2D
-    // message is collective for the subgroup: enumerate its descriptor once.
+    // partition_D is a replicated descriptor view, not a scalar destination
+    // inventory. copy_unpack consumes dst.data().coord_ once per atom. Its
+    // eight local values describe an8x16 collective message across16 lanes.
     auto target = copy.get_slice(sg * 16).partition_D(tile);
-    for (int i = 0; i < size(target); ++i) {
-      ++destination[index(target(i))]; ++subgroup_destination[index(target(i))];
+    static_assert(decltype(size<0, 0>(target))::value == 8 &&
+                  decltype(size<0, 1>(target))::value == 16 &&
+                  decltype(size<1>(target))::value == 1 && decltype(size<2>(target))::value == 1);
+    std::array<int, 16> anchors{};
+    for (int message = 0; message < 16; ++message) {
+      auto atom = target(make_coord(_, message), 0, 0);
+      const auto origin = atom.data().coord_;
+      const int r0 = get<0>(origin), c0 = get<1>(origin);
+      const int r = r0 - 32 * (sg / 2), c = c0 - 64 * (sg % 2);
+      need(r >= 0 && r < 32 && r % 8 == 0 && c >= 0 && c < 64 && c % 16 == 0,
+           "collective store anchor escapes subgroup region");
+      need(++anchors[(r / 8) * 4 + c / 16] == 1, "duplicate collective store anchor");
+      std::array<int, 128 * 128> payload{};
+      for (int lane = 0; lane < 16; ++lane) {
+        const int thread = sg * 16 + lane;
+        auto s = copy.get_slice(thread).partition_S(tile);
+        auto values = s(make_coord(_, message), 0, 0);
+        auto descriptors = copy.get_slice(thread).partition_D(tile);
+        auto replica = descriptors(make_coord(_, message), 0, 0);
+        for (int i = 0; i < size(replica); ++i)
+          need(get<0>(replica(i)) == get<0>(atom(i)) && get<1>(replica(i)) == get<1>(atom(i)),
+               "subgroup lanes have different descriptor replicas");
+        need(size(values) == 8, "unexpected payload values per lane/message");
+        for (int i = 0; i < size(values); ++i) {
+          const auto coordinate = values(i);
+          need(get<0>(coordinate) >= r0 && get<0>(coordinate) < r0 + 8 &&
+               get<1>(coordinate) >= c0 && get<1>(coordinate) < c0 + 16,
+               "message payload does not match its descriptor rectangle");
+          const int cell = index(coordinate);
+          ++source[cell]; ++subgroup_source[cell]; ++payload[cell];
+        }
+      }
+      for (int row = r0; row < r0 + 8; ++row) for (int col = c0; col < c0 + 16; ++col) {
+        const int cell = row * 128 + col;
+        need(payload[cell] == 1, "collective message payload coverage is not bijective");
+        ++destination[cell]; ++subgroup_destination[cell];
+      }
     }
     need(subgroup_source == subgroup_destination && subgroup_source == subgroup_accumulated,
          "subgroup accumulator/payload/destination cells disagree");
@@ -101,6 +136,8 @@ void ownership() {
             << ",\"atom_height\":" << Op::AtomHeight << ",\"atom_width\":" << Op::AtomWidth
             << ",\"checked_shapes\":" << shapes
             << ",\"T_min\":1,\"T_max\":8192,\"GPU_submissions\":0,"
+            << "\"messages_per_subgroup\":16,\"payload_values_per_lane_message\":8,"
+            << "\"accumulator_payload_values_validated\":false,"
             << "\"hardware_tail_masking_executed\":false,\"physical262144_qualified\":false}\n";
 }
 }

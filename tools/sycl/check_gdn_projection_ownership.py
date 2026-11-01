@@ -12,8 +12,8 @@ sys.dont_write_bytecode = True
 import check_gdn_projection_fp32 as image
 
 base, RESULT = image.base, image.RESULT
-ROOT = image.ROOT / 'ownership-v2'
-KEY = 'official_gdn_fp32_projection_ownership_v2'
+ROOT = image.ROOT / 'ownership-v3'
+KEY = 'official_gdn_fp32_projection_ownership_v3'
 FIXTURE = 'bench/sycl/gdn_projection_fp32.cpp'
 require, digest, write = base.require, base.digest, base.write
 
@@ -25,9 +25,9 @@ def save(row):
 
 def prepare():
     data = base.committed(RESULT); prior = json.loads(image.RECORD.read_text())
-    failed = data['official_gdn_fp32_projection_ownership_v1']
+    failed = data['official_gdn_fp32_projection_ownership_v2']
     require(failed['stage'] == 'failed' and not failed['passed'] and failed['ownership_closed'] and
-            'sycl/sycl.hpp' in failed['error'], 'preserve original host include failure')
+            'subgroup accumulator/payload/destination' in failed['error'], 'preserve original descriptor-proof failure')
     require(KEY not in data and not ROOT.exists() and data[image.KEY] == base.compact(prior) and
             prior['passed'] and prior['compiler_inputs_attested'] and prior['ownership_closed'] and
             not prior['active'] and prior['codegen_member']['manual_FP32_store_review_passed'],
@@ -43,8 +43,8 @@ def prepare():
         native_sources={FIXTURE:sha},
         compiled_native_implementation='e618f3466432dca7ee7435a399e7eb92ecfc06c3',
         image_proof=dict(path=str(image.RECORD), sha256=digest(image.RECORD)),
-        supersedes=dict(key='official_gdn_fp32_projection_ownership_v1', original_outcome='failed',
-            reason='Host-only -fno-sycl compile needs the installed SDK SYCL include root explicitly.'),
+        supersedes=dict(key='official_gdn_fp32_projection_ownership_v2', original_outcome='failed',
+            reason='Enumerate one8x16 collective write rectangle per8-value atom descriptor,not descriptor coordinates as scalar destination cells.'),
         commands=[('compile',[base.COMPILER, '-O2', '-std=c++20', '-fno-sycl',
             '-fno-fast-math', '-ffp-contract=off', '-DCUTLASS_ENABLE_HEADERS_ONLY',
             '-DCUTLASS_ENABLE_SYCL', '-DSYCL_INTEL_TARGET',
