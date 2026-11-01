@@ -390,9 +390,12 @@ and client TTFT49.309/39.841s are first/subsequent diagnostic observations,not
 matched clean speed. The117Kcomparison now has its first normal closed
 MTP16process:initial969.0tok/s,then three subsequent requests1047.1/1043.4/1041.6
 printed tok/s. Its exact process median is1043.3617tok/s,TTFT112.776s.
-This single-process observation is indexed separately in the CSV;Q8paired
-controls and two further candidate processes remain,so neither the prospective
-paired gain nor repeated1000target is decided. No native kernel or decode
+This first-candidate observation is indexed separately in the CSV. Its matched
+Q8control closes at983.7602tok/s/TTFT119.600s;the first
+paired prompt-time ratio is0.94287544(5.7125%less time). Both normal
+process exits,quiet final validation,source/provider/route/owner checks and no
+fresh fault pass. Two more pairs remain,so the frozen paired-gain and repeated
+1000target decisions remain pending. No native kernel or decode
 selection is changed. Initial117K preparation refuses two unlisted Python
 observer-controller changes before any GPU work or output-root creation. Its
 failed result remains. The V2admission recovers the original qualified profile
