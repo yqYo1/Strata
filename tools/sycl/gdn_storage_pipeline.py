@@ -112,7 +112,16 @@ def prepare_build():
     host_path = B/'gdn-kernel-trace-host-v4/record.json'
     host = json.loads(host_path.read_text())
     require(base.committed(RESULT)[HOST_KEY] == base.compact(host), 'committed full parser record required')
-    controls(host)
+    # Reuse only the same CPU parser/test. The changed build resolver is not
+    # executed by unittest; preserve its original measured controller identity.
+    name = str(CONTROLLER.relative_to(P))
+    original_host = base.basis.build.git(P, 'show', host['source_commit'] + ':' + name)
+    current_host = CONTROLLER.read_bytes(); boundary = b'\n\ndef prepare_build():'
+    require(hashlib.sha256(original_host).hexdigest() == host['controller_inputs'][name] and
+            original_host[:original_host.index(boundary)] == current_host[:current_host.index(boundary)],
+            'CPU parser runner/preamble changed')
+    require(all(n == name or digest(P/n) == sha for n,sha in host['controller_inputs'].items()),
+            'CPU parser dependency changed')
     require(host['passed'] and host['ownership_closed'] and not host['active'] and host['tests']==6 and
             digest(P/HOST_TEST)==host['test']['sha256'], 'current parser host gate required')
     old = base.basis.build.git(P, 'show', retained.NATIVE + ':' + KERNEL)
@@ -131,7 +140,8 @@ def prepare_build():
     for label, name in [('runtime', 'src/sycl/runtime.cpp'), ('profile', 'src/sycl/command_profile.cpp'),
                          ('kernel', KERNEL), ('fixture', FIXTURE)]:
         basis_name = KERNEL if label in ('kernel', 'fixture') else name
-        matches = [v for v in commands if v['file'] == str(retained.ROOT / 'source' / basis_name)]
+        matches = [v for v in commands if v['file'] == str(retained.ROOT / 'source' / basis_name) and
+            (label not in ('kernel','fixture') or '-o CMakeFiles/strata_kernels.dir/' in v['command'])]
         require(len(matches)==1, 'one original compile command required')
         command = shlex.split(matches[0]['command']); require(command[0] == base.COMPILER, 'original compiler changed')
         flags = command[1:command.index('-o')]
@@ -152,6 +162,7 @@ def prepare_build():
     for name in ('build', 'tmp', 'cache'): (ROOT / name).mkdir()
     row = dict(stage='prepared', source_commit=revision, controller_inputs=base.controls(revision,controller=CONTROLLER),
         native_sources={n:digest(P/n) for n in (FIXTURE,KERNEL,HEADER,CAST)}, selected_native_source=retained.NATIVE,
+        parser_gate_reuse=dict(source_commit=host['source_commit'],test=host['test'],scope='Exact CPU test,parser,runner preamble and unchanged helper inputs;new prepare_build resolver is outside unittest. No new parser test or GPU qualification claimed.'),
         original_compile_database=dict(path=str(retained.ROOT/'build/compile_commands.json'),sha256=digest(retained.ROOT/'build/compile_commands.json')),
         commands=steps,environment=dict(original['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
         budgets=dict(wall=300,cpu=1000,rss_cap=6<<30,text_cap=16<<20,file_cap=256<<20,total_cap=1<<30),

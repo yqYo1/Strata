@@ -73837,5 +73837,13 @@
       "files": 0,
       "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
     }
+  },
+  "gdn16_pipeline_recipe_preparation_v2_target_refusal": {
+    "stage": "failed-before-build",
+    "source_commit": "9d2b989eb928719b5617be65e8b452b79ca1b6bf",
+    "error": "RuntimeError: one original compile command required",
+    "cause": "Actual production compile database has engine and benchmark entries for fused_gdn.cpp. Added uniqueness check must select the strata_kernels target explicitly,which is the same first engine command used in V1. ROOT not created;no build/GPU execution.",
+    "GPU_executed": false,
+    "build_executed": false
   }
 }
