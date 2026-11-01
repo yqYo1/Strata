@@ -83913,7 +83913,7 @@
         "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
       }
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "6508753e209398c56078ae0ea9cac256b74196e6",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -83994,7 +83994,188 @@
         "environment_sha256": "2b69d7770f8dccf54647aac84d6c92979588e6b9f616d5e83cb32bf827e56713"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "candidate",
+        "spin_us": 200,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 947694,
+          "start_ticks": 190869690,
+          "sid": 947428
+        },
+        "route": {
+          "read_tokens": 33211,
+          "rows": 33210,
+          "GPU_residual_rows": 33210,
+          "ordinary_staged_slots": 384,
+          "split": false,
+          "GDN_FP16_calls": 180,
+          "GDN_FP16_rows": 1195560,
+          "GDN_barriers": 3,
+          "checkpoint_pairs": 2515,
+          "windows": 48,
+          "jobs": 20299,
+          "restored_dense_layers": 48,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 5,
+            "nominal_cells": 33210,
+            "internal_needed_rows_and_shapes_observed": false
+          },
+          "physical_resource_saturation_qualified": false
+        },
+        "prefill_main_cpu": {
+          "cpu_s": 43.480502553,
+          "wall_s": 48.08689886,
+          "known_wait_cpu_s": 25.568027185,
+          "known_wait_wall_s": 25.606675657,
+          "unclassified_cpu_s": 6.784199632,
+          "partition_qualified": true
+        },
+        "request_cpu": {
+          "process_cpu_s": 976.07,
+          "interval_wall_s": 348.476007579,
+          "process_core_equivalent": 2.8009675810427885,
+          "main_thread_cpu_s": 331.75,
+          "common_thread_cpu_s": 975.67,
+          "stable_threads": 29,
+          "thread_set_unchanged": true,
+          "born_or_reused_threads": 0,
+          "ended_or_reused_threads": 0,
+          "tick_s": 0.01,
+          "snapshot_wall_s": [
+            0.001255112,
+            0.001149933
+          ],
+          "limits": "Native process CPU over the full gated request,including prefill,decode,polling and control. Common-thread sum can omit exited threads;no worker-only,decode-only,arithmetic,DRAM or speed claim."
+        },
+        "decode_dependency_timing": [
+          {
+            "windows": 1109,
+            "ms_per_window": {
+              "average_T": 4.0,
+              "tokens_per_window": 3.52,
+              "total": 268.47,
+              "verify": 234.72,
+              "GPU_reach_wait": 86.91,
+              "per_layer_host": 126.08,
+              "plan": 4.04,
+              "activation_quant": 0.37,
+              "jobs": 0.11,
+              "CPU_pool_run": 120.85,
+              "stage": 2.11,
+              "commit_emit": 0.11,
+              "draft": 33.62,
+              "CPU_experts": 27.84,
+              "CPU_entries": 35.71,
+              "VRAM_hits": 4.26,
+              "PCIe": 0.0
+            },
+            "outer_residual_ms_per_window": 0.020000000000038654,
+            "host_nested_residual_ms_per_window": 0.710000000000008,
+            "work": {
+              "target_windows": 1109,
+              "target_rows": 4433,
+              "emitted_tokens": 3900,
+              "target_rows_per_emitted": 1.1366666666666667,
+              "cpu_unique_jobs": 1482033,
+              "cpu_entries": 1900835,
+              "cpu_unique_jobs_per_emitted": 380.0084615384615,
+              "minimum_NT1_jobs": 1063231,
+              "minimum_NT1_job_fraction": 0.717413849759081,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 18685968384000,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            },
+            "clock_binding": {
+              "absolute_total_difference_ms": 1.4699999999720603,
+              "rounding_bound_ms": 5.595,
+              "average_quantum_ms": 0.01,
+              "DONE_total_quantum_ms": 0.1
+            },
+            "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 947694,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "26aeaa99d2d6cb60651acc2f346f8474e03cc2aac25218e7883a3d51485cb472",
+            "738ff4a81389162a252dc08606163490cce421f2fb5e9dfbd4922a9e7c145894",
+            "b66985b082fec16b35e3c3849b3342f5210b87f6bb9c72cab28e4c0e265b37dd",
+            "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9"
+          ],
+          "valid": true,
+          "journal_sha256": "ba85956970733511cd6e1804a8f3abd88191544e8aaf10426b6817f23150dac3"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35520
+        },
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 3900,
+            "output_chars": 5496,
+            "reasoning_chars": 4848,
+            "prompt_ms": 50531.7,
+            "prompt_tps": 657.2,
+            "decode_ms": 297734.7,
+            "decode_tps": 13.1,
+            "ttft_s": 50.662,
+            "total_s": 348.29,
+            "drafts_offered": 3324,
+            "drafts_accepted": 2793,
+            "acceptance_rate": 0.8402527075812274,
+            "request_sha256": "424eb61e3b88f19275143af9fa65f3fe2aac566d32c6d6407120ca10cf0654b9",
+            "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+            "reasoning_sha256": "888405cb3266aa6804871f52a240f58cae981339e116ff6a24d9c8c4f001f7c5",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
