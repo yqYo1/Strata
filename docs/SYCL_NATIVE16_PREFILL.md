@@ -474,6 +474,15 @@ not a claim of spinning's critical-path cost or physical resource saturation.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
+After recovering both original261-file source sets from pushed history,
+218closed raw/JIT/research-transaction files totaling40546145bytes are retired.
+The manifest records their path/hash/reason;V1remains failed and V2remains a
+passed diagnostic. The unchanged V2admission passes after deletion without GPU
+execution. Keep its two generated config/plan pairs,record and runtime inventory
+for the new CPU wait-policy admission;retire when that dependency ends. The
+reviewed THP collection remains for its named consumer;completed review paperwork
+is replaced by the essential indexed metadata. Both engine generations and
+separate legacy provenance holds remain unchanged.
 The earlier GDN16on/off cohort's raw output is retired after recovering its
 261source inputs from pushed history. Keep its qualification record and runtime
 inventory for the next profile;the unchanged admission passes after deletion.
