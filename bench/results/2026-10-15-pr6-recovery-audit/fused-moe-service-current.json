@@ -70842,5 +70842,16 @@
       "selected_passed": true,
       "GPU_executed": false
     }
+  },
+  "gdn16_pipeline_recipe_preparation_v1": {
+    "source_commit": "c15f70e80",
+    "command": "python3 -B tools/sycl/gdn_storage_pipeline.py prepare-build",
+    "passed": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "stage": "failed-before-root-or-build",
+    "error": "TypeError: bytes.index given str rather than bytes in source-isolation guard",
+    "next_action": "Correct the byte-pattern literal;commit before fresh recipe preparation. No native compilation/execution occurred."
   }
 }

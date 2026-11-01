@@ -77,7 +77,7 @@ def prepare_build():
     require(old[old.index(begin):old.index(end)] == new[new.index(begin):new.index(end)], 'decode wrappers changed')
     begin, end = b'void gdn_conv(float', b'namespace {\n'
     require(old[old.index(begin):old.index(end, old.index(begin))] ==
-            new[new.index(begin):new.index('namespace {\ntemplate <class Input>', new.index(begin))],
+            new[new.index(begin):new.index(b'namespace {\ntemplate <class Input>', new.index(begin))],
             'original prefill conv/fused recurrence changed')
     commands = json.loads((retained.ROOT / 'build/compile_commands.json').read_text()); build = ROOT / 'build'
     steps = []
