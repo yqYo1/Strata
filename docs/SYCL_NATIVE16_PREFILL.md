@@ -467,7 +467,8 @@ CPU pool differs from HEAD only by absent optional service observers;the startup
 knob and20ms default are present. Controller`1d08e837b` passes three CPU
 accounting controls,four rejected windows and a replay of the actual retained
 prefill partition. The fresh plan is frozen from`caa46d5e7` with262source inputs;
-two frontend probes precede GPU execution. It measures one33K code
+both current frontend probes pass with normal owned closure. The20000us reference
+is the next native process. It measures one33K code
 request per process plus four official warmups,read-only request CPU snapshots
 and the existing disjoint main-thread prefill accounting. Lower CPU use alone is
 not a speedup;prefill and decode require independent repeated phase comparisons
