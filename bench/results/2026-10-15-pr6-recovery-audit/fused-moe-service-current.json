@@ -66103,7 +66103,7 @@
     }
   },
   "official_gdn_storage_device_v2": {
-    "stage": "prepared",
+    "stage": "general-check-passed",
     "source_commit": "143873608e97ea6868407fd04cd099d0475315cc",
     "prerequisite_records": {
       "build": {
@@ -66249,12 +66249,503 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": false,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        },
+        "environment_sha256": "1f3824160048162a6051e2386cd7d7209ab19454a34fbb6f03dff4a4f4a828f0"
+      },
+      {
+        "name": "storage-smoke",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 6,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "validation",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007537841796875,
+              "max_comparator_bound_fraction": 0.04959423069072862,
+              "max_FP64_bound_fraction": 0.11398565597486443,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 129,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 1320960,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.11078813134625767,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ],
+          "kernel_census": {
+            "launches": 9,
+            "per_kernel": {
+              "native_import_1": {
+                "creation": "native_import",
+                "name": null,
+                "launches": 1
+              },
+              "native_import_2": {
+                "creation": "native_import",
+                "name": null,
+                "launches": 2
+              },
+              "native_import_3": {
+                "creation": "native_import",
+                "name": null,
+                "launches": 1
+              },
+              "_ZTSZN12_GLOBAL__N_14Case6launchEiEUlN4sycl3_V12idILi1EEEE_": {
+                "creation": "named",
+                "name": "_ZTSZN12_GLOBAL__N_14Case6launchEiEUlN4sycl3_V12idILi1EEEE_",
+                "launches": 2
+              },
+              "native_import_4": {
+                "creation": "native_import",
+                "name": null,
+                "launches": 2
+              },
+              "native_import_5": {
+                "creation": "native_import",
+                "name": null,
+                "launches": 1
+              }
+            },
+            "unmapped": 0
+          }
+        },
+        "environment_sha256": "09bcf232e32c33707672a8a48a467438ad97ad36d2e2de223b779618ff97deb4"
+      },
+      {
+        "name": "storage-general",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 230,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "validation",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007537841796875,
+              "max_comparator_bound_fraction": 0.04959423069072862,
+              "max_FP64_bound_fraction": 0.11398565597486443,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 1,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 10240,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007537841796875,
+              "max_comparator_bound_fraction": 0.04959423069072862,
+              "max_FP64_bound_fraction": 0.10477473751414587,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 127,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 780288,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.20815111752783536,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 127,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 1300480,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.06616743975225543,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 128,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 786432,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.18938366193497158,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 128,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 1310720,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.06579995367069918,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 129,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 792576,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.10380262891399844,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 129,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 1320960,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.11078813134625767,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 255,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 1566720,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007808685302734375,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.09632510508193241,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 255,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 2611200,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007808685302734375,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.06299348789388615,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 256,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 1572864,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007808685302734375,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.10423464480858212,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 256,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 2621440,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007808685302734375,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.10423464480858212,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 257,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 1579008,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007808685302734375,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.11417556768379916,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 257,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 2631680,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007808685302734375,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.06256586580127717,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 8191,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50325504,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.11388266439143126,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 8191,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83875840,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.11388266439143126,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "cancel",
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 2.9802322387695312e-08,
+              "max_comparator_bound_fraction": 2.2637612087207897e-07,
+              "max_FP64_bound_fraction": 2.5571159707132396e-06,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 1,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "cancel",
+              "outputs": 10240,
+              "FP64_spots": 64,
+              "max_abs_difference": 2.9802322387695312e-08,
+              "max_comparator_bound_fraction": 2.2637612087207897e-07,
+              "max_FP64_bound_fraction": 2.5571159707132396e-06,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 129,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "cancel",
+              "outputs": 792576,
+              "FP64_spots": 64,
+              "max_abs_difference": 2.9802322387695312e-08,
+              "max_comparator_bound_fraction": 2.41538398754988e-07,
+              "max_FP64_bound_fraction": 2.7424326576281355e-06,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 129,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "cancel",
+              "outputs": 1320960,
+              "FP64_spots": 64,
+              "max_abs_difference": 2.9802322387695312e-08,
+              "max_comparator_bound_fraction": 2.41538398754988e-07,
+              "max_FP64_bound_fraction": 2.49797886477152e-06,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "zero",
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 257,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "zero",
+              "outputs": 2631680,
+              "FP64_spots": 64,
+              "max_abs_difference": 0,
+              "max_comparator_bound_fraction": 0,
+              "max_FP64_bound_fraction": 0,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 129,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "onehot",
+              "outputs": 792576,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.00048828125,
+              "max_comparator_bound_fraction": 0.5625315269840252,
+              "max_FP64_bound_fraction": 0.6098963366253791,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 8191,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "onehot",
+              "outputs": 83875840,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.00048828125,
+              "max_comparator_bound_fraction": 0.5637409635830997,
+              "max_FP64_bound_fraction": 0.5676713695292542,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "d8a778989fc209de4f17396696d2404cd70c27f09cf445a8d7b0bc6febe1ff2b"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -66280,6 +66771,20 @@
       "retention": "Preserve individual speed samples,numeric maxima,source/runtime/closure and decisions. Retire successful full traces and closed raw logs after compact evidence verification.",
       "layout": "All fixture rows use ldy=N+16 guards in both32/16bit controls. This isolates padded resident output storage;packed production layout and typed GDN3 consumers need their own qualification before adoption."
     },
+    "GPU_execution_requested": true,
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 38,
+    "ordinary_runtime_teardown_qualified": false,
     "controller_inputs": {
       "files": 40,
       "aggregate_sha256": "16dd6fee84cb7274feb0a468f02759f7e7fe95b3dbca477b22584723d38cd4e9"
