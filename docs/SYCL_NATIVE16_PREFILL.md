@@ -467,18 +467,31 @@ CPU pool differs from HEAD only by absent optional service observers;the startup
 knob and20ms default are present. Controller`1d08e837b` passes three CPU
 accounting controls,four rejected windows and a replay of the actual retained
 prefill partition. The fresh plan is frozen from`caa46d5e7` with262source inputs;
-both current frontend probes pass with normal owned closure. The20000us reference
-now closes normally with no fresh fault:33211read/3900generated tokens at13.5tok/s,
-84.03%draft acceptance. Native process CPU is1582.30s over340.5925s(4.6457core
-equivalent);the two endpoint thread sets match. Main-thread prefill accounts
-43.3379CPU seconds over48.0319s,including25.3899CPU seconds in known GPU waits.
-These are diagnostic request totals,not CPU arithmetic or saturation. The0us
-candidate is next. It measures one33K code
-request per process plus four official warmups,read-only request CPU snapshots
-and the existing disjoint main-thread prefill accounting. Lower CPU use alone is
-not a speedup;prefill and decode require independent repeated phase comparisons
-before selecting any shared wait policy. Existing CPU totals motivate this test,
-not a claim of spinning's critical-path cost or physical resource saturation.
+both current frontend probes pass with normal owned closure. Both processes now
+close normally with quiet validation,no fresh fault and all15final model hashes
+passing. Each has33211read/3900generated tokens,84.03%draft acceptance,and the
+same request,answer and reasoning hashes. The20000/0us observations are:
+
+| Metric | 20000us reference | 0us candidate |
+| --- | ---: | ---: |
+| Prefill,s | 50.4611 | 50.5657 |
+| Decode,s | 289.9376 | 300.6254 |
+| TG,tok/s | 13.5 | 13.0 |
+| Client TTFT,s | 50.587 | 50.741 |
+| Whole-request process CPU,s | 1582.30 | 910.09 |
+
+CPU time falls42.4831%,while decode takes3.68624%longer;0us is not selected.
+This is one descriptive diagnostic pair,including four official warmups and
+read-only request CPU snapshots,not repeated clean speed. Both endpoint thread
+sets match;this does not exclude short-lived threads inside the interval.
+Main-thread prefill accounts43.3379/43.7159CPU seconds over48.0319/48.3728s,
+including25.3899/25.5448CPU seconds in known GPU waits. These totals include
+polling,control and waits;they do not measure arithmetic or physical saturation.
+Next inspect the existing compiled decode dependency timers in a new committed
+bounded comparison with an intermediate wait bound. Determine wake/scheduling,
+CPU-expert and GPU-reach costs before choosing the next implementation change.
+Prefill and decode still require independent repeated phase comparisons before
+selecting a wait policy;lower CPU use alone is not a speedup.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
