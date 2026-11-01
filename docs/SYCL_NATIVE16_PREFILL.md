@@ -137,11 +137,11 @@ recovery. Selected555-source/1449-input/eight-ELF admission passes before and
 after deletion;the engine SHA is unchanged. The path/hash/reason manifest and
 remaining14legacy provenance holds are recorded in the compact closed decision.
 
-The next storage comparison is independently authored at605e73d451b3425fa275e6e917069909d39d8f7c:
+The output-storage comparison is independently authored at605e73d451b3425fa275e6e917069909d39d8f7c:
 oneMKL half-input/FP32-output,direct FP16-output,and FP32-output plus explicit
 FP16 conversion. Its CPU-only build recipe1cabcae5e is frozen before compilation;
-compile/link and actual input accounting pass. This is a new component fixture,
-not a production implementation or GPU result. The selected eight-ELF engine
+compile/link and actual input accounting pass. This is a component fixture,
+not a production implementation. The selected eight-ELF engine
 is checked unchanged before and after the build.
 
 Two bounded Orca Luna reports and native Luna max reviews now identify the
@@ -155,11 +155,50 @@ behavior remains a separately scoped question. The bounded finite-input
 FP32-plus-half-rounding oracle is a diagnostic criterion,not proof of the vendor
 accumulator type or model quality.
 
-Next qualify a bounded traced direct-output smoke,then general shapes and a
-clean repeated component comparison. Native BF16 producers are a separate
-producer variant,not a pure output-storage toggle. Current production conv/z
-consumers still take FP32;typed16bit consumers,range/rounding,arena ownership,
-unchanged FP32 state and decode handoff need their own checks before model trials.
+The closed device V2cohort passes the traced smoke and26general/cancellation/
+zero/onehot cases,including8191/8192rows. The original V1observer refusal remains
+failed:its native child completed,but the parser did not account for successful
+oneMKL native imports. Source and numerical results were not relabeled.
+
+Clean speed evidence is committed at`f540c76c4872f708bce1a16b92f46789f25f5b62`:
+three fresh resident processes,five rotated128-call batches per arm/shape,
+180eligible steady batches. All numerical,provider,source,closure and fresh-fault
+checks pass. Each interval below is the median of three process medians in
+milliseconds per call. The ratios use the geometric mean of paired process
+ratios;first shape/library calls are separate.
+
+| Rows T | Outputs N | FP32 output,ms | Direct FP16 output,ms | FP32 then cast,ms | FP16/FP32 time GM |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 4096 | 6144 | 2.53742 | 2.50684 | 3.21859 | 0.992454 |
+| 4096 | 10240 | 4.23890 | 4.20548 | 5.30439 | 0.990407 |
+| 8192 | 6144 | 5.06114 | 5.01076 | 6.29557 | 0.989827 |
+| 8192 | 10240 | 8.35677 | 8.20833 | 10.42674 | 0.983125 |
+
+Direct FP16 output saves0.75..1.69%against FP32 output and20.45..22.15%against
+FP32 plus explicit conversion. All three independent ratios favor it for every
+shape/control,so retain this small gain for typed-consumer follow-up. These are
+resident synthetic component results,excluding PCIe,dequantization and model
+inference. All arms use padded`ldy=N+16`,not the production packed layout;
+neither physical bandwidth saturation nor a model PP gain follows. The CSV
+indexes all four result points against their original evidence/source commits.
+
+The offline parser check at`582104ad0496c1d2510a4d8a93a7e1e1d94c6d36`passes
+six host tests and extracts actual function names from the same closed V2trace:
+FP32`gemm_f16f16f32_nocopy_tn_4x16_1x1x16`and
+`gemm_f16f16f32_nocopy_tn_32x48_8x4`;FP16
+`hgemm_nocopy_tn_4x16_1x1x16`and`hgemm_nocopy_tn_32x48_8x4`.
+All nine launches have creation provenance and names,including the library probe
+and conversion kernel. No additional GPU execution was needed. This corrects
+the earlier research premise that native imports could not be named from the
+trace:successful function-name query values were already present. These small
+smoke dispatches do not identify the larger timed shapes,accumulator type,
+per-launch device service or hardware counters;those remain unmeasured.
+
+Next qualify packed-layout FP16 producers with typed conv/history/z consumers
+as a compound GDN3 path. Native BF16 producers are a separate producer variant,
+not a pure output-storage toggle. Current production conv/z consumers still
+take FP32;typed16bit consumers,range/rounding,arena ownership,unchanged FP32
+state and decode handoff need their own checks before model trials.
 Do not adopt the slower chunk64 recurrence merely to obtain16bit storage.
 The curated resource collection supplies conditional ideas,not a blind tile
 sweep. Physical262144model/RESTORE,task/agent,sustained decode and a current-route
@@ -4083,12 +4122,13 @@ stopped. No reset/unbind/recovery action is part of a benchmark.
 ## Upstream and history
 
 Niko1221/Strata is the only upstream. The last actual check was
-2026-10-29T21:31:36.563996Z at`46c152a1310f77cd2f0ce2c7cd213962df14fe83`.
+2026-10-31T21:13:43.684269Z at`c62d5e3a15b40ea51c96aae9e8d36928965f53ab`
+(`v0.2.9`).
 The committed upstream-status.json tracks the partial functional reviews and
 ports,including CPU-name/missing-x86-flags reporting and stream-parser scan
 slices from this interval. Required tracking/recovery/alias/API/CLI functions,
 earlier functional obligations and hardware-tuned unmodified-upstream
-measurements remain incomplete. Check again around2026-10-31T21:31Z using
+measurements remain incomplete. Check again around2026-11-02T21:13Z using
 the project-only sync skill. These dates reconcile the existing committed
 status;this document edit is not another remote check or a completed import.
 

@@ -70740,5 +70740,87 @@
       "files": 1,
       "aggregate_sha256": "085d00b4b3e6fbfd79ddf8f15303ec4c4a23f712dca6b332d62793407aa8ab02"
     }
+  },
+  "gdn_storage_trace_parser_host_v2": {
+    "source_commit": "582104ad0496c1d2510a4d8a93a7e1e1d94c6d36",
+    "command": [
+      "/usr/bin/python3.12",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/core",
+      "-p",
+      "test_gdn_storage_trace.py",
+      "-v"
+    ],
+    "interpreter": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "active": false,
+    "passed": true,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "prior_trace_input": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-storage-v1/device-v2/storage-smoke/ur.trace",
+      "sha256": "844002933742c966af38822121a26df6080511c7b720caaa8a7459280b82ad6c",
+      "bytes": 106924,
+      "source": "Closed device V2small smoke,not a new GPU execution."
+    },
+    "result": "6native/named/import-reuse/name-query/unknown-or-failed-provenance tests",
+    "output_excerpt": "test_existing_function_query_names_prior_launch (test_gdn_storage_trace.TraceProvenance.test_existing_function_query_names_prior_launch) ... ok\ntest_named_conversion_and_native_import_coexist (test_gdn_storage_trace.TraceProvenance.test_named_conversion_and_native_import_coexist) ... ok\ntest_native_import_has_no_invented_name (test_gdn_storage_trace.TraceProvenance.test_native_import_has_no_invented_name) ... ok\ntest_reused_native_handle_keeps_distinct_imports (test_gdn_storage_trace.TraceProvenance.test_reused_native_handle_keeps_distinct_imports) ... ok\ntest_size_only_or_failed_query_does_not_invent_name (test_gdn_storage_trace.TraceProvenance.test_size_only_or_failed_query_does_not_invent_name) ... ok\ntest_unknown_and_failed_provenance_refuse (test_gdn_storage_trace.TraceProvenance.test_unknown_and_failed_provenance_refuse) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.001s\n\nOK\n",
+    "prior_trace_census": {
+      "launches": 9,
+      "per_kernel": {
+        "native_import_1": {
+          "creation": "native_import",
+          "name": "binary_test",
+          "launches": 1
+        },
+        "native_import_2": {
+          "creation": "native_import",
+          "name": "gemm_f16f16f32_nocopy_tn_4x16_1x1x16",
+          "launches": 2
+        },
+        "native_import_3": {
+          "creation": "native_import",
+          "name": "hgemm_nocopy_tn_4x16_1x1x16",
+          "launches": 1
+        },
+        "_ZTSZN12_GLOBAL__N_14Case6launchEiEUlN4sycl3_V12idILi1EEEE_": {
+          "creation": "named",
+          "name": "_ZTSZN12_GLOBAL__N_14Case6launchEiEUlN4sycl3_V12idILi1EEEE_",
+          "launches": 2
+        },
+        "native_import_4": {
+          "creation": "native_import",
+          "name": "gemm_f16f16f32_nocopy_tn_32x48_8x4",
+          "launches": 2
+        },
+        "native_import_5": {
+          "creation": "native_import",
+          "name": "hgemm_nocopy_tn_32x48_8x4",
+          "launches": 1
+        }
+      },
+      "unmapped": 0
+    },
+    "controller_inputs": {
+      "files": 41,
+      "aggregate_sha256": "d824d8569d599f6facbad124c8dd649c7a58afa1b33a9bd6334bb13bc1d2eb02"
+    },
+    "native_sources": {
+      "files": 0,
+      "aggregate_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
   }
 }
