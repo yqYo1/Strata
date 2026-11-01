@@ -73847,7 +73847,7 @@
     "build_executed": false
   },
   "gdn16_pipeline_build_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "2e1f3fa0c135e54fd23e93be7c5a3cee97f2fb19",
     "selected_native_source": "f6cea2f63315e2598d63cb04d5d0b6443dc21a24",
     "parser_gate_reuse": {
@@ -74083,6 +74083,7 @@
     "ownership_closed": true,
     "passed": false,
     "GPU_executed": false,
+    "error": "Optional kernel-ir CPU compiler step: error: IR output is not supported. Runtime/profile/kernel object compilation succeeded;42deprecation warnings are unrelated. Fixture compilation/link and all GPU work were not reached.",
     "controller_inputs": {
       "files": 40,
       "aggregate_sha256": "f1c440e52ec296a5217c589317991e647f6045be54bcd0a2645f90b633a7a5c7"
@@ -74090,6 +74091,8 @@
     "native_sources": {
       "files": 4,
       "aggregate_sha256": "d6869d40ad715d501266519f16211b4da4d2cba9531217154ad38de958726633"
-    }
+    },
+    "original_error_sha256": "88df305458d6c3908711c1ac402dda85ead35f77bcd745a1f9d6f674cdc84562",
+    "next_action": "Preserve this failed recipe;remove optional unsupported IR from a new committed build plan without changing native cast/corpus code."
   }
 }
