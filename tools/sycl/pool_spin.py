@@ -24,11 +24,11 @@ import mtp_prefill as generation
 
 model, comparison, shared, build = generation.model, generation.comparison, generation.shared, generation.build
 P, B, RESULT = generation.P, generation.B, generation.RESULT
-ROOT, KEY = model.gdn16.ROOT / 'pool-spin-diagnostic-v1', 'gdn16_pool_spin_diagnostic_v1'
+ROOT, KEY = model.gdn16.ROOT / 'pool-spin-timing-v2', 'gdn16_pool_spin_timing_v2'
 SOURCE = 'tools/sycl/pool_spin.py'
 WORKLOADS = ('regular-code',)
 WORKLOAD_ID = 'cpu_idle_wait_code_20261102'
-ARMS = (('reference', 20000), ('candidate', 0))
+ARMS = (('candidate', 200), ('reference', 20000))
 require, digest, write, compact = generation.require, generation.digest, generation.write, generation.compact
 
 
@@ -75,7 +75,7 @@ def environment(row, plan):
     env.update(STRATA_SYCL_PREFILL_GDN_BARRIERS3='1', STRATA_SYCL_PREFILL_GDN_FP16='1',
                STRATA_SYCL_PREFILL_GDN_CHUNK64='0', STRATA_MTP_BATCH_F16='1',
                STRATA_SNAPSHOT_VERIFY='1', STRATA_TRACE='1', STRATA_PREFILL_CPU_WAIT_PROFILE='1',
-               STRATA_POOL_SPIN_US=str(plan['spin_us']))
+               STRATA_POOL_SPIN_US=str(plan['spin_us']), STRATA_DECODE_TIMING='1')
     return env
 
 
@@ -173,22 +173,26 @@ def prepare():
         plans=[], processes=[], host_passed=False, passed=False, complete=False, active=False, ownership_closed=True,
         controls=selfcheck(), whole_bytes=192 << 20,
         budgets=dict(wall=1800, cpu=10800, rss_cap=104 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        plan=dict(question='Does reducing the existing CPU worker idle-spin bound warrant repeated phase-specific speed tests?',
-            motivation='Older registered-thread accounting showed substantial CPU time outside target pool calls;'
-                'it does not prove spinning latency or arithmetic/DRAM saturation. The actual selected pool has a20ms '
-                'idle bound and an immutable preexec override. Zero still checks its clock only after1024pause iterations.',
-            order='Two fresh processes:explicit20000us reference then0us candidate;four official warmups,then one regular-code request each.',
+        plan=dict(question='Does a200us idle bound avoid the0us decode penalty,and which existing nested decode wall scopes dominate?',
+            motivation='The closed V1matched3900-token pair reduced whole-request process CPU42.4831% with0us,'
+                'but decode took3.68624% longer. Test an intermediate200us bound,not an assumed optimum. '
+                'The source reads the immutable bound at startup and checks its clock after1024pause iterations.',
+            order='Two fresh processes:200us candidate then explicit20000us reference;four official warmups,then one regular-code request each. Same V1workload ID/body;new observers and fresh plan.',
             constants='Same qualified nine ELFs,providers,safety settings,throughput native16/GDN16/MTP16,heads1,131072INT8resident context,1256decode slots,5workers,spec4,chunk8192,no token graph,caches0. Only POOL_SPIN_US differs.',
-            observers='Parameter validation,private activation preload,trace/snapshot checks,prefill CPUv4 partition and two read-only /proc CPU snapshots. No full API trace,profiler or periodic observer. Diagnostic timings include these observers.',
+            observers='Parameter validation,private activation preload,trace/snapshot checks,prefill CPUv4 partition,two read-only /proc CPU snapshots and existing DECODE_TIMING footer. Native timers are already compiled and collected;the flag enables their request footer. No full API trace,profiler or periodic observer. Diagnostic timings include these observers.',
             acceptance='Exact committed source/build/assets/provider/body/native-route/journal/clock/owner gates. '
                 '>=32768fresh input,>=1024actual generated tokens,thinking and>=512answer characters,>=256drafts,normal stream/native0,quiet validation,no fresh fault. '
+                'Require actual fixed-spec4 windows,CPU job/entry conservation,one bound timing/copy footer and rounded-clock conservation against the client. '
                 'Report process CPU across whole request separately from the disjoint main-thread prefill accounting. No exact text requirement.',
             decision='One code-only observation per arm is descriptive. Lower CPU alone is not a speedup. '
                 'Freeze clean opposite-order repeated comparisons at both MTP workloads before nonregression or policy adoption. '
-                'Judge prefill and decode independently;global startup policy is an experimental control,not a selected shared phase policy.',
+                'Judge prefill and decode independently;global startup policy is an experimental control,not a selected shared phase policy. '
+                'Nested wall scopes are not additive hardware service;CPU_pool_run includes scheduling/waits and GPU_reach_wait is not GPU arithmetic. '
+                'Use the dominating measured dependency to select the next bounded implementation test,not claim physical saturation.',
             stopping='Stop first source/owner/provider/clock/route/validation/fault/budget/sample failure. No retry,exclusion,speed stop or hash refresh;commit each process before next. Full model hashes before/after.',
             retention='Keep compact samples,CPU partition aggregates,actual native source/configuration and closure decisions. '
-                'Retire successful raw journals/logs after verification. No new binary generation;existing engine/fallback consumers unchanged.'))
+                'Retire successful raw journals/logs after verification. Retain work counts and nested wall summaries,not per-window arrays. '
+                'No new binary generation;existing engine/fallback consumers unchanged.'))
     for index, (arm, spin) in enumerate(ARMS):
         root = ROOT / str(index); root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root / part).mkdir()
@@ -313,6 +317,7 @@ def run(index):
         require(validation['loader'] == row['native_validation_probe']['loader']['path'], 'validation loader differs')
         raw = (root / 'engine.stderr').read_bytes()[offsets['begin']:offsets['end']].decode()
         require(generation.native_route(raw, samples[0]['read_tokens']) == outcome['route'], 'live/final route differs')
+        outcome['decode_dependency_timing'] = shared.gen.decode_timing_evidence(raw, samples)
         current(row)
         if index == 1: shared.models.model_pins(row['configuration'], row['model_assets'], full=True)
         fields = ('workload', 'read_tokens', 'reused_tokens', 'generated_tokens', 'output_chars', 'reasoning_chars',
@@ -333,7 +338,7 @@ def run(index):
         if row['passed']:
             row['decision'] = dict(diagnostic_complete=True, speed_nonregression_qualified=False, inference_adopted=False,
                 physical_resource_saturation_qualified=False, prefill_decode_independence_qualified=False,
-                next='Inspect actual CPU/window/output differences;freeze repeated clean phase-specific comparison if promising.')
+                next='Inspect actual nested decode wall scopes and work/output differences;select the next bounded component or phase-specific speed comparison. No policy adoption from one diagnostic pair.')
         save(row)
     require(outcome['passed'], outcome.get('error', 'wait-policy diagnostic failed'))
     print(json.dumps({k: outcome.get(k) for k in ('index', 'kernel', 'passed', 'complete', 'error')}), flush=True)
