@@ -61,7 +61,8 @@ def verify():
         found = {n: hashlib.sha256(raw).hexdigest() for n, raw in base.basis.build.blobs(
             Path(group['root']), group['revision'], group['source_sha256'])}
         require(found == group['source_sha256'] and len(found) == group['count'] and
-                hashlib.sha256(json.dumps(found, sort_keys=True).encode()).hexdigest() ==
+                hashlib.sha256(json.dumps(found, sort_keys=True,
+                    separators=(',', ':')).encode()).hexdigest() ==
                 group['aggregate_sha256'], 'dependency Git recovery differs')
         for name, sha in found.items():
             path = (Path(group['root']) / name).resolve()
