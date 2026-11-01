@@ -388,7 +388,12 @@ successful mode2 MTP callbacks per request. Native exit0,quiet final validation,
 closed owners,full model hashes and no fresh fault pass. Logged PP666.2/825.3
 and client TTFT49.309/39.841s are first/subsequent diagnostic observations,not
 matched clean speed. The117Kcomparison is next. No native kernel or decode
-selection is changed.
+selection is changed. Initial117K preparation refuses two unlisted Python
+observer-controller changes before any GPU work or output-root creation. Its
+failed result remains. The V2admission recovers the original qualified profile
+and model-probe controllers,requiring the exact two observer hashes and only
+the new MTP controller delta from the closed current model probe. It does not
+refresh native/source hashes or claim another model qualification.
 Physical arithmetic/VRAM/PCIe saturation remains unknown. Next compare the
 source/shape-specific opportunities and characterize longer inputs on this
 same validated generation,without attributing a length/configuration change

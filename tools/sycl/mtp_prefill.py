@@ -20,12 +20,13 @@ import compare_prefill_strategies as gdn
 
 model, comparison, shared, build = gdn.model, gdn.comparison, gdn.shared, gdn.build
 P, B, RESULT = gdn.P, gdn.B, gdn.RESULT
-ROOT, KEY = model.gdn16.ROOT / 'mtp16-speed-v1', 'gdn16_mtp16_model_speed_v1'
+ROOT, KEY = model.gdn16.ROOT / 'mtp16-speed-v2', 'gdn16_mtp16_model_speed_v2'
 READ, RUNS = 117489, 4
 ARMS = ('candidate', 'reference', 'reference', 'candidate', 'candidate', 'reference')
 CASES = [(READ, arm) for arm in ARMS]
 ORDER = [(read, 1) for read, _ in CASES]
 CHANGED = {'tools/sycl/mtp_prefill.py', 'tools/sycl/check_prefill_strategy_model.py'}
+COLLECTOR_HOST = {'tools/sycl/profile_split.py', 'tools/sycl/test_profile_split.py'}
 require, digest, write, compact = model.require, model.digest, model.write, model.compact
 
 
@@ -34,6 +35,14 @@ def save(row):
     data = json.loads(RESULT.read_text())
     data[KEY] = compact(row)
     write(RESULT, data)
+
+
+def source_delta(current, original, declared, reused):
+    """Reused observer bytes must match their own qualified original inputs."""
+    require(set(current) == set(original)
+            and {n for n in current if current[n] != original[n]} == declared | set(reused)
+            and all(current[n] == sha for n, sha in reused.items()),
+            'undeclared or changed source outside the qualified reuse scope')
 
 
 def proof(revision):
@@ -60,15 +69,32 @@ def proof(revision):
     recovered = {n: hashlib.sha256(raw).hexdigest()
                  for n, raw in shared.gen.blobs(P, prior['source_commit'], prior['sources'])}
     current = model.pinned_sources(revision)
-    require(recovered == prior['sources'] and set(current) == set(recovered)
-            and {n for n in current if current[n] != recovered[n]} == CHANGED,
-            'undeclared benchmark/controller change since closed speed basis')
+    require(recovered == prior['sources'], 'original speed-controller source recovery failed')
+    profile = json.loads((model.gdn16.ROOT / 'resource-profile-v3/record.json').read_text())
+    require(data['gdn16_resource_profile_v3'] == compact(profile)
+            and profile['passed'] and profile['complete'] and profile['ownership_closed'] and not profile['active']
+            and profile['binary'] == native['binaries']['strata']
+            and profile['native_source_commit'] == native['source_commit'],
+            'closed same-build observer qualification required')
+    profile_sources = {n: hashlib.sha256(raw).hexdigest()
+                       for n, raw in shared.gen.blobs(P, profile['source_commit'], profile['sources'])}
+    require(profile_sources == profile['sources'], 'original observer-controller source recovery failed')
+    reuse = {n: profile_sources[n] for n in COLLECTOR_HOST}
+    source_delta(current, recovered, CHANGED, reuse)
+    probe_sources = {n: hashlib.sha256(raw).hexdigest()
+                     for n, raw in shared.gen.blobs(P, probe['source_commit'], probe['sources'])}
+    require(probe_sources == probe['sources'], 'original MTP16 probe-controller source recovery failed')
+    source_delta(current, probe_sources, {'tools/sycl/mtp_prefill.py'}, {})
     def draft_function(rev):
         text = shared.gen.git('show', rev + ':src/prefill/prefill.cpp').decode()
         return text[text.index('bool Prefill::draft_kv('):text.index('bool Prefill::set_peer(')].encode()
     original = draft_function('3b4998f326101fa913788fd368e1674b111dea03')
     require(original == draft_function(native['source_commit']), 'previously executed MTP function changed')
-    return native, providers, prior, probe, dict(bytes=len(original), sha256=hashlib.sha256(original).hexdigest())
+    return native, providers, prior, probe, dict(
+        previously_executed_draft_function=dict(bytes=len(original), sha256=hashlib.sha256(original).hexdigest()),
+        collector_source=profile['source_commit'], collector_original_files=len(profile_sources),
+        reused_collector_host_sources=reuse, probe_original_files=len(probe_sources),
+        probe_controller_only_change='tools/sycl/mtp_prefill.py')
 
 
 def native_context(row, plan):
@@ -174,8 +200,17 @@ def selfcheck():
     try: decision(rows)
     except RuntimeError: pass
     else: raise RuntimeError('duplicate native identity accepted')
+    old = dict(controller='old', observer='old', unchanged='fixed')
+    now = dict(controller='new', observer='qualified', unchanged='fixed')
+    source_delta(now, old, {'controller'}, dict(observer='qualified'))
+    for wrong in (dict(now, observer='unqualified'), dict(now, unchanged='changed'),
+                  dict(now, added='unexpected'), {k:v for k,v in now.items() if k != 'unchanged'}):
+        try: source_delta(wrong, old, {'controller'}, dict(observer='qualified'))
+        except RuntimeError: pass
+        else: raise RuntimeError('unqualified source delta accepted')
     return dict(passed=True, GPU_executed=False, model_route_controls=controls,
-                additional_callback_positive=2, additional_callback_negative=10, decision_controls=3)
+                additional_callback_positive=2, additional_callback_negative=10, decision_controls=3,
+                source_reuse_positive=1, source_reuse_negative=4)
 
 
 def prepare():
@@ -198,7 +233,7 @@ def prepare():
         runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'), sha256=digest(ROOT / 'runtime-inputs.json'), files=len(providers)),
         qualification_reuse=dict(native_source=native['source_commit'], current_MTP16_probe=probe['source_commit'],
             clean_GDN16_basis=prior['source_commit'], recovered_controller_files=len(prior['sources']),
-            declared_controller_changes=sorted(CHANGED), previously_executed_draft_function=source_contract,
+            declared_controller_changes=sorted(CHANGED), source_recovery=source_contract,
             scope='Same nine actual ELFs/native inputs/recipe and qualified providers; no new native build. '
                   'Current two32K traced/validated GDN16/MTP16 entries pass. Broader adoption remains pending.'),
         plans=[], processes=[], request_hashes={}, controls=controls, host_passed=False, passed=False,
@@ -206,6 +241,10 @@ def prepare():
         whole_bytes=512 << 20, budgets=dict(wall=1800, cpu=5400, rss_cap=104 << 30, text_cap=16 << 20,
                                           file_cap=16 << 20, total_cap=64 << 20),
         plan=dict(question='Does existing FP16 draft-KV projection improve current117K long prefill over Q8 with GDN16 fixed?',
+            previous_preparation='V1refused unlisted observer-controller changes before creating an output root or launching GPU work. '
+                                 'V2 recovers the qualified profile controller and original probe source;only the two exact observer '
+                                 'bytes may be reused and only the new MTP controller differs from the current closed model probe. '
+                                 'The original refusal remains failed;no recorded hash is refreshed.',
             attribution='Closed current resource profile has36Q80 prompt-product kernels/7.035882796s summed service. '
                         'draft_kv is unchanged from the previously executed3b function. This is an optimization candidate, '
                         'not a physical ceiling, warmed cost or predicted end-to-end gain.',

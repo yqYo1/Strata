@@ -79862,5 +79862,27 @@
       "files": 261,
       "aggregate_sha256": "5c313ef6f0c3b2bbd9e1a4a333b61c403c1ed809ace2c33ccc989474a150e324"
     }
+  },
+  "gdn16_mtp16_speed_v1_preparation_refusal": {
+    "source_commit": "970f40c39",
+    "command": [
+      "timeout",
+      "180s",
+      "python3",
+      "tools/sycl/mtp_prefill.py",
+      "prepare"
+    ],
+    "stage": "failed",
+    "passed": false,
+    "native_execution": false,
+    "output_root_created": false,
+    "error": "undeclared benchmark/controller change since closed speed basis",
+    "actual_changed_inputs": [
+      "tools/sycl/check_prefill_strategy_model.py",
+      "tools/sycl/mtp_prefill.py",
+      "tools/sycl/profile_split.py",
+      "tools/sycl/test_profile_split.py"
+    ],
+    "diagnosis": "The declared MTP pair omitted two observer-only Python files,which have a separate closed same-engine resource qualification. No native mismatch or GPU fault occurred. Preserve this refusal;fresh V2 requires original-source recovery and exact qualified observer hashes rather than an open allowlist."
   }
 }
