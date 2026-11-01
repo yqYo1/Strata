@@ -342,14 +342,17 @@ diagnostic kernels do not override the failed interaction/ownership gate.
 The original failure remains recorded,and no117Kmodel profile ran. The V3
 controller follows the actual two/three-gate protocols and persists owner
 transactions. All19CPU controls pass,including actual child-process protocol
-and cleanup cases;the fresh V3plan is prepared.
+and cleanup cases. The fresh V3frontend/prefix and both same-build fixtures now
+pass:606submission and62native-graph kernels have unique native-host IDs and
+contained raw-clock service,quiet validation,normal native exits,reaped owners,
+removed sessions and no fresh fault. This resolves the original EOF scenario;
+the failed V2result is unchanged.
 V1preparation refused an older collector audit's Python-parser fingerprint;its
 original refusal remains recorded. The reviewed delta only extends the census
 parser's explicit row bound/job groups;all31original collector inputs are
 recovered,and460actual compiler inputs,generated code,recipe and both tool ELFs
-are checked unchanged. No new native build is claimed. After the19CPU controls,
-execute fresh frontend/prefix probes and same-build606-launch submission/62-launch
-native-graph fixtures before the single controlled117Kmodel request. Hardware-resource
+are checked unchanged. No new native build is claimed. Next execute the single
+controlled117Kmodel request with this committed source and plan. Hardware-resource
 attribution and observer cost remain unqualified until that request closes.
 The closed cohort's raw output is retired after recovering its261source inputs
 from pushed history. Keep its full qualification record and runtime inventory
