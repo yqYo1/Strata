@@ -35,4 +35,3 @@ def launch_census(text):
     if not launches or unmapped:
         raise RuntimeError('complete successful GPU kernel census required')
     return dict(launches=sum(v['launches'] for v in launches.values()), per_kernel=launches, unmapped=unmapped)
-
