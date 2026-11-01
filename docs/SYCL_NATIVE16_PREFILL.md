@@ -440,8 +440,20 @@ the structured fields before the semicolon and passes that real-request CPU
 replay plus four valid/nine rejected route controls. Its fresh two-process plan
 uses both standard33K workloads,thinking on and a16384-output cap;only MTP16
 differs. Require >=1K generated tokens and a substantive answer in each request.
-Both frontend probes pass;native execution is next. One sample per workload/arm cannot qualify
-sustained-decode nonregression,strong/weak-MTP classes or inference adoption.
+Both frontend probes pass. V2's FP16process now closes both requests with normal
+native exit0,quiet validation,all six warmup/long-request bindings,closed owners
+and no fresh fault. Code reads33210tokens and generates2869at13.3tok/s;
+prose reads33284and generates11674at8.4tok/s. Draft acceptance is84.92%/37.61%.
+Actual answer/thinking characters are5578/2461and4104/35318;these establish
+answer presence,not task-quality adjudication. The Q8process and final model
+hashes remain next. These are one-sample diagnostic observations,not clean speed,
+decode nonregression,strong/weak-MTP classification or inference adoption.
+After this pair,the CPU idle-spin policy is a bounded next discriminator:
+the current pool defaults to20000us before CV parking,and its existing immutable
+startup knob permits a shorter bound. Prior CPU accounting motivates checking
+this,but does not prove spinning's critical-path cost. Compare wake costs and
+actual phase throughput,using the indexed idle-wait methods;lower CPU use alone
+does not qualify a speedup. Physical resource saturation remains unknown.
 The earlier GDN16on/off cohort's raw output is retired after recovering its
 261source inputs from pushed history. Keep its qualification record and runtime
 inventory for the next profile;the unchanged admission passes after deletion.
