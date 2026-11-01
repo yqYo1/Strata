@@ -67778,7 +67778,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "prepared",
+    "stage": "tails-v2-passed",
     "source_commit": "f5d663206414b1261cefabb9974790c807a96b05",
     "cases": [
       {
@@ -67794,13 +67794,171 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "environment_observed": false,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        }
+      },
+      {
+        "name": "fp32-tails",
+        "passed": true,
+        "exit_code": 0,
+        "pre_main_parameter_validation": true,
+        "quiet_final_validation": true,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 3150,
+          "permission_denials": 2,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": true,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "full_device_domain_qualified": false,
+          "shape_columns": [
+            "T",
+            "N",
+            "ldy",
+            "not_FP16_representable_outputs"
+          ],
+          "shapes": [
+            [
+              1,
+              6144,
+              6148,
+              3351
+            ],
+            [
+              1,
+              10240,
+              10244,
+              5585
+            ],
+            [
+              127,
+              6144,
+              6148,
+              425577
+            ],
+            [
+              127,
+              10240,
+              10244,
+              709295
+            ],
+            [
+              128,
+              6144,
+              6160,
+              428928
+            ],
+            [
+              128,
+              10240,
+              10256,
+              714880
+            ],
+            [
+              129,
+              6144,
+              6148,
+              432279
+            ],
+            [
+              129,
+              10240,
+              10244,
+              720465
+            ],
+            [
+              255,
+              6144,
+              6148,
+              854505
+            ],
+            [
+              255,
+              10240,
+              10244,
+              1424175
+            ],
+            [
+              256,
+              6144,
+              6160,
+              857856
+            ],
+            [
+              256,
+              10240,
+              10256,
+              1429760
+            ],
+            [
+              257,
+              6144,
+              6148,
+              861207
+            ],
+            [
+              257,
+              10240,
+              10244,
+              1435345
+            ],
+            [
+              8191,
+              6144,
+              6148,
+              27448041
+            ],
+            [
+              8191,
+              10240,
+              10244,
+              45746735
+            ],
+            [
+              8192,
+              6144,
+              6160,
+              27451392
+            ],
+            [
+              8192,
+              10240,
+              10256,
+              45752320
+            ]
+          ],
+          "all18_complete_outputs_zero_ULP": true,
+          "all_guards_inputs_oneMKL_retirement_passed": true,
+          "retention": "Compact original per-shape evidence;successful raw stdout is redundant."
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
-    "GPU_execution_requested": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
+    "GPU_execution_requested": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -67969,6 +68127,41 @@
       "original_gate_passed": false,
       "correction": "Bound inaccessible/empty /proc snapshots by2s while supervising the same unreaped child;only pidfd proves exit. Native source/image/fixture unchanged."
     },
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 38,
+    "ordinary_runtime_teardown_qualified": false,
+    "command_outcomes": [
+      {
+        "label": "host-canary",
+        "pid": 2862493,
+        "exit_code": 0,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "fp32-tails",
+        "pid": 2862499,
+        "exit_code": 0,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "errors": [],
+        "cleanup": []
+      }
+    ],
     "controller_inputs": {
       "files": 44,
       "aggregate_sha256": "a3d34fd998c767d7320a2b324bdab34c28a495cb408c6ccb6c40c0545a32fea0"

@@ -130,10 +130,42 @@ owner retirement pass. The trace observes two actual new-kernel launches out
 of five successful kernel launches. Actual device environment/maps,pre-main
 validation,38observed executable providers,normal process closure and the final
 frozen source/driver checks pass,with no fresh GPU fault. This establishes only
-these two small shapes;full device-domain,non-dyadic,model/speed/decode and
-physical-context qualification remain pending. Next cover both output widths
-through8192rows,invalid admissions and non-dyadic numerics before component
-timing including dequantization and unchanged consumers.
+these two small shapes. The subsequent18-shape gate reports exact outputs but
+fails its original exit observer:the native child exits0 while `/proc` briefly
+becomes inaccessible. Preserve that failed outcome. Six host-only real-child/
+pidfd controls qualify a bounded observer that never infers exit from denial
+and stops on persistent loss while the child is live. The fresh V2gate now
+passes all18shapes,including8191/8192rows and both padded widths,with38observed
+providers,quiet validation,normal ownership and no fresh GPU fault. Its3150
+live snapshots include two permission denials followed by positive child exit.
+These are selected device shapes,not every T or a physical262144model fill.
+General rounded-input,numerical/task/speed/decode and physical-context
+qualification remain pending;production dispatch is unchanged.
+
+The next maintained fixture compares this resident GEMM with unchanged oneMKL
+before adding a prefill-only production bridge. Preserve the current exact
+oracle and add seeded nonperiodic row/column/K inputs,paired cancellation,
+zero/one-hot probes and safe synchronous admission rejections. Finite binary16
+inputs are dyadic;the new cases exercise accumulation rounding rather than
+literally non-dyadic values. Compare all outputs with oneMKL and at least32..64
+independent FP64 spots across boundaries/cancellation. Predeclare bounds using
+`gamma2559(u)=2559*u/(1-2559*u)`,u32=2^-24 and u64=2^-53,with upward-rounded
+absolute-product bounds;do not demand bit equality on general data or assume
+oneMKL accumulation precision from its input/output type tuple. A short device
+span rejection needs a safe host/test-submit seam;otherwise leave that case
+unqualified. The reviewed recipe is indexed under
+`gdn_fp32_fixture_validation_contract_20261101`;the resource collection stays
+outside Main's context until component results need its specific alternatives.
+
+First isolate resident GEMM at T4096/8192,N6144/10240,K2560 with matched inputs,
+balanced arm order and independent processes. Record checked host elapsed time,
+whole in-order queue boundaries and native returned-event service separately;
+do not assume oneMKL's returned event represents its entire operation. The
+existing Runtime compute queue already enables profiling. Keep at most eight
+outstanding calls,declare a timing-duration floor and keep first use separate.
+This comparison does not include PCIe/dequantization or prove a hardware
+ceiling. Require dequantization and unchanged consumers in the actual dependency
+path before any model A/B or inference adoption.
 
 The two full weight shapes are N10240/K2560 and N6144/K2560,T1..8192.
 The existing33554432-half-element scratch is64MiB;their complete dequantized
