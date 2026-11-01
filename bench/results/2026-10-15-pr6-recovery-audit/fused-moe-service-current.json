@@ -65436,7 +65436,7 @@
     }
   },
   "official_gdn_fp32_projection_build_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "2ec130cd6e3d40fc12fe06d5d46a83bf7a6acfc5",
     "implementation_commit": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
     "source_basis": {
@@ -65807,6 +65807,34 @@
       }
     ],
     "retention": "Selected eight-ELF engine plus this named component generation;retire closed reference before compile.Raw compile output retires after useful diagnostics/input evidence and codegen question close.",
+    "error": "RuntimeError('uncovered/changed actual compiler input')",
+    "post_failure_artifact_proof": {
+      "all_four_CPU_commands_exit0": true,
+      "GPU_executed": false,
+      "outputs": {
+        "native16.o": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/native16.o",
+          "bytes": 443488,
+          "sha256": "ab7d8a915bfb394074ca6c32aeffc543be0c937f40de117af09f377fe517200b"
+        },
+        "image.o": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/image.o",
+          "bytes": 2033904,
+          "sha256": "c29d95581e0aa99acdc0e4c661fdfb0cbe4109e672635de3b7e7d25449d585b7"
+        },
+        "host.o": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/host.o",
+          "bytes": 305616,
+          "sha256": "4501156d2e8a55ce594a7b05c7039a68bd8624eda186ba38bdfba983dd9b406a"
+        },
+        "device.bin": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device.bin",
+          "bytes": 2005712,
+          "sha256": "57cfe9bf9bb35c663604609c798e6a125552abf4c5bc4224ea9217e3b8836b28"
+        }
+      },
+      "next": "Attest original actual compiler inputs with the pre-existing pinned dependency maps,without recompilation;preserve this failed V1 outcome."
+    },
     "controller_inputs": {
       "files": 39,
       "aggregate_sha256": "788fb7f59c4c0938424ada6aa58531871f4d0a7449038ec74873d4d2eca9a788"
