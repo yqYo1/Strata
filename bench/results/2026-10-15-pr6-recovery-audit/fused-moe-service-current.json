@@ -66795,7 +66795,7 @@
     }
   },
   "official_gdn_storage_speed_v1": {
-    "stage": "prepared",
+    "stage": "resident-speed-closed",
     "source_commit": "e39bd56bc3fea4125bbb7f2f02a80fc1f21196c8",
     "prerequisite_records": {
       "build": {
@@ -66964,12 +66964,3517 @@
         "trace": false
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "name": "host-canary",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": false,
+        "pre_main_parameter_validation": true,
+        "environment_observed": false,
+        "proc_observation": {
+          "successful_samples": 0,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "host_only": true
+        },
+        "environment_sha256": "506faebc6b4c9810f451d465d3a66d72fcee9b103053fd728185c91ac327bf49"
+      },
+      {
+        "name": "clean-smoke",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 6,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "validation",
+              "T": 1,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 6144,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.007537841796875,
+              "max_comparator_bound_fraction": 0.04959423069072862,
+              "max_FP64_bound_fraction": 0.11398565597486443,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "validation",
+              "T": 129,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 1320960,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078067779541015625,
+              "max_comparator_bound_fraction": 0.05287317492624513,
+              "max_FP64_bound_fraction": 0.11078813134625767,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "62350b35a7ad47f3312bd7c47f92653e2f61f7a1fd10cf19ea0ee805e0c2b4de"
+      },
+      {
+        "name": "resident-0",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 562,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 19.614334
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 16.256423
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 35.602864
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 25165824,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004789
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004699
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004648
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004648
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004658
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 327.158679
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 325.402428
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 418.355926
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 323.715966
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 415.587092
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 325.658351
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 416.650621
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 326.61695
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 324.546754
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 331.062911
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 327.473411
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 417.561473
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 322.757999
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 417.156931
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 326.527247
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 25165824,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.309153
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 5.497068
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 5.516435
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 41943040,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004999
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.008435
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.007214
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.007925
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.007524
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 541.575268
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 538.069943
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 678.224894
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 538.940218
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 682.292326
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 541.577102
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 682.27532
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 546.750236
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 542.850695
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 544.702651
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 537.980693
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 678.23124
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 542.970435
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 678.962406
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 542.579714
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 41943040,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 5.120655
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.957068
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 6.990859
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.009287
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.009788
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.009899
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.009568
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.009538
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 647.825916
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 645.772846
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 812.925496
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 640.367896
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 807.692433
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 649.395899
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 815.278768
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 645.601558
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 643.616155
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 651.513188
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 641.377337
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 806.419099
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 637.753259
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 808.814659
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 645.084607
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 19.064677
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 19.635306
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 10.278702
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004959
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004939
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004859
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004969
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004869
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1072.438088
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1049.712249
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1333.660488
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1047.88547
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1335.579053
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1068.653197
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1333.501024
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1067.727567
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1050.658697
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1069.744487
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1049.324986
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1336.850024
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1047.11621
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1335.393337
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1068.067343
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "f74e772b22b542e57e8938c059036cdc7729df6004031acc94a40cbd6e080872"
+      },
+      {
+        "name": "resident-1",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 554,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 21.523824
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 42.474073
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 2.841426
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 25165824,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004699
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004709
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004599
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004669
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004679
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 320.705242
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 417.575352
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 324.925437
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 411.279343
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 320.811511
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 322.210323
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 324.520786
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 320.874995
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 415.852316
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 322.504433
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 411.444792
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 321.937764
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 411.86213
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 322.013451
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 320.532905
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 25165824,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.170348
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 5.286239
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.225682
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 41943040,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.00492
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004859
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004819
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004829
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004819
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 533.838631
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 676.376261
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 540.076283
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 680.364963
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 542.199613
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 537.567929
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 544.474849
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 538.154688
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 681.119228
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 534.392464
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 678.021607
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 541.680507
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 682.272779
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 542.026939
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 538.176966
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 41943040,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.949018
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 6.247642
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.991959
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.00495
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004839
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.00481
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004849
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004789
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 636.687084
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 804.44517
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 650.458665
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 804.576857
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 645.622276
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 641.493319
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 652.59977
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 640.842425
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 805.241026
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 640.934421
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 807.979129
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 644.699867
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 806.352808
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 650.928089
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 639.516771
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 21.292974
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 18.671929
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 8.265457
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004949
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004819
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004819
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004869
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004829
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1050.752715
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1332.909406
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1069.978685
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1333.132977
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1068.724295
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1048.501823
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1071.050793
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1050.496879
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1334.622156
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1050.666385
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1335.285671
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1073.044841
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1334.872416
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1069.922686
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1050.962919
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "c7ae982e98acdb44b2d5ecb392c03d41c85dbe74d306c311b31dad964198b7b7"
+      },
+      {
+        "name": "resident-2",
+        "passed": true,
+        "exit_code": 0,
+        "clean_speed": true,
+        "pre_main_parameter_validation": false,
+        "environment_observed": true,
+        "proc_observation": {
+          "successful_samples": 551,
+          "permission_denials": 0,
+          "missing_samples": 0,
+          "exit_confirmed_after_unavailable": false,
+          "grace_seconds": 2.0
+        },
+        "ownership_closed": true,
+        "details": {
+          "rows": [
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 48.755053
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 2.848322
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 14.613716
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 25165824,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004759
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004799
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004728
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004789
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004749
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 412.267528
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 326.617246
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 326.091761
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 324.190795
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 320.155142
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 411.745201
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 318.214643
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 411.461324
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 324.959367
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 417.068403
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 321.980556
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 320.651312
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 324.790076
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 320.689509
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 411.979299
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 25165824,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 5.327061
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.250672
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.155744
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 41943040,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004949
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004839
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004819
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004809
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.00486
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 677.56313
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 540.663656
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 536.827917
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 546.194138
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 541.132479
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 676.767104
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 534.328847
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 678.745048
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 545.850878
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 677.416165
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 541.643067
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 538.301301
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 547.783724
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 538.80212
+            },
+            {
+              "kind": "timing",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 677.96268
+            },
+            {
+              "kind": "validation",
+              "T": 4096,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 41943040,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 6.295819
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.99042
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 4.927573
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004909
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004869
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004839
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004929
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004869
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 802.082072
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 644.219293
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 644.607475
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 648.49108
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 641.057932
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 804.947424
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 642.724192
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 805.832502
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 644.45517
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 810.971458
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 646.447173
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 639.198139
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 646.567768
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 646.261963
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 807.77909
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 6144,
+              "ldy": 6160,
+              "pattern": "general",
+              "outputs": 50331648,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.17939830659883904,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 21.169572
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 8.309318
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "first_shape_call",
+              "sample": 0,
+              "calls": 1,
+              "host_ms": 19.605188
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 0.004819
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 0.004809
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 0.004859
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 0.004799
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "empty",
+              "phase": "timer_control",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 0.004789
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1333.579587
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1068.145494
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 0,
+              "calls": 128,
+              "host_ms": 1054.685169
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1070.302001
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1054.570275
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 1,
+              "calls": 128,
+              "host_ms": 1333.604821
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1051.256764
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1335.336773
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 2,
+              "calls": 128,
+              "host_ms": 1069.666197
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1334.622027
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1068.942165
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 3,
+              "calls": 128,
+              "host_ms": 1051.485359
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1071.975567
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1054.173563
+            },
+            {
+              "kind": "timing",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "arm": "oneMKL32_convert16",
+              "phase": "steady",
+              "sample": 4,
+              "calls": 128,
+              "host_ms": 1336.394326
+            },
+            {
+              "kind": "validation",
+              "T": 8192,
+              "N": 10240,
+              "ldy": 10256,
+              "pattern": "general",
+              "outputs": 83886080,
+              "FP64_spots": 64,
+              "max_abs_difference": 0.0078125,
+              "max_comparator_bound_fraction": 0.054681785543035,
+              "max_FP64_bound_fraction": 0.10562536283460698,
+              "guards_inputs": true,
+              "passed": true
+            }
+          ]
+        },
+        "environment_sha256": "19428b358fb5d9ba7830c31abf4769451ffb7b41ccbea8802c32ee4978b1c9c6"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
-    "GPU_executed": false,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
     "budgets": {
@@ -66995,6 +70500,238 @@
       "retention": "Preserve individual speed samples,numeric maxima,source/runtime/closure and decisions. Retire successful full traces and closed raw logs after compact evidence verification.",
       "layout": "All fixture rows use ldy=N+16 guards in both32/16bit controls. This isolates padded resident output storage;packed production layout and typed GDN3 consumers need their own qualification before adoption."
     },
+    "GPU_execution_requested": true,
+    "component_decisions": [
+      {
+        "T": 4096,
+        "N": 6144,
+        "process_medians": [
+          {
+            "process": "resident-0",
+            "milliseconds": {
+              "oneMKL32": 2.551694921875,
+              "oneMKL16": 2.535521515625,
+              "oneMKL32_convert16": 3.2590385234375
+            },
+            "empty_control_ms": 0.004658,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9936617006557683,
+              "oneMKL32_convert16": 0.7779967918116648
+            }
+          },
+          {
+            "process": "resident-1",
+            "milliseconds": {
+              "oneMKL32": 2.5157300859375,
+              "oneMKL16": 2.5068358984375,
+              "oneMKL32_convert16": 3.217672890625
+            },
+            "empty_control_ms": 0.004679,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9964645700467961,
+              "oneMKL32_convert16": 0.7790835127279122
+            }
+          },
+          {
+            "process": "resident-2",
+            "milliseconds": {
+              "oneMKL32": 2.53742246875,
+              "oneMKL16": 2.505088375,
+              "oneMKL32_convert16": 3.2185882734375
+            },
+            "empty_control_ms": 0.004759,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9872571106513736,
+              "oneMKL32_convert16": 0.7783189902461579
+            }
+          }
+        ],
+        "all_batches_eligible": true,
+        "paired_geomean_time_ratios": {
+          "oneMKL32": 0.9924536370745692,
+          "oneMKL32_convert16": 0.7784662982176398
+        },
+        "follow_up_eligible": true
+      },
+      {
+        "T": 4096,
+        "N": 10240,
+        "process_medians": [
+          {
+            "process": "resident-0",
+            "milliseconds": {
+              "oneMKL32": 4.238904015625,
+              "oneMKL16": 4.210470453125,
+              "oneMKL32_convert16": 5.304393796875
+            },
+            "empty_control_ms": 0.007524,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9932922372398169,
+              "oneMKL32_convert16": 0.7937703372637099
+            }
+          },
+          {
+            "process": "resident-1",
+            "milliseconds": {
+              "oneMKL32": 4.2345854609375,
+              "oneMKL16": 4.1997494453125,
+              "oneMKL32_convert16": 5.3153512734375
+            },
+            "empty_control_ms": 0.004829,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9917734531641057,
+              "oneMKL32_convert16": 0.7901170081270044
+            }
+          },
+          {
+            "process": "resident-2",
+            "milliseconds": {
+              "oneMKL32": 4.264459984375,
+              "oneMKL16": 4.2054789140625,
+              "oneMKL32_convert16": 5.293461953125
+            },
+            "empty_control_ms": 0.004839,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.986169158456497,
+              "oneMKL32_convert16": 0.7944666366365005
+            }
+          }
+        ],
+        "all_batches_eligible": true,
+        "paired_geomean_time_ratios": {
+          "oneMKL32": 0.9904068733483264,
+          "oneMKL32_convert16": 0.7927823632547869
+        },
+        "follow_up_eligible": true
+      },
+      {
+        "T": 8192,
+        "N": 6144,
+        "process_medians": [
+          {
+            "process": "resident-0",
+            "milliseconds": {
+              "oneMKL32": 5.06113996875,
+              "oneMKL16": 5.0107604453125,
+              "oneMKL32_convert16": 6.3188645234375
+            },
+            "empty_control_ms": 0.009568,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9900458150241708,
+              "oneMKL32_convert16": 0.7929843133567638
+            }
+          },
+          {
+            "process": "resident-1",
+            "milliseconds": {
+              "oneMKL32": 5.0817083203125,
+              "oneMKL16": 5.0065814453125,
+              "oneMKL32_convert16": 6.290945515625
+            },
+            "empty_control_ms": 0.004839,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9852162166215436,
+              "oneMKL32_convert16": 0.7958392634108039
+            }
+          },
+          {
+            "process": "resident-2",
+            "milliseconds": {
+              "oneMKL32": 5.0503685390625,
+              "oneMKL16": 5.02128275,
+              "oneMKL32_convert16": 6.295566421875
+            },
+            "empty_control_ms": 0.004869,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9942408581002488,
+              "oneMKL32_convert16": 0.7975903061800305
+            }
+          }
+        ],
+        "all_batches_eligible": true,
+        "paired_geomean_time_ratios": {
+          "oneMKL32": 0.9898274270538555,
+          "oneMKL32_convert16": 0.7954690282392953
+        },
+        "follow_up_eligible": true
+      },
+      {
+        "T": 8192,
+        "N": 10240,
+        "process_medians": [
+          {
+            "process": "resident-0",
+            "milliseconds": {
+              "oneMKL32": 8.3488531015625,
+              "oneMKL16": 8.197851453125,
+              "oneMKL32_convert16": 10.4327604453125
+            },
+            "empty_control_ms": 0.004939,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9819134860081273,
+              "oneMKL32_convert16": 0.7857797076907237
+            }
+          },
+          {
+            "process": "resident-1",
+            "milliseconds": {
+              "oneMKL32": 8.3592084765625,
+              "oneMKL16": 8.2083311328125,
+              "oneMKL32_convert16": 10.42673559375
+            },
+            "empty_control_ms": 0.004829,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9819507619443839,
+              "oneMKL32_convert16": 0.7872388303135589
+            }
+          },
+          {
+            "process": "resident-2",
+            "milliseconds": {
+              "oneMKL32": 8.3567671640625,
+              "oneMKL16": 8.2357309609375,
+              "oneMKL32_convert16": 10.4267345859375
+            },
+            "empty_control_ms": 0.004809,
+            "batches_eligible": true,
+            "ratios": {
+              "oneMKL32": 0.9855163844165116,
+              "oneMKL32_convert16": 0.7898667500412835
+            }
+          }
+        ],
+        "all_batches_eligible": true,
+        "paired_geomean_time_ratios": {
+          "oneMKL32": 0.9831254265779046,
+          "oneMKL32_convert16": 0.7876266147101306
+        },
+        "follow_up_eligible": true
+      }
+    ],
+    "host_probe_accepted": true,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "observed_provider_count": 36,
+    "ordinary_runtime_teardown_qualified": false,
     "controller_inputs": {
       "files": 40,
       "aggregate_sha256": "16dd6fee84cb7274feb0a468f02759f7e7fe95b3dbca477b22584723d38cd4e9"
