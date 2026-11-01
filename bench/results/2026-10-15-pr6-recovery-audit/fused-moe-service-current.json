@@ -85759,7 +85759,7 @@
     }
   },
   "adaptive_cache_model_entry_adaptive-fault-throughput_model_v1": {
-    "stage": "frontend-qualified",
+    "stage": "closed",
     "source_commit": "ce30c289dad5dbe48d8c7202647d233dfaffabf3",
     "native_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
     "binary": {
@@ -86064,11 +86064,11 @@
       }
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "Expected-failure diagnostic,not a speed or successful-generation run. Use the official bench.sh thinking workload and its ordinary warmup;the injected failure may occur before any long request. Require two actual refill record attempts:ordinal1 succeeds and is committed,ordinal2 returns a nonzero real compatibility-API status after copies were queued. Native and benchmark must exit nonzero normally;no later ADAPT_COMMIT/prefill,DONE or retry. Require the source-qualified return/checked-teardown path,absence of fail-stop/termination/runtime errors,quiet parameter validation,matched native environment/provider/identity,closed owners,no fresh fault and all final model hashes. This does not emulate valid-handle provider failure or directly measure DMA completion.",
     "retention": "Keep compact model/lifecycle outcomes and source/binary/runtime identities. Retire successful traces,journals,JIT and expected-error output after evidence verification. Keep selected nine-ELF fallback and fixed nine-ELF candidate only for this imminent qualification/comparison;review and retire the extra generation at closure.",
@@ -86086,6 +86086,59 @@
         "passed": true
       }
     ],
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "model_executed": true,
+      "expected_record_failure_qualified": true,
+      "native_exit_code": 1,
+      "benchmark_exit_code": 1,
+      "native_identity": {
+        "pid": 1239984,
+        "start_ticks": 191602062,
+        "sid": 1239943
+      },
+      "validation": {
+        "pid": 1239984,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "actual_record_attempts": 2,
+      "first_record_committed_before_failure": true,
+      "no_publication_or_prefill_after_failure": true,
+      "checked_teardown_evidence": "Source-qualified normal return and absent fail-stop diagnostic with closed native/session;no direct DMA timeline or valid-handle provider failure claim.",
+      "final_model_hashes": 15,
+      "proc_observation": {
+        "successful_samples": 238,
+        "permission_denials": 0,
+        "missing_samples": 1,
+        "exit_confirmed_after_unavailable": false,
+        "grace_seconds": 2.0
+      },
+      "observed_provider_count": 38,
+      "clean_speed_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
     "source_inputs": {
       "files": 265,
       "aggregate_sha256": "93b6ba706d4e72813e5fdef9bbd0e7f3734ced3b239fc7fd144f03cb02457b87"

@@ -578,7 +578,7 @@ logging via`STRATA_TRACE_ADAPT`. The diagnostic-only preexec setting
 `STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE=1`passes a null event on the second refill
 record through the real compatibility API,leaving the old completed event intact
 after new copies are queued. This plans an actual error-propagation/teardown
-check without intentionally faulting the GPU;it has not run. Neither diagnostic
+check without intentionally faulting the GPU. Neither diagnostic
 is enabled by default,requested bytes are not measured PCIe traffic,and no
 positive-swap performance or lifecycle qualification follows from these edits.
 The fixed nine-ELF generation is constructed by`tools/sycl/adaptive_cache_model.py`
@@ -606,13 +606,17 @@ three kernel families and no unmapped launch. Closed build/device raw output
 Original packed-GDN/component evidence
 is reused only after eight identical fixture hashes,556unchanged nonprogram
 native files,236matching normalized compile units and identical external link
-inputs are verified. No changed engine-program model run has completed yet.
-Next use the maintained model-entry controller's injected-failure mode before
-its positive-swap mode. The expected native1 is a diagnostic success only if
-the second actual record fails after an earlier record was committed,and no
-later publication/prefill or cleanup fail-stop occurs;it is not successful
-generation or speed evidence. Keep full256K,task/agent and repeated independent
-prefill/decode adoption checks pending.
+inputs are verified. The maintained model-entry controller's injected-failure
+check now passes during the ordinary short thinking warmup:ordinal1 succeeds,
+eight swaps requesting16998400H2D bytes commit,then ordinal2 returns the real
+compatibility API's invalid-value status1. Native and benchmark both exit1
+normally,without owner cleanup signals,later publication/prefill,cleanup
+fail-stop,validation warning or fresh fault;all15final model hashes match.
+This is expected-error/retirement evidence,not successful generation or PP/TG.
+DMA completion is not directly timed and valid-handle provider failure is not
+emulated. Next run positive swaps into the next long GEN prefill. Keep payload/
+task,other exit paths,full256K and repeated independent prefill/decode adoption
+checks pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
