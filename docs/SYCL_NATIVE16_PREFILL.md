@@ -614,9 +614,17 @@ normally,without owner cleanup signals,later publication/prefill,cleanup
 fail-stop,validation warning or fresh fault;all15final model hashes match.
 This is expected-error/retirement evidence,not successful generation or PP/TG.
 DMA completion is not directly timed and valid-handle provider failure is not
-emulated. Next run positive swaps into the next long GEN prefill. Keep payload/
-task,other exit paths,full256K and repeated independent prefill/decode adoption
-checks pending.
+emulated. The positive-swap two-request32K GEN check now also passes,with
+normal native0,quiet validation,closed owners,no fresh fault and all15model
+assets hash-matched. It observes176submitted swaps,168committed and8terminal
+unpublished swaps,with360320000requested H2D bytes and two deferred-final-window
+commits before the next long prefill. QUIT drains the last copies without
+publishing them. Both32769-read/zero-reuse requests emit24tokens with thinking enabled;
+actual GDN16/MTP16 routes and dense/head/cache-loan restoration pass. This does
+not verify byte-exact cache payload,wire traffic,clean speed or sustained decode.
+Next compare zero/positive swaps using the same fixed binary and matched long
+generation. Keep payload/task,other exit paths,full256K and repeated independent
+prefill/decode adoption checks pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.

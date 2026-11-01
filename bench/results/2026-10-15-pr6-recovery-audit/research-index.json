@@ -20858,11 +20858,13 @@
       "built": true,
       "runtime_qualified": false,
       "positive_swaps_adopted": false,
-      "next_check": "Positive-swap two-request32K GEN lifecycle check,then same-binary zero/positive-swap long-generation timing. Payload/task,other exit cases and physical262144 remain unqualified.",
+      "next_check": "Same-binary zero/positive-swap long-generation diagnostic. Positive two-request32K GEN handoff and injected record failure pass;payload/task,other exit cases,physical262144 and repeated independent phase performance remain unqualified.",
       "native_recipe_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
       "engine_sha256": "bdba183e582c6b6bdcaa923d37b5d6282e834166a7b40b10f84b35d08efc310e",
       "device_fixture_runtime_qualified": true,
-      "injected_record_failure_qualified": true
+      "injected_record_failure_qualified": true,
+      "positive_next_GEN_prefill_qualified": true,
+      "positive_next_GEN_result_key": "adaptive_cache_model_entry_adaptive-positive-throughput_model_v1"
     },
     "fixed_source_review": {
       "sha256": "d9900e0a21e52e834ff0c053fb40ef8fa51955059bd620c07cc79a79f4db51ec",
@@ -20876,5 +20878,40 @@
       "Run a bounded traced/validated injected-failure case with two actual refill record attempts. Require ordinal 2 API failure, nonzero process exit before later prefill or ADAPT_COMMIT, and successful checked queue drain before owner release.",
       "Then run a bounded traced/validated serve case with an observed positive swap and immediate next-request long GEN prefill; verify completion, RAM exchange commit, matching residency/payload, and table publication. Keep clean speed and broader model qualification separate."
     ]
+  },
+  "prompt_conditioned_decode_cache_placement_20261102": {
+    "classification": "decision_support",
+    "status": "active",
+    "schedulable_now": true,
+    "finite_question": "Can request-local whole-prompt or recent-window expert counts choose decode-cache membership at the existing refill boundary,while preserving source/slot/lease ownership? Compare per-layer/global quotas and specify a held-out prompt-to-next-decode discriminator;efficacy remains unknown without paired traces.",
+    "source_pin": {
+      "native_recipe_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+      "program_sha256": "040f7ae162375499cb60f1f5f56955172b5e038218eefd31df8a1dfdb7f107c9"
+    },
+    "scope_review": {
+      "sha256": "abb0ccdd5d2b38db52190f199c39e552b8923a87f05aeb891aada0b37596cd39",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "decision": "Source/design scope eligible;prior static-cost,domain-routing,loan and adaptive-boundary reports supplied and hash-checked. Missing paired traces block efficacy/implementation,not this report."
+    },
+    "report": ".cache/research/2026-11-01/prompt_conditioned_decode_cache_placement_20261102.md",
+    "report_budget": {
+      "target_bytes": 10240,
+      "hard_bytes": 14336
+    },
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "effective_model_verified": true,
+    "dispatch": {
+      "run": "run_4096847f7211",
+      "task": "task_8602efd70c21",
+      "id": "ctx_6371c57e38f7",
+      "terminal": "term_549dd4fa-06c2-4671-bc01-de3648419faf",
+      "turn_started": true
+    },
+    "ownership_closed": false,
+    "consumer": "Upcoming decode-cache placement decision after Main same-binary adaptive-cache timing;bounded read-only research runs independently.",
+    "next_review": "After worker_done and verified settlement,native Luna max reviews depth/redundancy and realistic retrieval use;Main reads only digest.",
+    "limits": "No implementation,local measurements,speed,wire-traffic or adoption claims. XeStrata excluded. No paired prompt-to-decode traces supplied."
   }
 }
