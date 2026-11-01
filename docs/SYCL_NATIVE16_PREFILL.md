@@ -555,8 +555,11 @@ map changes being rejected and the old parent verifier being unavailable.
 After recovering the original555-file parent source,its controls and1449actual
 compiler inputs from pushed history,737build/source/log files totaling156121011B
 are retired,including all eight old ELFs and their object/library products.
-Current nine-ELF admission passes after actual deletion. Parent metadata remains
-only until the next fixed-source builder recipe is pinned;review it at prepare.
+Current nine-ELF admission passes after actual deletion. After pinning the next
+fixed-source recipe,all13remaining parent metadata files (804000B) are also
+retired. All six original build/device/model receipts match their committed
+results and their source inputs are recovered;the two failed outcomes stay
+failed. The old parent root is absent,separate legacy provenance holds unchanged.
 The adaptive request-boundary source audit and independent Luna review identify
 unchecked refill event records: a failed new record can leave an older completed
 event,allowing RAM exchange before the new H2D source is safe to overwrite.
@@ -579,6 +582,13 @@ after new copies are queued. This plans an actual error-propagation/teardown
 check without intentionally faulting the GPU;it has not run. Neither diagnostic
 is enabled by default,requested bytes are not measured PCIe traffic,and no
 positive-swap performance or lifecycle qualification follows from these edits.
+The next nine-ELF generation is prepared by`tools/sycl/adaptive_cache_model.py`
+at`20f2a971b5fa3c0b2c65ab08712c32febb894f93`,using the same557-file projection
+with only`src/program/generate.cpp`changed by the reversible fix/diagnostic delta
+`5465f65d0`to`f8f632341`. Source/compiler/runtime/configuration are pinned before
+compilation. Keep the current521c175nine-ELF generation as the validated fallback
+until the replacement's small device/model/lifecycle checks complete;compilation
+and the parallel source review do not establish model or performance adoption.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
 its named later CPU-only comparison;no page-policy implementation or performance
 claim follows from that literature research.
