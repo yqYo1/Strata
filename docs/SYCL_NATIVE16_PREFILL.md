@@ -47,7 +47,7 @@ requests:three reversed-order candidate/reference pairs per65537/117489read
 length,first use separate from each process's subsequent-three median. Both
 arms use head retention at64K and retirement at117K,from prior per-length
 measurements;this is manual benchmark configuration,not an automatic threshold.
-The first nine processes close normally with all36actual-route checks,quiet
+The first ten processes close normally with all40actual-route checks,quiet
 final validation and no fresh fault. All residual rows remain on GPU;64Kuses
 384expert slots and ordinary accumulation,117Kuses128slots and checked split.
 The following PP/TTFT medians use each process's three subsequent requests;
@@ -59,17 +59,19 @@ first use is separate. All individual samples remain in the compact result.
 | 117489 | 1,candidate first | 853.7 / 843.4 | 922.8 / 901.3 | 0.97662486 | 127.516 / 130.577 |
 | 65537 | 2,reference first | 698.1 / 703.1 | 805.8 / 791.9 | 0.98269377 | 81.504 / 82.960 |
 | 117489 | 2,reference first | 847.4 / 849.8 | 920.3 / 900.3 | 0.97822562 | 127.879 / 130.705 |
+| 65537 | 3,candidate first | 721.8 / 719.2 | 802.5 / 802.5 | 0.99996327 | 81.917 / 81.845 |
 
 PPunits are tok/s. Throughput gains derived from the unrounded prompt times
 are3.5984%/2.3935%in the first pairs and1.7611%/2.2259%in the second pairs.
 Both second pairs' first-use
 PP is slower in the candidate. First-use client TTFT is94.096/93.413s at64K
 and138.850/138.459s at117K,candidate/reference. Both first-use and subsequent
-samples remain in the result. Nine of12processes are complete. The third64K
-candidate closes at721.8tok/s first use and802.5tok/s subsequent median,with
-client TTFT90.983/81.917s. Its matched reference and the third117K pair remain
-pending,so no
-reproducible gain,adoption or1000target is established yet.
+samples remain in the result. Ten of12processes are complete. All three64K
+prompt-time ratios are below1,with geometric mean0.98253882. The third pair
+differs by only3.0ms over81.7s and its candidate TTFT is0.072s slower;do not
+claim a resolved0.0037%gain from that pair. Its first-use TTFT is90.983/91.368s,
+candidate/reference. The third117K pair and final whole-cohort checks remain
+pending;there is no adoption or1000target qualification.
 Each request must pass its actual route check before the next request proceeds.
 Reference admission directly recovers its554native source and1447compiler
 inputs plus seven ELFs;the retired ancestor executable is not required. The
