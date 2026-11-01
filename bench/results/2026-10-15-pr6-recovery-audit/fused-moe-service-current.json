@@ -66531,5 +66531,154 @@
       "files": 1,
       "aggregate_sha256": "d5a8fb39c46ad3cdc10cbc8e5584fd56b9742169b1b57d8aa1ddb1091c1ccbbe"
     }
+  },
+  "official_gdn_fp32_projection_fixture_build_v1": {
+    "stage": "prepared",
+    "source_commit": "3a542655d663ad23d0c935448dd85a2946a40a19",
+    "native_implementation_commit": "e618f3466432dca7ee7435a399e7eb92ecfc06c3",
+    "original_image_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/record-v2.json",
+      "sha256": "3caf8734ef88dc2788de31d412f22d1308d4d7a789b4ace6a3ebb32d76086214"
+    },
+    "commands": [
+      [
+        "fixture-object",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/src/prefill/sycl/vllm_xe2",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-isystem",
+          "/opt/intel/oneapi/mkl/2026.1/include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-DMKL_ILP64",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/build/fixture-object.o",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gdn_projection_fp32_device.cpp",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/fixture-object.d"
+        ]
+      ],
+      [
+        "runtime-object",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/build/runtime-object.o",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/source/src/sycl/runtime.cpp",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/runtime-object.d"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-O3",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fsycl-allow-device-image-dependencies",
+          "-Wl,-t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/build/fixture-object.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/build/runtime-object.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/image.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/host.o",
+          "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+          "-lm",
+          "-ldl",
+          "-lpthread",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/gdn-fp32-check"
+        ]
+      ]
+    ],
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-gdn-fp32-projection-v1/device-fixture-v1/cache"
+    },
+    "budgets": {
+      "wall": 300,
+      "cpu": 900,
+      "rss_cap": 5368709120,
+      "text_cap": 16777216,
+      "file_cap": 268435456,
+      "total_cap": 1073741824
+    },
+    "plan": {
+      "scope": "Compile and link only;no execution of the new fixture.",
+      "runtime": "One unchanged555-source Runtime translation unit;one allocation registry,no second runtime library.",
+      "acceptance": "Production flags,unchanged AOT objects,pinned original dependencies,covered actual compiler/link inputs,all owned commands exit0.",
+      "device_gate": "No launch until corrected host D-copy proof passes and Main commits a separate bounded,traced guard/numerical/retirement plan."
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "GPU_executed": false,
+    "device_launch_permitted": false,
+    "controller_inputs": {
+      "files": 41,
+      "aggregate_sha256": "7335b42c540122c055701bde458863583bb0a22da90f463de016b25d1cb22583"
+    },
+    "native_sources": {
+      "files": 1,
+      "aggregate_sha256": "8fd3f5759e02e986d83a6e6ff331d15fac9e1dd67eca6ff8354757753d69d4ff"
+    }
   }
 }
