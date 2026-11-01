@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""First bounded GPU check of the private FP32 GDN producer; MIT.
+"""Bounded GPU correctness gates for the private FP32 GDN producer; MIT.
 
 Main owns this two-process progression. Host descriptor ownership is a
 prerequisite, not a substitute for the guarded device oracle. No speed,
@@ -7,6 +7,7 @@ production dispatch, sustained decode or physical-context qualification.
 """
 import copy
 import fcntl
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -28,6 +29,49 @@ require, digest, write = base.require, base.digest, base.write
 SHAPES = [(1, 6144, 6144), (129, 10240, 10256)]
 CASES = [dict(name='host-canary', args=[], trace=False),
          dict(name='fp32-smoke', args=['--smoke'], trace=True)]
+MODE = 'smoke'
+SMOKE_ROOT, SMOKE_KEY = ROOT, KEY
+
+
+def configure(mode):
+    global ROOT, KEY, SHAPES, CASES, MODE
+    require(mode in ('smoke', 'tails'), 'unknown device correctness mode')
+    MODE = mode
+    if mode == 'tails':
+        ROOT = image.ROOT / 'device-tails-v1'
+        KEY = 'official_gdn_fp32_projection_device_tails_v1'
+        SHAPES = [(t, n, n + (4 if t % 2 else 16))
+                  for t in (1, 127, 128, 129, 255, 256, 257, 8191, 8192)
+                  for n in (6144, 10240)]
+        CASES = [dict(name='host-canary', args=[], trace=False),
+                 dict(name='fp32-tails', args=['--validate'], trace=False)]
+
+
+def original_smoke(data):
+    """Explicit controller-only reuse of a closed, unchanged native fixture."""
+    path = SMOKE_ROOT / 'record.json'
+    prior = json.loads(path.read_text())
+    require(data[SMOKE_KEY] == base.compact(prior) and prior['passed'] and
+            prior['complete'] and prior['ownership_closed'] and not prior['active'] and
+            prior['fresh_faults'] == [] and len(prior['processes']) == 2 and
+            all(v['passed'] for v in prior['processes']) and
+            prior['processes'][1]['details']['kernel_census']['native_FP32_launches'] == 2,
+            'closed traced original smoke required before large shapes')
+    recovered = {n:hashlib.sha256(raw).hexdigest() for n, raw in
+                 base.basis.build.blobs(base.P, prior['source_commit'], prior['controller_inputs'])}
+    require(recovered == prior['controller_inputs'], 'original smoke controls not recoverable')
+    fixture = data[built.KEY]
+    require(prior['binary'] == fixture['binary'] and
+            prior['prerequisites'][built.KEY]['sha256'] == digest(built.ROOT / 'record.json') and
+            prior['prerequisites'][host.KEY]['sha256'] == digest(host.ROOT / 'record.json') and
+            prior['prerequisites'][image.KEY]['sha256'] == digest(image.RECORD),
+            'original smoke native image/fixture/host proof changed')
+    gate = data['official_prefill_strategies_device_v2']
+    require(all(prior[k] == gate[k] for k in ('environment', 'runtime_manifest', 'boot', 'driver')),
+            'original smoke runtime envelope changed')
+    return dict(path=str(path), sha256=digest(path),
+                original_controller_source=prior['source_commit'],
+                scope='Same image,fixture,host proof,providers and safety settings;new controller and additional device shapes only.')
 
 
 def save(row):
@@ -114,6 +158,9 @@ def current(row):
     snapshot, providers = prerequisites()
     require(all(row[k] == v for k, v in snapshot.items()) and row['cases'] == CASES,
             'frozen device-smoke inputs changed')
+    if MODE == 'tails':
+        require(row['original_smoke'] == original_smoke(base.committed(RESULT)),
+                'original traced smoke reuse changed')
     require(base.guards.driver_guard() == row['driver'] and
             Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'],
             'qualified boot/driver changed')
@@ -123,6 +170,7 @@ def current(row):
 def prepare():
     require(KEY not in base.committed(RESULT) and not ROOT.exists(), 'fresh first-device plan only')
     snapshot, _ = prerequisites()
+    reuse = original_smoke(base.committed(RESULT)) if MODE == 'tails' else None
     revision = base.basis.build.git(base.P, 'rev-parse', 'HEAD').decode().strip()
     ROOT.mkdir(mode=0o700)
     row = dict(snapshot, stage='prepared', source_commit=revision,
@@ -131,14 +179,17 @@ def prepare():
         ownership_closed=True, passed=False, complete=False, GPU_executed=False,
         GPU_execution_requested=False,
         model_executed=False, inference_adopted=False,
-        budgets=dict(wall=180, cpu=600, rss_cap=4 << 30, text_cap=8 << 20,
+        budgets=dict(wall=600 if MODE == 'tails' else 180, cpu=1800, rss_cap=6 << 30, text_cap=8 << 20,
                      file_cap=64 << 20, total_cap=64 << 20),
-        whole_wall_seconds=420, whole_bytes=64 << 20,
-        plan=dict(scope='Host canary followed once by two small traced GPU shapes;stop first failure,no retries.',
-            acceptance='Pinned image/fixture/host proof/providers;genuine pre-main parameter validation;actual environment/maps;two native kernel launches;full dyadic FP32 and oneMKL output checks including guards;normal checked ownership,no fresh fault.',
+        whole_wall_seconds=900 if MODE == 'tails' else 420, whole_bytes=64 << 20,
+        plan=dict(scope='Host canary then18guarded shapes through8192rows;warning-only device run reuses the original traced smoke;stop first failure,no retries.' if MODE == 'tails' else
+                        'Host canary followed once by two small traced GPU shapes;stop first failure,no retries.',
+            acceptance='Pinned image/fixture/host proof/providers;genuine pre-main parameter validation;actual environment/maps;all planned full dyadic FP32 and oneMKL outputs/guards;normal checked ownership,no fresh fault. Small smoke additionally requires two traced native launches.',
             numerical='Exact dyadic inputs/products/sums;zero ULP FP32 oracle and unchanged oneMKL control;outputs must include values not representable in FP16.',
-            shapes=SHAPES, limits='No full T1..8192 device coverage,non-dyadic/task/performance/decode/262144/RESTORE qualification.'),
-        retention='Keep compact two-case results,trace kernel census and source/runtime identity. Retire successful raw trace/logs after verification;keep useful failure evidence only.')
+            shapes=SHAPES, limits='No invalid-API/non-dyadic/task/performance/decode/262144/RESTORE qualification. Device tails test selected shapes,not every T1..8192.'),
+        retention='Keep compact individual shape results,trace census when present and source/runtime identity. Retire successful raw logs after verification;keep useful failure evidence only.')
+    if reuse is not None:
+        row['original_smoke'] = reuse
     save(row)
     print('Prepared first bounded FP32 device smoke;commit before execution.', flush=True)
 
@@ -170,10 +221,13 @@ def analyze(case, stdout, stderr, pid, folder):
             v['dyadic_ULP'] == 0 and v['guards'] == v['oneMKL'] == v['owner_retirement'] == 'passed'
             and v['not_FP16_representable_outputs'] > 0 for v in rows), 'device oracle/shape coverage differs')
     for marker in ('case-start T=', 'native-complete', 'reference-complete'):
-        require(stderr.count(marker) == 2, 'device progress evidence missing: ' + marker)
-    census = launch_census((folder / 'ur.trace').read_text())
-    require(census['native_FP32_launches'] == 2, 'actual new-kernel dispatch missing')
-    return dict(cases=rows, kernel_census=census, full_device_domain_qualified=False)
+        require(stderr.count(marker) == len(SHAPES), 'device progress evidence missing: ' + marker)
+    result = dict(cases=rows, full_device_domain_qualified=False)
+    if case['trace']:
+        census = launch_census((folder / 'ur.trace').read_text())
+        require(census['native_FP32_launches'] == len(SHAPES), 'actual new-kernel dispatch missing')
+        result['kernel_census'] = census
+    return result
 
 
 def run():
@@ -233,7 +287,8 @@ def run():
                         io.read()
                         io.pending.clear()
                 io.exit(1)
-            row['GPU_execution_requested'] = bool(case['trace'])
+            device = case['name'] != 'host-canary'
+            row['GPU_execution_requested'] = row['GPU_execution_requested'] or device
             entry, out, err = owner.run(active_case, [asset['path'], *case['args']],
                 env, base.P, interaction=monitor, **row['budgets'])
             stdout, stderr = out.read_text(errors='replace'), err.read_text(errors='replace')
@@ -244,7 +299,7 @@ def run():
             require(not (folder / 'validation.log').exists() or (folder / 'validation.log').stat().st_size == 0,
                     'final parameter validation is not quiet')
             details = analyze(case, stdout, stderr, entry['pid'], folder)
-            if case['trace']:
+            if device:
                 require(env_seen and {env['LD_PRELOAD'], env['STRATA_UR_PROBE_EXPECTED_LOADER'],
                     env['ZE_ENABLE_ALT_DRIVERS'], '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0'} <= mapped,
                     'actual device provider observation incomplete')
@@ -259,7 +314,7 @@ def run():
             persist()
             print('Passed ' + active_case, flush=True)
         current(frozen)
-        row.update(stage='smoke-passed', complete=True, host_probe_accepted=True)
+        row.update(stage=MODE + '-passed', complete=True, host_probe_accepted=True)
     except BaseException as error:
         row.update(stage='failed', complete=False, host_probe_accepted=False,
                    failed_case=active_case, error=repr(error))
@@ -271,8 +326,10 @@ def run():
         if not row.get('passed'):
             row['stage'] = 'failed'
         trace = ROOT / 'fp32-smoke/ur.trace'
-        if trace.exists():
+        if MODE == 'smoke' and trace.exists():
             row['GPU_executed'] = launch_census(trace.read_text(errors='replace'))['native_FP32_launches'] > 0
+        if row['GPU_execution_requested'] and not row['GPU_executed']:
+            row['GPU_executed'] = None  # Requested but no checked completion/trace;do not claim nonexecution.
         row.update(active=bool(owner and owner.active), observed_provider_count=len(observed),
                    ordinary_runtime_teardown_qualified=False)
         require(owner is None or owner.active is None, 'device smoke owner unresolved')
@@ -282,12 +339,14 @@ def run():
 
 
 if __name__ == '__main__':
+    require(len(sys.argv) in (2, 3), 'use prepare|run [smoke|tails]')
+    configure(sys.argv[2] if len(sys.argv) == 3 else 'smoke')
     with (base.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         base.guards.no_model_owners([])
-        if sys.argv[1:] == ['prepare']:
+        if sys.argv[1] == 'prepare':
             prepare()
-        elif sys.argv[1:] == ['run']:
+        elif sys.argv[1] == 'run':
             run()
         else:
-            raise RuntimeError('check_gdn_projection_device.py prepare|run')
+            raise RuntimeError('check_gdn_projection_device.py prepare|run [smoke|tails]')
