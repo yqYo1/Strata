@@ -727,16 +727,24 @@ assets rehashed. Its order is0/8,8/0,0/8swaps;both fresh frontend probes pass.
 Reference process0closes with native0,quiet validation,closed owners and no
 fresh fault. Code33212read/3170generated gives exact TG10.3118304019and
 acceptance.824388462943;prose33282read/7275generated gives6.76842658783and
-.389236421408. Both answers/counts/routes are eligible;one of six processes
-and two of twelve long requests are closed. Candidate process1has completed
+.389236421408. Both reference answers/counts/routes are eligible.
+Candidate process1has completed
 its code request:33212read/2550generated,210223.9ms decode gives exact
 TG12.1299243331,acceptance.833104709648,prompt60740.8ms and TTFT60.899s.
 Its5578-character answer matches the reference answer hash,while thinking
-length differs. The provisional first code ratio is1.176311;the prose request
-and process closure remain in flight. This does not qualify a paired or
-repeated gain. Keep all six processes and both observed MTP classes in the
-frozen plan;final cohort asset hashes and independent prefill checks remain
-pending.
+length differs. The first eligible code ratio is1.176311,but its prose request
+exhausts16384output tokens in25234thinking characters with zero answer body.
+It finishes with length,acceptance.687219730942,prompt52139.2ms and
+TTFT52.370s;16384/1424.8117s gives11.4990633499TG,which remains ineligible.
+The benchmark exits1on the unchanged answer-body gate. Its native child
+exits0,validation stays empty,owners close and no fresh fault occurs.
+The cohort is failed after processes0/1;do not run2..5,retry,drop the failed
+sample or relax its criteria. Neither reproducible gain nor a repeated weak
+MTP class is qualified. Final whole-cohort asset hashing was not reached.
+The counts alone do not distinguish ordinary generation variation from a
+numerical/cache error;no exact-output rule was used. Keep the code gain as a
+development candidate while task/payload and independent prefill checks remain
+pending. A new task,cap or payload comparison needs a new committed plan.
 One first-long-request pilot does not establish its
 after-code history,repeated weak classification or a performance improvement.
 After original265-file source recovery from pushed history,the closed V1and
@@ -749,9 +757,10 @@ After source recovery from pushed`7faf03320`,the closed v5pilot retires75files
 totaling12285817bytes. Only its`record.json`remains for the repeated comparison.
 The current cohort admission passes after deletion without GPU execution;
 its active data and both engine generations are untouched.
-Next complete the repeated comparison and independent prefill checks,then
-separate remaining GPU kernel service from runtime/event waits with a bounded
-UnitTrace capture. A completed Luna source review supports reusing the pinned
+With the clean cohort terminal and owned processes closed,next qualify the
+bounded observer fixture below. It can later separate remaining GPU kernel
+service from runtime/event waits without treating the failed task as speed
+evidence. A completed Luna source review supports reusing the pinned
 collector without a rebuild,but its current helpers have no request-scoped
 decode-window mode. A T4capture message is only a hint,not a request gate;
 Chrome kernel logging also wires call spans,and text timelines lack instance
@@ -790,6 +799,12 @@ sets180s/64MiB per-device-process and256MiB whole-observer output bounds;it
 does not rebuild the inference engine. This controller is not yet executed:
 request-scoped decode gates,guard bands,clock/loss checks and model observer
 overhead remain the next qualification steps after the fixture.
+The cap retrieval review confirms that larger caps need a new bounded
+qualification. Its96-buffer limit concerns resident-RAM complement exchanges;
+the current native-GGUF Arena bypasses that path. There is no existing payload
+or larger-batch correctness qualification,and requested transfer bytes are not
+measured PCIe traffic. The completed review's essentials and next consumer are
+recorded in the research index;no duplicate source survey is admitted.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)

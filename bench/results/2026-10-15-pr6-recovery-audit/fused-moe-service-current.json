@@ -88789,7 +88789,7 @@
       "STRATA_SNAPSHOT_VERIFY": "1",
       "STRATA_TRACE_ADAPT": "1"
     },
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "b24e5a465a11fbb9e20b54b78203acd96718693e",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -89159,6 +89159,130 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1824358,
+          "start_ticks": 193129629,
+          "sid": 1824301
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 60.899,
+            "total_s": 270.986,
+            "prompt_tokens": 33212,
+            "reused_tokens": 0,
+            "read_tokens": 33212,
+            "generated_tokens": 2550,
+            "prompt_tps": 546.8,
+            "prompt_tps_source": "engine",
+            "decode_tps": 12.1,
+            "decode_tps_source": "engine",
+            "prompt_ms": 60740.8,
+            "decode_ms": 210223.9,
+            "drafts_offered": 2187,
+            "drafts_accepted": 1822,
+            "finish_reason": "stop",
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "stream_complete": true,
+            "truncated": false,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 1931427183074640,
+              "first_output_monotonic_ns": 1931488081757266,
+              "request_end_monotonic_ns": 1931698169614821
+            },
+            "eligible": true,
+            "agreement_eligible": true,
+            "speed_eligible": true,
+            "speed_ineligible_reasons": [],
+            "ineligible_reasons": [],
+            "acceptance_rate": 0.8331047096479195,
+            "usage_generated_tokens": 2550,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 0,
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "770bd07d6491ff7b0a2527411ca674664de8a11878bd720073b0b0b5c26761f3",
+            "output_chars": 5578,
+            "reasoning_chars": 2320,
+            "reasoning_tokens": null,
+            "workload": "regular-code",
+            "controller_eligible": true
+          },
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 52.37,
+            "total_s": 1476.974,
+            "prompt_tokens": 33282,
+            "reused_tokens": 0,
+            "read_tokens": 33282,
+            "generated_tokens": 16384,
+            "prompt_tps": 638.3,
+            "prompt_tps_source": "engine",
+            "decode_tps": 11.5,
+            "decode_tps_source": "engine",
+            "prompt_ms": 52139.2,
+            "decode_ms": 1424811.7,
+            "drafts_offered": 16056,
+            "drafts_accepted": 11034,
+            "finish_reason": "length",
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "stream_complete": true,
+            "truncated": true,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 1931698528415955,
+              "first_output_monotonic_ns": 1931750898457381,
+              "request_end_monotonic_ns": 1933175502238021
+            },
+            "eligible": false,
+            "agreement_eligible": false,
+            "speed_eligible": false,
+            "speed_ineligible_reasons": [
+              "thinking did not leave at least 512 characters of answer body"
+            ],
+            "ineligible_reasons": [
+              "thinking did not leave at least 512 characters of answer body"
+            ],
+            "acceptance_rate": 0.6872197309417041,
+            "usage_generated_tokens": 16384,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 1,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "c628b38881528ea15af448ee28a39edf09aa83141b6889c182c79547e28a74b3",
+            "output_chars": 0,
+            "reasoning_chars": 25234,
+            "reasoning_tokens": null,
+            "workload": "varied-prose",
+            "controller_eligible": false
+          }
+        ],
+        "error": "RuntimeError('owned benchmark failed: exit/result/closure gate')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_passed": true,
@@ -89221,6 +89345,30 @@
         "passed": true
       }
     ],
+    "failure_diagnosis": {
+      "mechanism": "Candidate v5 prose exhausts16384 output tokens in thinking without the required answer body;not a device fault or process deadline.",
+      "observed_native_exit_code": 0,
+      "native_exit_receipt_sha256": "782f3110d11620b6cb2def09bb26e7b659385679b15328dc0807c0e36b88c41e",
+      "benchmark_exit_code": 1,
+      "validation_bytes": 0,
+      "fresh_faults": [],
+      "original_failed_outcome_preserved": true,
+      "failed_request": {
+        "read_tokens": 33282,
+        "generated_tokens": 16384,
+        "thinking_chars": 25234,
+        "answer_chars": 0,
+        "finish_reason": "length",
+        "mtp_acceptance": 0.6872197309417041,
+        "exact_tg_ineligible": 11.49906334991494
+      },
+      "repeated_gain_qualified": false,
+      "weak_MTP_class_qualified": false,
+      "inference_adopted": false,
+      "interpretation": "Different floating-point routes can change generation;these counts alone do not establish either harmless variation or a numerical/cache bug. No exact-text condition was applied.",
+      "next": "Keep cache8 code gain as a development candidate. Do not run cohort processes2..5 or change its gates. Qualify bounded collector fixture;any new task/larger-cap/payload test needs a committed new plan.",
+      "retention_consumer": "Compact failed/task and valid code samples for next plan;raw cohort output may retire after committed source/result recovery and dependency review. Final whole-cohort model hashing was not reached."
+    },
     "source_inputs": {
       "files": 265,
       "aggregate_sha256": "d3729c53a313288b6666d8ce430f1f3c75993341d489386d6a8bae5e3a662f7f"
