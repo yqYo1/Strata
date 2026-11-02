@@ -739,7 +739,26 @@ collector without a rebuild,but its current helpers have no request-scoped
 decode-window mode. A T4capture message is only a hint,not a request gate;
 Chrome kernel logging also wires call spans,and text timelines lack instance
 IDs. Qualify window boundaries,graph replay,flush and output limits with a
-bounded same-build fixture before a model capture. Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
+bounded fixture before a model capture. The new Main-authored
+`tests/sycl/profile_window.cpp`uses two named integer graph kernels,three
+drained replays and guard/readback checks,with capture paused. A fourth replay
+is queued behind a bounded host task;the owner pauses before releasing it.
+The2s timer prevents a lost owner from leaving device work waiting forever;
+timer fallback or an already-complete late event cannot qualify that boundary.
+Build this observer fixture after the GPU comparison,with the pinned2026.2
+compiler,`-O2 -std=c++17 -fsycl -fsycl-device-code-split=per_kernel -pthread -MD`,
+an explicit dependency file and external output. Pin source,recipe,compiler,
+actual dependency inputs,ELF and runtime before its traced/validated check;
+reuse the fixed inference ELF and collector rather than another engine build.
+`tools/sycl/decode_window_trace.py`joins included graph work by instance ID,
+clips service to declared inner bounds and reports interval unions separately
+from overlapping sums. Requested crossing-copy bytes remain unassigned to the
+window. Its refusal/accounting tests and the native fixture are not yet run;
+the active clean comparison holds the global execution lock. At a closed
+process boundary,run
+`python3 -B -m unittest discover -s tests/core -p test_decode_window_trace.py`
+under that lock before using the reducer.
+Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
 36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
 costs. Keep payload/task,other exit paths,full256K and broader adoption pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for
