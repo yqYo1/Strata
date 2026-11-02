@@ -728,8 +728,15 @@ Reference process0closes with native0,quiet validation,closed owners and no
 fresh fault. Code33212read/3170generated gives exact TG10.3118304019and
 acceptance.824388462943;prose33282read/7275generated gives6.76842658783and
 .389236421408. Both answers/counts/routes are eligible;one of six processes
-and two of twelve long requests are closed. Candidate process1is next;paired
-gain,repeated MTP classes and final cohort asset hashes remain pending.
+and two of twelve long requests are closed. Candidate process1has completed
+its code request:33212read/2550generated,210223.9ms decode gives exact
+TG12.1299243331,acceptance.833104709648,prompt60740.8ms and TTFT60.899s.
+Its5578-character answer matches the reference answer hash,while thinking
+length differs. The provisional first code ratio is1.176311;the prose request
+and process closure remain in flight. This does not qualify a paired or
+repeated gain. Keep all six processes and both observed MTP classes in the
+frozen plan;final cohort asset hashes and independent prefill checks remain
+pending.
 One first-long-request pilot does not establish its
 after-code history,repeated weak classification or a performance improvement.
 After original265-file source recovery from pushed history,the closed V1and
@@ -768,7 +775,21 @@ refusal/accounting tests under the global execution lock with
 `python3 -B -m unittest discover -s tests/core -p test_decode_window_trace.py`
 (90s deadline,exit0). The native fixture remains unbuilt/unrun;no capture,
 clock/graph coverage,observer-cost or model attribution qualification follows
-from these CPU tests.
+from these CPU tests. The new Main-authored`tools/sycl/profile_window.py`
+controller now records separate`prepare`,`build`and`check`boundaries. Do not
+execute preparation until the frozen clean cohort is terminal and owned work
+is closed. Preparation recovers committed source and inventories actual compiler
+headers against the pinned SDK/native inputs;build must match that dependency
+set before recording the fixture ELF. Commit each result before the next mode.
+The check runs one direct and one traced process with immutable startup settings,
+the existing collector/private validation preload,and the seven fixture gates.
+It requires six uniquely joined clean replay kernels,numerical/guard checks,
+quiet validation,unchanged driver/boot and closed owners. Pause-crossing work
+cannot qualify lossless boundary coverage or model attribution. The source
+sets180s/64MiB per-device-process and256MiB whole-observer output bounds;it
+does not rebuild the inference engine. This controller is not yet executed:
+request-scoped decode gates,guard bands,clock/loss checks and model observer
+overhead remain the next qualification steps after the fixture.
 Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
 36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
 costs. Keep payload/task,other exit paths,full256K and broader adoption pending.
