@@ -21455,7 +21455,7 @@
   "qwen38_production_moe_decode_path_20261103": {
     "id": "qwen38_production_moe_decode_path_20261103",
     "classification": "decision_support",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "question": "At pinned official vLLM/SGLang commits, verify exact Qwen3.8-Flash-Next support, then trace its decode MoE path: router/backend, expert format and CPU/GPU placement, MTP draft/verify and accepted suffix, and source-defined precision boundaries. Compare with pinned Strata source. If exact-model or CPU-offload/MTP support is absent, report the boundary and stop. No code or local performance/bottleneck claim.",
     "reference_targets": [
       "Official vLLM and SGLang model/MoE/MTP sources at pinned revisions",
@@ -21478,15 +21478,28 @@
     "report_budget_bytes": 16384,
     "next_consumer": "After the output-room pilot, before any further CPU-offload/cache/MTP decode plan; compare against a verified production reference. Main reads the review digest first.",
     "counterevidence": "One code request and failed prose do not qualify speed/adoption. Official runtimes may lack exact support; that is a valid result. Keep model-specific to avoid repeating projection, MTP-reuse or Strata-source audits.",
-    "status": "ready",
+    "status": "running",
     "model": "gpt-6-luna",
     "effort": "high",
-    "ownership_closed": true,
+    "ownership_closed": false,
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/qwen38_production_moe_decode_path_20261103.md",
     "whole_hold_budget_bytes": 65536,
     "consumer": "After the output-room pilot, before any further CPU-offload/cache/MTP decode plan; compare against a verified production reference. Main reads the review digest first.",
     "main_read_report_body": false,
-    "review_point": "After accepted report and native Luna-max review;retire transaction output,keep only substantive reusable findings."
+    "review_point": "After accepted report and native Luna-max review;retire transaction output,keep only substantive reusable findings.",
+    "run": "run_f883bed7d89a",
+    "task": "task_c3bc2d09d7c8",
+    "dispatch": "ctx_b5755eaa820c",
+    "terminal": "term_422cc72a-9e00-4419-a84c-52881a6f0025",
+    "incarnation": "c4c493ab-dea3-4eaa-9a6e-11d61dcef232",
+    "start_request": "5862d472-f2fa-4119-97e6-afbbae3a394d",
+    "model_evidence": "Explicit Codex gpt-6-luna/high argv;Orca tui-idle verified and screen GPT-6-Luna high before dispatch;matching incarnation accepted input and observed turn_started. External-terminal launch.effective fields are null,not model proof.",
+    "launch_gap": "worker-start cannot express workspace-write/named report writable-root and explicit search/network permission;operator-created terminal is owned by Main and will close after accepted settlement/release.",
+    "spec": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/qwen38_production_moe_decode_path_20261103.spec.txt",
+      "sha256": "10458e2b3a24350c01097534697afb3b143cdd50675ae5693ee04059541ef042"
+    },
+    "source_rule_commit": "0f54fcc3c"
   },
   "post_cache_outcome_scope_review_20261103": {
     "classification": "library_scope_review",
