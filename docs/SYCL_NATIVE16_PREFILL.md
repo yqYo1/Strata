@@ -1076,8 +1076,8 @@ This is single-core GU evidence,not a pool/model speed or resource ceiling.
 The measured engine's pool differs from the worktree in three files;do not
 attribute current-pool timings to that engine. A later model comparison needs
 an answer-eligible route. Preserve the current validated model generation.
-The current safe engine still needs its117K repeated prefill recheck and a fresh
-multi-length time/TTFT fit;the older1046.0957tok/s result and older length fit do
+The current safe engine now has the closed117K repeated prefill check below;
+a fresh multi-length time/TTFT fit remains pending. The older length fit does
 not automatically qualify this engine. Full262144/RESTORE remain pending.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
@@ -1117,15 +1117,18 @@ three fresh clean processes with four same-length bench.sh requests each.
 First use stays separate;the median of the next three requests is the process
 unit,and all three process medians must reach1000tok/s for that117K milestone.
 This is a same-engine recheck,not a paired gain over the retired historical
-engine. The first two clean processes now close passed,native0,quiet validation,
-closed owners and no fresh fault. First-use PP/TTFT is965.9/121.812s and
-968.4/121.489s. Their subsequent-process medians are1044.8454and1047.0672tok/s,
-with112.615and112.385s TTFT. Both process units use the same four request-body
-hashes;individual samples remain in the compact result. The third independent
-process and final cohort-wide full-model hash check remain pending.
-The length fit and wider adoption gates remain pending. After this frozen
-cohort closes,existing indexed grouped-MoE,liveness and native16 references
-should guide a current-source job/expert/row census and disjoint submit/wait/
+engine. All three clean processes now close passed,native0,quiet validation,
+closed owners and no fresh fault;the final15whole-model hashes match.
+First-use PP/TTFT is965.9/121.812s,968.4/121.489s and969.3/121.375s.
+Subsequent-process medians are1044.8454,1047.0672and1047.3360tok/s,with
+112.615,112.385and112.349s TTFT. The aggregate is the median of process
+medians:1047.0672tok/s(112.2077s prefill),112.385s TTFT;the individual warmed
+peak is1051.3877tok/s. All three pass the frozen1000tok/s gate at117K.
+The same four request-body hashes occur in each process;all12samples remain
+in the compact result,with the first three separate from the nine warmed
+requests. The length fit and wider adoption gates remain pending. Existing
+indexed grouped-MoE,liveness and native16 references should now guide a
+current-source job/expert/row census and disjoint submit/wait/
 device attribution before selecting a materialization or grouping change.
 The FP32 primary plus tail still stores all117488rows(1203077120bytes);splitting
 the allocation has not reduced that materialization. Precision acceptance may
