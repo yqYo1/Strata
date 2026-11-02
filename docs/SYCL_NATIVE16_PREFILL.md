@@ -934,8 +934,18 @@ actual qualified component and confirms557native files with exactly those
 three changes. It creates no engine build and executes no GPU work. Preparation
 at`e811359d8`now freezes the557-source composition,nine targets,1451expected
 compiler inputs,qualified runtime/compiler environment and bounded CPU recipe
-under`cache-map-model-v1`. Compilation and fresh device/model qualification
-remain pending;the adaptive fallback is preserved.
+under`cache-map-model-v1`. Configure,compile and actual-dependency collection now
+exit0;all1451inputs match,and all nine ELFs are recorded. The eight non-program
+ELFs remain byte-identical to the adaptive fallback. This is a built-only
+generation with no GPU/model or speed qualification;the fallback is preserved.
+The completed reader review finds no reachable successful-route map race in
+the scoped one-B570 serve/standalone paths,but requires catching adaptive-worker
+exceptions,joining on main unwind and checking drain/free failures even with
+scratch tracking off before positive-swap execution. The existing second-record
+API-error check remains valid for its narrow serve branch. The new
+`checked_worker.hpp`and host fixture are committed at`b1c47bfdc`,outside this
+generation's frozen native inputs;they are not yet wired or tested. Integrate
+that correction and qualify its error paths before a positive-swap model test.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
