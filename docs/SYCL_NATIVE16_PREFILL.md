@@ -1111,7 +1111,12 @@ are verified. First-use PP/TTFT is971.1tok/s/121.181s;the subsequent request is
 speed,sustained TG,numerical/task or physical262144/RESTORE qualification.
 V1/V2stay failed. After publication and source/recipe recovery,the successful
 V3raw output and consumed V2capture are retired:74files,15574157bytes.
-Keep V3record/config/plan/runtime inputs only while the next proof reads them.
+Keep V3record/config/plan/runtime inputs for the imminent current-engine resource
+pair;review again at that pair closure. The closed clean cohort's214raw/host/JIT
+files and one completed scope-review transaction are also retired after exact
+275controller/558native-input recovery:215files,36750866bytes. Keep only the clean
+root record/runtime inventory for that same resource consumer;no engine generation
+is removed. The compact scope review and retrieval IDs replace its transaction body.
 Maintained`cache_map_prefill_speed.py`source`3191953d9`adds
 three fresh clean processes with four same-length bench.sh requests each.
 First use stays separate;the median of the next three requests is the process
