@@ -91526,7 +91526,7 @@
     "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065"
   },
   "cache_map_model_entry_zero_v1": {
-    "stage": "frontend-qualified",
+    "stage": "closed",
     "source_commit": "ad9900a57c186bb4711d14044b35a872f7280250",
     "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "binary": {
@@ -91828,11 +91828,11 @@
       }
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "Two current-source Python frontend probes,then two fresh bench.sh exact-input thinking-on requests at the pinned read_tokens with1..24outputs,zero reuse,normal stream/native exit,quiet final validation, immutable sources/assets/environment/providers and no new fault. Observe requested strategy/actual route and dense/head/MTP owner behavior. The existing short thinking warmup must finish before the first long-request gate;throughput requires actual GDN3 dispatch and every8-fully-submitted-MoE-job checkpoint;TTFT retains dense/head/MTP owners. Both preserve1256decode slots/spec4/chunk8192. No clean-speed,quality,sustained TG,physical262144 or full RESTORE adoption from this diagnostic. Fixed program only;all eight unchanged fixtures,nonprogram native source and normalized compiler/link recipe match the qualified generation. Fresh pending-copy/worker/cache-close cases pass0/0/1;no new model qualification is inherited. Single GPU,scratch lease enabled,immutable safety settings. Short outputs are not sustained-decode evidence. MTP FP16 changes only Prefill::draft_kv projection selection. Require successful batched mode2 callbacks and nominal chunk-cell conservation. The markers do not expose internal needed rows or batch shapes. Prompt/conversation reuse is disabled; short outputs do not qualify sustained decode or adoption. New composed worker/map engine only;explicit immutable ADAPT_SYNC1. Two fresh32K requests exercise prefill/decode/next-GEN lifecycle. This is not a long-generation task or speed result;full payload arithmetic and physical-context gates remain separate.",
     "retention": "Keep compact route/token/lifecycle/latency and fault outcomes. Retire successful API/journal/JIT output at closure. Preserve the adaptive fallback and this candidate for imminent clean speed comparison;no new engine generation is created.",
@@ -91857,6 +91857,138 @@
         "passed": true
       }
     ],
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "model_executed": true,
+      "native_identity": {
+        "pid": 3675227,
+        "start_ticks": 198607937,
+        "sid": 3675180
+      },
+      "warmup_route": {
+        "requested": "throughput",
+        "route": "chunked",
+        "tokens": "73",
+        "chunk": "256"
+      },
+      "native_exit_code": 0,
+      "routes": [
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18228,
+          "checkpoint_pairs": 2257,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 427,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false,
+          "strategy": "throughput",
+          "actual_route": "layer-major",
+          "GDN3_calls": 144,
+          "GDN_FP16_storage_calls": 144,
+          "GDN_FP16_storage_tokens": 1179648,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 4,
+            "nominal_cells": 32768,
+            "internal_needed_rows_and_shapes_observed": false
+          }
+        },
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18275,
+          "checkpoint_pairs": 2261,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 429,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false,
+          "strategy": "throughput",
+          "actual_route": "layer-major",
+          "GDN3_calls": 144,
+          "GDN_FP16_storage_calls": 144,
+          "GDN_FP16_storage_tokens": 1179648,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 4,
+            "nominal_cells": 32768,
+            "internal_needed_rows_and_shapes_observed": false
+          }
+        }
+      ],
+      "validation": {
+        "pid": 3675227,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "samples": [
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 49181.6,
+          "prompt_tps": 666.3,
+          "ttft_s": 49.317,
+          "total_s": 51.082,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+          "timing_frontend_state": "post-count-preflight"
+        },
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 39714.3,
+          "prompt_tps": 825.1,
+          "ttft_s": 39.841,
+          "total_s": 41.545,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+          "timing_frontend_state": "post-count-preflight"
+        }
+      ],
+      "clean_speed_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
     "source_inputs": {
       "files": 272,
       "aggregate_sha256": "6d56328e380880454c1470eadcb36ab6867d7900e1c91e51761a3ae76d577d21"
