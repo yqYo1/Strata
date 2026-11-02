@@ -1117,8 +1117,12 @@ three fresh clean processes with four same-length bench.sh requests each.
 First use stays separate;the median of the next three requests is the process
 unit,and all three process medians must reach1000tok/s for that117K milestone.
 This is a same-engine recheck,not a paired gain over the retired historical
-engine. Keep every individual sample and actual route;the length fit and wider
-adoption gates remain pending.
+engine. The first clean process now closes passed,native0,quiet validation,
+closed owners and no fresh fault. Its first use is965.9tok/s/121.812s TTFT;
+subsequent requests are1042.8,1044.8and1047.6tok/s,with process median
+1044.8454tok/s and112.615s TTFT. The other two independent processes and final
+cohort-wide full-model hash check remain pending. Keep every individual sample
+and actual route;the length fit and wider adoption gates remain pending.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
