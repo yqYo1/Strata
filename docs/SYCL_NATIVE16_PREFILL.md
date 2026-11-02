@@ -902,6 +902,14 @@ select the retained fallback from its applicable evidence,recover the old
 generation's exact source/recipe and reconcile live consumers;only then retire
 it and build the changed engine. Fixed-token/task,independent prefill and
 repeated clean strong/weak-MTP speed checks remain pending.
+After original source/recipe recovery from pushed`9974789b0`,the component's
+55closed API/build/object/JIT files totaling1417121bytes are retired under the
+execution lock with a path/hash/reason manifest. Keep only seven files needed
+by changed-engine mapping qualification:the fixture,record,two input maps and
+three projected sources. Both engine generations and legacy provenance holds
+remain unchanged. The two prior observer timelines remain within their128KiB
+combined budget for the first request-window qualification after this engine
+change;review that concrete consumer again at changed-engine qualification.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
