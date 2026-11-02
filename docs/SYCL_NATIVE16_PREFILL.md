@@ -723,8 +723,14 @@ reasoning characters,finishing with stop. Prompt62109.6ms,client TTFT62.352s
 and decode1092108.1ms give exact TG6.66142847947. Draft acceptance3920/10071
 =.389236421408passes the unchanged weak band. The six-process v5comparison is
 now prepared at source`b24e5a465`,with265unchanged pilot inputs and all15model
-assets rehashed. Its order is0/8,8/0,0/8swaps;both fresh frontend probes pass,
-with all12long requests pending. One first-long-request pilot does not establish its
+assets rehashed. Its order is0/8,8/0,0/8swaps;both fresh frontend probes pass.
+Reference process0closes with native0,quiet validation,closed owners and no
+fresh fault. Code33212read/3170generated gives exact TG10.3118304019and
+acceptance.824388462943;prose33282read/7275generated gives6.76842658783and
+.389236421408. Both answers/counts/routes are eligible;one of six processes
+and two of twelve long requests are closed. Candidate process1is next;paired
+gain,repeated MTP classes and final cohort asset hashes remain pending.
+One first-long-request pilot does not establish its
 after-code history,repeated weak classification or a performance improvement.
 After original265-file source recovery from pushed history,the closed V1and
 prior cache diagnostic retire95more files totaling12419188bytes,including raw/
@@ -753,11 +759,12 @@ reuse the fixed inference ELF and collector rather than another engine build.
 `tools/sycl/decode_window_trace.py`joins included graph work by instance ID,
 clips service to declared inner bounds and reports interval unions separately
 from overlapping sums. Requested crossing-copy bytes remain unassigned to the
-window. Its refusal/accounting tests and the native fixture are not yet run;
-the active clean comparison holds the global execution lock. At a closed
-process boundary,run
+window. At the closed process0boundary,the source`d87665fda`reducer passes all14
+refusal/accounting tests under the global execution lock with
 `python3 -B -m unittest discover -s tests/core -p test_decode_window_trace.py`
-under that lock before using the reducer.
+(90s deadline,exit0). The native fixture remains unbuilt/unrun;no capture,
+clock/graph coverage,observer-cost or model attribution qualification follows
+from these CPU tests.
 Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
 36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
 costs. Keep payload/task,other exit paths,full256K and broader adoption pending.

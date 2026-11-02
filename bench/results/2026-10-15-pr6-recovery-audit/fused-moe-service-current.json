@@ -88789,7 +88789,7 @@
       "STRATA_SNAPSHOT_VERIFY": "1",
       "STRATA_TRACE_ADAPT": "1"
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "b24e5a465a11fbb9e20b54b78203acd96718693e",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -88994,7 +88994,173 @@
         "environment_sha256": "bb73b1b71d90518a4f875c524bf861ea4e91876d827dda9fe4dcafbc6571410f"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1731835,
+          "start_ticks": 192857651,
+          "sid": 1731779
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33212,
+            "reused_tokens": 0,
+            "generated_tokens": 3170,
+            "output_chars": 5578,
+            "reasoning_chars": 3706,
+            "prompt_ms": 64753.5,
+            "prompt_tps": 512.9,
+            "decode_ms": 307413.9,
+            "decode_tps": 10.3,
+            "ttft_s": 64.939,
+            "total_s": 372.19,
+            "drafts_offered": 2739,
+            "drafts_accepted": 2258,
+            "acceptance_rate": 0.8243884629426798,
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "af34a2d690c431c65220f918c7afc407b6b27236f97c5a63e98f653cf2a841b0",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 7275,
+            "output_chars": 4632,
+            "reasoning_chars": 14409,
+            "prompt_ms": 52265.4,
+            "prompt_tps": 636.8,
+            "decode_ms": 1074843.6,
+            "decode_tps": 6.8,
+            "ttft_s": 52.438,
+            "total_s": 1127.132,
+            "drafts_offered": 10071,
+            "drafts_accepted": 3920,
+            "acceptance_rate": 0.3892364214080032,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "0bbd043abf9212ab45b4bf8794a261534529dd4c28ecff1cdcfc8c836434ad7c",
+            "reasoning_sha256": "d3ec503b2e7266e34b70c5123c07f543b06ff48306decd6e7659660b16581f21",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1731835,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33212,
+            "rows": 33211,
+            "GPU_residual_rows": 33211,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20285,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33211,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false
+          },
+          {
+            "read_tokens": 33282,
+            "rows": 33281,
+            "GPU_residual_rows": 33281,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19987,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33281,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false
+          }
+        ],
+        "cache": [
+          {
+            "hits": 190250,
+            "lookups": 1753440,
+            "hit_percent": 10.9
+          },
+          {
+            "hits": 433265,
+            "lookups": 6445920,
+            "hit_percent": 6.7
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "b8ad600838e690aeefe980ee97aac49111259004b36b65bebd0796fe463f7b1e",
+            "449cd1fc38718491031b395effbc35c6cad07cb79623623a7e4f5460f38e12db",
+            "820e49690239ef1cbb93b7789ecd6de5aa0a998843527deb595eacebd5b0f22c",
+            "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22"
+          ],
+          "valid": true,
+          "journal_sha256": "5e41764ffcb7bcc506de08ee1213d9780a1cded253869fca218ef5115768a00c"
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68800
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
