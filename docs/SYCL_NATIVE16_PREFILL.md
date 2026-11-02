@@ -738,6 +738,10 @@ JIT output,unused generated plans/runtime copies and the completed observer
 report/transactions. Only their two`record.json`files remain for current
 admission. The path/hash/reason manifest and original failed outcome are
 retained;both engine generations and separate legacy holds are unchanged.
+After source recovery from pushed`7faf03320`,the closed v5pilot retires75files
+totaling12285817bytes. Only its`record.json`remains for the repeated comparison.
+The current cohort admission passes after deletion without GPU execution;
+its active data and both engine generations are untouched.
 Next complete the repeated comparison and independent prefill checks,then
 separate remaining GPU kernel service from runtime/event waits with a bounded
 UnitTrace capture. A completed Luna source review supports reusing the pinned
