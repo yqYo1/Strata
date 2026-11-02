@@ -1079,22 +1079,23 @@ an answer-eligible route. Preserve the current validated model generation.
 The current safe engine still needs its117K repeated prefill recheck and a fresh
 multi-length time/TTFT fit;the older1046.0957tok/s result and older length fit do
 not automatically qualify this engine. Full262144/RESTORE remain pending.
-The prospective`cache_map_prefill.py`first checks117489read/117488engine rows
-with two same-length requests in one process,thinking on,24output cap and zero
-reuse. It reuses the corrected engine and the closed zero-swap32K qualification,
-with throughput,GDN16/MTP16,1256slots,spec4,8192chunks and immutable ADAPT_SYNC1.
-Private parser/policy contexts preserve the shared32K entry. Commit the adapter,
-prepared plan and frontend qualification before native launch. Require actual
-extent/route/owner checks,quiet validation,all15final model hashes and no new
-fault. Keep first and subsequent latency separate;this logged extent check does
-not replace independent-process clean speed samples,the current length fit,
-sustained TG or full-context/RESTORE qualification.
-V1preparation at`11f912553`stops before creating a root or launching an owner:
-input discovery also pins the existing generation adapter added after32K entry.
-All272original inputs remain unchanged. Preserve this failed admission;V2uses
-a fresh root and additionally recovers that unchanged adapter from`70805eb7bc`.
-This controller-only delta does not inherit the failed generation pilot's status
-or change native,benchmark,workload or runtime inputs.
+The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
+117488engine-row requests,thinking on,24outputs each and zero reuse. Native
+and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
+PP/TTFT is967.5tok/s/121.625s;the subsequent request is1043.2tok/s/112.794s.
+These logged samples reuse the corrected engine,throughput,GDN16/MTP16,
+1256slots,spec4,8192chunks and immutable ADAPT_SYNC1;they are not repeated clean
+speed or sustained-TG evidence. The private32K progress checker incorrectly
+requires an inactive accumulator split. This117K route has the existing active
+split:65536primary rows,531988480tail bytes,128prefill slots and two checked
+guard/final-drain completion markers. The final whole-model rehash is not reached.
+Keep V2failed. Next combine the maintained long-route bank/split geometry checks
+with full checkpoint/owner validation in a fresh private adapter,then commit and
+replay the two captured windows before a fresh model scope. Its1.67MBstderr is
+held within2MiB only for that immediate parser correction;retire it after fresh
+extent qualification. All274original controls are recovered from Git. The earlier
+V1pre-owner admission failure remains in`cache_map_prefill_read117489_admission_v1`.
+Neither failed scope qualifies the current length fit,physical262144 or RESTORE.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
@@ -5061,15 +5062,15 @@ stopped. No reset/unbind/recovery action is part of a benchmark.
 ## Upstream and history
 
 Niko1221/Strata is the only upstream. The last actual check was
-2026-10-31T21:13:43.684269Z at`c62d5e3a15b40ea51c96aae9e8d36928965f53ab`
-(`v0.2.9`).
+2026-11-02T21:17:40Z at`c62d5e3a15b40ea51c96aae9e8d36928965f53ab`
+(`v0.2.9`),unchanged after actual origin fetch and remote HEAD/main confirmation.
 The committed upstream-status.json tracks the partial functional reviews and
 ports,including CPU-name/missing-x86-flags reporting and stream-parser scan
 slices from this interval. Required tracking/recovery/alias/API/CLI functions,
 earlier functional obligations and hardware-tuned unmodified-upstream
-measurements remain incomplete. Check again around2026-11-02T21:13Z using
-the project-only sync skill. These dates reconcile the existing committed
-status;this document edit is not another remote check or a completed import.
+measurements remain incomplete. Check again around2026-11-04T21:17Z using
+the project-only sync skill. The remote check imports no source and changes
+neither execution path nor its qualification.
 
 Work is on`feature/sycl`. PR180 is mergeable but blocked by squash-only
 ruleset24638744; original measured commit identities require a merge commit.

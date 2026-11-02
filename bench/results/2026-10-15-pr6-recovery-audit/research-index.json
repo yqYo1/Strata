@@ -21574,7 +21574,7 @@
   "official_qwen38_native16_prefill_contracts_20261103": {
     "id": "official_qwen38_native16_prefill_contracts_20261103",
     "classification": "knowledge_collection",
-    "status": "running",
+    "status": "reviewed_conditional_reference",
     "question": "At pinned official SGLang/vLLM revisions, trace the exact Qwen3.8-Flash-Next long-prefill GDN/linear-attention and routed-MoE paths. Map producer/consumer storage dtypes, local accumulation/reduction precision, router and recurrent-state precision, normalization constants, cast/rounding points, and layer/chunk handoff. Compare the source-defined contracts and identify production patterns that retain FP16/BF16 tensor storage with required local FP32 math. State missing backend paths; do not infer XPU support from CUDA/ROCm code. No port, implementation proposal, or local performance claim.",
     "novelty": "Indexed work covers decode/MTP, another Qwen model, recurrence stability, one convolution, local integration, cast lowering, or logical bytes. None compares exact-model production prefill storage/accumulation/rounding across GDN and MoE in both frameworks.",
     "prior_ids": [
@@ -21597,7 +21597,7 @@
     "terminal": "term_a33f6d0d-676f-4a73-981e-5b4457a5b41f",
     "incarnation": "8be164a4-109b-4d8f-90da-01e90fcd70e6",
     "start_request": "4bffa71c-5592-49a7-b5c5-77075c9f25dd",
-    "ownership_closed": false,
+    "ownership_closed": true,
     "schedulable_now": false,
     "main_read_report_body": false,
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/official_qwen38_native16_prefill_contracts_20261103.md",
@@ -21606,14 +21606,58 @@
       "maximum": 18432
     },
     "whole_hold_budget_bytes": 65536,
-    "retrieval_consumer": "Native Luna-max reviewer evaluates depth/novelty and indexes retrieval metadata. Main retrieves only a relevant section for a concrete16bit producer/consumer implementation question after the current prefilling evidence;retire duplicate findings or transactions when the consumer ends.",
-    "next_review": "After accepted worker_done and actual external-terminal closure,delegate native gpt-6-luna max review. Main must not read the collection body merely because it arrives.",
-    "spec_sha256": "9f44e16a9e32e93743b4fea7f9d2a259841f30106be571e8ca7d8d0d0bb08573"
+    "next_review": "At concrete native16 producer/consumer boundary selection or first clean current-route length-fit closure,whichever comes first;retire an unused conditional body. Required corrections apply before retrieval.",
+    "spec_sha256": "9f44e16a9e32e93743b4fea7f9d2a259841f30106be571e8ca7d8d0d0bb08573",
+    "worker_done_accepted": true,
+    "external_terminal_physically_closed": true,
+    "delivery_acknowledged": true,
+    "report_identity": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/official_qwen38_native16_prefill_contracts_20261103.md",
+      "bytes": 17140,
+      "sha256": "7376ca62519879dbb52099ca43eb12d3e5b88a85896709d2a326b75436841f4b"
+    },
+    "reviewer": "native Codex gpt-6-luna max",
+    "review_verdict": "accept_with_material_corrections",
+    "required_retrieval_corrections": [
+      "Add the exact official checkpoint-config revision above to substantiate the Qwen3.8-to-Qwen4-Exp mapping; the current report asserts the mapping but does not pin that config.",
+      "The cited vLLM recipes/models/Qwen/Qwen3.8-Flash-Next.yaml is absent from commit e126687a9a828d513c01a07cd69f025f27d63280. Remove it as evidence that this pin explicitly declares XPU/TPU unsupported. The pinned model package has NVIDIA and AMD subtrees and no XPU subtree; phrase the result as no exact-model XPU route established in this inspected tree, not a universal unsupported claim."
+    ],
+    "retrieval": {
+      "consumer": "A concrete native16 Qwen3.8 GDN producer/consumer decision or numerical-gate design that needs the framework recurrent-state, chunk-store and cache-handoff boundary.",
+      "useful_sections": [
+        "SGLang selected model path and GDN boundaries",
+        "vLLM exact model path, backend split, and GDN wrapper",
+        "Cross-framework comparison and applicability"
+      ],
+      "limits": "Source contract only. Confirm deployed checkpoint/config, state-pool dtype and actual dispatch before applying; no local performance, model numerical qualification or adoption evidence."
+    },
+    "retention": {
+      "recommendation": "Keep as one conditional indexed source reference for the native16 GDN boundary decision; do not retain duplicate dispatch/spec/ack paperwork.",
+      "review_point": "When Main selects or closes the concrete GDN/native16 producer-consumer boundary; prune the body if that decision does not use it."
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "A selected local Qwen3.8 stage/backend and recorded state dtype, plus a concrete unresolved source-contract question or stage-localized numerical difference.",
+      "avoid": "No duplicate generic Qwen4-Exp/backend or precision survey."
+    },
+    "review_receipt": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/native16_prefill_collections_review_20261103.json",
+      "sha256": "a3813415270e51995dee599b026f644b87ed94acb5bb35af87f35319e5ebf5ad",
+      "consumer": "Essential corrections/retrieval metadata are now indexed;retire this review and dispatch/spec/start/operator records at the next serialized cleanup. Retain only conditional source bodies until the concrete boundary selection or first clean current-route length-fit closure."
+    },
+    "source_model_mapping": {
+      "finding": "The Qwen4-Exp mapping is exact, not an inference from a similar class: the official Qwen3.8 config snapshot declares architectures=Qwen4ExpForConditionalGeneration and model_type=qwen4_exp; SGLang's pinned config declares qwen4_exp, and vLLM's pinned registry maps that architecture to vllm.models.qwen4_exp.",
+      "evidence": [
+        "https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/21a7c3ca68484a9987d62fd51b78130d9b9a11f8/config.json",
+        "https://github.com/sgl-project/sglang/blob/94602c9c2b7cbdb8efd5c52802dac6a1c180089e/python/sglang/srt/configs/qwen4_exp.py#L116-L117",
+        "https://github.com/vllm-project/vllm/blob/e126687a9a828d513c01a07cd69f025f27d63280/vllm/model_executor/models/registry.py#L580-L582"
+      ]
+    }
   },
   "gpu_native16_producer_consumer_materialization_methods_20261103": {
     "id": "gpu_native16_producer_consumer_materialization_methods_20261103",
     "classification": "knowledge_collection",
-    "status": "running",
+    "status": "reviewed_conditional_reference",
     "question": "From a few original non-LLM GPU/HPC/ASIC kernels, compare producer-consumer designs that keep GEMM accumulation in FP32 but expose FP16/BF16 intermediates: narrow-store/reload, legal fused pointwise epilogue, and wider local state where reduction or recurrence requires it. Trace actual dtypes and rounding, logical intermediate traffic, register/SLM lifetime and synchronization; explain when fusion is illegal or can lose. Map documented SYCL/Level Zero/oneDNN support boundaries. No local speed prediction or implementation proposal.",
     "novelty": "Those scopes cover tile/autotuning, cast lowering, byte accounting, a specific GDN output, local integration, or queue submission. This compares cross-operator materialization/fusion from non-LLM workloads; it excludes those mechanisms.",
     "prior_ids": [
@@ -21634,7 +21678,7 @@
     "terminal": "term_055ddc7d-2274-44c5-a537-8e31876eabd9",
     "incarnation": "774bc254-d824-4f9a-9aa6-f36d1285ea01",
     "start_request": "2d253dee-d0ce-48f4-9b08-723097cd3937",
-    "ownership_closed": false,
+    "ownership_closed": true,
     "schedulable_now": false,
     "main_read_report_body": false,
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/gpu_native16_producer_consumer_materialization_methods_20261103.md",
@@ -21643,9 +21687,46 @@
       "maximum": 16384
     },
     "whole_hold_budget_bytes": 65536,
-    "retrieval_consumer": "Native Luna-max reviewer evaluates depth/novelty and indexes retrieval metadata. Main retrieves only a relevant section for a concrete16bit producer/consumer implementation question after the current prefilling evidence;retire duplicate findings or transactions when the consumer ends.",
-    "next_review": "After accepted worker_done and actual external-terminal closure,delegate native gpt-6-luna max review. Main must not read the collection body merely because it arrives.",
-    "spec_sha256": "b7af0eb39559a05f548f1541c0fd2536cb83222cd96c1c9aaffb9c64274e6707"
+    "next_review": "At concrete native16 producer/consumer boundary selection or first clean current-route length-fit closure,whichever comes first;retire an unused conditional body. Required corrections apply before retrieval.",
+    "spec_sha256": "b7af0eb39559a05f548f1541c0fd2536cb83222cd96c1c9aaffb9c64274e6707",
+    "worker_done_accepted": true,
+    "external_terminal_physically_closed": true,
+    "delivery_acknowledged": true,
+    "report_identity": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/gpu_native16_producer_consumer_materialization_methods_20261103.md",
+      "bytes": 14975,
+      "sha256": "4efd511b44a12cbf6a44e8a85a8e8df309c281c24f289fce9330d41f9495b00b"
+    },
+    "reviewer": "native Codex gpt-6-luna max",
+    "review_verdict": "accept_with_one_material_type_correction",
+    "required_retrieval_corrections": [
+      "Correct the Intel XMX table summary: FP16 inputs with C=FP32 and D=FP16 are listed; BF16 inputs with C=FP32 list D=FP32 or BF16, not FP16. Do not claim a BF16-input/FP16-output combination.",
+      "The Intel joint_matrix extension and IGC DPAS citations use rolling branch URLs. The report labels their status; pin the exact source commit if a later implementation decision relies on those details."
+    ],
+    "retrieval": {
+      "consumer": "A concrete local native16 stage choice between store/reload, a fused pointwise epilogue, and wider persistent or reduction state, where the location of boundary rounding and its consumer are specified.",
+      "useful_sections": [
+        "Narrow store, separate reload",
+        "Fused pointwise epilogue",
+        "Wider reduction and recurrence state",
+        "SYCL, Level Zero, and oneDNN boundaries"
+      ],
+      "limits": "API/type contracts and algorithm examples only; no actual device support, local compiler lowering, physical traffic, register use or speed claim. BRGeMM's f32 accumulation contract is specific to that ukernel."
+    },
+    "retention": {
+      "recommendation": "Conditional indexed retrieval only because prior reports cover much of the component material; retain the body only if the upcoming native16 boundary decision uses this cross-pattern synthesis. Do not preserve transaction/spec/ack paperwork.",
+      "review_point": "At the first concrete producer-consumer boundary selection; otherwise retire the body and keep only any nonduplicated citation pointer needed by that decision."
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisite_evidence": "Main identifies a local producer, consumer, required rounded value and selected candidate boundary, then records a specific unresolved legality or resource question.",
+      "avoid": "No further generic materialization/fusion or mixed-precision survey."
+    },
+    "review_receipt": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/native16_prefill_collections_review_20261103.json",
+      "sha256": "a3813415270e51995dee599b026f644b87ed94acb5bb35af87f35319e5ebf5ad",
+      "consumer": "Essential corrections/retrieval metadata are now indexed;retire this review and dispatch/spec/start/operator records at the next serialized cleanup. Retain only conditional source bodies until the concrete boundary selection or first clean current-route length-fit closure."
+    }
   },
   "prefill_next_scope_eligibility_20261103": {
     "status": "reviewed_and_dispatched",
