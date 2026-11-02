@@ -21,7 +21,7 @@ import ur_validation
 
 base, component = model.base, model.component
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT, KEY = B / 'checked-adaptive-worker-device-v1', 'checked_adaptive_worker_device_v1'
+ROOT, KEY = B / 'checked-adaptive-worker-device-v2', 'checked_adaptive_worker_device_v2'
 CPP = 'tests/sycl/checked_worker_device.cpp'
 ENV_KEY = 'adaptive_cache_model_entry_adaptive-positive-throughput_model_v1'
 require, digest, write = base.require, base.digest, base.write
@@ -59,6 +59,20 @@ def dependencies(path):
     return {str(Path(value).resolve()) for value in shlex.split(raw.split(':', 1)[1])}
 
 
+def allowed_inputs(native):
+    # model.verify() has just checked these exact inventories, source, actual
+    # dependencies and linker bytes. Do not repeat all package-manager queries.
+    allowed = {}
+    for name in ('sdk', 'external_manifest', 'runtime_manifest', 'compiled_inputs'):
+        inv = native[name]
+        require(digest(inv['path']) == inv['sha256'], 'verified inventory changed: ' + name)
+        values = json.loads(Path(inv['path']).read_text())
+        require(len(values) == inv['files'], 'verified inventory shape changed: ' + name)
+        allowed.update(values)
+    allowed.update(native['actual_link_inputs']['frozen_inputs'])
+    return allowed
+
+
 def current(row):
     require(base.committed(RESULT)[KEY] == compact(row) and
             sources(row['source_commit']) == row['sources'], 'commit/freeze exact device fixture inputs')
@@ -86,6 +100,13 @@ def current(row):
 def prepare():
     data = base.committed(RESULT)
     require(KEY not in data and not ROOT.exists(), 'one fresh device fixture')
+    failed = data['checked_adaptive_worker_device_v1']
+    original = json.loads((B / 'checked-adaptive-worker-device-v1/record.json').read_text())
+    require(compact(original) == failed and failed['stage'] == 'failed' and
+            not failed['active'] and not original['commands_executed'] and
+            'TimeoutExpired' in failed['error'] and 'dpkg-query' in failed['error'] and
+            'dependencies' not in failed and not (B / 'checked-adaptive-worker-device-v1/fixture').exists(),
+            'preserve the exact pre-owner package-query timeout;no device or compile attempt occurred')
     native = model.verify()
     old = json.loads((component.ROOT / 'record.json').read_text())
     require(data[component.KEY] == component.shared.compact(old) and old['passed'] and
@@ -124,6 +145,11 @@ def prepare():
             field='environment', build_environment_key=model.KEY,
             component_overrides=['TMPDIR', 'XDG_CACHE_HOME'],
             note='Exact templates are recovered from committed results;per-case tracing paths are set by the pinned controller before exec.'),
+        previous_failure=dict(result_key='checked_adaptive_worker_device_v1',
+            original_result_commit=revision,
+            original_status_preserved=True, before_owned_commands=True, GPU_executed=False,
+            closure='Controller exited1;check_output uses subprocess.run,which kills and waits for its timed-out child. No Owner was constructed,no compile command ran,and no component ELF exists. Original ownership flag remains unchanged.',
+            change='Reuse the just-verified source/dependency/link inventories instead of repeating model.inputs package queries.'),
         plan=dict(order=['exception', 'tracked', 'failed-drain'], stop_on_first_failure=True,
             expected_exits=[0, 0, 1], build_budget=BUILD, device_budget=DEVICE,
             contract='Pending4096-byte real H2D,worker bad_alloc,production all-queue drain,payload D2H equality,main-unwind join,and production cache close with tracking off/on. Software failed-drain status is injected only after known completion;expect fail-stop before owner release. No deliberately invalid GPU work or environment mutation.',
@@ -131,7 +157,7 @@ def prepare():
         passed=False, complete=False, active=False, ownership_closed=True, cases=[])
     owner = None
     try:
-        allowed = model.inputs(native); allowed[str((P / CPP).resolve())] = pins[CPP]
+        allowed = allowed_inputs(native); allowed[str((P / CPP).resolve())] = pins[CPP]
         owner = base.supervision.Owner(ROOT / 'prepare-owned')
         for label, argv in preprocess:
             entry, _, _ = owner.run(label, argv, env, P, **BUILD)
@@ -154,7 +180,7 @@ def prepare():
 def build():
     row = json.loads((ROOT / 'record.json').read_text()); native = current(row)
     require(row['stage'] == 'prepared' and not (ROOT / 'owned-build').exists(), 'one component build')
-    allowed = model.inputs(native); allowed[str((P / CPP).resolve())] = row['sources'][CPP]
+    allowed = allowed_inputs(native); allowed[str((P / CPP).resolve())] = row['sources'][CPP]
     owner = None
     try:
         owner = base.supervision.Owner(ROOT / 'owned-build')

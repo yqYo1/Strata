@@ -91307,5 +91307,274 @@
       "files": 558,
       "aggregate_sha256": "75f16a542e106fa9d85e7115028f23ba4f2613344e7fb40dafd722654102f94b"
     }
+  },
+  "checked_adaptive_worker_device_v1": {
+    "stage": "failed",
+    "source_commit": "02f57151b6fd8f4066ccd0ddf25070800bb1d032",
+    "engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+    "engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+      "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+      "bytes": 24058712
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "commands": [
+      [
+        "runtime",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/runtime.build.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/sycl/runtime.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/runtime.o"
+        ]
+      ],
+      [
+        "compat",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/compat.build.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/sycl/compat.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/compat.o"
+        ]
+      ],
+      [
+        "command_profile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/command_profile.build.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/sycl/command_profile.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/command_profile.o"
+        ]
+      ],
+      [
+        "cache",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/cache.build.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/core/expert_cache.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/cache.o"
+        ]
+      ],
+      [
+        "fixture",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/fixture.build.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/checked_worker_device.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/fixture.o"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-fsycl",
+          "-pthread",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/runtime.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/compat.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/command_profile.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/cache.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/objects/fixture.o",
+          "-ldl",
+          "-lm",
+          "-Wl,-t",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/fixture"
+        ]
+      ]
+    ],
+    "depfiles": [
+      [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/runtime.headers.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/runtime.build.d"
+      ],
+      [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/compat.headers.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/compat.build.d"
+      ],
+      [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/command_profile.headers.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/command_profile.build.d"
+      ],
+      [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/cache.headers.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/cache.build.d"
+      ],
+      [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/fixture.headers.d",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v1/fixture.build.d"
+      ]
+    ],
+    "environment_recovery": {
+      "record_commit": "02f57151b6fd8f4066ccd0ddf25070800bb1d032",
+      "result_key": "adaptive_cache_model_entry_adaptive-positive-throughput_model_v1",
+      "field": "environment",
+      "build_environment_key": "cache_map_model_build_v2",
+      "component_overrides": [
+        "TMPDIR",
+        "XDG_CACHE_HOME"
+      ],
+      "note": "Exact templates are recovered from committed results;per-case tracing paths are set by the pinned controller before exec."
+    },
+    "plan": {
+      "order": [
+        "exception",
+        "tracked",
+        "failed-drain"
+      ],
+      "stop_on_first_failure": true,
+      "expected_exits": [
+        0,
+        0,
+        1
+      ],
+      "build_budget": {
+        "wall": 600,
+        "cpu": 1200,
+        "rss_cap": 8589934592,
+        "text_cap": 4194304,
+        "file_cap": 268435456,
+        "total_cap": 536870912
+      },
+      "device_budget": {
+        "wall": 180,
+        "cpu": 180,
+        "rss_cap": 4294967296,
+        "text_cap": 4194304,
+        "file_cap": 33554432,
+        "total_cap": 536870912
+      },
+      "contract": "Pending4096-byte real H2D,worker bad_alloc,production all-queue drain,payload D2H equality,main-unwind join,and production cache close with tracking off/on. Software failed-drain status is injected only after known completion;expect fail-stop before owner release. No deliberately invalid GPU work or environment mutation.",
+      "consumer": "Qualify changed worker/cache error lifetime before positive-swap model work;retire raw traces,objects and component ELF after that qualification."
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": false,
+    "cases": [],
+    "error": "TimeoutExpired(['dpkg-query', '-S', '/usr/bin/x86_64-linux-gnu-ld.bfd'], 15)",
+    "sources": {
+      "files": 89,
+      "aggregate_sha256": "3e0d66561c5271abcd2c963b323980ff38f982974b7e1b06cc3eaaeb53d2ecb8"
+    },
+    "build_environment_sha256": "a03408c3ec4babfbf469c4f8a5013185507f41aa1d7827fe5f7aa6f57c5779cd",
+    "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065"
   }
 }
