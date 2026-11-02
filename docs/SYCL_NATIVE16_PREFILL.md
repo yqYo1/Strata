@@ -1006,6 +1006,16 @@ context,with an explicit new-generation proof and source pins. Its zero/positive
 arms retain spec4,1256slots,8192chunks and the current decode layout;each first
 checks two32K thinking-on requests. These24-output checks qualify route/lifecycle
 only,not sustained generation or a new speed record.
+Both closed entry roots now retain only their record,configuration,plan and
+runtime inventory. Original272-file source recovery,published outcomes and the
+actual engine are verified before retiring146successful log/journal/host/JIT
+files totaling26729029bytes,with a path/hash/reason manifest. The fresh
+`cache_map_generation_speed_v1`plan uses these retained entry inputs and the
+same corrected engine: six processes R/C,C/R,R/C,cap0/8,unchanged v5 code then
+prose,thinking on and immutable ADAPT_SYNC1. Its273source inputs and frontend
+qualification are committed before model launch. The older failed cohort
+remains failed. Every process must close and be committed before its successor;
+long-answer eligibility and observed MTP regimes precede any gain claim.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
