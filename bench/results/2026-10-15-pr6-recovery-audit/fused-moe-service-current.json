@@ -91009,5 +91009,233 @@
       "files": 557,
       "aggregate_sha256": "8b869af8429aee819bfda7c411170fa55495ec29ad7f80f612c4a77df5ca923f"
     }
+  },
+  "checked_adaptive_worker_host_v1": {
+    "stage": "prepared",
+    "source_commit": "8f44e817f5b403cc8b83ab415b129293dc1167cf",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+      "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+      "files": 10945
+    },
+    "external_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/official-prefill-joint-v1/external-inputs.json",
+      "sha256": "dbe84857b1896fda5b386e2741094cf142b1c2130f84c6eb919d1c560bfcfead",
+      "files": 1564
+    },
+    "host_link_inputs": {
+      "files": {
+        "/usr/bin/x86_64-linux-gnu-ld.bfd": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5"
+      },
+      "compiler_queries": [
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-prog-name=ld"
+          ],
+          "reported": "/usr/bin/ld",
+          "resolved": "/usr/bin/x86_64-linux-gnu-ld.bfd"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtbeginS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtendS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc.a"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc_s.so"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=Scrt1.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/Scrt1.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/Scrt1.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crti.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crti.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crti.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtn.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crtn.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crtn.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc_nonshared.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc_nonshared.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc_nonshared.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libdl.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libdl.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libdl.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libm.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libm.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libmvec.so.1"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libmvec.so.1",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libmvec.so.1"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libpthread.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libpthread.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libpthread.a"
+        }
+      ],
+      "packages": [
+        "binutils-x86-64-linux-gnu 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1"
+      ],
+      "scope": "Exact host linker,CRT,archive/linker-script and math-library bytes from official driver queries. No GPU runtime,safety key or old failure status is changed."
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-host-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-host-v1/cache"
+    },
+    "preprocess_command": [
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-std=c++20",
+      "-O2",
+      "-pthread",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "-M",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-host-v1/prepare.d",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/checked_worker_host.cpp"
+    ],
+    "compile_command": [
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-std=c++20",
+      "-O2",
+      "-pthread",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "-MD",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-host-v1/build.d",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/checked_worker_host.cpp",
+      "-Wl,-t",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-host-v1/fixture"
+    ],
+    "budgets": {
+      "wall": 120,
+      "cpu": 240,
+      "rss_cap": 2147483648,
+      "text_cap": 1048576,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "GPU_executed": false,
+    "model_executed": false,
+    "passed": false,
+    "active": false,
+    "ownership_closed": true,
+    "contract": "Five worker outcomes (success,false,std exception,nonstd exception,bad_alloc),main unwind joins before owners in all five,and child failed-drain fail-stop without owner unwind/atexit. No real DMA,cache-free,model,speed or262144 qualification.",
+    "dependencies": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-host-v1/compiler-inputs.json",
+      "sha256": "4a5be3d1037071577f36aa017250fd61c87cde7062c24e3910647221fa9cc622",
+      "files": 280
+    },
+    "sources": {
+      "files": 33,
+      "aggregate_sha256": "25a944427fa89db5d056a3656f04f29441118d9c858b58b1076f93be8a16f4c1"
+    }
   }
 }
