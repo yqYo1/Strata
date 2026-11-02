@@ -1148,6 +1148,33 @@ The FP32 primary plus tail still stores all117488rows(1203077120bytes);splitting
 the allocation has not reduced that materialization. Precision acceptance may
 follow a prospectively declared SGLang/vLLM contract;the existing FP32 order is
 a diagnostic reference,not a universal adoption requirement.
+
+The current-engine clean/observed117Kpair now closes passed,with all eight
+requests checked before continuation,normal native exits,quiet final validation,
+no fresh fault and all15final model hashes. Warmed medians are127931.8ms clean
+(918.3721tok/s)and124474.7ms observed(943.8786tok/s);their0.972977ratio passes
+the predeclared observer-cost screen,not a speedup claim. Both are slower than
+the prior three-process1047.0672milestone. Native/configuration/safety match;
+the extra explicit-zero observer selectors are source-confirmed disabled.
+Keep that environmental variability unresolved rather than dropping samples.
+Across the three subsequent observed requests,the layer-major scope median is
+121.6613s wall and120.0655s main-thread CPU;89.3153s CPU occurs inside GPU waits.
+Outside-wait CPU is30.7502s,including6.1569s GEMM submission,5.7301s upload
+submission,10.3647s unclassified,and only0.2588s host grouping. A busy CPU core
+therefore does not establish that routing arithmetic dominates. The coarse
+nonexclusive queue spans are47.4584s MoE,40.4713s QSA and23.3435s GDN;QSA
+attention is the largest QSA section. These include host submission gaps and
+are not additive service or hardware saturation. In one warmed census,7427of
+23840jobs have at most15rows,but carry only35386of56394240routed rows.
+Use that shape skew and full wrapper costs for a bounded next kernel/dispatch
+choice;do not optimize CPU grouping from job counts alone. Physical bus/VRAM
+traffic,compatible hardware ceilings and per-kernel service remain unknown.
+The reviewed spec4/8 source report supports feasibility only:prefill head
+release/draft detachment still require MTP4,and misses beyond16PCIe staging
+blobs stay on CPU. Record current effective settings,RESTORE and acceptance/phase
+behavior before a width comparison. Its Orca completion notification failed;
+the source report is reviewed,but that dispatch remains abandoned and closed.
+
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
