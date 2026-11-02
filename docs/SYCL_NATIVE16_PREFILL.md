@@ -723,8 +723,8 @@ reasoning characters,finishing with stop. Prompt62109.6ms,client TTFT62.352s
 and decode1092108.1ms give exact TG6.66142847947. Draft acceptance3920/10071
 =.389236421408passes the unchanged weak band. The six-process v5comparison is
 now prepared at source`b24e5a465`,with265unchanged pilot inputs and all15model
-assets rehashed. Its order is0/8,8/0,0/8swaps;fresh frontend probes and all12long
-requests remain pending. One first-long-request pilot does not establish its
+assets rehashed. Its order is0/8,8/0,0/8swaps;both fresh frontend probes pass,
+with all12long requests pending. One first-long-request pilot does not establish its
 after-code history,repeated weak classification or a performance improvement.
 After original265-file source recovery from pushed history,the closed V1and
 prior cache diagnostic retire95more files totaling12419188bytes,including raw/
