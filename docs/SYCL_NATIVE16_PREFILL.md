@@ -1117,12 +1117,20 @@ three fresh clean processes with four same-length bench.sh requests each.
 First use stays separate;the median of the next three requests is the process
 unit,and all three process medians must reach1000tok/s for that117K milestone.
 This is a same-engine recheck,not a paired gain over the retired historical
-engine. The first clean process now closes passed,native0,quiet validation,
-closed owners and no fresh fault. Its first use is965.9tok/s/121.812s TTFT;
-subsequent requests are1042.8,1044.8and1047.6tok/s,with process median
-1044.8454tok/s and112.615s TTFT. The other two independent processes and final
-cohort-wide full-model hash check remain pending. Keep every individual sample
-and actual route;the length fit and wider adoption gates remain pending.
+engine. The first two clean processes now close passed,native0,quiet validation,
+closed owners and no fresh fault. First-use PP/TTFT is965.9/121.812s and
+968.4/121.489s. Their subsequent-process medians are1044.8454and1047.0672tok/s,
+with112.615and112.385s TTFT. Both process units use the same four request-body
+hashes;individual samples remain in the compact result. The third independent
+process and final cohort-wide full-model hash check remain pending.
+The length fit and wider adoption gates remain pending. After this frozen
+cohort closes,existing indexed grouped-MoE,liveness and native16 references
+should guide a current-source job/expert/row census and disjoint submit/wait/
+device attribution before selecting a materialization or grouping change.
+The FP32 primary plus tail still stores all117488rows(1203077120bytes);splitting
+the allocation has not reduced that materialization. Precision acceptance may
+follow a prospectively declared SGLang/vLLM contract;the existing FP32 order is
+a diagnostic reference,not a universal adoption requirement.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
