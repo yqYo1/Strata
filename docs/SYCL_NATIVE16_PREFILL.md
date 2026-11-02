@@ -1048,6 +1048,27 @@ invoke the server's STOP/wrap/continuation GEN path. It tests answer feasibility
 not a speedup,task quality or why trajectories differ. The benchmark/native
 sources remain unchanged;only the maintained policy adapter changes. Source,
 prepared plan and frontend probes must be committed before native execution.
+The32K-output pilot now closes with native exit0,benchmark exit1,quiet final
+validation,closed owners and no fresh fault. Code reads33212tokens,generates2550
+with an answer at15.592411tok/s,and has50.769s client TTFT and83.3105%draft
+acceptance. Prose reads33282tokens but consumes all32768output tokens in thought
+and produces no answer;its82.2627%acceptance also does not supply the required
+weak-MTP workload. Keep this pilot failed and cache8unadopted;another output-cap
+increase is not the next tuning experiment. All273original controller/benchmark
+inputs are recovered and current,but the failed process does not reach the final
+full-model-hash gate. Its work counters are descriptive,not hardware saturation.
+Main has drafted an opt-in,decode-only IQ3_S NT1 gate/up pair in the isolated
+`perf/decode-iq3-pair`child while the model sources were frozen. It shares the
+activation load across gate/up,with the existing integer lanes,FMA order and
+reduction;prefill,Down and multi-token dispatch stay on their existing paths.
+This source is unbuilt and untested,not an adopted optimization. Next commit a
+CPU-only conformance/dispatch and repeated component-timing plan,then test it
+before considering a model build. The measured engine's pool differs from the
+current worktree in three files,so do not attribute current-pool timings to that
+engine. Use an answer-eligible model route for a later matched model comparison.
+The current safe engine still needs its117K repeated prefill recheck and a fresh
+multi-length time/TTFT fit;the older1046.0957tok/s result and older length fit do
+not automatically qualify this engine. Full262144/RESTORE remain pending.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's

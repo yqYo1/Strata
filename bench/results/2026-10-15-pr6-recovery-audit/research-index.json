@@ -21455,13 +21455,7 @@
   "qwen38_production_moe_decode_path_20261103": {
     "id": "qwen38_production_moe_decode_path_20261103",
     "classification": "decision_support",
-    "schedulable_now": false,
     "question": "At pinned official vLLM/SGLang commits, verify exact Qwen3.8-Flash-Next support, then trace its decode MoE path: router/backend, expert format and CPU/GPU placement, MTP draft/verify and accepted suffix, and source-defined precision boundaries. Compare with pinned Strata source. If exact-model or CPU-offload/MTP support is absent, report the boundary and stop. No code or local performance/bottleneck claim.",
-    "reference_targets": [
-      "Official vLLM and SGLang model/MoE/MTP sources at pinned revisions",
-      "Exact model config",
-      "Strata compiled source ddbbc6bfa6fb14a82a2239e7629679bbc7d5b7aed8df59e66fb14bbb2b087ccd"
-    ],
     "previous_scope_ids": [
       "decode_moe_projection_payload_collection_scope",
       "qwen4exp_moe_reduction_contract_decision_20261027",
@@ -21471,54 +21465,48 @@
       "thinking_sampling_contract_20261103"
     ],
     "what_is_new": "Existing reports cover generic CPU/GPU projection placement, speculative reuse, a Strata-only verifier map, Qwen4Exp long-prefill precision, and this model sampling/output budget. None maps exact Qwen3.8 production vLLM/SGLang decode support, CPU placement, MTP and numeric contracts together.",
-    "prerequisite_evidence": [
-      "Exact model ran through corrected Strata at 32K; one code request passed, prose failed, and cache/MTP counters were observed.",
-      "Source-only task; no local bottleneck or repeated speed result required. Main output-room pilot is separate."
-    ],
     "report_budget_bytes": 16384,
-    "next_consumer": "After the output-room pilot, before any further CPU-offload/cache/MTP decode plan; compare against a verified production reference. Main reads the review digest first.",
-    "counterevidence": "One code request and failed prose do not qualify speed/adoption. Official runtimes may lack exact support; that is a valid result. Keep model-specific to avoid repeating projection, MTP-reuse or Strata-source audits.",
-    "status": "running",
+    "whole_hold_budget_bytes": 65536,
+    "main_read_report_body": false,
+    "status": "reviewed_with_material_corrections",
+    "schedulable_now": false,
     "model": "gpt-6-luna",
     "effort": "high",
-    "ownership_closed": false,
-    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/qwen38_production_moe_decode_path_20261103.md",
-    "whole_hold_budget_bytes": 65536,
-    "consumer": "After the output-room pilot, before any further CPU-offload/cache/MTP decode plan; compare against a verified production reference. Main reads the review digest first.",
-    "main_read_report_body": false,
-    "review_point": "After accepted report and native Luna-max review;retire transaction output,keep only substantive reusable findings.",
-    "run": "run_f883bed7d89a",
-    "task": "task_c3bc2d09d7c8",
-    "dispatch": "ctx_8af246429bff",
-    "terminal": "term_09cc0c62-45c3-42b6-9eca-5673de490144",
-    "incarnation": "f9e27595-538f-44ac-b1df-c6a9cf0ae4e1",
-    "start_request": "f3d4cc52-aea2-47c6-b4dd-da48163ed450",
-    "model_evidence": "Fresh retry startup argv explicitly gpt-6-luna/high and research-only developer role;GPT-6-Luna high/tui-idle verified before dispatch;matching new incarnation input_accepted and turn_started. External launch.effective null is not treated as model proof.",
-    "launch_gap": "worker-start cannot express workspace-write/named report writable-root and explicit search/network permission;operator-created terminal is owned by Main and will close after accepted settlement/release.",
-    "spec": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/qwen38_production_moe_decode_path_20261103.spec.txt",
-      "sha256": "10458e2b3a24350c01097534697afb3b143cdd50675ae5693ee04059541ef042"
+    "ownership_closed": true,
+    "settlement": {
+      "worker_done_accepted": true,
+      "external_terminal_physically_closed": true,
+      "delivery_acknowledged": true,
+      "prior_unreported_attempt_preserved_at": "eab41f22a8111272f925a4190c7f273557572059"
     },
-    "source_rule_commit": "0f54fcc3c",
-    "prior_attempts": [
-      {
-        "dispatch": "ctx_b5755eaa820c",
-        "terminal": "term_422cc72a-9e00-4419-a84c-52881a6f0025",
-        "incarnation": "c4c493ab-dea3-4eaa-9a6e-11d61dcef232",
-        "outcome": "operator_abandoned_after_unreported_final_turn",
-        "report_produced": false,
-        "worker_done_received": false,
-        "source_exact_transcript": true,
-        "final_message_id": "msg_0283519eca5dcbdd016ae8deefcc9c8191bb3d124879ac755c",
-        "final_timestamp_ms": 1793646321030,
-        "reason": "Final assistant said no concrete task and asked what to continue,despite supplied research spec. No report. Git/state inspection appeared in final text,contrary to research scope. This does not establish a transport or model root cause.",
-        "abandon_request": "49053442-c4a7-45ff-934f-bd06942a47ff",
-        "terminal_closed_pty_killed": true,
-        "ownership_closed": true
-      }
+    "report": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/qwen38_production_moe_decode_path_20261103.md",
+      "bytes": 13201,
+      "sha256": "a10bffa62b536c3b32add0ca614564f549e5e0ef294d6d6aa4e6ded720ec8b57"
+    },
+    "review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/qwen38_production_moe_decode_path_review_20261103.json",
+      "bytes": 5780,
+      "sha256": "048ff5c15ef300392716cce7b356153fb2ef95d0f4ab9d724e151208d39e6e30",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "verdict": "accept_with_material_corrections"
+    },
+    "operational_digest": "Accept as conditional source decision support with the Q8_0 and selected-route corrections above. Exact vLLM support at the pin is CUDA/ROCm only; SGLang v0.5.20 includes the exact model but gives no exact XPU or CPU routed-expert path. This is not performance or adoption evidence. Keep it for retrieval after the current output-room cohort; schedule no new scope now.",
+    "material_corrections": [
+      "The sentence calling Q8_0 a concrete current expert payload is not established for the named Strata model: its run receipt identifies IQ3_S-primary, and the local native-expert source describes IQ3_S gate/up with Q2_0 or IQ4_NL down. Q8_0 also appears as an activation/oracle format. Mark Q8_0 as a generic/optional code path or identify the exact per-role GGUF tensor types for the referenced run.",
+      "Keep Strata's cache/residency, CPU-pool and MTP descriptions explicitly source-defined available paths. The source exposes optional --spec and --mtp controls and multiple placement routes; the report does not pin the selected run's flags/tier/dtypes. Do not read the table as evidence that the CPU route was selected in the 32K request. The report's no-runtime/no-speed caveat is correct.",
+      "Link the mutable official vLLM recipe and the official SGLang issue/roadmap pages directly. The SGLang #38589 issue is a useful pointer, but immutable qwen4_exp.py at the stated release is the direct support for the pin-specific capture claim."
     ],
-    "retry_policy": "Same Task and spec,explicit --retry-of the failed attempt,fresh bounded Luna-high session with research-only startup role. No steering of an active researcher or substituted success.",
-    "attempt_count": 2
+    "support_boundary": "The pinned official exact-model paths do not establish an XPU or CPU routed-expert deployment reference. Their source support is neither performance nor local bottleneck evidence.",
+    "source_pins": {
+      "vllm": "e126687a9a828d513c01a07cd69f025f27d63280",
+      "sglang": "94602c9c2b7cbdb8efd5c52802dac6a1c180089e",
+      "model_config": "de4b8e4d43b917e7706784d8bb445c9af86a3540",
+      "compiled_generate_sha256": "ddbbc6bfa6fb14a82a2239e7629679bbc7d5b7aed8df59e66fb14bbb2b087ccd"
+    },
+    "next_consumer": "Before a future selected CPU-expert/cache/MTP model plan,retrieve only the exact-model support/precision/backend boundary;Main has read only the short review.",
+    "review_point": "At that model-plan decision,retire the raw report/review if the indexed support boundary is sufficient;closed transaction files have no remaining consumer."
   },
   "post_cache_outcome_scope_review_20261103": {
     "classification": "library_scope_review",

@@ -93600,7 +93600,7 @@
       "STRATA_TRACE_ADAPT": "1",
       "STRATA_SYCL_ADAPT_SYNC": "1"
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "70805eb7bc432d2bba6eb446ef1b584786775499",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -93647,7 +93647,132 @@
         "environment_sha256": "3779ef51049c111d0d80ede0827ca725ff4523341a9286ccebad28e630643a5b"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 4034639,
+          "start_ticks": 199516334,
+          "sid": 4034591
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 50.769,
+            "total_s": 214.196,
+            "prompt_tokens": 33212,
+            "reused_tokens": 0,
+            "read_tokens": 33212,
+            "generated_tokens": 2550,
+            "prompt_tps": 655.9,
+            "prompt_tps_source": "engine",
+            "decode_tps": 15.6,
+            "decode_tps_source": "engine",
+            "prompt_ms": 50633.7,
+            "decode_ms": 163541.1,
+            "drafts_offered": 2187,
+            "drafts_accepted": 1822,
+            "finish_reason": "stop",
+            "request_sha256": "9d377dff2ea7e7ed690ab269ee3b093e82ef370394e37868426e957133f26e49",
+            "stream_complete": true,
+            "truncated": false,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 1995274965169621,
+              "first_output_monotonic_ns": 1995325733692715,
+              "request_end_monotonic_ns": 1995489161589357
+            },
+            "eligible": true,
+            "agreement_eligible": true,
+            "speed_eligible": true,
+            "speed_ineligible_reasons": [],
+            "ineligible_reasons": [],
+            "acceptance_rate": 0.8331047096479195,
+            "usage_generated_tokens": 2550,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 0,
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "770bd07d6491ff7b0a2527411ca674664de8a11878bd720073b0b0b5c26761f3",
+            "output_chars": 5578,
+            "reasoning_chars": 2320,
+            "reasoning_tokens": null,
+            "workload": "regular-code",
+            "controller_eligible": true
+          },
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 43.239,
+            "total_s": 2073.428,
+            "prompt_tokens": 33282,
+            "reused_tokens": 0,
+            "read_tokens": 33282,
+            "generated_tokens": 32768,
+            "prompt_tps": 772.3,
+            "prompt_tps_source": "engine",
+            "decode_tps": 16.1,
+            "decode_tps_source": "engine",
+            "prompt_ms": 43093.2,
+            "decode_ms": 2030314.2,
+            "drafts_offered": 28347,
+            "drafts_accepted": 23319,
+            "finish_reason": "length",
+            "request_sha256": "2816495b1d36a5d323179596cce05dd8081c75a6a3bf2643038831dff54f9f4b",
+            "stream_complete": true,
+            "truncated": true,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 1995489484395683,
+              "first_output_monotonic_ns": 1995532723498323,
+              "request_end_monotonic_ns": 1997562912879411
+            },
+            "eligible": false,
+            "agreement_eligible": false,
+            "speed_eligible": false,
+            "speed_ineligible_reasons": [
+              "thinking did not leave at least 512 characters of answer body"
+            ],
+            "ineligible_reasons": [
+              "thinking did not leave at least 512 characters of answer body"
+            ],
+            "acceptance_rate": 0.8226267329876178,
+            "usage_generated_tokens": 32768,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 1,
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "bca921de0b164d86b4fd7d3d388fd2f3fcd3f3b75d2570d89b52b41ef976f4a2",
+            "output_chars": 0,
+            "reasoning_chars": 43256,
+            "reasoning_tokens": null,
+            "workload": "varied-prose",
+            "controller_eligible": false
+          }
+        ],
+        "error": "RuntimeError('owned benchmark failed: exit/result/closure gate')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
@@ -93754,6 +93879,53 @@
       "original_sources_recovered": true,
       "closed_host_files": 4,
       "consumer": "Current admission uses compact host pass,global runtime inventory and its own generated plan;retired host output has no reader."
+    },
+    "failure_diagnosis": {
+      "observed_native_exit_code": 0,
+      "observed_benchmark_exit_code": 1,
+      "failure": "The32K-output prose request ends at length with32768generated thinking tokens and zero answer characters;the unchanged answer gate fails.",
+      "code_request_eligible": true,
+      "prose_request_eligible": false,
+      "answer_room_feasible": false,
+      "observed_code_TG_tps": 15.592410715104643,
+      "observed_prose_TG_tps_ineligible": 16.13937389592212,
+      "source_inputs_recovered_from": "70805eb7bc432d2bba6eb446ef1b584786775499",
+      "source_input_count": 273,
+      "quiet_final_validation": true,
+      "all_owned_identities_closed": true,
+      "full_final_model_hash_gate_reached": false,
+      "repeated_gain_qualified": false,
+      "strong_weak_workload_pair_qualified": false,
+      "inference_adopted": false,
+      "physical_resource_saturation_qualified": false,
+      "next": "Keep this pilot failed;do not escalate output budgets or adopt cache8from these samples. Proceed with independently scoped CPU GU component tuning;use an answer-eligible model route and a newly committed matched plan before model performance comparison."
+    },
+    "work_counter_semantics": {
+      "samples": [
+        {
+          "workload": "regular-code",
+          "cpu_unique_jobs": 697296,
+          "cpu_entries": 810742,
+          "cpu_unique_jobs_per_emitted": 273.44941176470587,
+          "minimum_NT1_job_fraction": 0.8373058213441638,
+          "cache_hits": 589418,
+          "cache_lookups": 1400160,
+          "cache_hit_percent": 42.1,
+          "requested_expert_copy_bytes": 0
+        },
+        {
+          "workload": "varied-prose",
+          "cpu_unique_jobs": 8041504,
+          "cpu_entries": 8938448,
+          "cpu_unique_jobs_per_emitted": 245.4072265625,
+          "minimum_NT1_job_fraction": 0.8884606660644576,
+          "cache_hits": 9204112,
+          "cache_lookups": 18142560,
+          "cache_hit_percent": 50.7,
+          "requested_expert_copy_bytes": 0
+        }
+      ],
+      "limits": "Request footers may include the final prefill row. Logical job/entry counts and requested expert-copy bytes are not CPU time,physical RAM/PCIe traffic or hardware saturation. Prose counts are descriptive ineligible work,not answer-bearing speed evidence."
     },
     "source_inputs": {
       "files": 273,
