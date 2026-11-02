@@ -1079,6 +1079,16 @@ an answer-eligible route. Preserve the current validated model generation.
 The current safe engine still needs its117K repeated prefill recheck and a fresh
 multi-length time/TTFT fit;the older1046.0957tok/s result and older length fit do
 not automatically qualify this engine. Full262144/RESTORE remain pending.
+The prospective`cache_map_prefill.py`first checks117489read/117488engine rows
+with two same-length requests in one process,thinking on,24output cap and zero
+reuse. It reuses the corrected engine and the closed zero-swap32K qualification,
+with throughput,GDN16/MTP16,1256slots,spec4,8192chunks and immutable ADAPT_SYNC1.
+Private parser/policy contexts preserve the shared32K entry. Commit the adapter,
+prepared plan and frontend qualification before native launch. Require actual
+extent/route/owner checks,quiet validation,all15final model hashes and no new
+fault. Keep first and subsequent latency separate;this logged extent check does
+not replace independent-process clean speed samples,the current length fit,
+sustained TG or full-context/RESTORE qualification.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
