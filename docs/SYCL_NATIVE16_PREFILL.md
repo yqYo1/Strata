@@ -880,7 +880,12 @@ and syntax-checks the reversible generator delta on the measured composition.
 Prepare/build/GPU-check results must be committed separately. Both inference
 generations remain intact;this small component does not qualify the full
 callback arithmetic,the failed task's cause,model speed or full context.
-The correction and oracle have not yet been built or executed.
+Initial V1 admission at`811fdd99c`refuses before creating its output root or
+running a compiler/device:the added CMake test target changes a file consumed
+by the older native source qualification. Keep that failed admission. Restore
+the qualified CMake file byte-exactly and use the independent component recipe
+in a new V2 plan;do not refresh the frozen native hashes. The correction and
+oracle have not yet been built or executed.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)

@@ -19,8 +19,8 @@ import profile_window as shared
 
 cache, profile = shared.cache, shared.profile
 P, B, RESULT = shared.P, shared.B, shared.RESULT
-ROOT = cache.model.adaptive.ROOT / 'residency-map-v1'
-KEY = 'adaptive_cache_residency_map_v1'
+ROOT = cache.model.adaptive.ROOT / 'residency-map-v2'
+KEY = 'adaptive_cache_residency_map_v2'
 BEFORE = '3e22e21b0b00eea9c51f1ca62407b368d340a4ed'
 CPP = 'tests/sycl/cache_residency.cpp'
 CORE = 'src/core/expert_cache.cpp'
@@ -90,6 +90,9 @@ def current(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in cache.build.committed(RESULT), 'fresh oracle only')
+    previous = cache.build.committed(RESULT)['adaptive_cache_residency_map_v1']
+    require(previous['stage'] == 'failed-admission' and not previous['GPU_executed']
+            and previous['ownership_closed'], 'preserve the original failed CMake admission')
     revision = cache.shared.gen.git('rev-parse', 'HEAD').decode().strip()
     pins = sources(revision)
     native, prior, providers, _ = shared.basis()
