@@ -953,8 +953,17 @@ owners. It links no GPU runtime and supplies no actual-DMA or model evidence.
 The V2recipe reuses the unexecuted map candidate and its incremental objects only
 after recovering V1's original source,recipe,1451inputs and nine ELFs from pushed
 history. It adds only the reversible two-source worker delta and its header:
-558native files. Preserve the existing adaptive fallback. Qualify real-copy
-error retirement before a positive-swap model test;V2is not yet built or adopted.
+558native files. Configure,incremental compilation and dependency collection now
+exit0,and all1452actual inputs match. Only the engine ELF changes;the other
+eight fixtures remain byte-identical. V2is built but not GPU/model-qualified or
+adopted. The superseded V1result is recovered from`05466aca7`,rather than keeping
+a second full copy in the active JSON. Preserve the existing adaptive fallback.
+The next bounded fixture
+checks pending real4096-byte H2D,worker bad_alloc,production all-queue drain,
+payload equality,main-unwind join and cache close with tracking on/off. Its
+failed-drain status is injected only after known completion,without deliberately
+leaving device work outstanding or inducing a GPU fault. Qualify those error
+paths before a positive-swap model test.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
