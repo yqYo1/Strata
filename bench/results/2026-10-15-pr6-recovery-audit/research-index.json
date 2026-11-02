@@ -21451,5 +21451,57 @@
       "retired_files": 3,
       "reason": "Review settled;no remaining task/start/delivery consumer. Keep only report and corrected review for prospective plan selection."
     }
+  },
+  "qwen38_production_moe_decode_path_20261103": {
+    "id": "qwen38_production_moe_decode_path_20261103",
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "question": "At pinned official vLLM/SGLang commits, verify exact Qwen3.8-Flash-Next support, then trace its decode MoE path: router/backend, expert format and CPU/GPU placement, MTP draft/verify and accepted suffix, and source-defined precision boundaries. Compare with pinned Strata source. If exact-model or CPU-offload/MTP support is absent, report the boundary and stop. No code or local performance/bottleneck claim.",
+    "reference_targets": [
+      "Official vLLM and SGLang model/MoE/MTP sources at pinned revisions",
+      "Exact model config",
+      "Strata compiled source ddbbc6bfa6fb14a82a2239e7629679bbc7d5b7aed8df59e66fb14bbb2b087ccd"
+    ],
+    "previous_scope_ids": [
+      "decode_moe_projection_payload_collection_scope",
+      "qwen4exp_moe_reduction_contract_decision_20261027",
+      "current_decode_mtp_verifier_reuse_source_audit",
+      "speculative_moe_offload_reuse_collection_scope",
+      "mtp_attention_window_catchup_methods_scope",
+      "thinking_sampling_contract_20261103"
+    ],
+    "what_is_new": "Existing reports cover generic CPU/GPU projection placement, speculative reuse, a Strata-only verifier map, Qwen4Exp long-prefill precision, and this model sampling/output budget. None maps exact Qwen3.8 production vLLM/SGLang decode support, CPU placement, MTP and numeric contracts together.",
+    "prerequisite_evidence": [
+      "Exact model ran through corrected Strata at 32K; one code request passed, prose failed, and cache/MTP counters were observed.",
+      "Source-only task; no local bottleneck or repeated speed result required. Main output-room pilot is separate."
+    ],
+    "report_budget_bytes": 16384,
+    "next_consumer": "After the output-room pilot, before any further CPU-offload/cache/MTP decode plan; compare against a verified production reference. Main reads the review digest first.",
+    "counterevidence": "One code request and failed prose do not qualify speed/adoption. Official runtimes may lack exact support; that is a valid result. Keep model-specific to avoid repeating projection, MTP-reuse or Strata-source audits.",
+    "status": "ready",
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "ownership_closed": true,
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/qwen38_production_moe_decode_path_20261103.md",
+    "whole_hold_budget_bytes": 65536,
+    "consumer": "After the output-room pilot, before any further CPU-offload/cache/MTP decode plan; compare against a verified production reference. Main reads the review digest first.",
+    "main_read_report_body": false,
+    "review_point": "After accepted report and native Luna-max review;retire transaction output,keep only substantive reusable findings."
+  },
+  "post_cache_outcome_scope_review_20261103": {
+    "classification": "library_scope_review",
+    "status": "reviewed",
+    "model": "gpt-6-luna",
+    "effort": "max",
+    "ownership_closed": true,
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/post_cache_outcome_scopes_review_20261103.json",
+    "sha256": "05a80711c20ad47d72f44b04195951706a055c89d9c234efcc6d157d6bb3ab2b",
+    "bytes": 6110,
+    "operational_digest": "One scope is eligible: map exact Qwen3.8-Flash-Next MoE/MTP decode support in official vLLM/SGLang, including CPU placement and precision. The two-process failure adds cache/CPU counts but no repeated gain or phase attribution; CPU/MTP scopes remain conditional. Main output-room pilot is the gate.",
+    "eligible_scopes": [
+      "qwen38_production_moe_decode_path_20261103"
+    ],
+    "consumer": "New exact-model production-path task admission;retire this temporary review after its essential eligibility is indexed and task accepted.",
+    "review_point": "Next serialized safe cleanup boundary after research dispatch."
   }
 }
