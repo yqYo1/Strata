@@ -798,10 +798,12 @@ cannot qualify lossless boundary coverage or model attribution. The source
 sets180s/64MiB per-device-process and256MiB whole-observer output bounds;it
 does not rebuild the inference engine. Source`e91882d81`now prepares the fixture
 with the pinned2026.2compiler:preprocessing exits0and all638actual source/header
-inputs match the frozen SDK/native inventory. Owners close;the native fixture
-is still unbuilt/unrun. Commit this prepared result before
-`python3 -B tools/sycl/profile_window.py build`,then commit its ELF/dependency
-result before`check`. Request-scoped decode gates,guard bands,clock/loss checks
+inputs match the frozen SDK/native inventory. The committed prepared plan
+then builds with exit0in4.251s;actual dependencies match all638pins. The
+158168-byte fixture ELF hashes to`0e5b4223f1710e01b20b85cf8c05200aebd3eceee55965524e3b358769afc523`.
+Owners close;no fixture GPU execution has occurred. Commit this ELF/dependency
+result before`python3 -B tools/sycl/profile_window.py check`.
+Request-scoped decode gates,guard bands,clock/loss checks
 and model observer overhead remain the next qualification steps after the
 fixture.
 The cap retrieval review confirms that larger caps need a new bounded
@@ -809,7 +811,13 @@ qualification. Its96-buffer limit concerns resident-RAM complement exchanges;
 the current native-GGUF Arena bypasses that path. There is no existing payload
 or larger-batch correctness qualification,and requested transfer bytes are not
 measured PCIe traffic. The completed review's essentials and next consumer are
-recorded in the research index;no duplicate source survey is admitted.
+recorded in the research index;no duplicate cap/lifetime survey is admitted.
+The new failed next-GEN task supplies one different,report-only Orca Luna
+question:do scratch-loan restoration and adaptive residency still name the
+same expert payloads,and which current IQ3 numerical controls can distinguish
+that error from ordinary CPU/GPU rounding? This is a bounded semantic review,
+not a diagnosis from text divergence. Main continues collector qualification;
+native Luna-max reviews the returned report before implementation decisions.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
