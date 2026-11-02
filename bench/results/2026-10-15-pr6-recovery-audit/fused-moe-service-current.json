@@ -92731,7 +92731,7 @@
       "STRATA_TRACE_ADAPT": "1",
       "STRATA_SYCL_ADAPT_SYNC": "1"
     },
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "088ef72cf51264d709f1b03854eac6ed1e27bc5c",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -93138,6 +93138,140 @@
           "consumer": "Current cohort admission retains global record/runtime and all six generated plans;closed raw output has no reader. Next process must pass admission before native launch.",
           "original_source_recovered": true
         }
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 3876364,
+          "start_ticks": 199150987,
+          "sid": 3876315
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33212,
+            "reused_tokens": 0,
+            "generated_tokens": 2550,
+            "output_chars": 5578,
+            "reasoning_chars": 2320,
+            "prompt_ms": 50728.6,
+            "prompt_tps": 654.7,
+            "decode_ms": 164207.8,
+            "decode_tps": 15.5,
+            "ttft_s": 50.866,
+            "total_s": 214.957,
+            "drafts_offered": 2187,
+            "drafts_accepted": 1822,
+            "acceptance_rate": 0.8331047096479195,
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "770bd07d6491ff7b0a2527411ca674664de8a11878bd720073b0b0b5c26761f3",
+            "finish_reason": "stop",
+            "controller_eligible": true,
+            "eligible": true,
+            "speed_eligible": true,
+            "ineligible_reasons": [],
+            "stream_complete": true,
+            "truncated": false,
+            "err": null
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 16384,
+            "output_chars": 0,
+            "reasoning_chars": 25234,
+            "prompt_ms": 41972.5,
+            "prompt_tps": 792.9,
+            "decode_ms": 1136943.0,
+            "decode_tps": 14.4,
+            "ttft_s": 42.106,
+            "total_s": 1178.937,
+            "drafts_offered": 16056,
+            "drafts_accepted": 11034,
+            "acceptance_rate": 0.6872197309417041,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "reasoning_sha256": "c628b38881528ea15af448ee28a39edf09aa83141b6889c182c79547e28a74b3",
+            "finish_reason": "length",
+            "controller_eligible": false,
+            "eligible": false,
+            "speed_eligible": false,
+            "ineligible_reasons": [
+              "thinking did not leave at least 512 characters of answer body"
+            ],
+            "stream_complete": true,
+            "truncated": true,
+            "err": null
+          }
+        ],
+        "error": "RuntimeError('owned benchmark failed: exit/result/closure gate')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "request_work_counters": [
+          {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 697296,
+            "cpu_entries": 810742,
+            "CPU_single_token_job_fraction_at_least": 0.8373058213441638
+          },
+          {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 4298121,
+            "cpu_entries": 4984708,
+            "CPU_single_token_job_fraction_at_least": 0.8402588014623135
+          }
+        ],
+        "cache": [
+          {
+            "hits": 589418,
+            "lookups": 1400160,
+            "hit_percent": 42.1
+          },
+          {
+            "hits": 5291612,
+            "lookups": 10276320,
+            "hit_percent": 51.5
+          }
+        ],
+        "postclosure_observations": {
+          "native_exit_code": 0,
+          "benchmark_exit_code": 1,
+          "quiet_validation": true,
+          "all_owned_processes_closed": true,
+          "paired_long_request_body_hashes_match": true,
+          "source_inputs_recovered_and_current": 273,
+          "original_execution_and_performance_failure_preserved": true,
+          "limits": "Descriptive checks after original gate failure;not retroactive model/performance qualification or final full-model-asset rehash."
+        }
       }
     ],
     "host_passed": true,
@@ -93205,6 +93339,25 @@
       "scope": "Two long-request footer deltas after four official warmups,in sample order. Request scope may include the final prefill row;not an isolated decode arithmetic interval.",
       "conservation": "At gpu_miss_groups0,cpu_entries+cache.hits=cache.lookups;cpu_unique_misses<=cpu_entries. Each distinct CPU expert job has>=1token,so max(0,2*unique-entries)/unique bounds its NT1 fraction.",
       "limits": "Counts and wrapper-requested copy bytes,not physical RAM/PCIe/VRAM traffic,CPU service or hardware saturation. Draft,dense and attention work are not represented by CPU expert counts."
+    },
+    "failure_diagnosis": {
+      "observed_native_exit_code": 0,
+      "observed_benchmark_exit_code": 1,
+      "failure": "Candidate prose generates16384thinking tokens and zero answer characters,finish_reason=length;fails unchanged>=512answer-character gate.",
+      "code_request_eligible": true,
+      "prose_request_eligible": false,
+      "source_inputs_recovered_from": "088ef72cf51264d709f1b03854eac6ed1e27bc5c",
+      "remaining_process_indices_not_run": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "full_final_model_hash_gate_reached": false,
+      "repeated_gain_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "inference_adopted": false,
+      "next": "Keep this cohort failed. Commit a separate output-room feasibility plan with thinking enabled before new generation;do not infer why trajectories differ from text or hit rates."
     },
     "source_inputs": {
       "files": 273,

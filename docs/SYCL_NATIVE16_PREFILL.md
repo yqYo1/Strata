@@ -1027,7 +1027,22 @@ Its cache hits are10.9%and6.7%of target expert entries. Unconditional native
 footers conserve CPU entries plus cache hits against all lookups with zero GPU
 miss-upload groups. CPU expert jobs number1221484/3743079;their minimum NT1
 fractions are72.0253%/39.3661%. These are request work counts,not physical
-traffic or CPU/GPU time shares. The next paired process uses cap8unchanged.
+traffic or CPU/GPU time shares. The paired cap8process now closes with native
+exit0,quiet validation and no fresh fault,but benchmark exit1:code generates
+2550tokens with an answer at15.529104tok/s,while prose uses all16384tokens for
+thought and returns no answer. The unchanged answer gate fails;the cohort stays
+failed and processes2..5must not run. Code alone is16.79%faster in this one pair,
+not a repeated gain or an adopted cache policy. Its CPU expert jobs fall from
+385.33to273.45per generated token;this is work-count evidence,not a hardware
+saturation measurement. Prose's14.4tok/s is ineligible as answer-bearing
+speed evidence. All273source inputs are recovered and current;the final
+whole-cohort model-asset rehash is not reached. Orca Luna research and native
+Luna-max review resolve the request to greedy sampling with uncapped thought;
+configured penalties remain possible and live sampler defaults are unobserved.
+The reviewed native pin is the actual composed build,not the main worktree's
+generator. Next commit a separate thinking-on output-room feasibility plan,
+holding sampler,prompt,placement and MTP fixed. A reasoning cap is a mechanism
+probe,not a model recommendation or evidence of why the trajectories differ.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
