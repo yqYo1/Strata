@@ -53,7 +53,9 @@
 #include "strata/core/prefill_head_scope.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/sycl/checked_worker.hpp"
 #include "strata/kernels/cpu/iq2_pair_avx2.hpp"
+#include <stdexcept>
 #endif
 #include "strata/core/verify.hpp"
 #include "strata/core/mtp.hpp"
@@ -597,6 +599,10 @@ bool resident_stage_swaps(strata::core::FileExpertSource& src, strata::core::Exp
     struct Staged { int32_t layer, in, out; int64_t q; };
     std::vector<Staged> staged;
     std::vector<Swap> kept;
+#ifdef STRATA_ENABLE_SYCL
+    // Reserve metadata before accepting a D2H that owns an exchange buffer.
+    staged.reserve(swaps.size());
+#endif
     kept.reserve(swaps.size());
     for (const Swap& s : swaps) {
         if (!src.has_resident(s.layer, s.in) || src.has_resident(s.layer, s.out)) { kept.push_back(s); continue; }
@@ -5682,6 +5688,8 @@ int main(int argc, char** argv) {
             if ((int) swaps.size() > o.adapt_swaps) swaps.resize((size_t) o.adapt_swaps);
             if (!resident_stage_swaps(src, xcache, host_res, g.n_expert, swaps, adapt_stream)) return false;
 #ifdef STRATA_ENABLE_SYCL
+            // No bookkeeping allocation may follow an accepted refill copy.
+            pending.reserve(swaps.size());
             for (auto& s : swaps) {
                 const size_t out = size_t(s.layer) * size_t(g.n_expert) + size_t(s.out);
                 s.slot = host_res[out];
@@ -6827,10 +6835,22 @@ int main(int argc, char** argv) {
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
                 if (from_sfx) { ++sfx_windows; sfx_drafts += T - 1; sfx_ok += a; }
                 const Clock::time_point tw1 = Clock::now();
-                std::thread adapt_thr;   // the adaptive tier beside the commit and the draft (as in generate)
                 bool adapt_ok = true;
+                std::thread adapt_thr;   // the adaptive tier beside the commit and the draft (as in generate)
+#ifdef STRATA_ENABLE_SYCL
+                strata::sycl_backend::CheckedWorkerJoin adapt_join(adapt_thr);
+#endif
                 if (!drive.d.usage.empty() && ((rounds + 1) % o.adapt_every) == 0)
-                    adapt_thr = std::thread([&] { adapt_ok = adapt(); });
+                    adapt_thr = std::thread([&] {
+#ifdef STRATA_ENABLE_SYCL
+                        adapt_ok = strata::sycl_backend::checked_worker(adapt, [] {
+                            if (cudaDeviceSynchronize() != cudaSuccess)
+                                throw std::runtime_error("serve adaptive completion unknown");
+                        }, "serve adaptive work failed before retirement");
+#else
+                        adapt_ok = adapt();
+#endif
+                    });
                 if (!ver.commit(a + 1, err)) {
                     if (adapt_thr.joinable()) adapt_thr.join();
                     std::printf("ERR %s\n", err.c_str());
@@ -7819,6 +7839,7 @@ int main(int argc, char** argv) {
                 return false;
             }
 #ifdef STRATA_ENABLE_SYCL
+            pending.reserve(swaps.size());
             for (auto& s : swaps) {
                 const size_t out = size_t(s.layer) * size_t(g.n_expert) + size_t(s.out);
                 s.slot = host_res[out];
@@ -7977,10 +7998,22 @@ int main(int argc, char** argv) {
             }
             // plan v0.3 P6: the adaptive tier's host work (ranking, copy submission) runs on its own thread while the
             // GPU commits and drafts; it touches only the residency tables, which nothing reads until the next window
-            std::thread adapt_thr;
             bool adapt_ok = true;
+            std::thread adapt_thr;
+#ifdef STRATA_ENABLE_SYCL
+            strata::sycl_backend::CheckedWorkerJoin adapt_join(adapt_thr);
+#endif
             if (!drive.d.usage.empty() && ((rounds + 1) % o.adapt_every) == 0)
-                adapt_thr = std::thread([&] { adapt_ok = adapt(); });
+                adapt_thr = std::thread([&] {
+#ifdef STRATA_ENABLE_SYCL
+                    adapt_ok = strata::sycl_backend::checked_worker(adapt, [] {
+                        if (cudaDeviceSynchronize() != cudaSuccess)
+                            throw std::runtime_error("standalone adaptive completion unknown");
+                    }, "standalone adaptive work failed before retirement");
+#else
+                    adapt_ok = adapt();
+#endif
+                });
             if (!ver.commit(a + 1, err)) {
                 if (adapt_thr.joinable()) adapt_thr.join();
                 std::fprintf(stderr, "strata generate: %s\n", err.c_str());

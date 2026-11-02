@@ -11,6 +11,7 @@
 #include <cstring>
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
+#include <stdexcept>
 #endif
 
 namespace strata::core {
@@ -304,29 +305,39 @@ bool ExpertCache::open_sized(const std::vector<int64_t>& slot_bytes, int64_t n_l
 
 void ExpertCache::close() {
 #ifdef STRATA_ENABLE_SYCL
-    if (scratch_state_) {
+    if (scratch_state_ || base_ || blocking_staging_) {
         strata::sycl_backend::checked_cleanup([&] {
             // Refuse the close before waiting/freeing when the loan is live.
-            scratch_state_->close();
+            if (scratch_state_) scratch_state_->close();
             if (cudaDeviceSynchronize() != cudaSuccess)
-                throw std::runtime_error("cache scratch: parent completion unknown");
-        }, [] {}, "cache scratch parent closed before verified retirement/refill");
+                throw std::runtime_error("cache: parent completion unknown");
+        }, [] {}, "cache parent closed before verified retirement/refill");
     }
 #endif
 #if defined(STRATA_USE_HIP) || defined(STRATA_ENABLE_SYCL)
-    if (blocking_staging_) (void) cudaFreeHost(blocking_staging_);
+    if (blocking_staging_) {
+#ifdef STRATA_ENABLE_SYCL
+        strata::sycl_backend::checked_cleanup([&] {
+            if (cudaFreeHost(blocking_staging_) != cudaSuccess)
+                throw std::runtime_error("cache: host staging free failed");
+        }, [] {}, "cache host staging retirement failed");
+#else
+        (void) cudaFreeHost(blocking_staging_);
+#endif
+    }
     blocking_staging_ = nullptr;
     blocking_staging_bytes_ = 0;
 #endif
     off_.clear();
     slot_sizes_.clear();
     if (base_ != nullptr) {
-        const auto released = cudaFree(base_);
 #ifdef STRATA_ENABLE_SYCL
-        if (scratch_state_ && released != cudaSuccess)
-            strata::sycl_backend::cleanup_fail_stop("cache scratch parent free failed");
+        strata::sycl_backend::checked_cleanup([&] {
+            if (cudaFree(base_) != cudaSuccess)
+                throw std::runtime_error("cache: parent free failed");
+        }, [] {}, "cache parent retirement failed");
 #else
-        (void) released;
+        (void) cudaFree(base_);
 #endif
         base_ = nullptr;
     }
