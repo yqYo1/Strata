@@ -884,8 +884,10 @@ Initial V1 admission at`811fdd99c`refuses before creating its output root or
 running a compiler/device:the added CMake test target changes a file consumed
 by the older native source qualification. Keep that failed admission. Restore
 the qualified CMake file byte-exactly and use the independent component recipe
-in a new V2 plan;do not refresh the frozen native hashes. The correction and
-oracle have not yet been built or executed.
+in a new V2 plan;do not refresh the frozen native hashes. V2 preparation at
+`9974789b0`now passes all six preprocessing commands and pins806actual
+source/header inputs against the qualified native/SDK inventory. Component
+compilation,the generator syntax check and device execution remain pending.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
