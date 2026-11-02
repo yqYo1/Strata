@@ -1016,6 +1016,18 @@ prose,thinking on and immutable ADAPT_SYNC1. Its273source inputs and frontend
 qualification are committed before model launch. The older failed cohort
 remains failed. Every process must close and be committed before its successor;
 long-answer eligibility and observed MTP regimes precede any gain claim.
+The new reference process0now passes both long requests,normal native exit0,
+quiet validation,closed owners and no fresh fault. After four official warmups,
+code generates3170tokens at13.296768tok/s,with55.506s client TTFT and82.4388%
+draft acceptance. Subsequent prose generates7275tokens at8.658100tok/s,with
+41.934s TTFT and38.9236%acceptance. Both include thought and an answer body;
+TG here is generated_tokens*1000/decode_ms. These are one process's two samples,
+not the completed repeated comparison or its final full-model-hash gate.
+Its cache hits are10.9%and6.7%of target expert entries. Unconditional native
+footers conserve CPU entries plus cache hits against all lookups with zero GPU
+miss-upload groups. CPU expert jobs number1221484/3743079;their minimum NT1
+fractions are72.0253%/39.3661%. These are request work counts,not physical
+traffic or CPU/GPU time shares. The next paired process uses cap8unchanged.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
