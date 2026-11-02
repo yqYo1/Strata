@@ -1109,9 +1109,10 @@ quiet final validation,no fresh fault,closed owners and all15final model hashes
 are verified. First-use PP/TTFT is971.1tok/s/121.181s;the subsequent request is
 1044.3tok/s/112.684s. This is logged extent/lifecycle evidence,not clean repeated
 speed,sustained TG,numerical/task or physical262144/RESTORE qualification.
-V1/V2stay failed. Retire the successful V3raw output and the consumed V2capture
-after publication;keep V3record/config/plan/runtime inputs only while the next
-proof reads them. Maintained`cache_map_prefill_speed.py`source`3191953d9`adds
+V1/V2stay failed. After publication and source/recipe recovery,the successful
+V3raw output and consumed V2capture are retired:74files,15574157bytes.
+Keep V3record/config/plan/runtime inputs only while the next proof reads them.
+Maintained`cache_map_prefill_speed.py`source`3191953d9`adds
 three fresh clean processes with four same-length bench.sh requests each.
 First use stays separate;the median of the next three requests is the process
 unit,and all three process medians must reach1000tok/s for that117K milestone.

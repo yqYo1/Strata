@@ -94625,13 +94625,11 @@
         "sha256": "51413b6f9106d89c9d580a919a7f19318836ca6430fb565b15d38ad15767b6dc",
         "maximum_bytes": 2097152,
         "owner": "Main",
-        "consumer": "Immediate committed long-split parser correction and offline replay of both failed-request windows;retire after fresh corrected extent qualification. Original V2 remains failed."
+        "consumer": "Ended after committed parser replay and freshV3 extent qualification.",
+        "retired": true,
+        "retirement_manifest_sha256": "1174cbe12e44b4db076183218f4a32ee9325f86a2cc9a85ae7f8ee5cba2d27b9"
       },
-      "next": "Use the already-maintained long-route bank/split guard geometry and preserve full checkpoint/owner checks in a new private adapter. Commit new controls/plan before offline replay or any fresh model run. Keep V1/V2 failures intact;no hardware fault diagnosis or automatic retry."
-    },
-    "source_inputs": {
-      "files": 274,
-      "aggregate_sha256": "4901d804c63fa7b1a58b32a0351db36dff2cc72aab0b25eade852433c8e888df"
+      "next": "Parser replay and freshV3 extent pass;original V2 remains failed.Next collect new clean repeated117K speed;captured raw consumer ended."
     },
     "closed_output_retirement": {
       "complete": true,
@@ -94645,6 +94643,10 @@
         "engine.stderr"
       ],
       "source_files_recovered": 274
+    },
+    "source_inputs": {
+      "files": 274,
+      "aggregate_sha256": "4901d804c63fa7b1a58b32a0351db36dff2cc72aab0b25eade852433c8e888df"
     }
   },
   "cache_map_prefill_parser_v3": {
@@ -94659,7 +94661,9 @@
     "fixture": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/prefill-read117489-v2/engine.stderr",
       "bytes": 1672682,
-      "sha256": "51413b6f9106d89c9d580a919a7f19318836ca6430fb565b15d38ad15767b6dc"
+      "sha256": "51413b6f9106d89c9d580a919a7f19318836ca6430fb565b15d38ad15767b6dc",
+      "retired": true,
+      "retirement_manifest_sha256": "1174cbe12e44b4db076183218f4a32ee9325f86a2cc9a85ae7f8ee5cba2d27b9"
     },
     "controls": {
       "passed": true,
@@ -95267,6 +95271,22 @@
         "devcoredump": false
       },
       "passed": true
+    },
+    "closed_output_retirement": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261103-prefill-v3.json",
+      "manifest_sha256": "1174cbe12e44b4db076183218f4a32ee9325f86a2cc9a85ae7f8ee5cba2d27b9",
+      "files": 74,
+      "bytes": 15574157,
+      "deleted_verified": true,
+      "original_controller_inputs_recovered": 274,
+      "original_native_inputs_recovered": 558,
+      "retained_files": [
+        "config.json",
+        "plan.json",
+        "record.json",
+        "runtime-inputs.json"
+      ],
+      "consumer": "V3record/config/plan/runtime inputs support immediate clean117K proof;review after clean cohort closes.No engine or fixture build generation removed."
     },
     "source_inputs": {
       "files": 274,
