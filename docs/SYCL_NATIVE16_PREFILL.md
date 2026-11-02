@@ -818,12 +818,15 @@ The traced check requires six named clean kernels and three copies inside the
 recorded window,plus two uniquely joined late kernels after owner release.
 The original direct numerical check is reused;one traced case is allowed,with
 the same180s/64MiB device and256MiB whole-output bounds. V2 preparation at
-`3259ae20b`passes the original638input/ELF/runtime checks;its traced GPU check
-is pending. Do not rebuild or retry V1. The completed collector source review
-does not establish that paused construction caused the loss:its append path
-can recognize graphs while paused. If fully active collection still loses the
-kernels,child-command tracking/submission/emission remains the concrete issue;
-missing events cannot count as GPU idle.
+`3259ae20b`passes the original638input/ELF/runtime checks. Its single traced
+case now closes with native0,quiet validation,closed owners,unchanged boot/driver
+and no fresh fault. All six clean graph kernels,three copies and two late
+kernels have unique instance joins;all numerical/guard/timer gates pass.
+The60112-byte trace qualifies fully active fixture coverage only,not paused
+boundaries or model observer cost. Do not rebuild or retry V1. This pass does
+not isolate which V1 control boundary lost graph events. The completed source
+review shows that append recognition can work while paused;paused construction
+alone is not a proven cause. Missing events cannot count as GPU idle.
 Request-scoped decode gates,guard bands,clock/loss checks
 and model observer overhead remain the next qualification steps after the
 fixture.
@@ -837,15 +840,32 @@ The new failed next-GEN task supplies one different,report-only Orca Luna
 question:do scratch-loan restoration and adaptive residency still name the
 same expert payloads,and which current IQ3 numerical controls can distinguish
 that error from ordinary CPU/GPU rounding? This is a bounded semantic review,
-not a diagnosis from text divergence. Main continues collector qualification;
-native Luna-max reviews the returned report before implementation decisions.
+not a diagnosis from text divergence. Native Luna-max review now confirms a
+conditional mapping defect:adaptive swaps change
+`host_res`and`d_res`,but the one-token hit callback still asks
+`ExpertCache::slot_of`,whose private residency table is unchanged. A routed
+victim can therefore select a slot now holding another expert. The failed v5
+task is not proof that this callback was reached or caused its output.
+The measured engine is a composition of`521c1757b`plus the reversible
+`5465f65d0..f8f632341`program delta,not the raw`20f2a971`tree. Its generated
+program SHA is`040f7ae162375499cb60f1f5f56955172b5e038218eefd31df8a1dfdb7f107c9`;
+the review inspected raw`20f2a971`SHA`9a7f38c3...`. Main verifies both serve
+and standalone adapt/apply-pending bodies are identical in those sources,and
+the three cache/source files match the measured manifest. The defect therefore
+applies to the measured composition without relabeling its native source.
+Prioritize a committed small mapping/payload oracle before more model profiling:
+force one swap,exclude both identities while copying,then compare host/device/
+callback identities and incoming payload bytes;loan/refill that same slot once.
+Correct the decode mapping transaction without changing prefill selection or
+placement. Fixed-token/task and repeated clean speed checks follow separately;
+the current candidate is not adopted,and262144/RESTORE qualification remains.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
 preserves the dependency before and after a graph submitted to an in-order
 queue;this is the ordering used by the bounded host-task gate. The fixture
 does not query SYCL graph profiling timestamps;its timings come from the
-existing collector. Runtime boundary behavior remains untested.
+existing collector. Paused request-boundary behavior remains unqualified.
 Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
 36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
 costs. Keep payload/task,other exit paths,full256K and broader adoption pending.

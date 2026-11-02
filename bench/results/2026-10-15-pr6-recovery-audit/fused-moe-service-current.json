@@ -89586,7 +89586,7 @@
     "build_environment_sha256": "69928cf6e225bd1816ca3ad35fdde367176f6564ffe55aa4bc965e83fd32b5a3"
   },
   "decode_window_observer_v2": {
-    "stage": "prepared",
+    "stage": "checked",
     "source_commit": "3259ae20b090f5b8569bfd3ab7d4f0f27f4b550f",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -89686,11 +89686,114 @@
         "LD_DEBUG": "libs"
       }
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "cases": [],
+    "cases": [
+      {
+        "mode": "trace",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "clock_bounds": {
+          "phase_clocks": {
+            "before-runtime": {
+              "raw_ns": 1936880696170691,
+              "monotonic_ns": 1936896143155059,
+              "boottime_ns": 1936896143155540
+            },
+            "runtime-ready": {
+              "raw_ns": 1936880829571658,
+              "monotonic_ns": 1936896276557054,
+              "boottime_ns": 1936896276557415
+            },
+            "captured-paused": {
+              "raw_ns": 1936880884758159,
+              "monotonic_ns": 1936896331744223,
+              "boottime_ns": 1936896331744343
+            },
+            "replay-drained": {
+              "raw_ns": 1936880889695398,
+              "monotonic_ns": 1936896336680868,
+              "boottime_ns": 1936896336681068
+            },
+            "late-enqueued": {
+              "raw_ns": 1936880893090504,
+              "monotonic_ns": 1936896340075900,
+              "boottime_ns": 1936896340076011
+            },
+            "late-drained": {
+              "raw_ns": 1936880898509567,
+              "monotonic_ns": 1936896345495094,
+              "boottime_ns": 1936896345495204
+            },
+            "before-exit": {
+              "raw_ns": 1936880901477583,
+              "monotonic_ns": 1936896348463042,
+              "boottime_ns": 1936896348463152
+            }
+          },
+          "controls": [
+            {
+              "action": "resume",
+              "before_ns": 1936880697750944,
+              "after_ns": 1936880820708967
+            },
+            {
+              "action": "stop",
+              "before_ns": 1936930532893643,
+              "after_ns": 1936930669228171
+            }
+          ],
+          "capture_begin": 1936880820947535,
+          "begin": 1936880886682387,
+          "end": 1936880891408440,
+          "late_release": 1936880894547377,
+          "capture_end": 1936881014071680
+        },
+        "clock_domain": "CLOCK_MONOTONIC_RAW",
+        "native_exit_code": 0,
+        "trace": {
+          "expected_clean_kernels": 6,
+          "observed_clean_kernels": 6,
+          "active_late_graph_kernels_observed": 2,
+          "collection_active_through_native_exit": true,
+          "gpu_interval_union_us": 38.64208984375,
+          "kernel_interval_union_us": 21.4560546875,
+          "host_api_interval_union_us": 795.032958984375,
+          "window_wall_us": 4726.052978515625,
+          "included_instance_joins_unique": true,
+          "timeline_sha256": "88f9c9e60d8208f3457b1ec12aacbf7890c8b66ff7d8e740fba7a00c96344fc6",
+          "timeline_bytes": 60112,
+          "lossless_boundary_qualified": false,
+          "model_observer_cost_qualified": false
+        },
+        "validation": {
+          "pid": 2044351,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "limits": "One observer fixture,not another engine generation. No model,observer-cost,full-context or saturation qualification.",
     "consumer": "Qualify paused graph construction/replay and pause-crossing metadata before the planned bounded decode capture. Retire raw capture after that question closes;retain exact source/recipe and compact counts.",
     "dependencies": {
@@ -89725,6 +89828,13 @@
         "file_cap": 33554432,
         "total_cap": 67108864
       }
+    },
+    "decision": {
+      "fully_active_fixture_graph_coverage_qualified": true,
+      "paused_graph_construction_qualified": false,
+      "paused_boundary_qualified": false,
+      "model_capture_qualified": false,
+      "next": "Separately qualify paused construction/flush and a request-scoped decode gate,guard bands,clock/loss checks and model observer cost."
     },
     "sources_sha256": "c8815288281e2beeecdb5781bf571f8a41e938ddd160fdbb02d4bf51e6e51541",
     "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065",
