@@ -1040,9 +1040,14 @@ whole-cohort model-asset rehash is not reached. Orca Luna research and native
 Luna-max review resolve the request to greedy sampling with uncapped thought;
 configured penalties remain possible and live sampler defaults are unobserved.
 The reviewed native pin is the actual composed build,not the main worktree's
-generator. Next commit a separate thinking-on output-room feasibility plan,
-holding sampler,prompt,placement and MTP fixed. A reasoning cap is a mechanism
-probe,not a model recommendation or evidence of why the trajectories differ.
+generator. The prospective`cache_map_generation_room_v1`uses the existing
+`--long-generation-max-tokens 32768`option in one fresh cache8process,keeping
+the same four warmups,code then prose,input,greedy/uncapped thinking,placement
+and MTP. Only total output room changes. Unlike a reasoning cap,this does not
+invoke the server's STOP/wrap/continuation GEN path. It tests answer feasibility,
+not a speedup,task quality or why trajectories differ. The benchmark/native
+sources remain unchanged;only the maintained policy adapter changes. Source,
+prepared plan and frontend probes must be committed before native execution.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
