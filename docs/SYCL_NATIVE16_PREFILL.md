@@ -915,8 +915,15 @@ comparison/MTP/profile modes and the old constructor/fixture-reuse preparation
 are retired;their Python source remains a frozen provenance input,while old
 admission must refuse after deletion. Original failed ownership flags remain
 failed;their separate cleanup evidence and fresh absence of all five recorded
-actor PIDs establish that no old run is active. Deletion and its subsequent
-current-admission check remain pending in`gdn16_model_fallback_retirement_v1`.
+actor PIDs establish that no old run is active. Serialized retirement now removes
+the old nine ELFs,build/source trees and unconsumed build/compiler-map receipts:
+737files/164221232bytes,with a path/hash/reason manifest. The old admission
+refuses on its missing build record;current adaptive/device/map admission still
+passes without any old-root read. The current nine-ELF fallback and seven map
+artifacts remain. Child model/component/profile receipts and their separate
+raw-output review are outside this generation retirement;legacy holds are
+unchanged. See`gdn16_model_fallback_retirement_v1`for original source recovery
+and exact deletion evidence.
 Main's new
 `tools/sycl/build_cache_map_model.py`composes exactly the three component-qualified
 cache files on the measured557-file adaptive source,without changing CMake.
