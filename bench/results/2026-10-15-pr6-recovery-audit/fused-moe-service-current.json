@@ -89390,7 +89390,7 @@
     "scope": "Closed v5 pilot only;current comparison,model assets,two engine generations and legacy provenance holds unchanged."
   },
   "decode_window_observer_v1": {
-    "stage": "built",
+    "stage": "failed",
     "source_commit": "e91882d8128eb20a0735de285a68ceae58eba806",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -89494,7 +89494,56 @@
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "cases": [],
+    "cases": [
+      {
+        "mode": "direct",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1958399,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "trace",
+        "passed": false,
+        "complete": false,
+        "host_probe_accepted": false,
+        "error": "ValueError('GPU kernels/host APIs missing from window')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "limits": "One observer fixture,not another engine generation. No model,observer-cost,full-context or saturation qualification.",
     "consumer": "Qualify paused graph construction/replay and pause-crossing metadata before the planned bounded decode capture. Retire raw capture after that question closes;retain exact source/recipe and compact counts.",
     "dependencies": {
@@ -89506,6 +89555,31 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/fixture",
       "sha256": "0e5b4223f1710e01b20b85cf8c05200aebd3eceee55965524e3b358769afc523",
       "bytes": 158168
+    },
+    "failure_diagnosis": {
+      "mechanism": "Native graph arithmetic/guards pass in both processes,but timeline contains no graph kernels after paused construction. The bounded collector coverage gate fails;this is not a measured GPU idle interval.",
+      "observed_native_exit_codes": {
+        "direct": 0,
+        "trace": 0
+      },
+      "total_timeline_gpu_operations": 4,
+      "gpu_names": {
+        "zeCommandListAppendMemoryCopy(D2M)[1164]": 3,
+        "zeCommandListAppendBarrier": 1
+      },
+      "total_timeline_host_api_spans": 24,
+      "named_graph_kernel_events": 0,
+      "timeline": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/trace/trace/fixture.1962899.json",
+        "sha256": "d3ad321e91a76fba3180a4fff8d4c746155b9205fbdb9e600ce84cc8c47bbf8d",
+        "bytes": 7046
+      },
+      "native_graph_markers": "Both print3clean replays/6kernels/3readbacks plus1late replay/2kernels,numerical/guards PASS,pending1,timer_fallback0.",
+      "safe_window_bounds_persisted": false,
+      "original_failed_outcome_preserved": true,
+      "model_capture_qualified": false,
+      "next": "New controller-only plan:reuse the exact158168-byte fixture/all638compiler inputs;collect during graph construction and retain every gate/control clock bound. Do not retry this failed paused-construction plan.",
+      "retention": "Keep one7046-byte timeline and the matching graph progress/provider/API diagnostic through the bounded active-construction/source review. Retire redundant raw after it resolves."
     },
     "sources_sha256": "30409407d716908922dad6427428dcef6b956968c98b03dff64e896c94762fea",
     "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065",

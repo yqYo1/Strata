@@ -801,8 +801,16 @@ with the pinned2026.2compiler:preprocessing exits0and all638actual source/header
 inputs match the frozen SDK/native inventory. The committed prepared plan
 then builds with exit0in4.251s;actual dependencies match all638pins. The
 158168-byte fixture ELF hashes to`0e5b4223f1710e01b20b85cf8c05200aebd3eceee55965524e3b358769afc523`.
-Owners close;no fixture GPU execution has occurred. Commit this ELF/dependency
-result before`python3 -B tools/sycl/profile_window.py check`.
+Both direct and traced fixture processes now exit0with all numerical/guard
+checks,three clean replays/six kernels and the pending late replay passing;
+timer fallback stays0. Both close with quiet validation and no fresh fault.
+The observer check nevertheless fails:the7046-byte timeline has24host API spans,
+three memory copies and one barrier,but zero named graph kernels. Do not
+interpret its missing events as idle or qualify a model capture. The V1
+controller also did not persist its inner clock bounds;that omission stays
+explicit in the failed result. The next committed controller-only plan must
+retain gate/control bounds and compare active graph construction while reusing
+the exact fixture and all638compiled inputs. Do not rebuild or retry V1.
 Request-scoped decode gates,guard bands,clock/loss checks
 and model observer overhead remain the next qualification steps after the
 fixture.
