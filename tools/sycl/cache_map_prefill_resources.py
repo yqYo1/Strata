@@ -225,7 +225,43 @@ def selfcheck():
         except RuntimeError:rejected+=1
         else:raise RuntimeError('failed route continued')
         require(len(target.sent)==1,'failed route forwarded continuation')
-    return dict(passed=True, valid_gate_pair=1, rejected=rejected, GPU_executed=False)
+    return dict(passed=True, valid_gate_pair=1, rejected=rejected,
+                finalization=policy_controls(), GPU_executed=False)
+
+
+def policy_controls():
+    """Exercise private-policy finalization; mock only journal/driver I/O."""
+    import tempfile
+    from unittest.mock import patch
+    before = (maintained.ROOT, maintained.KEY, maintained.build,
+              maintained.build.supervision, maintained.build.supervision.Owner)
+    ctx = context()
+    require(before == (maintained.ROOT, maintained.KEY, maintained.build,
+            maintained.build.supervision, maintained.build.supervision.Owner)
+            and ctx.build is not maintained.build
+            and ctx.build.supervision is not maintained.build.supervision
+            and ctx.build.supervision.Owner is not maintained.build.supervision.Owner,
+            'private policy changed imported supervision')
+    validation = ctx.shared.runtime.validation
+    boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+    cases = ('valid', 'missing_route', 'invalid_ttft', 'late_warning', 'driver_changed', 'request_failed')
+    with tempfile.TemporaryDirectory() as name:
+        root = Path(name)
+        ctx.case_plan, ctx.expected_driver = dict(index=0, root=str(root)), {'qualified': True}
+        for case in cases:
+            ctx.checked[0] = [{}] * (ctx.RUNS - (case == 'missing_route'))
+            (root/'validation.log').write_text('late warning' if case == 'late_warning' else '')
+            outcome = dict(complete=True, model_executed=True, native_exit_code=0,
+                samples=[dict(ttft_s=2 if case == 'invalid_ttft' else 1, total_s=1)])
+            if case == 'request_failed': outcome['error'] = 'forced request failure'
+            driver = {} if case == 'driver_changed' else ctx.expected_driver
+            with patch.object(validation.subprocess, 'check_output', return_value=''), \
+                    patch.object(validation.guards, 'driver_guard', return_value=driver):
+                ctx.finish_process(outcome, SimpleNamespace(active=None, commands=[]), 'CPU-fixture', boot)
+            require(outcome['passed'] is (case == 'valid') and outcome['ownership_closed'],
+                    'private finalization admitted invalid evidence: ' + case)
+    return dict(passed=True, valid=1, rejected=len(cases)-1, imported_context_unchanged=True,
+                actual_shared_finalizer=True, hardware_I_O_mocked=True, GPU_executed=False)
 
 
 if __name__ == '__main__':
