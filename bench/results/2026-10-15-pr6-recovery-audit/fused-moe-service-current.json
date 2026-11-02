@@ -91526,7 +91526,7 @@
     "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065"
   },
   "cache_map_model_entry_zero_v1": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "ad9900a57c186bb4711d14044b35a872f7280250",
     "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "binary": {
@@ -91827,7 +91827,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -91843,6 +91843,20 @@
       "unchanged_math_fixture_count": 8,
       "reuse": "Identical normalized production compile/link recipe and eight fixture ELFs;source changes are the declared cache-map/worker correction only. Fresh real-copy/cache-close error evidence replaces the retired-generation entry proof. No new host-canary/submission or model qualification is claimed."
     },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 190,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 272,
       "aggregate_sha256": "6d56328e380880454c1470eadcb36ab6867d7900e1c91e51761a3ae76d577d21"
