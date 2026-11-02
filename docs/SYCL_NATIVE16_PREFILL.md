@@ -906,7 +906,18 @@ The reviewed consumer audit identifies the existing adaptive generation as an
 eligible development fallback,distinct from inference adoption. Its closed
 device/two-request lifecycle and fixture-reuse receipts do not require another
 cohort;old GDN modes remain actual filesystem readers when invoked and must be
-retired or redirected before deleting their build. Main's new
+retired or redirected before deleting their build. The retirement admission now
+recovers the original557-file source and recipe`cb6ffca7e`,matches1451actual
+compiler inputs and all nine old ELFs,and verifies current adaptive/device/map
+admission without reading the old root. Select the existing adaptive generation
+as the development fallback,using cap0for model fallback work. Closed old GDN
+comparison/MTP/profile modes and the old constructor/fixture-reuse preparation
+are retired;their Python source remains a frozen provenance input,while old
+admission must refuse after deletion. Original failed ownership flags remain
+failed;their separate cleanup evidence and fresh absence of all five recorded
+actor PIDs establish that no old run is active. Deletion and its subsequent
+current-admission check remain pending in`gdn16_model_fallback_retirement_v1`.
+Main's new
 `tools/sycl/build_cache_map_model.py`composes exactly the three component-qualified
 cache files on the measured557-file adaptive source,without changing CMake.
 Preparation refuses until original-source recovery,old-generation retirement

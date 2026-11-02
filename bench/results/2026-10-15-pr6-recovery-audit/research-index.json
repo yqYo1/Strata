@@ -21214,5 +21214,33 @@
       "bytes": 12536,
       "deleted_verified": true
     }
+  },
+  "cache_map_reader_lifetime_20261102": {
+    "classification": "decision_support",
+    "status": "ready",
+    "schedulable_now": true,
+    "question": "In the tested three-file cache mapping correction,do all serve/standalone adaptive updates retire CPU callback readers and GPU readers before replacing the private map or overwriting slots? Trace actual caller joins/window/queue dependencies,and distinguish real gaps from unreachable unsupported modes.",
+    "prerequisites": [
+      {
+        "met": true,
+        "evidence": "9974789b0 mapping/payload/loan fixture passes at ccfcd21d3;f9c15df15 projection checks the measured557-file composition changes exactly cache core/header/program."
+      },
+      {
+        "met": true,
+        "evidence": "Original/current source and reader audit is reviewed. The new map setter copies a vector at adaptive publication;the prior report predates this correction and did not qualify its actual reader lifetime."
+      }
+    ],
+    "source_commit": "f9c15df159a7d25fc4d3ec880f0bdb3ce6c66f85",
+    "source_identity": "Use exact tested component projection at external residency-map-v2 for the three changed files,plus adaptive-cache-model-v1/source for unchanged files. The generator is521c+5465f65d0..f8f632341+3e22e21b0..9974789b0;raw HEAD is not this measured engine.",
+    "report": ".cache/research/2026-11-02/cache_map_reader_lifetime_20261102.md",
+    "report_budget_bytes": 14336,
+    "previous_reports": [
+      ".cache/research/2026-11-02/adaptive_cache_after_gen_payload_contract_20261102.md",
+      ".cache/research/2026-11-02/review_adaptive_cache_payload_contract_20261102.json",
+      ".cache/research/2026-11-02/fallback_consumer_audit_review_20261102.json"
+    ],
+    "consumer": "Main changed-engine bounded device/model qualification and any necessary synchronization correction. Research writes no product code;Main manages all tests/GPU work.",
+    "review_point": "After Orca settlement/native Luna-max review,before adopting positive swaps on the changed engine.",
+    "constraints": "Orca gpt-6-luna high;report only,no Git/build/test/GPU/profiler/process actions,no task steering,no agents,no XeStrata derivation. Honor actual projected-source pins and recorded immutable safety envelope. Main keeps source/retirement/build work moving."
   }
 }
