@@ -790,6 +790,13 @@ sets180s/64MiB per-device-process and256MiB whole-observer output bounds;it
 does not rebuild the inference engine. This controller is not yet executed:
 request-scoped decode gates,guard bands,clock/loss checks and model observer
 overhead remain the next qualification steps after the fixture.
+Before first build,the fixture header is corrected to the installed2026.2
+`sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
+[queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
+preserves the dependency before and after a graph submitted to an in-order
+queue;this is the ordering used by the bounded host-task gate. The fixture
+does not query SYCL graph profiling timestamps;its timings come from the
+existing collector. Runtime boundary behavior remains untested.
 Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
 36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
 costs. Keep payload/task,other exit paths,full256K and broader adoption pending.

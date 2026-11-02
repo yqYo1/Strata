@@ -3,7 +3,7 @@
 // Graph construction uses the installed SYCL command_graph interface. The
 // external owner controls collector state at each stdin gate, never getenv.
 #include <sycl/sycl.hpp>
-#include <sycl/ext/oneapi/experimental/command_graph.hpp>
+#include <sycl/ext/oneapi/experimental/graph.hpp>
 
 #include <array>
 #include <chrono>
