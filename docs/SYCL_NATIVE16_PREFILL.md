@@ -1089,11 +1089,9 @@ speed or sustained-TG evidence. The private32K progress checker incorrectly
 requires an inactive accumulator split. This117K route has the existing active
 split:65536primary rows,531988480tail bytes,128prefill slots and two checked
 guard/final-drain completion markers. The final whole-model rehash is not reached.
-Keep V2failed. Next combine the maintained long-route bank/split geometry checks
-with full checkpoint/owner validation in a fresh private adapter,then commit and
-replay the two captured windows before a fresh model scope. Its1.67MBstderr is
-held within2MiB only for that immediate parser correction;retire it after fresh
-extent qualification. All274original controls are recovered from Git. The earlier
+Keep V2failed. Its1.67MBstderr was held within2MiB only for the immediate parser
+correction and fresh extent qualification below;that consumer has now ended.
+All274original controls are recovered from Git. The earlier
 V1pre-owner admission failure remains in`cache_map_prefill_read117489_admission_v1`.
 Neither failed scope qualifies the current length fit,physical262144 or RESTORE.
 The V3adapter now validates the real117K residual/bank/split
@@ -1104,9 +1102,22 @@ the actual active split. Committed source`70569e2fe`passes64negative controls,
 the existing positive shapes,and both captured V2windows:2958/2959checkpoint
 pairs,48windows,540GDN16/GDN3calls and15MTP16callbacks per request. The compact
 parser evidence is`cache_map_prefill_parser_v3`;all274original inputs are
-recovered. Commit it before preparing a fresh V3model scope with unchanged native inputs,
-decode placement and runtime safety. V2stays failed;offline replay supplies
-no new model,clean-speed or numerical evidence.
+recovered. The fresh V3model scope(source`79151b3c6`,same552bengine)now closes
+passed:both117489-read/117488-row requests,thinking on,24outputs,zero reuse,
+checked split/bank drains and full checkpoint coverage pass. Native exit0,
+quiet final validation,no fresh fault,closed owners and all15final model hashes
+are verified. First-use PP/TTFT is971.1tok/s/121.181s;the subsequent request is
+1044.3tok/s/112.684s. This is logged extent/lifecycle evidence,not clean repeated
+speed,sustained TG,numerical/task or physical262144/RESTORE qualification.
+V1/V2stay failed. Retire the successful V3raw output and the consumed V2capture
+after publication;keep V3record/config/plan/runtime inputs only while the next
+proof reads them. Maintained`cache_map_prefill_speed.py`source`3191953d9`adds
+three fresh clean processes with four same-length bench.sh requests each.
+First use stays separate;the median of the next three requests is the process
+unit,and all three process medians must reach1000tok/s for that117K milestone.
+This is a same-engine recheck,not a paired gain over the retired historical
+engine. Keep every individual sample and actual route;the length fit and wider
+adoption gates remain pending.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
