@@ -1068,10 +1068,10 @@ are mixed. Keep numerical success separate from its failed performance gate.
 No model trial or inference adoption follows. Original source,recipe and full
 individual samples are reachable at`1b5ccaecfbe36344fb74d64d6b71715e98e60235`;
 the active summary is`cpu_iq3_pair_gu_v1`. Retire unused prototype exports,
-targets and fixtures from the primary tree;the child source remains briefly
-held for the explicitly indexed,read-only Orca Luna dataflow research Task.
-That Task must distinguish a new method from this pairing and prior IQ2gather/
-activation-LUT proposals. Main reads its native Luna-max review digest.
+targets and fixtures from the primary tree. The read-only Orca Luna dataflow
+Task and native Luna-max review now close with no distinct next method. Keep
+only their compact negative decision and source corrections in the research
+index;the completed child source hold and report-body consumer have ended.
 This is single-core GU evidence,not a pool/model speed or resource ceiling.
 The measured engine's pool differs from the worktree in three files;do not
 attribute current-pool timings to that engine. A later model comparison needs
