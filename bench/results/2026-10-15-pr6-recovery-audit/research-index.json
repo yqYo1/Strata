@@ -21570,5 +21570,93 @@
       "complete": true,
       "sha256": "49f3be71fe11b0cd252d972b4b0426b8b2be02f8d325d07282876c53883c8c27"
     }
+  },
+  "official_qwen38_native16_prefill_contracts_20261103": {
+    "id": "official_qwen38_native16_prefill_contracts_20261103",
+    "classification": "knowledge_collection",
+    "status": "running",
+    "question": "At pinned official SGLang/vLLM revisions, trace the exact Qwen3.8-Flash-Next long-prefill GDN/linear-attention and routed-MoE paths. Map producer/consumer storage dtypes, local accumulation/reduction precision, router and recurrent-state precision, normalization constants, cast/rounding points, and layer/chunk handoff. Compare the source-defined contracts and identify production patterns that retain FP16/BF16 tensor storage with required local FP32 math. State missing backend paths; do not infer XPU support from CUDA/ROCm code. No port, implementation proposal, or local performance claim.",
+    "novelty": "Indexed work covers decode/MTP, another Qwen model, recurrence stability, one convolution, local integration, cast lowering, or logical bytes. None compares exact-model production prefill storage/accumulation/rounding across GDN and MoE in both frameworks.",
+    "prior_ids": [
+      "qwen38_production_moe_decode_path_20261103",
+      "qwen4exp_moe_reduction_contract_decision_20261027",
+      "gdn3_causal_convolution_gpu_dataflows_20261101",
+      "recurrent_low_precision_state_stability_collection",
+      "native_half_conversion_codegen_collection_20261101",
+      "gdn16_model_integration_contract_audit_20261101",
+      "gdn16_typed_consumer_audit_20261101",
+      "oneMKL_half_output_gdn_precision_20261101",
+      "moe_native16_traffic_scope"
+    ],
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "startup_evidence": "Explicit model/effort and research-only developer role,workspace-write/on-request,report add-dir,network/search;actual GPT-6-Luna high TUI verified before adoption. launch.effective null is not model proof.",
+    "run": "run_f883bed7d89a",
+    "task": "task_fd7f0e90c80b",
+    "dispatch": "ctx_ef1209e9e4bc",
+    "terminal": "term_a33f6d0d-676f-4a73-981e-5b4457a5b41f",
+    "incarnation": "8be164a4-109b-4d8f-90da-01e90fcd70e6",
+    "start_request": "4bffa71c-5592-49a7-b5c5-77075c9f25dd",
+    "ownership_closed": false,
+    "schedulable_now": false,
+    "main_read_report_body": false,
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/official_qwen38_native16_prefill_contracts_20261103.md",
+    "report_budget_bytes": {
+      "target": 14336,
+      "maximum": 18432
+    },
+    "whole_hold_budget_bytes": 65536,
+    "retrieval_consumer": "Native Luna-max reviewer evaluates depth/novelty and indexes retrieval metadata. Main retrieves only a relevant section for a concrete16bit producer/consumer implementation question after the current prefilling evidence;retire duplicate findings or transactions when the consumer ends.",
+    "next_review": "After accepted worker_done and actual external-terminal closure,delegate native gpt-6-luna max review. Main must not read the collection body merely because it arrives.",
+    "spec_sha256": "9f44e16a9e32e93743b4fea7f9d2a259841f30106be571e8ca7d8d0d0bb08573"
+  },
+  "gpu_native16_producer_consumer_materialization_methods_20261103": {
+    "id": "gpu_native16_producer_consumer_materialization_methods_20261103",
+    "classification": "knowledge_collection",
+    "status": "running",
+    "question": "From a few original non-LLM GPU/HPC/ASIC kernels, compare producer-consumer designs that keep GEMM accumulation in FP32 but expose FP16/BF16 intermediates: narrow-store/reload, legal fused pointwise epilogue, and wider local state where reduction or recurrence requires it. Trace actual dtypes and rounding, logical intermediate traffic, register/SLM lifetime and synchronization; explain when fusion is illegal or can lose. Map documented SYCL/Level Zero/oneDNN support boundaries. No local speed prediction or implementation proposal.",
+    "novelty": "Those scopes cover tile/autotuning, cast lowering, byte accounting, a specific GDN output, local integration, or queue submission. This compares cross-operator materialization/fusion from non-LLM workloads; it excludes those mechanisms.",
+    "prior_ids": [
+      "intel_tile_programming_collection_scope",
+      "native_half_conversion_codegen_collection_20261101",
+      "moe_native16_traffic_scope",
+      "gdn16_model_integration_contract_audit_20261101",
+      "gdn16_typed_consumer_audit_20261101",
+      "oneMKL_half_output_gdn_precision_20261101",
+      "sycl_command_submission_amortization_collection_scope"
+    ],
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "startup_evidence": "Explicit model/effort and research-only developer role,workspace-write/on-request,report add-dir,network/search;actual GPT-6-Luna high TUI verified before adoption. launch.effective null is not model proof.",
+    "run": "run_f883bed7d89a",
+    "task": "task_cf435bb14859",
+    "dispatch": "ctx_496b8f04193d",
+    "terminal": "term_055ddc7d-2274-44c5-a537-8e31876eabd9",
+    "incarnation": "774bc254-d824-4f9a-9aa6-f36d1285ea01",
+    "start_request": "2d253dee-d0ce-48f4-9b08-723097cd3937",
+    "ownership_closed": false,
+    "schedulable_now": false,
+    "main_read_report_body": false,
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/gpu_native16_producer_consumer_materialization_methods_20261103.md",
+    "report_budget_bytes": {
+      "target": 12288,
+      "maximum": 16384
+    },
+    "whole_hold_budget_bytes": 65536,
+    "retrieval_consumer": "Native Luna-max reviewer evaluates depth/novelty and indexes retrieval metadata. Main retrieves only a relevant section for a concrete16bit producer/consumer implementation question after the current prefilling evidence;retire duplicate findings or transactions when the consumer ends.",
+    "next_review": "After accepted worker_done and actual external-terminal closure,delegate native gpt-6-luna max review. Main must not read the collection body merely because it arrives.",
+    "spec_sha256": "b7af0eb39559a05f548f1541c0fd2536cb83222cd96c1c9aaffb9c64274e6707"
+  },
+  "prefill_next_scope_eligibility_20261103": {
+    "status": "reviewed_and_dispatched",
+    "model": "gpt-6-luna",
+    "effort": "max",
+    "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/prefill_next_scope_eligibility_20261103.json",
+    "sha256": "a16265477d7f5d838af352bacb378e86ef4e654676410d95de0dbfc8a57143fb",
+    "eligible_scope_ids": [
+      "official_qwen38_native16_prefill_contracts_20261103",
+      "gpu_native16_producer_consumer_materialization_methods_20261103"
+    ],
+    "consumer": "Both selections are dispatched;retire this temporary eligibility receipt at the first serialized safe cleanup after the active117K run closes. Conditional scheduling/hardware scopes remain gated."
   }
 }
