@@ -978,6 +978,16 @@ from multiple lengths,with first-use and subsequent requests separate;compare
 simple models and held-out residuals rather than assuming a linear law. Actual
 physical CPU/GPU/VRAM/PCIe saturation remains unknown. Full262144and RESTORE
 remain separate adoption gates;do not repeat the now-passed error component.
+After original source/recipe/ELF recovery from pushed history,69closed CPU/device
+build,trace and research-transaction files totaling1253714bytes are retired.
+Current admission still passes without opening either retired root. Keep only
+the current GPU fixture,dependency map and result for the imminent model check;
+the separate legacy provenance holds remain unchanged. The new
+`cache_map_model_entry.py`uses the unchanged benchmark entry in an isolated
+context,with an explicit new-generation proof and source pins. Its zero/positive
+arms retain spec4,1256slots,8192chunks and the current decode layout;each first
+checks two32K thinking-on requests. These24-output checks qualify route/lifecycle
+only,not sustained generation or a new speed record.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
