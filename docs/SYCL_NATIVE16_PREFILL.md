@@ -885,9 +885,12 @@ running a compiler/device:the added CMake test target changes a file consumed
 by the older native source qualification. Keep that failed admission. Restore
 the qualified CMake file byte-exactly and use the independent component recipe
 in a new V2 plan;do not refresh the frozen native hashes. V2 preparation at
-`9974789b0`now passes all six preprocessing commands and pins806actual
-source/header inputs against the qualified native/SDK inventory. Component
-compilation,the generator syntax check and device execution remain pending.
+`9974789b0`passes all six preprocessing commands and pins806actual
+source/header inputs against the qualified native/SDK inventory. All seven
+component compile/syntax/link commands now exit0,and actual dependencies match
+those806pins. The344344-byte fixture hashes to
+`f948a4f70379d18cb2c3debe367195e5bc8fea936513adf63d5f93b97adf880d`.
+Device execution remains pending;neither inference generation was rebuilt.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
