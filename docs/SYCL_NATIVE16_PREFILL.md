@@ -931,8 +931,11 @@ Preparation refuses until original-source recovery,old-generation retirement
 and post-retirement adaptive admission are recorded. At source`f9c15df15`,
 `python3 -B tools/sycl/build_cache_map_model.py projection`exits0,checks the
 actual qualified component and confirms557native files with exactly those
-three changes. It creates no engine build and executes no GPU work. Engine
-preparation,compilation and fresh device/model qualification remain pending.
+three changes. It creates no engine build and executes no GPU work. Preparation
+at`e811359d8`now freezes the557-source composition,nine targets,1451expected
+compiler inputs,qualified runtime/compiler environment and bounded CPU recipe
+under`cache-map-model-v1`. Compilation and fresh device/model qualification
+remain pending;the adaptive fallback is preserved.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
