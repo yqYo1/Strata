@@ -94646,5 +94646,127 @@
       ],
       "source_files_recovered": 274
     }
+  },
+  "cache_map_prefill_parser_v3": {
+    "source_commit": "70569e2fe7d5c45ce5646edbda4ce081dc6236a6",
+    "source_sha256": "8c41cc50267320ec1779785f97bd99c3a893023add898847fc552d4fd326a2a5",
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "requests": 2,
+    "preserved_failed_scope": "cache_map_prefill_read117489_v2",
+    "fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/prefill-read117489-v2/engine.stderr",
+      "bytes": 1672682,
+      "sha256": "51413b6f9106d89c9d580a919a7f19318836ca6430fb565b15d38ad15767b6dc"
+    },
+    "controls": {
+      "passed": true,
+      "valid_profile_route": 1,
+      "invalid_profile_routes": 7,
+      "MTP_callback_positive": 1,
+      "MTP_callback_negative": 5,
+      "GDN_storage_positive": 1,
+      "GDN_storage_negative": 3,
+      "GPU_executed": false,
+      "original_throughput_progress_controls": {
+        "passed": true,
+        "legacy": {
+          "passed": true,
+          "synthetic_positive_controls": 1,
+          "invalid_cases_rejected": 14,
+          "GPU_executed": false,
+          "head_payload_bytes_verified": false
+        },
+        "long_geometry": {
+          "passed": true,
+          "valid_route_shapes": 6,
+          "invalid_routes_rejected": 18,
+          "comparison_controls": 3
+        },
+        "extended_positive": 1,
+        "extended_negative": 17,
+        "GPU_executed": false
+      }
+    },
+    "routes": [
+      {
+        "rows": 117488,
+        "mode": 10,
+        "GPU_residual_rows": 117488,
+        "split_active": true,
+        "windows": 48,
+        "jobs": 23816,
+        "checkpoint_pairs": 2958,
+        "interval_jobs": 8,
+        "maximum_jobs_per_window": 557,
+        "maximum_tail_jobs": 7,
+        "requested_expert_H2D_bytes": 225576960,
+        "resource_saturation_qualified": false,
+        "target_snapshot_bytes": 521472000,
+        "draft_rebuilt_bytes": 223227900,
+        "restored_dense_layers": 48,
+        "head_payload_bytes_verified": false,
+        "split_guard_checked": true,
+        "prefill_slots": 128,
+        "staged_bank_checked_drain": true,
+        "residual_gpu_bytes": 2406154240,
+        "residual_host_bytes": 0,
+        "split_primary_rows": 65536,
+        "split_tail_payload_bytes": 531988480,
+        "strategy": "throughput",
+        "actual_route": "layer-major",
+        "GDN3_calls": 540,
+        "GDN_FP16_storage_calls": 540,
+        "GDN_FP16_storage_tokens": 4229568,
+        "MTP_prefill": {
+          "path": "batched",
+          "placement_mode": 2,
+          "callbacks": 15,
+          "nominal_cells": 117488,
+          "internal_needed_rows_and_shapes_observed": false
+        }
+      },
+      {
+        "rows": 117488,
+        "mode": 10,
+        "GPU_residual_rows": 117488,
+        "split_active": true,
+        "windows": 48,
+        "jobs": 23840,
+        "checkpoint_pairs": 2959,
+        "interval_jobs": 8,
+        "maximum_jobs_per_window": 559,
+        "maximum_tail_jobs": 7,
+        "requested_expert_H2D_bytes": 225576960,
+        "resource_saturation_qualified": false,
+        "target_snapshot_bytes": 521472000,
+        "draft_rebuilt_bytes": 223227900,
+        "restored_dense_layers": 48,
+        "head_payload_bytes_verified": false,
+        "split_guard_checked": true,
+        "prefill_slots": 128,
+        "staged_bank_checked_drain": true,
+        "residual_gpu_bytes": 2406154240,
+        "residual_host_bytes": 0,
+        "split_primary_rows": 65536,
+        "split_tail_payload_bytes": 531988480,
+        "strategy": "throughput",
+        "actual_route": "layer-major",
+        "GDN3_calls": 540,
+        "GDN_FP16_storage_calls": 540,
+        "GDN_FP16_storage_tokens": 4229568,
+        "MTP_prefill": {
+          "path": "batched",
+          "placement_mode": 2,
+          "callbacks": 15,
+          "nominal_cells": 117488,
+          "internal_needed_rows_and_shapes_observed": false
+        }
+      }
+    ],
+    "original_inputs_recovered": 274,
+    "limits": "Offline parser replay only. Original V2 remains failed;no new model,clean-speed or numerical qualification. Fresh V3 must pass its own complete model/asset/fault/owner checks."
   }
 }

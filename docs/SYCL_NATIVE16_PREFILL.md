@@ -1096,13 +1096,15 @@ held within2MiB only for that immediate parser correction;retire it after fresh
 extent qualification. All274original controls are recovered from Git. The earlier
 V1pre-owner admission failure remains in`cache_map_prefill_read117489_admission_v1`.
 Neither failed scope qualifies the current length fit,physical262144 or RESTORE.
-The prospective V3adapter first validates the real117K residual/bank/split
+The V3adapter now validates the real117K residual/bank/split
 geometry with the maintained long-route checker,including the tail guard and
 checked drains. Only then does the unchanged checkpoint/owner checker receive
 a private compatibility copy of the admission line;the reported split remains
-the actual active split. Commit the source before synthetic positive/negative
-controls and offline replay of both captured V2windows. Commit that parser
-evidence before preparing a fresh V3model scope with unchanged native inputs,
+the actual active split. Committed source`70569e2fe`passes64negative controls,
+the existing positive shapes,and both captured V2windows:2958/2959checkpoint
+pairs,48windows,540GDN16/GDN3calls and15MTP16callbacks per request. The compact
+parser evidence is`cache_map_prefill_parser_v3`;all274original inputs are
+recovered. Commit it before preparing a fresh V3model scope with unchanged native inputs,
 decode placement and runtime safety. V2stays failed;offline replay supplies
 no new model,clean-speed or numerical evidence.
 New-engine verification consumes the closed component receipt rather
