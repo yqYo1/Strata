@@ -1089,6 +1089,12 @@ extent/route/owner checks,quiet validation,all15final model hashes and no new
 fault. Keep first and subsequent latency separate;this logged extent check does
 not replace independent-process clean speed samples,the current length fit,
 sustained TG or full-context/RESTORE qualification.
+V1preparation at`11f912553`stops before creating a root or launching an owner:
+input discovery also pins the existing generation adapter added after32K entry.
+All272original inputs remain unchanged. Preserve this failed admission;V2uses
+a fresh root and additionally recovers that unchanged adapter from`70805eb7bc`.
+This controller-only delta does not inherit the failed generation pilot's status
+or change native,benchmark,workload or runtime inputs.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's

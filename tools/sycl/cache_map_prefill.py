@@ -18,8 +18,10 @@ import cache_map_model_entry as entry
 
 P,B,RESULT=entry.P,entry.B,entry.RESULT
 SOURCE='tools/sycl/cache_map_prefill.py'
-ROOT=entry.model.ROOT/'prefill-read117489-v1'
-KEY='cache_map_prefill_read117489_v1'
+ROOT=entry.model.ROOT/'prefill-read117489-v2'
+KEY='cache_map_prefill_read117489_v2'
+PRIOR_ADAPTER='tools/sycl/cache_map_generation.py'
+PRIOR_ADAPTER_COMMIT='70805eb7bc432d2bba6eb446ef1b584786775499'
 READ,ROWS,RUNS=117489,117488,2
 require,digest=entry.require,entry.digest
 
@@ -38,8 +40,15 @@ def basis(revision):
         'closed current-engine zero-swap32K qualification required')
     recovered={n:hashlib.sha256(raw).hexdigest()for n,raw in prior.shared.gen.blobs(P,row['source_commit'],row['sources'])}
     current=pinned_sources(revision)
+    prior_adapter=prior.shared.gen.git('show',PRIOR_ADAPTER_COMMIT+':'+PRIOR_ADAPTER)
     require(recovered==row['sources'] and all(current.get(n)==h for n,h in recovered.items()) and
-        set(current)-set(recovered)=={SOURCE},'only this extent adapter may extend unchanged entry inputs')
+        set(current)-set(recovered)=={SOURCE,PRIOR_ADAPTER} and
+        current[PRIOR_ADAPTER]==hashlib.sha256(prior_adapter).hexdigest(),
+        'unchanged original entry inputs plus this adapter and the recovered existing generation controller only')
+    failed=entry.base.committed(RESULT)['cache_map_prefill_read117489_admission_v1']
+    require(failed['stage']=='failed' and not failed['model_executed'] and failed['ownership_closed'] and
+        failed['source_commit']=='11f912553c491d13e30491667f17c4d1043b1569',
+        'preserve the closed pre-owner V1 admission failure')
     return row
 
 
@@ -102,6 +111,11 @@ if __name__=='__main__':
             row['plan_scope']='First corrected-engine117489-read/117488-row check:two same-length requests in one process,thinking on,24output cap,zero reuse,throughput strategy,MTP16/GDN16. Actual route/owner/extent and final full model hashes required. First use and subsequent request reported separately;no clean repeated-speed or sustained-TG claim.'
             row['criteria']=row['criteria'].replace('at the pinned read_tokens','at117489actual read tokens')
             row['criteria']=row['criteria'].replace('Two fresh32K requests','Two fresh117K requests')
+            row['qualification_basis']['controller_delta']=dict(new_extent_adapter=SOURCE,
+                unchanged_existing_generation_adapter=PRIOR_ADAPTER,
+                existing_adapter_original_commit=PRIOR_ADAPTER_COMMIT,
+                original_entry_inputs_unchanged=True,
+                limits='The existing generation adapter is conservatively pinned by benchmark input discovery;no failed generation cohort or V1 admission is qualified or resumed.')
             row['retention']='Keep compact individual samples,route/extent,source/native identity and fault/closure outcome. Retire successful raw output after publication and source recovery. Both existing model generations remain only while the imminent unchanged entry proof still consumes the fallback.'
             ctx.save(row)
         elif sys.argv[1]=='host':ctx.host()

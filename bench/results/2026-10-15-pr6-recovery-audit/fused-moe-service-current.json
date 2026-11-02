@@ -94175,5 +94175,26 @@
       "closed_commands": 12,
       "published_ref": "1ce2790b875009e446314796fa067d31c8c98e31"
     }
+  },
+  "cache_map_prefill_read117489_admission_v1": {
+    "source_commit": "11f912553c491d13e30491667f17c4d1043b1569",
+    "stage": "failed",
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "model_executed": false,
+    "GPU_executed": false,
+    "controller_exit_code": 1,
+    "output_root_created": false,
+    "source_guard": "only this extent adapter may extend unchanged entry inputs",
+    "original_entry_inputs": 272,
+    "original_entry_inputs_unchanged": true,
+    "changed_paths": [],
+    "removed_paths": [],
+    "added_paths": {
+      "tools/sycl/cache_map_generation.py": "2f0712bf3fb0729f3a4de491da1175ede05c72d2e4701d719ad5b2a4be2edb6d",
+      "tools/sycl/cache_map_prefill.py": "80947391fa308ecff903b7ca7a8bd641706bf899069c0b55483a6049de8a51fc"
+    },
+    "decision": "Keep the failed pre-owner admission. No model or GPU work occurred. New V2scope must recover the existing generation adapter from its original70805eb7bc commit,retain all272unchanged original inputs and admit only the declared two added controls. No hash refresh or failed-cohort qualification."
   }
 }
