@@ -944,8 +944,17 @@ exceptions,joining on main unwind and checking drain/free failures even with
 scratch tracking off before positive-swap execution. The existing second-record
 API-error check remains valid for its narrow serve branch. The new
 `checked_worker.hpp`and host fixture are committed at`b1c47bfdc`,outside this
-generation's frozen native inputs;they are not yet wired or tested. Integrate
-that correction and qualify its error paths before a positive-swap model test.
+generation's frozen native inputs. Production wiring at`649221315`catches worker
+exceptions,joins during main unwind,reserves transfer bookkeeping before copies
+and checks cache drain/free even without scratch tracking. The CPU-only fixture
+at`8f44e817f`now compiles with280verified inputs and passes five worker outcomes,
+all five main-unwind joins and a failed-drain child that exits1without releasing
+owners. It links no GPU runtime and supplies no actual-DMA or model evidence.
+The V2recipe reuses the unexecuted map candidate and its incremental objects only
+after recovering V1's original source,recipe,1451inputs and nine ELFs from pushed
+history. It adds only the reversible two-source worker delta and its header:
+558native files. Preserve the existing adaptive fallback. Qualify real-copy
+error retirement before a positive-swap model test;V2is not yet built or adopted.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's

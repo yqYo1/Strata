@@ -91011,7 +91011,7 @@
     }
   },
   "checked_adaptive_worker_host_v1": {
-    "stage": "built",
+    "stage": "closed",
     "source_commit": "8f44e817f5b403cc8b83ab415b129293dc1167cf",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -91224,7 +91224,7 @@
     },
     "GPU_executed": false,
     "model_executed": false,
-    "passed": false,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "contract": "Five worker outcomes (success,false,std exception,nonstd exception,bad_alloc),main unwind joins before owners in all five,and child failed-drain fail-stop without owner unwind/atexit. No real DMA,cache-free,model,speed or262144 qualification.",
@@ -91271,6 +91271,9 @@
       "scope": "Observed GNU ld -t input paths;private generated objects are owned outputs,not external source evidence."
     },
     "no_GPU_runtime_needed": true,
+    "coverage": "checked_worker_host=PASS success_no_drain=1 failed_work_drains=4 main_unwind_joins=5 failed_drain_retains_owners=1",
+    "native_exit_code": 0,
+    "expected_failed_drain_child_exit": 1,
     "sources": {
       "files": 33,
       "aggregate_sha256": "25a944427fa89db5d056a3656f04f29441118d9c858b58b1076f93be8a16f4c1"

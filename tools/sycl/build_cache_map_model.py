@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Build the independently authored cache-map correction; repository LICENSE.
 
-Compose exactly three changed native files on the measured adaptive engine.
-Keep that engine as the development fallback, and retire its older comparison
-generation before creating this one. Compilation supplies no model, numerical,
+Compose the cache-map correction and checked worker retirement on the measured
+adaptive engine. Reuse the unexecuted map candidate after exact source recovery;
+keep the adaptive fallback. Compilation supplies no model, numerical,
 performance, ordinary teardown or physical-context qualification.
 """
 import copy
@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import select
 import shlex
+import shutil
 import subprocess
 import sys
 import time
@@ -24,11 +25,16 @@ import cache_residency as component
 base, P, B, RESULT = prior.base, prior.P, prior.B, prior.RESULT
 require, digest, write = base.require, base.digest, base.write
 ROOT = B / 'cache-map-model-v1'
-KEY = 'cache_map_model_build_v1'
+OLD_KEY = 'cache_map_model_build_v1'
+KEY = 'cache_map_model_build_v2'
 RETIREMENT_KEY = 'gdn16_model_fallback_retirement_v1'
 CONTROLLER = Path(__file__).resolve()
 CORRECTION = '9974789b0ec57c4146beedb35dfc811595cc15c8'
 CHANGED = (component.CORE, component.HEADER, component.PROGRAM)
+WORKER_FIX = '649221315b7b79c48748281a75b867568a141bbd'
+WORKER_HEADER = 'include/strata/sycl/checked_worker.hpp'
+OLD_RECIPE = '33711c7cd'
+OLD_RESULT = '05466aca7'
 
 
 def save(row):
@@ -38,7 +44,7 @@ def save(row):
     write(RESULT, data)
 
 
-def projection():
+def projection(*, worker=False):
     full, native = prior.projection()
     before = dict(native)
     patches = component.projection(CORRECTION)
@@ -48,6 +54,17 @@ def projection():
     require(len(native) == 557 and
             {name for name in native if native[name] != before[name]} == set(CHANGED),
             'correction changed unrelated measured native inputs')
+    if worker:
+        corrected = dict(native)
+        for name in (component.CORE, component.PROGRAM):
+            native[name] = base.basis.merge_delta(corrected[name], name, CORRECTION, WORKER_FIX)
+            require(base.basis.merge_delta(native[name], name, WORKER_FIX, CORRECTION) ==
+                    corrected[name], 'worker correction is not reversible: ' + name)
+        native[WORKER_HEADER] = base.basis.build.git(P, 'show', WORKER_FIX + ':' + WORKER_HEADER)
+        require(len(native) == 558 and {name for name in native
+                if native[name] != corrected.get(name)} ==
+                {component.CORE, component.PROGRAM, WORKER_HEADER},
+                'worker correction changed unrelated native inputs')
     return full, native
 
 
@@ -86,12 +103,24 @@ def retired_comparison(data, fallback):
     return row
 
 
-def inputs(row):
-    require(base.controls(row['source_commit'], controller=CONTROLLER) == row['controller_inputs'],
+def inputs(row, *, legacy_admission=False):
+    reuse = {}
+    if legacy_admission:
+        require(row['source_commit'] == 'e811359d81e330f3c67e8de7741a8421e0b9c612' and
+                'worker_fix_commit' not in row['composition'], 'only the closed V1 seed may be reused')
+        reuse = dict(reuse_revision=base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip(),
+                     controller_changes=('tools/sycl/build_cache_map_model.py',))
+    require(base.controls(row['source_commit'], controller=CONTROLLER, **reuse) == row['controller_inputs'],
             'cache-map build controller changed')
     require(qualified_component() == row['component_qualification'],
             'component qualification changed')
-    full, native = projection()
+    if 'worker_fix_commit' in row['composition']:
+        host = base.committed(RESULT)['checked_adaptive_worker_host_v1']
+        require(host['stage'] == 'closed' and host['passed'] and host['ownership_closed'] and
+                not host['active'] and all(host[name] == row['host_worker_qualification'][name]
+                for name in ('source_commit', 'binary', 'coverage')),
+                'closed host worker qualification changed')
+    full, native = projection(worker='worker_fix_commit' in row['composition'])
     require({name: hashlib.sha256(raw).hexdigest() for name, raw in native.items()} ==
             row['native_sources'], 'projected cache-map native source changed')
     allowed = base.sdk()
@@ -127,32 +156,81 @@ def inputs(row):
 
 def prepare():
     data = base.committed(RESULT)
-    require(KEY not in data and not ROOT.exists(), 'one fresh cache-map engine generation')
+    require(KEY not in data and ROOT.is_dir(), 'one prospective rebuild of the unexecuted map candidate')
     fallback = prior.verify()
     require(len(fallback['binaries']) == 9, 'preserve the nine-ELF adaptive fallback')
     retired = retired_comparison(data, fallback)
-    qualification = qualified_component(actual=True)
-    full, native = projection()
+    old = verify(legacy=True)
+    require(not old['GPU_executed'] and not old['model_executed'] and not old['inference_adopted'],
+            'only the unexecuted candidate may be overwritten without another fallback')
+    host = data['checked_adaptive_worker_host_v1']
+    require(host['stage'] == 'closed' and host['passed'] and host['ownership_closed'] and
+            not host['active'] and host['native_exit_code'] == 0 and
+            host['expected_failed_drain_child_exit'] == 1,
+            'qualify host worker lifetime before rebuilding the engine')
+    remote = base.basis.build.git(P, 'ls-remote', 'origin', 'refs/heads/feature/sycl').decode().split()[0]
+    require(base.basis.build.git(P, 'rev-parse', 'origin/feature/sycl').decode().strip() == remote,
+            'refresh and verify the retained remote branch before seed supersession')
+    for revision in (old['source_commit'], OLD_RECIPE, OLD_RESULT, WORKER_FIX):
+        base.basis.build.git(P, 'merge-base', '--is-ancestor', revision, remote)
+    recovered = {name: hashlib.sha256(raw).hexdigest() for name, raw in base.basis.build.blobs(
+        P, old['source_commit'], old['controller_inputs'])}
+    require(recovered == old['controller_inputs'] and
+            json.loads(base.basis.build.git(P, 'show', OLD_RESULT + ':' +
+                str(RESULT.relative_to(P))))[OLD_KEY] == base.compact(old),
+            'original V1 controls/final result must be recoverable before supersession')
+    original_recipe = json.loads(base.basis.build.git(P, 'show', OLD_RECIPE + ':' +
+        str(RESULT.relative_to(P))))[OLD_KEY]
+    for name in ('source_commit', 'controller_inputs', 'native_sources', 'configure_argv',
+                 'commands', 'environment', 'compiler', 'sdk', 'external_manifest', 'targets'):
+        require(original_recipe[name] == base.compact(old)[name],
+                'original V1 recipe does not match final executable inputs: ' + name)
+    qualification = qualified_component()
+    full, native = projection(worker=True)
     revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     controls = base.controls(revision, controller=CONTROLLER)
     providers = prior.fallback.retained.runtime.inventory(fallback['runtime_manifest'])
-    ROOT.mkdir(mode=0o700)
-    for name in ('source', 'tmp', 'cache'):
-        (ROOT / name).mkdir()
-    for name, raw in native.items():
-        path = ROOT / 'source' / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(raw)
-    write(ROOT / 'runtime-inputs.json', providers)
-    env = dict(fallback['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
-    cfg = [value.replace(str(prior.ROOT), str(ROOT)) for value in fallback['configure_argv']]
+    require(providers == json.loads((ROOT / 'runtime-inputs.json').read_text()),
+            'reuse the same qualified runtime inputs')
+    env, cfg = old['environment'], old['configure_argv']
+    discarded = [path for path in (ROOT / 'owned-build').rglob('*') if path.is_file()]
+    require(len(discarded) == 6 and not any(path.is_symlink() for path in discarded),
+            'inspect the exact closed build output before retiring it')
+    manifest = B / 'artifact-retirement-20261102-cache-map-v1-build-output.json'
+    require(not manifest.exists(), 'one original retirement manifest')
+    deletion = dict(reason='Closed V1 build output has no remaining consumer after source/recipe/input/ELF recovery;reuse its unqualified candidate path for the worker fix. Keep fallback and incremental objects.',
+        original_source_commit=old['source_commit'], original_recipe_commit=OLD_RECIPE,
+        original_result_commit=OLD_RESULT, retained_remote_commit=remote,
+        files=[dict(path=str(path), sha256=digest(path), bytes=path.stat().st_size)
+               for path in sorted(discarded)])
     row = dict(stage='prepared', source_commit=revision, controller_inputs=controls,
         native_sources={name: hashlib.sha256(raw).hexdigest() for name, raw in native.items()},
         composition=dict(selected_native_commit=prior.SELECTED,
             adaptive_fix_before=prior.FIX_BEFORE, adaptive_fix_commit=prior.FIX,
             correction_before=component.BEFORE, correction_commit=CORRECTION,
-            changed_from_adaptive=list(CHANGED), independent_from_XeStrata=True),
+            worker_fix_commit=WORKER_FIX,
+            changed_from_map_v1=[component.CORE, component.PROGRAM, WORKER_HEADER],
+            changed_from_adaptive=[*CHANGED, WORKER_HEADER], independent_from_XeStrata=True),
         component_qualification=qualification,
+        host_worker_qualification=dict(result_key='checked_adaptive_worker_host_v1',
+            source_commit=host['source_commit'], binary=host['binary'], coverage=host['coverage']),
+        superseded_unexecuted_generation=dict(result_key=OLD_KEY,
+            original_source_commit=old['source_commit'], original_recipe_commit=OLD_RECIPE,
+            original_result_commit=OLD_RESULT, source_files=len(old['native_sources']),
+            controller_files=len(recovered),
+            compiled_input_files=old['compiled_inputs']['files'],
+            compiled_inputs_sha256=old['compiled_inputs']['sha256'],
+            compile_database_sha256=old['compile_database']['sha256'],
+            original_engine_sha256=old['binaries']['strata']['sha256'],
+            executable_count=len(old['binaries']),
+            executable_identity_sha256=hashlib.sha256(json.dumps(
+                old['binaries'], sort_keys=True).encode()).hexdigest(),
+            original_inputs_recovered=True, retained_remote_commit=remote,
+            manifest=dict(path=str(manifest), sha256=hashlib.sha256(
+                (json.dumps(deletion, indent=2, ensure_ascii=False) + '\n').encode()).hexdigest()),
+            retired_build_output_files=len(discarded),
+            retired_build_output_bytes=sum(value['bytes'] for value in deletion['files']),
+            disposition='V1 was compiled but never executed. Its original result remains unchanged in Git;its physical candidate path and incremental objects are reused. No third engine generation or qualification is introduced.'),
         fallback=dict(root=str(prior.ROOT), source_commit=fallback['source_commit'],
             binaries=fallback['binaries'],
             consumer='Development fallback until changed-engine device/model checks and comparison closure;not full inference adoption.'),
@@ -165,7 +243,7 @@ def prepare():
         environment=env, configure_argv=cfg, targets=fallback['targets'],
         generated_expected={path.replace(str(prior.ROOT), str(ROOT)): sha
             for path, sha in fallback['generated_expected'].items()},
-        expected_compiler_inputs=fallback['compiled_inputs']['files'],
+        expected_compiler_inputs=old['compiled_inputs']['files'] + 1,
         commands=[['configure', cfg], ['compile', ['/usr/bin/cmake', '--build', str(ROOT / 'build'),
             '--target', *fallback['targets'], '-j', '4']],
             ['dependencies', ['/usr/bin/ninja', '-C', str(ROOT / 'build'), '-t', 'deps']]],
@@ -175,13 +253,25 @@ def prepare():
         passed=False, GPU_executed=False, model_executed=False, inference_adopted=False,
         next='Fresh bounded submission/wrapper and actual-model zero/positive-swap checks,including next-GEN payload/loan identity. Then fixed-token/task,independent prefill,and repeated clean strong/weak-MTP timing. No prior fixture qualification is inherited by these changed native inputs.')
     try:
+        write(manifest, deletion)
+        require(digest(manifest) == row['superseded_unexecuted_generation']['manifest']['sha256'],
+                'retirement manifest bytes differ')
+        for path in discarded:
+            require(digest(path) == next(value['sha256'] for value in deletion['files']
+                    if value['path'] == str(path)), 'closed output changed before deletion')
+        shutil.rmtree(ROOT / 'owned-build')
+        require(not (ROOT / 'owned-build').exists(), 'closed build output retirement incomplete')
+        for name in (component.CORE, component.PROGRAM, WORKER_HEADER):
+            path = ROOT / 'source' / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(native[name])
         inputs(row)
     except BaseException as error:
         row.update(stage='failed-admission', error=repr(error))
         save(row)
         raise
     save(row)
-    print('Prepared cache-map engine recipe;commit before CPU compilation.', flush=True)
+    print('Prepared checked-worker engine recipe in the existing candidate path;commit before CPU compilation.', flush=True)
 
 
 def build():
@@ -256,13 +346,13 @@ def build():
     require(row['passed'], 'cache-map model build failed')
 
 
-def verify():
+def verify(*, legacy=False):
     row = json.loads((ROOT / 'record.json').read_text())
-    require(base.committed(RESULT)[KEY] == base.compact(row) and row['passed'] and
+    require(base.committed(RESULT)[OLD_KEY if legacy else KEY] == base.compact(row) and row['passed'] and
             row['stage'] == 'built-not-executed' and row['ownership_closed'] and not row['active'] and
             all(base.supervision.closed(value) for value in row['commands_executed']),
             'closed complete cache-map build required')
-    allowed = inputs(row)
+    allowed = inputs(row, legacy_admission=legacy)
     asset = row['compiled_inputs']
     require(digest(asset['path']) == asset['sha256'], 'actual compiler map changed')
     found = json.loads(Path(asset['path']).read_text())
@@ -291,9 +381,10 @@ if __name__ == '__main__':
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         base.guards.no_model_owners([])
         if sys.argv[1] == 'projection':
-            qualified_component(actual=True)
-            _, native = projection()
+            qualified_component()
+            _, native = projection(worker=True)
             print(json.dumps(dict(native_files=len(native), changed=list(CHANGED),
+                worker_fix_commit=WORKER_FIX, added_header=WORKER_HEADER,
                 inference_build_created=False, GPU_executed=False)), flush=True)
         elif sys.argv[1] == 'prepare':
             prepare()
