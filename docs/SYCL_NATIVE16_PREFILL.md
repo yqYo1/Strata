@@ -1077,8 +1077,17 @@ The measured engine's pool differs from the worktree in three files;do not
 attribute current-pool timings to that engine. A later model comparison needs
 an answer-eligible route. Preserve the current validated model generation.
 The current safe engine now has the closed117K repeated prefill check below;
-a fresh multi-length time/TTFT fit remains pending. The older length fit does
-not automatically qualify this engine. Full262144/RESTORE remain pending.
+a fresh multi-length time/TTFT fit remains pending. The maintained client rejects
+`--prefill-scaling`with`--profile-request-gates`;that ungated suite cannot simply
+reuse the current supervision. The next curve should use the unchanged exact-count
+bench.sh entry in separate same-configuration processes across short and long
+lengths,with actual route/bank/split checks and first use separate from repeated
+requests. Freeze its lengths,order,repetitions and criteria before collection.
+The throughput selector uses layer-major only above the8192-row operator chunk;
+record that eligibility boundary rather than treating a mixed-route intercept as
+a physical fixed cost. Fit actual counts/time/TTFT with held-out lengths and
+residuals. The older length fit does not qualify this engine. Full262144/RESTORE
+remain pending.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
