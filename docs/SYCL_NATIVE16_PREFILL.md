@@ -715,10 +715,15 @@ rejects5invalid footer windows,5wrong-source/missing-warmup histories,9wrong
 workload contracts and4disabled-observer strings,without GPU execution.
 Source7faf03320passes fresh native/admission and all15model-asset hash checks,
 and prepares one prose-only reference pilot. Fresh benchmark-definition and
-server-loopback probes pass. The pilot is active:all four official warmups and
-the common-cache history gate pass before its long request starts. Native/fault
-closure,answer eligibility and observed weak-MTP decision remain pending;the
-repeated cohort is not yet eligible.
+server-loopback probes pass. The pilot now closes with native0,closed owners,
+quiet validation,no fresh fault and all15final model assets hash-matched. All
+four official warmups and the common-cache history gate pass before generation.
+The33282-fresh-read prose produces7275tokens,4632answer characters and14409
+reasoning characters,finishing with stop. Prompt62109.6ms,client TTFT62.352s
+and decode1092108.1ms give exact TG6.66142847947. Draft acceptance3920/10071
+=.389236421408passes the unchanged weak band. This permits preparation of the
+six-process v5comparison;one first-long-request pilot does not establish its
+after-code history,repeated weak classification or a performance improvement.
 After original265-file source recovery from pushed history,the closed V1and
 prior cache diagnostic retire95more files totaling12419188bytes,including raw/
 JIT output,unused generated plans/runtime copies and the completed observer
@@ -727,7 +732,12 @@ admission. The path/hash/reason manifest and original failed outcome are
 retained;both engine generations and separate legacy holds are unchanged.
 Next complete the repeated comparison and independent prefill checks,then
 separate remaining GPU kernel service from runtime/event waits with a bounded
-UnitTrace capture. Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
+UnitTrace capture. A completed Luna source review supports reusing the pinned
+collector without a rebuild,but its current helpers have no request-scoped
+decode-window mode. A T4capture message is only a hint,not a request gate;
+Chrome kernel logging also wires call spans,and text timelines lack instance
+IDs. Qualify window boundaries,graph replay,flush and output limits with a
+bounded same-build fixture before a model capture. Candidate CPU-pool/GPU-reach/draft intervals are35.55%,
 36.01%and16.26%of decode wall;they are nested wall clocks,not additive hardware
 costs. Keep payload/task,other exit paths,full256K and broader adoption pending.
 The parallel Linux host-Arena THP methods collection is reviewed and indexed for

@@ -88325,7 +88325,7 @@
       "STRATA_SNAPSHOT_VERIFY": "1",
       "STRATA_TRACE_ADAPT": "1"
     },
-    "stage": "ready",
+    "stage": "closed",
     "source_commit": "7faf03320cd4bbd188b10fd302cb970f734d86d1",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -88372,10 +88372,128 @@
         "environment_sha256": "e7beed57dacf022d5b7ded9f4e2ed3586bb06e19c5a9fb06f37781bf734c661b"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1636918,
+          "start_ticks": 192623904,
+          "sid": 1636871
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 7275,
+            "output_chars": 4632,
+            "reasoning_chars": 14409,
+            "prompt_ms": 62109.6,
+            "prompt_tps": 535.9,
+            "decode_ms": 1092108.1,
+            "decode_tps": 6.7,
+            "ttft_s": 62.352,
+            "total_s": 1154.243,
+            "drafts_offered": 10071,
+            "drafts_accepted": 3920,
+            "acceptance_rate": 0.3892364214080032,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "0bbd043abf9212ab45b4bf8794a261534529dd4c28ecff1cdcfc8c836434ad7c",
+            "reasoning_sha256": "d3ec503b2e7266e34b70c5123c07f543b06ff48306decd6e7659660b16581f21",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1636918,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33282,
+            "rows": 33281,
+            "GPU_residual_rows": 33281,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19987,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33281,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false
+          }
+        ],
+        "cache": [
+          {
+            "hits": 433265,
+            "lookups": 6445920,
+            "hit_percent": 6.7
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "b8ad600838e690aeefe980ee97aac49111259004b36b65bebd0796fe463f7b1e",
+            "449cd1fc38718491031b395effbc35c6cad07cb79623623a7e4f5460f38e12db",
+            "820e49690239ef1cbb93b7789ecd6de5aa0a998843527deb595eacebd5b0f22c",
+            "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22"
+          ],
+          "valid": true,
+          "journal_sha256": "7c67e942f201bd9783968cdda8d06df47a8c017738b095833f19be874d8bdf6b"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35589
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "controls": {
@@ -88445,6 +88563,16 @@
         "passed": true
       }
     ],
+    "decision": {
+      "task_sample_eligible": true,
+      "observed_acceptance": 0.3892364214080032,
+      "observed_weak_MTP": true,
+      "cohort_permitted": true,
+      "repeated_MTP_class_qualified": false,
+      "inference_adopted": false,
+      "physical_resource_saturation_qualified": false,
+      "limits": "One fresh first-long-request pilot;no after-code history or repeated gain. Keep thinking/answer/length/MTP gates unchanged."
+    },
     "source_inputs": {
       "files": 265,
       "aggregate_sha256": "d3729c53a313288b6666d8ce430f1f3c75993341d489386d6a8bae5e3a662f7f"
