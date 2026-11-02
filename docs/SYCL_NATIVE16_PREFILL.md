@@ -827,6 +827,12 @@ boundaries or model observer cost. Do not rebuild or retry V1. This pass does
 not isolate which V1 control boundary lost graph events. The completed source
 review shows that append recognition can work while paused;paused construction
 alone is not a proven cause. Missing events cannot count as GPU idle.
+After committing the result,19routine observer/JIT and settled research
+transaction/review files totaling122742bytes are retired under the execution
+lock,with a path/hash/reason manifest. V2 keeps its record and one60112-byte
+timeline for the bounded later request-window comparison;review that hold at
+mapping-oracle closure. Required V1 fixture/dependency/runtime inputs,both
+engine generations and separate legacy provenance holds are unchanged.
 Request-scoped decode gates,guard bands,clock/loss checks
 and model observer overhead remain the next qualification steps after the
 fixture.
