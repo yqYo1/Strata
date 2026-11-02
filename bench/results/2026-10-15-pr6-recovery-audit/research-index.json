@@ -21720,5 +21720,66 @@
       "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261103-prefill-v2-and-research.json",
       "sha256": "0935a2ab0b240a68406d6955bc02e1a529dc3e6ac32a28a0a660f58154cada3f"
     }
+  },
+  "decode_spec_width_source_feasibility_20261103": {
+    "id": "decode_spec_width_source_feasibility_20261103",
+    "classification": "decision_support",
+    "schedulable_now": true,
+    "why": "A source-only, exact-build comparison of width-eight allocations and state safety is distinct from existing MTP path maps and adaptive-width methods. The current baseline supplies an active --spec 4 route. It authorizes no model trial.",
+    "overlaps": [
+      {
+        "id": "current_decode_mtp_verifier_reuse_source_audit",
+        "sha256": "4757ba7dfaabbf6814b1149dff6f5f981fd9a06788d70b59ab2dca87e05cd03a",
+        "covers": "Verifier/MTP call chain, grouped expert dispatch, accepted-prefix commit and RESTORE; no current --spec 8 working-set comparison."
+      },
+      {
+        "id": "adaptive_speculation_cost_methods_collection_20261022",
+        "sha256": "800633a21bc996c2a920f77e3997c8aedc39efcd246bbe9b24dc3812769797f1",
+        "covers": "Draft-length policy; model-width follow-up still requires MTP4 handoff admission, phase costs and accepted-prefix distribution."
+      },
+      {
+        "id": "mtp_attention_window_catchup_methods_scope",
+        "sha256": "2d7608ec6bb13fd3e09cdea46f3db017d038ea0d5a8ebe58c180067296642c83",
+        "covers": "Attention window/catch-up, not CLI draft-width allocation."
+      },
+      {
+        "id": "qwen38_production_moe_decode_path_20261103",
+        "sha256": "a10bffa62b536c3b32add0ca614564f549e5e0ef294d6d6aa4e6ded720ec8b57",
+        "covers": "Exact-model framework support and source-available controls; no local width comparison."
+      }
+    ],
+    "report_path": ".cache/research/2026-11-03/spec8_vs_spec4_source_feasibility_20261103.md",
+    "report_budget_bytes": 14336,
+    "finite_question": "Using only the exact compiled source root/recipe above, compare --spec 4 and --spec 8 through proposal bounds, MTP/verifier state and RESTORE, CPU/GPU dispatch, and expert staging. Calculate source-derived incremental host/device working-set bounds; identify ownership, overflow, tail and cleanup risks, counterevidence, and remaining runtime/numerical/task gates. State whether a later width test is source-feasible. No code, build, test, process inspection, runtime experiment or local speed prediction.",
+    "model_trial_prerequisites": [
+      "Resolve MTP4-only handoff/RESTORE admission.",
+      "Capture actual per-window draft/accepted-prefix distribution and phase costs on an answer-bearing route.",
+      "Commit width comparison order, repetitions, correctness/task gates and stopping rules."
+    ],
+    "status": "eligible_source_only",
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "model_trial_schedulable": false,
+    "source_identity": {
+      "recipe_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+      "source_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source",
+      "engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+      "source_sha256": {
+        "src/program/generate.cpp": "ddbbc6bfa6fb14a82a2239e7629679bbc7d5b7aed8df59e66fb14bbb2b087ccd",
+        "src/core/mtp.cpp": "7e98636191fa0b9c10d4a651c2148c1446dfb722c1536bda2be4d4f78e2e2af5",
+        "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
+        "include/strata/kernels/cpu/pool.hpp": "e503e544dd9d4e2ff4896750253c3dcc43353c1e2f666af8d173a802aa7268bb"
+      }
+    },
+    "consumer": "A bounded source-feasibility decision before any prospective decode-width comparison.",
+    "scope_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-03/decode_next_scope_eligibility_20261103.json",
+      "sha256": "ef1ccd0f3f8c3828e3927fc0217055d9fa05de6d5f02b8fefdd179a6f96529b4",
+      "bytes": 6649,
+      "model": "native Codex gpt-6-luna max",
+      "retirement_reason": "Scope review transaction fully folded into compact eligibility/prerequisites;not a knowledge reference.",
+      "body_retired": true,
+      "deleted_verified": true
+    }
   }
 }
