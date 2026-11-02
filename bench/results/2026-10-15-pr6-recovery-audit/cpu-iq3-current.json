@@ -1,10 +1,10 @@
 {
   "schema": "strata-iq3-gu-v1",
-  "stage": "prepared",
+  "stage": "built",
   "active": false,
   "ownership_closed": true,
-  "passed": false,
-  "complete": false,
+  "passed": true,
+  "complete": true,
   "plan": {
     "source": {
       "revision": "dd885700e36ab9e3848c49b22013c7dd59024533",
@@ -248,5 +248,18 @@
       "component_consumer": "This new CPU-only fixture serves the current GU comparison. Does not overwrite either model generation. Retire successful logs and build objects after committed result/provenance;retain fixture only for a concrete next model qualification consumer.",
       "permanent": "Source/recipe,pins,individual time samples,correctness/dispatch counts,cell decisions and limitations. No tensor captures,full IO histories or successful compiler output."
     }
+  },
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-gu-v1/build/cpu_iq3_gu",
+    "bytes": 2533504,
+    "sha256": "4b0f13141e9166b4f063902165ed4ce38c3d37c9a4d7e54faed52b83b20ff5e4"
+  },
+  "compile_commands_sha256": "d10b5d9f0b55b09c1bc713215e5e6e3cc1ef2ef241f43c8e8115f4159b61c040",
+  "configured_compile_entries": 39,
+  "linked_runtime": {
+    "/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+    "/lib/x86_64-linux-gnu/libstdc++.so.6": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+    "/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+    "/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf"
   }
 }
