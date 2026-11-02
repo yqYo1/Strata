@@ -902,6 +902,18 @@ select the retained fallback from its applicable evidence,recover the old
 generation's exact source/recipe and reconcile live consumers;only then retire
 it and build the changed engine. Fixed-token/task,independent prefill and
 repeated clean strong/weak-MTP speed checks remain pending.
+The reviewed consumer audit identifies the existing adaptive generation as an
+eligible development fallback,distinct from inference adoption. Its closed
+device/two-request lifecycle and fixture-reuse receipts do not require another
+cohort;old GDN modes remain actual filesystem readers when invoked and must be
+retired or redirected before deleting their build. Main's new
+`tools/sycl/build_cache_map_model.py`composes exactly the three component-qualified
+cache files on the measured557-file adaptive source,without changing CMake.
+Preparation refuses until original-source recovery,old-generation retirement
+and post-retirement adaptive admission are recorded. The source is written;
+engine preparation,compilation and fresh device/model qualification remain
+pending. New-engine verification consumes the closed component receipt rather
+than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's
 55closed API/build/object/JIT files totaling1417121bytes are retired under the
 execution lock with a path/hash/reason manifest. Keep only seven files needed
