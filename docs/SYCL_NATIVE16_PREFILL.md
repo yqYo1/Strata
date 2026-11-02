@@ -782,15 +782,14 @@ from overlapping sums. Requested crossing-copy bytes remain unassigned to the
 window. At the closed process0boundary,the source`d87665fda`reducer passes all14
 refusal/accounting tests under the global execution lock with
 `python3 -B -m unittest discover -s tests/core -p test_decode_window_trace.py`
-(90s deadline,exit0). The native fixture remains unbuilt/unrun;no capture,
-clock/graph coverage,observer-cost or model attribution qualification follows
-from these CPU tests. The new Main-authored`tools/sycl/profile_window.py`
-controller now records separate`prepare`,`build`and`check`boundaries. Do not
-execute preparation until the frozen clean cohort is terminal and owned work
-is closed. Preparation recovers committed source and inventories actual compiler
-headers against the pinned SDK/native inputs;build must match that dependency
-set before recording the fixture ELF. Commit each result before the next mode.
-The check runs one direct and one traced process with immutable startup settings,
+(90s deadline,exit0). Those CPU tests alone do not qualify capture,
+clock/graph coverage,observer cost or model attribution. The original V1
+Main-authored`tools/sycl/profile_window.py`controller recorded separate
+`prepare`,`build`and`check`boundaries after the clean cohort closed.
+Preparation recovered committed source and actual compiler headers against the
+pinned SDK/native inputs;build matched that set before recording the fixture
+ELF. Each result was committed before the next mode.
+Its check ran one direct and one traced process with immutable startup settings,
 the existing collector/private validation preload,and the seven fixture gates.
 It requires six uniquely joined clean replay kernels,numerical/guard checks,
 quiet validation,unchanged driver/boot and closed owners. Pause-crossing work
@@ -808,9 +807,22 @@ The observer check nevertheless fails:the7046-byte timeline has24host API spans,
 three memory copies and one barrier,but zero named graph kernels. Do not
 interpret its missing events as idle or qualify a model capture. The V1
 controller also did not persist its inner clock bounds;that omission stays
-explicit in the failed result. The next committed controller-only plan must
-retain gate/control bounds and compare active graph construction while reusing
-the exact fixture and all638compiled inputs. Do not rebuild or retry V1.
+explicit in the failed result. The V2 controller-only plan reuses the exact
+fixture,original recipe and all638compiled inputs,with no fixture or inference
+rebuild. Its CLI is now`prepare|check`;the V1 build recipe remains recoverable
+from`e91882d81`. V2 resumes collection at the before-runtime gate and leaves it
+active through graph construction,all three clean replays,the late replay,
+readback and native exit/flush. It persists every gate/control clock bound;
+the original ELF's`captured-paused`label is only a protocol name in this arm.
+The traced check requires six named clean kernels and three copies inside the
+recorded window,plus two uniquely joined late kernels after owner release.
+The original direct numerical check is reused;one traced case is allowed,with
+the same180s/64MiB device and256MiB whole-output bounds. No V2 execution result
+exists yet. Do not rebuild or retry V1. The completed collector source review
+does not establish that paused construction caused the loss:its append path
+can recognize graphs while paused. If fully active collection still loses the
+kernels,child-command tracking/submission/emission remains the concrete issue;
+missing events cannot count as GPU idle.
 Request-scoped decode gates,guard bands,clock/loss checks
 and model observer overhead remain the next qualification steps after the
 fixture.

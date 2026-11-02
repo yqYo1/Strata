@@ -2,7 +2,7 @@
 """Qualify a bounded collector window, without rebuilding the inference engine.
 
 Main-authored from owned supervision/collector helpers; repository LICENSE.
-Prepare/build/check are separate committed boundaries. This fixture does not
+The original fixture build is recovered from the closed V1 check. This fixture does not
 qualify a model request gate, observer overhead or physical resource saturation.
 """
 import copy
@@ -11,7 +11,6 @@ import hashlib
 import json
 from pathlib import Path
 import select
-import shlex
 import sys
 import time
 
@@ -21,15 +20,15 @@ import profile_split as profile
 import decode_window_trace as window
 
 P, B, RESULT = cache.P, cache.B, cache.RESULT
-ROOT = cache.model.adaptive.ROOT / 'decode-window-observer-v1'
-KEY = 'decode_window_observer_v1'
+OLD_ROOT = cache.model.adaptive.ROOT / 'decode-window-observer-v1'
+OLD_KEY = 'decode_window_observer_v1'
+ROOT = cache.model.adaptive.ROOT / 'decode-window-observer-v2'
+KEY = 'decode_window_observer_v2'
 CPP = 'tests/sycl/profile_window.cpp'
 NATIVE = '20f2a971b5fa3c0b2c65ab08712c32febb894f93'
 PHASES = ('before-runtime', 'runtime-ready', 'captured-paused', 'replay-drained',
           'late-enqueued', 'late-drained', 'before-exit')
 require, digest, write = cache.require, cache.digest, cache.write
-BUILD_BUDGET = dict(wall=600, cpu=1200, rss_cap=8 << 30,
-                    text_cap=8 << 20, file_cap=64 << 20, total_cap=128 << 20)
 DEVICE_BUDGET = dict(wall=180, cpu=180, rss_cap=4 << 30,
                      text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20)
 
@@ -70,9 +69,26 @@ def basis():
     return native, prior, providers, assets
 
 
+def original():
+    old = json.loads((OLD_ROOT / 'record.json').read_text())
+    require(cache.build.committed(RESULT)[OLD_KEY] == compact(old)
+            and old['stage'] == 'failed' and old['ownership_closed'] and not old['active']
+            and len(old['cases']) == 2 and old['cases'][0]['passed']
+            and not old['cases'][1]['passed']
+            and all(c['ownership_closed'] and c['fresh_faults'] == [] for c in old['cases'])
+            and old['failure_diagnosis']['observed_native_exit_codes'] == dict(direct=0, trace=0)
+            and old['failure_diagnosis']['named_graph_kernel_events'] == 0,
+            'closed failed paused-construction fixture required')
+    return old
+
+
 def current(row):
     require(cache.build.committed(RESULT)[KEY] == compact(row), 'commit the exact observer plan/results')
     require(sources(row['source_commit']) == row['sources'], 'observer source changed')
+    old = original()
+    require(old['source_commit'] == row['fixture_reuse']['original_source_commit']
+            and all(old[k] == row[k] for k in ('binary', 'dependencies', 'command', 'build_environment'))
+            and old['sources'][CPP] == row['sources'][CPP], 'original fixture/reuse qualification changed')
     native, prior, providers, assets = basis()
     require(native['compiler'] == row['compiler'] and native['sdk'] == row['sdk']
             and native['boot'] == row['boot'] and native['driver'] == row['driver']
@@ -95,90 +111,53 @@ def current(row):
     return native, providers
 
 
-def dependencies(path):
-    text = path.read_text().replace('\\\n', ' ')
-    paths = set()
-    for line in text.splitlines():
-        if not line.strip(): continue
-        target, separator, body = line.partition(':')
-        require(separator and target.strip(), 'malformed compiler dependency rule')
-        paths.update(str(Path(name).resolve()) for name in shlex.split(body))
-    require(str((P / CPP).resolve()) in paths, 'fixture missing from compiler dependencies')
-    return paths
-
-
 def prepare():
     require(not ROOT.exists() and KEY not in cache.build.committed(RESULT), 'fresh observer qualification only')
+    old = original()
     revision = cache.shared.gen.git('rev-parse', 'HEAD').decode().strip()
     pins = sources(revision)
+    recovered = {name: hashlib.sha256(raw).hexdigest() for name, raw in
+                 cache.shared.gen.blobs(P, old['source_commit'], old['sources'])}
+    require(recovered == old['sources'] and pins.keys() == recovered.keys()
+            and {name for name in pins if pins[name] != recovered[name]} == {'tools/sycl/profile_window.py'},
+            'only the declared controller delta may reuse the fixture')
     native, prior, providers, assets = basis()
+    require(native['compiler'] == old['compiler'] and native['sdk'] == old['sdk']
+            and native['boot'] == old['boot'] and native['driver'] == old['driver']
+            and native['binaries']['strata'] == old['engine']
+            and prior['environment'] == old['environment_template']
+            and prior['native_validation_probe'] == old['native_validation_probe'] and assets == old['assets'],
+            'original fixture/compiler/runtime/collector basis differs')
+    inv = old['dependencies']
+    require(digest(inv['path']) == inv['sha256'], 'original fixture dependency manifest changed')
+    deps = json.loads(Path(inv['path']).read_text())
+    require(len(deps) == inv['files'] == 638 and all(digest(p) == sha for p, sha in deps.items())
+            and deps[str((P / CPP).resolve())] == pins[CPP], 'original638compiled inputs changed')
+    inv = old['runtime_manifest']
+    require(digest(inv['path']) == inv['sha256'] and json.loads(Path(inv['path']).read_text()) == providers,
+            'original runtime inventory changed')
+    binary = old['binary']
+    require(digest(binary['path']) == binary['sha256'] and Path(binary['path']).stat().st_size == binary['bytes'],
+            'original fixture ELF changed')
+    require(not profile.session_path(old['profile']['session']).exists(), 'original collector session remains')
     ROOT.mkdir(mode=0o700)
-    for name in ('tmp', 'cache', 'direct', 'trace'):
+    for name in ('tmp', 'cache', 'trace'):
         (ROOT / name).mkdir()
-    write(ROOT / 'runtime-inputs.json', providers)
-    env = dict(native['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
-    flags = ['-O2', '-std=c++17', '-fsycl', '-fsycl-device-code-split=per_kernel', '-pthread']
-    prefix = [native['compiler']['path'], *flags]
-    row = dict(stage='preparing', source_commit=revision, sources=pins, compiler=native['compiler'], sdk=native['sdk'],
-        boot=native['boot'], driver=native['driver'], engine=native['binaries']['strata'],
-        native_source_commit=NATIVE, native_validation_probe=prior['native_validation_probe'], assets=assets,
-        environment_template=copy.deepcopy(prior['environment']), build_environment=env,
-        runtime_manifest=dict(path=str(ROOT / 'runtime-inputs.json'), sha256=digest(ROOT / 'runtime-inputs.json')),
-        preprocess=[*prefix, '-M', '-MT', 'fixture', '-MF', str(ROOT / 'headers.d'), str(P / CPP)],
-        command=[*prefix, '-MD', '-MF', str(ROOT / 'build.d'), str(P / CPP), '-o', str(ROOT / 'fixture')],
-        profile=profile.profiling(ROOT / 'trace', assets), passed=False, complete=False,
-        active=False, ownership_closed=True, cases=[],
-        limits='One observer fixture,not another engine generation. No model,observer-cost,full-context or saturation qualification.',
-        consumer='Qualify paused graph construction/replay and pause-crossing metadata before the planned bounded decode capture. Retire raw capture after that question closes;retain exact source/recipe and compact counts.')
-    owner = None
-    def persist():
-        write(ROOT / 'prepare-execution.json', dict(active=bool(owner and owner.active), commands=owner.commands if owner else []))
-    try:
-        owner = cache.build.supervision.Owner(ROOT / 'prepare-owned', persist)
-        entry, _, _ = owner.run('headers', row['preprocess'], env, P, **BUILD_BUDGET)
-        require(cache.build.supervision.closed(entry) and entry['exit_code'] == 0, 'fixture preprocessing failed')
-        allowed = cache.model.adaptive.inputs(native)
-        allowed[str((P / CPP).resolve())] = pins[CPP]
-        paths = dependencies(ROOT / 'headers.d')
-        require(all(name in allowed and digest(name) == allowed[name] for name in paths), 'unqualified fixture header input')
-        deps = {name: allowed[name] for name in sorted(paths)}
-        write(ROOT / 'compiler-inputs.json', deps)
-        row.update(stage='prepared', dependencies=dict(path=str(ROOT / 'compiler-inputs.json'),
-            sha256=digest(ROOT / 'compiler-inputs.json'), files=len(deps)))
-    except BaseException as error:
-        row.update(stage='failed', error=repr(error))
-    finally:
-        row.update(active=bool(owner and owner.active), ownership_closed=bool(owner and owner.active is None
-            and all(cache.build.supervision.closed(x) for x in owner.commands)))
-        save(row)
-    require(row['stage'] == 'prepared' and row['ownership_closed'], row.get('error', 'preparation not closed'))
-    print('Prepared observer fixture;commit before build.', flush=True)
-
-
-def build():
-    row = json.loads((ROOT / 'record.json').read_text()); current(row)
-    require(row['stage'] == 'prepared' and not (ROOT / 'build-execution.json').exists(), 'fresh committed build only')
-    owner = None
-    def persist():
-        write(ROOT / 'build-execution.json', dict(active=bool(owner and owner.active), commands=owner.commands if owner else []))
-    try:
-        owner = cache.build.supervision.Owner(ROOT / 'build-owned', persist)
-        entry, _, _ = owner.run('compile', row['command'], row['build_environment'], P, **BUILD_BUDGET)
-        require(cache.build.supervision.closed(entry) and entry['exit_code'] == 0, 'fixture compilation failed')
-        expected = json.loads(Path(row['dependencies']['path']).read_text())
-        require(dependencies(ROOT / 'build.d') == set(expected) and
-                all(digest(p) == sha for p, sha in expected.items()), 'actual compile dependencies differ')
-        current(row)
-        row.update(stage='built', binary=dict(path=str(ROOT / 'fixture'), sha256=digest(ROOT / 'fixture'),
-                                             bytes=(ROOT / 'fixture').stat().st_size))
-    except BaseException as error:
-        row.update(stage='failed', error=repr(error))
-    finally:
-        row.update(active=bool(owner and owner.active), ownership_closed=bool(owner and owner.active is None
-            and all(cache.build.supervision.closed(x) for x in owner.commands)))
-        save(row)
-    require(row['stage'] == 'built' and row['ownership_closed'], row.get('error', 'build not closed'))
-    print('Built observer fixture;commit before traced/validated checks.', flush=True)
+    row = copy.deepcopy(old)
+    row.pop('failure_diagnosis', None)
+    row.update(stage='prepared', source_commit=revision, sources=pins, profile=profile.profiling(ROOT / 'trace', assets),
+               passed=False, complete=False, active=False, ownership_closed=True, cases=[])
+    row['fixture_reuse'] = dict(original_result_key=OLD_KEY, original_source_commit=old['source_commit'],
+        changed_controls=['tools/sycl/profile_window.py'], compiled_inputs_unchanged=638,
+        original_direct_numerical_check_reused=True,
+        scope='Same original CPP,recipe,compiler638inputs,ELF and providers;no fixture or engine rebuild. V1 remains failed.')
+    row['plan'] = dict(change='Resume at before-runtime and stay active through graph construction,replay,late completion,readback and native exit/flush. '
+        'Do not pause before releasing the late host task;the original ELF gate names remain literal protocol labels. Persist every gate/control RAW clock bound.',
+        acceptance='Exactly6named clean replay kernels and3copies inside the recorded inner window,plus2named late kernels,unique native flow joins,normal0,quiet validation,closed owners,no fresh fault. '
+        'Any failure stops without retry;no model/lossless boundary/observer-cost claim.',
+        whole_bytes=256 << 20, device_budget=DEVICE_BUDGET)
+    save(row)
+    print('Prepared controller-only active-construction check;commit before execution.', flush=True)
 
 
 def device_environment(row, root):
@@ -197,9 +176,9 @@ def device_environment(row, root):
 
 def check():
     row = json.loads((ROOT / 'record.json').read_text()); _, providers = current(row)
-    require(row['stage'] == 'built' and not row['cases'], 'fresh ordered direct/trace qualification only')
+    require(row['stage'] == 'prepared' and not row['cases'], 'fresh active-construction qualification only')
     frozen = copy.deepcopy(row)
-    for mode in ('direct', 'trace'):
+    for mode in ('trace',):
         root = ROOT / mode
         require(not (root / 'execution.json').exists(), 'no fixture retry')
         prof = row['profile'] if mode == 'trace' else None
@@ -208,18 +187,23 @@ def check():
                   cache.model.engine_once.native_environment(row, env))
         expected = profile.expected_target_environment(row, env, prof) if prof else target
         owner, controls = None, None
-        outcome = dict(mode=mode, passed=False, complete=False, host_probe_accepted=False)
-        bounds, phases, mapped = {}, [], set()
+        bounds, phases, mapped = dict(phase_clocks={}, controls=[]), [], set()
+        outcome = dict(mode=mode, passed=False, complete=False, host_probe_accepted=False,
+                       clock_bounds=bounds, clock_domain='CLOCK_MONOTONIC_RAW')
         cursor = profile.cursor()
         def persist():
             write(root / 'execution.json', dict(outcome, active=bool((owner and owner.active) or (controls and controls.active)),
                 commands=owner.commands if owner else [], controls=controls.commands if controls else []))
         def control(action, state=None):
+            before = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
             entry, _, _ = controls.run(action + '-' + str(len(controls.commands)),
                 [prof['launcher']['path'], '--' + action, prof['session']], env, P,
                 wall=15, cpu=15, rss_cap=2 << 30, text_cap=1 << 20, file_cap=32 << 20, total_cap=64 << 20)
             require(cache.build.supervision.closed(entry) and entry['exit_code'] == 0, 'collector control failed')
             if state is not None: profile.session_state(prof['session'], state)
+            after = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+            bounds['controls'].append(dict(action=action, before_ns=before, after_ns=after))
+            persist()
         def interact(io, entry):
             for phase in PHASES:
                 while True:
@@ -228,6 +212,8 @@ def check():
                 require(line == 'COMPONENT_READY ' + phase, 'fixture gate order differs')
                 require(cache.build.supervision.artifact_bytes(ROOT) <= 256 << 20, 'observer whole-output budget')
                 phases.append(phase)
+                bounds['phase_clocks'][phase] = dict(raw_ns=time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW),
+                    monotonic_ns=time.monotonic_ns(), boottime_ns=time.clock_gettime_ns(time.CLOCK_BOOTTIME))
                 require(Path('/proc', str(entry['pid']), 'exe').resolve() == Path(row['binary']['path']).resolve(), 'fixture identity differs')
                 actual = dict(v.split('=', 1) for v in Path('/proc', str(entry['pid']), 'environ').read_text().split('\0') if '=' in v)
                 profile.same_environment(actual, expected)
@@ -236,14 +222,17 @@ def check():
                         'fixture provider differs')
                 mapped.update(seen)
                 if prof:
-                    if phase == 'before-runtime': profile.session_state(prof['session'], 1)
+                    if phase == 'before-runtime':
+                        profile.session_state(prof['session'], 1)
+                        control('resume', 0); bounds['capture_begin'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
                     if phase == 'captured-paused':
-                        control('resume', 0); bounds['begin'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+                        bounds['begin'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
                     if phase == 'replay-drained':
-                        bounds['end'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW); control('pause', 1); control('resume', 0)
+                        bounds['end'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
                     if phase == 'late-enqueued':
-                        bounds['late_pause'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW); control('pause', 1)
-                io.send(b'X')
+                        bounds['late_release'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+                    profile.session_state(prof['session'], 0)
+                persist(); io.send(b'X')
             io.proc.stdin.close()
             deadline = time.monotonic() + 45
             while not io.exit_watch.poll(0) or not io.eof:
@@ -261,6 +250,9 @@ def check():
             if prof: command = cache.model.engine_once.profile_command(prof, command)
             entry, out, err = owner.run(mode, command, target, P, interaction=interact, **DEVICE_BUDGET)
             require(cache.build.supervision.closed(entry) and entry['exit_code'] == 0 and phases == list(PHASES), 'fixture execution failed')
+            outcome['native_exit_code'] = entry['exit_code']
+            bounds['capture_end'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+            persist()
             stdout, stderr = out.read_text(), err.read_text()
             for marker in ('fixture_status=PASS mode=profile-window', 'late_graph_pending=1',
                            'late_replays=1 kernels=2 numerical=PASS guards=PASS timer_fallback=0',
@@ -277,18 +269,37 @@ def check():
                 traces = list((root / 'trace').rglob('*.json')); require(len(traces) == 1, 'one flushed fixture timeline required')
                 events = json.loads(traces[0].read_text())['traceEvents']
                 summary = window.summarize(events, native_pid=entry['pid'], begin_ns=bounds['begin'], end_ns=bounds['end'],
-                    capture_begin_ns=bounds['begin'], capture_end_ns=bounds['end'])
-                require(summary['operation_counts']['kernel'] == 6, 'paused-capture/replay kernel inventory differs')
+                    capture_begin_ns=bounds['capture_begin'], capture_end_ns=bounds['capture_end'])
+                require(summary['operation_counts'].get('kernel') == 6 and summary['operation_counts'].get('copy') == 3,
+                        'active-construction replay inventory differs')
+                named = [e for e in events if e.get('ph') == 'X' and e.get('cat') == 'gpu_op'
+                         and bounds['begin'] / 1000 <= e['ts'] < bounds['end'] / 1000
+                         and 'StrataWindow' in e.get('name', '')]
+                require(len(named) == 6 and all(sum(name in e['name'] for e in named) == 3
+                    for name in ('StrataWindowProduce', 'StrataWindowConsume')),
+                    'named producer/consumer replay coverage differs')
+                clocks = list(bounds['phase_clocks'].values()); first = clocks[0]
+                require(len(clocks) == len(PHASES) and all(abs((c['boottime_ns'] - first['boottime_ns']) -
+                    (c['monotonic_ns'] - first['monotonic_ns'])) <= 50000000 for c in clocks),
+                    'fixture clock/suspend discontinuity')
                 late = [e for e in events if e.get('ph') == 'X' and e.get('cat') == 'gpu_op'
                         and ('StrataWindowProduce' in e.get('name', '') or 'StrataWindowConsume' in e.get('name', ''))
-                        and e.get('ts', 0) >= bounds['late_pause'] / 1000]
+                        and e.get('ts', 0) >= bounds['late_release'] / 1000]
                 require(not any(e.get('ph') == 'X' and e.get('cat') == 'gpu_op'
                     and ('StrataWindowProduce' in e.get('name', '') or 'StrataWindowConsume' in e.get('name', ''))
-                    and bounds['end'] / 1000 <= e.get('ts', 0) < bounds['late_pause'] / 1000 for e in events),
+                    and bounds['end'] / 1000 <= e.get('ts', 0) < bounds['late_release'] / 1000 for e in events),
                     'late graph ran before its blocked host task was released')
-                require(len(late) in (0, 2), 'partial/duplicate late graph inventory')
+                require(len(late) == 2 and all(sum(name in e['name'] for e in late) == 1
+                    for name in ('StrataWindowProduce', 'StrataWindowConsume')), 'partial/duplicate late graph inventory')
+                ids = {window.identifier(e['args']['id']) for e in named}
+                late_ids = {window.identifier(e['args']['id']) for e in late}
+                require(len(late_ids) == 2 and ids.isdisjoint(late_ids)
+                    and all(e['pid'] == named[0]['pid'] for e in late)
+                    and all(sum(e.get('ph') == 's' and e.get('pid') == entry['pid']
+                        and str(e.get('cat', '')).startswith('Flow_H2D_') and str(e.get('id')) == identity
+                        for e in events) == 1 for identity in late_ids), 'late native flow joins differ')
                 outcome['trace'] = dict(expected_clean_kernels=6, observed_clean_kernels=6,
-                    paused_boundary_late_kernels_observed=len(late),
+                    active_late_graph_kernels_observed=len(late), collection_active_through_native_exit=True,
                     gpu_interval_union_us=summary['observed_gpu_interval_union_us'],
                     kernel_interval_union_us=summary['observed_kernel_interval_union_us'],
                     host_api_interval_union_us=summary['observed_host_api_interval_union_us'],
@@ -313,20 +324,21 @@ def check():
             row.update(stage='checked' if outcome['passed'] and mode == 'trace' else 'checking' if outcome['passed'] else 'failed',
                 passed=bool(outcome['passed'] and mode == 'trace'), complete=bool(outcome['passed'] and mode == 'trace'),
                 active=bool((owner and owner.active) or (controls and controls.active)), ownership_closed=outcome['ownership_closed'])
-            # Keep the committed input plan unchanged during the two-case job.
+            # Keep the committed input plan unchanged during the observed job.
             # Private partial results still prevent an interrupted case retry.
             write(ROOT / 'record.json', row)
             if not outcome['passed']: save(row)
         require(outcome['passed'], outcome.get('error', 'observer fixture qualification failed'))
-    row['decision'] = dict(safe_fixture_window_qualified=True, model_capture_qualified=False,
-        next='A new committed request-scoped decode gate,guard bands,clock/loss checks and model observer-cost plan remain required.')
+    row['decision'] = dict(fully_active_fixture_graph_coverage_qualified=True,
+        paused_graph_construction_qualified=False, paused_boundary_qualified=False, model_capture_qualified=False,
+        next='Separately qualify paused construction/flush and a request-scoped decode gate,guard bands,clock/loss checks and model observer cost.')
     save(row)
     print('Window fixture checks passed;model attribution remains unqualified.', flush=True)
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'check'), 'profile_window.py prepare|build|check')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'check'), 'profile_window.py prepare|check')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         cache.build.guards.no_model_owners([])
-        {'prepare': prepare, 'build': build, 'check': check}[sys.argv[1]]()
+        {'prepare': prepare, 'check': check}[sys.argv[1]]()
