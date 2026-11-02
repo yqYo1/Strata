@@ -890,7 +890,18 @@ source/header inputs against the qualified native/SDK inventory. All seven
 component compile/syntax/link commands now exit0,and actual dependencies match
 those806pins. The344344-byte fixture hashes to
 `f948a4f70379d18cb2c3debe367195e5bc8fea936513adf63d5f93b97adf880d`.
-Device execution remains pending;neither inference generation was rebuilt.
+Both fresh traced/validated component processes now exit0,with quiet validation,
+closed owners,unchanged boot/driver and no fresh fault. The controlled legacy
+sequence reproduces a victim lookup of slot129 after it holds the incoming
+payload. The fixed sequence passes pending-copy exclusion,host/device/callback
+lookup equality,six invalid-map refusals,two same-slot tail refills and an
+unlent-prefix byte comparison. These are actual ExpertCache lookup/payload and
+lease checks,not a full`expert_hit_run`arithmetic or model-task test. Neither
+inference generation was rebuilt. Before creating another engine generation,
+select the retained fallback from its applicable evidence,recover the old
+generation's exact source/recipe and reconcile live consumers;only then retire
+it and build the changed engine. Fixed-token/task,independent prefill and
+repeated clean strong/weak-MTP speed checks remain pending.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
