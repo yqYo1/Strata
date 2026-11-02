@@ -955,8 +955,9 @@ after recovering V1's original source,recipe,1451inputs and nine ELFs from pushe
 history. It adds only the reversible two-source worker delta and its header:
 558native files. Configure,incremental compilation and dependency collection now
 exit0,and all1452actual inputs match. Only the engine ELF changes;the other
-eight fixtures remain byte-identical. V2is built but not GPU/model-qualified or
-adopted. The superseded V1result is recovered from`05466aca7`,rather than keeping
+eight fixtures remain byte-identical. V2's subsequent component and short model
+checks are recorded below;inference adoption remains pending. The superseded
+V1result is recovered from`05466aca7`,rather than keeping
 a second full copy in the active JSON. Preserve the existing adaptive fallback.
 The new fixture at`a2335fc54`now passes three fresh traced/validated processes:
 pending real4096-byte H2D,worker bad_alloc,production all-queue drain,payload
@@ -970,9 +971,26 @@ redundant second admission query rather than changing the original result.
 Orca Luna's new correction audit and native Luna-max review find no additional
 source correction before the one-B570 positive-swap model check. These component
 results do not exercise the full adaptive transaction or qualify model output.
-Next commit a fresh`bench.sh`model plan for this exact V2engine:zero/positive swaps,
-next-GEN payload/loan identity and state handoff,then separate repeated clean
-long-prefill and thinking-on strong/weak-MTP generation. Keep the current decode
+The fresh`bench.sh`zero/positive-swap model plans now both pass two32K
+thinking-on requests on this exact V2engine,with normal native exit,quiet final
+validation,closed owners,all15final model hashes and no fresh fault. Their compact
+results are`cache_map_model_entry_zero_v1`and`cache_map_model_entry_positive_v1`.
+Each request reads32769tokens with zero reuse and generates24tokens:
+
+| Swap cap | First long request PP / client TTFT | Second long request PP / client TTFT |
+| --- | --- | --- |
+| 0 | 666.3tok/s / 49.317s | 825.1tok/s / 39.841s |
+| 8 | 659.2tok/s / 49.835s | 824.6tok/s / 39.871s |
+
+These are validated lifecycle samples,not a clean repeated speed comparison or
+sustained TG evidence. First and second requests use different recorded bodies;
+their time difference does not isolate setup cost. Positive swaps conserve176
+submissions as168commits plus8terminal unpublished copies,and observe two deferred
+next-long-prefill boundaries. Progress proves the exercised lifecycle,not
+byte-exact cache payload/arithmetic or task quality. Next verify long thinking-on
+generation and actual answers with strong/weak observed MTP acceptance,then
+collect separate repeated clean long-prefill/decode comparisons. Next-GEN payload/
+loan identity remains an adoption check. Keep the current decode
 layout and two explicit prefill strategies. Refit input-length/time behavior
 from multiple lengths,with first-use and subsequent requests separate;compare
 simple models and held-out residuals rather than assuming a linear law. Actual
