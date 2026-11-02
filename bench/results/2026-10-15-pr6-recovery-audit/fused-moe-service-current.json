@@ -89584,5 +89584,150 @@
     "sources_sha256": "30409407d716908922dad6427428dcef6b956968c98b03dff64e896c94762fea",
     "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065",
     "build_environment_sha256": "69928cf6e225bd1816ca3ad35fdde367176f6564ffe55aa4bc965e83fd32b5a3"
+  },
+  "decode_window_observer_v2": {
+    "stage": "prepared",
+    "source_commit": "3259ae20b090f5b8569bfd3ab7d4f0f27f4b550f",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+      "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+      "files": 10945
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/build/strata",
+      "sha256": "bdba183e582c6b6bdcaa923d37b5d6282e834166a7b40b10f84b35d08efc310e",
+      "bytes": 24050200
+    },
+    "native_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+    },
+    "preprocess": [
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-O2",
+      "-std=c++17",
+      "-fsycl",
+      "-fsycl-device-code-split=per_kernel",
+      "-pthread",
+      "-M",
+      "-MT",
+      "fixture",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/headers.d",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/profile_window.cpp"
+    ],
+    "command": [
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-O2",
+      "-std=c++17",
+      "-fsycl",
+      "-fsycl-device-code-split=per_kernel",
+      "-pthread",
+      "-MD",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/build.d",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/profile_window.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/fixture"
+    ],
+    "profile": {
+      "mode": "trace",
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      },
+      "session": "StrataPrefill0ffa88b1eb0c2190ab36c3ae",
+      "environment": {
+        "UNITRACE_SystemTime": "1",
+        "UNITRACE_FollowChildProcess": "1",
+        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v2/trace/trace",
+        "LD_DEBUG": "libs"
+      }
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "cases": [],
+    "limits": "One observer fixture,not another engine generation. No model,observer-cost,full-context or saturation qualification.",
+    "consumer": "Qualify paused graph construction/replay and pause-crossing metadata before the planned bounded decode capture. Retire raw capture after that question closes;retain exact source/recipe and compact counts.",
+    "dependencies": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/compiler-inputs.json",
+      "sha256": "597f19e1fc3c2c7322ed42b273f2fe670fb725e743ddd1b9b993935736e9fd82",
+      "files": 638
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cache-model-v1/decode-window-observer-v1/fixture",
+      "sha256": "0e5b4223f1710e01b20b85cf8c05200aebd3eceee55965524e3b358769afc523",
+      "bytes": 158168
+    },
+    "fixture_reuse": {
+      "original_result_key": "decode_window_observer_v1",
+      "original_source_commit": "e91882d8128eb20a0735de285a68ceae58eba806",
+      "changed_controls": [
+        "tools/sycl/profile_window.py"
+      ],
+      "compiled_inputs_unchanged": 638,
+      "original_direct_numerical_check_reused": true,
+      "scope": "Same original CPP,recipe,compiler638inputs,ELF and providers;no fixture or engine rebuild. V1 remains failed."
+    },
+    "plan": {
+      "change": "Resume at before-runtime and stay active through graph construction,replay,late completion,readback and native exit/flush. Do not pause before releasing the late host task;the original ELF gate names remain literal protocol labels. Persist every gate/control RAW clock bound.",
+      "acceptance": "Exactly6named clean replay kernels and3copies inside the recorded inner window,plus2named late kernels,unique native flow joins,normal0,quiet validation,closed owners,no fresh fault. Any failure stops without retry;no model/lossless boundary/observer-cost claim.",
+      "whole_bytes": 268435456,
+      "device_budget": {
+        "wall": 180,
+        "cpu": 180,
+        "rss_cap": 4294967296,
+        "text_cap": 16777216,
+        "file_cap": 33554432,
+        "total_cap": 67108864
+      }
+    },
+    "sources_sha256": "c8815288281e2beeecdb5781bf571f8a41e938ddd160fdbb02d4bf51e6e51541",
+    "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065",
+    "build_environment_sha256": "69928cf6e225bd1816ca3ad35fdde367176f6564ffe55aa4bc965e83fd32b5a3"
   }
 }

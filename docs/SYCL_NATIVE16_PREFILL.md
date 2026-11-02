@@ -817,8 +817,9 @@ the original ELF's`captured-paused`label is only a protocol name in this arm.
 The traced check requires six named clean kernels and three copies inside the
 recorded window,plus two uniquely joined late kernels after owner release.
 The original direct numerical check is reused;one traced case is allowed,with
-the same180s/64MiB device and256MiB whole-output bounds. No V2 execution result
-exists yet. Do not rebuild or retry V1. The completed collector source review
+the same180s/64MiB device and256MiB whole-output bounds. V2 preparation at
+`3259ae20b`passes the original638input/ELF/runtime checks;its traced GPU check
+is pending. Do not rebuild or retry V1. The completed collector source review
 does not establish that paused construction caused the loss:its append path
 can recognize graphs while paused. If fully active collection still loses the
 kernels,child-command tracking/submission/emission remains the concrete issue;
