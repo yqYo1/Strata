@@ -796,9 +796,14 @@ It requires six uniquely joined clean replay kernels,numerical/guard checks,
 quiet validation,unchanged driver/boot and closed owners. Pause-crossing work
 cannot qualify lossless boundary coverage or model attribution. The source
 sets180s/64MiB per-device-process and256MiB whole-observer output bounds;it
-does not rebuild the inference engine. This controller is not yet executed:
-request-scoped decode gates,guard bands,clock/loss checks and model observer
-overhead remain the next qualification steps after the fixture.
+does not rebuild the inference engine. Source`e91882d81`now prepares the fixture
+with the pinned2026.2compiler:preprocessing exits0and all638actual source/header
+inputs match the frozen SDK/native inventory. Owners close;the native fixture
+is still unbuilt/unrun. Commit this prepared result before
+`python3 -B tools/sycl/profile_window.py build`,then commit its ELF/dependency
+result before`check`. Request-scoped decode gates,guard bands,clock/loss checks
+and model observer overhead remain the next qualification steps after the
+fixture.
 The cap retrieval review confirms that larger caps need a new bounded
 qualification. Its96-buffer limit concerns resident-RAM complement exchanges;
 the current native-GGUF Arena bypasses that path. There is no existing payload
