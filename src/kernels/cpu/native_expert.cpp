@@ -6,7 +6,6 @@
 #include "strata/kernels/cpu/iq_avx512.hpp"
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "strata/kernels/cpu/iq2_pair_avx2.hpp"
-#include "strata/kernels/cpu/iq3_pair_avx2.hpp"
 #include "strata/kernels/cpu/kq_avx2.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
 
@@ -184,14 +183,6 @@ void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* 
             iq256_gu_rows(f.gu_type, blob, f.gu_row, f.up_off, (int) f.n_embd, act, nt, ff, r0, r1);
             return;
         }
-    }
-    // Decode-only IQ3_S NT1 pair. Keep prefill,Down and multi-token dispatch
-    // independent. The process environment is fixed before startup.
-    static const bool iq3_pair=[] {const char* v=std::getenv("STRATA_IQ3_PAIR");return v&&v[0]=='1'&&v[1]=='\0';}();
-    if(phase==NativeGuPhase::Decode&&iq3_pair&&avx2&&!cpu512&&nt==1&&
-       iq3_pair_gu_rows(f,blob,act[0],ff[0],r0,r1)) {
-        iq3_pair_note_dispatch(static_cast<uint64_t>(r1-r0));
-        return;
     }
     // The default-off direct pair producer only replaces IQ2_S NT1.
     // Environment remains immutable after startup; existing MT dispatch above

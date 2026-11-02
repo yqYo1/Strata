@@ -93944,5 +93944,222 @@
         "record.json"
       ]
     }
+  },
+  "cpu_iq3_pair_gu_v1": {
+    "source_commit": "dd885700e36ab9e3848c49b22013c7dd59024533",
+    "recipe_commit": "6d836155345cd648dca84065b8e482f6f48a54b6",
+    "result_commit": "1b5ccaecfbe36344fb74d64d6b71715e98e60235",
+    "original_result_path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-iq3-current.json",
+    "original_result_sha256": "d0e4d3938b243a06654347b33d35543585f6dc2086913a7b971bc55771ecc658",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-gu-v1/build/cpu_iq3_gu",
+      "bytes": 2533504,
+      "sha256": "4b0f13141e9166b4f063902165ed4ce38c3d37c9a4d7e54faed52b83b20ff5e4"
+    },
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "performance_gate_passed": false,
+    "eligible_down_formats": [],
+    "inference_adopted": false,
+    "model_qualified": false,
+    "question": "Does sharing activation loads across IQ3_S gate/up improve the actual Decode NT1 GU dispatcher on this Zen3 CPU?",
+    "scope": "GU only,H2560/FF640,64real experts for each21/20and21/42form. Calls native_gu_rows,including selector/fallback,swish and optional selected-route audit. Does not call ExpertPool,quantize hidden states or execute Down. In particular,the newer pool.cpp/pool.hpp/service_profile.hpp are not a measured model baseline.",
+    "environment": {
+      "OMP_NUM_THREADS": "1",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ_MT_MIN": "2",
+      "STRATA_IQ3_PAIR_AUDIT": "1"
+    },
+    "cpu_core": 1,
+    "project_sources": {
+      "revision": "dd885700e36ab9e3848c49b22013c7dd59024533",
+      "count": 38,
+      "aggregate_sha256": "f61cfa80f7a2a67b618de8abbd559944cec865eb2f698ab0568a8bcafd48221c"
+    },
+    "ggml": {
+      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+      "count": 1376,
+      "aggregate_sha256": "04cc6ab883190bdb3bbcfc3e3d62c630c7b147587b98379157ad768f9936c8d2"
+    },
+    "compiler": {
+      "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
+      "/usr/bin/python3.12": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "conformance": {
+      "processes": 3,
+      "guard_cases_per_process": 74,
+      "formats": [
+        [
+          21,
+          20
+        ],
+        [
+          21,
+          42
+        ]
+      ],
+      "real_experts_per_format": 64,
+      "activations": 4,
+      "bitwise": true,
+      "prefill_and_NT2_NT4_isolated": true,
+      "disabled_fallback": true,
+      "GPU_executed": false
+    },
+    "timing": {
+      "independent_process_pairs": 3,
+      "order": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "batches_per_cell": 6,
+      "individual_samples": 144,
+      "original_samples_retained_in_result_commit": true,
+      "min_batch_wall_s": 0.350002006,
+      "max_batch_wall_s": 0.371017293,
+      "minimum_declared_batch_s": 0.25,
+      "maximum_clock_to_warm_ratio": 6.315377780002753e-05,
+      "decisions": [
+        {
+          "down": 20,
+          "access": 0,
+          "pairs": [
+            {
+              "process": 0,
+              "reference_s": 0.0003243573673692503,
+              "candidate_s": 0.0003219868184627743,
+              "ratio": 0.9926915521429258
+            },
+            {
+              "process": 1,
+              "reference_s": 0.00032261533621588093,
+              "candidate_s": 0.00032532124101136294,
+              "ratio": 1.0083874028656572
+            },
+            {
+              "process": 2,
+              "reference_s": 0.00032190406646936964,
+              "candidate_s": 0.00033365355671531485,
+              "ratio": 1.0364999745881223
+            }
+          ],
+          "geomean_ratio": 1.012364741408669,
+          "repeatable_gain": false
+        },
+        {
+          "down": 20,
+          "access": 1,
+          "pairs": [
+            {
+              "process": 0,
+              "reference_s": 0.00032292415625,
+              "candidate_s": 0.00032490764889705885,
+              "ratio": 1.0061422863810885
+            },
+            {
+              "process": 1,
+              "reference_s": 0.0003228162867647059,
+              "candidate_s": 0.00032198965073529416,
+              "ratio": 0.997439298872754
+            },
+            {
+              "process": 2,
+              "reference_s": 0.0003238428745404412,
+              "candidate_s": 0.0003281753520220588,
+              "ratio": 1.0133783319696803
+            }
+          ],
+          "geomean_ratio": 1.005632183580518,
+          "repeatable_gain": false
+        },
+        {
+          "down": 42,
+          "access": 0,
+          "pairs": [
+            {
+              "process": 0,
+              "reference_s": 0.00032358429323661183,
+              "candidate_s": 0.0003358363368430923,
+              "ratio": 1.0378635300370451
+            },
+            {
+              "process": 1,
+              "reference_s": 0.00032222266931587154,
+              "candidate_s": 0.00032184021415441176,
+              "ratio": 0.9988130718354739
+            },
+            {
+              "process": 2,
+              "reference_s": 0.00032384237965144713,
+              "candidate_s": 0.000330327239222804,
+              "ratio": 1.0200247403639282
+            }
+          ],
+          "geomean_ratio": 1.0187752634685663,
+          "repeatable_gain": false
+        },
+        {
+          "down": 42,
+          "access": 1,
+          "pairs": [
+            {
+              "process": 0,
+              "reference_s": 0.00034782878955078126,
+              "candidate_s": 0.0003233292830882353,
+              "ratio": 0.9295644662013546
+            },
+            {
+              "process": 1,
+              "reference_s": 0.00032270747334558824,
+              "candidate_s": 0.00032264271504799834,
+              "ratio": 0.9997993281750852
+            },
+            {
+              "process": 2,
+              "reference_s": 0.0003255335124080882,
+              "candidate_s": 0.0003284711750919118,
+              "ratio": 1.009024148273069
+            }
+          ],
+          "geomean_ratio": 0.9788090395205646,
+          "repeatable_gain": false
+        }
+      ]
+    },
+    "decision": "Numerical/dispatch contract passes,but no form/access cell has all3paired medians below reference. Do not launch a model trial or keep unused production exports. Preserve original measured source and full individual samples in reachable Git history.",
+    "limits": "Single-core GU component with audit enabled,not ExpertPool/model speed. Logical access patterns are not RAM/PCIe traffic or hardware saturation. No sustained TG,task,agent,physical262144or RESTORE qualification.",
+    "next": "A distinct source-only paired-dataflow research task is running;read its native review digest before choosing another CPU component. Keep the current known-good model engine and complete its long-prefill recheck/length fit.",
+    "tracked_prototype_retirement": {
+      "original_commit": "1b5ccaecfbe36344fb74d64d6b71715e98e60235",
+      "files": 6,
+      "bytes": 82659,
+      "reason": "Closed performance screen has no eligible form;unused production entry,exports,targets,fixture and driver retire to reachable original Git history. Useful compact decision and independent process-pair medians remain active. Source-only research uses separately held child paths.",
+      "path_and_blob_manifest": "Git deletion diff;no duplicate permanent path list."
+    }
   }
 }

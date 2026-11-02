@@ -1057,15 +1057,25 @@ weak-MTP workload. Keep this pilot failed and cache8unadopted;another output-cap
 increase is not the next tuning experiment. All273original controller/benchmark
 inputs are recovered and current,but the failed process does not reach the final
 full-model-hash gate. Its work counters are descriptive,not hardware saturation.
-Main has drafted an opt-in,decode-only IQ3_S NT1 gate/up pair in the isolated
-`perf/decode-iq3-pair`child while the model sources were frozen. It shares the
-activation load across gate/up,with the existing integer lanes,FMA order and
-reduction;prefill,Down and multi-token dispatch stay on their existing paths.
-This source is unbuilt and untested,not an adopted optimization. Next commit a
-CPU-only conformance/dispatch and repeated component-timing plan,then test it
-before considering a model build. The measured engine's pool differs from the
-current worktree in three files,so do not attribute current-pool timings to that
-engine. Use an answer-eligible model route for a later matched model comparison.
+The decode-only IQ3_S NT1 gate/up pair now passes three CPU-only checks:
+reference,candidate and candidate with IQ256disabled. Each checks74producer
+boundary cases,two real64-expert forms and four quantized activations,bitwise
+GU results,input immutability and Prefill/NT2/NT4/fallback isolation. The frozen
+six-process A/B,B/A,A/B screen yields144eligible batches but no repeatable gain
+in any form/access cell. Candidate/reference time geomeans are1.012365/1.005632
+for Down20hot/stream,and1.018775/0.978809for Down42;individual pair directions
+are mixed. Keep numerical success separate from its failed performance gate.
+No model trial or inference adoption follows. Original source,recipe and full
+individual samples are reachable at`1b5ccaecfbe36344fb74d64d6b71715e98e60235`;
+the active summary is`cpu_iq3_pair_gu_v1`. Retire unused prototype exports,
+targets and fixtures from the primary tree;the child source remains briefly
+held for the explicitly indexed,read-only Orca Luna dataflow research Task.
+That Task must distinguish a new method from this pairing and prior IQ2gather/
+activation-LUT proposals. Main reads its native Luna-max review digest.
+This is single-core GU evidence,not a pool/model speed or resource ceiling.
+The measured engine's pool differs from the worktree in three files;do not
+attribute current-pool timings to that engine. A later model comparison needs
+an answer-eligible route. Preserve the current validated model generation.
 The current safe engine still needs its117K repeated prefill recheck and a fresh
 multi-length time/TTFT fit;the older1046.0957tok/s result and older length fit do
 not automatically qualify this engine. Full262144/RESTORE remain pending.
