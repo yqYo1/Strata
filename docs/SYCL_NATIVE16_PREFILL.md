@@ -958,12 +958,26 @@ exit0,and all1452actual inputs match. Only the engine ELF changes;the other
 eight fixtures remain byte-identical. V2is built but not GPU/model-qualified or
 adopted. The superseded V1result is recovered from`05466aca7`,rather than keeping
 a second full copy in the active JSON. Preserve the existing adaptive fallback.
-The next bounded fixture
-checks pending real4096-byte H2D,worker bad_alloc,production all-queue drain,
-payload equality,main-unwind join and cache close with tracking on/off. Its
-failed-drain status is injected only after known completion,without deliberately
-leaving device work outstanding or inducing a GPU fault. Qualify those error
-paths before a positive-swap model test.
+The new fixture at`a2335fc54`now passes three fresh traced/validated processes:
+pending real4096-byte H2D,worker bad_alloc,production all-queue drain,payload
+equality,main-unwind join and cache close with tracking off/on. Native exits are
+0/0/1;the software failed-drain case has no owner-release marker. Its failure is
+injected only after known completion,without deliberately leaving device work
+outstanding or inducing a GPU fault. All owners close,boot/driver remain unchanged
+and no fresh fault is recorded. The earlier V1preparation remains a failed
+host`dpkg-query`timeout before any Owner,compile or GPU launch;V2removes the
+redundant second admission query rather than changing the original result.
+Orca Luna's new correction audit and native Luna-max review find no additional
+source correction before the one-B570 positive-swap model check. These component
+results do not exercise the full adaptive transaction or qualify model output.
+Next commit a fresh`bench.sh`model plan for this exact V2engine:zero/positive swaps,
+next-GEN payload/loan identity and state handoff,then separate repeated clean
+long-prefill and thinking-on strong/weak-MTP generation. Keep the current decode
+layout and two explicit prefill strategies. Refit input-length/time behavior
+from multiple lengths,with first-use and subsequent requests separate;compare
+simple models and held-out residuals rather than assuming a linear law. Actual
+physical CPU/GPU/VRAM/PCIe saturation remains unknown. Full262144and RESTORE
+remain separate adoption gates;do not repeat the now-passed error component.
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
 After original source/recipe recovery from pushed`9974789b0`,the component's

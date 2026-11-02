@@ -91578,7 +91578,7 @@
     "environment_template_sha256": "0d3cf247ae0fe1c9f302d650c691b23de162d948a32f7e2fa8535aaa7a357065"
   },
   "checked_adaptive_worker_device_v2": {
-    "stage": "built",
+    "stage": "closed",
     "source_commit": "a2335fc5475311f9062ac581697faec8d139613b",
     "engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "engine": {
@@ -91842,11 +91842,129 @@
       "contract": "Pending4096-byte real H2D,worker bad_alloc,production all-queue drain,payload D2H equality,main-unwind join,and production cache close with tracking off/on. Software failed-drain status is injected only after known completion;expect fail-stop before owner release. No deliberately invalid GPU work or environment mutation.",
       "consumer": "Qualify changed worker/cache error lifetime before positive-swap model work;retire raw traces,objects and component ELF after that qualification."
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "cases": [],
+    "cases": [
+      {
+        "mode": "exception",
+        "expected_exit_code": 0,
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "complete": true,
+        "validation": {
+          "pid": 2531761,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "phases": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "pending_copy": true,
+        "payload_equal": true,
+        "owner_release": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "tracked",
+        "expected_exit_code": 0,
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "complete": true,
+        "validation": {
+          "pid": 2534185,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "phases": [
+          "before-runtime",
+          "runtime-ready",
+          "before-exit"
+        ],
+        "pending_copy": true,
+        "payload_equal": true,
+        "owner_release": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "failed-drain",
+        "expected_exit_code": 1,
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 1,
+        "complete": true,
+        "validation": {
+          "pid": 2536647,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "phases": [
+          "before-runtime",
+          "runtime-ready",
+          "before-failstop"
+        ],
+        "pending_copy": true,
+        "payload_equal": true,
+        "owner_release": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "dependencies": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/checked-adaptive-worker-device-v2/compiler-inputs.json",
       "sha256": "ffc7fa03f0c56d93163127b00b944a2a8b6f9bb74c9a6fe1bda124d104f60d72",
@@ -91896,6 +92014,7 @@
       "uncovered_external_inputs": 0,
       "scope": "Observed GNU ld -t input paths;private generated objects are owned outputs,not external source evidence."
     },
+    "decision": "Worker/error/cache-close component passed;fresh model zero/positive-swap,task,independent prefill,repeated clean speed and262144/RESTORE remain unqualified.",
     "sources": {
       "files": 89,
       "aggregate_sha256": "852222a28422e0f07548c63075b3278d88a50a763518ce0576243e1b72d15b77"
