@@ -191,6 +191,10 @@ if(STRATA_SYCL_TESTS)
     tests/sycl/expert_bank.cpp src/core/expert_cache.cpp)
   target_link_libraries(sycl_expert_bank_test PRIVATE strata_sycl_runtime)
   target_compile_features(sycl_expert_bank_test PRIVATE cxx_std_20)
+  add_executable(sycl_cache_residency_test EXCLUDE_FROM_ALL
+    tests/sycl/cache_residency.cpp src/core/expert_cache.cpp)
+  target_link_libraries(sycl_cache_residency_test PRIVATE strata_sycl_runtime)
+  target_compile_features(sycl_cache_residency_test PRIVATE cxx_std_20)
 
   # Explicit diagnostic entrypoint: the normal strata target keeps its original
   # admission/decode path. Building this does not qualify physical context fill.

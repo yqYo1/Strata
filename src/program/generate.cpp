@@ -4717,6 +4717,14 @@ int main(int argc, char** argv) {
             return cudaMemcpy(st->d_res, host_res.data(), host_res.size() * sizeof(int32_t), cudaMemcpyHostToDevice);
         }, e);
     };
+    auto adaptive_res_upload = [&](const char* phase, std::string& e) -> bool {
+#ifdef STRATA_ENABLE_SYCL
+        // The adaptive owner has retired readers before changing slot payloads.
+        // Scalar callbacks and verify windows must see the same identities.
+        if (!xcache.replace_residency(host_res, e)) return false;
+#endif
+        return res_upload(phase, e);
+    };
     if (!o.no_capture && !o.no_token_graph && layer_dump == nullptr && half_dump == nullptr &&
         (hit_fn == nullptr || thits.on()) && !native_pack && !multi_gpu) {   // a split's token graph cannot span stages
         if (!strata::core::session_capture_token(wt, g, ss, d_parts, loop_scratch.y_miss, loop_scratch.parts_bytes,
@@ -5640,7 +5648,7 @@ int main(int argc, char** argv) {
             src.commit_exchanges();   // the resident RAM mode: the evicted experts take their places in RAM
             for (const auto& [i, slot] : pending) host_res[(size_t) i] = slot;
             pending.clear();
-            const bool published = res_upload("serve adaptive refill", e);
+            const bool published = adaptive_res_upload("serve adaptive refill", e);
             if (published && trace_adapt)
                 std::fprintf(stderr, "strata serve: ADAPT_COMMIT swaps=%zu\n", completed);
             return published;
@@ -5648,7 +5656,7 @@ int main(int argc, char** argv) {
         // the VRAM tier follows the conversation (the same rule as the speculative loop below)
         auto adapt = [&]() -> bool {
             if (!pending.empty()) return true;   // the previous swaps are still in flight
-            struct Swap { float gain; int32_t layer, in, out; };
+            struct Swap { float gain; int32_t layer, in, out; int32_t slot = -1; };
             std::vector<Swap> swaps;
             std::vector<std::pair<float, int32_t>> cand, vict;
             for (int64_t l = 0; l < g.n_layers; ++l) {
@@ -5673,10 +5681,27 @@ int main(int argc, char** argv) {
             std::sort(swaps.begin(), swaps.end(), [](const Swap& a, const Swap& b) { return a.gain > b.gain; });
             if ((int) swaps.size() > o.adapt_swaps) swaps.resize((size_t) o.adapt_swaps);
             if (!resident_stage_swaps(src, xcache, host_res, g.n_expert, swaps, adapt_stream)) return false;
+#ifdef STRATA_ENABLE_SYCL
+            for (auto& s : swaps) {
+                const size_t out = size_t(s.layer) * size_t(g.n_expert) + size_t(s.out);
+                s.slot = host_res[out];
+                if (s.slot < 0) return false;
+                host_res[out] = strata::core::kNotResident;
+            }
+            std::string mask_error;
+            if (!swaps.empty() && !adaptive_res_upload("serve adaptive mask", mask_error)) {
+                std::fprintf(stderr, "strata serve: %s\n", mask_error.c_str()); return false;
+            }
+#endif
             bool main_live = false;
             for (const Swap& s : swaps) {
                 const size_t in = (size_t) s.layer * g.n_expert + s.in, out = (size_t) s.layer * g.n_expert + s.out;
-                const int32_t slot = host_res[out];
+                const int32_t slot =
+#ifdef STRATA_ENABLE_SYCL
+                    s.slot;
+#else
+                    host_res[out];
+#endif
                 const uint8_t* b = srcp->blob(s.layer, s.in);
                 const int stn = multi_gpu ? stage_of(s.layer) : 0;   // the swap stays in the layer's own cache
                 GpuStage* gs = stn > 0 ? stages[(size_t) stn - 1].get() : nullptr;
@@ -7746,7 +7771,7 @@ int main(int argc, char** argv) {
             src.commit_exchanges();   // the resident RAM mode: the evicted experts take their places in RAM
             for (const auto& [i, slot] : pending) host_res[(size_t) i] = slot;
             pending.clear();
-            return res_upload("standalone adaptive refill", e);
+            return adaptive_res_upload("standalone adaptive refill", e);
         };
         // Plan v0.3 P6: the VRAM tier follows the conversation.  Candidates are missing experts routed at least
         // twice (decayed); each is paired with its layer's least-routed resident expert and swapped when it was
@@ -7765,7 +7790,7 @@ int main(int argc, char** argv) {
                 return true;   // the previous swaps are still in flight
             }
             if (trace_adapt) std::fprintf(stderr, "strata: ADAPT round=%lld considering\n", (long long) adapt_rounds);
-            struct Swap { float gain; int32_t layer, in, out; };
+            struct Swap { float gain; int32_t layer, in, out; int32_t slot = -1; };
             std::vector<Swap> swaps;
             std::vector<std::pair<float, int32_t>> cand, vict;
             for (int64_t l = 0; l < g.n_layers; ++l) {
@@ -7793,9 +7818,26 @@ int main(int argc, char** argv) {
                 std::fprintf(stderr, "strata generate: an adaptive refill failed (copying evicted experts back)\n");
                 return false;
             }
+#ifdef STRATA_ENABLE_SYCL
+            for (auto& s : swaps) {
+                const size_t out = size_t(s.layer) * size_t(g.n_expert) + size_t(s.out);
+                s.slot = host_res[out];
+                if (s.slot < 0) return false;
+                host_res[out] = strata::core::kNotResident;
+            }
+            std::string mask_error;
+            if (!swaps.empty() && !adaptive_res_upload("standalone adaptive mask", mask_error)) {
+                std::fprintf(stderr, "strata generate: %s\n", mask_error.c_str()); return false;
+            }
+#endif
             for (const Swap& s : swaps) {
                 const size_t in = (size_t) s.layer * g.n_expert + s.in, out = (size_t) s.layer * g.n_expert + s.out;
-                const int32_t slot = host_res[out];
+                const int32_t slot =
+#ifdef STRATA_ENABLE_SYCL
+                    s.slot;
+#else
+                    host_res[out];
+#endif
                 const uint8_t* b = srcp->blob(s.layer, s.in);
                 // asynchronous: the copies run while the MTP drafts; the next window waits for them
                 if (slot < 0 || b == nullptr ||

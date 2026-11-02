@@ -245,6 +245,9 @@ bool ExpertCache::open_impl(int64_t n_slots, int64_t n_layers, int64_t n_expert,
     }
 
     residency_.assign((size_t) (n_layers * n_expert), kNotResident);
+#ifdef STRATA_ENABLE_SYCL
+    residency_check_.assign(size_t(n_slots), 0);
+#endif
     slots_ = n_slots;
     n_layers_ = n_layers;
     n_expert_ = n_expert;
@@ -328,6 +331,9 @@ void ExpertCache::close() {
         base_ = nullptr;
     }
     residency_.clear();
+#ifdef STRATA_ENABLE_SYCL
+    residency_check_.clear();
+#endif
     slots_ = 0;
     n_layers_ = 0;
     n_expert_ = 0;
@@ -396,6 +402,39 @@ int32_t ExpertCache::admit(int64_t layer, int64_t expert) {
     residency_[at] = (int32_t) next_free_;
     return (int32_t) next_free_++;
 }
+
+#ifdef STRATA_ENABLE_SYCL
+bool ExpertCache::replace_residency(const std::vector<int32_t>& snapshot, std::string& err) {
+    if (!valid() || !decode_ready() || snapshot.size() != residency_.size() ||
+        residency_check_.size() != size_t(slots_)) {
+        err = "ExpertCache: adaptive residency requires a ready cache and matching geometry";
+        return false;
+    }
+    std::fill(residency_check_.begin(), residency_check_.end(), uint8_t(0));
+    for (size_t i = 0; i < snapshot.size(); ++i) {
+        const int32_t slot = snapshot[i];
+        if (slot == kNotResident) continue;
+        if (slot < 0 || int64_t(slot) >= slots_) {
+            err = "ExpertCache: adaptive residency slot is out of range"; return false;
+        }
+        const int64_t layer = int64_t(i) / n_expert_;
+        int64_t lo = 0, hi = next_free_;
+        if (per_layer_) {
+            layer_slot_range(layer, lo, hi);
+            hi = layer_next_[size_t(layer)];
+        }
+        if (int64_t(slot) < lo || int64_t(slot) >= hi || residency_check_[size_t(slot)]) {
+            err = "ExpertCache: adaptive residency aliases or names an unclaimed/layer-incompatible slot";
+            return false;
+        }
+        residency_check_[size_t(slot)] = 1;
+    }
+    // Validate the whole snapshot first. A rejected publication must not partly
+    // change callback decisions; reuse the existing allocation on the hot path.
+    std::copy(snapshot.begin(), snapshot.end(), residency_.begin());
+    return true;
+}
+#endif
 
 uint8_t* ExpertCache::device_slot(int32_t slot) {
     if (slot < 0 || slot >= slots_) return nullptr;

@@ -865,6 +865,22 @@ callback identities and incoming payload bytes;loan/refill that same slot once.
 Correct the decode mapping transaction without changing prefill selection or
 placement. Fixed-token/task and repeated clean speed checks follow separately;
 the current candidate is not adopted,and262144/RESTORE qualification remains.
+The new Main-authored SYCL correction adds checked,allocation-free callback
+snapshot replacement at adaptive publication. It masks callback/device victims
+before overwriting their slots,and admits incoming identities after the checked
+completion event. Claim counters stay unchanged;temporary prefill masks remain
+owned by the existing scratch lease. This changes no prefill strategy,kernel or
+weight placement. The maintained`tests/sycl/cache_residency.cpp`oracle uses
+130claimed1KiB slots across two layers,one forced tail replacement,a bounded
+host-task copy gate,six invalid-map refusals and same-slot scratch refill.
+Its legacy arm omits the new publication calls in the same fixture;it is not
+an original-engine speed comparison. The new`tools/sycl/cache_residency.py`
+plan rebuilds three unchanged qualified runtime units and the changed cache,
+and syntax-checks the reversible generator delta on the measured composition.
+Prepare/build/GPU-check results must be committed separately. Both inference
+generations remain intact;this small component does not qualify the full
+callback arithmetic,the failed task's cause,model speed or full context.
+The correction and oracle have not yet been built or executed.
 Before first build,the fixture header is corrected to the installed2026.2
 `sycl/ext/oneapi/experimental/graph.hpp`entrypoint. The graph extension's
 [queue-property contract](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc#queue-properties)
