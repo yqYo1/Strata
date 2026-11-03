@@ -1151,8 +1151,17 @@ frontend output and the obsolete V5receipt. V7and V6each retain only their
 consumed full record/runtime inventory. Post-retirement current-source/native/
 provider/prefix admission passes without GPU execution;the replay no longer
 needs its raw capture for admission.
-Both still-consumed native generations remain until the adaptive fallback's
-actual reader is migrated. This curve does not qualify sustained TG,task/agent
+The adaptive fallback's model-entry reader now has a prospective migration:
+recover its557native source hashes and closed zero-swap fixture bridge from
+`c23a2f7ca`,reconstruct its exact compile database by substituting the old root
+in the selected database,and check all eight actual selected fixture ELFs.
+Worker-device reuse permits only the declared controller admission changes;
+its native/fixture/provider/environment/error-case checks stay unchanged.
+The original strict entry proof at`c23a2f7ca`already rejects changed controller
+`build_cache_map_model.py`;it is not a successful current admission. Commit
+the new source and host mutation/no-legacy-read tests before execution. Retire
+the old generation only after that proof passes and its original final
+source/recipe is recovered;keep the selected552bengine. This curve does not qualify sustained TG,task/agent
 adoption,hardware saturation,physical262144or RESTORE.
 
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/

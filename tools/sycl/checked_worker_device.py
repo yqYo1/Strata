@@ -46,8 +46,9 @@ def save(row):
     data = json.loads(RESULT.read_text()); data[KEY] = compact(row); write(RESULT, data)
 
 
-def sources(revision):
-    pins = base.controls(revision, controller=Path(__file__).resolve())
+def sources(revision, *, reuse_revision=None, controller_changes=()):
+    pins = base.controls(revision, controller=Path(__file__).resolve(),
+                        reuse_revision=reuse_revision, controller_changes=controller_changes)
     raw = base.basis.build.git(P, 'show', revision + ':' + CPP)
     require((P / CPP).read_bytes() == raw, 'commit exact device fixture')
     pins[CPP] = hashlib.sha256(raw).hexdigest()
@@ -73,10 +74,12 @@ def allowed_inputs(native):
     return allowed
 
 
-def current(row):
+def current(row, *, reuse_revision=None, controller_changes=(), native_controller_changes=()):
     require(base.committed(RESULT)[KEY] == compact(row) and
-            sources(row['source_commit']) == row['sources'], 'commit/freeze exact device fixture inputs')
-    native = model.verify()
+            sources(row['source_commit'], reuse_revision=reuse_revision,
+                    controller_changes=controller_changes) == row['sources'],
+            'commit/freeze exact device fixture inputs')
+    native = model.verify(reuse_revision=reuse_revision, controller_changes=native_controller_changes)
     require(native['source_commit'] == row['engine_source_commit'] and
             native['binaries']['strata'] == row['engine'] and native['boot'] == row['boot'] and
             native['driver'] == row['driver'], 'new engine/source/environment changed')
