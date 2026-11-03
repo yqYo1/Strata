@@ -33,6 +33,40 @@ def summarize(rows, **options):
 
 
 class WindowAccounting(unittest.TestCase):
+    def test_client_monotonic_is_mapped_to_raw_with_guard_and_offset_envelope(self):
+        interval = dict(request_begin_monotonic_ns=2000000000,
+                        first_output_monotonic_ns=3000000000,
+                        request_end_monotonic_ns=5000000000)
+        clocks = [dict(raw_before_ns=m-16000100, monotonic_ns=m,
+                       raw_after_ns=m-15999900)
+                  for m in (1000000000, 1900000000, 5100000000, 6000000000)]
+        row = window.client_decode_window(interval, clocks)
+        self.assertEqual(row['begin_ns'], 3084000100)
+        self.assertEqual(row['end_ns'], 4883999900)
+        for offset in (row['observed_offset_min_ns'], row['observed_offset_max_ns']):
+            self.assertGreaterEqual(row['begin_ns'] - offset, 3100000000)
+            self.assertLessEqual(row['end_ns'] - offset, 4900000000)
+
+    def test_wrong_client_units_order_short_interval_and_unstable_mapping_are_refused(self):
+        interval = dict(request_begin_monotonic_ns=2000000000,
+                        first_output_monotonic_ns=3000000000,
+                        request_end_monotonic_ns=5000000000)
+        clocks = [dict(raw_before_ns=m-16000100, monotonic_ns=m,
+                       raw_after_ns=m-15999900)
+                  for m in (1000000000, 1900000000, 5100000000, 6000000000)]
+        cases = [(dict(interval, first_output_monotonic_ns=3000000), clocks),
+                 (dict(interval, first_output_monotonic_ns=True), clocks),
+                 (dict(interval, first_output_monotonic_ns=5000000000), clocks),
+                 (dict(interval, request_end_monotonic_ns=3200000000), clocks),
+                 (interval, clocks[::-1])]
+        drift = copy.deepcopy(clocks)
+        drift[-1]['raw_before_ns'] += 60000000
+        drift[-1]['raw_after_ns'] += 60000000
+        cases.append((interval, drift))
+        for client, pairs in cases:
+            with self.subTest(client=client, pairs=pairs), self.assertRaises(ValueError):
+                window.client_decode_window(client, pairs)
+
     def test_overlapping_device_intervals_are_not_added(self):
         row = summarize(trace(event('kernel', 1000., 10., 1), event('kernel', 1005., 10., 2)))
         self.assertEqual(row['observed_gpu_interval_union_us'], 15.)
