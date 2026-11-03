@@ -1088,147 +1088,58 @@ record that eligibility boundary rather than treating a mixed-route intercept as
 a physical fixed cost. Fit actual counts/time/TTFT with held-out lengths and
 residuals. The older length fit does not qualify this engine. Full262144/RESTORE
 remain pending.
-The prospective`cache_map_prefill_curve_v4`keeps all nine current native ELFs
-and explicitly scopes reuse of three changed Python policies. It measures nine
-exact lengths from1286to117489,with request progress enabled and actual short
-cache-loan versus long typed-route checks;an adjacent clean117K anchor supplies
-a local observer-cost screen. Each length has one fresh process,four requests,
-and a separate first-use sample. Five non-split long lengths support held-out
-affine/quadratic/nlogn comparisons;short and117Ksplit routes stay separate.
-This is a descriptive observed curve,not clean timing at every length,a repeated
-speed gain or wider adoption. Recover the original closed clean qualification
-at`2880a857f`;ended-consumer metadata does not rewrite its frozen evidence.
-V1stopped during pre-owner source admission:its source matcher omitted the
-already-committed resource adapter from the added-control set. The native
-verification and host parser controls passed;no model process or curve root was
-created. Keep that failure. V2explicitly recovers the unchanged resource helper
-from`b13d99d13`alongside the original275clean inputs and the new curve controller.
-V2then fails before native startup because the benchmark CLI still restricts
-exact counts to32768or more. Preserve its exit2and incomplete command observation;
-a later audit confirms its reaped PID and empty owned session,with no native
-receipt/log or fresh fault. V3adds explicit`--prefill-short-diagnostic`admission
-and a pure CLI parser used to check every generated argument vector before
-launch. Short results remain labeled diagnostics and do not qualify long-input
-speed. The benchmark change is separately pinned;native source/ELFs stay fixed.
-V3reaches the first1286-token request and24outputs,but its parser rejects the
-valid1536-row short scratch lease as if every request had an8192-row operator.
-The owner terminates the session;keep V3failed,including its incomplete command
-observation. A posthoc audit finds all recorded identities gone and the session
-empty,with no fresh fault. Native-only prompt time14355ms/89.6tok/s is descriptive;
-the client never persists that request's TTFT before the failed end gate.
-V4requires the observed chunked route to satisfy rows<=chunk<=8192,records that
-actual chunk,and still requires8192for the long route. Replay its unchanged
-V3window before a fresh bounded process;do not rewrite the capture or qualify
-the externally terminated V3run. The unchanged-window replay and first fresh
-V4short process now pass:1286read/1285engine rows,actual1536-row chunk,thinking
-on,24outputs per request,zero reuse and all four cache-loan/MTP/owner gates.
-Native exit0,quiet final validation,closed owners and no fresh fault are checked.
-First-use prompt time/TTFT is16.4305s/16.601s;the next three prompt times are
-14.9546,14.7231and14.5418s,with14.7231s median(87.3tok/s)and14.893s median
-TTFT. This observed short diagnostic does not qualify clean speed or sustained
-TG. Only one of the ten planned processes has closed;no current-engine time
-formula is fitted yet. The next clean117K anchor stops before owner/native
-startup:the unchanged compiler link-input package query for GCC13crtendS.o
-exceeds15s. Controller exit1and absent native/owner receipts are verified;the
-package-query child is gone. V4closes incomplete/failed with its passed short
-process preserved;no case1GPU execution or final whole-model rehash occurs.
-Inspect the package-inventory cost and commit a new control/scope before another
-launch;do not silently retry or claim a current-engine fitted curve. The failed V2/V3
-raw-output consumer ends at this successful replay/short-process closure.
-After both original277-input sets are recovered from pushed history,113closed
-failed-curve/research-transaction files totaling11956461bytes are retired. Keep
-the failed outcomes,original command exits/signals and posthoc owner audits;
-no active V4input or native generation is removed.
-The exact stopped package query now completes three host-only probes in
-1.3312,1.2423and1.2033s under the unchanged build environment;its earlier15s
-timeout is not reproduced or explained. Keep the inventory/timeout unchanged.
-The prospective V5scope repeats the frozen ten-process/nine-length plan with
-fresh processes;do not insert V4's short sample into that new cohort. Reuse
-only the immutable parser replay at`7532cbe1b`,recover its original controller
-bytes,and require AST equality outside the narrowly checked ROOT/KEY labels,
-the added stdlib ast import and explicit proof-reader functions. All actual
-route checks,workloads,case order,timers,owners and native/dependency gates stay
-unchanged. This is source-equal parser reuse,not another raw-capture replay or
-new native qualification. Before prepare,check the current and original source
-projections plus negative controls for changed routes,globals,imports,scope
-expressions and dispatch. Then run inherited host controls and the full native
-admission before creating any new model process.
-V5prepare now passes full native/provider/package admission and all15whole-model
-hashes,with the same552bengine. The ended V4root
-and resource-pair root receipts are retired after original277/276-control
-recovery;the new curve does not read those paths. Keep the clean qualification
-root and both still-consumed native generations.
-The first fresh V5short process now passes all four1286-read requests,normal
-native exit,quiet validation,closed owners and no fresh fault. First-use prompt
-time/TTFT is10.8977s/11.009s;subsequent times10.0482,10.0205and10.0121s give
-10.0205s median(128.3369tok/s)and10.127s median TTFT. Same bodies/native/config
-as V4,but a different process;its lower time is not a source-change gain. No
-fit or independent-process variation estimate is qualified yet. The clean117K
-anchor now also passes four requests,native0,quiet final validation,closed
-owners and no fresh fault. First-use prompt/TTFT is121.2642s/121.464s;subsequent
-prompt times111.7902,112.1692and112.2560s give112.1692s median(1047.4266tok/s),
-with112.348s median TTFT. This single clean process matches the earlier
-three-process milestone level;it is not a new-code gain or a completed curve.
-The adjacent observed117K process also passes all four requests,native0,quiet
-validation,closed owners and no fresh fault. First-use prompt/TTFT is
-122.2955s/122.467s;subsequent prompt times111.9631,112.4512and111.9152s give
-111.9631s median(1049.3547tok/s),with112.189s median TTFT. Its observed/clean
-prompt-time ratio0.9981626passes the predeclared local1.15cost screen;one adjacent
-pair does not establish observer benefit or general short-input overhead.
-V5now closes failed after the39254-read process. All four request gates and the
-benchmark complete,native/benchmark exit0,validation stays quiet,owners close
-and no fresh fault is recorded. Its post-run admission fails because Main added
-the unrelated QSA CMake targets during execution:the transitive GDN source
-reader still compares the entire live CMake file to its selected revision,
-although it projects only the unchanged final GDN appendix. Preserve that
-failure and the three previously passed processes;no final whole-model rehash
-is reached. The failed process's first/subsequent prompt times are54.7639s and
-45.6804,46.0327,45.3201s;its45.6804s median and45.824s TTFT are descriptive
-only,not qualified curve points. Correct the appendix reader with host regression
-controls and prove all558native inputs unchanged against the full build record
-before committing a fresh continuation plan. Do not retry or relabel V5.
-The host regression now exercises the actual complete projection,using the
-original full558-input record rather than its compact count/hash summary.
-Before the fix,the original CMake recovers all558inputs,but three harmless
-prelude/current-target cases reproduce the admission failure;all nine contract
-mutations are rejected. The scoped reader now compares the exact consumed final
-GDN appendix,requires one marker and one actual target declaration,and still
-projects the original selected CMake prelude. Changes to the fixture,link,math,
-target or consumed suffix remain rejected. All five host tests now pass:four
-positive complete558-input projections and nine rejected contract mutations.
-All nine actual ELFs retain their recorded hashes. This is source/admission
-evidence only,not a new model qualification;the V5failure remains intact.
-The prospective V6scope retains all three successful prefix processes from
-`ef6a0269d`without selecting by speed,and collects seven new processes at the
-unchanged indices3..9. The failed39Kpoint is not reused. Require the original
-failed V5root record to match`be6629074`,recover all277original controller inputs,
-and permit only the new curve controller and scoped GDN reader to differ.
-Its first host contract stops at setup because the two newly added host tests
-also enter the benchmark's broad source inventory;no test body or native process
-runs. Preserve that failed host result. Explicitly add only those two test paths,
-pin their actual bytes,and normalize only that one declared input-set addition
-in the AST proof. All277old controls still recover unchanged except the two
-named controller/admission files;the prospective source set now has279inputs.
-Keep the exact native,configuration,providers,boot,requests and first-use rules;
-normalize only private config/output paths and port in the inherited commands.
-Guard the inherited records again before every admission. Reuse the immutable
-parser proof only after full AST comparison outside strict scope/policy labels,
-the explicit proof functions and one checked prefix call each in prepare/current.
-Before prepare,run inherited host controls plus changed-source/prefix negative
-controls. Prepare repeats all15whole-model hashes and full native/dependency/ELF
-admission;host frontend probes then precede new native process3. Final hashes,
-route-specific fits and all original stops remain mandatory. This is a
-descriptive same-native curve spanning two controller/admission versions,not a
-new native build,causal speed comparison or completed throughput/adoption gate.
-The revised V6host contract now passes all four tests at`7a23cd963`:13source,
-11prefix and three immutable-proof mutations are rejected;the inherited route,
-CLI and time-model controls pass. No V6native process or new native generation
-has run. Full prepare/frontend admission remains next.
-The parallel Orca source audit and native Luna-max review also close. Keep the
-entire shared result file frozen during active readers:its committed()helper
-compares every byte before selecting keys. The GDN CMake exception covers only
-edits before the marker;the entire suffix remains exact. Keep the current
-file-level result guard rather than adding a reader-scoping detour now.
+The current length/TTFT plan is`cache_map_prefill_curve_v6`,using the unchanged
+552bengine and the exact-count bench.sh route. It covers nine lengths1286to117489
+with four requests per process,thinking enabled,zero reuse and24outputs. First
+use stays separate from the next three requests. The chunked route at8192engine
+rows or fewer is separate from layer-major and the117Ksplit case. Compare
+affine/quadratic/nlogn models on five homogeneous non-split long lengths with
+whole lengths held out;keep residuals and adjacent time/TTFT slopes. Do not
+interpret a mixed-route intercept as physical setup cost or extrapolate.
+
+V6inherits all three successful planned V5prefix processes from`ef6a0269d`,
+without choosing by speed,and collects seven new processes at indices3..9.
+The1286-read diagnostic has10.0205s subsequent median(128.3369tok/s),TTFT10.127s;
+first use is10.8977s/11.009s. The clean117489-read anchor has112.1692s subsequent
+median(1047.4266tok/s),TTFT112.348s;first use is121.2642s/121.464s. Its observed
+partner has111.9631s median(1049.3547tok/s),TTFT112.189s;first use is
+122.2955s/122.467s. Their0.9981626observed/clean ratio passes the local1.15cost
+screen only;it does not establish observer benefit or short-input overhead.
+These measurements match the prior three-process1047.0672milestone level;
+no new native code gain is implied. No current-engine fit is complete yet.
+
+V5remains failed at its later39254-read process:four requests and native/bench
+exit0,but post-run admission rejected Main's unrelated CMake addition. Keep
+its original failure at`be6629074`and descriptive45.6804s warmed median/
+45.824s TTFT;that point is not inherited. The GDN source reader now compares
+only the exact final suffix after its marker,including any later comments or
+targets. Four complete558-input projections and nine contract mutations pass
+at`1cf473cb5`;all nine actual ELFs remain unchanged. The failed original V6host
+setup omitted two newly added tests from its declared source set. The revised
+host contract at`7a23cd963`passes four tests,including13source,11prefix and
+three immutable-proof mutations;the old setup failure remains recorded.
+The earlier V4pre-owner GCC package query timeout remains unexplained;three
+1.2to1.3s leaf probes did not reproduce it. Its15s deadline stays unchanged.
+
+Before each V6admission,recover the original277V5controls and require only the
+curve controller and GDN reader to differ,plus the two explicitly pinned host
+tests(279current inputs). Keep one original failed V5record for this reader.
+Check native/config/providers/boot,commands and inherited samples against their
+committed originals. The unchanged parser is proven from`7532cbe1b`by strict
+AST comparison outside declared labels,proof readers,input additions and the
+two required prefix calls;no retired raw capture is replayed again. Prepare
+repeats full native/dependency/ELF admission and all15model hashes;frontend
+probes precede new native execution. Preserve final hashes and every original
+budget,route,owner,clock,validation and fresh-fault stop. Keep the whole shared
+result file frozen for active readers:committed()checks every byte before row
+selection. The parallel Orca audit and native Luna-max review support retaining
+that guard;no reader-scoping detour is selected. At the serialized boundary,
+301closed V5raw/research files totaling54251040bytes are deleted after source
+recovery and publication;the sole V5record and both consumed native generations
+remain. Full V6prepare/frontend admission is next. This descriptive curve spans
+two controller versions;it does not qualify a causal gain,sustained TG,
+task/agent adoption,hardware saturation,physical262144or RESTORE.
+
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
