@@ -4626,6 +4626,19 @@ the extra executable is retired and normal compilation leaves this observer out.
 A new scoped observer plan and qualified model census/clock/fault/source checks
 are needed before selecting a kernel or placement optimization from leaf timing.
 
+For the current479a/552b worker/map engine,`cpu_service_sources.py`now verifies
+a561-file construction from four pinned observer/test deltas. Reversing the
+stack recovers every one of the558selected source files;only seven declared
+observer/build/fixture files differ. The actual selected executable is unchanged.
+The distinct comparison recipe retains its oneAPI2026.2 compiler,optimization,
+dependencies and runtime safety,adding only the observer build option. It does
+not copy the live generator's other layout changes. This is source preparation,
+not a new build or renewed qualification. Finish the bounded old-build review
+before creating this extra generation;then qualify same-build pool off/on parity,
+small traced device execution and a new phase-specific model/overhead comparison.
+The earlier overall observer failure remains failed. See
+`cache_map_cpu_service_sources_v1`in the current service result.
+
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 provide scoped work/activity bounds. CPU perf counters were denied; the metric
