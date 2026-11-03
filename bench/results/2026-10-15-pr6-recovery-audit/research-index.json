@@ -21855,7 +21855,7 @@
   },
   "qsa_subgroup_rows_contract_20261103": {
     "classification": "decision_support",
-    "status": "running_source_review",
+    "status": "reviewed_source_only",
     "schedulable_now": false,
     "source_candidate_commit": "f984402bfd8d5aac524087b0e6ea5e21a778a7d8",
     "source_sha256": {
@@ -21880,49 +21880,59 @@
       "qsa_cached_parallel_sum_contract_scope",
       "qsa_pair_attention_contract_20261029"
     ],
-    "consumer": "Main source-contract gate before any candidate fixture build/device run;Main continues the current-engine length curve.",
-    "next_review": "After native Luna-max report review and Main source decision;retire report transactions after folding essential proof/corrections.",
+    "consumer": "Main component source/build gate after the active current-engine length curve closes;no compilation or device qualification yet.",
+    "next_review": "At the component-build gate,after positive logical-page-overflow fixture coverage and fallback-reader migration;retire the source report once essential proof is consumed.",
     "model": "gpt-6-luna",
     "effort": "high",
     "ownership": "Only the named report;no Git,build/tests,GPU/profiler,project/system process inspection,product edits or child workers. Main owns implementation and serialized tests.",
     "run": "run_87cd7126383f",
     "terminal": "term_620e73be-59d1-4dfe-95c9-bd0b642e9417",
-    "launch": {
-      "custom_argv_reason": "Normal sandbox/approval and explicit IPC network settings are not expressible by worker-start;reuse a verified terminal.",
-      "model_requested": "gpt-6-luna",
-      "effort_requested": "high",
-      "sandbox": "workspace-write",
-      "approval": "on-request",
-      "sandbox_workspace_write_network_access": true,
-      "report_within_workspace": true,
-      "permissions_bypassed": false,
-      "actual_startup_TUI": "GPT-6-Luna high;project directory;verified before task injection.",
-      "command": [
-        "codex",
-        "-m",
-        "gpt-6-luna",
-        "-c",
-        "model_reasoning_effort=\"high\"",
-        "-c",
-        "sandbox_workspace_write.network_access=true",
-        "-s",
-        "workspace-write",
-        "-a",
-        "on-request",
-        "--cd",
-        "/home/yayoi/orca/workspaces/Strata/sycl"
-      ]
-    },
-    "spec": {
-      "path": ".cache/research/2026-11-03/qsa_subgroup_rows_contract_20261103.spec.txt",
-      "sha256": "34d544bf37b8c08571e21aa4bf68f5823542ef839810b0cafc9c807f0295ae4f",
-      "bytes": 3836
-    },
     "task": "task_a2599ad434cd",
     "dispatch": "ctx_678d38e7555c",
-    "turn_start_observed": true,
-    "worker_done_accepted": false,
-    "ownership_closed": false,
-    "launch_receipt": ".cache/research/2026-11-03/qsa_subgroup_rows_contract_20261103.spec.start.json"
+    "worker_done_accepted": true,
+    "ownership_closed": true,
+    "report_sha256": "9ed63349b98c908b6deb5e634e031826cd8e2bf1140792600f9c3f6198092730",
+    "report_bytes": 11176,
+    "source_review": {
+      "outcome": "accepted_with_scope_corrections",
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "reviewer_sha256": "be1de4708fdfdf4684c097477633b30a3a0a6b95972158bc7ebd777f09d32e16",
+      "reviewer_bytes": 6725,
+      "source_blockers": [],
+      "conclusion": "No source-level correctness blocker was found for the SubgroupRows specialization. It changes row-ID ownership/staging and removes the row-publication barrier; it leaves the selected ordered-exp arithmetic and BF16/FP32 contract unchanged. This is source evidence only.",
+      "collectives": "Wrapper selects CacheQueries+VectorK4+VectorV4+OrderedExp+SubgroupRows. Active row_at calls are K (i%32), V (i/64), and softmax (lane/lane+16); all are unconditional in SG16, with selected IDs 0..15. K/V half mappings check out. SYCL rev.12 requires converged group calls; select_from_group leaves out-of-range IDs unspecified and lists no remote-ID uniformity precondition.",
+      "bounds_and_diagnostics": "resolve_row checks negative IDs, logical page bounds before page-table read, live prefix and physical-page bounds before forming the logical packed row. Logical (page,KV-head,offset) mapping is preserved. Repeated bad_rows/live observations are private OR predicates reduced once; only their cost may change. Static SLM delta is 248 bytes; cached-Q score33 payload is 20,036 to 19,788 bytes. Actual allocation/admission is unknown.",
+      "corrections": [
+        "List the retained initial item.barrier before cached-Q loads.",
+        "Fixture IDs cover negative, >=live_cells and invalid physical pages, but not positive cell >= logical_pages*page_size; add that case or keep it an explicit bounds gate.",
+        "Two-byte-only scratch alignment needs STRATA_QSA_PACKED_GUARD=17; fixture default is 16. Pin the define before claiming coverage.",
+        "Query NaN is tested; K/V scale poison is +Inf (0x7c00), not NaN."
+      ],
+      "unexecuted_gates": [
+        "No compile, device run, fixture execution, speed comparison, selector, model-route or physical-context qualification. Compiler/backend and collective execution remain open.",
+        "Wait for the active baseline curve to close; retire/migrate the actual adaptive-fallback reader before a native build. This review is not build/device qualification.",
+        "Then pin candidate/fixture/controller/generated inputs, macros, recipe, environment and executables; run bounded component correctness (including the page-overflow case) and a separately frozen comparison. No model trial unless the component speed gate passes.",
+        "Do not repeat the failed isolated parallel-sum screen or infer speed from the barrier count or 27.085s interval."
+      ],
+      "primary_references": [
+        "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+        "https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html"
+      ],
+      "new_research_scopes": []
+    },
+    "closure": {
+      "dispatch": "completed",
+      "worker": "succeeded",
+      "stage": "settled",
+      "accepted_worker_done": "msg_ccb35d853850",
+      "delivery_acknowledged": "delivery_207925c7b748",
+      "physical_worker_observation": "exited",
+      "exact_worker": true,
+      "terminal_connected": false,
+      "exit_cause": "operator_close",
+      "external_terminal_resource": "retained metadata;physical terminal exited",
+      "verified_at": "2026-11-03T01:37:11.314176+00:00"
+    }
   }
 }

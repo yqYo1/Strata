@@ -1119,7 +1119,16 @@ the client never persists that request's TTFT before the failed end gate.
 V4requires the observed chunked route to satisfy rows<=chunk<=8192,records that
 actual chunk,and still requires8192for the long route. Replay its unchanged
 V3window before a fresh bounded process;do not rewrite the capture or qualify
-the externally terminated V3run. Review old raw-output consumers at that closure.
+the externally terminated V3run. The unchanged-window replay and first fresh
+V4short process now pass:1286read/1285engine rows,actual1536-row chunk,thinking
+on,24outputs per request,zero reuse and all four cache-loan/MTP/owner gates.
+Native exit0,quiet final validation,closed owners and no fresh fault are checked.
+First-use prompt time/TTFT is16.4305s/16.601s;the next three prompt times are
+14.9546,14.7231and14.5418s,with14.7231s median(87.3tok/s)and14.893s median
+TTFT. This observed short diagnostic does not qualify clean speed or sustained
+TG. Only one of the ten planned processes has closed;no current-engine time
+formula is fitted yet. The adjacent clean117K anchor is next. The failed V2/V3
+raw-output consumer ends at this successful replay/short-process closure.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
@@ -1233,8 +1242,15 @@ This independently authored proposal has no production selector,build or GPU
 qualification yet. Existing numerical and paired-component fixtures gain explicit
 compile-time arms for its current component consumer,including selected-kernel
 bit checks,an independent tensor oracle,tails,masks,NaNs,alignment and bounds.
-Next:source-contract review,retire the adaptive fallback's actual reader,then
-commit the exact build/measurement recipe before any new device execution.
+Orca Luna's source-contract report and native Luna-max review now close without
+a source blocker;the exact worker is settled and its terminal has exited.
+Keep the initial workgroup barrier in the source inventory. Before device
+qualification,add the missing positive logical-page-overflow fixture,pin
+`STRATA_QSA_PACKED_GUARD=17`for two-byte-only scratch alignment,and describe
+the scale poison as+Inf rather than NaN. None of these reviews is compilation,
+numerical execution or performance evidence. Next:close the baseline curve,
+retire or migrate the adaptive fallback's actual reader,and commit the exact
+build/measurement recipe before any new device execution.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
