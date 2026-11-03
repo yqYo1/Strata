@@ -106872,7 +106872,7 @@
     }
   },
   "qsa_subgroup_rows_device_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "4acb56e95d1d9997430fe16d595aab47f1d0172f",
     "plans": [
       {
@@ -107003,11 +107003,34 @@
         "retention": "Retain compact coverage,individual timing samples,source/build/provider and fault/closure evidence. Retire successful full trace/JIT/raw output after publication;keep diagnostic only for a distinct unresolved failure."
       }
     ],
-    "cases": [],
+    "cases": [
+      {
+        "mode": "smoke",
+        "passed": false,
+        "complete": false,
+        "active": false,
+        "ownership_closed": false,
+        "host_probe_accepted": false,
+        "GPU_kernels_executed": false,
+        "model_executed": false,
+        "device": "device=Intel(R) Arc(TM) B570 Graphics driver=1.17.39758+17",
+        "error": "RuntimeError('normal owned native exit required')",
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "model_executed": false,
     "inference_adopted": false,
     "build_identity": {
@@ -107053,5 +107076,81 @@
       "files": 96,
       "aggregate_sha256": "060bdbfd0add6bc783ed3c111e1dd81a71d469bb7b76ddd96132020a03ea25c5"
     }
+  },
+  "qsa_subgroup_rows_device_v1_failure_diagnosis": {
+    "source_commit": "4acb56e95d1d9997430fe16d595aab47f1d0172f",
+    "original_outcome_retained": true,
+    "supervisor_error": "RuntimeError('unexpected trailing protocol')",
+    "native_exit_code": 0,
+    "direct_child_reaped": true,
+    "session_empty": true,
+    "survivors": [],
+    "original_PID_absent": true,
+    "native_identity": {
+      "pid": 2133400,
+      "state": "D",
+      "ppid": 2129721,
+      "pgid": 2133400,
+      "sid": 2133400,
+      "start_ticks": 205691838,
+      "rss_bytes": 131072
+    },
+    "native_elapsed_seconds": 4.349578279070556,
+    "actual_GPU_enqueue_observed": true,
+    "numerical_cases": [
+      {
+        "cells": "97",
+        "live_cells": "49",
+        "active_rows": "128",
+        "cap": "33",
+        "queries": "1",
+        "masked": "0",
+        "compared": "6144",
+        "max_abs": "0",
+        "max_budget_ratio": "0",
+        "oracle": "BF16_operands_FP32_online",
+        "packed_guard_elements": "17",
+        "packed_k_mod8": "2",
+        "packed_logical_prefix": "PASS",
+        "packed_guards": "PASS",
+        "guards": "PASS",
+        "inputs": "PASS",
+        "status": "PASS"
+      },
+      {
+        "cells": "97",
+        "live_cells": "71",
+        "active_rows": "160",
+        "cap": "33",
+        "queries": "3",
+        "masked": "1",
+        "compared": "18432",
+        "max_abs": "0",
+        "max_budget_ratio": "0",
+        "oracle": "BF16_operands_FP32_online",
+        "packed_guard_elements": "17",
+        "packed_k_mod8": "2",
+        "packed_logical_prefix": "PASS",
+        "packed_guards": "PASS",
+        "guards": "PASS",
+        "inputs": "PASS",
+        "status": "PASS"
+      }
+    ],
+    "original_observation_complete_retained": false,
+    "stdout": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v2/device-v1/smoke/owned/smoke.stdout",
+      "bytes": 1063,
+      "sha256": "7a43ff0d3ed248633ff52de7f9de66c099dbf64bf013c677a47ff8ff207cec0e"
+    },
+    "trace": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v2/device-v1/smoke/ur.trace",
+      "bytes": 1359819,
+      "sha256": "829ddb98a8e727998c51f98762e8e8eb28f1be7c5354358c1438a9273b238783"
+    },
+    "validation_bytes": 0,
+    "fresh_faults": [],
+    "consumer": "Main host-only footer protocol regression and new source-frozen smoke;retire original raw trace/stdout after new plan qualifies.",
+    "limits": "Original V1remains failed/incomplete/ownership-unqualified. Actual native0/empty session and GPU numerical output are independently observed;no model/performance/full-context qualification."
   }
 }
