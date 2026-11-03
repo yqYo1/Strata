@@ -107152,5 +107152,31 @@
     "fresh_faults": [],
     "consumer": "Main host-only footer protocol regression and new source-frozen smoke;retire original raw trace/stdout after new plan qualifies.",
     "limits": "Original V1remains failed/incomplete/ownership-unqualified. Actual native0/empty session and GPU numerical output are independently observed;no model/performance/full-context qualification."
+  },
+  "qsa_subgroup_rows_protocol_host_v1": {
+    "source_commit": "fb0e2d9cee699509d63c31eedccd34b1aff8178e",
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "active": false,
+    "GPU_executed": false,
+    "tests": 3,
+    "command": "timeout 60s python3 tools/test_sycl_qsa_protocol.py",
+    "exit_code": 0,
+    "unittest_seconds": 0.294,
+    "source_files": {
+      "tools/sycl/check_qsa_subgroup_rows.py": "f53b1a65aa914b953cfd4a18c7465140c189e23a85c19c44400e10f706152765",
+      "tools/test_sycl_qsa_protocol.py": "9fb78861655ccf535890ddc52e3dc5c3e134a87b3d73c9196aebcf1cb6f5ce0f"
+    },
+    "red": {
+      "source_commit": "02aae8cbae1903cb1eb1b0c5ee081b7cbbb4fb7c",
+      "command": "timeout 60s python3 tools/test_sycl_qsa_protocol.py QsaProtocol.test_expected_footer_allows_closed_session",
+      "exit_code": 1,
+      "tests": 1,
+      "unittest_seconds": 0.102,
+      "error": "unexpected trailing protocol"
+    },
+    "coverage": "Real owned pipe with three gates:exact footer permits normal closed session;missing footer and additional trailing output are rejected. All child processes reaped/sessions empty;no GPU work.",
+    "limits": "Host protocol only;original device-v1 remains failed. Fresh device-v2 still required."
   }
 }
