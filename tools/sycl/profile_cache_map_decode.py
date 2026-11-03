@@ -22,8 +22,8 @@ import profile_selected_compat as collector
 
 entry, base, profile = short.entry, short.base, collector.profile
 P, B, RESULT = short.P, short.B, short.RESULT
-ROOT = entry.model.ROOT / 'decode-gpu-service-v1'
-KEY = 'cache_map_decode_gpu_service_v1'
+ROOT = entry.model.ROOT / 'decode-gpu-service-v2'
+KEY = 'cache_map_decode_gpu_service_v2'
 SOURCE = Path(__file__).resolve()
 require, digest, write = base.require, base.digest, base.write
 CONTROL_KEY = 'cache_map_compat_collector_active_v1'
@@ -113,15 +113,17 @@ def context():
 
 
 def prepare(ctx):
+    data = base.committed(RESULT)
+    prior = json.loads((short.ROOT / 'record.json').read_text())
+    require(data[short.KEY] == short.context().compact(prior)
+            and prior['passed'] and prior['ownership_closed'] and not prior['active'],
+            'closed matched short census basis required')
+    assets = profile.collector_assets(data)
     entry.prepare(ctx, 'zero')
     row = json.loads((ROOT / 'record.json').read_text())
-    prior = json.loads((short.ROOT / 'record.json').read_text())
-    require(base.committed(RESULT)[short.KEY] == short.context().compact(prior)
-            and prior['passed'] and prior['ownership_closed'] and not prior['active']
-            and prior['binary'] == row['binary'], 'closed matched short census basis required')
+    require(prior['binary'] == row['binary'], 'short census native generation differs')
     row['environment'].update(UNITRACE_ChromeKernelLogging='1',
         UNITRACE_ChromeEventBufferSize='128', STRATA_CPU_WORK_CENSUS='1', STRATA_DECODE_TIMING='1')
-    assets = profile.collector_assets(base.committed(RESULT))
     (ROOT / 'trace').mkdir()
     row['native_profile'] = profile.profiling(ROOT, assets)
     row['native_profile']['mode'] = 'aggregate'
