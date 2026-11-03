@@ -64,7 +64,12 @@ def qualification():
             'preserve the selected model fallback')
     review = entry.template.shared.runtime.validation.committed(entry.INDEX, (SCOPE,))
     require(review['status'] == 'reviewed_source_only' and review['ownership_closed'] is True
-            and review['worker_done_accepted'] is True and review['source_sha256'] == digest(P/KERNEL),
+            and review['worker_done_accepted'] is True
+            and all(review['source_sha256'][name] == digest(P/name) for name in (KERNEL, HEADER))
+            and review['fixture_followup']['file'] == TEST
+            and review['fixture_followup']['sha256'] == digest(P/TEST)
+            and review['timing_gate_source_followup']['file'] == BENCH
+            and review['timing_gate_source_followup']['sha256'] == digest(P/BENCH),
             'exact independent QSA source review required')
     return native, gate, providers
 
