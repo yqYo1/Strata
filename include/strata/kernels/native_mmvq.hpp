@@ -75,6 +75,13 @@ void native_q4_k_f32(const void* weights, const float* x, void* scratch_q8_1,
 void native_q6_k_mmvq(const void* weights, const void* x_q8_1, float* y,
                       int n_in, int n_out, int ncols, void* stream);
 
+// Explicit component candidate; no production caller selects this yet.
+// Exact-layout Q6_K column specialization for 1,2,3,4,8 columns; other valid
+// column counts retain the original exact dispatch. Same pointer/shape/queue
+// contract as native_mmvq. Requires native_mmvq_multi_exact()==true.
+void native_q6_k_columns_mmvq(const void* weights, const void* x_q8_1, float* y,
+                             int n_in, int n_out, int ncols, void* stream);
+
 void native_q6_k_f32(const void* weights, const float* x, void* scratch_q8_1,
                      float* y, int n_in, int n_out, int ncols, void* stream);
 

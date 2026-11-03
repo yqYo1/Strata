@@ -973,6 +973,74 @@ void dispatch(const void *w, const void *x, float *y, int n_in, int n_out,
   else
     launch<F, 1, 4>(w, x, y, n_in, n_out, ncols, stream);
 }
+
+// Explicit Q6_K candidate; the production dispatch above stays unchanged.
+// Keep its exact thread/block and reduction order, specializing only the column
+// bound so private accumulators need not support eight runtime-indexed columns.
+template <int COLS, int ROWS>
+void launch_q6_columns(const void *weights, const void *activations, float *y,
+                       int n_in, int n_out, void *stream) {
+  using F = Q6KTraits;
+  constexpr int NW = 4;
+  const auto *w = static_cast<const F::Block *>(weights);
+  const auto *x = static_cast<const Q81Block *>(activations);
+  const size_t groups = (size_t(n_out) + ROWS - 1) / ROWS;
+  queue_for(stream).submit([&](sycl::handler &h) {
+    sycl::local_accessor<float, 1> partial((NW - 1) * COLS * ROWS * 32, h);
+    h.parallel_for(
+        sycl::nd_range<1>(groups * NW * 32, NW * 32),
+        [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
+          const int tid = int(item.get_local_linear_id());
+          const int lane = tid % 32, warp = tid / 32;
+          const size_t row0 = item.get_group_linear_id() * ROWS;
+          const int blocks = n_in / F::DIV;
+          const size_t stride = size_t(n_in) / 32;
+          float tmp[COLS][ROWS] = {};
+          for (int kbx = tid / F::T; kbx < blocks; kbx += F::BPI * NW / 4) {
+            const int kqs = F::kqs(tid);
+            for (int i = 0; i < ROWS; ++i)
+              if (row0 + i < size_t(n_out)) {
+                const auto weight = F::load(w + (row0 + i) * blocks + kbx, kqs);
+#pragma unroll
+                for (int j = 0; j < COLS; ++j)
+                  tmp[j][i] +=
+                      F::apply(weight, x + j * stride + kbx * F::KBY, kqs);
+              }
+          }
+          if (warp > 0)
+#pragma unroll
+            for (int j = 0; j < COLS; ++j)
+              for (int i = 0; i < ROWS; ++i)
+                partial[(((warp - 1) * COLS + j) * ROWS + i) * 32 + lane] =
+                    tmp[j][i];
+          item.barrier(sycl::access::fence_space::local_space);
+          if (warp == 0) {
+            const auto group = item.get_sub_group();
+#pragma unroll
+            for (int j = 0; j < COLS; ++j)
+              for (int i = 0; i < ROWS; ++i) {
+                for (int k = 0; k < NW - 1; ++k)
+                  tmp[j][i] +=
+                      partial[((k * COLS + j) * ROWS + i) * 32 + lane];
+                for (int offset = 16; offset; offset >>= 1)
+                  tmp[j][i] +=
+                      sycl::permute_group_by_xor(group, tmp[j][i], offset);
+                if (lane == i && row0 + i < size_t(n_out))
+                  y[size_t(j) * n_out + row0 + i] = tmp[j][i];
+              }
+          }
+        });
+  });
+}
+
+template <int COLS>
+void dispatch_q6_columns(const void *w, const void *x, float *y, int n_in,
+                         int n_out, void *stream) {
+  if (n_in / Q6KTraits::DIV < Q6KTraits::BPI)
+    launch_q6_columns<COLS, 4>(w, x, y, n_in, n_out, stream);
+  else
+    launch_q6_columns<COLS, 1>(w, x, y, n_in, n_out, stream);
+}
 template <typename F, bool Down>
 void grouped_projection(const NativeExpertLayout &L,
                         const unsigned long long *pointers,
@@ -1256,6 +1324,31 @@ bool native_mmvq_supported(int type) noexcept {
   return type == 2 || type == 6 || type == 7 || type == 8 || type == 11 || type == 12 ||
          type == 13 || type == 14 || type == 18 || type == 20 || type == 21 ||
          type == 22 || type == 23 || type == 42 || type == 16 || type == 17 || type == 29;
+}
+
+void native_q6_k_columns_mmvq(const void *w, const void *x, float *y, int n_in,
+                             int n_out, int ncols, void *stream) {
+  const auto wb = native_mmvq_weight_bytes(14, n_in, n_out);
+  const auto xb = native_q8_1_bytes(n_in, ncols);
+  validate_stream(stream);
+  validate_spans({{y, checked_count(checked_count(n_out, ncols), 4)}},
+                 {{w, wb}, {x, xb}});
+  if (!multi_exact.load(std::memory_order_relaxed))
+    throw std::invalid_argument("Q6 column specialization requires exact layout");
+  switch (ncols) {
+#define Q6_COLUMNS(N)                                                          \
+  case N:                                                                     \
+    dispatch_q6_columns<N>(w, x, y, n_in, n_out, stream);                        \
+    break
+    Q6_COLUMNS(1);
+    Q6_COLUMNS(2);
+    Q6_COLUMNS(3);
+    Q6_COLUMNS(4);
+    Q6_COLUMNS(8);
+#undef Q6_COLUMNS
+  default:
+    dispatch<Q6KTraits>(w, x, y, n_in, n_out, ncols, stream);
+  }
 }
 size_t native_mmvq_weight_bytes(int type, int n_in, int n_out) {
   const auto f = format(type);
