@@ -1295,8 +1295,15 @@ restores the original output. Its subgroup-row arm requires
 scratch alignment. These are uncompiled source changes;the future recipe must
 still pin that define. The scale poison is+Inf rather than NaN. None of these reviews is compilation,
 numerical execution or performance evidence. The baseline curve now closes at
-`51ddbbfaa`. Next:retire or migrate the adaptive fallback's actual reader,and
-commit the exact build/measurement recipe before any new device execution.
+`51ddbbfaa`and the obsolete adaptive generation is retired after reader migration.
+The prospective`tools/sycl/qsa_subgroup_rows_component.py`recipe compiles four
+runtime/prompt files from the selected479a projection plus the reviewed QSA
+kernel and two current fixtures. Only its header is overlaid;other headers use
+the selected source. Seven strict C++20/SYCL units and two traced links produce
+numerical/paired component ELFs beside the unchanged model fallback. Source,
+compiler,header overlay,actual dependencies and external link inputs are pinned;
+the build has1800s/2GiB whole bounds and does not launch a GPU workload.
+Commit preparation and a separate bounded device plan before device execution.
 The paired component fixture gains an uncompiled`--current-prefill`mode only
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
 cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
