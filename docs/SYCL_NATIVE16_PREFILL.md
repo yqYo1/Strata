@@ -1187,6 +1187,15 @@ is reached. The failed process's first/subsequent prompt times are54.7639s and
 only,not qualified curve points. Correct the appendix reader with host regression
 controls and prove all558native inputs unchanged against the full build record
 before committing a fresh continuation plan. Do not retry or relabel V5.
+The host regression now exercises the actual complete projection,using the
+original full558-input record rather than its compact count/hash summary.
+Before the fix,the original CMake recovers all558inputs,but three harmless
+prelude/current-target cases reproduce the admission failure;all nine contract
+mutations are rejected. The scoped reader now compares the exact consumed final
+GDN appendix,requires one marker and one actual target declaration,and still
+projects the original selected CMake prelude. Changes to the fixture,link,math,
+target or consumed suffix must remain rejected. This source change is not yet
+validated or part of a new model qualification.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use

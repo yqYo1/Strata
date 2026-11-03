@@ -6,6 +6,7 @@ onto the recoverable selected555-file source instead of building all of HEAD.
 """
 import hashlib
 from pathlib import Path
+import re
 
 import retained_prefill_candidate as retained
 
@@ -25,6 +26,15 @@ MARKER = b'# Main-owned production-wrapper GDN storage qualification (repository
 
 def blob(revision, name):
     return base.basis.build.git(P, 'show', revision + ':' + name)
+
+
+def fixture_appendix(cmake):
+    # Only this final appendix enters the recovered selected CMake input.
+    # Unrelated live targets must not silently become measured native inputs.
+    target = rb'(?m)^\s*(?i:add_executable)\s*\(\s*sycl_gdn_storage_pipeline_bench(?=[\s)])'
+    require(type(cmake) is bytes and cmake.count(MARKER) == 1 and
+            len(re.findall(target, cmake)) == 1, 'unique GDN fixture appendix required')
+    return MARKER + cmake.split(MARKER, 1)[1]
 
 
 def sources(revision):
@@ -48,9 +58,9 @@ def sources(revision):
     values[FIXTURE] = blob(revision,FIXTURE)
     require((P/FIXTURE).read_bytes() == values[FIXTURE], 'commit exact production fixture')
     cmake = blob(revision,CMAKE)
-    require((P/CMAKE).read_bytes() == cmake and cmake.count(MARKER)==1,
-            'commit exact unique fixture target')
-    appendix = MARKER + cmake.split(MARKER,1)[1]
+    appendix = fixture_appendix(cmake)
+    require(fixture_appendix((P/CMAKE).read_bytes()) == appendix,
+            'commit exact GDN fixture appendix')
     require(b'sycl_gdn_storage_pipeline_bench' not in values[CMAKE], 'duplicate fixture target')
     values[CMAKE] += b'\n' + appendix
     touched = {*DELTA,KERNEL,HEADER,CAST,FIXTURE,CMAKE}
