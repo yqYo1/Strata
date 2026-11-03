@@ -1220,6 +1220,15 @@ admission;host frontend probes then precede new native process3. Final hashes,
 route-specific fits and all original stops remain mandatory. This is a
 descriptive same-native curve spanning two controller/admission versions,not a
 new native build,causal speed comparison or completed throughput/adoption gate.
+The revised V6host contract now passes all four tests at`7a23cd963`:13source,
+11prefix and three immutable-proof mutations are rejected;the inherited route,
+CLI and time-model controls pass. No V6native process or new native generation
+has run. Full prepare/frontend admission remains next.
+The parallel Orca source audit and native Luna-max review also close. Keep the
+entire shared result file frozen during active readers:its committed()helper
+compares every byte before selecting keys. The GDN CMake exception covers only
+edits before the marker;the entire suffix remains exact. Keep the current
+file-level result guard rather than adding a reader-scoping detour now.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use

@@ -100025,5 +100025,39 @@
     "next_action": "Declare only the two host-test additions,then commit/test the revised host contract before any V6prepare;preserve this setup failure.",
     "exit_code": 5,
     "wall_seconds": 3.558
+  },
+  "cache_map_prefill_curve_v6_host_contract_v2": {
+    "source_commit": "7a23cd963ac001c3022a83ab1a95bf212a1fee27",
+    "command": [
+      "timeout",
+      "120s",
+      "python3",
+      "tools/test_sycl_prefill_curve_continuation.py"
+    ],
+    "tests_executed": 4,
+    "exit_code": 0,
+    "wall_seconds": 4.493,
+    "source_mutations_rejected": 13,
+    "prefix_mutations_rejected": 11,
+    "original_replay_proof_mutations_rejected": 3,
+    "inherited_controls_passed": true,
+    "original_prefix_controls_recovered": 277,
+    "prospective_source_inputs": 279,
+    "new_host_test_inputs": [
+      "tools/test_sycl_gdn_model_sources.py",
+      "tools/test_sycl_prefill_curve_continuation.py"
+    ],
+    "inputs": {
+      "tools/sycl/cache_map_prefill_curve.py": "449226dc8012396ceec9c06e7ddee21f8224c8439b2a440bd6ff298bdfa5778f",
+      "tools/test_sycl_prefill_curve_continuation.py": "4258c3425e6442ce17c23e9221d0d463b07be4efd3cb5c1e084bb8c184dcd85b",
+      "tools/sycl/gdn_model_sources.py": "1829dceed92c38f74b120a571349cddd743b9b52a80452eb885ccc273038b53f",
+      "tools/test_sycl_gdn_model_sources.py": "cb5cd7cbaecbcf04e44307162e306506c1c938e1e3888294793f58569eb9d1e6"
+    },
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_recompiled": false,
+    "limits": "Host-only source/prefix/parser controls. V6prepare/native/provider/model-hash/frontend admission still pending;V5and V6hostV1 failures retained."
   }
 }
