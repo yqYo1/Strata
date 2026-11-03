@@ -4762,13 +4762,44 @@ kernels and physical PCIe/RAM traffic remains unknown. The profiled prompt is
 1.10785times its same-body unprofiled diagnostic reference;the short decode
 interval is also affected by collection and is not clean sustained TG evidence.
 
-Next test Q6_K compile-time column specialization while preserving its weight
-mapping,ascending partial sums and XOR reduction. Runtime-indexed eight-column
-accumulators may add register/spill cost;this remains a hypothesis without
-compiler/hardware evidence. Measure the actual model tensor geometries in a
-bounded component comparison before changing any model route. Keep existing
-prefill and MTP callers on their original implementation;any model integration
-must select the candidate through an explicit decode policy.
+The explicit Q6_K column candidate now passes the32-case GPU smoke and
+three fresh resident component processes across seven actual model geometries
+and columns1,2,3,4,8. All1050timing batches pass the10ms floor;all output bits,
+guards,read-only inputs,normal exits,quiet validation and fresh-fault checks pass.
+The separately scoped V4gate accounts for exactly one intentional null-platform
+validation-probe error before main in the full-trace smoke;all other diagnostics
+still reject. Earlier source/link/trace-parser refusals remain failed.
+
+In28of35geometry/column combinations,the candidate is faster in all three
+process medians,meeting the prospective component follow-up screen. The table
+shows milliseconds per public call,using geometric means of the three process
+medians,each from five batches per arm. It includes dispatch/submission and
+queue completion;weights and Q8_1 activations are already resident.
+
+| Input width | Output rows | Columns | Reference ms | Candidate ms | Candidate/reference time |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 2560 | 10240 | 4 | 0.493024 | 0.444126 | 0.900820 |
+| 6144 | 2560 | 4 | 0.247354 | 0.215991 | 0.873206 |
+| 2560 | 6144 | 4 | 0.266403 | 0.228655 | 0.858304 |
+| 2560 | 12288 | 4 | 0.592440 | 0.535173 | 0.903337 |
+| 2560 | 248320 | 4 | 11.815285 | 10.738417 | 0.908858 |
+
+The smaller512-row cases at columns1..4 do not meet that screen;keep their
+reference. The640-row columns1/2 and6144-row single-column case also remain
+unqualified despite some favorable samples;do not discard their individual
+values or call the decrease noise. Compiled native source664a280d5 composes
+selected479a with the explicit candidate;ELF SHA-256 is
+bb63479f9f4290525cd1fef1475033292f7ccc64a1ac3c4a0879f53d0b58bc26.
+See`q6_columns_component_v4`;all individual samples remain there.
+
+The change preserves weight mapping,ascending partial sums and XOR reduction.
+Smaller constant-column accumulators are source-level intent;register/spill
+reduction and physical saturation are not measured. This is component evidence,
+not a model TG gain or adoption. A model route must select only qualifying
+shapes through an explicit decode policy,leaving MTP and both prefill paths on
+their original implementation. In particular,short prompt reads also call the
+Verifier:changing every Verifier graph globally would couple prefill and decode.
+Keep phase-distinct graph selection and state handoff in the next model plan.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
