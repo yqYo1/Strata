@@ -4752,6 +4752,8 @@ committed read-only audit at267198631 recovers all288original source inputs,
 checks unchanged boot/driver/engine,finds no owned processes or named shared
 memory,and reproduces the identical closed-data reduction. That audit closes
 current ownership without relabeling the original failure.
+The closed raw timeline,successful logs and private JIT/transaction output have
+now been retired;the compact source,correctness and original outcomes remain.
 
 The guarded interior decode window is2.153721s. Observed Q6_K MMVQ service is
 0.342910s across868calls;copy_rows_from_mapped contributes0.076589s across316calls.
@@ -4802,7 +4804,7 @@ dynamic occupancy,physical saturation or which code change causes the timing
 gain. The existing candidate already reaches native packed integer-dot
 instructions;another generic dp4a/ESIMD rewrite is not justified by that
 question alone. The compact fields and cache/tool hashes are in the same
-result's`codegen`entry;the full disassembly is temporary. This is component
+result's`codegen`entry;the full disassembly has been retired. This is component
 evidence,not a model TG gain or adoption. A model route must select only qualifying
 shapes through an explicit decode policy,leaving MTP and both prefill paths on
 their original implementation. In particular,short prompt reads also call the

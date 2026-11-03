@@ -113456,6 +113456,17 @@
     "source_inputs": {
       "files": 288,
       "aggregate_sha256": "3196b8bc9707f40a1bbc93a787287f48c00afdbba7ebfc96351e34262d2a8af8"
+    },
+    "raw_retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/decode-gpu-service-v2",
+      "files": 82,
+      "bytes": 370833784,
+      "completed": true,
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-profile-and-q6-codegen-retirement-20261104.json",
+      "manifest_sha256": "bf174cb0f6eec27fd947999655a93d6acdd93c210f3e65ee6e93396432c0e98b",
+      "reason": "Closed attribution/source-recovery consumer;compact device/host/correctness/fault and original failure evidence is already committed. Full timeline,successful API text,private JIT cache and transaction files have no next consumer.",
+      "original_failure_preserved": true,
+      "original_source_files_recovered": 288
     }
   },
   "q6_columns_prepare_refusal_v1": {
@@ -117048,6 +117059,15 @@
         "representative_candidate_dp4a": "dp4a (32|M0) r14.0<1>:d 0:w r50.0<1;0>:d r24.0<1>:d {I@2}",
         "decision": "The existing constant-column candidate already emits native signed packed integer-dot instructions;the reference ROWS1/NW4 emits none. Do not start a generic dp4a/ESIMD rewrite merely to obtain those instructions. Advance only the repeated faster shapes through an explicitly decode-scoped graph policy.",
         "limits": "Static allocation/instruction/code-size observations only:they neither prove dynamic occupancy,physical traffic/saturation,nor isolate the cause of the measured timing gain. Both timed ROWS1 routes report GRF128/SIMD32 and no private/spill fields or per-thread scratch buffers;there is no evidence here for spill elimination. The C4 native text is larger,13504 versus8192bytes."
+      },
+      "raw_retirement": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-columns-component-v2/native-codegen-v1",
+        "files": 270,
+        "bytes": 14684503,
+        "completed": true,
+        "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-profile-and-q6-codegen-retirement-20261104.json",
+        "manifest_sha256": "bf174cb0f6eec27fd947999655a93d6acdd93c210f3e65ee6e93396432c0e98b",
+        "reason": "Selected-kernel native fields/opcodes/hashes are committed. Retain the private source cache for the next decode policy choice;full disassembly is reproducible with the recorded tool/command and adds no active evidence."
       }
     }
   }
