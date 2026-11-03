@@ -36,7 +36,8 @@ FIXTURE = 'bench/sycl/q6_columns.cpp'
 SOURCES = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
     CORE, 'src/kernels/sycl/native_q5_head.cpp', 'src/kernels/sycl/native_q3_esimd.cpp',
     'src/kernels/sycl/native_q4_esimd.cpp', 'src/kernels/sycl/native_q2_esimd.cpp',
-    'src/kernels/sycl/native_iq4xs_esimd.cpp', FIXTURE)
+    'src/kernels/sycl/native_iq4xs_esimd.cpp', 'src/kernels/sycl/native_iq_esimd.cpp',
+    'src/kernels/sycl/native_mmq_xmx.cpp', FIXTURE)
 HELPERS = ('tools/sycl/measure_q6_columns.py', 'tools/sycl/build_engine.py',
     'tools/sycl/build_manifest.py', 'tools/sycl/measurement_guards.py',
     'tools/sycl/measurement_owner.py', 'tools/sycl/ur_validation.py')
