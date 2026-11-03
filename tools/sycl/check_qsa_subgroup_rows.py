@@ -19,9 +19,12 @@ sys.dont_write_bytecode = True
 import qsa_subgroup_rows_component as build
 
 entry, base, P, B, RESULT = build.entry, build.base, build.P, build.B, build.RESULT
-ROOT, KEY = build.ROOT/'device-v1', 'qsa_subgroup_rows_device_v1'
+ROOT, KEY = build.ROOT/'device-v2', 'qsa_subgroup_rows_device_v2'
 ORDER = ('smoke','numerical','speed0','speed1','speed2')
 SELF = Path(__file__).resolve()
+HOST_KEY = 'qsa_subgroup_rows_protocol_host_v1'
+HOST_TEST = 'tools/test_sycl_qsa_protocol.py'
+FOOTER = 'fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED'
 require, digest, write = base.require, base.digest, base.write
 
 
@@ -39,7 +42,26 @@ def save(row):
 def inputs(revision):
     values=build.sources(revision)
     values.update(base.controls(revision,controller=SELF))
+    raw=base.basis.build.git(P,'show',revision+':'+HOST_TEST)
+    require((P/HOST_TEST).read_bytes()==raw,'commit/freeze protocol regression test')
+    values[HOST_TEST]=hashlib.sha256(raw).hexdigest()
     return values
+
+
+def protocol_qualification():
+    host=base.committed(RESULT)[HOST_KEY]
+    require(all(host[k] is True for k in ('passed','complete','ownership_closed'))
+            and host['GPU_executed'] is False and host['tests']==3,'qualified host protocol required')
+    for name,sha in host['source_files'].items():
+        require(digest(P/name)==sha==hashlib.sha256(base.basis.build.git(
+            P,'show',host['source_commit']+':'+name)).hexdigest(),'protocol source/proof changed')
+    return dict(source_commit=host['source_commit'],receipt_sha256=build.fingerprint(host))
+
+
+def finish_protocol(io):
+    require(io.line(20)==FOOTER,'exact native completion footer required')
+    io.proc.stdin.close()
+    io.exit(30)
 
 
 def admit_build():
@@ -70,6 +92,7 @@ def admit_build():
 def current(row):
     require(base.committed(RESULT)[KEY]==compact(row) and inputs(row['source_commit'])==row['sources'],
             'commit/freeze exact device source and plan')
+    require(protocol_qualification()==row['protocol_qualification'],'consumed protocol proof changed')
     compiled,native,providers=admit_build()
     require(row['build_identity']=={k:compiled[k] for k in ('source_commit','compiler_inputs','binaries')}
             and row['boot']==native['boot'] and row['driver']==native['driver'], 'device build/platform differs')
@@ -89,6 +112,7 @@ def prepare(mode):
                  sources={},plans=[],cases=[],passed=False,complete=False,active=False,ownership_closed=True,
                  model_executed=False,inference_adopted=False)
         row['sources']=inputs(row['source_commit'])
+        row['protocol_qualification']=protocol_qualification()
         compiled,native,providers=admit_build()
     require(len(row['cases'])==ORDER.index(mode) and all(v['passed'] for v in row['cases']),
             'ordered successful cases required;no retry/replacement')
@@ -204,7 +228,7 @@ def run(mode):
                 delta=[a-b for a,b in zip((time.clock_gettime_ns(time.CLOCK_BOOTTIME),time.monotonic_ns()),start)]
                 require(min(delta)>=0 and abs(delta[0]-delta[1])<=50000000,'suspend/clock discontinuity')
                 phases.append(phase);mapped.update(seen);print(mode+' '+phase,flush=True);io.send(b'X')
-            io.proc.stdin.close();io.exit(30)
+            finish_protocol(io)
         command,out,err=owner.run(mode,plan['command'],plan['environment'],P,interaction=interact,**plan['budgets'])
         require(base.supervision.closed(command) and command['exit_code']==0,'normal owned native exit required')
         text,errors=out.read_text(),err.read_text();validation=entry.device.ur_validation.preload_evidence(errors,command['pid'])

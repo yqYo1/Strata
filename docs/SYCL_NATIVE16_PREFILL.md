@@ -1322,6 +1322,14 @@ prefix comparisons;full numerical has11cases,including262144-cell component
 addresses rather than a full model context. Timing keeps72individual intervals
 per process over six synthetic cases and the existing10ms/clock-cost gates.
 Commit each prepared case and result before the next;do not retry a failed case.
+The first smoke remains failed at`329310777`:the native runs4.3496s,exits0,
+passes two zero-error oracle/selected-prefix cases and cleanup,and leaves an
+empty session with quiet validation/no freshfault. Its supervisor fails only
+because the expected final footer was unread when checking pipe exhaustion.
+Original incomplete/ownership-unqualified flags remain. The CPU-only owned-pipe
+regression at`02aae8cba`reproduces that exact rejection. V2consumes the one exact
+footer before the unchanged strict EOF check;missing/extra output still fails.
+Commit green host protocol evidence before a new V2smoke;C++/ELFs stay unchanged.
 The paired component fixture gains an uncompiled`--current-prefill`mode only
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
 cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
