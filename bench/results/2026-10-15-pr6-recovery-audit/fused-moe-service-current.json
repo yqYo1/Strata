@@ -112470,5 +112470,97 @@
     "ownership_closed": true,
     "sources_sha256": "d42b24ed2578b93e21673c967daf6c835bb36f0a3d2630643004e96e81e0b512",
     "environment_template_sha256": "2fcedf0fa81900030a0c70e8c4c4caf24ca320c470c70875c74dde8e5d6fdab0"
+  },
+  "cache_map_compat_collector_active_v1": {
+    "stage": "prepared",
+    "source_commit": "1a70c1efab3f06a84d2487c1aebf70e9ab197421",
+    "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+    "engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+      "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+      "bytes": 24058712
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_submission_test",
+      "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+      "bytes": 343384
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "profile": {
+      "mode": "aggregate",
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      },
+      "session": "StrataPrefillf707cde96fa22645810c9ab7",
+      "environment": {
+        "UNITRACE_SystemTime": "1",
+        "UNITRACE_FollowChildProcess": "1",
+        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/compat-collector-active-v1/trace",
+        "LD_DEBUG": "libs"
+      }
+    },
+    "cases": [],
+    "plan": {
+      "question": "Does the existing active-from-exec launcher mode preserve all compatibility graph/kernel flow joins with only kernel-activity Chrome logging?",
+      "native": "Reuse selected479a/552b engine and same-build compatibility ELF;no rebuild. Run the no-argument compatibility graph case,not --native or the submission-only early return. cudaStreamBeginCapture uses normal command_graph recording;GraphExec finalizes without per-node profiling. STRATA_SYCL_VERIFY_NATIVE_CAPTURE remains0.",
+      "order": "One new same-ELF process,after the closed control. Use the existing aggregate launcher mode(device-timing/verbose,no --start-paused),plus immutable UNITRACE_ChromeKernelLogging1 and128-event buffer. No host-timing or full Chrome-call selector. Require the named session already active at both native gates and stay active through native exit;no in-application collection toggle.",
+      "acceptance": "Verify committed source,original selected native inputs,actual engine/fixture/collector/runtime bytes,startup environment and provider mappings. Require the original numerical/event/copy/graph/host-handoff/lifetime pass,normal owned exit,quiet parameter validation,no fresh fault,all62 kernel instances with native host-flow joins and names,finite contained raw-clock intervals,closed controls and removed named session.",
+      "limits": "Collector-mode qualification only. Host API timeline coverage may be limited to kernel activities;its observed intervals are not total submission time or useful CPU time. No paused-construction,interior model window,observer overhead,clean speed,physical traffic,saturation or adoption claim.",
+      "next": "A separately committed bounded fully active model capture can use existing benchmark client first-output/end monotonic timestamps with qualified raw-clock mapping to reduce only interior decode GPU services. Do not infer full model coverage or overhead from this fixture.",
+      "stopping": "Stop first source,ownership,provider,validation,fault,budget,numerical,count or join failure. No retry,hash refresh or changed criteria.",
+      "retention": "Keep compact counts,clock/identity/qualification limits and diagnostic outcome. Retire successful full API trace,timeline,JIT and execution bookkeeping after joins and next-consumer needs are recorded. No new native generation."
+    },
+    "budgets": {
+      "wall": 180,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 134217728,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "sources_sha256": "f42cac7ff196432d8641189657aa43d4ace05dfb66742c1898f0a1ccde6c7004",
+    "environment_template_sha256": "2fcedf0fa81900030a0c70e8c4c4caf24ca320c470c70875c74dde8e5d6fdab0"
   }
 }
