@@ -4744,10 +4744,31 @@ exit,quiet validation,closed owners and no fresh fault. It uses the existing
 aggregate launcher mode and immutable kernel-activity logging,without a paused
 start or full API logging. See`cache_map_compat_collector_active_v1`. These host
 events are an observed activity subset,not total submission or useful CPU time.
-The collector mode is qualified on this fixture;actual model-window coverage,
-clock mapping and observer overhead remain pending. A bounded model capture can
-now use the existing client timestamps to select an interior decode interval
-without relying on paused graph construction.
+The collector mode is qualified on this fixture. The subsequent selected-engine
+capture is recorded in`cache_map_decode_gpu_service_v2`;its original collection
+remains failed at the post-exit collector-control artifact cap. Native and bench
+exit0,quiet validation,all15model hashes and no fresh fault pass. A separately
+committed read-only audit at267198631 recovers all288original source inputs,
+checks unchanged boot/driver/engine,finds no owned processes or named shared
+memory,and reproduces the identical closed-data reduction. That audit closes
+current ownership without relabeling the original failure.
+
+The guarded interior decode window is2.153721s. Observed Q6_K MMVQ service is
+0.342910s across868calls;copy_rows_from_mapped contributes0.076589s across316calls.
+These are device-service sums,not disjoint critical-path fractions. Observed
+GPU-event union is0.945779s;the unobserved remainder does not prove GPU idle.
+Explicit copy commands request9,355,264bytes,but mapped host reads occur inside
+kernels and physical PCIe/RAM traffic remains unknown. The profiled prompt is
+1.10785times its same-body unprofiled diagnostic reference;the short decode
+interval is also affected by collection and is not clean sustained TG evidence.
+
+Next test Q6_K compile-time column specialization while preserving its weight
+mapping,ascending partial sums and XOR reduction. Runtime-indexed eight-column
+accumulators may add register/spill cost;this remains a hypothesis without
+compiler/hardware evidence. Measure the actual model tensor geometries in a
+bounded component comparison before changing any model route. Keep existing
+prefill and MTP callers on their original implementation;any model integration
+must select the candidate through an explicit decode policy.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 

@@ -22360,7 +22360,7 @@
   },
   "iq3xxs_iq2s_cpu_resident_views_20261104": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed",
     "schedulable_now": false,
     "question": "For the selected Zen3/AVX2 native IQ3_XXS and IQ2_S single-row expert work,compare exact compact/predecoded CPU-resident weight views against on-the-fly lookup,including setup,RAM/cache traffic,GU/Down activation reuse and original GPU-pack coexistence. Audit existing IQ_SINGLE_EXACT/IQ2_PAIR precedence and rank source-feasible experiments without asserting useful-CPU time or saturation.",
     "prerequisites": {
@@ -22388,8 +22388,8 @@
     "consumer": "CPU layout-method selection alongside Main decode GPU attribution;compare the actually dominant non-affine formats rather than repeating the IQ3_S21 survey",
     "review_point": "Native Luna-max review at completion;retain only novel source-feasible methods until the next CPU candidate decision",
     "main_reads_body_on_arrival": false,
-    "ownership_closed": false,
-    "worker_done_accepted": false,
+    "ownership_closed": true,
+    "worker_done_accepted": true,
     "run": "run_3a590df77264",
     "task": "task_5fed8ae0098c",
     "dispatch": "ctx_73777e483b39",
@@ -22405,6 +22405,46 @@
       "report_directory_writable": true,
       "model_screen": "GPT-6-Luna high",
       "startup": "Exact Main-created terminal;process-local no-update and workspace-write/network permissions;worker-start reused this terminal for the custom-argv expressiveness gap."
+    },
+    "worker_done_message": "msg_df94b2acd2bd",
+    "worker_outcome": "succeeded",
+    "worker_process_closure": "Exact dispatch completed;Main-owned terminal close confirms ptyKilled after worker-release retained the external terminal.",
+    "report_sha256": "0b1557d0d23fa4a6cad0793ec9f20a75c9fd6ae2e2a3c5fbffdcc7604440826b",
+    "report_bytes": 18747,
+    "review": {
+      "path": ".cache/research/2026-11-04/iq3xxs-iq2s-cpu-resident-views.review.json",
+      "sha256": "fd7e66d136cc95a62f5dd29f2a719ce101b64fc1fa76eebbc7d1d24aa44f13a4",
+      "verdict": "accepted_conditional_reference",
+      "original_verdict": "revise_before_acceptance",
+      "original_report_sha256": "c6bf0c6a6ca7173c5863aeeacd69c25b2eb82b0b890842ef14989aeca988d2c7",
+      "corrections_verified": true
+    },
+    "review_digest": "The corrected report is acceptable as conditional decision support only. Each IQ3_XXS 32-value group uses eight four-value grid indices. For 2560x640 geometry, Q2_0 Down is 18 B per 64 values (460800 B/expert) and IQ4_NL is 18 B per 32 values (921600 B/expert); whole-expert totals are shown for both formats. In the pinned ArenaExpertSource route, a transformed view adds to the retained raw arena needed by CPU fallback and GPU cache fill. The default MT threshold is 2; pin it for route-specific comparisons. The roughly 74% figure remains whole-pool wall including Down/scheduling/waits, not useful-GU CPU time or CPU/RAM saturation. Exact compact codes remain the first conditional candidate; signed-byte rows need a concrete AVX2 multiply mapping and attributed decode cost. No performance gain or adoption follows.",
+    "conditional_next_scopes": [
+      {
+        "name": "Exact compact IQ3_XXS/IQ2_S signed-code view",
+        "schedulable_now": false,
+        "prerequisite_evidence": [
+          "Main establishes the actual production NT1 phase, dispatch flags and threshold, plus useful CPU work separated from Down, polling and waits; the current pool percentage alone is insufficient.",
+          "Name the view owner and demonstrate raw packed arena coexistence, actual per-format expert counts and admitted RAM headroom.",
+          "Commit a setup-inclusive repeated-use comparison, exact decoded-code/lane/FMA comparator, bounds/lifetime checks and stopping rules before implementation measurement."
+        ],
+        "decision_gate": "Reject on any level/sign/scale, int32-lane or FP32/FMA mismatch, wrong production route, or no repeatable setup-inclusive benefit at the declared reuse horizon."
+      },
+      {
+        "name": "Predecoded signed-byte rows",
+        "schedulable_now": false,
+        "prerequisite_evidence": [
+          "The compact-view path or equivalent source attribution shows codebook/unpack instructions remain material after isolating waits and current IQ2_PAIR activation reuse.",
+          "A measured reuse and memory-admission case can carry the 2.67x/3.24x GU footprint over packed data while retaining raw upload/fallback bytes.",
+          "Specify signed-byte AVX2 multiplication and exact lane/FMA conformance, then commit a matched setup-inclusive comparison plan."
+        ],
+        "decision_gate": "Reject if signed-byte decode, padding, setup, memory traffic/residency or exact arithmetic erases the saved lookup/unpack work."
+      }
+    ],
+    "retention": {
+      "consumer": "Next CPU layout-method selection after Main's decode attribution and actual RAM/route admission evidence.",
+      "review_point": "At that next CPU candidate decision, retain the body only if a named compact-view or signed-byte comparison needs its source detail; otherwise preserve the corrected sizes and decision digest in the existing research index/result and retire the temporary report body."
     }
   }
 }

@@ -113416,6 +113416,43 @@
         "devcoredump": false
       }
     },
+    "post_run_ownership_audit": {
+      "source_commit": "26719863141e5ee357bf056a38721253ba74a75a",
+      "currently_closed": true,
+      "owned_sessions_checked": [
+        3222253,
+        3236322
+      ],
+      "live_owned_processes": 0,
+      "named_session_absent": true,
+      "original_native_and_control_exit_codes": [
+        0,
+        0
+      ],
+      "original_observation_complete": [
+        true,
+        false
+      ],
+      "boot_driver_engine_unchanged": true,
+      "original_source_files_recovered": 288,
+      "original_failed_status_preserved": true,
+      "closed_data_reduction_equal": true,
+      "first_observed_launch_metadata": {
+        "Q6K": {
+          "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {10240; 1; 1} {128; 1; 1}]",
+          "args": {
+            "id": "263521"
+          }
+        },
+        "mapped_rows": {
+          "name": "strata::sycl_backend::for_each<strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {100; 1; 1} {1024; 1; 1}]",
+          "args": {
+            "id": "263568"
+          }
+        }
+      },
+      "limits": "Current ownership is closed;original collection remains failed at its artifact-cap gate. Its observed services can frame a bounded kernel hypothesis,not a passed model route or adoption."
+    },
     "source_inputs": {
       "files": 288,
       "aggregate_sha256": "3196b8bc9707f40a1bbc93a787287f48c00afdbba7ebfc96351e34262d2a8af8"
