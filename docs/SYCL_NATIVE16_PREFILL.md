@@ -1277,9 +1277,9 @@ restores the original output. Its subgroup-row arm requires
 `STRATA_QSA_PACKED_GUARD=17`at preprocessing for the intended two-byte-only
 scratch alignment. These are uncompiled source changes;the future recipe must
 still pin that define. The scale poison is+Inf rather than NaN. None of these reviews is compilation,
-numerical execution or performance evidence. Next:close the baseline curve,
-retire or migrate the adaptive fallback's actual reader,and commit the exact
-build/measurement recipe before any new device execution.
+numerical execution or performance evidence. The baseline curve now closes at
+`51ddbbfaa`. Next:retire or migrate the adaptive fallback's actual reader,and
+commit the exact build/measurement recipe before any new device execution.
 The paired component fixture gains an uncompiled`--current-prefill`mode only
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
 cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
