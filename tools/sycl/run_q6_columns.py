@@ -18,8 +18,8 @@ sys.dont_write_bytecode = True
 import measure_q6_columns as q
 
 P, B, ROOT, RESULT = q.P, q.B, q.ROOT, q.RESULT
-KEY = 'q6_columns_component_v3'
-STATE = ROOT / 'record-v3.json'
+KEY = 'q6_columns_component_v4'
+STATE = ROOT / 'record-v4.json'
 SELF = Path(__file__).resolve()
 require, digest, write = q.require, q.digest, q.write
 
@@ -63,8 +63,33 @@ def build_bytes(revision):
     return q.build.git(P, 'show', revision + ':' + str(SELF.relative_to(P)))
 
 
+def validation_log(text, pid, loader, traced):
+    proof = q.validation.preload_evidence(text, pid)
+    require(proof['loader'] == loader, 'wrong validation loader')
+    # The qualified preload intentionally submits one null-platform query to
+    # prove parameter validation before main. Full API tracing logs its expected
+    # INVALID_NULL_HANDLE; every other diagnostic must still fail admission.
+    boundary = text.index('strata UR validation: pid=' + str(pid) + ' phase=before-main ')
+    pattern = (r'(?m)^[ \t]*<--- urPlatformGetApiVersion\(\.hPlatform = nullptr, '
+        r'\.pVersion = 0x[0-9a-f]+(?: \([^\r\n]*\))?\) '
+        r'-> UR_RESULT_ERROR_INVALID_NULL_HANDLE;[ \t]*$')
+    expected = list(re.finditer(pattern, text[:boundary]))
+    require(len(expected) == int(traced), 'wrong expected negative-probe trace count')
+    if expected:
+        match = expected[0]
+        text = text[:match.start()] + text[match.end():]
+    require(not any(word in text for word in
+        ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', '[WARNING]', '[ERROR]')),
+        'unexpected validation/provider diagnostic')
+    return proof
+
+
 def audit():
     require(KEY not in q.committed() and not STATE.exists(), 'fresh post-build audit only')
+    previous = q.committed().get('q6_columns_component_v3', {})
+    require(previous.get('stage') == 'failed-smoke' and
+        previous.get('error') == "RuntimeError('validation/provider diagnostic')" and
+        previous.get('ownership_closed') is True, 'preserve the original traced-probe refusal')
     native = original()
     revision = q.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     require(build_bytes(revision) == SELF.read_bytes(), 'commit audit controller before use')
@@ -110,6 +135,7 @@ def audit():
         actual_inputs=dict(path=str(inputs_path), sha256=digest(inputs_path)),
         plan=native['plan'], processes=[], passed=False, complete=False, active=False, ownership_closed=True,
         retention=native['retention'])
+    row['plan'] = dict(row['plan'], validation_trace_contract='Full-trace smoke requires exactly one qualified preload null-platform INVALID_NULL_HANDLE before the first before-main proof;all other UR/ZE warnings/errors reject. Quiet speed requires no error trace. Original V3 failure remains failed;new smoke evidence required.')
     current(row)
     save(row)
     print('Audited unchanged final ELF and original source/recipe;original V2 refusal remains failed.', flush=True)
@@ -126,12 +152,12 @@ def run(smoke):
 
     def persist():
         if owner is not None:
-            write(ROOT / 'v3-ownership.json', dict(active=owner.active is not None,
+            write(ROOT / 'v4-ownership.json', dict(active=owner.active is not None,
                 commands=[{key: entry[key] for key in ('pid', 'direct_identity', 'exit_code',
                     'observation_complete', 'session_empty', 'direct_child_reaped', 'errors') if key in entry}
                     for entry in owner.commands]))
 
-    owner = q.supervision.Owner(ROOT / ('v3-smoke' if smoke else 'v3-speed'), persist)
+    owner = q.supervision.Owner(ROOT / ('v4-smoke' if smoke else 'v4-speed'), persist)
     deadline = time.monotonic() + 2400
     try:
         for process in range(1 if smoke else 3):
@@ -147,10 +173,8 @@ def run(smoke):
             text, errors = out.read_text(), err.read_text()
             require('Q6_COLUMNS_PASS mode=' + ('smoke' if smoke else 'speed') in text,
                 'missing normal completion')
-            proof = q.validation.preload_evidence(errors, entry['pid'])
-            require(proof['loader'] == native['native_reference']['validation']['loader']['path'] and
-                not any(word in errors for word in ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', '[WARNING]', '[ERROR]')),
-                'validation/provider diagnostic')
+            proof = validation_log(errors, entry['pid'],
+                native['native_reference']['validation']['loader']['path'], smoke)
             faults = q.fresh_faults(cursor)
             require(not faults, 'new GPU fault')
             current(row)

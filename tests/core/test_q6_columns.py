@@ -5,6 +5,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/sycl'))
 import measure_q6_columns as comparison
+import run_q6_columns as runner
 
 
 def samples():
@@ -46,6 +47,30 @@ class Evidence(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(RuntimeError):
                 comparison.parse_speed('\n'.join([lines[0].replace('seconds=0.125',
                     'seconds=' + value)] + lines[1:]))
+
+
+class ValidationTrace(unittest.TestCase):
+    begin = 'strata UR validation: pid=17 phase=begin loader=/qualified/loader\n'
+    negative = ('   <--- urPlatformGetApiVersion(.hPlatform = nullptr, '
+        '.pVersion = 0xabcdef (-1.65535)) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;\n')
+    proof = ('strata UR validation: pid=17 phase=before-main threads_before=1 '
+        'preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 '
+        'checked=46 untouched=1 retained_ref=1\n')
+
+    def test_exact_pre_main_probe_and_quiet_mode(self):
+        self.assertEqual(runner.validation_log(self.begin+self.negative+self.proof,
+            17, '/qualified/loader', True)['dispatch_result'], 46)
+        runner.validation_log(self.begin+self.proof, 17, '/qualified/loader', False)
+
+    def test_wrong_location_duplicate_api_and_fresh_error(self):
+        cases = [self.begin+self.proof+self.negative,
+            self.begin+self.negative*2+self.proof,
+            self.begin+self.negative.replace('urPlatformGetApiVersion', 'urUSMDeviceAlloc')+self.proof,
+            self.begin+self.negative+self.proof+'unexpected UR_RESULT_ERROR_DEVICE_LOST\n',
+            self.begin+self.negative+self.proof+'[WARNING] bad parameter\n']
+        for text in cases:
+            with self.subTest(text=text), self.assertRaises(RuntimeError):
+                runner.validation_log(text, 17, '/qualified/loader', True)
 
 
 if __name__ == '__main__':
