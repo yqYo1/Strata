@@ -56,6 +56,7 @@ class ContinuationGuards(unittest.TestCase):
             ('    inherit_prefix(row)\n', ''),
             ('    inherit_prefix(row)\n', '    inherit_prefix(row)\n    inherit_prefix(row)\n'),
             ('def current(row):\n    prefix_qualification(row, check=True)\n', 'def current(row):\n'),
+            ('mtp = entry.template.mtp_route(text, n)', 'mtp = mtp_boundary_route(text, n)'),
         ]
         for before, after in cases:
             self.assertEqual(source.count(before), 1, before)
@@ -93,6 +94,62 @@ class ContinuationGuards(unittest.TestCase):
             with self.subTest(name=name), patch.object(curve.base, 'committed', return_value=data), \
                     self.assertRaises(RuntimeError):
                 curve.parser_qualification()
+
+
+class MTPBoundaryRoute(unittest.TestCase):
+    # Reduced callback markers from failed V6/read65537, evidence86c02f511.
+    captured = ''.join('strata serve: DRAFT_PREFILL path='+path+' mode=2 cells=8192\n'
+                       for path in ['batched']*3+['token']+['batched']*4)
+
+    @classmethod
+    def setUpClass(cls):
+        cls.lock = (curve.B/'owned-v0141-measurement.lock').open('a+')
+        cls.addClassCleanup(cls.lock.close)
+        fcntl.flock(cls.lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        curve.base.guards.no_model_owners([])
+
+    def route(self, text, rows=65536):
+        fn = getattr(curve, 'mtp_boundary_route', curve.entry.template.mtp_route)
+        return fn(text, rows)
+
+    def test_actual_mixed_callback(self):
+        result = self.route(self.captured)
+        self.assertEqual(result['fallback_callback_index'], 3)
+        self.assertEqual(result['source_derived_active_rows'], 63)
+        self.assertFalse(result['internal_needed_rows_and_shapes_observed'])
+
+    def test_boundary_capacity_matrix(self):
+        for read, first, active in [(40959, 0, 65), (40960, 0, 64), (40961, 0, 63),
+                                    (65535, 24576, 65), (65536, 24576, 64), (65537, 24576, 63)]:
+            for workspace in (64, 128):
+                for ring in (64, 128):
+                    with self.subTest(read=read, workspace=workspace, ring=ring):
+                        q = curve.mtp_boundary_batch(read, first, 8192, workspace, ring)
+                        expected = active if active<=64 or workspace==ring==128 else 64
+                        self.assertEqual(q['active_rows'], active)
+                        self.assertEqual(q['first_batch_rows'], expected)
+                        self.assertEqual(q['path'], 'token' if active==63 else 'batched')
+        q = curve.mtp_boundary_batch(65537, 0, 8192, 64, 64)
+        self.assertTrue(q['skipped']);self.assertIsNone(q['first_batch_rows'])
+
+    def test_bad_callback_sequences_rejected(self):
+        batch='strata serve: DRAFT_PREFILL path=batched mode=2 cells=8192\n'
+        token='strata serve: DRAFT_PREFILL path=token mode=2 cells=8192\n'
+        bad = [self.captured.replace(token,batch),self.captured.replace(batch,token,1),
+               self.captured.replace(token,'').replace(batch,token,1)+batch,
+               self.captured.replace('cells=8192','cells=8191',1),
+               self.captured.replace('mode=2','mode=1',1),self.captured+batch,
+               self.captured.replace(token,''),self.captured.replace(token,token.replace('mode=2','mode=2 mode=2'))]
+        for i, text in enumerate(bad):
+            with self.subTest(mutation=i), self.assertRaises(RuntimeError):
+                self.route(text)
+        with self.assertRaises(RuntimeError):self.route(self.captured,65535)
+
+    def test_other_lengths_keep_original_contract(self):
+        for rows in (1285,4955,8192,24576,32768,117488):
+            text=''.join(f'strata serve: DRAFT_PREFILL path=batched mode=2 cells={min(8192,rows-i)}\n'
+                         for i in range(0,rows,8192))
+            self.assertEqual(self.route(text,rows),curve.entry.template.mtp_route(text,rows))
 
 
 if __name__ == '__main__':
