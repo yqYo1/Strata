@@ -4823,6 +4823,17 @@ syntax checks for Verifier,generator and retirement fixture;971compiler/link
 inputs are covered,all six commands exit0 and close their owners. It does not
 build or select a model engine.
 GPU lifecycle,whole-model performance and physical-context checks remain pending.
+The next production-linked fixture is
+`sycl_verifier_retirement_test --phase-cache`:16synthetic callback windows use
+prompt/decode keys at widths1,4,8,including phase roundtrips and drained
+clear/recapture with new operands. It exercises the real segment finalizer,
+resident/PCIe callbacks and destructor,with separate markers for each graph
+family. It runs directly without fork because the validation preload may
+initialize UR before main. This new case has not yet run on the GPU;it does not
+qualify full window recording,Q6 arithmetic,dense/head resume or model speed.
+`build_verify_window_model.py`prepares its same-generation engine/fixture from
+the selected479a source and only the eight declared phase/Q6 changes. A syntax
+check may precede legacy artifact reconciliation;engine compilation may not.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 

@@ -15,6 +15,7 @@
 #include <thread>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <utility>
 #include <vector>
 
 namespace strata::core {
@@ -128,6 +129,79 @@ struct VerifierRetirementTestAccess {
     static cudaError_t early_status(const Verifier& v) { return v.pcie_status_; }
     static cudaError_t early_done(Verifier& v) { return cudaEventSynchronize(v.pcie_done_); }
     static cudaError_t resident_done(Verifier& v) { return cudaEventSynchronize(v.work_done_); }
+    static void prepare_phases(Verifier& v) {
+        if (cudaMallocHost(reinterpret_cast<void**>(&v.h_plan_), 4*sizeof(int32_t)) != cudaSuccess ||
+            cudaMallocHost(reinterpret_cast<void**>(&v.h_flagA_), sizeof(uint32_t)) != cudaSuccess ||
+            cudaEventCreateWithFlags(&v.work_done_, cudaEventDisableTiming) != cudaSuccess ||
+            cudaEventCreateWithFlags(&v.pcie_copy_ready_, cudaEventDisableTiming) != cudaSuccess ||
+            cudaEventCreateWithFlags(&v.pcie_done_, cudaEventDisableTiming) != cudaSuccess)
+            throw std::runtime_error("phase test owner admission");
+        std::memset(v.h_plan_, 0, 4*sizeof(int32_t));
+        v.sink_.counts = v.h_plan_;
+        v.sink_.counts[2] = 2;
+        v.max_t_ = 8;
+        v.early_pcie_ = v.overlap_gpu_ = true;
+        v.cur_layer_.store(0);
+    }
+    // Real end_segment owners and production resident/PCIe callbacks; the
+    // small payload kernels are synthetic. This is not record_window/run(),
+    // a numerical Q6 test, or qualification of dense/head lease restoration.
+    static bool record_phase(Verifier& v, VerifyInput input, int tokens,
+                             uint8_t* result, size_t bytes, uint8_t tag) {
+        auto& window = v.window_graphs_.at(input, tokens);
+        if (window.ready) return false;
+        if (!window.layer.empty() || !window.resident.empty() || !window.pcie.empty())
+            throw std::runtime_error("partial synthetic phase family");
+        const auto begin = [&] {
+            if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess)
+                throw std::runtime_error("phase test begin capture");
+        };
+        const auto end = [&](Verifier::SegmentKind kind) {
+            std::string error;
+            if (!v.end_segment(tokens, error, input, kind))
+                throw std::runtime_error(error);
+        };
+        begin();
+        v.cs_->single_task([=] { result[bytes+1] = tag; });
+        end(Verifier::SegmentKind::layer);
+        begin();
+        v.cs_->single_task([=] { result[bytes] = tag; });
+        end(Verifier::SegmentKind::resident);
+        begin();
+        auto* stage = v.staging_;
+        v.cs_->parallel_for(sycl::range<1>(bytes), [=](sycl::id<1> i) {
+            result[i[0]] = uint8_t(stage[i[0]] ^ result[bytes] ^ uint8_t(tag*3));
+        });
+        end(Verifier::SegmentKind::pcie);
+        begin();
+        v.cs_->single_task([=] { result[bytes+2] = uint8_t(tag+1); });
+        end(Verifier::SegmentKind::layer);
+        window.ready = true;
+        return true;
+    }
+    static void select_phase(Verifier& v, VerifyInput input, int tokens) {
+        reset_early(v);
+        v.last_input_ = input;
+        v.last_t_ = tokens;
+    }
+    static cudaError_t phase_layer(Verifier& v, size_t index) {
+        return cudaGraphLaunch(v.window_graphs_.at(v.last_input_, v.last_t_).layer.at(index), v.cs_);
+    }
+    static void clear_phases(Verifier& v) {
+        if (cudaStreamSynchronize(v.cs_) != cudaSuccess || cudaStreamSynchronize(v.copy_) != cudaSuccess)
+            throw std::runtime_error("phase owner drain");
+        v.window_graphs_.clear([](cudaGraphExec_t graph) {
+            if (cudaGraphExecDestroy(graph) != cudaSuccess)
+                throw std::runtime_error("phase graph retirement");
+        });
+        for (auto input : {VerifyInput::prompt, VerifyInput::decode})
+            for (int tokens=1; tokens<=8; ++tokens) {
+                const auto& window = v.window_graphs_.at(input, tokens);
+                if (window.ready || !window.layer.empty() || !window.resident.empty() ||
+                    !window.pcie.empty() || window.q6_reference_calls || window.q6_columns_calls)
+                    throw std::runtime_error("phase graph owner survived retirement");
+            }
+    }
     static void poison(Verifier& v) {
         // The existing runtime fixture uses this host-only failure mechanism.
         // No invalid device address, stalled kernel or device fault is induced.
@@ -355,6 +429,70 @@ void early_case(const std::string& mode) {
     check(cudaFree(output_raw));
 }
 
+void phase_cache_case() {
+    using Input = strata::core::VerifyInput;
+    constexpr size_t bytes=128;
+    const auto runtime=strata::sycl_backend::runtime_for();
+    strata::sycl_backend::Allocation allocation(runtime,bytes+131,strata::sycl_backend::MemoryKind::Device);
+    auto* raw=static_cast<uint8_t*>(allocation.data());
+    auto* result=raw+64;
+    std::array<uint8_t,bytes> source{};
+    const uint8_t* inputs[]={source.data(),source.data()+64};
+    // Both host source and device output outlive every graph and both queues.
+    auto verifier=std::make_unique<V>();
+    Access::prepare(*verifier);
+    Access::prepare_phases(*verifier);
+    const std::array<std::pair<Input,int>,8> sequence{{
+        {Input::prompt,4},{Input::decode,4},{Input::prompt,4},{Input::prompt,8},
+        {Input::decode,8},{Input::decode,1},{Input::prompt,1},{Input::decode,4}}};
+    unsigned captures=0,windows=0;
+    for (unsigned epoch=0;epoch<2;++epoch) {
+        if (epoch) Access::clear_phases(*verifier);
+        for (const auto& key : sequence) {
+            const auto input=key.first;
+            const int tokens=key.second;
+            const auto tag=uint8_t(0x20+epoch*0x50+(input==Input::decode ? 0x18 : 0)+tokens);
+            captures+=Access::record_phase(*verifier,input,tokens,result,bytes,tag);
+            Access::select_phase(*verifier,input,tokens);
+            check(cudaMemset(raw,0xe7,bytes+131));
+            for (size_t i=0;i<bytes;++i) source[i]=uint8_t(i*3+windows*7+1);
+            check(Access::phase_layer(*verifier,0));
+            Access::publish(*verifier); // Production callback chooses phase/T.
+            Access::submit(*verifier,inputs,2,64); // Production callback chooses phase/T.
+            need(Access::status(*verifier)==cudaSuccess && Access::early_status(*verifier)==cudaSuccess,
+                 "phase callback submission failed");
+            check(Access::resident_done(*verifier));
+            check(Access::early_done(*verifier));
+            std::string error;
+            need(Access::finish(*verifier,error),"phase source retirement failed");
+            check(Access::phase_layer(*verifier,1));
+            std::array<uint8_t,bytes+131> observed{};
+            check(cudaMemcpy(observed.data(),raw,observed.size(),cudaMemcpyDeviceToHost));
+            for (size_t i=0;i<bytes;++i)
+                need(observed[64+i]==uint8_t(source[i]^tag^uint8_t(tag*3)),
+                     "phase/T callback selected a stale graph");
+            need(observed[64+bytes]==tag && observed[65+bytes]==tag &&
+                 observed[66+bytes]==uint8_t(tag+1),"phase layer/resident markers differ");
+            for (size_t i=0;i<64;++i)
+                need(observed[i]==0xe7 && observed[67+bytes+i]==0xe7,"phase output guard changed");
+            std::array<uint8_t,128> guards{};
+            auto* stage=static_cast<uint8_t*>(Access::stage(*verifier));
+            check(cudaMemcpy(guards.data(),stage-64,64,cudaMemcpyDeviceToHost));
+            check(cudaMemcpy(guards.data()+64,stage+Access::arena_bytes,64,cudaMemcpyDeviceToHost));
+            for (auto value:guards) need(value==0xa5,"phase staging guard changed");
+            ++windows;
+        }
+    }
+    need(captures==12 && windows==16,"phase lazy-capture/reuse counts differ");
+    const auto copies=verifier->expert_copy_stats();
+    const auto early=verifier->early_pcie_stats();
+    need(copies.submitted_blobs==32 && copies.completed_blobs==32 &&
+         copies.submitted_bytes==2048 && copies.completed_bytes==2048 &&
+         early.launches==16 && early.groups==32,"phase copy/launch conservation differs");
+    verifier.reset(); // Real destructor drains/destroys both populated phases.
+    std::puts("phase_cache_fixture_status=PASS windows=16 captures=12 phase_roundtrip=2 retire_recapture=1 guards=PASS");
+}
+
 [[noreturn]] void child(const std::string& mode, int fd) {
     marker_fd = fd;
     need(std::atexit([] { (void)write(marker_fd, "X", 1); }) == 0, "atexit hook");
@@ -530,6 +668,13 @@ void isolated(const char* mode, const char* expected, int exit_code) {
 int main(int argc, char** argv) {
     try {
         if (argc == 4 && std::string(argv[1]) == "--case") child(argv[2], std::stoi(argv[3]));
+        if (argc==2 && std::string(argv[1])=="--phase-cache") {
+            // No fork: the validation preload may initialize UR before main.
+            // The external Main-owned process supplies isolation and budgets.
+            phase_cache_case();
+            std::puts("phase_fixture_status=PASS cases=1");
+            return 0;
+        }
         if (argc == 2 && std::string(argv[1]) == "--query-profile") {
             isolated("profile", "R", 0);
             std::puts("query_profile_fixture_status=PASS cases=1");
@@ -545,7 +690,7 @@ int main(int argc, char** argv) {
             std::puts("early_fixture_status=PASS cases=6");
             return 0;
         }
-        need(argc == 1, "usage: sycl_verifier_retirement_test [--early|--query-profile]");
+        need(argc == 1, "usage: sycl_verifier_retirement_test [--early|--query-profile|--phase-cache]");
         // The coordinator initializes no SYCL runtime before fork+exec.
         isolated("success", "S", 0);
         isolated("large", "L", 0);
