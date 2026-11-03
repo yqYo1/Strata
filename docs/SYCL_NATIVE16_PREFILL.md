@@ -1338,33 +1338,39 @@ the largest component address space is262144cells,and every oracle/selected
 prefix comparison has zero absolute error. Input and packed/output guards pass.
 Both processes exit0,close their owned sessions,and report quiet validation,
 unchanged boot/driver and no freshfault. This is component correctness,not
-model quality or physical262144-token context qualification. The next comparison
-is three fresh paired timing processes over six shapes;no candidate speedup or
-model-route adoption is established yet. The selected552bmodel engine remains
-unchanged.
-The paired component fixture gains an uncompiled`--current-prefill`mode only
+model quality or physical262144-token context qualification. All three fresh
+timing processes now close normally,with72eligible intervals each and no fresh
+fault. Every one of108paired rounds is slower with subgroup rows. The median
+candidate/reference ratios across processes are1.04558,1.03853and1.02986for
+gather,and1.10703,1.10776and1.10392for clustered IDs,in the shape order below.
+Reject this candidate for all six tested shapes;do not advance it to a model
+trial. Successful execution/numerical flags do not establish a gain. Preserve
+all216individual intervals and the unchanged selected552bmodel engine.
+The paired component fixture's`--current-prefill`mode covers
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
 cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
 It keeps a constant query position and is not a captured causal replay. The
 existing full-entry timing and alternating six rounds per arm stay unchanged;
-record timer eligibility and the actual recipe before device use. These source
-cases do not establish component speed or a model gain.
-The manual CMake targets are now
+the measured timer eligibility and recipe remain in the closed compact result.
+These synthetic cases do not establish a model gain or hardware saturation.
+The experiment's manual CMake targets are
 `sycl_qsa_bf16_prefix_subgroup_rows_test`and
 `sycl_qsa_bf16_prefix_subgroup_rows_bench`,both excluded from the default build.
 The correctness target pins the subgroup-row arm,prefix33 comparisons and
-17-element scratch guards;both keep strict math flags. Neither is configured
-or compiled yet. The prospective current-shape comparison uses three fresh
+17-element scratch guards;both keep strict math flags. The owned manual build
+uses the equivalent pinned defines. The current-shape comparison uses three fresh
 process ordinals0..2,each with six alternating pairs for all six cases. Require
 each timed interval to reach10ms and clock-pair overhead below1percent of the
 shortest interval;an ineligible interval stops the screen and needs a new plan.
-The uncompiled fixture now enforces these limits for`--current-prefill`and
+The fixture enforces these limits for`--current-prefill`and
 records the maximum of4096consecutive steady-clock pairs after runtime-ready,
 before case allocation. This observed clock cost is not a universal bound.
 Compare matched per-case medians and process ratios without a blanket minimum
 gain. Keep traced smoke/component correctness separate from clean timing and
-retain the current engine as fallback. Commit exact compiler/dependency/generated
-inputs and supervision before executing this plan after the curve closes.
+retain the current engine as fallback. Exact compiler/dependency/generated
+inputs and supervision are pinned before execution. After publishing the closed
+rejection,recover its original source/recipe and retire rejected-only source,
+targets,controllers,ELFs and raw output. No new model performance record follows.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
