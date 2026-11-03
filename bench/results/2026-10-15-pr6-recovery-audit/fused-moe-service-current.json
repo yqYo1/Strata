@@ -102834,7 +102834,7 @@
     }
   },
   "cache_map_prefill_curve_v7": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "b854ab0dab482e77bc196695386bad2d0315cd49",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
@@ -105462,6 +105462,169 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 9,
+        "read": 8193,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 1927040,
+          "start_ticks": 205152246,
+          "sid": 1926988
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1927040,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 8192,
+            "actual_route": "chunked",
+            "actual_operator_chunk": 8192,
+            "dense_activations": 0,
+            "dense_head_MTP_weights_retained": true,
+            "cache_loan_retired_and_restored": true,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 1,
+              "nominal_cells": 8192,
+              "internal_needed_rows_and_shapes_observed": false
+            }
+          },
+          {
+            "rows": 8192,
+            "actual_route": "chunked",
+            "actual_operator_chunk": 8192,
+            "dense_activations": 0,
+            "dense_head_MTP_weights_retained": true,
+            "cache_loan_retired_and_restored": true,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 1,
+              "nominal_cells": 8192,
+              "internal_needed_rows_and_shapes_observed": false
+            }
+          },
+          {
+            "rows": 8192,
+            "actual_route": "chunked",
+            "actual_operator_chunk": 8192,
+            "dense_activations": 0,
+            "dense_head_MTP_weights_retained": true,
+            "cache_loan_retired_and_restored": true,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 1,
+              "nominal_cells": 8192,
+              "internal_needed_rows_and_shapes_observed": false
+            }
+          },
+          {
+            "rows": 8192,
+            "actual_route": "chunked",
+            "actual_operator_chunk": 8192,
+            "dense_activations": 0,
+            "dense_head_MTP_weights_retained": true,
+            "cache_loan_retired_and_restored": true,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 1,
+              "nominal_cells": 8192,
+              "internal_needed_rows_and_shapes_observed": false
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 8193,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 25391.0,
+            "prompt_tps": 322.7,
+            "ttft_s": 25.506,
+            "total_s": 27.165,
+            "generated_tokens": 24,
+            "request_sha256": "d164a6d855c47056689d33d6a692fa993003c052f493cbb93e87cb5918762a3e",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 8193,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 22504.1,
+            "prompt_tps": 364.1,
+            "ttft_s": 22.631,
+            "total_s": 24.49,
+            "generated_tokens": 24,
+            "request_sha256": "c456e8ad3fbdee5ce9b9aadf367a340d0551a5d202fd7bb3a3e6e2e1e1957b22",
+            "drafts_offered": 24,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 8193,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 22284.7,
+            "prompt_tps": 367.7,
+            "ttft_s": 22.401,
+            "total_s": 24.072,
+            "generated_tokens": 24,
+            "request_sha256": "c5606d407d3260ce38f0e4b2bfeafefbea8b45c9e1da64e8cf442b2e3c14e1b7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 8193,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 22596.9,
+            "prompt_tps": 362.6,
+            "ttft_s": 22.713,
+            "total_s": 24.371,
+            "generated_tokens": 24,
+            "request_sha256": "813a6e4e2d23fd11a6cc6045253411fc103a3700da0144d7e89445a82abd31ea",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 22504.1,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "request_hashes": {
@@ -105512,11 +105675,17 @@
         "5df2d1810d4a407cf7206fb1466275b4e21a9ccd49704d73dd09565bfe1122ad",
         "02445cbfb401f94711837382366f2eee3a03dbd53a3001e30186aa4bbea3d626",
         "66d411e5757821fbed65b052aed75c105d80c9a171b6dc40668824833cf3196c"
+      ],
+      "8193": [
+        "d164a6d855c47056689d33d6a692fa993003c052f493cbb93e87cb5918762a3e",
+        "c456e8ad3fbdee5ce9b9aadf367a340d0551a5d202fd7bb3a3e6e2e1e1957b22",
+        "c5606d407d3260ce38f0e4b2bfeafefbea8b45c9e1da64e8cf442b2e3c14e1b7",
+        "813a6e4e2d23fd11a6cc6045253411fc103a3700da0144d7e89445a82abd31ea"
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "inference_adopted": false,
@@ -105614,6 +105783,381 @@
         "passed": true
       }
     ],
+    "decision": {
+      "points": [
+        {
+          "actual_read_tokens": 1286,
+          "actual_route": "chunked",
+          "actual_operator_chunk": 1536,
+          "staged": false,
+          "split": false,
+          "prompt_ms": 10020.5,
+          "ttft_ms": 10127.0
+        },
+        {
+          "actual_read_tokens": 4956,
+          "actual_route": "chunked",
+          "actual_operator_chunk": 5120,
+          "staged": false,
+          "split": false,
+          "prompt_ms": 16640.3,
+          "ttft_ms": 16755.0
+        },
+        {
+          "actual_read_tokens": 8193,
+          "actual_route": "chunked",
+          "actual_operator_chunk": 8192,
+          "staged": false,
+          "split": false,
+          "prompt_ms": 22504.1,
+          "ttft_ms": 22631.0
+        },
+        {
+          "actual_read_tokens": 19665,
+          "actual_route": "layer-major",
+          "actual_operator_chunk": 8192,
+          "staged": true,
+          "split": false,
+          "prompt_ms": 29737.2,
+          "ttft_ms": 29891.0
+        },
+        {
+          "actual_read_tokens": 24577,
+          "actual_route": "layer-major",
+          "actual_operator_chunk": 8192,
+          "staged": true,
+          "split": false,
+          "prompt_ms": 32796.7,
+          "ttft_ms": 32916.0
+        },
+        {
+          "actual_read_tokens": 39254,
+          "actual_route": "layer-major",
+          "actual_operator_chunk": 8192,
+          "staged": true,
+          "split": false,
+          "prompt_ms": 45470.3,
+          "ttft_ms": 45603.0
+        },
+        {
+          "actual_read_tokens": 65537,
+          "actual_route": "layer-major",
+          "actual_operator_chunk": 8192,
+          "staged": true,
+          "split": false,
+          "prompt_ms": 66850.5,
+          "ttft_ms": 66991.0
+        },
+        {
+          "actual_read_tokens": 78445,
+          "actual_route": "layer-major",
+          "actual_operator_chunk": 8192,
+          "staged": true,
+          "split": false,
+          "prompt_ms": 77811.3,
+          "ttft_ms": 78045.0
+        },
+        {
+          "actual_read_tokens": 117489,
+          "actual_route": "layer-major",
+          "actual_operator_chunk": 8192,
+          "staged": true,
+          "split": true,
+          "prompt_ms": 111963.1,
+          "ttft_ms": 112189.0
+        }
+      ],
+      "route_specific_models": {
+        "chunked": {
+          "prompt_affine": {
+            "intercept_ms": 7692.158229505969,
+            "ms_per_token": 1.807303450743477,
+            "r_squared": 0.999998490714303,
+            "max_relative_residual": 0.0005320896492636899,
+            "points": [
+              {
+                "actual_read_tokens": 1286,
+                "prompt_ms": 10020.5,
+                "residual_ms": 4.14953283792056
+              },
+              {
+                "actual_read_tokens": 4956,
+                "prompt_ms": 16640.3,
+                "residual_ms": -8.854131390642578
+              },
+              {
+                "actual_read_tokens": 8193,
+                "prompt_ms": 22504.1,
+                "residual_ms": 4.704598552722018
+              }
+            ],
+            "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
+          },
+          "prompt_models": null,
+          "TTFT_models": null
+        },
+        "layer-major-bank384": {
+          "prompt_affine": {
+            "intercept_ms": 13086.321375275977,
+            "ms_per_token": 0.8230879167375311,
+            "r_squared": 0.9996929796887315,
+            "max_relative_residual": 0.015814185723999098,
+            "points": [
+              {
+                "actual_read_tokens": 19665,
+                "prompt_ms": 29737.2,
+                "residual_ms": 464.85474208047526
+              },
+              {
+                "actual_read_tokens": 24577,
+                "prompt_ms": 32796.7,
+                "residual_ms": -518.6531049342811
+              },
+              {
+                "actual_read_tokens": 39254,
+                "prompt_ms": 45470.3,
+                "residual_ms": 74.48554110898112
+              },
+              {
+                "actual_read_tokens": 65537,
+                "prompt_ms": 66850.5,
+                "residual_ms": -178.53417450355482
+              },
+              {
+                "actual_read_tokens": 78445,
+                "prompt_ms": 77811.3,
+                "residual_ms": 157.84699624839413
+              }
+            ],
+            "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
+          },
+          "prompt_models": {
+            "candidates": {
+              "affine": {
+                "formula_ms": "a+b*x",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 13086.321375275955,
+                  "b": 53941.88971131087
+                },
+                "residual_ms": [
+                  464.8547420804862,
+                  -518.6531049342739,
+                  74.48554110898112,
+                  -178.53417450355482,
+                  157.84699624839413
+                ],
+                "leave_one_length_out_error_ms": [
+                  -850.7451352699536,
+                  818.4708810101583,
+                  -94.86267447873252,
+                  275.795978718641,
+                  -407.4829748158372
+                ],
+                "mean_held_out_relative_error": 0.013002660877056378,
+                "max_held_out_relative_error": 0.028608784124596585
+              },
+              "quadratic": {
+                "formula_ms": "a+b*x+c*x^2",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 13796.773149320396,
+                  "b": 51475.258188747575,
+                  "c": 1657.5615494605727
+                },
+                "residual_ms": [
+                  345.30622054542255,
+                  -537.1939827727329,
+                  246.7961612526924,
+                  -79.92892278519867,
+                  25.02052375981293
+                ],
+                "leave_one_length_out_error_ms": [
+                  -994.9483318946986,
+                  854.1932114301817,
+                  -665.1292871952464,
+                  156.19643897567585,
+                  -177.09929106626078
+                ],
+                "mean_held_out_relative_error": 0.015748684216039532,
+                "max_held_out_relative_error": 0.03345803679884786
+              },
+              "n_log_n": {
+                "formula_ms": "a+b*x+c*x*log2(x)",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 14573.933423575061,
+                  "b": 52371.64529323509,
+                  "c": 1678.5817920772126
+                },
+                "residual_ms": [
+                  323.13993688917617,
+                  -526.6791775509919,
+                  270.8544473088841,
+                  -95.91479690957931,
+                  28.599590262558195
+                ],
+                "leave_one_length_out_error_ms": [
+                  -1069.272804426928,
+                  832.1652255265799,
+                  -856.3008903315203,
+                  169.95922030508518,
+                  -155.22597139858408
+                ],
+                "mean_held_out_relative_error": 0.01694004607308098,
+                "max_held_out_relative_error": 0.03595741375875765
+              }
+            },
+            "selected_model": null,
+            "interpretation": "Hypotheses, not a required law. Compare held-out error against measured spread; inspect route/chunk changes and prefer a simpler adequate model. Piecewise route-specific fits may be required. Do not extrapolate outside measured lengths."
+          },
+          "TTFT_models": {
+            "candidates": {
+              "affine": {
+                "formula_ms": "a+b*x",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 13186.651245339497,
+                  "b": 54022.08202959035
+                },
+                "residual_ms": [
+                  494.26203725489177,
+                  -529.7563179902791,
+                  58.82299798418535,
+                  -218.557586484254,
+                  195.2288692354632
+                ],
+                "leave_one_length_out_error_ms": [
+                  -904.564341672125,
+                  835.9925279173767,
+                  -74.91530338044686,
+                  337.62333535535436,
+                  -503.98450586173567
+                ],
+                "mean_held_out_relative_error": 0.013760013930789872,
+                "max_held_out_relative_error": 0.03026209700820063
+              },
+              "quadratic": {
+                "formula_ms": "a+b*x+c*x^2",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 14044.959766941201,
+                  "b": 51042.10374983304,
+                  "c": 2002.5274831565898
+                },
+                "residual_ms": [
+                  349.8334939995293,
+                  -552.1558587165055,
+                  266.9943039545906,
+                  -99.43095338041894,
+                  34.75901414282271
+                ],
+                "leave_one_length_out_error_ms": [
+                  -1007.9929945827753,
+                  877.9841198753202,
+                  -719.5643974892082,
+                  194.30714565885137,
+                  -246.02989217764116
+                ],
+                "mean_held_out_relative_error": 0.016445511238224086,
+                "max_held_out_relative_error": 0.03372229080936654
+              },
+              "n_log_n": {
+                "formula_ms": "a+b*x+c*x*log2(x)",
+                "x": "actual_read_tokens/65536",
+                "coefficients_ms": {
+                  "a": 14950.881649249684,
+                  "b": 52159.85393920415,
+                  "c": 1990.7105729740836
+                },
+                "residual_ms": [
+                  326.19565980884363,
+                  -539.2748220590074,
+                  291.7062924536949,
+                  -120.57530806018622,
+                  41.948177856669645
+                ],
+                "leave_one_length_out_error_ms": [
+                  -1079.3842176036778,
+                  852.0666338210794,
+                  -922.2235795836314,
+                  213.65718331522658,
+                  -227.6762218070944
+                ],
+                "mean_held_out_relative_error": 0.017665244858821264,
+                "max_held_out_relative_error": 0.03611067604307912
+              }
+            },
+            "selected_model": null,
+            "interpretation": "Hypotheses, not a required law. Compare held-out error against measured spread; inspect route/chunk changes and prefer a simpler adequate model. Piecewise route-specific fits may be required. Do not extrapolate outside measured lengths."
+          }
+        }
+      },
+      "observed_over_clean117K": 0.9981625972192011,
+      "observer_cost_screen_passed": true,
+      "adjacent_ms_per_token": [
+        {
+          "from_tokens": 1286,
+          "to_tokens": 4956,
+          "prompt": 1.803760217983651,
+          "TTFT": 1.8059945504087194,
+          "same_route_and_split": true
+        },
+        {
+          "from_tokens": 4956,
+          "to_tokens": 8193,
+          "prompt": 1.8114921223354956,
+          "TTFT": 1.8152610441767068,
+          "same_route_and_split": true
+        },
+        {
+          "from_tokens": 8193,
+          "to_tokens": 19665,
+          "prompt": 0.630500348675035,
+          "TTFT": 0.6328451882845189,
+          "same_route_and_split": false
+        },
+        {
+          "from_tokens": 19665,
+          "to_tokens": 24577,
+          "prompt": 0.6228623778501621,
+          "TTFT": 0.6158387622149837,
+          "same_route_and_split": true
+        },
+        {
+          "from_tokens": 24577,
+          "to_tokens": 39254,
+          "prompt": 0.8635007154050559,
+          "TTFT": 0.8644137085235403,
+          "same_route_and_split": true
+        },
+        {
+          "from_tokens": 39254,
+          "to_tokens": 65537,
+          "prompt": 0.8134611726210857,
+          "TTFT": 0.8137579423962257,
+          "same_route_and_split": true
+        },
+        {
+          "from_tokens": 65537,
+          "to_tokens": 78445,
+          "prompt": 0.8491478153083362,
+          "TTFT": 0.8563681437867989,
+          "same_route_and_split": true
+        },
+        {
+          "from_tokens": 78445,
+          "to_tokens": 117489,
+          "prompt": 0.8747003380801148,
+          "TTFT": 0.8745005634668579,
+          "same_route_and_split": false
+        }
+      ],
+      "inference_adopted": false,
+      "paired_gain_qualified": false,
+      "physical_saturation_qualified": false,
+      "limits": "Progress-observed descriptive curve;one independent process per length,first use separate from3subsequent requests. The clean/observed cost screen covers117K only,not short inputs. Never infer physical fixed cost from mixed routes or extrapolate past measured counts. Split117K remains distinct. No sustained TG,task/agent,physical262144/RESTORE or inference adoption."
+    },
     "source_inputs": {
       "files": 279,
       "aggregate_sha256": "6c867a8350bbc6ab10f9292a22048bc7eeff1834f57aa2144f872168e541ba1d"
