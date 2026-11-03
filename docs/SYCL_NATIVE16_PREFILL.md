@@ -1305,7 +1305,8 @@ compiler,header overlay,actual dependencies and external link inputs are pinned;
 the build has1800s/2GiB whole bounds and does not launch a GPU workload.
 The unexecuted V1plan closes at`a607099ac`before compilation;V2keeps its reviewed
 C++ sources/options and adds type-sensitive original/worker-proof identity.
-Four host tests,including those two proof-type mutations,must pass before V2preparation.
+Four host tests now pass at`3a123bdde`,including those two proof-type mutations
+and the nine original negative controls;no legacy build products are reopened.
 Commit preparation and a separate bounded device plan before device execution.
 The paired component fixture gains an uncompiled`--current-prefill`mode only
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
