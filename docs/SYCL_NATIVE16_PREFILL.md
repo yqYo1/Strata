@@ -1120,11 +1120,12 @@ are verified. First-use PP/TTFT is971.1tok/s/121.181s;the subsequent request is
 speed,sustained TG,numerical/task or physical262144/RESTORE qualification.
 V1/V2stay failed. After publication and source/recipe recovery,the successful
 V3raw output and consumed V2capture are retired:74files,15574157bytes.
-Keep V3record/config/plan/runtime inputs for the imminent current-engine resource
-pair;review again at that pair closure. The closed clean cohort's214raw/host/JIT
-files and one completed scope-review transaction are also retired after exact
+Keep V3record/config/plan/runtime inputs for the prospective current-engine
+length/TTFT controller admission;the resource-pair consumer has closed.
+The closed clean cohort's214raw/host/JIT files and one completed scope-review
+transaction are also retired after exact
 275controller/558native-input recovery:215files,36750866bytes. Keep only the clean
-root record/runtime inventory for that same resource consumer;no engine generation
+root record/runtime inventory for that curve admission;no engine generation
 is removed. The compact scope review and retrieval IDs replace its transaction body.
 Maintained`cache_map_prefill_speed.py`source`3191953d9`adds
 three fresh clean processes with four same-length bench.sh requests each.
@@ -1174,6 +1175,17 @@ release/draft detachment still require MTP4,and misses beyond16PCIe staging
 blobs stay on CPU. Record current effective settings,RESTORE and acceptance/phase
 behavior before a width comparison. Its Orca completion notification failed;
 the source report is reviewed,but that dispatch remains abandoned and closed.
+After source/recipe recovery and publication at`2880a857f`,the closed resource
+pair's148raw/host/JIT/config files and two completed review transactions are
+retired:150files,28503087bytes. Keep its root record/runtime inventory for the
+prospective current-engine length/TTFT admission. Preserve the original closed
+qualification snapshot at that commit;updated consumer metadata does not refresh
+the resource controller's frozen whole-cohort fingerprint. The latest native
+Luna-max scope review selects retrieval of existing MoE,wrapper/submission and
+QSA references,with no fresh Orca scope currently schedulable. Main must check
+timer boundaries,split-job frequency,slot-1 ownership and current QSA source
+identity before choosing a bounded implementation or calibration. No native
+generation or retained request-window timeline is removed at this boundary.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
