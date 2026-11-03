@@ -24,6 +24,8 @@ entry, base = census.entry, census.base
 P, B, RESULT = census.P, census.B, census.RESULT
 ROOT = entry.model.ROOT / 'compat-collector-control-v1'
 KEY = 'cache_map_compat_collector_control_v1'
+CONTROL_ROOT, CONTROL_KEY = ROOT, KEY
+ACTIVE_FROM_EXEC = False
 SOURCE = Path(__file__).resolve()
 require, digest, write = base.require, base.digest, base.write
 PHASES = ('before-runtime', 'runtime-ready')
@@ -68,6 +70,15 @@ def basis():
     require(digest(fixture['path']) == fixture['sha256']
             and Path(fixture['path']).stat().st_size == fixture['bytes'],
             'selected compatibility fixture changed')
+    if ACTIVE_FROM_EXEC:
+        control = json.loads((CONTROL_ROOT / 'record.json').read_text())
+        require(data[CONTROL_KEY] == compact(control) and control['passed']
+                and control['complete'] and control['ownership_closed'] and not control['active']
+                and control['binary'] == fixture and control['assets'] == assets,
+                'commit the closed same-ELF active-construction control first')
+        old = base.basis.build.git(P, 'show', control['source_commit'] + ':' + str(SOURCE.relative_to(P)))
+        require(hashlib.sha256(old).hexdigest() == control['sources'][str(SOURCE.relative_to(P))],
+                'original control policy is not recoverable')
     return native, prior, providers, assets
 
 
@@ -112,6 +123,13 @@ def prepare():
             retention='Keep compact counts,clock/identity/qualification limits and diagnostic outcome. Retire successful full API trace,timeline,JIT and execution bookkeeping after joins and next-consumer needs are recorded. No new native generation.'),
         budgets=BUDGET, whole_bytes=128 << 20,
         passed=False, complete=False, active=False, ownership_closed=True)
+    if ACTIVE_FROM_EXEC:
+        row['profile']['mode'] = 'aggregate'
+        row['plan'].update(
+            question='Does the existing active-from-exec launcher mode preserve all compatibility graph/kernel flow joins with only kernel-activity Chrome logging?',
+            order='One new same-ELF process,after the closed control. Use the existing aggregate launcher mode(device-timing/verbose,no --start-paused),plus immutable UNITRACE_ChromeKernelLogging1 and128-event buffer. No host-timing or full Chrome-call selector. Require the named session already active at both native gates and stay active through native exit;no in-application collection toggle.',
+            limits='Collector-mode qualification only. Host API timeline coverage may be limited to kernel activities;its observed intervals are not total submission time or useful CPU time. No paused-construction,interior model window,observer overhead,clean speed,physical traffic,saturation or adoption claim.',
+            next='A separately committed bounded fully active model capture can use existing benchmark client first-output/end monotonic timestamps with qualified raw-clock mapping to reduce only interior decode GPU services. Do not infer full model coverage or overhead from this fixture.')
     save(row)
     print('Prepared selected compatibility graph collector control;commit before execution.', flush=True)
 
@@ -127,7 +145,20 @@ def environment(row):
             and env['EnableDirectSubmission'] == '0'
             and env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0'
             and env['ZES_ENABLE_SYSMAN'] == '0', 'qualified safety/graph settings differ')
+    if ACTIVE_FROM_EXEC:
+        require(not any(k.startswith('UNITRACE_') for k in env),
+                'unexpected inherited collector selector')
+        env.update(UNITRACE_ChromeKernelLogging='1', UNITRACE_ChromeEventBufferSize='128')
     return env
+
+
+def expected_environment(row, env, prof):
+    expected = profile.expected_target_environment(row, env, prof)
+    if ACTIVE_FROM_EXEC:
+        for key in ('UNITRACE_StartPaused', 'UNITRACE_HostTiming', 'UNITRACE_ChromeCallLogging'):
+            expected.pop(key)
+        expected['UNITRACE_Verbose'] = '1'
+    return expected
 
 
 def check():
@@ -138,7 +169,7 @@ def check():
     frozen, env, prof = copy.deepcopy(row), environment(row), row['profile']
     require(not profile.session_path(prof['session']).exists(), 'preexisting collector session')
     target = profile.profile_target_environment(row, env, prof)
-    expected = profile.expected_target_environment(row, env, prof)
+    expected = expected_environment(row, env, prof)
     owner = controls = None
     bounds, phases, mapped = {}, [], set()
     outcome = dict(passed=False, complete=False, host_probe_accepted=False)
@@ -178,9 +209,10 @@ def check():
                     'unexpected fixture provider')
             mapped.update(seen)
             if phase == 'before-runtime':
-                profile.session_state(prof['session'], 1)
-                bounds['begin'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
-                control('resume', 0)
+                profile.session_state(prof['session'], 0 if ACTIVE_FROM_EXEC else 1)
+                if not ACTIVE_FROM_EXEC:
+                    bounds['begin'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+                    control('resume', 0)
             profile.session_state(prof['session'], 0)
             persist()
             io.send(b'X')
@@ -199,6 +231,7 @@ def check():
         owner = base.supervision.Owner(ROOT / 'owned', persist)
         controls = base.supervision.Owner(ROOT / 'controls', persist)
         command = entry.template.engine_once.profile_command(prof, [row['binary']['path']])
+        bounds['begin'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
         native, out, err = owner.run('compat', command, target, P, interaction=interact, **BUDGET)
         bounds['end'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
         require(base.supervision.closed(native) and native['exit_code'] == 0
@@ -227,6 +260,7 @@ def check():
         outcome.update(complete=True, host_probe_accepted=True, native_exit_code=0,
             validation=activation, trace=dict(expected_kernels=62, observed_kernels=62,
                 native_PID=native['pid'], GPU_events=summary['gpu_events'],
+                host_events=summary['host_events'], collection_active_from_exec=ACTIVE_FROM_EXEC,
                 native_host_flow_joins_unique=True, all_kernel_names_present=True,
                 timeline_sha256=digest(traces[0]),
                 timeline_bytes=traces[0].stat().st_size), clocks=bounds)
@@ -258,7 +292,12 @@ def check():
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'check'), 'use prepare|check')
+    require(len(sys.argv) in (2, 3) and sys.argv[1] in ('prepare', 'check')
+            and (len(sys.argv) == 2 or sys.argv[2] == 'active'), 'use prepare|check [active]')
+    if len(sys.argv) == 3:
+        ACTIVE_FROM_EXEC = True
+        ROOT = entry.model.ROOT / 'compat-collector-active-v1'
+        KEY = 'cache_map_compat_collector_active_v1'
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         base.guards.no_model_owners([])
