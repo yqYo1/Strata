@@ -450,6 +450,10 @@ integration and testing.
   Before dispatch, verify that the worker's startup permissions allow its named
   report directory. For a report outside its workspace, pass that directory as
   an additional writable root at launch; do not rely on a later save approval.
+  Include permissions for Orca lifecycle IPC; a custom workspace-write Codex
+  launch must explicitly enable sandbox network access. Require a successful
+  worker-side Orca status check before investigation; Main's connection alone
+  does not establish that the worker can send its completion message.
   Preserve the normal filesystem protections and report-only task scope.
   Apply scope corrections to new tasks, without steering running researchers.
   Research may write only its named report, with sources, applicability and evidence
