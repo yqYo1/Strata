@@ -106306,5 +106306,492 @@
     "current_admission_after_deletion": true,
     "remaining_legacy_files": 0,
     "native_generations_removed": 1
+  },
+  "qsa_subgroup_rows_component_v1": {
+    "stage": "superseded-before-build",
+    "source_commit": "78a51a9c002de22f51ae4a2f3e05411dbceb821f",
+    "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+    "selected_engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+      "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+      "bytes": 24058712
+    },
+    "fixture_basis": {
+      "history_commit": "c23a2f7ca5d177102f347eeabae605903cb2ff9d",
+      "original_build_key": "adaptive_cache_model_build_v1",
+      "original_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+      "closed_bridge": "cache_map_model_entry_zero_v1",
+      "current_native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+      "mathematical_fixtures": 8,
+      "original_native_sources_recovered": 557,
+      "original_compile_database_reconstructed": true,
+      "old_build_products_reopened": false,
+      "GPU_executed": false
+    },
+    "reviewed_source_commit": "c23a2f7ca5d177102f347eeabae605903cb2ff9d",
+    "reviewed_scope": "qsa_subgroup_rows_contract_20261103",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/cache"
+    },
+    "host_link_inputs": {
+      "files": {
+        "/usr/bin/x86_64-linux-gnu-ld.bfd": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5"
+      },
+      "compiler_queries": [
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-prog-name=ld"
+          ],
+          "reported": "/usr/bin/ld",
+          "resolved": "/usr/bin/x86_64-linux-gnu-ld.bfd"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtbeginS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtendS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc.a"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc_s.so"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=Scrt1.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/Scrt1.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/Scrt1.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crti.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crti.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crti.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtn.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crtn.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crtn.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc_nonshared.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc_nonshared.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc_nonshared.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libdl.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libdl.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libdl.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libm.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libm.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libmvec.so.1"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libmvec.so.1",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libmvec.so.1"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libpthread.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libpthread.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libpthread.a"
+        }
+      ],
+      "packages": [
+        "binutils-x86-64-linux-gnu 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1"
+      ],
+      "scope": "Exact host linker,CRT,archive/linker-script and math-library bytes from official driver queries. No GPU runtime,safety key or old failure status is changed."
+    },
+    "overlay_sha256": "080ad9a175d031cffa533d5af4c42e0311a2b7b93515428dcca8e9390f3903be",
+    "commands": [
+      {
+        "label": "object0",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-0.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/sycl/runtime.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-0.o"
+        ]
+      },
+      {
+        "label": "object1",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-1.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/sycl/compat.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-1.o"
+        ]
+      },
+      {
+        "label": "object2",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-2.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/sycl/command_profile.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-2.o"
+        ]
+      },
+      {
+        "label": "object3",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-3.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/src/kernels/sycl/prompt_attention.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-3.o"
+        ]
+      },
+      {
+        "label": "object4",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-4.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-4.o"
+        ]
+      },
+      {
+        "label": "object5",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-DSTRATA_QSA_TEST_SUBGROUP_ROWS=1",
+          "-DSTRATA_QSA_COMPARE_PREFIX33=1",
+          "-DSTRATA_QSA_PACKED_GUARD=17",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-5.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_bf16_prefix.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-5.o"
+        ]
+      },
+      {
+        "label": "object6",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "-DSTRATA_QSA_BENCH_SUBGROUP_ROWS=1",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-6.d",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/qsa_bf16_prefix_layout_bench.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-6.o"
+        ]
+      },
+      {
+        "label": "link0",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-0.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-1.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-2.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-3.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-4.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-5.o",
+          "-pthread",
+          "-ldl",
+          "-Wl,--trace",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/numerical"
+        ]
+      },
+      {
+        "label": "link1",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++20",
+          "-O3",
+          "-DNDEBUG",
+          "-g0",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source/include/strata/sycl/compat",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-0.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-1.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-2.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-3.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-4.o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/input-6.o",
+          "-pthread",
+          "-ldl",
+          "-Wl,--trace",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-subgroup-rows-component-v1/build/paired"
+        ]
+      }
+    ],
+    "source_origin": "Current independently authored QSA/fixtures unchanged from reviewed c23a snapshot;four runtime/prompt files and remaining headers come from the selected479a native projection. No production selector or engine replacement.",
+    "budgets": {
+      "wall": 420,
+      "cpu": 1200,
+      "rss_cap": 12884901888,
+      "text_cap": 16777216,
+      "file_cap": 536870912,
+      "total_cap": 2147483648
+    },
+    "whole_wall_seconds": 1800,
+    "plan": "Compile seven units and link numerical/paired fixtures only;strict C++20/SYCL math. Freeze exact source,generated overlay,compiler,all actual dependencies and external host-link inputs. No GPU execution follows automatically.",
+    "device_next": "Commit a bounded traced smoke and full numerical plan before device use. Only then three fresh --current-prefill processes0..2,each six alternating pairs per six shapes;10ms interval floor and clock cost<1percent. Preserve original failed/ineligible outcomes;no model gain implied.",
+    "retention": "Selected552b nine-ELF engine remains the known-good fallback. This is the sole additional active component build;legacy PR6 provenance hold is separate. Retire closed raw build/JIT/trace output and this comparison generation after a recorded selection and source/recipe recovery.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "supersession": "Strengthen consumed-proof type identity before compilation;fresh V2plan will keep the same reviewed C++ sources and compile options. No compiler or GPU execution occurred.",
+    "prior_preparation_failure": {
+      "source_commit": "81dee394aa9f44c0cc40bda410707d7f2e798557",
+      "command": "timeout 240s python3 tools/sycl/qsa_subgroup_rows_component.py prepare",
+      "exit_code": 1,
+      "error": "exact independent QSA source review required",
+      "cause": "Review contains per-file hash map and separate fixture/timer followups;initial reader incorrectly compared the map to a single digest.",
+      "GPU_executed": false
+    },
+    "source_inputs": {
+      "files": 95,
+      "aggregate_sha256": "23d16c311897f2a94b3747b385ce25f80979956242d7e56d623620896f9db495"
+    }
   }
 }
