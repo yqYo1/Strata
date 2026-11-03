@@ -1287,8 +1287,17 @@ GPU processes close normally with no freshfault. Rejected-only exports,targets
 and controllers are retired. Independent bounds/guard fixtures and the typed
 retained-fixture proof remain. Source recovery verifies95inputs per comparison
 plan,558selected native sources,721compiled dependencies and both component ELFs.
-External artifact retirement is prepared with a path/hash/reason manifest;
-selected552bplus its eight same-build fixtures and separate PR6hold remain.
+External retirement deletes93files/9228994B under the execution lock after
+source recovery. Selected558-source/nine-ELF admission passes before and after
+deletion. The broader legacy-build inventory remains unreconciled:a completed
+scan of the state root and seven primary-worktree build directories finds464
+executable/shared ELFs,850ELF objects,40archives and36GPU compiler binaries,
+total1454915620B. Installed dependencies and current support are included;
+these are not464engine generations. The bounded temporary inventory and its
+review/deletion consumer are recorded in the existing retirement row.
+The PR6verification worktree has no build/output directory. Do not reuse the old fourteen-hold or
+single-PR6-build description as a current inventory. Review actual source/recipe
+and live consumers before another engine generation;selected552b/8fixtures stay.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
