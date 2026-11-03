@@ -56,7 +56,7 @@ class ContinuationGuards(unittest.TestCase):
             ('    inherit_prefix(row)\n', ''),
             ('    inherit_prefix(row)\n', '    inherit_prefix(row)\n    inherit_prefix(row)\n'),
             ('def current(row):\n    prefix_qualification(row, check=True)\n', 'def current(row):\n'),
-            ('mtp = mtp_boundary_route(text, n)', 'mtp = entry.template.mtp_route(text, n)'),
+            ('\n    mtp = mtp_boundary_route(text, n)\n', '\n    mtp = entry.template.mtp_route(text, n)\n'),
         ]
         for before, after in cases:
             self.assertEqual(source.count(before), 1, before)
