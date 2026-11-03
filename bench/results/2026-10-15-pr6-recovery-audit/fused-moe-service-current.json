@@ -102806,6 +102806,31 @@
       "error": "ambiguous full-route negative control",
       "GPU_executed": false,
       "decision": "Full route passed;negative-control substring occurred twice. Use the unique complete policy line in the new committed source;no native/model result changed."
+    },
+    "host_contract": {
+      "source_commit": "70575d8d927ea1d38d1c38f4ba5a67254190a3b1",
+      "command": "timeout 120s python3 tools/test_sycl_prefill_curve_continuation.py",
+      "exit_code": 0,
+      "tests": 9,
+      "unittest_seconds": 5.922,
+      "source_files": {
+        "tools/sycl/cache_map_prefill_curve.py": "461c12e1d1fba721bf9f51e0a7c9de50d2b4a4f0df1a71605bb249a6e26bc853",
+        "tools/test_sycl_prefill_curve_continuation.py": "8ba89ecf0a1e090746a8cf554e020e7d369caba64f75b1105dfc86990c4b710e"
+      },
+      "capacity_cases": 24,
+      "callback_mutations_rejected": 9,
+      "other_length_controls": 6,
+      "source_mutations_rejected": 14,
+      "prefix_mutations_rejected": 11,
+      "immutable_proof_mutations_rejected": 3,
+      "boundary_proof_mutations_rejected": 5,
+      "GPU_executed": false,
+      "prior_attempt": {
+        "source_commit": "f99a4585b1618bda861ec6d584192178de778fee",
+        "exit_code": 1,
+        "tests": 9,
+        "error": "Source-mutation fixture matched both actual assignment and quoted AST declaration;new committed test targets the exact indented statement."
+      }
     }
   }
 }

@@ -1153,6 +1153,10 @@ unchanged64K,24K,8Korder,with four requests each. All native/configuration,
 source/provider,body,clock,owner,validation/fault and final15model-hash gates
 remain. Commit sources,composed replay,prepared plan and frontend admission
 before the next native process;these tests do not qualify native execution.
+The composed687207-byte replay now passes all full-route checks and four
+negative controls at`89ef02f2c`. The updated continuation suite passes nine
+host tests at`70575d8d9`,including five boundary-proof mutations;V7native
+prepare/frontend admission and all three new processes remain pending.
 Retain the capture within1MiB only through that replay/admission;later admission
 consumes its committed compact result rather than the raw bytes. The settled
 report,review and spec are retired after the corrected digest and host decision.
