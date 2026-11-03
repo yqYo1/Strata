@@ -113619,5 +113619,141 @@
       "deleted_verified": true,
       "remote_original_source_reachable": true
     }
+  },
+  "q6_columns_component_v2": {
+    "stage": "prepared",
+    "source_commit": "664a280d5aab4e272fef37538634207d38704b4c",
+    "native_reference": {
+      "source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "sycl_qsa_topk_prefill_entry_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_qsa_topk_prefill_entry_test",
+          "sha256": "4ba024ef4386be7192ffd78624c4f6aeee9d7ccd43f16f37b5ff893d0a60fbe0",
+          "bytes": 316784
+        },
+        "sycl_submission_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_submission_test",
+          "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+          "bytes": 343384
+        },
+        "sycl_vllm_native16_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_vllm_native16_test",
+          "sha256": "d1b28549a77c8ed457130477a8d6ec2a99957d8e6ebc1a55e797c4718d4ef4db",
+          "bytes": 2452528
+        },
+        "sycl_moe_gu_swiglu_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_gu_swiglu_bench",
+          "sha256": "dd1e9a93301c418b935063f600bc7bf126db908d9c3891453179e2ba342cd0d2",
+          "bytes": 13837112
+        },
+        "sycl_moe_down_scatter_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_down_scatter_bench",
+          "sha256": "506e0bc8f4af9a7579318941f93493ad435b3e914d622a60b7b9200ebf8e22ab",
+          "bytes": 13857912
+        },
+        "sycl_moe_accum_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_accum_test",
+          "sha256": "e93b9b0d50e357acc928c01b8dd7e6bcd0d38655b5d4f5994b04bf26ff762839",
+          "bytes": 3055560
+        },
+        "sycl_gdn_columns_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_gdn_columns_bench",
+          "sha256": "debfc1279965b3d6628095a9066dc74c58152ab25cb0baf55c265f799d53d37e",
+          "bytes": 422792
+        },
+        "sycl_gdn_storage_pipeline_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_gdn_storage_pipeline_bench",
+          "sha256": "7d0fb7492fefd0c5c3874d099c51282b91a787698059b1250d8b3ee45a0196cc",
+          "bytes": 14019960
+        }
+      },
+      "validation": {
+        "library": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+          "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+        },
+        "loader": {
+          "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+        }
+      }
+    },
+    "compiler_inputs": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "plan": {
+      "reference": "Original public native_q6_k_mmvq exact layout in unchanged production dispatch",
+      "candidate": "Explicit native_q6_k_columns_mmvq;specialize 1,2,3,4,8 only;no model caller",
+      "model_shapes": [
+        [
+          2560,
+          10240,
+          256
+        ],
+        [
+          6144,
+          2560,
+          256
+        ],
+        [
+          2560,
+          6144,
+          256
+        ],
+        [
+          2560,
+          640,
+          1024
+        ],
+        [
+          2560,
+          512,
+          1024
+        ],
+        [
+          2560,
+          12288,
+          256
+        ],
+        [
+          2560,
+          248320,
+          8
+        ]
+      ],
+      "smoke_cases": 32,
+      "process_repetitions": 3,
+      "batches_per_arm_shape": 5,
+      "timing_floor_seconds": 0.01,
+      "timer": "Host steady clock including public dispatch,submission and final queue completion;weights/Q8_1 already resident;no conversion,reset or correctness work inside timing",
+      "order": "For each shape/column,batch+column+position modulo2;five rotated paired batches",
+      "acceptance": "All output bits,guards,read-only inputs and finite values match. Normal exits,quiet validation,no fresh fault. Any shape may advance separately only when all three independent process median candidate/reference ratios are below1;no arbitrary minimum gain.",
+      "stopping": "Stop on first source/provider/geometry/numerical/fault/owner/budget/timing-floor failure;retain original failure. No model execution from this component alone.",
+      "limits": "Synthetic packed weights at actual model geometries;not sustained TG,prefill,PCIe traffic,register-spill proof or model adoption."
+    },
+    "build_input_pins": {
+      "project_inputs": "7c5207559380bc437d33f0e9b7bbc0c704967b72aa6b4790483b01a7fe195b3e",
+      "generated_inputs": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "dependency_inputs": "a27c9ee4a0b061eeaeb0d55e4f67ceb1a6511211deed675d319105fd2f8cfd10",
+      "external_inputs": "1a6997192c57c69cf8aa42a4d2fbf0bd24e3bd8eb981d3dee99519f1f8be9a7d",
+      "environment": "5dd582436d6ea75cbda09722bf75f05a994acdd348ec59144410b73d2ccbb275",
+      "compiler_inputs": "ac16b40447822dee275c6cd073be2968a9aa6e7069864c439e007f38f7ab32b7"
+    },
+    "processes": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "retention": {
+      "consumer": "Immediate Q6_K column specialization comparison only;selected nine-ELF fallback remains unchanged",
+      "review_point": "After component decision,retire rejected candidate ELF/objects/raw logs after source recovery;no extra engine generation",
+      "legacy_build_inventory": "retained_builds_review_20261103 remains partial;CPU observer build gate is unchanged and not consumed or bypassed"
+    }
   }
 }

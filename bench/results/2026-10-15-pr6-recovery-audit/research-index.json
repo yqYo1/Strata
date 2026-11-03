@@ -22449,7 +22449,7 @@
   },
   "q6_packed_integer_dot_lowering_20261104": {
     "classification": "knowledge collection",
-    "status": "running",
+    "status": "native_review_running",
     "schedulable_now": false,
     "question": "Compare source-expressible packed signed-int8 dot-product paths for the actually observed Q6_K SPMD GEMV on Intel B570:current scalar packed_dot loop,documented SYCL/SPIR-V integer-dot builtins,and ESIMD dp4a alternatives. Check sign/accumulator exactness,device/compiler support and software fallback,original sources/licenses,counterexamples and concrete bounded discriminators;do not repeat generic register/spill or graph surveys.",
     "prerequisites": {
@@ -22476,8 +22476,8 @@
     "consumer": "Next independently decode-scoped Q6 kernel choice after column-specialization comparison;retrieve specific compiler/integer arithmetic sections only if needed",
     "review_point": "Native review on completion;retain only nonduplicated source-feasible findings through next Q6 implementation decision",
     "main_reads_body_on_arrival": false,
-    "ownership_closed": false,
-    "worker_done_accepted": false,
+    "ownership_closed": true,
+    "worker_done_accepted": true,
     "run": "run_bb9bcf6fbc64",
     "task": "task_73b7e2502801",
     "dispatch": "ctx_c3ed19c2c33b",
@@ -22493,6 +22493,12 @@
       "report_directory_writable": true,
       "model_screen": "GPT-6-Luna high",
       "startup": "Main-created exact terminal;process-local no-update and workspace-write/network settings;worker-start reused that terminal."
-    }
+    },
+    "worker_done_message": "msg_fab712bcdbca",
+    "worker_outcome": "succeeded",
+    "report_bytes": 12633,
+    "report_sha256": "faa694c66d2ae5c51b21a7572b21500db21628f7cb5f52b1b3d07f5a22b7be37",
+    "review_agent": "/root/review_q6_packed_dot_20261104",
+    "worker_process_closure": "Exact task/dispatch succeeded;external-terminal release took no process action;Main-owned terminal close confirms ptyKilled;delivery acknowledged."
   }
 }
