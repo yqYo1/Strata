@@ -4662,6 +4662,12 @@ native/API request. Counts start after prefill/refill;the selected copy footer
 uses the same decode-only snapshot. Short requests qualify the counter route,
 not representative long-generation work or physical traffic. A fresh committed
 long-generation plan remains necessary before selecting a CPU leaf experiment.
+`tools/sycl/cache_map_decode_census.py` supplies that separate diagnostic policy:
+one static-cache process,four official warmups,then the unchanged code/prose
+long-generation workloads. It refuses entry without the closed short census,
+joins prior requests before each long request,and requires all six final
+native/API/counter clocks. It creates no engine generation and does not treat
+the observed pool wall or logical blob visits as physical RAM/PCIe traffic.
 
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
