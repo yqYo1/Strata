@@ -98102,7 +98102,7 @@
     }
   },
   "cache_map_prefill_curve_v4": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "f35a8882bc80b64b52374b4ab8d1feb071c25add",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
@@ -98980,6 +98980,46 @@
         "passed": true
       }
     ],
+    "pre_owner_admission_failure": {
+      "index": 1,
+      "read_tokens": 117489,
+      "trace_progress": false,
+      "stage": "native_qualification_before_owner",
+      "attempted_at_head": "1708a29c918615bff21e5b39f1e931c559f35b0c",
+      "command": [
+        "python3",
+        "tools/sycl/cache_map_prefill_curve.py",
+        "1"
+      ],
+      "tool_session": 92295,
+      "controller_exit_code": 1,
+      "exception": "subprocess.TimeoutExpired",
+      "query": [
+        "dpkg-query",
+        "-S",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
+      ],
+      "timeout_seconds": 15,
+      "source": "tools/sycl/host_link_inventory.py:inventory,called by build_cache_map_model.inputs",
+      "ownership_closed": true,
+      "controller_terminal_observed": true,
+      "package_query_absent": true,
+      "execution_receipt_absent": true,
+      "native_start_receipt_absent": true,
+      "model_executed": false,
+      "GPU_executed": false,
+      "native_dependency_qualification": "incomplete;no package/library identity assumed from the timeout",
+      "first_short_process_remains_passed": true,
+      "whole_curve_passed": false,
+      "final_cohort_model_rehash_reached": false,
+      "next_action": "Inspect package-query cost/provider inventory without GPU execution. Commit the corrected control/admission plan and new scope before continuing;do not relabel this interrupted cohort or refresh hashes.",
+      "observed_at": "2026-11-03T04:51:20.199138+00:00"
+    },
+    "failure_mechanism": "Case1stops before measurement ownership/native startup because the compiler link-input package query exceeds15s. Process0remains a passed short diagnostic;the planned curve/fit and final cohort rehash are incomplete. No GPU trial or fresh GPU-fault claim for case1.",
+    "retention_review": {
+      "consumer": "Next bounded package-inventory/control admission repair;retain original record/runtime input map for source recovery. No raw GPU trace or tensor consumer.",
+      "next_review": "At the corrected controller/new-scope commit,retire unused future-case configs and host output;preserve the compact incomplete-cohort decision and process0samples."
+    },
     "source_inputs": {
       "files": 277,
       "aggregate_sha256": "41de6302f97008741fe36fa518250d40ccfb3d4dc4fced8b64af96f837212fcc"

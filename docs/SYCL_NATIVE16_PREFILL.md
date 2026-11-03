@@ -1127,7 +1127,13 @@ First-use prompt time/TTFT is16.4305s/16.601s;the next three prompt times are
 14.9546,14.7231and14.5418s,with14.7231s median(87.3tok/s)and14.893s median
 TTFT. This observed short diagnostic does not qualify clean speed or sustained
 TG. Only one of the ten planned processes has closed;no current-engine time
-formula is fitted yet. The adjacent clean117K anchor is next. The failed V2/V3
+formula is fitted yet. The next clean117K anchor stops before owner/native
+startup:the unchanged compiler link-input package query for GCC13crtendS.o
+exceeds15s. Controller exit1and absent native/owner receipts are verified;the
+package-query child is gone. V4closes incomplete/failed with its passed short
+process preserved;no case1GPU execution or final whole-model rehash occurs.
+Inspect the package-inventory cost and commit a new control/scope before another
+launch;do not silently retry or claim a current-engine fitted curve. The failed V2/V3
 raw-output consumer ends at this successful replay/short-process closure.
 After both original277-input sets are recovered from pushed history,113closed
 failed-curve/research-transaction files totaling11956461bytes are retired. Keep
