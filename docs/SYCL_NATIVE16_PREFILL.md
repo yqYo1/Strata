@@ -1208,6 +1208,23 @@ QSA references,with no fresh Orca scope currently schedulable. Main must check
 timer boundaries,split-job frequency,slot-1 ownership and current QSA source
 identity before choosing a bounded implementation or calibration. No native
 generation or retained request-window timeline is removed at this boundary.
+Current QSA prefix source is byte-identical to the reviewed`6e40`implementation
+(`4f9f815c`);the existing work-geometry/calibration reference applies to its
+unchanged kernel. A new component-only subgroup-row proposal keeps its cached-Q,
+KVvec4 and ordered-exp arithmetic. Each SIMD16 subgroup resolves the same32IDs
+into two private rows per lane,then uses bounded lane exchanges instead of a
+shared row publication. This removes one source workgroup barrier per tile and
+reduces declared local payload from20036to19788bytes;it duplicates read-only
+ID/page/flag lookups across eight subgroups. The
+[SYCL group-exchange contract](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html#select)
+requires valid participating lanes;the source keeps all lanes participating and
+all remote IDs within0..15. Cached-Q handoff and prior-PV retirement barriers stay.
+This independently authored proposal has no production selector,build or GPU
+qualification yet. Existing numerical and paired-component fixtures gain explicit
+compile-time arms for its current component consumer,including selected-kernel
+bit checks,an independent tensor oracle,tails,masks,NaNs,alignment and bounds.
+Next:source-contract review,retire the adaptive fallback's actual reader,then
+commit the exact build/measurement recipe before any new device execution.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.

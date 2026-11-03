@@ -20,6 +20,11 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
+#if defined(STRATA_QSA_TEST_SUBGROUP_ROWS)
+constexpr auto prefix_attention=qsa_bf16_prefix_subgroup_rows_batch;
+#else
+constexpr auto prefix_attention=qsa_bf16_prefix_batch;
+#endif
 std::shared_ptr<sycl_backend::Runtime> rt;
 void require(bool x, const char *message) { if (!x) throw std::runtime_error(message); }
 void drain() noexcept {
@@ -132,7 +137,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   auto attention=[&](const uint16_t *qin,const QsaAttnPools &p,const int32_t *ii,const int32_t *ss,
                      int64_t c,const QsaShapes &sh,uint16_t *o,int64_t nq,
                      const QsaPromptBf16Bounds &b,void *stream) {
-    return qsa_bf16_prefix_batch(qin,p,ii,ss,c,sh,o,nq,b,live_cells,scratch,stream);
+    return prefix_attention(qin,p,ii,ss,c,sh,o,nq,b,live_cells,scratch,stream);
   };
   auto packed_guards=[&] {
     auto a=packed_k.get(),b=packed_v.get();auto bad=packed_bad.get();
@@ -144,6 +149,15 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},&rt->compute()),"BF16 matrix unavailable");
     rt->wait();
+#if defined(STRATA_QSA_TEST_SUBGROUP_ROWS)
+    // This transform changes only selected-row ownership/synchronization.
+    // Compare masks,NaNs and guards as well as normal outputs to the selected
+    // ordered-exp kernel;the independent host tensor oracle still follows.
+    const auto private_rows=out.get();out.put(sentinel);
+    require(qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+        out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"ordered-exp reference unavailable");
+    rt->wait();require(out.get()==private_rows,"complete subgroup-row bit identity");
+#endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
     // Compare every output bit, including NaN diagnostics, masks and guards.
     // Both calls use the same inputs; the second refreshes identical scratch.
@@ -365,7 +379,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       if (variant==2) bad.bad_rows=reinterpret_cast<int32_t *>(bad.k);
       if (variant==3) bad.bad_rows=table.data(); // Host memory is not a device allocation.
       bool refused=false;
-      try { (void)qsa_bf16_prefix_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)prefix_attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},live_cells,bad,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"scratch overlap/domain rejected before either kernel");
@@ -373,16 +387,16 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     }
     { Buffer<uint16_t> tiny(1); Drain pending_tiny;auto bad=scratch;bad.k=tiny.data();
       bool refused=false;
-      try { (void)qsa_bf16_prefix_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)prefix_attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},live_cells,bad,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"complete scratch extent rejected before either kernel");
       require(guarded()==y,"short scratch rejection preserves output");
     }
-    require(qsa_bf16_prefix_batch(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{}, 0,{},&rt->compute()),"zero-query no-op");
+    require(prefix_attention(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{}, 0,{},&rt->compute()),"zero-query no-op");
     for (int64_t bad_live : {int64_t(0),int64_t(-1),int64_t(pages*Page+1)}) {
       bool refused=false;
-      try { (void)qsa_bf16_prefix_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)prefix_attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},bad_live,scratch,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"invalid live prefix rejected before either submission");

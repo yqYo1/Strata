@@ -19,7 +19,11 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
-#if defined(STRATA_QSA_BENCH_ORDERED_EXP)
+#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
+constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
+constexpr auto candidate_attention=qsa_bf16_prefix_subgroup_rows_batch;
+constexpr const char *baseline_name="ordered_exp", *candidate_name="subgroup_rows";
+#elif defined(STRATA_QSA_BENCH_ORDERED_EXP)
 constexpr auto baseline_attention=qsa_bf16_prefix_kvvec4_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name="kvvec4", *candidate_name="ordered_exp";
