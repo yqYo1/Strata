@@ -1139,9 +1139,16 @@ The independent source review supports a narrow boundary explanation:P65537,
 window32768,F32705,63needed rows at callback index3. B=63,not zero,and the
 minimum64-row batch declines;the effectively unset SYCL sync selects grouped
 upload with a64-cell overlap. Internal runtime bounds/capacity were not logged.
-Host-check the exact boundary/cap/fallback matrix before a new controller-only
-plan;do not permit arbitrary token callbacks. Keep the687207-byte stderr within
-a1MiB budget and report/review only through that immediate host-gate decision.
+The host gate at`b97f94395`passes eight tests:24capacity cases,nine invalid
+callback sequences,six unchanged lengths and the existing source/prefix controls.
+Its reduced actual-callback test fails before the correction at`df4e05d14`.
+The new helper also passes the687207-byte capture;the original request_route
+still rejects it. These helpers are unwired and excluded explicitly from the
+old parser replay proof;no new native execution is admitted by these tests.
+Commit a new controller-only plan and replay the full composed route before a
+fresh64Kprocess;do not accept arbitrary token callbacks. Retain the capture
+within1MiB only through that full-route replay/admission. The report/review
+body consumer has ended after the corrected digest and host-gate decision.
 
 V6prepare at`e88d0e454`passes full native/dependency/provider admission,all nine
 ELFs and all15model hashes after retirement;current-source frontend probes pass.
