@@ -1115,6 +1115,15 @@ non-split long points and two of three chunked points passed. Do not fit mixed
 routes or interpret an intercept as physical fixed cost. Keep affine/quadratic/
 nlogn comparison,whole-length held-out errors,residuals and adjacent slopes
 pending;do not claim a completed current-engine approximation.
+An explicitly exploratory three-point affine description is now recorded in
+`cache_map_prefill_curve_partial_affine_v1`:for19665..78445actual reads,
+prefill seconds approximately13.5098+0.000818915n,and client TTFT seconds
+approximately13.6130+0.000820449n. Training residuals reach0.4152percent and
+0.4815percent respectively;these are not held-out errors or confidence bounds.
+The original five-point model comparison remains pending. Its frozen exploratory
+predictions for subsequent requests are33.6363s/33.7771s TTFT at24577reads and
+67.1790s/67.3827s TTFT at65537reads. The intercept is not a physical fixed cost;
+do not extrapolate or treat this incomplete curve as an adoption result.
 
 At65537reads,the engine logs65536prefill rows,75468ms(868.4tok/s),zero reuse
 and24generated tokens. The end gate sees eight MTPcallbacks:three batched,
@@ -1126,8 +1135,13 @@ owned PIDs are independently confirmed absent. The compact diagnosis is
 `cache_map_prefill_curve_v6_failure_diagnosis`;24K/8Kremain unrun and final15model
 rehash is not reached. An Orca Luna source-only audit must distinguish legitimate
 empty-window handling from an unexpected fallback before new native execution.
-Keep the687207-byte stderr within a1MiB budget only for that audit/replay;retire
-it after the compact source decision and independent review are published.
+The independent source review supports a narrow boundary explanation:P65537,
+window32768,F32705,63needed rows at callback index3. B=63,not zero,and the
+minimum64-row batch declines;the effectively unset SYCL sync selects grouped
+upload with a64-cell overlap. Internal runtime bounds/capacity were not logged.
+Host-check the exact boundary/cap/fallback matrix before a new controller-only
+plan;do not permit arbitrary token callbacks. Keep the687207-byte stderr within
+a1MiB budget and report/review only through that immediate host-gate decision.
 
 V6prepare at`e88d0e454`passes full native/dependency/provider admission,all nine
 ELFs and all15model hashes after retirement;current-source frontend probes pass.
