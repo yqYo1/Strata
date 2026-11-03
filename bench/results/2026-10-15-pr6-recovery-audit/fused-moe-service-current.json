@@ -107180,7 +107180,7 @@
     "limits": "Host protocol only;original device-v1 remains failed. Fresh device-v2 still required."
   },
   "qsa_subgroup_rows_device_v2": {
-    "stage": "prepared",
+    "stage": "between-cases",
     "source_commit": "805647e7eccfa07f01dc999d42111a08f9002529",
     "plans": [
       {
@@ -107311,7 +107311,97 @@
         "retention": "Retain compact coverage,individual timing samples,source/build/provider and fault/closure evidence. Retire successful full trace/JIT/raw output after publication;keep diagnostic only for a distinct unresolved failure."
       }
     ],
-    "cases": [],
+    "cases": [
+      {
+        "mode": "smoke",
+        "passed": true,
+        "complete": true,
+        "active": false,
+        "ownership_closed": true,
+        "host_probe_accepted": true,
+        "GPU_kernels_executed": true,
+        "model_executed": false,
+        "device": "device=Intel(R) Arc(TM) B570 Graphics driver=1.17.39758+17",
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2166704,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "phases": [
+          "before-runtime",
+          "runtime-ready",
+          "after-cleanup"
+        ],
+        "results": {
+          "numerical_cases": [
+            {
+              "cells": "97",
+              "live_cells": "49",
+              "active_rows": "128",
+              "cap": "33",
+              "queries": "1",
+              "masked": "0",
+              "compared": "6144",
+              "max_abs": "0",
+              "max_budget_ratio": "0",
+              "oracle": "BF16_operands_FP32_online",
+              "packed_guard_elements": "17",
+              "packed_k_mod8": "2",
+              "packed_logical_prefix": "PASS",
+              "packed_guards": "PASS",
+              "guards": "PASS",
+              "inputs": "PASS",
+              "status": "PASS"
+            },
+            {
+              "cells": "97",
+              "live_cells": "71",
+              "active_rows": "160",
+              "cap": "33",
+              "queries": "3",
+              "masked": "1",
+              "compared": "18432",
+              "max_abs": "0",
+              "max_budget_ratio": "0",
+              "oracle": "BF16_operands_FP32_online",
+              "packed_guard_elements": "17",
+              "packed_k_mod8": "2",
+              "packed_logical_prefix": "PASS",
+              "packed_guards": "PASS",
+              "guards": "PASS",
+              "inputs": "PASS",
+              "status": "PASS"
+            }
+          ],
+          "exact_prefix_comparisons": 2,
+          "positive_overflow_IDs_checked": true,
+          "model_quality_qualified": false,
+          "trace": {
+            "bytes": 1367710,
+            "sha256": "58e7dff768d05e4d7ad108abc10d4e005aea57504f5318afbc738aa236fec37c",
+            "kernel_enqueue_observed": true
+          }
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
