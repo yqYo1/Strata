@@ -4702,6 +4702,17 @@ disables the CUDA-only`STRATA_VERIFY_PROFILE`stamps in SYCL;the existing SYCL
 query profiler measures host event-query calls. Neither flag establishes GPU
 kernel service. See`cache_map_decode_census_v1`in the current service result.
 
+The next unchanged-engine diagnostic is
+`tools/sycl/cache_map_worker_scaling.py`:three fresh processes with5,3and9
+expert workers,each running the same two official long-generation tasks with
+thinking enabled. The host also computes during pool drain,so the baseline
+has six CPU participants on six physical cores. Workers above five are
+unpinned in the selected source;this does not guarantee SMT placement.
+Only worker count varies. Freeze CPU affinity/topology and ancestor cgroup
+quotas,retain actual NT/format/pool-clock evidence,and require a separate clean
+repeated comparison before selecting a configuration. This does not alter the
+prefill or decode math or establish a RAM-bandwidth ceiling.
+
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 provide scoped work/activity bounds. CPU perf counters were denied; the metric
