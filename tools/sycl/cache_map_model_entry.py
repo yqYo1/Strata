@@ -37,7 +37,8 @@ def mathematical_fixture_basis(native):
     """Reuse closed byte-identical fixtures without reopening retired build products."""
     original = history()
     old = original[model.prior.KEY]
-    require(base.committed(RESULT)[model.prior.KEY] == old and old['passed'] is True
+    require(json.dumps(base.committed(RESULT)[model.prior.KEY], sort_keys=True) ==
+            json.dumps(old, sort_keys=True) and old['passed'] is True
             and old['ownership_closed'] is True and old['active'] is False,
             'immutable original adaptive build qualification changed')
     bridge = original['cache_map_model_entry_zero_v1']
@@ -80,6 +81,8 @@ def mathematical_fixture_basis(native):
 
 def proof():
     row = json.loads((device.ROOT / 'record.json').read_text())
+    require(json.dumps(device.compact(row), sort_keys=True) ==
+            json.dumps(history()[device.KEY], sort_keys=True), 'immutable worker-device proof changed')
     revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     native = device.current(row, reuse_revision=revision,
         controller_changes=(*NATIVE_CONTROLS, 'tools/sycl/checked_worker_device.py'),

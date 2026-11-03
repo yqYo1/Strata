@@ -16,7 +16,7 @@ sys.dont_write_bytecode = True
 import cache_map_model_entry as entry
 
 base, P, B, RESULT = entry.base, entry.P, entry.B, entry.RESULT
-ROOT, KEY = B/'qsa-subgroup-rows-component-v1', 'qsa_subgroup_rows_component_v1'
+ROOT, KEY = B/'qsa-subgroup-rows-component-v2', 'qsa_subgroup_rows_component_v2'
 SELF = Path(__file__).resolve()
 SCOPE = 'qsa_subgroup_rows_contract_20261103'
 KERNEL = 'src/kernels/sycl/qsa_bf16_prefix.cpp'

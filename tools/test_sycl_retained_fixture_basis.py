@@ -89,6 +89,18 @@ class RetainedFixtureBasis(unittest.TestCase):
             with self.subTest(case=case), self.assertRaises(RuntimeError):
                 entry.mathematical_fixture_basis(value)
 
+    def test_consumed_proof_type_changes_rejected(self):
+        real = entry.base.committed
+        data = copy.deepcopy(real(entry.RESULT))
+        data[entry.model.prior.KEY]['passed'] = 1
+        with patch.object(entry.base, 'committed', return_value=data), self.assertRaises(RuntimeError):
+            entry.mathematical_fixture_basis(self.native)
+        original = entry.device.compact
+        def changed(row):
+            value = original(row);value['passed'] = 1;return value
+        with patch.object(entry.device, 'compact', side_effect=changed), self.assertRaises(RuntimeError):
+            entry.proof()
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

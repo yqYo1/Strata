@@ -1303,6 +1303,9 @@ the selected source. Seven strict C++20/SYCL units and two traced links produce
 numerical/paired component ELFs beside the unchanged model fallback. Source,
 compiler,header overlay,actual dependencies and external link inputs are pinned;
 the build has1800s/2GiB whole bounds and does not launch a GPU workload.
+The unexecuted V1plan closes at`a607099ac`before compilation;V2keeps its reviewed
+C++ sources/options and adds type-sensitive original/worker-proof identity.
+Four host tests,including those two proof-type mutations,must pass before V2preparation.
 Commit preparation and a separate bounded device plan before device execution.
 The paired component fixture gains an uncompiled`--current-prefill`mode only
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
