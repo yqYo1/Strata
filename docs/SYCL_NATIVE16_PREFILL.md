@@ -4675,6 +4675,32 @@ long-generation workloads. It refuses entry without the closed short census,
 joins prior requests before each long request,and requires all six final
 native/API/counter clocks. It creates no engine generation and does not treat
 the observed pool wall or logical blob visits as physical RAM/PCIe traffic.
+That one-process diagnostic now passes both long workloads and all six request
+joins,including the four official warmups. Both requests have nonempty thought
+and an answer;normal exits,quiet validation,all15final model hashes and no fresh
+fault pass. The following values include the declared observers;they are not
+clean or repeated speed evidence.
+
+| Workload | Generated | TG,tok/s | Actual NT1 jobs | Mean rows/CPU job | CPU-pool/decode wall | GPU-reach-wait/decode wall |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Code | 3170 | 13.0839 | 78.16% | 1.2797 | 44.27% | 32.72% |
+| Prose | 7275 | 8.6946 | 63.63% | 1.6063 | 40.17% | 34.80% |
+
+Observed MTP acceptance is82.44%/38.92%,not the same quantity as expert-job
+reuse. Grouped by GU format,IQ3_XXS and IQ2_S together account for about74%of
+whole-expert pool wall;IQ3_S accounts for about24%. These groups include Down
+work and worker scheduling/waits;GU-only useful CPU time remains unmeasured.
+Do not prioritize affine IQ3_S solely because its representation study is ready.
+With all remaining work/time held fixed,removing the entire observed CPU pool
+would give only23.48/14.53tok/s. This conditional bound is not a hardware ceiling;
+it shows why CPU instruction tuning alone is insufficient under that fixed-work
+model. GPU service/submission and the job/residency policy also need attribution.
+The exact format/NT mix implies0.7860/1.0490GB of logical full-blob visits per
+emitted token;holding that mix fixed at70TG gives55.02/73.43GB/s. These are not
+measured DRAM/PCIe bytes or proof of RAM saturation. Current source explicitly
+disables the CUDA-only`STRATA_VERIFY_PROFILE`stamps in SYCL;the existing SYCL
+query profiler measures host event-query calls. Neither flag establishes GPU
+kernel service. See`cache_map_decode_census_v1`in the current service result.
 
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)

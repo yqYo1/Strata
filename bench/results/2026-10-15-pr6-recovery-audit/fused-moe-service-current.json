@@ -108575,6 +108575,43 @@
       "live_candidate_mappings": [],
       "unreadable_same_uid_maps": 3,
       "limits": "Read-only same-UID scan plus closed Main job handles;unreadable maps do not establish absence of other GPU users. No reset,signal or GPU operation."
+    },
+    "prompt_softmax_v3_recovery_correction": {
+      "actual_binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-prompt-softmax-build-v3/reference_prompt_k_cellmajor_test",
+      "sha256": "3e78a5c218e2a2c2534af39dd303545aa1441791005e521f752db8fcd4f42d4b",
+      "bytes": 795920,
+      "controller_commit": "63326f98c36656cf3a3e1adcc54c3c25a02aa6ee",
+      "original_fixture_source": "6354f0b4ff3731466795410e11ca9ef785c9d326:tests/sycl/prompt_k_cellmajor.cpp",
+      "source_sha256": "8779469bb00ced55c5dad5aa27f6b8485f1e5a7e07eddb502b29bd602c79bb5d",
+      "remaining": "Recover/check the6354fixture and original three main-vllm-prefill-build-v1 archives from the pinned own-vllm-public-qualification-v3 and own-vllm-unitrace-direct-v6 manifests. The432candidate source pins and candidate strata command are not this retained reference fixture source;do not use them as its deletion proof.",
+      "deleted": false
+    },
+    "current_admission_binary_reader_trace": {
+      "source_commit": "c822f5ecb15696190bfd0e356cc2ab4f5a5f993d",
+      "source_functions": [
+        "cache_map_model_entry.proof/mathematical_fixture_basis",
+        "checked_worker_device.current",
+        "measure_gdn_scheduling.qualified_probe",
+        "runtime_probe.components"
+      ],
+      "consumed_maps": [
+        "selected.sdk",
+        "selected.external_manifest",
+        "selected.runtime_manifest",
+        "selected.compiled_inputs",
+        "selected.actual_link_inputs",
+        "worker.dependencies",
+        "worker.actual_link_inputs"
+      ],
+      "map_intersection_with_initial_project_binary_inventory": [
+        "ur-validation-preload-v2/libstrata_ur_validation.so"
+      ],
+      "additional_actual_ELF_readers": [
+        "selected nine engine/mathematical fixtures",
+        "checked-adaptive-worker-device-v2/fixture",
+        "ur-validation-preload-v2/canary"
+      ],
+      "limits": "Static actual admission call/input-map trace,not global retirement. Existing configured serving engine/vision remain protected;remaining roots still require bounded recovery/consumer decisions."
     }
   },
   "cache_map_cpu_census_entry_v1": {
@@ -109434,7 +109471,7 @@
       "STRATA_CPU_WORK_CENSUS": "1",
       "STRATA_DECODE_TIMING": "1"
     },
-    "stage": "ready",
+    "stage": "closed",
     "source_commit": "668003eb96e8764166efdb40c0ea3aa3729fbfdd",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -109479,10 +109516,176 @@
         "environment_sha256": "dbb82555f5d6d2dd5fd15cfc02fd8441debb3f6f225d822d5b59a04de515c0e2"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 2695248,
+          "start_ticks": 207123521,
+          "sid": 2695193
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33212,
+            "reused_tokens": 0,
+            "generated_tokens": 3170,
+            "output_chars": 5578,
+            "reasoning_chars": 3706,
+            "prompt_ms": 50939.9,
+            "prompt_tps": 652.0,
+            "decode_ms": 242282.8,
+            "decode_tps": 13.1,
+            "ttft_s": 51.075,
+            "total_s": 293.246,
+            "drafts_offered": 2739,
+            "drafts_accepted": 2258,
+            "acceptance_rate": 0.8243884629426798,
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "af34a2d690c431c65220f918c7afc407b6b27236f97c5a63e98f653cf2a841b0",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 7275,
+            "output_chars": 4632,
+            "reasoning_chars": 14409,
+            "prompt_ms": 43268.8,
+            "prompt_tps": 769.2,
+            "decode_ms": 836724.6,
+            "decode_tps": 8.7,
+            "ttft_s": 43.417,
+            "total_s": 880.017,
+            "drafts_offered": 10071,
+            "drafts_accepted": 3920,
+            "acceptance_rate": 0.3892364214080032,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "0bbd043abf9212ab45b4bf8794a261534529dd4c28ecff1cdcfc8c836434ad7c",
+            "reasoning_sha256": "d3ec503b2e7266e34b70c5123c07f543b06ff48306decd6e7659660b16581f21",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2695248,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33212,
+            "rows": 33211,
+            "GPU_residual_rows": 33211,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20285,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33211,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false
+          },
+          {
+            "read_tokens": 33282,
+            "rows": 33281,
+            "GPU_residual_rows": 33281,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19987,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33281,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false
+          }
+        ],
+        "cache": [
+          {
+            "hits": 190250,
+            "lookups": 1753440,
+            "hit_percent": 10.9
+          },
+          {
+            "hits": 433265,
+            "lookups": 6445920,
+            "hit_percent": 6.7
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "b8ad600838e690aeefe980ee97aac49111259004b36b65bebd0796fe463f7b1e",
+            "449cd1fc38718491031b395effbc35c6cad07cb79623623a7e4f5460f38e12db",
+            "820e49690239ef1cbb93b7789ecd6de5aa0a998843527deb595eacebd5b0f22c",
+            "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22"
+          ],
+          "valid": true,
+          "journal_sha256": "0d4991ef10e15c6a90073f42d83f32c832aa007ed6392c5a6e1ecb8a24cdd0ec"
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68800
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "controls": {
@@ -109531,6 +109734,456 @@
         "passed": true
       }
     ],
+    "decision": {
+      "diagnostic_requests_qualified": true,
+      "observed_code_strong_MTP": true,
+      "observed_prose_weak_MTP": true,
+      "clean_speed_qualified": false,
+      "repeated_gain_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "inference_adopted": false,
+      "next": "Bind the complete same-request census before selecting a CPU leaf experiment. Actual NT/format/pool work is not useful-arithmetic CPU time or physical RAM traffic."
+    },
+    "generation_route_check_passed": true,
+    "census_boundary_prefixes": [
+      4,
+      5
+    ],
+    "census": {
+      "passed": true,
+      "completed_requests_verified": 6,
+      "warmup_requests_verified": 4,
+      "long_requests": [
+        {
+          "workload": "regular-code",
+          "work": {
+            "windows": 914,
+            "rows": 3653,
+            "cpu_jobs": 1221484,
+            "cpu_entries": 1563190,
+            "vram_entries": 190250,
+            "jobs_NT": [
+              954705,
+              205462,
+              47707,
+              13610,
+              0,
+              0,
+              0,
+              0
+            ],
+            "NT1_fraction": 0.7815943557181265,
+            "format_bins": [
+              {
+                "gu": 18,
+                "down": 20,
+                "blob_bytes": 2176000,
+                "calls": 12796,
+                "pool_ns": 33479170691,
+                "CPU": 453209,
+                "VRAM": 58211,
+                "jobs_NT": [
+                  282692,
+                  55827,
+                  13885,
+                  4302,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 14
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "blob_bytes": 1510400,
+                "calls": 4570,
+                "pool_ns": 9038449479,
+                "CPU": 167148,
+                "VRAM": 15502,
+                "jobs_NT": [
+                  95080,
+                  24272,
+                  5700,
+                  1606,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 5
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "blob_bytes": 1971200,
+                "calls": 13710,
+                "pool_ns": 30403041212,
+                "CPU": 500776,
+                "VRAM": 47174,
+                "jobs_NT": [
+                  305663,
+                  67456,
+                  14723,
+                  4008,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 15
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "blob_bytes": 1715200,
+                "calls": 2742,
+                "pool_ns": 6738822060,
+                "CPU": 101154,
+                "VRAM": 8436,
+                "jobs_NT": [
+                  63044,
+                  13719,
+                  2864,
+                  520,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 3
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "blob_bytes": 2329600,
+                "calls": 8226,
+                "pool_ns": 23125213403,
+                "CPU": 280521,
+                "VRAM": 48249,
+                "jobs_NT": [
+                  168165,
+                  36765,
+                  9058,
+                  2913,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 9
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "blob_bytes": 1868800,
+                "calls": 914,
+                "pool_ns": 2770115186,
+                "CPU": 34632,
+                "VRAM": 1898,
+                "jobs_NT": [
+                  22160,
+                  4492,
+                  984,
+                  134,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 1
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "blob_bytes": 2662400,
+                "calls": 914,
+                "pool_ns": 1713619287,
+                "CPU": 25750,
+                "VRAM": 10780,
+                "jobs_NT": [
+                  17901,
+                  2931,
+                  493,
+                  127,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 1
+              }
+            ],
+            "pool_ms": 107268.431318,
+            "pool_clock_rounding_bound_ms": 4.613872010000001,
+            "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+            "logical_job_blob_bytes": 2491682304000
+          },
+          "timing": {
+            "windows": 914,
+            "ms_per_window": {
+              "average_T": 4.0,
+              "tokens_per_window": 3.47,
+              "total": 265.08,
+              "verify": 231.31,
+              "GPU_reach_wait": 86.73,
+              "per_layer_host": 122.92,
+              "plan": 4.13,
+              "activation_quant": 0.41,
+              "jobs": 0.11,
+              "CPU_pool_run": 117.36,
+              "stage": 2.12,
+              "commit_emit": 0.11,
+              "draft": 33.62,
+              "CPU_experts": 27.84,
+              "CPU_entries": 35.63,
+              "VRAM_hits": 4.34,
+              "PCIe": 0.0
+            },
+            "outer_residual_ms_per_window": 0.03999999999996362,
+            "host_nested_residual_ms_per_window": 0.9099999999999966,
+            "clock_binding": {
+              "absolute_total_difference_ms": 0.3200000000069849,
+              "rounding_bound_ms": 4.62,
+              "average_quantum_ms": 0.01,
+              "DONE_total_quantum_ms": 0.1
+            }
+          }
+        },
+        {
+          "workload": "varied-prose",
+          "work": {
+            "windows": 3358,
+            "rows": 13429,
+            "cpu_jobs": 3743079,
+            "cpu_entries": 6012655,
+            "vram_entries": 433265,
+            "jobs_NT": [
+              2381683,
+              740976,
+              332660,
+              287760,
+              0,
+              0,
+              0,
+              0
+            ],
+            "NT1_fraction": 0.6362898031273184,
+            "format_bins": [
+              {
+                "gu": 18,
+                "down": 20,
+                "blob_bytes": 2176000,
+                "calls": 47012,
+                "pool_ns": 103444099302,
+                "CPU": 1756949,
+                "VRAM": 123111,
+                "jobs_NT": [
+                  727484,
+                  201811,
+                  89737,
+                  89158,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 14
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "blob_bytes": 1510400,
+                "calls": 16790,
+                "pool_ns": 29786938381,
+                "CPU": 620938,
+                "VRAM": 50512,
+                "jobs_NT": [
+                  262548,
+                  79083,
+                  33492,
+                  24937,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 5
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "blob_bytes": 1971200,
+                "calls": 50370,
+                "pool_ns": 97204568851,
+                "CPU": 1876509,
+                "VRAM": 137841,
+                "jobs_NT": [
+                  759621,
+                  244371,
+                  107494,
+                  76416,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 15
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "blob_bytes": 1715200,
+                "calls": 10074,
+                "pool_ns": 20366039059,
+                "CPU": 376949,
+                "VRAM": 25921,
+                "jobs_NT": [
+                  157075,
+                  50292,
+                  21490,
+                  13705,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 3
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "blob_bytes": 2329600,
+                "calls": 30222,
+                "pool_ns": 72571648006,
+                "CPU": 1136263,
+                "VRAM": 72347,
+                "jobs_NT": [
+                  389994,
+                  140371,
+                  68717,
+                  64844,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 9
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "blob_bytes": 1868800,
+                "calls": 3358,
+                "pool_ns": 7893491717,
+                "CPU": 126708,
+                "VRAM": 7582,
+                "jobs_NT": [
+                  50100,
+                  15026,
+                  6548,
+                  6728,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 1
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "blob_bytes": 2662400,
+                "calls": 3358,
+                "pool_ns": 4883353433,
+                "CPU": 118339,
+                "VRAM": 15951,
+                "jobs_NT": [
+                  34861,
+                  10022,
+                  5182,
+                  11972,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "layer_count": 1
+              }
+            ],
+            "pool_ms": 336150.138749,
+            "pool_clock_rounding_bound_ms": 16.95118401,
+            "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+            "logical_job_blob_bytes": 7631673804800
+          },
+          "timing": {
+            "windows": 3358,
+            "ms_per_window": {
+              "average_T": 4.0,
+              "tokens_per_window": 2.17,
+              "total": 249.17,
+              "verify": 215.52,
+              "GPU_reach_wait": 86.7,
+              "per_layer_host": 105.31,
+              "plan": 3.96,
+              "activation_quant": 0.38,
+              "jobs": 0.09,
+              "CPU_pool_run": 100.1,
+              "stage": 4.26,
+              "commit_emit": 0.11,
+              "draft": 33.51,
+              "CPU_experts": 23.22,
+              "CPU_entries": 37.3,
+              "VRAM_hits": 2.69,
+              "PCIe": 0.0
+            },
+            "outer_residual_ms_per_window": 0.029999999999972715,
+            "host_nested_residual_ms_per_window": 0.7800000000000011,
+            "clock_binding": {
+              "absolute_total_difference_ms": 11.739999999990687,
+              "rounding_bound_ms": 16.84,
+              "average_quantum_ms": 0.01,
+              "DONE_total_quantum_ms": 0.1
+            }
+          }
+        }
+      ],
+      "physical_traffic_qualified": false,
+      "hardware_saturation_qualified": false,
+      "clean_speed_qualified": false,
+      "inference_adopted": false
+    },
+    "resource_interpretation": {
+      "samples": [
+        {
+          "workload": "regular-code",
+          "pool_wall_fraction": 0.4427405961875957,
+          "GPU_reach_wait_wall_fraction": 0.3271842462652784,
+          "draft_wall_fraction": 0.1268296363362004,
+          "mean_rows_per_CPU_job": 1.2797466033120368,
+          "logical_blob_visit_bytes_per_emitted": 786019654.2586751,
+          "conditional_TG70_logical_blob_GBps": 55.02137579810726,
+          "conditional_zero_pool_TG": 23.47898250345722
+        },
+        {
+          "workload": "varied-prose",
+          "pool_wall_fraction": 0.4017452561440168,
+          "GPU_reach_wait_wall_fraction": 0.3479552113015211,
+          "draft_wall_fraction": 0.1344864951639443,
+          "mean_rows_per_CPU_job": 1.6063393265277062,
+          "logical_blob_visit_bytes_per_emitted": 1049027327.1202749,
+          "conditional_TG70_logical_blob_GBps": 73.43191289841926,
+          "conditional_zero_pool_TG": 14.533302361888056
+        }
+      ],
+      "actual_hardware_saturation_qualified": false,
+      "physical_RAM_traffic_measured": false,
+      "GPU_kernel_service_measured": false,
+      "limits": "One instrumented static-cache process,not clean/repeated speed. Pool wall includes work/scheduling/waits;GPU-reach wait is a host dependency interval,not GPU arithmetic. The zero-pool estimate is conditional on all other measured intervals/work staying fixed;it is not a hardware ceiling. Logical full-blob visits are not physical DRAM/PCIe bytes and may be served by caches. TG70 rates hold this observed job/routing/MTP mix fixed.",
+      "decision": "Actual NT1 jobs are78.16percent code/63.63percent prose. CPU pool is44.27/40.17percent of decode wall;CPU-only instruction tuning cannot by itself explain a path to70under fixed remaining costs. IQ3_XXS and IQ2_S groups account for about74percent of pool wall together;IQ3_S is about24percent. Do not select affine IQ3_S merely because its representation study is ready. Next attribute GU versus Down and useful leaf CPU work versus waiting,while also resolving GPU service/submission cost. Current source disables CUDA-only STRATA_VERIFY_PROFILE in SYCL;STRATA_SYCL_QUERY_PROFILE measures host API queries only.",
+      "retention": "Compact two-workload samples,seven-format NT counts/pool clocks and this conditional resource model support the imminent leaf-selection/placement decision. NativeFmt layout is recovered from pinned selected source/manifest,not duplicated per bin."
+    },
     "source_inputs": {
       "files": 285,
       "aggregate_sha256": "43dd05209bbc43cd494f1c5de8ae53bd425b726d4a6465c60891dc7b44e6e124"
