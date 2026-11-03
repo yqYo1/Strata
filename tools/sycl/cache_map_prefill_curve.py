@@ -23,8 +23,10 @@ import prefill_scaling_bench as fit
 
 entry, base, comparison = speed.entry, speed.base, speed.comparison
 P, B, RESULT = speed.P, speed.B, speed.RESULT
-ROOT = entry.model.ROOT / 'prefill-curve-v3'
-KEY = 'cache_map_prefill_curve_v3'
+ROOT = entry.model.ROOT / 'prefill-curve-v4'
+KEY = 'cache_map_prefill_curve_v4'
+PARSER_KEY = 'cache_map_prefill_curve_short_route_v4'
+FAILED_KEY = 'cache_map_prefill_curve_v3'
 SOURCE = 'tools/sycl/cache_map_prefill_curve.py'
 SNAPSHOT = '2880a857f40c94d8bc11824fa513466368079858'
 EXISTING_HELPER = 'tools/sycl/cache_map_prefill_resources.py'
@@ -125,8 +127,13 @@ def request_route(text, plan):
         require(plan['read'] == 117489, 'only the matched117K anchor may be clean')
         return speed.request_route(text, dict(plan, kernel='candidate'))
     long = n > 8192
-    require(records(text, 'strata prefill policy: ') == [dict(requested='throughput',
-        route='layer-major' if long else 'chunked', tokens=str(n), chunk='8192')],
+    policies = records(text, 'strata prefill policy: ')
+    require(len(policies) == 1 and set(policies[0]) == {'requested', 'route', 'tokens', 'chunk'},
+            'missing/duplicate actual request policy')
+    policy = policies[0]; chunk = int(policy['chunk'])
+    require(policy['requested'] == 'throughput' and policy['tokens'] == str(n)
+            and policy['route'] == ('layer-major' if long else 'chunked')
+            and (chunk == 8192 if long else n <= chunk <= 8192),
         'actual request strategy/route/extent differs')
     states = records(text, 'strata prefill dense: phase=')
     require([s['phase'] for s in states] == ['retired', 'bank' if long else 'cache-loan', 'restored'],
@@ -141,7 +148,7 @@ def request_route(text, plan):
             'strata prefill heads: target detached ', 'strata prefill heads: draft detached ',
             'strata mtp: prompt expert phase=', 'strata GDN dispatch: ', 'strata GDN storage: ')),
             'short input entered a dedicated long-prefill route')
-        return dict(rows=n, actual_route='chunked', dense_activations=0,
+        return dict(rows=n, actual_route='chunked', actual_operator_chunk=chunk, dense_activations=0,
             dense_head_MTP_weights_retained=True, cache_loan_retired_and_restored=True, MTP_prefill=mtp)
     route = comparison.route(text, plan['read'], 1, expected_rows=n)
     require(route['residual_gpu_rows'] == n and route['residual_host_bytes'] == 0,
@@ -157,7 +164,7 @@ def request_route(text, plan):
             sum(int(v['tokens']) for v in calls) == 36 * n and
             all(v['schedule'] == 'barriers3' and v['partitions'] == '4' and
                 0 < int(v['tokens']) <= 8192 for v in calls), 'typed GDN extent differs')
-    route.update(actual_route='layer-major', checkpoint_pairs=progress['checkpoint_pairs'],
+    route.update(actual_route='layer-major', actual_operator_chunk=chunk, checkpoint_pairs=progress['checkpoint_pairs'],
                  GDN_FP16_storage_calls=len(storage), GDN3_calls=len(calls), MTP_prefill=mtp)
     return route
 
@@ -179,9 +186,10 @@ def decision(processes):
         if not CASES[p['index']][1]:
             continue
         routes = p['routes']
-        require(len(routes) == RUNS and len({r['actual_route'] for r in routes}) == 1,
+        require(len(routes) == RUNS and len({(r['actual_route'], r['actual_operator_chunk']) for r in routes}) == 1,
                 'request route changed within a length')
         points.append(dict(actual_read_tokens=p['read'], actual_route=routes[0]['actual_route'],
+            actual_operator_chunk=routes[0]['actual_operator_chunk'],
             staged=routes[0].get('staged', False), split=routes[0].get('split', False),
             prompt_ms=p['subsequent_median_ms'],
             ttft_ms=1000 * statistics.median(s['ttft_s'] for s in p['samples'][1:])))
@@ -209,7 +217,7 @@ def decision(processes):
 def selfcheck():
     inherited = dict(geometry=comparison.selfcheck(), progress=entry.template.original.selfcheck())
     plan = dict(read=1286, trace_progress=True)
-    text = ('strata prefill policy: requested=throughput route=chunked tokens=1285 chunk=8192\n'
+    text = ('strata prefill policy: requested=throughput route=chunked tokens=1285 chunk=1536\n'
         'strata prefill dense: phase=retired residency=Full activations=0\n'
         'strata prefill dense: phase=cache-loan residency=Full activations=0\n'
         'strata serve: DRAFT_PREFILL path=batched mode=2 cells=1285\n'
@@ -218,7 +226,11 @@ def selfcheck():
     bad = [text + text, text.replace('tokens=1285', 'tokens=1284'),
         text.replace('route=chunked', 'route=layer-major'), text.replace('residency=Full', 'residency=Bank'),
         text.replace('activations=0', 'activations=1'), text.replace('cells=1285', 'cells=1284'),
-        text.replace('phase=restored', 'phase=missing'), text + 'strata GDN dispatch: tokens=1285\n']
+        text.replace('phase=restored', 'phase=missing'), text + 'strata GDN dispatch: tokens=1285\n',
+        text.replace('chunk=1536', 'chunk=1024'), text.replace('chunk=1536', 'chunk=0'),
+        text.replace('chunk=1536', 'chunk=8193')]
+    require(request_route(text.replace('chunk=1536', 'chunk=8192'), plan)['actual_operator_chunk'] == 8192,
+            'valid larger short scratch lease rejected')
     for value in bad:
         try: request_route(value, plan)
         except (RuntimeError, ValueError, KeyError): continue
@@ -253,9 +265,39 @@ def selfcheck():
                 legacy_clock_floor_preserved=True, GPU_executed=False)
 
 
+def parser_qualification():
+    parser = base.committed(RESULT)[PARSER_KEY]
+    require(parser['passed'] and parser['complete'] and parser['ownership_closed']
+            and not parser['GPU_executed'] and parser['controller_sha256'] == digest(__file__)
+            and parser['failed_scope'] == FAILED_KEY and parser['actual_route']['rows'] == 1285
+            and parser['actual_route']['actual_operator_chunk'] == 1536,
+            'commit the same-source captured short-route replay first')
+    return {k: parser[k] for k in ('source_commit', 'passed', 'complete', 'ownership_closed',
+        'GPU_executed', 'controller_sha256', 'fixture', 'failed_scope', 'actual_route')}
+
+
+def replay():
+    data = base.committed(RESULT); failed = data[FAILED_KEY]
+    require(PARSER_KEY not in data and failed['stage'] == 'failed' and not failed['passed']
+            and failed['ownership_closed'] and not failed['active'] and
+            failed['posthoc_owner_closure']['original_outcome_retained'], 'preserve the closed failed model scope')
+    fixture = failed['parser_replay_consumer']; path = Path(fixture['path']); raw = path.read_bytes()
+    require(len(raw) == fixture['bytes'] <= 16384 and digest(path) == fixture['sha256']
+            and 0 <= fixture['begin'] < fixture['end'] == len(raw), 'original failed capture changed')
+    route = request_route(raw[fixture['begin']:fixture['end']].decode(), dict(read=1286, trace_progress=True))
+    evidence = dict(source_commit=speed.shared.gen.git('rev-parse', 'HEAD').decode().strip(),
+        passed=True, complete=True, ownership_closed=True, GPU_executed=False,
+        controller_sha256=digest(__file__), fixture={k: fixture[k] for k in ('path', 'sha256', 'bytes', 'begin', 'end')},
+        failed_scope=FAILED_KEY, actual_route=route,
+        limits='Parser replay of the original unchanged bytes only;V3remains failed,incomplete and externally terminated. No model,numerical,normal-teardown or speed qualification.')
+    data[PARSER_KEY] = evidence; write(RESULT, data)
+    print(json.dumps(evidence), flush=True)
+
+
 def prepare():
     revision = speed.shared.gen.git('rev-parse', 'HEAD').decode().strip()
-    controls = selfcheck(); native, providers, manifest, prior = qualification(revision)
+    controls = selfcheck(); parser = parser_qualification()
+    native, providers, manifest, prior = qualification(revision)
     require(not ROOT.exists() and KEY not in base.committed(RESULT), 'one fresh curve only')
     assets = speed.shared.models.model_pins(prior['configuration'], prior['model_assets'], full=True)
     ROOT.mkdir(mode=0o700); write(ROOT/'runtime-inputs.json', providers)
@@ -270,7 +312,7 @@ def prepare():
             declared_changed_python_policies=list(CHANGED), new_controller=SOURCE,
             declared_benchmark_changes=sorted(BENCHMARK_CHANGED),
             unchanged_existing_helper=dict(path=EXISTING_HELPER, commit=HELPER_COMMIT)),
-        controls=controls, plans=[], processes=[], request_hashes={}, host_passed=False, passed=False,
+        controls=controls, parser_qualification=parser, plans=[], processes=[], request_hashes={}, host_passed=False, passed=False,
         complete=False, active=False, ownership_closed=True, inference_adopted=False, whole_bytes=512 << 20,
         budgets=dict(wall=1200, cpu=3600, rss_cap=104 << 30, text_cap=16 << 20, file_cap=16 << 20, total_cap=64 << 20),
         plan=dict(question='Characterize same-engine prompt time and client TTFT across three short and six long lengths,including the actual chunked/layer-major and bank/split boundaries.',
@@ -303,6 +345,7 @@ def prepare():
 
 def current(row):
     require(base.committed(RESULT)[KEY] == compact(row), 'commit exact current curve state')
+    require(parser_qualification() == row['parser_qualification'], 'consumed parser qualification changed')
     native, providers, manifest, _ = qualification(row['source_commit'])
     require(pinned_sources(row['source_commit']) == row['sources'] and row['binary'] == native['binaries']['strata'],
             'frozen curve inputs changed')
@@ -317,11 +360,12 @@ def current(row):
 
 if __name__ == '__main__':
     args = sys.argv[1:]
-    require(args in (['selfcheck'], ['prepare'], ['host']) or len(args) == 1 and
-            args[0].isdigit() and int(args[0]) < len(CASES), 'use selfcheck|prepare|host|INDEX0..9')
+    require(args in (['selfcheck'], ['replay'], ['prepare'], ['host']) or len(args) == 1 and
+            args[0].isdigit() and int(args[0]) < len(CASES), 'use selfcheck|replay|prepare|host|INDEX0..9')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); base.guards.no_model_owners([])
         if args == ['selfcheck']: print(json.dumps(selfcheck()), flush=True)
+        elif args == ['replay']: replay()
         elif args == ['prepare']: prepare()
         elif args == ['host']: comparison.host(sys.modules[__name__])
         else: comparison.run(int(args[0]), sys.modules[__name__])

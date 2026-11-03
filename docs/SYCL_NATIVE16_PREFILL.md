@@ -1088,7 +1088,7 @@ record that eligibility boundary rather than treating a mixed-route intercept as
 a physical fixed cost. Fit actual counts/time/TTFT with held-out lengths and
 residuals. The older length fit does not qualify this engine. Full262144/RESTORE
 remain pending.
-The prospective`cache_map_prefill_curve_v3`keeps all nine current native ELFs
+The prospective`cache_map_prefill_curve_v4`keeps all nine current native ELFs
 and explicitly scopes reuse of three changed Python policies. It measures nine
 exact lengths from1286to117489,with request progress enabled and actual short
 cache-loan versus long typed-route checks;an adjacent clean117K anchor supplies
@@ -1110,6 +1110,16 @@ receipt/log or fresh fault. V3adds explicit`--prefill-short-diagnostic`admission
 and a pure CLI parser used to check every generated argument vector before
 launch. Short results remain labeled diagnostics and do not qualify long-input
 speed. The benchmark change is separately pinned;native source/ELFs stay fixed.
+V3reaches the first1286-token request and24outputs,but its parser rejects the
+valid1536-row short scratch lease as if every request had an8192-row operator.
+The owner terminates the session;keep V3failed,including its incomplete command
+observation. A posthoc audit finds all recorded identities gone and the session
+empty,with no fresh fault. Native-only prompt time14355ms/89.6tok/s is descriptive;
+the client never persists that request's TTFT before the failed end gate.
+V4requires the observed chunked route to satisfy rows<=chunk<=8192,records that
+actual chunk,and still requires8192for the long route. Replay its unchanged
+V3window before a fresh bounded process;do not rewrite the capture or qualify
+the externally terminated V3run. Review old raw-output consumers at that closure.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
