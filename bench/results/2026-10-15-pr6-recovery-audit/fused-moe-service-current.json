@@ -98513,7 +98513,7 @@
     "limits": "CPU-only CLI,eligibility and frontend regression tests. Explicit short exact input remains diagnostic;no native/kernel/model or long-input speed qualification."
   },
   "cache_map_prefill_curve_v3": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "cb94d3963c6327f90fa935c4e8856fbd73e2845e",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
@@ -99110,7 +99110,41 @@
         "environment_sha256": "4b0ff16b15970600642d7e851f51c9c3be5e07efbc5d1fa8fcf46d90931c45bd"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 1286,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 667648,
+          "start_ticks": 201587232,
+          "sid": 667599
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
@@ -99189,6 +99223,39 @@
         "passed": true
       }
     ],
+    "posthoc_owner_closure": {
+      "verified_at": "2026-11-03T01:01:14.257379+00:00",
+      "sid": 667599,
+      "direct_child_reaped": true,
+      "all_recorded_identities_gone": true,
+      "owned_session_empty": true,
+      "original_observation_complete": false,
+      "original_outcome_retained": true,
+      "qualifies_run": false
+    },
+    "failure_mechanism": "The first1286read/1285row request completes24outputs,but the pre-continuation parser incorrectly requires chunk8192. Actual chunk1536is a valid short scratch lease. Owner stops the session with SIGTERM/SIGKILL;no normal native exit,complete client sample/final hash or route qualification. Preserve failed/incomplete status and all original owner evidence.",
+    "parser_replay_consumer": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/prefill-curve-v3/0/engine.stderr",
+      "sha256": "59f5205d9588c16f11d5860398f7a0c7f733a57888da6b8ca8e9e0c5109c0390",
+      "bytes": 9510,
+      "begin": 7252,
+      "end": 9510,
+      "actual_read_tokens": 1286,
+      "actual_rows": 1285,
+      "actual_operator_chunk": 1536,
+      "consumer": "First V4short-route parser replay and fresh short-case closure;no log/header rewrite.",
+      "review_point": "Retire after V4replay and first fresh short-process closure."
+    },
+    "incomplete_native_sample": {
+      "summary": "strata serve: prompt 1286 tokens = 0 reused + 1286 read in 14355 ms (89.6 tok/s), 24 generated in 2017 ms (11.9 tok/s), drafts accepted 17 of 18, 0 checkpoints",
+      "actual_read_tokens": 1286,
+      "actual_reused_tokens": 0,
+      "generated_tokens": 24,
+      "reported_prompt_ms": 14355,
+      "reported_pp": 89.6,
+      "client_TTFT_available": false,
+      "performance_eligible": false
+    },
     "source_inputs": {
       "files": 277,
       "aggregate_sha256": "101d70a3e3d35575e6bfd2f4e6d736e0f625d5861ecbd7965b5c2954e6eaf8f6"
