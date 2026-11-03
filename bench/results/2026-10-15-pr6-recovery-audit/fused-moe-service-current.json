@@ -99996,5 +99996,34 @@
     "GPU_executed": false,
     "native_recompiled": false,
     "limits": "Host admission/source equality only. Preserve failed V5/process3 and original source/proof identities. No new model,math,teardown,performance or physical-context qualification."
+  },
+  "cache_map_prefill_curve_v6_host_contract_v1": {
+    "source_commit": "44ddec03b2f142697af880e300a45d5a9c47036c",
+    "command": [
+      "timeout",
+      "120s",
+      "python3",
+      "tools/test_sycl_prefill_curve_continuation.py"
+    ],
+    "passed": false,
+    "complete": false,
+    "tests_executed": 0,
+    "setup_errors": 1,
+    "error": "RuntimeError(undeclared inherited-prefix input change)",
+    "original_control_recovery_passed": 277,
+    "current_controls": 279,
+    "unplanned_added_controls": [
+      "tools/test_sycl_gdn_model_sources.py",
+      "tools/test_sycl_prefill_curve_continuation.py"
+    ],
+    "other_input_changes": [
+      "tools/sycl/cache_map_prefill_curve.py",
+      "tools/sycl/gdn_model_sources.py"
+    ],
+    "GPU_executed": false,
+    "ownership_closed": true,
+    "next_action": "Declare only the two host-test additions,then commit/test the revised host contract before any V6prepare;preserve this setup failure.",
+    "exit_code": 5,
+    "wall_seconds": 3.558
   }
 }

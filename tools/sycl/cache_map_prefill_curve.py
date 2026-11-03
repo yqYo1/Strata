@@ -35,6 +35,8 @@ HELPER_COMMIT = 'b13d99d13bbd975aa8e723907b2f430c64e9e3a0'
 CHANGED = ('tools/sycl/build_cache_map_model.py', 'tools/sycl/compare_official_prefill.py',
            'tools/sycl/official_model_entry.py', 'tools/sycl/gdn_model_sources.py')
 BENCHMARK_CHANGED = {'tools/strata_bench.py', 'tools/test_strata_bench.py'}
+HOST_TESTS = ('tools/test_sycl_gdn_model_sources.py',
+              'tools/test_sycl_prefill_curve_continuation.py')
 CASES = ((1286, True), (117489, False), (117489, True), (39254, True),
          (4956, True), (78445, True), (19665, True), (65537, True),
          (24577, True), (8193, True))
@@ -78,7 +80,7 @@ def qualification(revision):
                  speed.shared.gen.blobs(P, prior['source_commit'], prior['sources'])}
     current = pinned_sources(revision)
     helper_sha = hashlib.sha256(speed.shared.gen.git('show', HELPER_COMMIT + ':' + EXISTING_HELPER)).hexdigest()
-    require(recovered == prior['sources'] and set(current) - set(recovered) == {SOURCE, EXISTING_HELPER}
+    require(recovered == prior['sources'] and set(current) - set(recovered) == {SOURCE, EXISTING_HELPER, *HOST_TESTS}
             and not set(recovered) - set(current) and
             {n for n in recovered if recovered[n] != current[n]} == set(CHANGED) | BENCHMARK_CHANGED
             and current[EXISTING_HELPER] == helper_sha,
@@ -297,6 +299,11 @@ def scope_projection(source):
                     'undeclared native-admission policy change')
             nodes.append('declared native-admission policy change')
             continue
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and \
+                isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'HOST_TESTS':
+            require(ast.literal_eval(node.value) == ('tools/test_sycl_gdn_model_sources.py',
+                'tools/test_sycl_prefill_curve_continuation.py'), 'undeclared host contract inputs')
+            continue
         if isinstance(node, ast.FunctionDef) and node.name in (
                 'scope_projection', 'parser_qualification', 'prefix_evidence', 'prefix_qualification', 'inherit_prefix'):
             continue
@@ -309,6 +316,13 @@ def scope_projection(source):
                     'prefix admission call missing,moved or duplicated')
             if matches:
                 node.body.pop(matches[0])
+        if isinstance(node, ast.FunctionDef) and node.name == 'qualification':
+            expected = ast.dump(ast.parse('{SOURCE, EXISTING_HELPER, *HOST_TESTS}', mode='eval').body,
+                                include_attributes=False)
+            sets = [value for value in ast.walk(node) if isinstance(value, ast.Set)
+                    and ast.dump(value, include_attributes=False) == expected]
+            require(len(sets) == (1 if continuation else 0), 'host-input declaration moved or changed')
+            for value in sets: value.elts.pop()
         nodes.append(ast.dump(node, include_attributes=False))
     require(len(labels) == 2 and labels[0] == labels[1], 'inconsistent or duplicate scope labels')
     return nodes
@@ -336,7 +350,8 @@ def parser_qualification():
         original_proof_commit=proof_commit, original_controller_sha256=parser['controller_sha256'],
         unchanged_projection_sha256=comparison.fingerprint(scope_projection(source)),
         allowed_changes=['ast import', 'ROOT/KEY scope labels', 'explicit GDN appendix admission policy',
-            'source/prefix proof readers', 'one final prepare prefix import and one initial current prefix check'],
+            'two named host test inputs', 'source/prefix proof readers',
+            'one final prepare prefix import and one initial current prefix check'],
         raw_fixture_replayed_again=False, model_or_native_qualification_added=False)
     return frozen
 
@@ -369,11 +384,12 @@ def prefix_qualification(row, *, check):
                 'inherited prefix configuration differs: ' + name)
     recovered = {name: hashlib.sha256(raw).hexdigest() for name, raw in
                  speed.shared.gen.blobs(P, full['source_commit'], full['sources'])}
-    require(recovered == full['sources'] and set(recovered) == set(row['sources'])
+    require(recovered == full['sources'] and set(row['sources']) - set(recovered) == set(HOST_TESTS)
+            and not set(recovered) - set(row['sources'])
             and {name for name in recovered if recovered[name] != row['sources'][name]} ==
                 {SOURCE, 'tools/sycl/gdn_model_sources.py'}
             and all(row['sources'][name] == digest(P/name)
-                    for name in (SOURCE, 'tools/sycl/gdn_model_sources.py')),
+                    for name in (SOURCE, 'tools/sycl/gdn_model_sources.py', *HOST_TESTS)),
             'undeclared inherited-prefix input change')
     def normalized(plan):
         command = list(plan['command'])

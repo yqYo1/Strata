@@ -51,6 +51,8 @@ class ContinuationGuards(unittest.TestCase):
             ("\nKEY = 'cache_map_prefill_curve_v6'\n", "\nKEY = 'cache_map_prefill_curve_v5'\n"),
             ("'tools/sycl/official_model_entry.py', 'tools/sycl/gdn_model_sources.py')",
              "'tools/sycl/official_model_entry.py', 'tools/sycl/other.py')"),
+            ("HOST_TESTS = ('tools/test_sycl_gdn_model_sources.py',",
+             "HOST_TESTS = ('tools/unplanned_test.py',"),
             ('    inherit_prefix(row)\n', ''),
             ('    inherit_prefix(row)\n', '    inherit_prefix(row)\n    inherit_prefix(row)\n'),
             ('def current(row):\n    prefix_qualification(row, check=True)\n', 'def current(row):\n'),

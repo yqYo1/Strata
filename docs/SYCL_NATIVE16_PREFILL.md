@@ -1203,6 +1203,12 @@ The prospective V6scope retains all three successful prefix processes from
 unchanged indices3..9. The failed39Kpoint is not reused. Require the original
 failed V5root record to match`be6629074`,recover all277original controller inputs,
 and permit only the new curve controller and scoped GDN reader to differ.
+Its first host contract stops at setup because the two newly added host tests
+also enter the benchmark's broad source inventory;no test body or native process
+runs. Preserve that failed host result. Explicitly add only those two test paths,
+pin their actual bytes,and normalize only that one declared input-set addition
+in the AST proof. All277old controls still recover unchanged except the two
+named controller/admission files;the prospective source set now has279inputs.
 Keep the exact native,configuration,providers,boot,requests and first-use rules;
 normalize only private config/output paths and port in the inherited commands.
 Guard the inherited records again before every admission. Reuse the immutable
