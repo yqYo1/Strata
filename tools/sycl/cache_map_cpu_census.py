@@ -60,10 +60,10 @@ def contract(row):
 
 
 def prepare(ctx):
+    native, _, _ = entry.proof()
     entry.prepare(ctx, 'zero')
     row = json.loads((ROOT / 'record.json').read_text())
     row['environment'].update(STRATA_CPU_WORK_CENSUS='1', STRATA_DECODE_TIMING='1')
-    native, _, _ = entry.proof()
     require(native['source_commit'] == '479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54'
             and native['binaries']['strata']['sha256'] ==
                 '552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a',
