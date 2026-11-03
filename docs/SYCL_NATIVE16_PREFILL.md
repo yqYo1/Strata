@@ -1143,12 +1143,19 @@ The host gate at`b97f94395`passes eight tests:24capacity cases,nine invalid
 callback sequences,six unchanged lengths and the existing source/prefix controls.
 Its reduced actual-callback test fails before the correction at`df4e05d14`.
 The new helper also passes the687207-byte capture;the original request_route
-still rejects it. These helpers are unwired and excluded explicitly from the
-old parser replay proof;no new native execution is admitted by these tests.
-Commit a new controller-only plan and replay the full composed route before a
-fresh64Kprocess;do not accept arbitrary token callbacks. Retain the capture
-within1MiB only through that full-route replay/admission. The settled report,
-review and spec are retired after the corrected digest and host-gate decision.
+still rejects it. That host proof covers the helper only,not its connection to
+the complete route. The prospective V7controller permits one exact call
+replacement,with byte/AST recovery of the original helper proof and a separate
+full64Kroute replay before native admission. Other lengths keep their original
+MTP contract. Reuse all seven successful V6processes without selection by speed;
+keep the failed64Ksample excluded and collect three fresh processes in the
+unchanged64K,24K,8Korder,with four requests each. All native/configuration,
+source/provider,body,clock,owner,validation/fault and final15model-hash gates
+remain. Commit sources,composed replay,prepared plan and frontend admission
+before the next native process;these tests do not qualify native execution.
+Retain the capture within1MiB only through that replay/admission;later admission
+consumes its committed compact result rather than the raw bytes. The settled
+report,review and spec are retired after the corrected digest and host decision.
 
 V6prepare at`e88d0e454`passes full native/dependency/provider admission,all nine
 ELFs and all15model hashes after retirement;current-source frontend probes pass.

@@ -24,8 +24,9 @@ import prefill_scaling_bench as fit
 
 entry, base, comparison = speed.entry, speed.base, speed.comparison
 P, B, RESULT = speed.P, speed.B, speed.RESULT
-ROOT = entry.model.ROOT / 'prefill-curve-v6'
-KEY = 'cache_map_prefill_curve_v6'
+ROOT = entry.model.ROOT / 'prefill-curve-v7'
+KEY = 'cache_map_prefill_curve_v7'
+BOUNDARY_KEY = 'cache_map_prefill_boundary_route_v7'
 PARSER_KEY = 'cache_map_prefill_curve_short_route_v4'
 FAILED_KEY = 'cache_map_prefill_curve_v3'
 SOURCE = 'tools/sycl/cache_map_prefill_curve.py'
@@ -139,7 +140,7 @@ def mtp_boundary_batch(read, first, cells, workspace_rows, ring_rows):
 
 
 def mtp_boundary_route(text, rows):
-    """Unwired prospective gate for the reviewed exact64K boundary only."""
+    """Reviewed exact64K boundary gate;other lengths retain the original contract."""
     if rows != 65536:
         return entry.template.mtp_route(text, rows)
     expected = [mtp_boundary_batch(rows + 1, first, 8192, 64, 64)
@@ -184,7 +185,7 @@ def request_route(text, plan):
             if not long else states[0]['residency'] == states[-1]['residency'] == 'Full'
             and states[1]['residency'] == 'Bank' and states[-1]['activations'] == '48',
             'actual phase owners or activation count differ')
-    mtp = entry.template.mtp_route(text, n)
+    mtp = mtp_boundary_route(text, n)
     if not long:
         require(not any(s in text for s in ('strata prefill: layer-major candidate, ',
             'strata prefill heads: target detached ', 'strata prefill heads: draft detached ',
@@ -310,9 +311,11 @@ def selfcheck():
 def scope_projection(source):
     """Keep replayed parser/work/math code fixed outside declared admission seams."""
     module = ast.parse(source)
-    continuation_label = ast.dump(ast.parse("KEY = 'cache_map_prefill_curve_v6'").body[0], include_attributes=False)
-    continuation = any(ast.dump(n, include_attributes=False) == continuation_label for n in module.body)
-    nodes, labels = [], []
+    declarations = [ast.dump(ast.parse(f"KEY = 'cache_map_prefill_curve_v{v}'").body[0],
+                             include_attributes=False) for v in (6, 7)]
+    continuation = any(ast.dump(n, include_attributes=False) in declarations for n in module.body)
+    extension = any(ast.dump(n, include_attributes=False) == declarations[1] for n in module.body)
+    nodes, labels, boundary_labels = [], [], 0
     for node in module.body:
         if isinstance(node, ast.Import) and len(node.names) == 1 and \
                 node.names[0].name == 'ast' and node.names[0].asname is None:
@@ -321,14 +324,20 @@ def scope_projection(source):
                 isinstance(node.targets[0], ast.Name) and node.targets[0].id in ('ROOT', 'KEY'):
             name = node.targets[0].id
             declarations = [f"ROOT = entry.model.ROOT / 'prefill-curve-v{v}'" if name == 'ROOT'
-                            else f"KEY = 'cache_map_prefill_curve_v{v}'" for v in (4, 5, 6)]
+                            else f"KEY = 'cache_map_prefill_curve_v{v}'" for v in (4, 5, 6, 7)]
             require(ast.dump(node, include_attributes=False) in
                     [ast.dump(ast.parse(s).body[0], include_attributes=False) for s in declarations],
                     'scope declaration contains more than an approved label')
-            labels.append(next(v for v, declaration in zip((4, 5, 6), declarations)
+            labels.append(next(v for v, declaration in zip((4, 5, 6, 7), declarations)
                                if ast.dump(node, include_attributes=False) ==
                                ast.dump(ast.parse(declaration).body[0], include_attributes=False)))
             nodes.append(name + ' versioned scope label')
+            continue
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and \
+                isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'BOUNDARY_KEY':
+            require(extension and ast.literal_eval(node.value) == 'cache_map_prefill_boundary_route_v7',
+                    'undeclared boundary receipt label')
+            boundary_labels += 1
             continue
         if isinstance(node, ast.Assign) and len(node.targets) == 1 and \
                 isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'CHANGED':
@@ -344,14 +353,24 @@ def scope_projection(source):
                 'tools/test_sycl_prefill_curve_continuation.py'), 'undeclared host contract inputs')
             continue
         if isinstance(node, ast.FunctionDef) and node.name in ('mtp_boundary_batch', 'mtp_boundary_route'):
-            # These are separately host-checked and still uncalled by the frozen
-            # request_route. Its protected AST forbids wiring them without a new plan.
+            # Separate immutable host proof covers these bodies. V7permits only
+            # the single exact call replacement checked below.
             require(not node.decorator_list and not node.args.defaults and not node.args.kwonlyargs,
                     'future MTP helper has definition-time work')
             continue
         if isinstance(node, ast.FunctionDef) and node.name in (
-                'scope_projection', 'parser_qualification', 'prefix_evidence', 'prefix_qualification', 'inherit_prefix'):
+                'scope_projection', 'parser_qualification', 'prefix_evidence', 'prefix_qualification',
+                'inherit_prefix', 'boundary_qualification', 'replay'):
             continue
+        if isinstance(node, ast.FunctionDef) and node.name == 'request_route':
+            old = ast.parse('mtp = entry.template.mtp_route(text, n)').body[0]
+            new = ast.parse('mtp = mtp_boundary_route(text, n)').body[0]
+            positions = lambda target: [i for i, value in enumerate(node.body)
+                if ast.dump(value, include_attributes=False) == ast.dump(target, include_attributes=False)]
+            before, after = positions(old), positions(new)
+            require((not before and len(after) == 1) if extension else
+                    (len(before) == 1 and not after), 'missing/duplicate/wrong MTP boundary call')
+            if extension: node.body[after[0]] = old
         if isinstance(node, ast.FunctionDef) and node.name in ('prepare', 'current'):
             call = 'inherit_prefix(row)' if node.name == 'prepare' else 'prefix_qualification(row, check=True)'
             expected = ast.dump(ast.parse(call).body[0], include_attributes=False)
@@ -370,10 +389,11 @@ def scope_projection(source):
             for value in sets: value.elts.pop()
         nodes.append(ast.dump(node, include_attributes=False))
     require(len(labels) == 2 and labels[0] == labels[1], 'inconsistent or duplicate scope labels')
+    require(boundary_labels == int(extension), 'missing/duplicate boundary receipt label')
     return nodes
 
 
-def parser_qualification():
+def parser_qualification(*, include_boundary=True):
     parser = base.committed(RESULT)[PARSER_KEY]
     fields = ('source_commit', 'passed', 'complete', 'ownership_closed',
         'GPU_executed', 'controller_sha256', 'fixture', 'failed_scope', 'actual_route')
@@ -397,18 +417,72 @@ def parser_qualification():
         allowed_changes=['ast import', 'ROOT/KEY scope labels', 'explicit GDN appendix admission policy',
             'two named host test inputs', 'source/prefix proof readers',
             'one final prepare prefix import and one initial current prefix check',
-            'two unwired future MTP boundary helpers;not covered by original replay'],
-        unwired_helpers_not_covered_by_original_replay=['mtp_boundary_batch', 'mtp_boundary_route'],
+            'separately qualified MTP boundary helpers and one exact V7call replacement',
+            'host-only replay now records full64Kcomposition under BOUNDARY_KEY'],
+        helpers_not_covered_by_original_replay=['mtp_boundary_batch', 'mtp_boundary_route'],
         raw_fixture_replayed_again=False, model_or_native_qualification_added=False)
+    if include_boundary:
+        frozen['MTP_boundary_extension'] = boundary_qualification()
     return frozen
+
+
+def boundary_qualification(*, composed=True):
+    """Old host-tested helper bodies plus the separately committed full-route replay."""
+    host_key, commit = 'cache_map_mtp_boundary_host_v1', '007af4203'
+    data = base.committed(RESULT)
+    original = json.loads(speed.shared.gen.git('show', commit + ':' + str(RESULT.relative_to(P))))[host_key]
+    host = data[host_key]
+    require(comparison.fingerprint(host) == comparison.fingerprint(original)
+            and all(host[k] is True for k in ('passed', 'complete', 'ownership_closed'))
+            and host['GPU_executed'] is False and host['active'] is False
+            and type(host['green']['exit_code']) is int and host['green']['exit_code'] == 0
+            and host['green']['tests'] == 8, 'immutable MTP host contract changed')
+    for name, sha in host['source_files'].items():
+        require(hashlib.sha256(speed.shared.gen.git('show', host['source_commit'] + ':' + name)).hexdigest() == sha,
+                'original MTP host source is not recoverable')
+    def helpers(source):
+        names = {'mtp_boundary_batch', 'mtp_boundary_route'}
+        result = {}
+        for node in ast.parse(source).body:
+            if not isinstance(node, ast.FunctionDef) or node.name not in names: continue
+            if isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant) \
+                    and isinstance(node.body[0].value.value, str): node.body.pop(0)
+            require(node.name not in result, 'duplicate MTP helper')
+            result[node.name] = ast.dump(node, include_attributes=False)
+        require(set(result) == names, 'missing MTP helper')
+        return result
+    current = Path(__file__).read_text()
+    old = speed.shared.gen.git('show', host['source_commit'] + ':' + SOURCE).decode()
+    require(helpers(current) == helpers(old), 'MTP helper changed beyond its documentation')
+    proof = dict(original_host_commit=commit, original_host_key=host_key,
+        original_host_source_commit=host['source_commit'], helper_AST_sha256=comparison.fingerprint(helpers(current)),
+        documentation_only_ignored=True, GPU_executed=False)
+    if composed:
+        replay = data[BOUNDARY_KEY]
+        require(all(replay[k] is True for k in ('passed', 'complete', 'ownership_closed'))
+                and replay['active'] is False and replay['GPU_executed'] is False
+                and replay['controller_sha256'] == digest(__file__)
+                and replay['controller_sha256'] == hashlib.sha256(speed.shared.gen.git(
+                    'show', replay['source_commit'] + ':' + SOURCE)).hexdigest()
+                and replay['helper_basis'] == proof
+                and replay['legacy_projection_sha256'] == comparison.fingerprint(scope_projection(current)),
+                'new full-route replay/source qualification required')
+        capture = {k: host['actual_capture_replay'][k] for k in ('path', 'sha256', 'bytes')}
+        require(comparison.fingerprint(replay['actual_capture']) == comparison.fingerprint(capture)
+                and replay['actual_route']['rows'] == 65536
+                and replay['actual_route']['MTP_prefill']['fallback_callback_index'] == 3,
+                'full-route capture or boundary differs')
+        proof.update(composed_source_commit=replay['source_commit'],
+                     composed_receipt_sha256=comparison.fingerprint(replay))
+    return proof
 
 
 @lru_cache(maxsize=1)
 def prefix_evidence():
     path = str(RESULT.relative_to(P))
-    prefix_commit = 'ef6a0269d15a0675d185e3639ef8f9c04515cd2c'
-    failed_commit = 'be6629074b33d6cb2d3074876f44cdf8bd78a73d'
-    name = 'cache_map_prefill_curve_v5'
+    prefix_commit = '69ec5bad89becbac4c2ce64507aa92528982fe5c'
+    failed_commit = '86c02f5112043329fd67771725ef5a2ab5c0e9ce'
+    name = 'cache_map_prefill_curve_v6'
     return (prefix_commit,
         json.loads(speed.shared.gen.git('show', prefix_commit + ':' + path))[name],
         json.loads(speed.shared.gen.git('show', failed_commit + ':' + path))[name])
@@ -416,25 +490,35 @@ def prefix_evidence():
 
 def prefix_qualification(row, *, check):
     commit, old, failed = prefix_evidence()
-    record = entry.model.ROOT / 'prefill-curve-v5' / 'record.json'
+    record = entry.model.ROOT / 'prefill-curve-v6' / 'record.json'
     full = json.loads(record.read_text())
     require(comparison.fingerprint(compact(full)) == comparison.fingerprint(failed)
             and failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
-            and failed['ownership_closed'] and not failed['active'], 'preserve original failed V5 receipt')
+            and failed['ownership_closed'] is False and not failed['active']
+            and len(failed['processes']) == 8 and not failed['processes'][7]['passed'],
+            'preserve original failed V6 receipt')
+    archived = json.loads(speed.shared.gen.git('show',
+        '86c02f511:' + str(RESULT.relative_to(P))))['cache_map_prefill_curve_v6_failure_diagnosis']
+    closure = archived['posthoc_owner_closure']
+    require(closure['all_original_PIDs_absent'] is True and closure['owned_session_empty'] is True
+            and closure['normal_native_exit_qualified'] is False,
+            'independent original failed-session closure required')
+    for identity in closure['owned_identities']:
+        live = base.supervision.identity(identity['pid'])
+        require(not live or live['start_ticks'] != identity['start_ticks'], 'original failed owner remains live')
     require(old['stage'] == 'running' and old['host_passed'] and old['ownership_closed']
-            and not old['active'] and len(old['processes']) == 3
-            and comparison.fingerprint(old['processes']) == comparison.fingerprint(failed['processes'][:3]),
-            'only the complete committed three-process prefix may be inherited')
+            and not old['active'] and len(old['processes']) == 7
+            and comparison.fingerprint(old['processes']) == comparison.fingerprint(failed['processes'][:7]),
+            'only the complete committed seven-process prefix may be inherited')
     for name in ('binary', 'native_source_commit', 'native_validation_probe', 'configuration',
                  'environment_template', 'python_contract', 'python_selected', 'template', 'boot', 'driver'):
         require(comparison.fingerprint(row[name]) == comparison.fingerprint(old[name]),
                 'inherited prefix configuration differs: ' + name)
     recovered = {name: hashlib.sha256(raw).hexdigest() for name, raw in
                  speed.shared.gen.blobs(P, full['source_commit'], full['sources'])}
-    require(recovered == full['sources'] and set(row['sources']) - set(recovered) == set(HOST_TESTS)
-            and not set(recovered) - set(row['sources'])
+    require(recovered == full['sources'] and set(row['sources']) == set(recovered)
             and {name for name in recovered if recovered[name] != row['sources'][name]} ==
-                {SOURCE, 'tools/sycl/gdn_model_sources.py'}
+                {SOURCE, HOST_TESTS[1]}
             and all(row['sources'][name] == digest(P/name)
                     for name in (SOURCE, 'tools/sycl/gdn_model_sources.py', *HOST_TESTS)),
             'undeclared inherited-prefix input change')
@@ -457,13 +541,13 @@ def prefix_qualification(row, *, check):
                 and normalized(row['plans'][i]) == normalized(old['plans'][i]),
                 'incomplete or different inherited request process')
     proof = dict(record_commit=commit, record_path=str(record), record_sha256=digest(record),
-        process_indices=[0, 1, 2], freshly_executed=False, failed39K_inherited=False,
+        process_indices=list(range(7)), freshly_executed=False, failed64K_inherited=False,
         original_source_commit=old['source_commit'], recovered_controller_inputs=len(recovered),
-        changed_controls=[SOURCE, 'tools/sycl/gdn_model_sources.py'],
-        limits='All three successful planned prefix processes retained;no selection by speed. Same native/config/requests,with only source-admission/controller changes. V5/process3 stays failed. New native processes start at index3;descriptive curve,not a causal speed gain.')
+        changed_controls=[SOURCE, HOST_TESTS[1]],
+        limits='All seven successful planned V6prefix processes retained;no selection by speed. Same native/config/requests;only controller/host-test changes. V6/process7stays failed. New native processes start at index7;descriptive curve,not a causal speed gain.')
     if check:
         require(comparison.fingerprint(row['inherited_prefix']) == comparison.fingerprint(proof)
-                and comparison.fingerprint(compact(row)['processes'][:3]) == comparison.fingerprint(old['processes'])
+                and comparison.fingerprint(compact(row)['processes'][:7]) == comparison.fingerprint(old['processes'])
                 and all(comparison.fingerprint(row['request_hashes'].get(k)) == comparison.fingerprint(v)
                         for k, v in old['request_hashes'].items()), 'inherited prefix evidence changed')
     return old, proof
@@ -474,27 +558,58 @@ def inherit_prefix(row):
     row.update(processes=copy.deepcopy(old['processes']), request_hashes=copy.deepcopy(old['request_hashes']),
                inherited_prefix=proof)
     row['plan'].update(
-        repetitions='Reuse all three complete V5prefix processes at ef6a0269d unchanged;seven new ordered processes at indices3..9,four requests each. First use separate;median of subsequent3 is the length unit. One independent process per length;not process-variance evidence.',
-        stopping='Preserve V5/process3 failed and do not reuse its39Ksamples. Stop new scope on any original budget/source/provider/owner/clock/body/route/validation/fault failure;no retry or replacement. Commit each new process before the next. Full15model hashes at new prepare/final,quick identities throughout.',
-        retention='Keep one original V5record for immutable prefix/source-map verification;retire its raw logs/JIT after useful failed/successful evidence and original inputs are recovered. Preserve compact points/fits and source identities;no new native generation.')
+        repetitions='Reuse all seven complete V6prefix processes at69ec5bad8 unchanged;three new ordered processes at indices7..9,four requests each. First use separate;median of subsequent3 is the length unit. One independent process per length;not process-variance evidence.',
+        stopping='Preserve V6/process7failed and do not reuse its64Ksample. Only the reviewed exact63-row callback may use token;all other gates/budgets unchanged. Stop on any source/provider/owner/clock/body/route/validation/fault failure;no retry/replacement. Commit each new process before next. Full15model hashes at new prepare/final,quick identities throughout.',
+        retention='Keep original V6record/runtime inventory for immutable prefix/source-map verification;retire ended raw/research after publication. Full64Kcapture is only for committed composition replay,not continued admission. Preserve compact points/fits and source identities;no new native generation.')
     prefix_qualification(row, check=True)
 
 
 def replay():
-    data = base.committed(RESULT); failed = data[FAILED_KEY]
-    require(PARSER_KEY not in data and failed['stage'] == 'failed' and not failed['passed']
-            and failed['ownership_closed'] and not failed['active'] and
-            failed['posthoc_owner_closure']['original_outcome_retained'], 'preserve the closed failed model scope')
-    fixture = failed['parser_replay_consumer']; path = Path(fixture['path']); raw = path.read_bytes()
-    require(len(raw) == fixture['bytes'] <= 16384 and digest(path) == fixture['sha256']
-            and 0 <= fixture['begin'] < fixture['end'] == len(raw), 'original failed capture changed')
-    route = request_route(raw[fixture['begin']:fixture['end']].decode(), dict(read=1286, trace_progress=True))
+    data = base.committed(RESULT)
+    require(BOUNDARY_KEY not in data, 'one full-route boundary replay only')
+    basis = boundary_qualification(composed=False)
+    parser_qualification(include_boundary=False)
+    original = data['cache_map_prefill_curve_v6']
+    require(original['stage'] == 'failed' and original['passed'] is False
+            and original['complete'] is False and original['ownership_closed'] is False
+            and original['active'] is False, 'preserve the failed V6 outcome')
+    host = data['cache_map_mtp_boundary_host_v1']
+    fixture = {k: host['actual_capture_replay'][k] for k in ('path', 'sha256', 'bytes')}
+    path = Path(fixture['path']); raw = path.read_bytes()
+    require(len(raw) == fixture['bytes'] <= 1 << 20 and digest(path) == fixture['sha256'],
+            'original full64K capture changed')
+    text = raw.decode()
+    marker = 'strata prefill policy: requested=throughput route=layer-major tokens=65536 chunk=8192'
+    require(text.count(marker) == 1, 'one exact64K request window required')
+    window = text[text.index(marker):]
+    route = request_route(window, dict(read=65537, trace_progress=True))
+    require(route['rows'] == route['residual_gpu_rows'] == 65536 and not route['split']
+            and route['residual_host_bytes'] == 0 and route['actual_route'] == 'layer-major'
+            and route['actual_operator_chunk'] == 8192
+            and route['GDN_FP16_storage_calls'] == route['GDN3_calls'] == 288
+            and route['MTP_prefill']['fallback_callback_index'] == 3,
+            'full64K route differs beyond the declared boundary')
+    mutations = [
+        ('path=token mode=2 cells=8192', 'path=batched mode=2 cells=8192'),
+        ('path=token mode=2 cells=8192', 'path=token mode=1 cells=8192'),
+        ('path=token mode=2 cells=8192', 'path=token mode=2 cells=8191'),
+        ('tokens=65536 chunk=8192', 'tokens=65535 chunk=8192'),
+    ]
+    for before, after in mutations:
+        require(window.count(before) == 1, 'ambiguous full-route negative control')
+        try:
+            request_route(window.replace(before, after), dict(read=65537, trace_progress=True))
+        except RuntimeError:
+            continue
+        raise RuntimeError('full-route mutation accepted: ' + before)
     evidence = dict(source_commit=speed.shared.gen.git('rev-parse', 'HEAD').decode().strip(),
-        passed=True, complete=True, ownership_closed=True, GPU_executed=False,
-        controller_sha256=digest(__file__), fixture={k: fixture[k] for k in ('path', 'sha256', 'bytes', 'begin', 'end')},
-        failed_scope=FAILED_KEY, actual_route=route,
-        limits='Parser replay of the original unchanged bytes only;V3remains failed,incomplete and externally terminated. No model,numerical,normal-teardown or speed qualification.')
-    data[PARSER_KEY] = evidence; write(RESULT, data)
+        passed=True, complete=True, ownership_closed=True, active=False, GPU_executed=False,
+        controller_sha256=digest(__file__), actual_capture=fixture, helper_basis=basis,
+        legacy_projection_sha256=comparison.fingerprint(scope_projection(Path(__file__).read_text())),
+        failed_scope='cache_map_prefill_curve_v6', actual_route=route,
+        full_route_negative_controls=len(mutations),
+        limits='Host-only replay of unchanged original64K bytes through the composed route. V6stays failed/incomplete and externally terminated;no model,numerical,normal-teardown or speed qualification. Raw capture is not a later admission dependency.')
+    data[BOUNDARY_KEY] = evidence; write(RESULT, data)
     print(json.dumps(evidence), flush=True)
 
 

@@ -32,10 +32,10 @@ class ContinuationGuards(unittest.TestCase):
     def test_original_parser_and_inherited_controls(self):
         self.assertTrue(curve.selfcheck()['passed'])
         self.assertTrue(curve.parser_qualification()['passed'])
-        self.assertEqual(curve.ROOT.name, 'prefill-curve-v6')
-        self.assertEqual(curve.KEY, 'cache_map_prefill_curve_v6')
+        self.assertEqual(curve.ROOT.name, 'prefill-curve-v7')
+        self.assertEqual(curve.KEY, 'cache_map_prefill_curve_v7')
         curve.prefix_qualification(self.row, check=True)
-        self.assertEqual([p['index'] for p in self.row['processes']], [0, 1, 2])
+        self.assertEqual([p['index'] for p in self.row['processes']], list(range(7)))
 
     def test_source_mutations_rejected(self):
         source = Path(curve.__file__).read_text()
@@ -46,9 +46,9 @@ class ContinuationGuards(unittest.TestCase):
             ("STRATA_SYCL_PREFILL_GDN_FP16='1'", "STRATA_SYCL_PREFILL_GDN_FP16='0'"),
             ('import math\n', 'import math\nimport decimal\n'),
             ('import ast\n', 'import ast as renamed_ast\n'),
-            ("ROOT = entry.model.ROOT / 'prefill-curve-v6'", "ROOT = entry.model.ROOT / str('prefill-curve-v6')"),
-            ("\nKEY = 'cache_map_prefill_curve_v6'\n", "\nKEY = 'cache_map_prefill_curve_v9'\n"),
-            ("\nKEY = 'cache_map_prefill_curve_v6'\n", "\nKEY = 'cache_map_prefill_curve_v5'\n"),
+            ("ROOT = entry.model.ROOT / 'prefill-curve-v7'", "ROOT = entry.model.ROOT / str('prefill-curve-v7')"),
+            ("\nKEY = 'cache_map_prefill_curve_v7'\n", "\nKEY = 'cache_map_prefill_curve_v9'\n"),
+            ("\nKEY = 'cache_map_prefill_curve_v7'\n", "\nKEY = 'cache_map_prefill_curve_v5'\n"),
             ("'tools/sycl/official_model_entry.py', 'tools/sycl/gdn_model_sources.py')",
              "'tools/sycl/official_model_entry.py', 'tools/sycl/other.py')"),
             ("HOST_TESTS = ('tools/test_sycl_gdn_model_sources.py',",
@@ -56,7 +56,7 @@ class ContinuationGuards(unittest.TestCase):
             ('    inherit_prefix(row)\n', ''),
             ('    inherit_prefix(row)\n', '    inherit_prefix(row)\n    inherit_prefix(row)\n'),
             ('def current(row):\n    prefix_qualification(row, check=True)\n', 'def current(row):\n'),
-            ('mtp = entry.template.mtp_route(text, n)', 'mtp = mtp_boundary_route(text, n)'),
+            ('mtp = mtp_boundary_route(text, n)', 'mtp = entry.template.mtp_route(text, n)'),
         ]
         for before, after in cases:
             self.assertEqual(source.count(before), 1, before)
@@ -94,6 +94,21 @@ class ContinuationGuards(unittest.TestCase):
             with self.subTest(name=name), patch.object(curve.base, 'committed', return_value=data), \
                     self.assertRaises(RuntimeError):
                 curve.parser_qualification()
+
+    def test_boundary_replay_proof_mutations_rejected(self):
+        real = curve.base.committed
+        for fields, value in [
+                (('passed',), 1), (('GPU_executed',), 0),
+                (('controller_sha256',), '0'*64),
+                (('actual_capture', 'bytes'), 1),
+                (('actual_route', 'MTP_prefill', 'fallback_callback_index'), 4)]:
+            data = copy.deepcopy(real(curve.RESULT))
+            node = data[curve.BOUNDARY_KEY]
+            for field in fields[:-1]: node = node[field]
+            node[fields[-1]] = value
+            with self.subTest(fields=fields), patch.object(curve.base, 'committed', return_value=data), \
+                    self.assertRaises(RuntimeError):
+                curve.boundary_qualification()
 
 
 class MTPBoundaryRoute(unittest.TestCase):
