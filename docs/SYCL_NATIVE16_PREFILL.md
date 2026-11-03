@@ -1301,8 +1301,9 @@ reviews cover the inventory's887engine/workspace,136host and367GPU/support
 entries;the last is explicitly partial for individual consumer/source checks.
 Main has recovered the selected558sources/1452compiler inputs and the original
 six/seven source pins and recipe controllers for two closed CPU fixtures.
-A145-file/81403396B retirement subset is ready;selected9outputs,source/recipe
-metadata and current providers stay. Actual local serving configurations also
+A145-file/81403396B subset is now physically retired;selected admission and all
+nine output hashes pass again afterwards. Source/recipe metadata and current
+providers stay. Actual local serving configurations also
 refer to`build-sycl-aot/strata`and`build-vision-sycl/bin/strata-vision`;preserve
 these until validated migration. Review remaining original source/recipe and
 current byte consumers before the observer build. See
