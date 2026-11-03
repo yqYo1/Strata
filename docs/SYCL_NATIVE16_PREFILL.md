@@ -1311,6 +1311,17 @@ V2preparation now passes;its nine compile/link commands normalize exactly to
 the unexecuted V1plan,with the same selected fallback and header bytes. V1is
 archived at`a607099ac`;its duplicate current result is retired to Git history.
 Commit preparation and a separate bounded device plan before device execution.
+The V2CPU build now passes all nine commands at`ca32391db`,with721actual
+compiler inputs and25external linker inputs. The two ELFs remain unexecuted.
+The prospective`check_qsa_subgroup_rows.py`uses one fresh process each for traced
+smoke,full numerical,and speed ordinals0..2,in that order. Native startup,
+runtime-ready and cleanup gates check the actual executable,immutable safety
+environment,qualified providers and clock continuity. Require normal0,quiet
+final validation and no freshfault. Smoke has two independent-oracle/selected
+prefix comparisons;full numerical has11cases,including262144-cell component
+addresses rather than a full model context. Timing keeps72individual intervals
+per process over six synthetic cases and the existing10ms/clock-cost gates.
+Commit each prepared case and result before the next;do not retry a failed case.
 The paired component fixture gains an uncompiled`--current-prefill`mode only
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
 cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
