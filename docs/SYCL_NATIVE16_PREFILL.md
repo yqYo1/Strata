@@ -4810,6 +4810,14 @@ shapes through an explicit decode policy,leaving MTP and both prefill paths on
 their original implementation. In particular,short prompt reads also call the
 Verifier:changing every Verifier graph globally would couple prefill and decode.
 Keep phase-distinct graph selection and state handoff in the next model plan.
+The source candidate at`3a0645d89`now supplies those separate phase/token caches
+and explicit prompt forwarding,including callback selection and retirement of
+both phases. Only complete graph families become reusable. The opt-in
+`STRATA_SYCL_DECODE_Q6_COLUMNS=1`selects only the28component-eligible shapes;
+the default0and all prompt calls keep their reference kernels. Actual captured
+Q6 route counts are logged per phase/token key. The committed host/syntax plan
+is`verify_window_policy_host_v1`;it does not build or select a model engine.
+GPU lifecycle,whole-model performance and physical-context checks remain pending.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
