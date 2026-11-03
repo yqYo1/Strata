@@ -97757,7 +97757,7 @@
     "decision": "Preserve failed pre-owner admission. A new V2scope must explicitly pin the already-committed unchanged resource helper as well as the new adapter;no native or benchmark trial occurred."
   },
   "cache_map_prefill_curve_v2": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "11682209d9c443684b1c1e4fd4112d6be839c7fe",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
@@ -98344,7 +98344,36 @@
         "environment_sha256": "09342be8da5f48d05c56a37930af5dd3422c30524fdfcbaaa1593437a80a49b1"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 1286,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": false,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
@@ -98423,6 +98452,21 @@
         "passed": true
       }
     ],
+    "posthoc_owner_closure": {
+      "verified_at": "2026-11-03T00:37:14.293156+00:00",
+      "sid": 622954,
+      "start_ticks": 201464210,
+      "direct_child_reaped": true,
+      "direct_identity_gone": true,
+      "owned_session_empty": true,
+      "native_receipt_absent": true,
+      "native_log_absent": true,
+      "model_not_started": true,
+      "original_observation_complete": false,
+      "original_outcome_retained": true,
+      "qualifies_run": false
+    },
+    "failure_mechanism": "CLI rejected --prefill-exact-tokens1286 at argparse before server/native startup;explicit short-diagnostic parsing was missing. Native/model did not run;no fault. Keep original failed/incomplete command observation. New V3scope must test every actual CLI argument vector before native launch.",
     "source_inputs": {
       "files": 277,
       "aggregate_sha256": "85fe4552a6f2ac0d3770fc23e741593a6e9e2ee8bbcb6e64933c133a5763e96f"
