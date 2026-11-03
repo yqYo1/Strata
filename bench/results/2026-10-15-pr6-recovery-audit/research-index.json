@@ -21853,167 +21853,6 @@
     "delivery_failure": "Worker check/send returned runtime_unavailable and no accepted worker_done;host runtime remained reachable. Final agent turn ended;Main fenced the dispatch and closed its exact external PTY. Do not label the Orca task successful.",
     "next_launch_requirement": "Preserve workspace-write/on-request and named report root;explicitly enable sandbox_workspace_write.network_access=true for Orca IPC as in prior successful launches,and verify the chosen executable/bound-run connection before research."
   },
-  "qsa_subgroup_rows_contract_20261103": {
-    "classification": "decision_support",
-    "status": "reviewed_source_only",
-    "schedulable_now": false,
-    "source_candidate_commit": "f984402bfd8d5aac524087b0e6ea5e21a778a7d8",
-    "source_sha256": {
-      "src/kernels/sycl/qsa_bf16_prefix.cpp": "b16a2a5efb9a6e0d13fcbb4d1590c6644e25f3684b61f500fd908b17696fd6be",
-      "include/strata/kernels/qsa_bf16_prefix.hpp": "080ad9a175d031cffa533d5af4c42e0311a2b7b93515428dcca8e9390f3903be",
-      "tests/sycl/qsa_bf16_prefix.cpp": "ed70bc4bc67b5edefa75b7ed1ebd5322b68338673c4285cecaa4903bdf86788b",
-      "tests/sycl/qsa_bf16_prefix_layout_bench.cpp": "461ca61a19c1d5b7e741d3a587bc92937eb9933422f84a6817b73848d6c93444"
-    },
-    "baseline_source_sha256": "4f9f815c9baae709f919f6d5ad1af04677c10d8c13c7597b3857cf81567ae192",
-    "baseline_native_recipe": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
-    "report_path": ".cache/research/2026-11-03/qsa_subgroup_rows_contract_20261103.md",
-    "report_budget_bytes": 12288,
-    "question": "Audit the new concrete subgroup-private32ID row lookup against the exact selected ordered-exp kernel:SG16collective convergence/source-lane semantics,all remaining barrier dependencies,readonly ownership/bounds/page mapping,duplicated OR diagnostics,tail/zero/NaN/padded-head behavior,local payload and fixture coverage. Give at most3essential corrections or counterexamples before Main builds;no implementation or performance prediction.",
-    "prerequisites": [
-      "Closed current resource pair supplies a27.085s nonexclusive attention span;hardware limiter remains unknown.",
-      "Main confirmed current selected prefix source is byte-identical to reviewed6e40/4f9f815c.",
-      "New independently authored source and compile-time numeric/performance fixture arms exist atf984402bf;no production selector,build or device run."
-    ],
-    "nonduplication": "This audits a new concrete row-ownership/barrier transform. It changes neither isolated softmax summation nor two-query union;do not repeat those closed surveys.",
-    "prior_ids": [
-      "current_qsa_prefix_work_geometry_audit_20261023",
-      "qsa_cached_parallel_sum_contract_scope",
-      "qsa_pair_attention_contract_20261029"
-    ],
-    "consumer": "Main component source/build gate after the active current-engine length curve closes;no compilation or device qualification yet.",
-    "next_review": "At the component-build gate,after positive logical-page-overflow fixture coverage and fallback-reader migration;retire the source report once essential proof is consumed.",
-    "model": "gpt-6-luna",
-    "effort": "high",
-    "ownership": "Only the named report;no Git,build/tests,GPU/profiler,project/system process inspection,product edits or child workers. Main owns implementation and serialized tests.",
-    "run": "run_87cd7126383f",
-    "terminal": "term_620e73be-59d1-4dfe-95c9-bd0b642e9417",
-    "task": "task_a2599ad434cd",
-    "dispatch": "ctx_678d38e7555c",
-    "worker_done_accepted": true,
-    "ownership_closed": true,
-    "report_sha256": "9ed63349b98c908b6deb5e634e031826cd8e2bf1140792600f9c3f6198092730",
-    "report_bytes": 11176,
-    "source_review": {
-      "outcome": "accepted_with_scope_corrections",
-      "model": "gpt-6-luna",
-      "effort": "max",
-      "reviewer_sha256": "be1de4708fdfdf4684c097477633b30a3a0a6b95972158bc7ebd777f09d32e16",
-      "reviewer_bytes": 6725,
-      "source_blockers": [],
-      "conclusion": "No source-level correctness blocker was found for the SubgroupRows specialization. It changes row-ID ownership/staging and removes the row-publication barrier; it leaves the selected ordered-exp arithmetic and BF16/FP32 contract unchanged. This is source evidence only.",
-      "collectives": "Wrapper selects CacheQueries+VectorK4+VectorV4+OrderedExp+SubgroupRows. Active row_at calls are K (i%32), V (i/64), and softmax (lane/lane+16); all are unconditional in SG16, with selected IDs 0..15. K/V half mappings check out. SYCL rev.12 requires converged group calls; select_from_group leaves out-of-range IDs unspecified and lists no remote-ID uniformity precondition.",
-      "bounds_and_diagnostics": "resolve_row checks negative IDs, logical page bounds before page-table read, live prefix and physical-page bounds before forming the logical packed row. Logical (page,KV-head,offset) mapping is preserved. Repeated bad_rows/live observations are private OR predicates reduced once; only their cost may change. Static SLM delta is 248 bytes; cached-Q score33 payload is 20,036 to 19,788 bytes. Actual allocation/admission is unknown.",
-      "corrections": [
-        "List the retained initial item.barrier before cached-Q loads.",
-        "Fixture IDs cover negative, >=live_cells and invalid physical pages, but not positive cell >= logical_pages*page_size; add that case or keep it an explicit bounds gate.",
-        "Two-byte-only scratch alignment needs STRATA_QSA_PACKED_GUARD=17; fixture default is 16. Pin the define before claiming coverage.",
-        "Query NaN is tested; K/V scale poison is +Inf (0x7c00), not NaN."
-      ],
-      "unexecuted_gates": [
-        "No compile, device run, fixture execution, speed comparison, selector, model-route or physical-context qualification. Compiler/backend and collective execution remain open.",
-        "Wait for the active baseline curve to close; retire/migrate the actual adaptive-fallback reader before a native build. This review is not build/device qualification.",
-        "Then pin candidate/fixture/controller/generated inputs, macros, recipe, environment and executables; run bounded component correctness (including the page-overflow case) and a separately frozen comparison. No model trial unless the component speed gate passes.",
-        "Do not repeat the failed isolated parallel-sum screen or infer speed from the barrier count or 27.085s interval."
-      ],
-      "primary_references": [
-        "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
-        "https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html"
-      ],
-      "new_research_scopes": []
-    },
-    "closure": {
-      "dispatch": "completed",
-      "worker": "succeeded",
-      "stage": "settled",
-      "accepted_worker_done": "msg_ccb35d853850",
-      "delivery_acknowledged": "delivery_207925c7b748",
-      "physical_worker_observation": "exited",
-      "exact_worker": true,
-      "terminal_connected": false,
-      "exit_cause": "operator_close",
-      "external_terminal_resource": "retained metadata;physical terminal exited",
-      "verified_at": "2026-11-03T01:37:11.314176+00:00"
-    },
-    "transaction_retirement": {
-      "stage": "retired",
-      "files": 3,
-      "bytes": 12787,
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261103-failed-short-curves.json",
-      "source_report_retained_for_component_gate": true,
-      "manifest_sha256": "46bde16f3d3c21dc4ec432ebef0a542ca6af44e05bfa6491b6f14d0258a4bd57",
-      "deleted_paths_verified": true
-    },
-    "fixture_followup": {
-      "status": "source_only",
-      "file": "tests/sycl/qsa_bf16_prefix.cpp",
-      "sha256": "b73cb8050c4d8a040d85c8d4b5b0eda1fe545382c101d831dba62fb02178d266",
-      "original_candidate_commit": "f984402bfd8d5aac524087b0e6ea5e21a778a7d8",
-      "original_fixture_sha256": "ed70bc4bc67b5edefa75b7ed1ebd5322b68338673c4285cecaa4903bdf86788b",
-      "positive_overflow_IDs": [
-        "logical_pages*page_size",
-        "(logical_pages+1)*page_size",
-        "INT32_MAX"
-      ],
-      "expected": "All selected IDs masked,full output zero,guards/input bytes unchanged;restore original IDs and output.",
-      "compile_admission": "STRATA_QSA_TEST_SUBGROUP_ROWS now requires STRATA_QSA_PACKED_GUARD=17 at preprocessing.",
-      "compiled": false,
-      "executed": false,
-      "production_kernel_changed": false,
-      "next": "After current curve closure and fallback-reader migration,pin exact build/source/macros and run bounded component correctness/performance gates.",
-      "source_commit": "08fc2eff6514c4513592454b0b8942f8e6ee4167"
-    },
-    "component_shapes_followup": {
-      "status": "source_only",
-      "file": "tests/sycl/qsa_bf16_prefix_layout_bench.cpp",
-      "sha256": "04aa87567fe09c294284aa5173f0d67a43115ea170e7466065b15712a2abb039",
-      "original_file_sha256": "461ca61a19c1d5b7e741d3a587bc92937eb9933422f84a6817b73848d6c93444",
-      "command": "--current-prefill [PROCESS0..2]",
-      "required_compile_arm": "STRATA_QSA_BENCH_SUBGROUP_ROWS",
-      "shapes": [
-        {
-          "cells": 65536,
-          "queries": 8192,
-          "cap": 2051
-        },
-        {
-          "cells": 114688,
-          "queries": 8192,
-          "cap": 2051
-        },
-        {
-          "cells": 117488,
-          "queries": 2800,
-          "cap": 2051
-        }
-      ],
-      "patterns": [
-        "gather",
-        "clustered"
-      ],
-      "valid_pages_and_IDs": true,
-      "constant_query_position": true,
-      "causal_replay": false,
-      "timed": "Unchanged full API admission,prefix refresh,attention and checked completion;uploads,readbacks and bit/guard checks outside timing.",
-      "compiled": false,
-      "executed": false,
-      "production_selector_added": false,
-      "next": "Freeze actual recipe/comparison and satisfy native-generation retirement before component build.",
-      "source_commit": "e47ad6e1135f693a750ad248c3deb4eade6e824f"
-    },
-    "timing_gate_source_followup": {
-      "status": "source_only_uncompiled",
-      "file": "tests/sycl/qsa_bf16_prefix_layout_bench.cpp",
-      "sha256": "bf905d61162a69c0d3a311133f5bfbdfd88c9fd4120dbe57dd9db48bbdd76b61",
-      "scope": "STRATA_QSA_BENCH_SUBGROUP_ROWS --current-prefill only",
-      "minimum_interval_ms": 10,
-      "clock_probe_pairs": 4096,
-      "clock_statistic": "maximum observed consecutive steady-clock pair",
-      "maximum_clock_fraction": 0.01,
-      "invalid_interval": "Preserve diagnostic,stop;new prospective plan before another collection.",
-      "new_native_or_math_qualification": false,
-      "next": "Migrate consumed adaptive fallback reader,freeze compiler/dependency/generated recipe,then build and run numeric/smoke/timing phases serially."
-    }
-  },
   "same_native_short_variability_20261103": {
     "classification": "decision_support",
     "status": "reviewed_closed_no_source_cause",
@@ -22208,8 +22047,8 @@
   },
   "iq3_s_affine_u4_feasibility_20261103": {
     "classification": "decision_support",
-    "status": "eligible-before-dispatch",
-    "schedulable_now": true,
+    "status": "reviewed-source-feasibility",
+    "schedulable_now": false,
     "finite_question": "Source/algebra/AVX2 feasibility of exact unsigned affine U4 IQ3_S: q=(w+15)/2, dot=2*dot(q,a)-15*sum(a), preserving original32-value scale groups and FP32 accumulation boundaries. Compare134B/block with original110B,166B magnitude/sign and262B signed-int8;no performance or model-quality claim.",
     "prerequisites": {
       "source_levels_checked": {
@@ -22233,24 +22072,57 @@
         "include/strata/artifact/iq_codebooks.hpp": "302000e6a85fa7224bff9a10155601a82391b7a64d5ee76fba1f76b537bb6c71"
       }
     },
-    "novelty_review": {
-      "path": ".cache/research/2026-11-03/affine_u4_scope_review_20261103.json",
-      "sha256": "27eb102ca87fc56982a976f4a1dbd779c31f9aa6d856f8b8a79c8da946bd70d5",
-      "bytes": 3074,
-      "reviewer": "native Codex gpt-6-luna max",
-      "digest": "Absent from indexed166B/262B representation alternatives;distinct from failed paired-GU dataflow. Eligible source feasibility only;actual CPU relevance/NT/RAM and frozen gates still required for any performance trial."
-    },
     "previous_scope_keys": [
       "cpu_decode_representation_methods_20261102",
       "iq3_s_paired_gu_dataflow_methods_20261103"
     ],
     "report": {
-      "path": ".cache/research/2026-11-03/iq3_s_affine_u4_feasibility_20261103.md",
-      "working_byte_budget": 6144
+      "path": "docs/research/iq3-s-affine-u4.md",
+      "sha256": "203a0d2872ea2cba25ef17572e2208affa5eab61e166f11577fe6861652b5c0f",
+      "bytes": 6115
     },
     "ownership": "Research writes only its named report;Main owns implementation,tests/builds/GPU. Orca Luna launch must verify report access and actual model;no steering.",
-    "consumer": "Decide whether a134B exact expanded CPU expert representation is feasible before preparing an owned comparator.",
+    "consumer": "Use verified affine/lane mapping for the Main-owned CPU representation comparison if current decode attribution establishes relevance.",
     "limits": "Source feasibility does not establish CPU/RAM bottleneck,workload reuse,headroom,speedup or unchanged model behavior.",
-    "next_review": "After one finite Orca report and native Luna-max review;retire transaction paperwork after accepted settlement."
+    "next_review": "After Main current-engine CPU attribution;retain substantive6115B report,retire completed dispatch/review paperwork.",
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "effective_model_verified": true,
+    "accepted_worker_done": true,
+    "ownership_closed": true,
+    "main_reads_full_report": false,
+    "review": {
+      "reviewer": "native Codex gpt-6-luna",
+      "effort": "max",
+      "report_sha256": "203a0d2872ea2cba25ef17572e2208affa5eab61e166f11577fe6861652b5c0f",
+      "review_sha256": "2e121bf7aee1eccb282372b3916002a6787f4aa70aaeac9c4b314da881907ccb",
+      "verdict": "Source algebra,134B/block,bounds and per-four-value correction checked;no speed claim. Scalar Q8_K bsums correction does not preserve original integer-lane/FP32-FMA schedule.",
+      "citation_limit": "Intel Intrinsics Guide citation is general;verify instruction-specific contracts during implementation review."
+    },
+    "operational_digest": [
+      "Signed odd IQ3_S levels admit exact unsigned affineU4 code q=(w+15)/2,keeping original half-d/four-scale metadata at134B/block.",
+      "Preserve each four-value integer lane before FP32 conversion/FMA;whole-block scalar correction is insufficient.",
+      "Exact unpack/layout/lifetime and actual activation contract still require an owned conformance comparator.",
+      "Actual CPU decode cost,NT mix,RAM headroom,setup-inclusive speed and model qualification remain unmeasured."
+    ],
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "Attribute current selected-engine CPU decode work separately from polling/waits.",
+        "Establish actual NT mix,expert dimensions and available RAM.",
+        "Commit setup-inclusive paired comparison and numerical/dispatch gates before performance execution."
+      ],
+      "next": "Main owns CPU decode attribution;no repeated broad representation survey."
+    },
+    "closure": {
+      "worker_done_accepted": true,
+      "outcome": "succeeded",
+      "worker_terminal_physically_closed": true,
+      "coordinator_terminal_physically_closed": true,
+      "delivery_acknowledged": true,
+      "reclaimable_workers": 0
+    },
+    "source_ancestry_checked_by_Main": true,
+    "retention": "Keep the substantive6115B reference in Git;review after current-engine CPU attribution. Finished dispatch/review transactions have no remaining consumer."
   }
 }

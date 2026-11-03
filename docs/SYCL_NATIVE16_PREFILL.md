@@ -1270,107 +1270,25 @@ QSA references,with no fresh Orca scope currently schedulable. Main must check
 timer boundaries,split-job frequency,slot-1 ownership and current QSA source
 identity before choosing a bounded implementation or calibration. No native
 generation or retained request-window timeline is removed at this boundary.
-Current QSA prefix source is byte-identical to the reviewed`6e40`implementation
-(`4f9f815c`);the existing work-geometry/calibration reference applies to its
-unchanged kernel. A new component-only subgroup-row proposal keeps its cached-Q,
-KVvec4 and ordered-exp arithmetic. Each SIMD16 subgroup resolves the same32IDs
-into two private rows per lane,then uses bounded lane exchanges instead of a
-shared row publication. This removes one source workgroup barrier per tile and
-reduces declared local payload from20036to19788bytes;it duplicates read-only
-ID/page/flag lookups across eight subgroups. The
-[SYCL group-exchange contract](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html#select)
-requires valid participating lanes;the source keeps all lanes participating and
-all remote IDs within0..15. Cached-Q handoff and prior-PV retirement barriers stay.
-This independently authored proposal has no production selector,build or GPU
-qualification yet. Existing numerical and paired-component fixtures gain explicit
-compile-time arms for its current component consumer,including selected-kernel
-bit checks,an independent tensor oracle,tails,masks,NaNs,alignment and bounds.
-Orca Luna's source-contract report and native Luna-max review now close without
-a source blocker;the exact worker is settled and its terminal has exited.
-Keep the initial workgroup barrier in the source inventory. Before device
-qualification,the fixture now adds exact logical-page boundary,next-page and
-INT32_MAXselected-ID cases,checks zero output/guards/immutable inputs,and
-restores the original output. Its subgroup-row arm requires
-`STRATA_QSA_PACKED_GUARD=17`at preprocessing for the intended two-byte-only
-scratch alignment. These are uncompiled source changes;the future recipe must
-still pin that define. The scale poison is+Inf rather than NaN. None of these reviews is compilation,
-numerical execution or performance evidence. The baseline curve now closes at
-`51ddbbfaa`and the obsolete adaptive generation is retired after reader migration.
-The prospective`tools/sycl/qsa_subgroup_rows_component.py`recipe compiles four
-runtime/prompt files from the selected479a projection plus the reviewed QSA
-kernel and two current fixtures. Only its header is overlaid;other headers use
-the selected source. Seven strict C++20/SYCL units and two traced links produce
-numerical/paired component ELFs beside the unchanged model fallback. Source,
-compiler,header overlay,actual dependencies and external link inputs are pinned;
-the build has1800s/2GiB whole bounds and does not launch a GPU workload.
-The unexecuted V1plan closes at`a607099ac`before compilation;V2keeps its reviewed
-C++ sources/options and adds type-sensitive original/worker-proof identity.
-Four host tests now pass at`3a123bdde`,including those two proof-type mutations
-and the nine original negative controls;no legacy build products are reopened.
-V2preparation now passes;its nine compile/link commands normalize exactly to
-the unexecuted V1plan,with the same selected fallback and header bytes. V1is
-archived at`a607099ac`;its duplicate current result is retired to Git history.
-Commit preparation and a separate bounded device plan before device execution.
-The V2CPU build passes all nine commands at`ca32391db`,with721actual
-compiler inputs and25external linker inputs. That CPU-only receipt does not
-include the subsequent device qualification below.
-The prospective`check_qsa_subgroup_rows.py`uses one fresh process each for traced
-smoke,full numerical,and speed ordinals0..2,in that order. Native startup,
-runtime-ready and cleanup gates check the actual executable,immutable safety
-environment,qualified providers and clock continuity. Require normal0,quiet
-final validation and no freshfault. Smoke has two independent-oracle/selected
-prefix comparisons;full numerical has11cases,including262144-cell component
-addresses rather than a full model context. Timing keeps72individual intervals
-per process over six synthetic cases and the existing10ms/clock-cost gates.
-Commit each prepared case and result before the next;do not retry a failed case.
-The first smoke remains failed at`329310777`:the native runs4.3496s,exits0,
-passes two zero-error oracle/selected-prefix cases and cleanup,and leaves an
-empty session with quiet validation/no freshfault. Its supervisor fails only
-because the expected final footer was unread when checking pipe exhaustion.
-Original incomplete/ownership-unqualified flags remain. The CPU-only owned-pipe
-regression at`02aae8cba`reproduces that exact rejection. V2consumes the one exact
-footer before the unchanged strict EOF check;missing/extra output still fails.
-Commit green host protocol evidence before a new V2smoke;C++/ELFs stay unchanged.
-The host protocol now passes all three owned-pipe tests at`805647e7e`.
-Fresh V2smoke passes at`4466a940e`,including actual traced kernel enqueue.
-The separately committed full numerical plan`ac0e3dd4e`also passes all11cases:
-the largest component address space is262144cells,and every oracle/selected
-prefix comparison has zero absolute error. Input and packed/output guards pass.
-Both processes exit0,close their owned sessions,and report quiet validation,
-unchanged boot/driver and no freshfault. This is component correctness,not
-model quality or physical262144-token context qualification. All three fresh
-timing processes now close normally,with72eligible intervals each and no fresh
-fault. Every one of108paired rounds is slower with subgroup rows. The median
-candidate/reference ratios across processes are1.04558,1.03853and1.02986for
-gather,and1.10703,1.10776and1.10392for clustered IDs,in the shape order below.
-Reject this candidate for all six tested shapes;do not advance it to a model
-trial. Successful execution/numerical flags do not establish a gain. Preserve
-all216individual intervals and the unchanged selected552bmodel engine.
-The paired component fixture's`--current-prefill`mode covers
-for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
-cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
-It keeps a constant query position and is not a captured causal replay. The
-existing full-entry timing and alternating six rounds per arm stay unchanged;
-the measured timer eligibility and recipe remain in the closed compact result.
-These synthetic cases do not establish a model gain or hardware saturation.
-The experiment's manual CMake targets are
-`sycl_qsa_bf16_prefix_subgroup_rows_test`and
-`sycl_qsa_bf16_prefix_subgroup_rows_bench`,both excluded from the default build.
-The correctness target pins the subgroup-row arm,prefix33 comparisons and
-17-element scratch guards;both keep strict math flags. The owned manual build
-uses the equivalent pinned defines. The current-shape comparison uses three fresh
-process ordinals0..2,each with six alternating pairs for all six cases. Require
-each timed interval to reach10ms and clock-pair overhead below1percent of the
-shortest interval;an ineligible interval stops the screen and needs a new plan.
-The fixture enforces these limits for`--current-prefill`and
-records the maximum of4096consecutive steady-clock pairs after runtime-ready,
-before case allocation. This observed clock cost is not a universal bound.
-Compare matched per-case medians and process ratios without a blanket minimum
-gain. Keep traced smoke/component correctness separate from clean timing and
-retain the current engine as fallback. Exact compiler/dependency/generated
-inputs and supervision are pinned before execution. After publishing the closed
-rejection,recover its original source/recipe and retire rejected-only source,
-targets,controllers,ELFs and raw output. No new model performance record follows.
+Current QSA prefix source is restored byte-for-byte to the selected native
+`6e40`/`4f9f815c`implementation,including its header and maintained layout fixture.
+The independent subgroup-row publication experiment closes **rejected** at
+`0b2ae9fab`:all11numerical cases pass with zero error,while all108paired rounds
+across three fresh processes and six synthetic shapes are slower. Gather
+candidate/reference process-median ratios are1.04558,1.03853and1.02986;clustered
+ratios are1.10703,1.10776and1.10392,for cells/queries65536/8192,114688/8192and
+117488/2800respectively,all cap2051. Keep all216individual intervals in
+`qsa_subgroup_rows_device_v2`;no model trial or new speed record follows.
+The component's262144-cell cases are not full-model context qualification.
+Original source,recipes and full qualification/failure records are recoverable
+at`0b2ae9fab`and the unexecuted V1plan at`a607099ac`. The first footer-protocol
+failure stays failed in that archive;the corrected host test and all five fresh
+GPU processes close normally with no freshfault. Rejected-only exports,targets
+and controllers are retired. Independent bounds/guard fixtures and the typed
+retained-fixture proof remain. Source recovery verifies95inputs per comparison
+plan,558selected native sources,721compiled dependencies and both component ELFs.
+External artifact retirement is prepared with a path/hash/reason manifest;
+selected552bplus its eight same-build fixtures and separate PR6hold remain.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.

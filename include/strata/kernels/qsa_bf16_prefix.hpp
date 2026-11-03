@@ -46,13 +46,6 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *q, const QsaAttnPools &po
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
-// Component candidate: identical ordered-exp math with subgroup-private IDs.
-// One row-publication workgroup barrier is removed per32-cell tile,at the cost
-// of replicated read-only ID/page/flag lookups. No production selector yet.
-bool qsa_bf16_prefix_subgroup_rows_batch(const uint16_t *q, const QsaAttnPools &pools,
-    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
-    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
-    int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 
 // Diagnostic-only online state for one query, KV group and head row. Includes
 // padded head rows12..15; they follow the original state update too. Each

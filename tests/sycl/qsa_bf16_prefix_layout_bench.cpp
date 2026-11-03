@@ -1,5 +1,5 @@
 // Authored for Strata; repository LICENSE (MIT) applies.
-// Matched component pairs selected at compile time: KV layout,ordered exp or rows.
+// Matched component pairs selected at compile time; original K/KV or ordered exp.
 // Wall timing includes admission, prefix refresh, attention and checked drain;
 // uploads/readbacks/checks are outside timing. No physical-bandwidth claim.
 #include "strata/kernels/qsa_bf16_prefix.hpp"
@@ -19,11 +19,7 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
-#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
-constexpr auto baseline_attention=qsa_bf16_prefix_ordered_exp_batch;
-constexpr auto candidate_attention=qsa_bf16_prefix_subgroup_rows_batch;
-constexpr const char *baseline_name="ordered_exp", *candidate_name="subgroup_rows";
-#elif defined(STRATA_QSA_BENCH_ORDERED_EXP)
+#if defined(STRATA_QSA_BENCH_ORDERED_EXP)
 constexpr auto baseline_attention=qsa_bf16_prefix_kvvec4_batch;
 constexpr auto candidate_attention=qsa_bf16_prefix_ordered_exp_batch;
 constexpr const char *baseline_name="kvvec4", *candidate_name="ordered_exp";
@@ -34,30 +30,7 @@ constexpr const char *baseline_name="kvec4", *candidate_name="kvvec4";
 #endif
 std::shared_ptr<sycl_backend::Runtime> rt;
 int process_id=0;
-#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
-bool current_timing=false;
-constexpr double minimum_interval_ms=10.0, maximum_clock_fraction=.01;
-constexpr int clock_probe_pairs=4096;
-double maximum_clock_pair_ms=0;
-static_assert(std::chrono::steady_clock::is_steady);
-#endif
 void require(bool x,const char *s) { if (!x) throw std::runtime_error(s); }
-#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
-void probe_clock() {
-  for (int i=0;i<clock_probe_pairs;++i) {
-    const auto begin=std::chrono::steady_clock::now();
-    const auto end=std::chrono::steady_clock::now();
-    const double ms=std::chrono::duration<double,std::milli>(end-begin).count();
-    require(std::isfinite(ms) && ms>=0,"nonmonotonic timing probe");
-    if (ms>maximum_clock_pair_ms) maximum_clock_pair_ms=ms;
-  }
-  require(maximum_clock_pair_ms>0,"clock probe has no positive resolution");
-  std::cout<<"timing_contract minimum_interval_ms="<<minimum_interval_ms
-      <<" clock_probe_pairs="<<clock_probe_pairs
-      <<" maximum_clock_pair_ms="<<std::setprecision(12)<<maximum_clock_pair_ms
-      <<" maximum_clock_fraction="<<maximum_clock_fraction<<'\n';
-}
-#endif
 void drain() noexcept {
   sycl_backend::checked_cleanup([] { if (rt) rt->wait(); },[] {},"QSA pitch performance fixture drain");
 }
@@ -85,15 +58,11 @@ void gate(bool enabled,const char *phase) {
   if (!enabled) return;
   std::cout<<"QSA_BF16_READY "<<phase<<'\n';require(std::cin.get()=='X',"Main gate token");
 }
-void run(int cells,int queries,int cap,bool clustered,bool valid_only=false) {
+void run(int cells,int queries,int cap,bool clustered) {
   constexpr int Dim=256,Heads=24,KV=2,Page=16;
-  if (valid_only)
-    std::cout<<"workload scope=current-prefill-shapes cells="<<cells<<" queries="<<queries
-        <<" cap="<<cap<<" pattern="<<(clustered ? "clustered" : "gather")
-        <<" valid_pages=1 valid_ids=1 constant_position=1 causal_replay=0\n";
   const int pages=(cells+Page-1)/Page,rows=pages*KV*Page;
   std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
-  for (int p=0;p<pages;++p) table[p]=!valid_only && p%13==5 ? -1 : pages-1-p;
+  for (int p=0;p<pages;++p) table[p]=p%13==5 ? -1 : pages-1-p;
   std::vector<int8_t> k(size_t(rows)*Dim),v(k.size());
   for (size_t i=0;i<k.size();++i) {
     k[i]=int8_t(int((uint64_t(i)*1664525+1013904223)%255)-127);
@@ -112,8 +81,8 @@ void run(int cells,int queries,int cap,bool clustered,bool valid_only=false) {
     for (int c=0;c<cap;++c) {
       int32_t cell=clustered ? int32_t((uint64_t(b)*11+c)%cells)
           : int32_t((uint64_t(b)*8191+uint64_t(c)*7919+37)%cells);
-      if (!valid_only && c%97==13) cell=-1;
-      if (!valid_only && c%103==7) cell=cells+13;
+      if (c%97==13) cell=-1;
+      if (c%103==7) cell=cells+13;
       ids[size_t(b)*cap+c]=cell;
     }
   }
@@ -154,19 +123,6 @@ void run(int cells,int queries,int cap,bool clustered,bool valid_only=false) {
   for (int round=0;round<6;++round) for (int index=0;index<2;++index) {
     const int variant=variants[(process_id+round+index)%2];const double ms=invoke(variant);
     guards();require(out.get()==reference,"timed full-output bit comparison");
-#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
-    if (current_timing && !(std::isfinite(ms) && ms>=minimum_interval_ms &&
-          maximum_clock_pair_ms<maximum_clock_fraction*ms)) {
-      std::cerr<<"timing_ineligible process="<<process_id<<" cells="<<cells<<" queries="<<queries
-          <<" cap="<<cap<<" pattern="<<(clustered ? "clustered" : "gather")
-          <<" round="<<round<<" order="<<index<<" variant="<<variant
-          <<" milliseconds="<<std::setprecision(12)<<ms
-          <<" minimum_interval_ms="<<minimum_interval_ms
-          <<" maximum_clock_pair_ms="<<maximum_clock_pair_ms
-          <<" maximum_clock_fraction="<<maximum_clock_fraction<<'\n';
-      throw std::runtime_error("current-prefill timing contract failed;stop and replan before collecting again");
-    }
-#endif
     std::cout<<"sample process="<<process_id<<" cells="<<cells<<" queries="<<queries<<" cap="<<cap
         <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
         <<" order="<<index<<" variant="<<variant<<" implementation="<<(variant ? candidate_name : baseline_name)
@@ -183,33 +139,14 @@ int main(int argc,char **argv) {
   try {
     std::cout.setf(std::ios::unitbuf);
     require((argc==2 || argc==3) && (std::string(argv[1])=="--smoke" ||
-        std::string(argv[1])=="--component" || std::string(argv[1])=="--current-prefill"),
-        "--smoke|--component|--current-prefill [PROCESS] required");
-    const bool current=std::string(argv[1])=="--current-prefill";
-#if !defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
-    require(!current,"current-prefill shapes require the subgroup-row comparison arm");
-#endif
+        std::string(argv[1])=="--component"),"--smoke|--component [PROCESS] required");
     if (argc==3) { process_id=std::stoi(argv[2]);require(process_id>=0 && process_id<3,"process ordinal"); }
-#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
-    current_timing=current;
-#endif
     const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gated=g && std::string(g)=="1";
     gate(gated,"before-runtime");rt=sycl_backend::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
         <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gated,"runtime-ready");
-#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
-    if (current_timing) probe_clock();
-#endif
-    if (current) {
-      // Same dimensions as current middle/late full chunks and the117488-row
-      // request's2800-row tail. IDs are synthetic,not a captured causal replay.
-      for (bool clustered : {false,true}) {
-        run(65536,8192,2051,clustered,true);
-        run(114688,8192,2051,clustered,true);
-        run(117488,2800,2051,clustered,true);
-      }
-    } else if (std::string(argv[1])=="--smoke") run(97,3,33,false);
+    if (std::string(argv[1])=="--smoke") run(97,3,33,false);
     else { run(78453,8192,33,false);run(78453,8192,2051,false);run(78453,8192,2051,true); }
     rt->wait();rt.reset();gate(gated,"after-cleanup");
     std::cout<<"fixture_status=PASS model_quality=UNRUN model_PP=UNRUN physical262144_model=UNRUN faults=EXTERNAL_REQUIRED\n";

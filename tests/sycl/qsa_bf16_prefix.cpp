@@ -20,14 +20,7 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
-#if defined(STRATA_QSA_TEST_SUBGROUP_ROWS)
-#if !defined(STRATA_QSA_PACKED_GUARD) || STRATA_QSA_PACKED_GUARD != 17
-#error "subgroup-row fixture requires STRATA_QSA_PACKED_GUARD=17"
-#endif
-constexpr auto prefix_attention=qsa_bf16_prefix_subgroup_rows_batch;
-#else
 constexpr auto prefix_attention=qsa_bf16_prefix_batch;
-#endif
 std::shared_ptr<sycl_backend::Runtime> rt;
 void require(bool x, const char *message) { if (!x) throw std::runtime_error(message); }
 void drain() noexcept {
@@ -152,15 +145,6 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     require(attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
         out.data()+16,queries,{pages,pages},&rt->compute()),"BF16 matrix unavailable");
     rt->wait();
-#if defined(STRATA_QSA_TEST_SUBGROUP_ROWS)
-    // This transform changes only selected-row ownership/synchronization.
-    // Compare masks,NaNs and guards as well as normal outputs to the selected
-    // ordered-exp kernel;the independent host tensor oracle still follows.
-    const auto private_rows=out.get();out.put(sentinel);
-    require(qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
-        out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"ordered-exp reference unavailable");
-    rt->wait();require(out.get()==private_rows,"complete subgroup-row bit identity");
-#endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
     // Compare every output bit, including NaN diagnostics, masks and guards.
     // Both calls use the same inputs; the second refreshes identical scratch.
