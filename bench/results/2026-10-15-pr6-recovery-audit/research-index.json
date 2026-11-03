@@ -22528,7 +22528,7 @@
   },
   "verify_window_phase_policy_audit_20261104": {
     "classification": "decision_support",
-    "stage": "running",
+    "stage": "reviewed-pending-gpu-qualification",
     "source_revision": "3a0645d89",
     "report_path": ".cache/research/2026-11-04/verify-window-phase-policy-audit.md",
     "model": "gpt-6-luna",
@@ -22548,7 +22548,13 @@
       "task_id": "task_4a7a2338f8e6",
       "dispatch_id": "ctx_f215f3d6e221",
       "terminal_handle": "term_6bdca4e7-c799-4a3a-a06a-d24f6027a7a2",
-      "main_owned_external_terminal": true
+      "main_owned_external_terminal": true,
+      "worker_outcome": "succeeded",
+      "dispatch_settled": true,
+      "worker_release_process_action": "none:Main-owned external terminal",
+      "terminal_closed": true,
+      "terminal_pty_killed": true,
+      "delivery_acknowledged": "delivery_d0b604d2f0a4"
     },
     "retention": {
       "owner": "Main",
@@ -22556,11 +22562,24 @@
       "consumer": "Independent phase-policy model admission",
       "review_point": "At review and the next Q6 model/representation decision;retire transaction output and bodies without a concrete remaining use."
     },
-    "main_reads_collection_body_on_arrival": false
+    "main_reads_collection_body_on_arrival": false,
+    "review": {
+      "reviewer": "/root/review_verify_window_phase_20261104",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "report_bytes": 14809,
+      "report_sha256": "bd1ba3692006d040edb642dac376ac27f0dd10f4790a3dc097c1b1f4d58a20e1",
+      "review_path": ".cache/research/2026-11-04/verify-window-phase-policy-audit.review.json",
+      "review_bytes": 7918,
+      "review_sha256": "d535e70996224272220432d58179d59350c169e736236b19b72af3c06f915ed0",
+      "GPU_qualified": false,
+      "model_adopted": false,
+      "decision": "No source defect confirmed;host/syntax checks passed only. Production phase switching,retirement/RESTORE,numerical and matched model preservation gates remain."
+    }
   },
   "q6_resident_weight_prepacking_20261104": {
     "classification": "knowledge_collection",
-    "stage": "completed-awaiting-native-review",
+    "stage": "reviewed-conditional-reference",
     "source_revision": "3a0645d89",
     "report_path": ".cache/research/2026-11-04/q6-resident-weight-prepacking.md",
     "model": "gpt-6-luna",
@@ -22595,6 +22614,33 @@
       "consumer": "Next resident-Q6 representation choice;retrieve only required sections after native Luna-max review",
       "review_point": "At review and the next Q6 model/representation decision;retire transaction output and bodies without a concrete remaining use."
     },
-    "main_reads_collection_body_on_arrival": false
+    "main_reads_collection_body_on_arrival": false,
+    "review": {
+      "reviewer": "/root/review_q6_weight_prepacking_20261104",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "report_bytes": 19147,
+      "report_sha256": "b13812006bbbdb1acc4cd1c4f685c458a872e8b3752d7cc89933aae69867da22",
+      "review_path": ".cache/research/2026-11-04/q6-resident-weight-prepacking.review.json",
+      "review_bytes": 10206,
+      "review_sha256": "9b3fb0916061f8bff584250e1b0631f5d517ecacf4baced2617c0fd1e4e4cfc5",
+      "GPU_qualified": false,
+      "model_adopted": false,
+      "decision": "Conditional retrieval only;generic dp4a repeat is unnecessary. Further representation/DPAS research requires qualified phase/route evidence and a measured remaining Q6 cost.",
+      "next_scopes": [
+        {
+          "id": "q6_same_bit_budget_repack_discriminator",
+          "schedulable_now": false
+        },
+        {
+          "id": "q6_int8_or_dpas_combined_representation_mapping",
+          "schedulable_now": false
+        },
+        {
+          "id": "generic_q6_dp4a_lowering_repeat",
+          "schedulable_now": false
+        }
+      ]
+    }
   }
 }
