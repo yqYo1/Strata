@@ -100078,7 +100078,7 @@
     "limits": "Host-only source/prefix/parser controls. V6prepare/native/provider/model-hash/frontend admission still pending;V5and V6hostV1 failures retained."
   },
   "cache_map_prefill_curve_v6": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "e88d0e4542dcefa92c5d77af234f8d23d23e4873",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
@@ -102196,6 +102196,39 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 7,
+        "read": 65537,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 1548406,
+          "start_ticks": 204062983,
+          "sid": 1548365
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "request_hashes": {
@@ -102240,7 +102273,7 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "inference_adopted": false,
     "whole_bytes": 536870912,
     "budgets": {
@@ -102336,5 +102369,177 @@
       "files": 279,
       "aggregate_sha256": "1d78a7ecf136e34c6bfa922d795765f451fb0f9d025141d3e4583ea01676e4df"
     }
+  },
+  "cache_map_prefill_curve_v6_failure_diagnosis": {
+    "source_commit": "69ec5bad89becbac4c2ce64507aa92528982fe5c",
+    "failed_scope": "cache_map_prefill_curve_v6",
+    "original_outcome_retained": true,
+    "passed": false,
+    "complete": false,
+    "stopped_index": 7,
+    "stopped_read": 65537,
+    "remaining_indices_not_run": [
+      8,
+      9
+    ],
+    "completed_prefix_processes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "failure": "End-of-request route gate rejected callback4 token/mode2/cells8192;supervisor then terminated the owned session. Outer model-process-failed message is not evidence of a native fault.",
+    "callbacks": [
+      {
+        "index": 0,
+        "path": "batched",
+        "mode": 2,
+        "cells": 8192
+      },
+      {
+        "index": 1,
+        "path": "batched",
+        "mode": 2,
+        "cells": 8192
+      },
+      {
+        "index": 2,
+        "path": "batched",
+        "mode": 2,
+        "cells": 8192
+      },
+      {
+        "index": 3,
+        "path": "token",
+        "mode": 2,
+        "cells": 8192
+      },
+      {
+        "index": 4,
+        "path": "batched",
+        "mode": 2,
+        "cells": 8192
+      },
+      {
+        "index": 5,
+        "path": "batched",
+        "mode": 2,
+        "cells": 8192
+      },
+      {
+        "index": 6,
+        "path": "batched",
+        "mode": 2,
+        "cells": 8192
+      },
+      {
+        "index": 7,
+        "path": "batched",
+        "mode": 2,
+        "cells": 8192
+      }
+    ],
+    "engine_observation": {
+      "actual_read_tokens": 65537,
+      "reused_tokens": 0,
+      "prefill_rows": 65536,
+      "prompt_ms": 75468,
+      "logged_prompt_tps": 868.4,
+      "generated_tokens": 24,
+      "decode_ms": 1881,
+      "client_TTFT_available": false,
+      "eligible_curve_sample": false
+    },
+    "posthoc_owner_closure": {
+      "owned_identities": [
+        {
+          "pid": 1548365,
+          "start_ticks": 204062853,
+          "sid": 1548365,
+          "pgid": 1548365
+        },
+        {
+          "pid": 1548372,
+          "start_ticks": 204062880,
+          "sid": 1548365,
+          "pgid": 1548365
+        },
+        {
+          "pid": 1548395,
+          "start_ticks": 204062957,
+          "sid": 1548365,
+          "pgid": 1548365
+        },
+        {
+          "pid": 1548406,
+          "start_ticks": 204062983,
+          "sid": 1548365,
+          "pgid": 1548365
+        }
+      ],
+      "all_original_PIDs_absent": true,
+      "owned_session_empty": true,
+      "direct_child_reaped": true,
+      "normal_native_exit_qualified": false,
+      "original_ownership_closed_flag_retained": false,
+      "cleanup_signals": [
+        {
+          "pid": 1548365,
+          "signal": "SIGTERM"
+        },
+        {
+          "pid": 1548372,
+          "signal": "SIGTERM"
+        },
+        {
+          "pid": 1548395,
+          "signal": "SIGTERM"
+        },
+        {
+          "pid": 1548406,
+          "signal": "SIGTERM"
+        },
+        {
+          "pid": 1548372,
+          "signal": "SIGKILL"
+        }
+      ]
+    },
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "source_only_replay": {
+      "controller": "tools/sycl/check_prefill_strategy_model.py::mtp_route",
+      "rows": 65536,
+      "exit_code": 1,
+      "error": "MTP callback path/mode/chunk-cell coverage differs",
+      "seconds": 0.458561691,
+      "GPU_executed": false
+    },
+    "exact_native_source_files": {
+      "src/program/generate.cpp": "ddbbc6bfa6fb14a82a2239e7629679bbc7d5b7aed8df59e66fb14bbb2b087ccd",
+      "src/prefill/prefill.cpp": "9c739484e49b39f615d85871468880727dd138499c135eed9b85aa4d029524fa",
+      "src/core/mtp.cpp": "7e98636191fa0b9c10d4a651c2148c1446dfb722c1536bda2be4d4f78e2e2af5"
+    },
+    "diagnostic_consumer": {
+      "owner": "Main and Orca Luna MTP64K source-contract audit",
+      "question": "Explain actual fourth callback and derive active-row/path gate without accepting an unexplained fallback.",
+      "next_review": "After independent source report and native Luna-max review",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/prefill-curve-v6/7/engine.stderr",
+      "sha256": "97dc4af211ef52f804eeaba17f5690b97ef3da46f2fc2bd50d48f3c5e2cf31c8",
+      "bytes": 687207,
+      "byte_budget": 1048576
+    },
+    "limits": "V6remains failed/incomplete;no retry or ignored64Ksample. Other seven complete processes retain their original results. No final15model rehash,current fit,normal64Kteardown,sustainedTG or context/RESTORE qualification."
   }
 }

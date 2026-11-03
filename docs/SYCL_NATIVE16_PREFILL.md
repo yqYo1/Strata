@@ -1088,61 +1088,59 @@ record that eligibility boundary rather than treating a mixed-route intercept as
 a physical fixed cost. Fit actual counts/time/TTFT with held-out lengths and
 residuals. The older length fit does not qualify this engine. Full262144/RESTORE
 remain pending.
-The current length/TTFT plan is`cache_map_prefill_curve_v6`,using the unchanged
-552bengine and the exact-count bench.sh route. It covers nine lengths1286to117489
-with four requests per process,thinking enabled,zero reuse and24outputs. First
-use stays separate from the next three requests. The chunked route at8192engine
-rows or fewer is separate from layer-major and the117Ksplit case. Compare
-affine/quadratic/nlogn models on five homogeneous non-split long lengths with
-whole lengths held out;keep residuals and adjacent time/TTFT slopes. Do not
-interpret a mixed-route intercept as physical setup cost or extrapolate.
+The current length/TTFT scope`cache_map_prefill_curve_v6`is failed at its
+65537-read first request. Seven earlier processes remain passed:all three
+successful V5prefix processes at`ef6a0269d`,plus fresh39254,4956,78445and19665
+points. The native479a/552bengine is unchanged,with throughput,GDN16/MTP16,
+BF16hidden,INT8resident131072,8192operator chunks and immutable runtime safety.
+Every completed process has four bench.sh requests,thinking on,zero reuse and
+24outputs;first use stays separate from the subsequent three.
 
-V6inherits all three successful planned V5prefix processes from`ef6a0269d`,
-without choosing by speed,and collects seven new processes at indices3..9.
-The1286-read diagnostic has10.0205s subsequent median(128.3369tok/s),TTFT10.127s;
-first use is10.8977s/11.009s. The clean117489-read anchor has112.1692s subsequent
-median(1047.4266tok/s),TTFT112.348s;first use is121.2642s/121.464s. Its observed
-partner has111.9631s median(1049.3547tok/s),TTFT112.189s;first use is
-122.2955s/122.467s. Their0.9981626observed/clean ratio passes the local1.15cost
-screen only;it does not establish observer benefit or short-input overhead.
-These measurements match the prior three-process1047.0672milestone level;
-no new native code gain is implied. No current-engine fit is complete yet.
+| Actual read | Route | Subsequent median prefill seconds | tok/s | Client TTFT seconds |
+| ---: | --- | ---: | ---: | ---: |
+| 1286 | chunked | 10.0205 | 128.3369 | 10.127 |
+| 4956 | chunked | 16.6403 | 297.8312 | 16.755 |
+| 19665 | layer-major | 29.7372 | 661.2929 | 29.891 |
+| 39254 | layer-major | 45.4703 | 863.2888 | 45.603 |
+| 78445 | layer-major | 77.8113 | 1008.1441 | 78.045 |
+| 117489 | layer-major,split | 111.9631 | 1049.3547 | 112.189 |
 
-V5remains failed at its later39254-read process:four requests and native/bench
-exit0,but post-run admission rejected Main's unrelated CMake addition. Keep
-its original failure at`be6629074`and descriptive45.6804s warmed median/
-45.824s TTFT;that point is not inherited. The GDN source reader now compares
-only the exact final suffix after its marker,including any later comments or
-targets. Four complete558-input projections and nine contract mutations pass
-at`1cf473cb5`;all nine actual ELFs remain unchanged. The failed original V6host
-setup omitted two newly added tests from its declared source set. The revised
-host contract at`7a23cd963`passes four tests,including13source,11prefix and
-three immutable-proof mutations;the old setup failure remains recorded.
-The earlier V4pre-owner GCC package query timeout remains unexplained;three
-1.2to1.3s leaf probes did not reproduce it. Its15s deadline stays unchanged.
+These observed points are descriptive,one independent process per length.
+The separate clean117Kanchor is112.1692s/1047.4266tok/s/112.348s TTFT;
+the0.9981626observed/clean ratio passes the local1.15cost screen only.
+The prior three-process clean1047.0672milestone remains the repeated reference.
+No native-code gain or short-input observer-cost qualification is implied.
+The intended nine-length fit is incomplete:only three of five homogeneous
+non-split long points and two of three chunked points passed. Do not fit mixed
+routes or interpret an intercept as physical fixed cost. Keep affine/quadratic/
+nlogn comparison,whole-length held-out errors,residuals and adjacent slopes
+pending;do not claim a completed current-engine approximation.
 
-Before each V6admission,recover the original277V5controls and require only the
-curve controller and GDN reader to differ,plus the two explicitly pinned host
-tests(279current inputs). Keep one original failed V5record for this reader.
-Check native/config/providers/boot,commands and inherited samples against their
-committed originals. The unchanged parser is proven from`7532cbe1b`by strict
-AST comparison outside declared labels,proof readers,input additions and the
-two required prefix calls;no retired raw capture is replayed again. Prepare
-repeats full native/dependency/ELF admission and all15model hashes;frontend
-probes precede new native execution. Preserve final hashes and every original
-budget,route,owner,clock,validation and fresh-fault stop. Keep the whole shared
-result file frozen for active readers:committed()checks every byte before row
-selection. The parallel Orca audit and native Luna-max review support retaining
-that guard;no reader-scoping detour is selected. At the serialized boundary,
-301closed V5raw/research files totaling54251040bytes are deleted after source
-recovery and publication;the sole V5record and both consumed native generations
-remain. Full V6prepare at`e88d0e454`now passes native/dependency/provider admission,
-all nine ELF checks and all15model hashes after that retirement. Current-source
-benchmark/server frontend probes also pass. The three inherited processes
-remain historical evidence;new native execution starts with39254reads.
-This descriptive curve spans
-two controller versions;it does not qualify a causal gain,sustained TG,
-task/agent adoption,hardware saturation,physical262144or RESTORE.
+At65537reads,the engine logs65536prefill rows,75468ms(868.4tok/s),zero reuse
+and24generated tokens. The end gate sees eight MTPcallbacks:three batched,
+one token,then four batched,all mode2/cells8192. The strict all-batched checker
+rejects this and the supervisor terminates the owned session. No fresh GPU fault
+or validation error appears;normal native exit is unqualified. Original failed/
+incomplete/ownership flags remain unchanged. The session is empty and all four
+owned PIDs are independently confirmed absent. The compact diagnosis is
+`cache_map_prefill_curve_v6_failure_diagnosis`;24K/8Kremain unrun and final15model
+rehash is not reached. An Orca Luna source-only audit must distinguish legitimate
+empty-window handling from an unexpected fallback before new native execution.
+Keep the687207-byte stderr within a1MiB budget only for that audit/replay;retire
+it after the compact source decision and independent review are published.
+
+V6prepare at`e88d0e454`passes full native/dependency/provider admission,all nine
+ELFs and all15model hashes after retirement;current-source frontend probes pass.
+Only its controller and GDN source reader differ from277recovered V5controls,
+with two explicitly pinned host tests added. The reader now compares the exact
+consumed final CMake suffix;its source/contract tests pass. V5stays failed at its
+39Kpost-run gate(`be6629074`);that failed point was not inherited. The unchanged
+parser's strict AST proof is pinned at`7532cbe1b`;the sole original V5record
+remains for prefix qualification. Whole shared-result contents stay frozen for
+active readers. The closed301V5/research files(54251040bytes)are retired after
+source recovery/publication;both still-consumed native generations remain.
+This incomplete descriptive curve does not qualify sustained TG,task/agent
+adoption,hardware saturation,physical262144or RESTORE.
 
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
