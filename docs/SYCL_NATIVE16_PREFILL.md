@@ -1154,7 +1154,7 @@ projections plus negative controls for changed routes,globals,imports,scope
 expressions and dispatch. Then run inherited host controls and the full native
 admission before creating any new model process.
 V5prepare now passes full native/provider/package admission and all15whole-model
-hashes,with the same552bengine;no inference has run in V5yet. The ended V4root
+hashes,with the same552bengine. The ended V4root
 and resource-pair root receipts are retired after original277/276-control
 recovery;the new curve does not read those paths. Keep the clean qualification
 root and both still-consumed native generations.
@@ -1163,8 +1163,13 @@ native exit,quiet validation,closed owners and no fresh fault. First-use prompt
 time/TTFT is10.8977s/11.009s;subsequent times10.0482,10.0205and10.0121s give
 10.0205s median(128.3369tok/s)and10.127s median TTFT. Same bodies/native/config
 as V4,but a different process;its lower time is not a source-change gain. No
-fit or independent-process variation estimate is qualified yet. Next is the
-clean117K anchor,then the observed117K partner and remaining length points.
+fit or independent-process variation estimate is qualified yet. The clean117K
+anchor now also passes four requests,native0,quiet final validation,closed
+owners and no fresh fault. First-use prompt/TTFT is121.2642s/121.464s;subsequent
+prompt times111.7902,112.1692and112.2560s give112.1692s median(1047.4266tok/s),
+with112.348s median TTFT. This single clean process matches the earlier
+three-process milestone level;it is not a new-code gain or a completed curve.
+Next is its observed117K partner and the remaining length points.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
