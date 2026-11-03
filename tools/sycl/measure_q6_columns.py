@@ -56,6 +56,20 @@ def committed():
     return json.loads(raw)
 
 
+def project_sources(revision):
+    # The live tree also has unrelated, unselected observer work. Recover the
+    # selected composition instead of silently compiling those runtime changes.
+    _, baseline = selected.model.projection(worker=True)
+    overlay = (CORE, HEADER, FIXTURE, *HELPERS, 'cmake/sycl_backend.cmake')
+    values = {name: raw for name, raw in baseline.items()
+              if name.startswith('include/') or name in SOURCES[:-1]}
+    for name in (CORE, HEADER):
+        require(build.git(P, 'show', '79e240181:' + name) == baseline[name],
+            'original Q6 reference differs from the selected input: ' + name)
+    values.update(dict(build.blobs(P, revision, overlay)))
+    return values, set(overlay)
+
+
 def save(row):
     write(ROOT / 'record.json', row)
     data = json.loads(RESULT.read_text())
@@ -68,10 +82,12 @@ def save(row):
 
 def source_current(row):
     project = row['project_inputs']
-    recovered = dict(build.blobs(P, project['revision'], project['files']))
+    recovered, overlay = project_sources(project['revision'])
+    require(set(recovered) == set(project['files']), 'composed source set changed')
     for name, sha in project['files'].items():
         require(hashlib.sha256(recovered[name]).hexdigest() == sha and
-            digest(P / name) == sha and digest(ROOT / 'source' / name) == sha,
+            (name not in overlay or digest(P / name) == sha) and
+            digest(ROOT / 'source' / name) == sha,
             'frozen component source changed: ' + name)
     for name, expected in row['external_inputs']['manifests'].items():
         require(digest(expected['path']) == expected['sha256'], 'input manifest changed: ' + name)
@@ -102,12 +118,10 @@ def prepare():
     require(native['source_commit'] == '479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54',
         'comparison is scoped to the selected native generation')
     revision = build.git(P, 'rev-parse', 'HEAD').decode().strip()
-    names = set(build.git(P, 'ls-files', '-z', '--', 'include').decode().strip('\0').split('\0'))
-    names.update((*SOURCES, *HELPERS, 'cmake/sycl_backend.cmake'))
-    values = dict(build.blobs(P, revision, sorted(names)))
-    require(all((P / name).read_bytes() == raw for name, raw in values.items()),
+    values, overlay = project_sources(revision)
+    require(all((P / name).read_bytes() == values[name] for name in overlay),
         'commit exact component source, benchmark and recipe first')
-    # Existing runtime/format sources must still be the original selected input.
+    # Every unrelated runtime/format input is the exact selected source byte.
     for name in SOURCES[:-1]:
         if name != CORE:
             require(values[name] == (selected.model.ROOT / 'source' / name).read_bytes(),
@@ -134,7 +148,8 @@ def prepare():
             '-MD', '-MF', str(obj.with_suffix('.d')), '-c', str(ROOT / 'source' / name), '-o', str(obj)]))
     commands.append(('link', [compiler['path'], *flags, *objects, '-Wl,-t', '-o', str(EXE)]))
     row = dict(stage='prepared', source_commit=revision,
-        project_inputs=dict(revision=revision, files={name: hashlib.sha256(raw).hexdigest()
+        project_inputs=dict(revision=revision, selected_native_revision=native['source_commit'],
+            reference_source_base='79e240181', files={name: hashlib.sha256(raw).hexdigest()
             for name, raw in values.items()}), generated_inputs={},
         dependency_inputs=dict(selected_native=native['source_commit'], standalone=True),
         external_inputs=dict(manifests={name: native[name] for name in
