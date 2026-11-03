@@ -4662,6 +4662,13 @@ native/API request. Counts start after prefill/refill;the selected copy footer
 uses the same decode-only snapshot. Short requests qualify the counter route,
 not representative long-generation work or physical traffic. A fresh committed
 long-generation plan remains necessary before selecting a CPU leaf experiment.
+The new short cohort now passes:two frontend probes,six reader controls,and all
+three actual native/API/census joins including the warmup. Both32769-read
+requests generate24tokens. Static membership,seven formats,job/entry/window
+counts and rounded pool clocks conserve;all15final model hashes match,owners
+close normally,validation stays quiet and no fresh fault appears. This qualifies
+the selected engine's existing counters,not representative long-generation NT
+mix,leaf CPU service,physical traffic or a speed improvement.
 `tools/sycl/cache_map_decode_census.py` supplies that separate diagnostic policy:
 one static-cache process,four official warmups,then the unchanged code/prose
 long-generation workloads. It refuses entry without the closed short census,
