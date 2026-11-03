@@ -202,7 +202,10 @@ def host():
     print('Two current-source frontend probes passed;commit before model execution.', flush=True)
 
 
-def progress(text):
+def progress(text, *, rows=None, split_active=False):
+    rows = ROWS if rows is None else rows
+    require(type(rows) is int and rows > 8192 and type(split_active) is bool,
+            'invalid prospective long-route geometry')
     def fields(prefix):
         found = [v for v in text.splitlines() if v.startswith(prefix)]
         require(len(found) == 1, 'missing/duplicate native route:' + prefix)
@@ -211,11 +214,11 @@ def progress(text):
     window = fields('strata MoE window configuration: ')
     work = fields('strata MoE accumulator window: ')
     split = fields('strata MoE split admission: ')
-    require(int(main['tokens']) == ROWS and int(main['residual_gpu_rows']) == ROWS and
+    require(int(main['tokens']) == rows and int(main['residual_gpu_rows']) == rows and
             main['chunk'] == '8192' and main['residual_dtype'] == 'bf16' and
-            window['effective_mode'] == window['requested_mode'] == '10' and split['active'] == '0' and
+            window['effective_mode'] == window['requested_mode'] == '10' and split['active'] == str(int(split_active)) and
             work['windows'] == '48',
-            'actual32Kprefill route differs')
+            'actual declared prefill route differs')
     pending, groups, pairs = None, {}, 0
     for line in text.splitlines():
         if not line.startswith('strata MoE progress: '):
@@ -254,7 +257,7 @@ def progress(text):
         'strata prefill dense: phase=restored ')
     order = [text.index(m) for m in markers]
     require(order == sorted(order), 'joint owner phase ordering differs')
-    return dict(rows=ROWS, mode=10, GPU_residual_rows=ROWS, split_active=False,
+    return dict(rows=rows, mode=10, GPU_residual_rows=rows, split_active=split_active,
         windows=len(groups), jobs=int(work['jobs']), checkpoint_pairs=pairs, interval_jobs=8,
         maximum_jobs_per_window=max(v['total'] for v in groups.values()),
         maximum_tail_jobs=max(v['total'] % 8 for v in groups.values()),

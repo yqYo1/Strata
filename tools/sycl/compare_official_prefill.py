@@ -224,9 +224,11 @@ def host(experiment=None):
     print('Current-source frontend probes passed;commit before native execution.', flush=True)
 
 
-def route(text, read, heads):
+def route(text, read, heads, *, expected_rows=None):
     """Validate one actual request window,including a capacity-limited control."""
-    require(read in READS and heads in (0, 1), 'unplanned route case')
+    require(heads in (0, 1) and (read in READS if expected_rows is None else
+            expected_rows == read - 1 and (8192 < expected_rows <= 81920 or
+                                          90112 < expected_rows <= 117488)), 'unplanned route case')
     def records(prefix):
         result = []
         for line in text.splitlines():
@@ -260,7 +262,7 @@ def route(text, read, heads):
             and admission['rows'] == str(n) and admission['prefill_slots'] == str(slots)
             and admission['decode_changed'] == '0', 'bank/cache publication differs')
     full = gpu == n
-    if read == 65537:
+    if read == 65537 or expected_rows is not None and n <= 81920:
         require(full and staged == 1 and slots == 384 and split == 0, '64K placement differs')
     elif full:
         require(staged == split == 1 and slots == 128, '117K all-GPU split placement differs')
@@ -295,7 +297,7 @@ def route(text, read, heads):
         require(admission['primary_rows'] == admission['tail_payload_bytes'] ==
                 admission['extra_allocation_bytes'] == '0', 'inactive split carries storage')
     down = one('strata MoE Down fusion: ')
-    require(int(down['fused_jobs']) > 0 and down['min_rows'] == '2334'
+    require(int(down['fused_jobs']) >= (1 if expected_rows is None else 0) and down['min_rows'] == '2334'
             and int(down['fused_rows']) >= 2334 * int(down['fused_jobs'])
             and int(down['fused_jobs']) + int(down['separate_jobs']) == int(work['jobs']), 'Down work conservation differs')
     targets, drafts = records('strata prefill heads: target detached '), records('strata prefill heads: draft detached ')
@@ -378,6 +380,15 @@ def selfcheck():
     cases += [(117489, 0, fixture(117489, 0, gpu)) for gpu in (81920, 73728)]
     for read, heads, text in cases:
         route(text, read, heads)
+    generic = (19665, 24577, 39254, 65537, 78445, 117489)
+    for read in generic:
+        route(fixture(read, 1), read, 1, expected_rows=read - 1)
+        try:
+            route(fixture(read, 1), read, 1, expected_rows=read)
+        except RuntimeError:
+            pass
+        else:
+            raise RuntimeError('mismatched prospective geometry accepted')
     full, short, partial = fixture(117489, 1), fixture(65537, 1), fixture(117489, 0, 73728)
     bad = [(full + '\nstrata MoE accumulator window: jobs=48', 117489, 1),
         (full.replace('strata MoE expert bank:', 'missing bank:'), 117489, 1),
@@ -417,8 +428,23 @@ def selfcheck():
     try:
         decision(duplicate)
     except (RuntimeError, ValueError, KeyError):
-        return dict(passed=True, valid_route_shapes=len(cases), invalid_routes_rejected=len(bad), comparison_controls=3)
+        return dict(passed=True, valid_route_shapes=len(cases), invalid_routes_rejected=len(bad),
+                    prospective_shapes=len(generic), prospective_geometry_rejections=len(generic), comparison_controls=3)
     raise RuntimeError('reused native identity accepted')
+
+
+def check_sample(sample, count, read, minimum_ms=10000):
+    """Preserve the long-screen floor unless a frozen policy supplies another."""
+    require(type(minimum_ms) in (int, float) and math.isfinite(minimum_ms) and minimum_ms >= 0,
+            'invalid prospective prompt-clock floor')
+    require_valid_client_ttft(sample)
+    require(all(sample[k] is True for k in ('ok', 'eligible', 'stream_complete',
+                'thinking_requested', 'reasoning_observed'))
+            and sample['actual_read_tokens'] == sample['actual_prompt_tokens'] == count['counted_input_tokens'] == read
+            and sample['actual_reused_tokens'] == 0 and sample['request_sha256'] == count['body_sha256']
+            and 1 <= sample['generated_tokens'] <= 24 and sample['prompt_tps_source'] == 'engine'
+            and type(sample['prompt_ms']) in (int, float) and math.isfinite(sample['prompt_ms'])
+            and sample['prompt_ms'] > minimum_ms, 'sample/workload/clock differs')
 
 
 def run(index, experiment=None):
@@ -443,8 +469,11 @@ def run(index, experiment=None):
             all(digest(root / n) == sha for n, sha in plan['generated'].items()), 'process plan changed')
     cursor = next(v.split(': ', 1)[1] for v in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines() if v.startswith('-- cursor: '))
+    traced = plan.get('trace_progress', False)
+    require(type(traced) is bool and env.get('STRATA_TRACE') == ('1' if traced else None),
+            'frozen request-progress observer differs')
     outcome, owner = dict(index=index, read=plan['read'], heads=plan['heads'], complete=False,
-        host_probe_accepted=False, model_executed=False, clean_speed=True), None
+        host_probe_accepted=False, model_executed=False, clean_speed=not traced), None
     if 'kernel' in plan:
         outcome['kernel'] = plan['kernel']
     if hasattr(policy, 'native_context'):
@@ -521,12 +550,7 @@ def run(index, experiment=None):
         require(len(set(hashes)) == policy.RUNS and all(re.fullmatch('[0-9a-f]{64}', s) for s in hashes)
                 and hashes == row['request_hashes'].get(str(plan['read']), hashes), 'request bodies differ')
         for sample, count in zip(samples, counts):
-            require_valid_client_ttft(sample)
-            require(all(sample[k] is True for k in ('ok', 'eligible', 'stream_complete', 'thinking_requested', 'reasoning_observed'))
-                    and sample['actual_read_tokens'] == sample['actual_prompt_tokens'] == count['counted_input_tokens'] == plan['read']
-                    and sample['actual_reused_tokens'] == 0 and sample['request_sha256'] == count['body_sha256']
-                    and 1 <= sample['generated_tokens'] <= 24 and sample['prompt_tps_source'] == 'engine'
-                    and math.isfinite(sample['prompt_ms']) and sample['prompt_ms'] > 10000, 'sample/workload/clock differs')
+            check_sample(sample, count, plan['read'], getattr(policy, 'MIN_PROMPT_MS', 10000))
         require(shared.client.verify_request_journal(outputs[0].parent)['valid'], 'request journal invalid')
         policy.current(row)
         config = json.loads((root / 'config.json').read_text())
@@ -534,9 +558,11 @@ def run(index, experiment=None):
         raw_text = (root / 'engine.stderr').read_bytes()
         text = raw_text.decode()
         validation = shared.runtime.validation.preload_evidence(text, end['native']['pid'])
-        require(validation['loader'] == row['native_validation_probe']['loader']['path'] and not any(s in text for s in
-            ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'terminate called', 'teardown uncertain', 'strata trace:',
-             'strata MoE progress:', 'strata MoE mixed owners:', 'strata prefill dense:', 'strata decode timing:')), 'runtime/observer differs')
+        forbidden = ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'terminate called', 'teardown uncertain', 'strata decode timing:')
+        if not traced:
+            forbidden += ('strata trace:', 'strata MoE progress:', 'strata MoE mixed owners:', 'strata prefill dense:')
+        require(validation['loader'] == row['native_validation_probe']['loader']['path']
+                and not any(s in text for s in forbidden), 'runtime/observer differs')
         if hasattr(policy, 'validate_model_text'):
             policy.validate_model_text(text, plan)
         fields = ('actual_read_tokens', 'actual_reused_tokens', 'prompt_ms', 'prompt_tps', 'ttft_s', 'total_s',

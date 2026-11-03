@@ -103,8 +103,13 @@ def retired_comparison(data, fallback):
     return row
 
 
-def inputs(row, *, legacy_admission=False):
+def inputs(row, *, legacy_admission=False, reuse_revision=None, controller_changes=()):
     reuse = {}
+    if reuse_revision is not None:
+        require(not legacy_admission, 'legacy admission cannot also change its reuse scope')
+        reuse = dict(reuse_revision=reuse_revision, controller_changes=controller_changes)
+    else:
+        require(not controller_changes, 'controller changes need a committed reuse revision')
     if legacy_admission:
         require(row['source_commit'] == 'e811359d81e330f3c67e8de7741a8421e0b9c612' and
                 'worker_fix_commit' not in row['composition'], 'only the closed V1 seed may be reused')
@@ -346,13 +351,14 @@ def build():
     require(row['passed'], 'cache-map model build failed')
 
 
-def verify(*, legacy=False):
+def verify(*, legacy=False, reuse_revision=None, controller_changes=()):
     row = json.loads((ROOT / 'record.json').read_text())
     require(base.committed(RESULT)[OLD_KEY if legacy else KEY] == base.compact(row) and row['passed'] and
             row['stage'] == 'built-not-executed' and row['ownership_closed'] and not row['active'] and
             all(base.supervision.closed(value) for value in row['commands_executed']),
             'closed complete cache-map build required')
-    allowed = inputs(row, legacy_admission=legacy)
+    allowed = inputs(row, legacy_admission=legacy, reuse_revision=reuse_revision,
+                     controller_changes=controller_changes)
     asset = row['compiled_inputs']
     require(digest(asset['path']) == asset['sha256'], 'actual compiler map changed')
     found = json.loads(Path(asset['path']).read_text())
