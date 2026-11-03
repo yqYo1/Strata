@@ -1088,7 +1088,7 @@ record that eligibility boundary rather than treating a mixed-route intercept as
 a physical fixed cost. Fit actual counts/time/TTFT with held-out lengths and
 residuals. The older length fit does not qualify this engine. Full262144/RESTORE
 remain pending.
-The prospective`cache_map_prefill_curve_v1`keeps all nine current native ELFs
+The prospective`cache_map_prefill_curve_v2`keeps all nine current native ELFs
 and explicitly scopes reuse of three changed Python policies. It measures nine
 exact lengths from1286to117489,with request progress enabled and actual short
 cache-loan versus long typed-route checks;an adjacent clean117K anchor supplies
@@ -1098,6 +1098,11 @@ affine/quadratic/nlogn comparisons;short and117Ksplit routes stay separate.
 This is a descriptive observed curve,not clean timing at every length,a repeated
 speed gain or wider adoption. Recover the original closed clean qualification
 at`2880a857f`;ended-consumer metadata does not rewrite its frozen evidence.
+V1stopped during pre-owner source admission:its source matcher omitted the
+already-committed resource adapter from the added-control set. The native
+verification and host parser controls passed;no model process or curve root was
+created. Keep that failure. V2explicitly recovers the unchanged resource helper
+from`b13d99d13`alongside the original275clean inputs and the new curve controller.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use

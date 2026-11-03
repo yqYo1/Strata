@@ -23,10 +23,12 @@ import prefill_scaling_bench as fit
 
 entry, base, comparison = speed.entry, speed.base, speed.comparison
 P, B, RESULT = speed.P, speed.B, speed.RESULT
-ROOT = entry.model.ROOT / 'prefill-curve-v1'
-KEY = 'cache_map_prefill_curve_v1'
+ROOT = entry.model.ROOT / 'prefill-curve-v2'
+KEY = 'cache_map_prefill_curve_v2'
 SOURCE = 'tools/sycl/cache_map_prefill_curve.py'
 SNAPSHOT = '2880a857f40c94d8bc11824fa513466368079858'
+EXISTING_HELPER = 'tools/sycl/cache_map_prefill_resources.py'
+HELPER_COMMIT = 'b13d99d13bbd975aa8e723907b2f430c64e9e3a0'
 CHANGED = ('tools/sycl/build_cache_map_model.py', 'tools/sycl/compare_official_prefill.py',
            'tools/sycl/official_model_entry.py')
 CASES = ((1286, True), (117489, False), (117489, True), (39254, True),
@@ -71,10 +73,12 @@ def qualification(revision):
     recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
                  speed.shared.gen.blobs(P, prior['source_commit'], prior['sources'])}
     current = pinned_sources(revision)
-    require(recovered == prior['sources'] and set(current) - set(recovered) == {SOURCE}
+    helper_sha = hashlib.sha256(speed.shared.gen.git('show', HELPER_COMMIT + ':' + EXISTING_HELPER)).hexdigest()
+    require(recovered == prior['sources'] and set(current) - set(recovered) == {SOURCE, EXISTING_HELPER}
             and not set(recovered) - set(current) and
-            {n for n in recovered if recovered[n] != current[n]} == set(CHANGED),
-            'only the three declared Python policies and new curve adapter may change')
+            {n for n in recovered if recovered[n] != current[n]} == set(CHANGED)
+            and current[EXISTING_HELPER] == helper_sha,
+            'only declared policy changes,new curve and unchanged committed resource helper may extend clean inputs')
     inv = prior['runtime_manifest']; providers = json.loads(Path(inv['path']).read_text())
     require(digest(inv['path']) == inv['sha256'] and len(providers) == inv['files'],
             'qualified native provider inventory changed')
@@ -254,7 +258,8 @@ def prepare():
         runtime_manifest=dict(path=str(ROOT/'runtime-inputs.json'), sha256=digest(ROOT/'runtime-inputs.json'), files=len(providers)),
         native_qualification_reuse=dict(original_closed_snapshot=SNAPSHOT, result_key=speed.KEY,
             native_recompiled=False, unchanged_native_files=len(native['native_sources']), same_build_ELFs=9,
-            declared_changed_python_policies=list(CHANGED), new_controller=SOURCE),
+            declared_changed_python_policies=list(CHANGED), new_controller=SOURCE,
+            unchanged_existing_helper=dict(path=EXISTING_HELPER, commit=HELPER_COMMIT)),
         controls=controls, plans=[], processes=[], request_hashes={}, host_passed=False, passed=False,
         complete=False, active=False, ownership_closed=True, inference_adopted=False, whole_bytes=512 << 20,
         budgets=dict(wall=1200, cpu=3600, rss_cap=104 << 30, text_cap=16 << 20, file_cap=16 << 20, total_cap=64 << 20),

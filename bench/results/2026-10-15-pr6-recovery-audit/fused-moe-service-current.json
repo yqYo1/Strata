@@ -97727,5 +97727,33 @@
       "comparison_fingerprint_preserved": true,
       "note": "The resource controller used the whole clean cohort as an admission input. Consumer metadata changes after closure do not refresh or requalify its frozen fingerprint;recover the original snapshot from this commit."
     }
+  },
+  "cache_map_prefill_curve_admission_v1": {
+    "stage": "failed",
+    "source_commit": "56757b4f31a729a1c4875cb113e8c249abea691c",
+    "model_executed": false,
+    "GPU_executed": false,
+    "active": false,
+    "ownership_closed": true,
+    "root_created": false,
+    "controls_passed": true,
+    "native_verification_returned": true,
+    "error": "RuntimeError: only the three declared Python policies and new curve adapter may change",
+    "source_recovery": {
+      "original_files": 275,
+      "current_files": 277,
+      "original_recovered": true,
+      "added": [
+        "tools/sycl/cache_map_prefill_curve.py",
+        "tools/sycl/cache_map_prefill_resources.py"
+      ],
+      "removed": [],
+      "changed": [
+        "tools/sycl/build_cache_map_model.py",
+        "tools/sycl/compare_official_prefill.py",
+        "tools/sycl/official_model_entry.py"
+      ]
+    },
+    "decision": "Preserve failed pre-owner admission. A new V2scope must explicitly pin the already-committed unchanged resource helper as well as the new adapter;no native or benchmark trial occurred."
   }
 }
