@@ -4728,14 +4728,20 @@ ancestor cgroup quotas are frozen,but continuous per-thread placement and
 useful CPU service remain unmeasured. The result changes neither prefill nor
 decode math. See`cache_map_worker_scaling_v1`in the current service result.
 
-The next collector control`tools/sycl/profile_selected_compat.py`reuses the
-selected compatibility fixture ELF without rebuilding the engine. It checks
-all62kernel instances through normal command-graph capture/replay and the
-actual completion/lifetime adapter,with collection active from before runtime
-initialization through native exit. This is a necessary active-construction
-control;paused construction,interior model windows and observer overhead still
-need separate evidence. Existing owned launcher,collector admission and trace
-reducers remain the implementation basis.
+The collector control`tools/sycl/profile_selected_compat.py`now passes on the
+selected compatibility fixture ELF without rebuilding the engine. All62named
+kernel instances and249GPU operations join uniquely to the native host and
+controlled raw-clock interval. The original graph/host-handoff/event/lifetime
+checks pass,with native exit0,quiet validation,closed owners and no fresh fault.
+Collection stays active from before runtime initialization through native exit;
+the315678-byte trace is a bounded fixture diagnostic,not model performance.
+See`cache_map_compat_collector_control_v1`. Paused construction,interior model
+windows and observer overhead remain unqualified. The existing benchmark does
+already record client request/first-nonempty-output/end monotonic timestamps.
+An active-from-exec capture with a separate clock mapping can avoid relying on
+paused graph construction;qualify that collector mode before model execution.
+Existing owned launcher,collector admission and trace reducers remain the
+implementation basis.
 
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)

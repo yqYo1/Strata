@@ -112336,7 +112336,7 @@
     }
   },
   "cache_map_compat_collector_control_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "078d8aa0d604ae44571147e6abb5df95d6ebc29c",
     "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "engine": {
@@ -112400,7 +112400,51 @@
         "LD_DEBUG": "libs"
       }
     },
-    "cases": [],
+    "cases": [
+      {
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3116208,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": {
+          "expected_kernels": 62,
+          "observed_kernels": 62,
+          "native_PID": 3116208,
+          "GPU_events": 249,
+          "native_host_flow_joins_unique": true,
+          "all_kernel_names_present": true,
+          "timeline_sha256": "aa0c53a3de270144225f7c981d61b4ee27ef25ac018f2712d6e9bcdbe7f3b849",
+          "timeline_bytes": 315678
+        },
+        "clocks": {
+          "begin": 2082023414155368,
+          "end": 2082023720404747
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "plan": {
       "question": "Does the currently admitted owned collector cover the selected non-native-recording compatibility GraphExec with its real completion/lifetime rules?",
       "native": "Reuse selected479a/552b engine and same-build compatibility ELF;no rebuild. Run the no-argument compatibility graph case,not --native or the submission-only early return. cudaStreamBeginCapture uses normal command_graph recording;GraphExec finalizes without per-node profiling. STRATA_SYCL_VERIFY_NATIVE_CAPTURE remains0.",
@@ -112420,8 +112464,8 @@
       "total_cap": 67108864
     },
     "whole_bytes": 134217728,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "sources_sha256": "d42b24ed2578b93e21673c967daf6c835bb36f0a3d2630643004e96e81e0b512",
