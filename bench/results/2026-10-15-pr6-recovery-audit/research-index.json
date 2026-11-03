@@ -22288,7 +22288,7 @@
   },
   "decode_kv_budget_vs_expert_residency_source_20261104": {
     "classification": "decision_support",
-    "status": "running",
+    "status": "reviewed",
     "schedulable_now": false,
     "question": "Audit the selected479a native source for trading unused full-context GPU KV allocation for more decode expert residency. Quantify actual GPU/RAM budgets for131072context with131072,65536,32768 or20480resident cells,including the drafter. Determine existing CLI viability versus necessary phase-boundary changes,selected native16 prefill fallback/coupling,cache sizing/allocation bounds and full262144/RESTORE obligations. Compare against the already reviewed layer-scoped long-prefill methods;no implementation or execution.",
     "prerequisites": {
@@ -22313,7 +22313,7 @@
       "readback_residency_methods_20261024"
     ],
     "consumer": "Main choosing a decode placement experiment after the5/3/9worker sweep,without discarding the measured dedicated native16 prefill path",
-    "review_point": "On source feasibility report review;no model trial is authorized by a source report",
+    "review_point": "After the first post-sweep capacity/decode placement decision, or when that decision is dropped",
     "active_run_reader_audit": "Worker frozen286sources exclude this JSON. Actual ur_validation.committed(path,keys) compares only the canonical consumed subtree;current entry proof consumes checked_worker_retirement_contract_20261102 and preload_qualification consumes UR_silent_validation_native_child_scope/preload_component. Whole-index readers are preparation/run functions not called by the active qualification. Both consumed parent subtrees are unchanged.",
     "main_reads_body_on_arrival": false,
     "run": "run_51235a81170b",
@@ -22331,7 +22331,31 @@
       "model_screen": "GPT-6-Luna high",
       "startup": "Process-local no-update plus workspace-write/network true;worker-start reused this exact Main-created terminal because its normal argv does not express those settings."
     },
-    "worker_done_accepted": false,
-    "ownership_closed": false
+    "worker_done_accepted": true,
+    "ownership_closed": true,
+    "worker_done_message": "msg_2adb8266fbb4",
+    "worker_outcome": "succeeded",
+    "worker_process_closure": "Exact dispatch completed;worker-show observation exited/exactWorker true,terminal disconnected and operator_close;Main-owned terminal close receipt confirms ptyKilled.",
+    "source_correction_required": false,
+    "report_sha256": "7bb241d05d6996a4c246e4ccb3e17a2b7bf132c823cf6010975ae0edb2eb0f2a",
+    "report_bytes": 14176,
+    "review": {
+      "path": ".cache/research/2026-11-04/decode-kv-budget-source.review.json",
+      "sha256": "90d8e6489570dae98368da7aed57f5031214582fcc946f6059cf2417f9390b7a",
+      "verdict": "accepted_conditional_knowledge_reference",
+      "original_verdict": "needs_targeted_correction",
+      "original_report_sha256": "ae23e161bbd60146d9c086e3b7082a68a51339c63551fc5aa7c7db50fb155b94",
+      "corrections_verified": true
+    },
+    "review_digest": "Selected native16 QSA16 refuses mode1 streamed KV without fallback;do not merely lower --kv-resident at the current max-context. Fully resident lower configured context is a distinct bounded comparison,not117K/full262144 qualification. Effective spec4 MTP ring is32848cells/8212pages;state34822160B,pinned full-logical backing138413056B. Expert arena maximum-single-allocation,actual capacity/hit-rate and TG gain remain unmeasured.",
+    "retention": {
+      "recommendation": "Retain this source report and final review for one post-5/3/9-worker decode-placement decision. Its distinct consumer is the selected-source decode expert-cache budget and QSA16/mode-1 conflict; reuse the 2026-11-01 report only for its broader ownership, graph and snapshot constraints. At the decision boundary, carry corrected arena bytes, actual admission and the experiment outcome into the existing compact result, then retire the active report/review if no named follow-up remains.",
+      "consumer": "Main choosing a decode placement experiment after the 5/3/9-worker sweep without discarding the measured dedicated native16 prefill path",
+      "review_point": "After the first post-sweep capacity/decode placement decision, or when that decision is dropped"
+    },
+    "next_scope": {
+      "schedulable_now": false,
+      "reason": "Frame a matched capacity screen with equal context and admitted allocations,or separately qualify phase/graph/KV transition ownership;the reviewed source report authorizes neither."
+    }
   }
 }
