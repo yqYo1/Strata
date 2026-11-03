@@ -1198,6 +1198,22 @@ target or consumed suffix remain rejected. All five host tests now pass:four
 positive complete558-input projections and nine rejected contract mutations.
 All nine actual ELFs retain their recorded hashes. This is source/admission
 evidence only,not a new model qualification;the V5failure remains intact.
+The prospective V6scope retains all three successful prefix processes from
+`ef6a0269d`without selecting by speed,and collects seven new processes at the
+unchanged indices3..9. The failed39Kpoint is not reused. Require the original
+failed V5root record to match`be6629074`,recover all277original controller inputs,
+and permit only the new curve controller and scoped GDN reader to differ.
+Keep the exact native,configuration,providers,boot,requests and first-use rules;
+normalize only private config/output paths and port in the inherited commands.
+Guard the inherited records again before every admission. Reuse the immutable
+parser proof only after full AST comparison outside strict scope/policy labels,
+the explicit proof functions and one checked prefix call each in prepare/current.
+Before prepare,run inherited host controls plus changed-source/prefix negative
+controls. Prepare repeats all15whole-model hashes and full native/dependency/ELF
+admission;host frontend probes then precede new native process3. Final hashes,
+route-specific fits and all original stops remain mandatory. This is a
+descriptive same-native curve spanning two controller/admission versions,not a
+new native build,causal speed comparison or completed throughput/adoption gate.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use

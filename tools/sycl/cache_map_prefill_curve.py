@@ -24,8 +24,8 @@ import prefill_scaling_bench as fit
 
 entry, base, comparison = speed.entry, speed.base, speed.comparison
 P, B, RESULT = speed.P, speed.B, speed.RESULT
-ROOT = entry.model.ROOT / 'prefill-curve-v5'
-KEY = 'cache_map_prefill_curve_v5'
+ROOT = entry.model.ROOT / 'prefill-curve-v6'
+KEY = 'cache_map_prefill_curve_v6'
 PARSER_KEY = 'cache_map_prefill_curve_short_route_v4'
 FAILED_KEY = 'cache_map_prefill_curve_v3'
 SOURCE = 'tools/sycl/cache_map_prefill_curve.py'
@@ -33,7 +33,7 @@ SNAPSHOT = '2880a857f40c94d8bc11824fa513466368079858'
 EXISTING_HELPER = 'tools/sycl/cache_map_prefill_resources.py'
 HELPER_COMMIT = 'b13d99d13bbd975aa8e723907b2f430c64e9e3a0'
 CHANGED = ('tools/sycl/build_cache_map_model.py', 'tools/sycl/compare_official_prefill.py',
-           'tools/sycl/official_model_entry.py')
+           'tools/sycl/official_model_entry.py', 'tools/sycl/gdn_model_sources.py')
 BENCHMARK_CHANGED = {'tools/strata_bench.py', 'tools/test_strata_bench.py'}
 CASES = ((1286, True), (117489, False), (117489, True), (39254, True),
          (4956, True), (78445, True), (19665, True), (65537, True),
@@ -267,9 +267,12 @@ def selfcheck():
 
 
 def scope_projection(source):
-    """Only scope labels and their proof reader may differ from the replayed code."""
-    nodes = []
-    for node in ast.parse(source).body:
+    """Keep replayed parser/work/math code fixed outside declared admission seams."""
+    module = ast.parse(source)
+    continuation_label = ast.dump(ast.parse("KEY = 'cache_map_prefill_curve_v6'").body[0], include_attributes=False)
+    continuation = any(ast.dump(n, include_attributes=False) == continuation_label for n in module.body)
+    nodes, labels = [], []
+    for node in module.body:
         if isinstance(node, ast.Import) and len(node.names) == 1 and \
                 node.names[0].name == 'ast' and node.names[0].asname is None:
             continue
@@ -277,15 +280,37 @@ def scope_projection(source):
                 isinstance(node.targets[0], ast.Name) and node.targets[0].id in ('ROOT', 'KEY'):
             name = node.targets[0].id
             declarations = [f"ROOT = entry.model.ROOT / 'prefill-curve-v{v}'" if name == 'ROOT'
-                            else f"KEY = 'cache_map_prefill_curve_v{v}'" for v in (4, 5)]
+                            else f"KEY = 'cache_map_prefill_curve_v{v}'" for v in (4, 5, 6)]
             require(ast.dump(node, include_attributes=False) in
                     [ast.dump(ast.parse(s).body[0], include_attributes=False) for s in declarations],
                     'scope declaration contains more than an approved label')
+            labels.append(next(v for v, declaration in zip((4, 5, 6), declarations)
+                               if ast.dump(node, include_attributes=False) ==
+                               ast.dump(ast.parse(declaration).body[0], include_attributes=False)))
             nodes.append(name + ' versioned scope label')
             continue
-        if isinstance(node, ast.FunctionDef) and node.name in ('scope_projection', 'parser_qualification'):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and \
+                isinstance(node.targets[0], ast.Name) and node.targets[0].id == 'CHANGED':
+            paths = ('tools/sycl/build_cache_map_model.py', 'tools/sycl/compare_official_prefill.py',
+                     'tools/sycl/official_model_entry.py')
+            require(ast.literal_eval(node.value) in (paths, (*paths, 'tools/sycl/gdn_model_sources.py')),
+                    'undeclared native-admission policy change')
+            nodes.append('declared native-admission policy change')
             continue
+        if isinstance(node, ast.FunctionDef) and node.name in (
+                'scope_projection', 'parser_qualification', 'prefix_evidence', 'prefix_qualification', 'inherit_prefix'):
+            continue
+        if isinstance(node, ast.FunctionDef) and node.name in ('prepare', 'current'):
+            call = 'inherit_prefix(row)' if node.name == 'prepare' else 'prefix_qualification(row, check=True)'
+            expected = ast.dump(ast.parse(call).body[0], include_attributes=False)
+            matches = [i for i, value in enumerate(node.body)
+                       if ast.dump(value, include_attributes=False) == expected]
+            require(matches == ([len(node.body)-3 if node.name == 'prepare' else 0] if continuation else []),
+                    'prefix admission call missing,moved or duplicated')
+            if matches:
+                node.body.pop(matches[0])
         nodes.append(ast.dump(node, include_attributes=False))
+    require(len(labels) == 2 and labels[0] == labels[1], 'inconsistent or duplicate scope labels')
     return nodes
 
 
@@ -310,9 +335,86 @@ def parser_qualification():
     frozen['source_equal_reuse'] = dict(current_controller_sha256=digest(__file__),
         original_proof_commit=proof_commit, original_controller_sha256=parser['controller_sha256'],
         unchanged_projection_sha256=comparison.fingerprint(scope_projection(source)),
-        allowed_changes=['ast import', 'ROOT/KEY scope labels', 'scope_projection/parser_qualification proof readers'],
+        allowed_changes=['ast import', 'ROOT/KEY scope labels', 'explicit GDN appendix admission policy',
+            'source/prefix proof readers', 'one final prepare prefix import and one initial current prefix check'],
         raw_fixture_replayed_again=False, model_or_native_qualification_added=False)
     return frozen
+
+
+@lru_cache(maxsize=1)
+def prefix_evidence():
+    path = str(RESULT.relative_to(P))
+    prefix_commit = 'ef6a0269d15a0675d185e3639ef8f9c04515cd2c'
+    failed_commit = 'be6629074b33d6cb2d3074876f44cdf8bd78a73d'
+    name = 'cache_map_prefill_curve_v5'
+    return (prefix_commit,
+        json.loads(speed.shared.gen.git('show', prefix_commit + ':' + path))[name],
+        json.loads(speed.shared.gen.git('show', failed_commit + ':' + path))[name])
+
+
+def prefix_qualification(row, *, check):
+    commit, old, failed = prefix_evidence()
+    record = entry.model.ROOT / 'prefill-curve-v5' / 'record.json'
+    full = json.loads(record.read_text())
+    require(comparison.fingerprint(compact(full)) == comparison.fingerprint(failed)
+            and failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
+            and failed['ownership_closed'] and not failed['active'], 'preserve original failed V5 receipt')
+    require(old['stage'] == 'running' and old['host_passed'] and old['ownership_closed']
+            and not old['active'] and len(old['processes']) == 3
+            and comparison.fingerprint(old['processes']) == comparison.fingerprint(failed['processes'][:3]),
+            'only the complete committed three-process prefix may be inherited')
+    for name in ('binary', 'native_source_commit', 'native_validation_probe', 'configuration',
+                 'environment_template', 'python_contract', 'python_selected', 'template', 'boot', 'driver'):
+        require(comparison.fingerprint(row[name]) == comparison.fingerprint(old[name]),
+                'inherited prefix configuration differs: ' + name)
+    recovered = {name: hashlib.sha256(raw).hexdigest() for name, raw in
+                 speed.shared.gen.blobs(P, full['source_commit'], full['sources'])}
+    require(recovered == full['sources'] and set(recovered) == set(row['sources'])
+            and {name for name in recovered if recovered[name] != row['sources'][name]} ==
+                {SOURCE, 'tools/sycl/gdn_model_sources.py'}
+            and all(row['sources'][name] == digest(P/name)
+                    for name in (SOURCE, 'tools/sycl/gdn_model_sources.py')),
+            'undeclared inherited-prefix input change')
+    def normalized(plan):
+        command = list(plan['command'])
+        for flag in ('--config', '--port', '--out'):
+            require(command.count(flag) == 1, 'missing/duplicate prefix command field')
+            command[command.index(flag)+1] = '<private-path-or-port>'
+        return command
+    for i, process in enumerate(old['processes']):
+        fields = ('index', 'read', 'heads', 'trace_progress')
+        require(comparison.fingerprint({k: row['plans'][i][k] for k in fields}) ==
+                comparison.fingerprint({k: old['plans'][i][k] for k in fields}),
+                'inherited prefix plan selection differs')
+        require(process['index'] == i and process['read'] == CASES[i][0]
+                and process['clean_speed'] == (not CASES[i][1]) and process['complete'] is True
+                and process['passed'] is True and process['ownership_closed'] is True
+                and type(process['native_exit_code']) is int and process['native_exit_code'] == 0
+                and not process['fresh_faults'] and len(process['samples']) == RUNS
+                and normalized(row['plans'][i]) == normalized(old['plans'][i]),
+                'incomplete or different inherited request process')
+    proof = dict(record_commit=commit, record_path=str(record), record_sha256=digest(record),
+        process_indices=[0, 1, 2], freshly_executed=False, failed39K_inherited=False,
+        original_source_commit=old['source_commit'], recovered_controller_inputs=len(recovered),
+        changed_controls=[SOURCE, 'tools/sycl/gdn_model_sources.py'],
+        limits='All three successful planned prefix processes retained;no selection by speed. Same native/config/requests,with only source-admission/controller changes. V5/process3 stays failed. New native processes start at index3;descriptive curve,not a causal speed gain.')
+    if check:
+        require(comparison.fingerprint(row['inherited_prefix']) == comparison.fingerprint(proof)
+                and comparison.fingerprint(compact(row)['processes'][:3]) == comparison.fingerprint(old['processes'])
+                and all(comparison.fingerprint(row['request_hashes'].get(k)) == comparison.fingerprint(v)
+                        for k, v in old['request_hashes'].items()), 'inherited prefix evidence changed')
+    return old, proof
+
+
+def inherit_prefix(row):
+    old, proof = prefix_qualification(row, check=False)
+    row.update(processes=copy.deepcopy(old['processes']), request_hashes=copy.deepcopy(old['request_hashes']),
+               inherited_prefix=proof)
+    row['plan'].update(
+        repetitions='Reuse all three complete V5prefix processes at ef6a0269d unchanged;seven new ordered processes at indices3..9,four requests each. First use separate;median of subsequent3 is the length unit. One independent process per length;not process-variance evidence.',
+        stopping='Preserve V5/process3 failed and do not reuse its39Ksamples. Stop new scope on any original budget/source/provider/owner/clock/body/route/validation/fault failure;no retry or replacement. Commit each new process before the next. Full15model hashes at new prepare/final,quick identities throughout.',
+        retention='Keep one original V5record for immutable prefix/source-map verification;retire its raw logs/JIT after useful failed/successful evidence and original inputs are recovered. Preserve compact points/fits and source identities;no new native generation.')
+    prefix_qualification(row, check=True)
 
 
 def replay():
@@ -379,10 +481,12 @@ def prepare():
         require(args.prefill_exact_tokens == read and args.prefill_short_diagnostic == (read < 32768),
                 'generated command differs from its validated CLI plan')
         plan['environment_sha256'] = comparison.fingerprint(environment(row, plan)); row['plans'].append(plan)
+    inherit_prefix(row)
     save(row); print('Prepared nine-length observed curve and one clean anchor;commit before host probes.', flush=True)
 
 
 def current(row):
+    prefix_qualification(row, check=True)
     require(base.committed(RESULT)[KEY] == compact(row), 'commit exact current curve state')
     require(parser_qualification() == row['parser_qualification'], 'consumed parser qualification changed')
     native, providers, manifest, _ = qualification(row['source_commit'])
