@@ -113470,7 +113470,7 @@
     "next": "Recover selected runtime/header inputs from their original Git composition;overlay only the explicit Q6 candidate and fixture/controller."
   },
   "q6_columns_component_v1": {
-    "stage": "prepared",
+    "stage": "failed-build",
     "source_commit": "6bd00010412a5f6e9e19014430043c1aee312e51",
     "native_reference": {
       "source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
@@ -113599,10 +113599,24 @@
     "complete": false,
     "active": false,
     "ownership_closed": true,
+    "error": "RuntimeError(\"link failed: /usr/bin/ld: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-columns-component-v1/tmp/icpx-ef072faaf5/3-589248.o: in function `strata::kernels::native_mmq(strata::kernels::NativeMmq const&, void*)':\\nnative_mmvq.cpp:(.text+0x317): undefined reference to `strata::kernels::iq_old_kernels()'\\n/usr/bin/ld: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-columns-component-v1/tmp/icpx-ef072faaf5/3-589248.o: in function `strata::kernels::native_mmvq(int, void const*, void const*, float*, int, int, int, void*)':\\nnative_mmvq.cpp:(.text+0x4bd4): undefined reference to `strata::kernels::iq_old_kernels()'\\n/usr/bin/ld: native_mmvq.cpp:(.text+0x507b): undefined reference to `strata::kernels::iq_old_kernels()'\\n/usr/bin/ld: native_mmvq.cpp:(.text+0x54a3): undefined reference to `strata::kernels::iq_old_kernels()'\\n/usr/bin/ld: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-columns-component-v1/tmp/icpx-ef072faaf5/3-589248.o: in function `strata::kernels::native_expert_grouped(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, long, long, void const*, void*, float*, void*, long)':\\nnative_mmvq.cpp:(.text+0xa397): undefined reference to `strata::kernels::iq_old_kernels()'\\n/usr/bin/ld: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-columns-component-v1/tmp/icpx-ef072faaf5/3-589248.o:native_mmvq.cpp:(.text+0xa3b3): more undefined references to `strata::kernels::iq_old_kernels()' follow\\nicpx: error: linker command failed with exit code 1 (use -v to see invocation)\\n\")",
     "retention": {
       "consumer": "Immediate Q6_K column specialization comparison only;selected nine-ELF fallback remains unchanged",
       "review_point": "After component decision,retire rejected candidate ELF/objects/raw logs after source recovery;no extra engine generation",
       "legacy_build_inventory": "retained_builds_review_20261103 remains partial;CPU observer build gate is unchanged and not consumed or bypassed"
+    },
+    "retirement": {
+      "stage": "planned",
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-columns-component-v1-retirement.json",
+        "sha256": "7cb7eeabb114630293dec100e9c10c35c7c8a81106f077071baf6bb7e768795c"
+      },
+      "files": 228,
+      "bytes": 27862906,
+      "original_inputs_recovered": true,
+      "compiled_dependencies_verified": 742,
+      "consumer_ended": true,
+      "deleted_verified": false
     }
   }
 }
