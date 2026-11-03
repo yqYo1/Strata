@@ -53,46 +53,6 @@ def top_services(rows):
     return result
 
 
-def client_decode_window(interval, clocks, *, guard_ns=100000000):
-    """Select a guarded RAW interval inside the client's observed decode.
-
-    Use the whole observed offset envelope rather than treating MONOTONIC as
-    RAW or equating the first client output with an exact device boundary.
-    Same time namespaces and suspend continuity remain caller prerequisites.
-    """
-    names = ('request_begin_monotonic_ns', 'first_output_monotonic_ns',
-             'request_end_monotonic_ns')
-    require(type(interval) is dict and set(interval) == set(names), 'client clock fields')
-    begin, first, end = (interval[n] for n in names)
-    require(all(type(v) is int and v > 0 for v in (begin, first, end))
-            and begin < first < end, 'client clock order/units')
-    require(type(clocks) is list and len(clocks) == 4
-            and type(guard_ns) is int and guard_ns >= 100000000, 'clock/guard plan')
-    lower, upper, previous = [], [], None
-    for clock in clocks:
-        require(type(clock) is dict and set(clock) ==
-                {'raw_before_ns', 'monotonic_ns', 'raw_after_ns'}, 'clock pair fields')
-        a, m, b = (clock[n] for n in ('raw_before_ns', 'monotonic_ns', 'raw_after_ns'))
-        require(all(type(v) is int and v > 0 for v in (a, m, b))
-                and 0 <= b - a <= 1000000, 'clock pair bracket')
-        require(previous is None or previous[0] < a and previous[1] < m,
-                'clock pair order')
-        lower.append(a - m)
-        upper.append(b - m)
-        previous = b, m
-    require(clocks[1]['monotonic_ns'] <= begin < end <= clocks[2]['monotonic_ns'],
-            'client interval outside request gates')
-    offset_min, offset_max = min(lower), max(upper)
-    require(offset_max - offset_min <= 50000000, 'observed RAW/MONOTONIC offset drift')
-    start, finish = first + offset_max + guard_ns, end + offset_min - guard_ns
-    require(finish - start >= 100000000, 'guarded decode window too short')
-    return dict(begin_ns=start, end_ns=finish, guard_ns=guard_ns,
-        observed_offset_min_ns=offset_min, observed_offset_max_ns=offset_max,
-        clock_pair_count=len(clocks),
-        limits='Interior client decode only;observed clock-offset envelope is not a '
-               'proof of unsampled clock error or an exact prefill/device boundary.')
-
-
 def summarize(events, *, native_pid, begin_ns, end_ns, capture_begin_ns, capture_end_ns):
     """Admit native ID joins, then report observed service in an inner window.
 

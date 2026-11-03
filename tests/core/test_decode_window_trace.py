@@ -2,6 +2,7 @@
 import copy
 import importlib.util
 import math
+import sys
 from pathlib import Path
 import unittest
 
@@ -9,6 +10,8 @@ path = Path(__file__).resolve().parents[2] / 'tools/sycl/decode_window_trace.py'
 spec = importlib.util.spec_from_file_location('decode_window_trace', path)
 window = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(window)
+sys.path.insert(0, str(path.parent))
+import profile_cache_map_decode as client_clock
 
 
 def event(name, start, duration, work=1, **extra):
@@ -40,7 +43,7 @@ class WindowAccounting(unittest.TestCase):
         clocks = [dict(raw_before_ns=m-16000100, monotonic_ns=m,
                        raw_after_ns=m-15999900)
                   for m in (1000000000, 1900000000, 5100000000, 6000000000)]
-        row = window.client_decode_window(interval, clocks)
+        row = client_clock.client_decode_window(interval, clocks)
         self.assertEqual(row['begin_ns'], 3084000100)
         self.assertEqual(row['end_ns'], 4883999900)
         for offset in (row['observed_offset_min_ns'], row['observed_offset_max_ns']):
@@ -65,7 +68,7 @@ class WindowAccounting(unittest.TestCase):
         cases.append((interval, drift))
         for client, pairs in cases:
             with self.subTest(client=client, pairs=pairs), self.assertRaises(ValueError):
-                window.client_decode_window(client, pairs)
+                client_clock.client_decode_window(client, pairs)
 
     def test_overlapping_device_intervals_are_not_added(self):
         row = summarize(trace(event('kernel', 1000., 10., 1), event('kernel', 1005., 10., 2)))
