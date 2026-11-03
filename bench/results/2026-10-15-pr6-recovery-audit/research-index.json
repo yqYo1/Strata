@@ -22176,6 +22176,16 @@
         "Commit matched workload, acceptance/rejection, context, state/conv-history correctness, RESTORE and measurement criteria before any run."
       ],
       "schedulable_now": false
+    },
+    "closed_wave_transaction_retirement": {
+      "stage": "planned",
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261104-decode-research-transactions.json",
+        "sha256": "4e1e6f9adf6203667096a55a5359147374038e5606669a1e9ca956d865c5c2d9"
+      },
+      "files": 16,
+      "bytes": 92384,
+      "deleted_verified": false
     }
   },
   "qsa_decode_selected_kv_fusion_collection_20261104": {
@@ -22237,31 +22247,43 @@
     }
   },
   "unitrace_decode_phase_gating_feasibility_20261104": {
-    "status": "orca_running",
+    "status": "reviewed_compact_decision",
     "classification": "decision_support",
     "schedulable_now": false,
     "question": "Compare source-supported Unitrace conditional collection,ITT and minimal event hooks for a bounded decode-only GPU service window under the selected SYCL-v2 compatibility graph path.",
-    "report": ".cache/research/2026-11-04/unitrace-decode-phase-gating.md",
-    "report_budget_bytes": 18000,
+    "report": {
+      "sha256": "082b9af8cee4cb5cc92fb64f70f1fdd3cd3c2bc365e3945ef96be2059076f71e",
+      "bytes": 15728,
+      "disposition": "Body duplicates retained source methods;retire after these source-backed corrections and the actual owned-path choice are committed."
+    },
     "model": "gpt-6-luna",
     "effort": "high",
-    "prerequisites": {
-      "current_native_source": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
-      "engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
-      "source_question_independent_of_hardware_saturation": true,
-      "current_long_census_closed": true,
-      "existing_library_and_policy_shared": true,
-      "worker_sandbox_Orca_IPC_preflight_passed": true,
-      "report_directory_writable": true
+    "next_review": "After the frozen5/3/9worker sweep closes,reconcile exact existing collector/launcher inputs and qualify a small source-matched compatibility-graph window. Then choose a bounded decode capture;no duplicate broad profiler survey.",
+    "worker_done_accepted": true,
+    "ownership_closed": true,
+    "model_evidence": "Explicit custom argv and GPT-6-Luna high ready TUI verified before injection;actual worker-sandbox IPC/writable-directory preflight passed. Existing-terminal launch model fields are null,not an effective-model receipt.",
+    "terminal_closed": true,
+    "review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "sha256": "1f5d67653244c8a98639edb0ecd7d727a9a6027558a85e659992e2d7517e05b1",
+      "verdict": "accept_with_narrow_corrections"
     },
-    "startup": "Process-local workspace-write plus sandbox_workspace_write.network_access=true and check_for_update_on_startup=false;no global configuration change. GPT-6-Luna high verified in ready TUI and worker preflight reached the actual runtime.",
-    "next_review": "Native Codex gpt-6-luna/max report review before Main retrieves the relevant decision-support findings. Main continues the serialized worker-count comparison;no worker profiler execution.",
-    "worker_done_accepted": false,
-    "ownership_closed": false,
-    "run": "run_6ff38f3cf4af",
-    "task": "task_0c21286ac95d",
-    "dispatch": "ctx_3df9d507b2a2",
-    "terminal": "term_88905cf4-be57-4b51-92e4-a05da5cb7b50",
-    "model_evidence": "Explicit custom argv and GPT-6-Luna high ready TUI verified before injection;actual worker-sandbox IPC/writable-directory preflight passed. Existing-terminal launch model fields are null,not an effective-model receipt."
+    "findings": [
+      "Stock PTI application launch forces ZES_ENABLE_SYSMAN=1;the existing owned unitrace_launch.py already honors explicit0,keeps validation target-only and preserves named-session bootstrap. Use that owned path only after its current admission;do not invent a second bootstrap or claim the stock CLI is safe.",
+      "Direct collector LD_PRELOAD alone does not create temporal-session shared memory. ITT pause/resume mutates PTI_ENABLE_COLLECTION after initialization and is excluded from this immutable-environment policy.",
+      "The closed decode_window_observer_v2 qualifies active construction/replay of the SDK command_graph fixture,not the selected production compatibility-graph route. V1paused-construction failure stays failed.",
+      "Selected current inference explicitly pins STRATA_SYCL_VERIFY_NATIVE_CAPTURE=0. Keep that exact route in a small compatibility-graph qualification and distinguish envelope events from per-node device service.",
+      "Service timestamp sums,host dependency intervals and physical counters are separate. No new GPU execution,model profile,saturation or adoption evidence follows from this source study."
+    ],
+    "owned_path": {
+      "launcher": "tools/sycl/unitrace_launch.py",
+      "admission": "tools/sycl/profile_split.py::collector_assets",
+      "prior_fixture": "tools/sycl/profile_window.py",
+      "reducer": "tools/sycl/decode_window_trace.py",
+      "source_boundary": "7300e46050960dac694f9a592d3db5a08d0463cf",
+      "current_admission_executed": false
+    },
+    "retention": "Keep only these source corrections,owned recipe references and original report/review hashes;the full report and completed lifecycle/spec/preflight transactions have no remaining consumer."
   }
 }
