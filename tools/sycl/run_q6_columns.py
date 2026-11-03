@@ -120,7 +120,7 @@ def audit():
         sum(name.startswith('sycl_q6_columns_bench-wrapper-') for name in generated) == 1 and
         len(actual) >= 300 and len(linked) >= 10, 'incomplete source/link accounting')
     actual.update(linked)
-    inputs_path = ROOT / 'actual-inputs-v3.json'
+    inputs_path = ROOT / 'actual-inputs-v4.json'
     require(not inputs_path.exists(), 'do not overwrite input proof')
     write(inputs_path, actual)
     row = dict(stage='compiled-audited', source_commit=native['source_commit'],
