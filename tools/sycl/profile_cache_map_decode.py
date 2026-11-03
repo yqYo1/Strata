@@ -314,7 +314,10 @@ def run(ctx):
         if owner and owner.active is None and profile.session_path(prof['session']).exists():
             try:
                 command, _, _ = controls.run('stop', [prof['launcher']['path'],'--stop',prof['session']],
-                    env, P, wall=15,cpu=15,rss_cap=2<<30,text_cap=1<<20,file_cap=2<<20,total_cap=8<<20)
+                    env, P, wall=15,cpu=15,rss_cap=2<<30,text_cap=1<<20,file_cap=2<<20,
+                    # Owner accounts output.parent,including the completed
+                    # model trace. Keep the already declared whole-job cap.
+                    total_cap=row['budgets']['total_cap'])
                 require(base.supervision.closed(command) and command['exit_code'] == 0, 'collector close failed')
             except BaseException as error: outcome['control_close_error'] = repr(error)
         if owner: entry.template.shared.runtime.validation.finish(outcome, owner, cursor, row['boot'])
@@ -332,10 +335,85 @@ def run(ctx):
     require(outcome['passed'],outcome.get('error','decode GPU diagnostic failed'))
 
 
+def audit_closed(ctx):
+    """Read-only ownership recovery; never relabel the failed collection.
+
+    Admit only the observed post-native-exit control artifact-cap mechanism.
+    Source recovery,normal original exits,no current owned PID/session,removed
+    named SHM and unchanged fault/boot evidence must all agree. This does not
+    turn the original observer into a completed one or qualify model adoption.
+    """
+    row = json.loads((ROOT / 'record.json').read_text())
+    require(base.committed(RESULT)[KEY] == ctx.compact(row)
+            and row['stage'] == 'failed' and not row['passed'] and not row['active']
+            and 'post_run_ownership_audit' not in row, 'commit original failed collection first')
+    o = row['outcome']
+    require(o['complete'] and o['native_exit_code'] == 0 and o['host_probe_accepted']
+            and not o['fresh_faults'] and o['control_close_error'] == "RuntimeError('collector close failed')",
+            'different or incomplete failure mechanism')
+    recovered = {n:hashlib.sha256(raw).hexdigest() for n,raw in
+        short.gen.blobs(P, row['source_commit'], row['sources'])}
+    require(recovered == row['sources'] and all(digest(P / n) == sha
+            for n,sha in recovered.items() if n != str(SOURCE.relative_to(P))),
+            'original source unavailable or unrelated input changed')
+    e = json.loads((ROOT / 'execution.json').read_text())
+    require(len(e['commands']) == len(e['controls']) == 1, 'unexpected ownership extent')
+    bench, stop = e['commands'][0], e['controls'][0]
+    require(base.supervision.closed(bench) and bench['exit_code'] == 0
+            and stop['exit_code'] == 0 and stop['direct_child_reaped']
+            and stop['session_empty'] and not stop['survivors']
+            and stop['error'] == "RuntimeError('artifact cap')" and not stop['observation_complete'],
+            'original control failure differs')
+    sessions = {bench['pid'], stop['pid']}
+    live = []
+    for proc in Path('/proc').iterdir():
+        if proc.name.isdecimal():
+            actual = base.supervision.identity(int(proc.name))
+            if actual and actual['sid'] in sessions: live.append(actual)
+    require(not live and not profile.session_path(row['native_profile']['session']).exists(),
+            'owned session or named collector remains')
+    require(Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot']
+            and base.guards.driver_guard() == row['driver']
+            and digest(row['binary']['path']) == row['binary']['sha256'], 'boot/driver/engine differs')
+    trace = o['trace']
+    require(digest(trace['path']) == trace['sha256'] and Path(trace['path']).stat().st_size == trace['bytes']
+            and base.supervision.artifact_bytes(ROOT) <= row['whole_bytes'], 'trace/whole budget differs')
+    events = json.loads(Path(trace['path']).read_text())['traceEvents']
+    bounds = o['selected_window']
+    replay = window.summarize(events, native_pid=o['native_identity']['pid'],
+        begin_ns=bounds['begin_ns'], end_ns=bounds['end_ns'],
+        capture_begin_ns=o['clocks'][0]['raw_before_ns'],
+        capture_end_ns=o['clocks'][-1]['raw_after_ns'])
+    require(replay == o['observed_decode'], 'closed-data service reduction differs')
+    examples = {}
+    for event in events:
+        if event.get('ph') != 'X' or event.get('cat') != 'gpu_op': continue
+        if not (bounds['begin_ns']/1000 <= event['ts'] < bounds['end_ns']/1000): continue
+        family = ('Q6K' if 'Q6KTraits' in event.get('name','') else
+                  'mapped_rows' if 'copy_rows_from_mapped' in event.get('name','') else None)
+        if family and family not in examples:
+            args = event.get('args', {})
+            require(len(json.dumps(args)) <= 4096, 'unexpected launch argument extent')
+            examples[family] = dict(name=event['name'][:1024], args=args)
+    row['post_run_ownership_audit'] = dict(
+        source_commit=base.basis.build.git(P,'rev-parse','HEAD').decode().strip(),
+        currently_closed=True, owned_sessions_checked=sorted(sessions), live_owned_processes=0,
+        named_session_absent=True, original_native_and_control_exit_codes=[0,0],
+        original_observation_complete=[True,False], boot_driver_engine_unchanged=True,
+        original_source_files_recovered=len(recovered), original_failed_status_preserved=True,
+        closed_data_reduction_equal=True, first_observed_launch_metadata=examples,
+        limits='Current ownership is closed;original collection remains failed at its artifact-cap gate. '
+               'Its observed services can frame a bounded kernel hypothesis,not a passed model route or adoption.')
+    ctx.save(row)
+    print('Current owned sessions/SHM are closed;original profiling failure remains failed.',flush=True)
+
+
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare','host','run'), 'use prepare|host|run')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare','host','run','audit-closed'),
+            'use prepare|host|run|audit-closed')
     ctx = context()
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         base.guards.no_model_owners([])
-        {'prepare':lambda:prepare(ctx),'host':lambda:host(ctx),'run':lambda:run(ctx)}[sys.argv[1]]()
+        {'prepare':lambda:prepare(ctx),'host':lambda:host(ctx),'run':lambda:run(ctx),
+         'audit-closed':lambda:audit_closed(ctx)}[sys.argv[1]]()
