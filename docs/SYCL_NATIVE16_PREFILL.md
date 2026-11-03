@@ -1309,6 +1309,19 @@ It keeps a constant query position and is not a captured causal replay. The
 existing full-entry timing and alternating six rounds per arm stay unchanged;
 record timer eligibility and the actual recipe before device use. These source
 cases do not establish component speed or a model gain.
+The manual CMake targets are now
+`sycl_qsa_bf16_prefix_subgroup_rows_test`and
+`sycl_qsa_bf16_prefix_subgroup_rows_bench`,both excluded from the default build.
+The correctness target pins the subgroup-row arm,prefix33 comparisons and
+17-element scratch guards;both keep strict math flags. Neither is configured
+or compiled yet. The prospective current-shape comparison uses three fresh
+process ordinals0..2,each with six alternating pairs for all six cases. Require
+each timed interval to reach10ms and clock-pair overhead below1percent of the
+shortest interval;an ineligible interval stops the screen and needs a new plan.
+Compare matched per-case medians and process ratios without a blanket minimum
+gain. Keep traced smoke/component correctness separate from clean timing and
+retain the current engine as fallback. Commit exact compiler/dependency/generated
+inputs and supervision before executing this plan after the curve closes.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
