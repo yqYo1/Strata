@@ -4652,6 +4652,17 @@ The earlier overall observer failure remains failed. See
 `cache_map_cpu_service_sources_v1`and the prepared`cache_map_cpu_service_build_v1`
 in the current service result. Compilation refuses missing retention reconciliation.
 
+The selected479a/552b engine already contains the host-only
+`STRATA_CPU_WORK_CENSUS` and `STRATA_DECODE_TIMING` counters.
+`tools/sycl/cache_map_cpu_census.py` prepares a separate static-cache diagnostic
+without creating another native generation. It first requires the existing six
+reader controls,one ordinary warmup and two exact32769-input/24-output requests,
+then binds final CPU jobs,actual NT,format,residency and pool clocks to the same
+native/API request. Counts start after prefill/refill;the selected copy footer
+uses the same decode-only snapshot. Short requests qualify the counter route,
+not representative long-generation work or physical traffic. A fresh committed
+long-generation plan remains necessary before selecting a CPU leaf experiment.
+
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 provide scoped work/activity bounds. CPU perf counters were denied; the metric
