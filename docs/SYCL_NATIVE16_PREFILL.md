@@ -1311,8 +1311,9 @@ V2preparation now passes;its nine compile/link commands normalize exactly to
 the unexecuted V1plan,with the same selected fallback and header bytes. V1is
 archived at`a607099ac`;its duplicate current result is retired to Git history.
 Commit preparation and a separate bounded device plan before device execution.
-The V2CPU build now passes all nine commands at`ca32391db`,with721actual
-compiler inputs and25external linker inputs. The two ELFs remain unexecuted.
+The V2CPU build passes all nine commands at`ca32391db`,with721actual
+compiler inputs and25external linker inputs. That CPU-only receipt does not
+include the subsequent device qualification below.
 The prospective`check_qsa_subgroup_rows.py`uses one fresh process each for traced
 smoke,full numerical,and speed ordinals0..2,in that order. Native startup,
 runtime-ready and cleanup gates check the actual executable,immutable safety
@@ -1330,6 +1331,17 @@ Original incomplete/ownership-unqualified flags remain. The CPU-only owned-pipe
 regression at`02aae8cba`reproduces that exact rejection. V2consumes the one exact
 footer before the unchanged strict EOF check;missing/extra output still fails.
 Commit green host protocol evidence before a new V2smoke;C++/ELFs stay unchanged.
+The host protocol now passes all three owned-pipe tests at`805647e7e`.
+Fresh V2smoke passes at`4466a940e`,including actual traced kernel enqueue.
+The separately committed full numerical plan`ac0e3dd4e`also passes all11cases:
+the largest component address space is262144cells,and every oracle/selected
+prefix comparison has zero absolute error. Input and packed/output guards pass.
+Both processes exit0,close their owned sessions,and report quiet validation,
+unchanged boot/driver and no freshfault. This is component correctness,not
+model quality or physical262144-token context qualification. The next comparison
+is three fresh paired timing processes over six shapes;no candidate speedup or
+model-route adoption is established yet. The selected552bmodel engine remains
+unchanged.
 The paired component fixture gains an uncompiled`--current-prefill`mode only
 for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
 cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
