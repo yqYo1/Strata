@@ -21961,6 +21961,43 @@
       "production_kernel_changed": false,
       "next": "After current curve closure and fallback-reader migration,pin exact build/source/macros and run bounded component correctness/performance gates.",
       "source_commit": "08fc2eff6514c4513592454b0b8942f8e6ee4167"
+    },
+    "component_shapes_followup": {
+      "status": "source_only",
+      "file": "tests/sycl/qsa_bf16_prefix_layout_bench.cpp",
+      "sha256": "04aa87567fe09c294284aa5173f0d67a43115ea170e7466065b15712a2abb039",
+      "original_file_sha256": "461ca61a19c1d5b7e741d3a587bc92937eb9933422f84a6817b73848d6c93444",
+      "command": "--current-prefill [PROCESS0..2]",
+      "required_compile_arm": "STRATA_QSA_BENCH_SUBGROUP_ROWS",
+      "shapes": [
+        {
+          "cells": 65536,
+          "queries": 8192,
+          "cap": 2051
+        },
+        {
+          "cells": 114688,
+          "queries": 8192,
+          "cap": 2051
+        },
+        {
+          "cells": 117488,
+          "queries": 2800,
+          "cap": 2051
+        }
+      ],
+      "patterns": [
+        "gather",
+        "clustered"
+      ],
+      "valid_pages_and_IDs": true,
+      "constant_query_position": true,
+      "causal_replay": false,
+      "timed": "Unchanged full API admission,prefix refresh,attention and checked completion;uploads,readbacks and bit/guard checks outside timing.",
+      "compiled": false,
+      "executed": false,
+      "production_selector_added": false,
+      "next": "Freeze actual recipe/comparison and satisfy native-generation retirement before component build."
     }
   }
 }

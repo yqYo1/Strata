@@ -1158,6 +1158,13 @@ hashes,with the same552bengine;no inference has run in V5yet. The ended V4root
 and resource-pair root receipts are retired after original277/276-control
 recovery;the new curve does not read those paths. Keep the clean qualification
 root and both still-consumed native generations.
+The first fresh V5short process now passes all four1286-read requests,normal
+native exit,quiet validation,closed owners and no fresh fault. First-use prompt
+time/TTFT is10.8977s/11.009s;subsequent times10.0482,10.0205and10.0121s give
+10.0205s median(128.3369tok/s)and10.127s median TTFT. Same bodies/native/config
+as V4,but a different process;its lower time is not a source-change gain. No
+fit or independent-process variation estimate is qualified yet. Next is the
+clean117K anchor,then the observed117K partner and remaining length points.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
@@ -1283,6 +1290,13 @@ still pin that define. The scale poison is+Inf rather than NaN. None of these re
 numerical execution or performance evidence. Next:close the baseline curve,
 retire or migrate the adaptive fallback's actual reader,and commit the exact
 build/measurement recipe before any new device execution.
+The paired component fixture gains an uncompiled`--current-prefill`mode only
+for the subgroup-row arm:cells/queries65536/8192,114688/8192and117488/2800,
+cap2051,with both clustered and gather synthetic IDs and all pages/IDs valid.
+It keeps a constant query position and is not a captured causal replay. The
+existing full-entry timing and alternating six rounds per arm stay unchanged;
+record timer eligibility and the actual recipe before device use. These source
+cases do not establish component speed or a model gain.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
