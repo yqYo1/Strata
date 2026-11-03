@@ -108464,5 +108464,109 @@
         }
       ]
     }
+  },
+  "retained_builds_review_20261103": {
+    "stage": "partial-retirement-ready",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "source_boundary": "e409619e6651d7d2c1434c961660068857d2cfe7",
+    "selected_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1",
+    "next_comparison_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-cache-map-v1",
+    "inventory": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-review-20261103-inventory.json",
+      "sha256": "7080ae3bcd12874442e79daa48e25e69e50ee6e1687b9be8f5f20012539172de",
+      "initial_assets": 1390,
+      "initial_binary_bytes": 1454915620
+    },
+    "receipt_join": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-review-20261103-receipt-index.json",
+      "sha256": "cff50f0c1ff4d17fe333c6361110d317040806cb85c1b8f9e3b676f22063076e",
+      "bytes": 108597,
+      "receipts": 136,
+      "read_bytes": 11476213,
+      "matched_unique_binary_hashes": 163,
+      "limits": "Bounded inventory-root receipt names only;no general recursive state scan or original Git recovery follows from a hash match."
+    },
+    "native_reviews": {
+      "engine_and_workspace": {
+        "path": ".cache/research/2026-11-03/engine_build_retention_review_20261103.json",
+        "sha256": "c78decd86e59b51294cc3940d553ed76110a41546881233c3bfae435c2cbe8dd",
+        "bytes": 12246,
+        "inventory_assets": 887
+      },
+      "host_fixtures": {
+        "path": ".cache/research/2026-11-03/host_fixture_retention_review_20261103.json",
+        "sha256": "6f1c44f5c6033a1a2e57eb02c9018a8be3291802905d311020aaf62b73995df6",
+        "bytes": 10059,
+        "inventory_assets": 136
+      },
+      "gpu_profilers_and_current_support": {
+        "path": ".cache/research/2026-11-03/gpu_binary_roots_retention_review_20261103.json",
+        "sha256": "d20444a5aad1674cbda893a0583533e35b0d9df2b0cd5f02be3d315deaeb1cf5",
+        "bytes": 10142,
+        "inventory_assets": 367
+      }
+    },
+    "review_limits": "GPU review is explicitly partial:367assets grouped across113roots with at most24receipt/script reads;not all consumer identities or original source closures are established. Main verified only the following retirement subset.",
+    "retirement_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261103-selected-and-closed-fixtures.json",
+      "sha256": "e631ffd9cdb4dc1d5e7abbbf7a3f527f17dfee0bb20b0de08d81df46c8855e12",
+      "files": 145,
+      "bytes": 81403396
+    },
+    "subset_source_recovery": {
+      "selected_source_files": 558,
+      "selected_actual_compiler_inputs": 1452,
+      "closed_fixtures": [
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/host-profile-cpu-v2",
+          "source_commit": "5719820ed1ad80bce9be82cbef3e0a2d319f6ff2",
+          "source_files": 6,
+          "source_aggregate_sha256": "7c30d04b23d18b65d5f40229814a63fe86a2528cfac7d80e95293068b633854b",
+          "recipe_controller": "tools/sycl/check_host_profile.py",
+          "recipe_controller_sha256": "51cc35f311e9c1c03b0e90ee9b925adceae21a7f5d718ce6972326feb4a09fa7"
+        },
+        {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/moe-expert-bank-component-v4",
+          "source_commit": "8bd20575cc2eac28cb8b63fb6fab80821e17767d",
+          "source_files": 7,
+          "source_aggregate_sha256": "5d4bb168b2ca89d2acc9c4e28097eb460b9dca1003986c80fad69ac80bd1423b",
+          "recipe_controller": "tools/sycl/check_expert_bank.py",
+          "recipe_controller_sha256": "f633b40f53b021dd9c2203a021cd8b8c7225c5cb30d5b3922371b521c6969555"
+        }
+      ],
+      "original_inputs_recovered": true,
+      "current_admission_before_deletion": true,
+      "selected_qualified_outputs_preserved": 9
+    },
+    "deleted_verified": false,
+    "current_admission_after_deletion": false,
+    "live_consumer_findings": {
+      "deployment_engine": "/home/yayoi/orca/workspaces/Strata/sycl/build-sycl-aot/strata",
+      "deployment_vision": "/home/yayoi/orca/workspaces/Strata/sycl/build-vision-sycl/bin/strata-vision",
+      "deployment_configs": [
+        "/home/yayoi/.local/share/strata-sycl/serve-config.json",
+        "/home/yayoi/.local/share/strata-sycl/serve-config-iq3_s.json",
+        "/home/yayoi/.local/share/strata-sycl/serve-config-vision-sycl.json"
+      ],
+      "deployment_hold": "Actual configs refer to these files;preserve their executable/runtime bytes until validated migration. Original build source closures remain unreconciled. Static ELF dependency inspection found runtime dependencies outside their build trees.",
+      "host_fixture_limit": "The host-profile reader consumes ROOT existence/receipt only;its ELF is not a current input. The oldv4expert-bank plan is superseded byv5;its committed recipe/source and old outcome remain recoverable.",
+      "other_provider_holds": "Selected9outputs,UR validation preload/loader and frozen external link inputs remain protected. Trace native16-public-control-v4,checked worker and pending subscriber readers before retiring any additional fixture/library;closed status alone is insufficient."
+    },
+    "next_actions": [
+      "After this decision is committed,verify manifest hashes/live owners under the execution lock,delete only145listed files,then recheck selected admission and9output hashes.",
+      "Finish source/recipe recovery for the remaining roots:prompt-softmaxv3has432Git source pins recovered but its recipe/dependency closure still needs matching;27host groups lack an exact-output receipt. Bound each lookup and record irrecoverable provenance before retiring unusable outputs,preserving unique source/recipe evidence.",
+      "Trace actual current consumers of the remaining GPU/profiler roots and reconcile all7workspace build trees;retain the configured serving engine/vision output until validated migration. Only then reconcile the generation inventory and compile the prepared observer plan."
+    ],
+    "temporary_evidence": {
+      "owner": "Main",
+      "byte_budget": 2097152,
+      "consumer": "Remaining original-source/recipe and current-consumer reconciliation before the next engine build",
+      "review_point": "At next bounded retirement subset and before observer compilation;retire inventories/review transactions when reconciled,no permanent archive copy."
+    },
+    "GPU_executed": false,
+    "inference_adopted": false
   }
 }

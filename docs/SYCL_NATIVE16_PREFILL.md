@@ -1289,15 +1289,24 @@ retained-fixture proof remain. Source recovery verifies95inputs per comparison
 plan,558selected native sources,721compiled dependencies and both component ELFs.
 External retirement deletes93files/9228994B under the execution lock after
 source recovery. Selected558-source/nine-ELF admission passes before and after
-deletion. The broader legacy-build inventory remains unreconciled:a completed
-scan of the state root and seven primary-worktree build directories finds464
+deletion. The broader legacy-build inventory remains unreconciled:the initial
+scan of the state root and seven primary-worktree build directories found464
 executable/shared ELFs,850ELF objects,40archives and36GPU compiler binaries,
 total1454915620B. Installed dependencies and current support are included;
 these are not464engine generations. The bounded temporary inventory and its
 review/deletion consumer are recorded in the existing retirement row.
 The PR6verification worktree has no build/output directory. Do not reuse the old fourteen-hold or
-single-PR6-build description as a current inventory. Review actual source/recipe
-and live consumers before another engine generation;selected552b/8fixtures stay.
+single-PR6-build description as a current inventory. Three native Luna-max
+reviews cover the inventory's887engine/workspace,136host and367GPU/support
+entries;the last is explicitly partial for individual consumer/source checks.
+Main has recovered the selected558sources/1452compiler inputs and the original
+six/seven source pins and recipe controllers for two closed CPU fixtures.
+A145-file/81403396B retirement subset is ready;selected9outputs,source/recipe
+metadata and current providers stay. Actual local serving configurations also
+refer to`build-sycl-aot/strata`and`build-vision-sycl/bin/strata-vision`;preserve
+these until validated migration. Review remaining original source/recipe and
+current byte consumers before the observer build. See
+`retained_builds_review_20261103`;it is not completed global retirement.
 
 New-engine verification consumes the closed component receipt rather
 than requiring its older fixture/fallback binaries indefinitely.
