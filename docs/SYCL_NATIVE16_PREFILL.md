@@ -4793,9 +4793,17 @@ bb63479f9f4290525cd1fef1475033292f7ccc64a1ac3c4a0879f53d0b58bc26.
 See`q6_columns_component_v4`;all individual samples remain there.
 
 The change preserves weight mapping,ascending partial sums and XOR reduction.
-Smaller constant-column accumulators are source-level intent;register/spill
-reduction and physical saturation are not measured. This is component evidence,
-not a model TG gain or adoption. A model route must select only qualifying
+Offline inspection of this component's actual B570 native cache now finds
+0static`dp4a`instructions in the reference ROWS1/NW4 kernel and2,4,6,8,16in
+the constant-column1,2,3,4,8kernels. Both routes report GRF128/SIMD32,with no
+reported private/spill fields or per-thread scratch buffers. The C4 native
+text grows from8192to13504bytes. This does not establish spill elimination,
+dynamic occupancy,physical saturation or which code change causes the timing
+gain. The existing candidate already reaches native packed integer-dot
+instructions;another generic dp4a/ESIMD rewrite is not justified by that
+question alone. The compact fields and cache/tool hashes are in the same
+result's`codegen`entry;the full disassembly is temporary. This is component
+evidence,not a model TG gain or adoption. A model route must select only qualifying
 shapes through an explicit decode policy,leaving MTP and both prefill paths on
 their original implementation. In particular,short prompt reads also call the
 Verifier:changing every Verifier graph globally would couple prefill and decode.

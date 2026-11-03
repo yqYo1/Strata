@@ -116897,7 +116897,7 @@
       "model_speed_qualified": false
     },
     "codegen": {
-      "stage": "prepared",
+      "stage": "closed",
       "GPU_executed": false,
       "model_executed": false,
       "cache": {
@@ -116938,6 +116938,116 @@
         "raw_byte_budget": 67108864,
         "consumer": "This immediate native-code discriminator before choosing another Q6 arithmetic/row-layout experiment",
         "review_point": "Record compact selected-kernel fields/opcode counts,then retire the full disassembly;retain only a named next implementation consumer."
+      },
+      "exit_code": 0,
+      "ownership_closed": true,
+      "stdout": "",
+      "stderr": "",
+      "evidence": {
+        "plan_commit": "01cbad74da6d4c84f00eeb9e4d3f70cc2d2a329d",
+        "method": "Parse the actual ELF64 little-endian IntelGT cache .ze_info and .text sections; count IGA assembly lines whose first opcode is dp4a. Null private/spill fields mean not reported,not measured zero.",
+        "ze_info_version": "1.73",
+        "kernels": [
+          {
+            "route": "reference",
+            "columns": null,
+            "rows_per_group": 1,
+            "warps": 4,
+            "native_text_bytes": 8192,
+            "native_text_sha256": "a9c14057142ce0ea06183d787e1dc4ccf76d6d728264723a6193a25a2082ca25",
+            "reported_grf_count": 128,
+            "reported_simd_size": 32,
+            "reported_barrier_count": 1,
+            "private_size": null,
+            "spill_size": null,
+            "per_thread_memory_buffers": [],
+            "static_dp4a_instructions": 0,
+            "assembly_sha256": "611474ba7f808f4395cba1547d1ed9f834a063f4b8094da22e62b161bb3b7b45"
+          },
+          {
+            "route": "constant-columns",
+            "columns": 1,
+            "rows_per_group": 1,
+            "warps": 4,
+            "native_text_bytes": 6080,
+            "native_text_sha256": "82700d5402457314e0ca9d7cafaf6c114694d823d6ebb80a69214d0da8fc8eea",
+            "reported_grf_count": 128,
+            "reported_simd_size": 32,
+            "reported_barrier_count": 1,
+            "private_size": null,
+            "spill_size": null,
+            "per_thread_memory_buffers": [],
+            "static_dp4a_instructions": 2,
+            "assembly_sha256": "97fb7527c3d269795cadfbd571b94df847d4e9da7b2464d8881fd8682c503cc1"
+          },
+          {
+            "route": "constant-columns",
+            "columns": 2,
+            "rows_per_group": 1,
+            "warps": 4,
+            "native_text_bytes": 8640,
+            "native_text_sha256": "fca99a3f3c3b235bac9234a7b3bce8082f521d93d3a9c1f0866488c731420780",
+            "reported_grf_count": 128,
+            "reported_simd_size": 32,
+            "reported_barrier_count": 1,
+            "private_size": null,
+            "spill_size": null,
+            "per_thread_memory_buffers": [],
+            "static_dp4a_instructions": 4,
+            "assembly_sha256": "98c6242e014612e9b410d8962ca030c011dfb27954fb941f962410fcafcdf0ae"
+          },
+          {
+            "route": "constant-columns",
+            "columns": 3,
+            "rows_per_group": 1,
+            "warps": 4,
+            "native_text_bytes": 11136,
+            "native_text_sha256": "797083cd82a2f415da0c817ddc0ec50df89a988af1657616a3661bd815052424",
+            "reported_grf_count": 128,
+            "reported_simd_size": 32,
+            "reported_barrier_count": 1,
+            "private_size": null,
+            "spill_size": null,
+            "per_thread_memory_buffers": [],
+            "static_dp4a_instructions": 6,
+            "assembly_sha256": "38d47d13d62b13d8249540f0d91af1a12da1893f5b56e3d5377e06244e64baac"
+          },
+          {
+            "route": "constant-columns",
+            "columns": 4,
+            "rows_per_group": 1,
+            "warps": 4,
+            "native_text_bytes": 13504,
+            "native_text_sha256": "de4040bceca601012eb43f7241f1477e6636113e3a247c82e0b393ee7282be21",
+            "reported_grf_count": 128,
+            "reported_simd_size": 32,
+            "reported_barrier_count": 1,
+            "private_size": null,
+            "spill_size": null,
+            "per_thread_memory_buffers": [],
+            "static_dp4a_instructions": 8,
+            "assembly_sha256": "b529b55c1c8ebcd2faf53d442f8118af6525d42decb791dabf41b28a92e23e0a"
+          },
+          {
+            "route": "constant-columns",
+            "columns": 8,
+            "rows_per_group": 1,
+            "warps": 4,
+            "native_text_bytes": 23360,
+            "native_text_sha256": "0853dc09a6fa63e6c905bd0d81a43bea638256948188138960c721bb216c389e",
+            "reported_grf_count": 128,
+            "reported_simd_size": 32,
+            "reported_barrier_count": 1,
+            "private_size": null,
+            "spill_size": null,
+            "per_thread_memory_buffers": [],
+            "static_dp4a_instructions": 16,
+            "assembly_sha256": "f3287d91b8abad55b27c55738679463c0dfab9f39d0f4a6ef942eabeba1a24be"
+          }
+        ],
+        "representative_candidate_dp4a": "dp4a (32|M0) r14.0<1>:d 0:w r50.0<1;0>:d r24.0<1>:d {I@2}",
+        "decision": "The existing constant-column candidate already emits native signed packed integer-dot instructions;the reference ROWS1/NW4 emits none. Do not start a generic dp4a/ESIMD rewrite merely to obtain those instructions. Advance only the repeated faster shapes through an explicitly decode-scoped graph policy.",
+        "limits": "Static allocation/instruction/code-size observations only:they neither prove dynamic occupancy,physical traffic/saturation,nor isolate the cause of the measured timing gain. Both timed ROWS1 routes report GRF128/SIMD32 and no private/spill fields or per-thread scratch buffers;there is no evidence here for spill elimination. The C4 native text is larger,13504 versus8192bytes."
       }
     }
   }
