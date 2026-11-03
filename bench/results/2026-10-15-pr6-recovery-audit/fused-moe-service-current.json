@@ -99087,12 +99087,124 @@
     "failure_mechanism": "The ad-hoc host harness expected the --think/--runs fragment once,but it occurs in both the real command and CLI selfcheck. It stops before testing that mutation,proof-field controls or inherited selfcheck. No controller/native failure is inferred."
   },
   "cache_map_prefill_curve_v5_host_contract_v2": {
-    "stage": "planned",
+    "stage": "closed",
     "source_commit": "bbbe871a3e13bf3639d8fc8334bd2f08447e7b08",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "plan": "Retain V1harness failure;ten source mutations must reject. Declare2thinking-fragment occurrences (real command+selfcheck),one for every other mutation;replace all declared occurrences. Three immutable-proof field changes must reject,including bool/int type changes. Then run inherited host selfcheck. No GPU execution.",
-    "no_source_or_acceptance_change": true
+    "no_source_or_acceptance_change": true,
+    "tested_at_commit": "dba3bf2d00d5824b9f40f008c301bd5ea81160b7",
+    "controller_sha256": "99b57f2e6df4f1fc4637e58170c03cddc66472771f3943f6c9a595beaff750e3",
+    "source_equal_parser_reuse": {
+      "current_controller_sha256": "99b57f2e6df4f1fc4637e58170c03cddc66472771f3943f6c9a595beaff750e3",
+      "original_proof_commit": "7532cbe1b4f8c8e448df58673689faa30ffc1cf8",
+      "original_controller_sha256": "46d41d77fb01bab1a084239464296b2e8e76670381e5795c0a3a7397ec441517",
+      "unchanged_projection_sha256": "21ffd8307aed4d708a016539d86d37449910daa86a8c3c01df8426903030cb57",
+      "allowed_changes": [
+        "ast import",
+        "ROOT/KEY scope labels",
+        "scope_projection/parser_qualification proof readers"
+      ],
+      "raw_fixture_replayed_again": false,
+      "model_or_native_qualification_added": false
+    },
+    "original_module_projection_equal": true,
+    "source_mutations": [
+      {
+        "name": "route_extent",
+        "before": "n = plan['read'] - 1",
+        "after": "n = plan['read'] - 2",
+        "occurrences": 1
+      },
+      {
+        "name": "case_order",
+        "before": "CASES = ((1286, True)",
+        "after": "CASES = ((1287, True)",
+        "occurrences": 1
+      },
+      {
+        "name": "clock_floor",
+        "before": "ORDER, RUNS, MIN_PROMPT_MS = [(n, 1) for n, _ in CASES], 4, 0",
+        "after": "ORDER, RUNS, MIN_PROMPT_MS = [(n, 1) for n, _ in CASES], 4, 1",
+        "occurrences": 1
+      },
+      {
+        "name": "GDN_setting",
+        "before": "STRATA_SYCL_PREFILL_GDN_COLUMNS='4'",
+        "after": "STRATA_SYCL_PREFILL_GDN_COLUMNS='8'",
+        "occurrences": 1
+      },
+      {
+        "name": "aliased_ast_import",
+        "before": "import ast\n",
+        "after": "import ast as copy\n",
+        "occurrences": 1
+      },
+      {
+        "name": "extra_import",
+        "before": "import copy\n",
+        "after": "import copy\nimport os\n",
+        "occurrences": 1
+      },
+      {
+        "name": "root_expression",
+        "before": "ROOT = entry.model.ROOT / 'prefill-curve-v5'",
+        "after": "ROOT = entry.model.ROOT / 'prefill-curve-v5' / 'other'",
+        "occurrences": 1
+      },
+      {
+        "name": "undeclared_scope",
+        "before": "KEY = 'cache_map_prefill_curve_v5'",
+        "after": "KEY = 'cache_map_prefill_curve_v6'",
+        "occurrences": 1
+      },
+      {
+        "name": "thinking_workload",
+        "before": "'--think', '--runs'",
+        "after": "'--no-think', '--runs'",
+        "occurrences": 2
+      },
+      {
+        "name": "dispatch",
+        "before": "comparison.run(int(args[0]), sys.modules[__name__])",
+        "after": "comparison.run(0, sys.modules[__name__])",
+        "occurrences": 1
+      }
+    ],
+    "source_negative_controls": 10,
+    "immutable_proof_negative_controls": [
+      "passed",
+      "GPU_executed",
+      "controller_sha256"
+    ],
+    "inherited": {
+      "passed": true,
+      "inherited": {
+        "geometry": {
+          "passed": true,
+          "valid_route_shapes": 6,
+          "invalid_routes_rejected": 18,
+          "prospective_shapes": 6,
+          "prospective_geometry_rejections": 6,
+          "comparison_controls": 3
+        },
+        "progress": {
+          "passed": true,
+          "synthetic_positive_controls": 1,
+          "invalid_cases_rejected": 14,
+          "GPU_executed": false,
+          "head_payload_bytes_verified": false
+        }
+      },
+      "short_route_negative": 11,
+      "workload_clock_negative": 8,
+      "actual_CLI_vectors": 10,
+      "legacy_clock_floor_preserved": true,
+      "GPU_executed": false
+    },
+    "ownership_closed": true,
+    "model_executed": false,
+    "limits": "Host source/argument/geometry qualification only;no new raw-capture replay,provider/native validation or speed claim. V1harness failure remains recorded."
   }
 }
