@@ -1175,8 +1175,18 @@ validation,closed owners and no fresh fault. First-use prompt/TTFT is
 111.9631s median(1049.3547tok/s),with112.189s median TTFT. Its observed/clean
 prompt-time ratio0.9981626passes the predeclared local1.15cost screen;one adjacent
 pair does not establish observer benefit or general short-input overhead.
-Three of ten planned processes have closed;the remaining seven length points
-and final whole-model hashes are pending. Next is the39254-read process.
+V5now closes failed after the39254-read process. All four request gates and the
+benchmark complete,native/benchmark exit0,validation stays quiet,owners close
+and no fresh fault is recorded. Its post-run admission fails because Main added
+the unrelated QSA CMake targets during execution:the transitive GDN source
+reader still compares the entire live CMake file to its selected revision,
+although it projects only the unchanged final GDN appendix. Preserve that
+failure and the three previously passed processes;no final whole-model rehash
+is reached. The failed process's first/subsequent prompt times are54.7639s and
+45.6804,46.0327,45.3201s;its45.6804s median and45.824s TTFT are descriptive
+only,not qualified curve points. Correct the appendix reader with host regression
+controls and prove all558native inputs unchanged against the full build record
+before committing a fresh continuation plan. Do not retry or relabel V5.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use

@@ -98514,7 +98514,7 @@
     "limits": "Host source/argument/geometry qualification only;no new raw-capture replay,provider/native validation or speed claim. V1harness failure remains recorded."
   },
   "cache_map_prefill_curve_v5": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "84868954c86c7fb88239a6ef96cd83d5b5e4d02c",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
@@ -99760,6 +99760,40 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 3,
+        "read": 39254,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 1295030,
+          "start_ticks": 203412523,
+          "sid": 1294978
+        },
+        "request_routes_checked_before_continue": 4,
+        "error": "RuntimeError('commit exact unique fixture target')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "request_hashes": {
@@ -99857,5 +99891,66 @@
       "files": 277,
       "aggregate_sha256": "676cf61b0d0d5fc4e97d6cc3cd106b5f3e251f5302361bb3cba426ca20aed943"
     }
+  },
+  "cache_map_prefill_curve_v5_failure_diagnosis": {
+    "source_commit": "d594a8515b0d3d9f039625901dc97196b48856ed",
+    "stage": "closed_failed_process",
+    "original_outcome": "V5 and process3 remain failed/incomplete;no retry or final whole-model rehash. All four request gates and benchmark execution closed before the post-run admission failed.",
+    "error": "RuntimeError('commit exact unique fixture target')",
+    "trigger": "Unrelated QSA CMake targets were committed during process3. Transitive gdn_model_sources.sources compares the full live CMake file to the original selected revision,although projection consumes only its unchanged final GDN appendix.",
+    "current_cmake_sha256": "638ee424c435a1208a39e96abaceb03c7880f0c1b05a8fcc8cb160a3e050a31d",
+    "whole_equal": false,
+    "consumed_appendix_equal": true,
+    "marker_counts": [
+      1,
+      1
+    ],
+    "native_exit_code": 0,
+    "benchmark_exit_code": 0,
+    "native_identity": {
+      "pid": 1295030,
+      "start_ticks": 203412523,
+      "sid": 1294978
+    },
+    "quiet_final_validation": true,
+    "ownership_closed": true,
+    "fresh_faults": [],
+    "actual_read_tokens": 39254,
+    "actual_reused_tokens": 0,
+    "samples": [
+      {
+        "prompt_ms": 54763.9,
+        "prompt_tps": 716.8,
+        "ttft_s": 54.897,
+        "generated_tokens": 24,
+        "request_sha256": "bd4ce8aa98f30e239fe87a92436fb6a9581b64fafc05ecafa1cb6d980e7c32dd"
+      },
+      {
+        "prompt_ms": 45680.4,
+        "prompt_tps": 859.3,
+        "ttft_s": 45.824,
+        "generated_tokens": 24,
+        "request_sha256": "c826e0a4656378c60da2ae4204aed73c09d9e26c097806190b08e0e455fdef2f"
+      },
+      {
+        "prompt_ms": 46032.7,
+        "prompt_tps": 852.7,
+        "ttft_s": 46.162,
+        "generated_tokens": 24,
+        "request_sha256": "0139792a2f62c6b4ca228641357c7e53034b31499d3e1c45e576c1679872c920"
+      },
+      {
+        "prompt_ms": 45320.1,
+        "prompt_tps": 866.1,
+        "ttft_s": 45.452,
+        "generated_tokens": 24,
+        "request_sha256": "b5c66c5a5097821baae7fad480d8506b22da9db41f5e85b164aeaf05f433a411"
+      }
+    ],
+    "descriptive_subsequent_median_ms": 45680.4,
+    "performance_eligible": false,
+    "native_equivalence_after_scoped_fix": "pending complete558-input comparison against actual full build record;compact count/hash summaries are not input maps.",
+    "next_action": "Commit a scoped appendix reader and host regression controls,then a new prospective continuation scope preserving all V5 outcomes and unchanged native/ELFs. Do not refresh old hashes or relabel this failure.",
+    "selected_fixture_cmake_sha256": "251f64508460414feb7463df21e7aee02dd4813a89aaee039c8ecf3cb86dd4a4"
   }
 }
