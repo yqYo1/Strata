@@ -22205,5 +22205,52 @@
       "report_review_spec_deleted_verified": true,
       "substantive_source_corrections_preserved": true
     }
+  },
+  "iq3_s_affine_u4_feasibility_20261103": {
+    "classification": "decision_support",
+    "status": "eligible-before-dispatch",
+    "schedulable_now": true,
+    "finite_question": "Source/algebra/AVX2 feasibility of exact unsigned affine U4 IQ3_S: q=(w+15)/2, dot=2*dot(q,a)-15*sum(a), preserving original32-value scale groups and FP32 accumulation boundaries. Compare134B/block with original110B,166B magnitude/sign and262B signed-int8;no performance or model-quality claim.",
+    "prerequisites": {
+      "source_levels_checked": {
+        "file": "include/strata/artifact/iq_codebooks.hpp",
+        "words": 512,
+        "positive_levels": [
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15
+        ]
+      },
+      "selected_native_source_equal": true,
+      "source_commit": "925f547fdceb2c5228b218d3628b11630cebaeb3",
+      "files_sha256": {
+        "src/kernels/cpu/iq_avx2.cpp": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
+        "include/strata/artifact/iq_codebooks.hpp": "302000e6a85fa7224bff9a10155601a82391b7a64d5ee76fba1f76b537bb6c71"
+      }
+    },
+    "novelty_review": {
+      "path": ".cache/research/2026-11-03/affine_u4_scope_review_20261103.json",
+      "sha256": "27eb102ca87fc56982a976f4a1dbd779c31f9aa6d856f8b8a79c8da946bd70d5",
+      "bytes": 3074,
+      "reviewer": "native Codex gpt-6-luna max",
+      "digest": "Absent from indexed166B/262B representation alternatives;distinct from failed paired-GU dataflow. Eligible source feasibility only;actual CPU relevance/NT/RAM and frozen gates still required for any performance trial."
+    },
+    "previous_scope_keys": [
+      "cpu_decode_representation_methods_20261102",
+      "iq3_s_paired_gu_dataflow_methods_20261103"
+    ],
+    "report": {
+      "path": ".cache/research/2026-11-03/iq3_s_affine_u4_feasibility_20261103.md",
+      "working_byte_budget": 6144
+    },
+    "ownership": "Research writes only its named report;Main owns implementation,tests/builds/GPU. Orca Luna launch must verify report access and actual model;no steering.",
+    "consumer": "Decide whether a134B exact expanded CPU expert representation is feasible before preparing an owned comparator.",
+    "limits": "Source feasibility does not establish CPU/RAM bottleneck,workload reuse,headroom,speedup or unchanged model behavior.",
+    "next_review": "After one finite Orca report and native Luna-max review;retire transaction paperwork after accepted settlement."
   }
 }
