@@ -21855,9 +21855,9 @@
   },
   "qsa_subgroup_rows_contract_20261103": {
     "classification": "decision_support",
-    "status": "eligible_source_review",
-    "schedulable_now": true,
-    "source_candidate_commit": "f984402bf",
+    "status": "starting_source_review",
+    "schedulable_now": false,
+    "source_candidate_commit": "f984402bfd8d5aac524087b0e6ea5e21a778a7d8",
     "source_sha256": {
       "src/kernels/sycl/qsa_bf16_prefix.cpp": "b16a2a5efb9a6e0d13fcbb4d1590c6644e25f3684b61f500fd908b17696fd6be",
       "include/strata/kernels/qsa_bf16_prefix.hpp": "080ad9a175d031cffa533d5af4c42e0311a2b7b93515428dcca8e9390f3903be",
@@ -21884,6 +21884,23 @@
     "next_review": "After native Luna-max report review and Main source decision;retire report transactions after folding essential proof/corrections.",
     "model": "gpt-6-luna",
     "effort": "high",
-    "ownership": "Only the named report;no Git,build/tests,GPU/profiler,project/system process inspection,product edits or child workers. Main owns implementation and serialized tests."
+    "ownership": "Only the named report;no Git,build/tests,GPU/profiler,project/system process inspection,product edits or child workers. Main owns implementation and serialized tests.",
+    "run": "run_87cd7126383f",
+    "terminal": "term_620e73be-59d1-4dfe-95c9-bd0b642e9417",
+    "launch": {
+      "custom_argv_reason": "Normal sandbox/approval and explicit IPC network settings are not expressible by worker-start;reuse a verified terminal.",
+      "model_requested": "gpt-6-luna",
+      "effort_requested": "high",
+      "sandbox": "workspace-write",
+      "approval": "on-request",
+      "sandbox_workspace_write_network_access": true,
+      "report_within_workspace": true,
+      "permissions_bypassed": false
+    },
+    "spec": {
+      "path": ".cache/research/2026-11-03/qsa_subgroup_rows_contract_20261103.spec.txt",
+      "sha256": "34d544bf37b8c08571e21aa4bf68f5823542ef839810b0cafc9c807f0295ae4f",
+      "bytes": 3836
+    }
   }
 }
