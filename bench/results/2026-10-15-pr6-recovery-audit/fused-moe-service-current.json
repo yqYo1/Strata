@@ -99072,5 +99072,27 @@
     "complete": true,
     "ownership_closed": true,
     "limits": "A fast current probe does not identify the cause of the earlier timeout or qualify a native/model trial."
+  },
+  "cache_map_prefill_curve_v5_host_contract_v1": {
+    "source_commit": "bbbe871a3e13bf3639d8fc8334bd2f08447e7b08",
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "stage": "harness_input_assertion",
+    "error": "AssertionError: ('thinking_workload', 2)",
+    "original_source_projection_equal": true,
+    "completed_source_negative_controls": 8,
+    "failure_mechanism": "The ad-hoc host harness expected the --think/--runs fragment once,but it occurs in both the real command and CLI selfcheck. It stops before testing that mutation,proof-field controls or inherited selfcheck. No controller/native failure is inferred."
+  },
+  "cache_map_prefill_curve_v5_host_contract_v2": {
+    "stage": "planned",
+    "source_commit": "bbbe871a3e13bf3639d8fc8334bd2f08447e7b08",
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "plan": "Retain V1harness failure;ten source mutations must reject. Declare2thinking-fragment occurrences (real command+selfcheck),one for every other mutation;replace all declared occurrences. Three immutable-proof field changes must reject,including bool/int type changes. Then run inherited host selfcheck. No GPU execution.",
+    "no_source_or_acceptance_change": true
   }
 }
