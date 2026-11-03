@@ -112660,7 +112660,7 @@
     }
   },
   "cache_map_decode_gpu_service_v2": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "170dbd2a071bc9ee84b88d4adfab89fd72151150",
     "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "binary": {
@@ -112965,7 +112965,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -113014,6 +113014,26 @@
       "raw_budget": "The prior32Kfull-API trace was266967750bytes;kernel-activity-only capture is bounded to512MiB/file,768MiB/job and1GiBwhole. Required temporarily to bind graph capture IDs to replay and select decode after flush. Retire full timeline/logs/JIT after compact attribution is verified.",
       "limits": "Diagnostic24-output sample,not sustained TG,MTP strong/weak,clean speed,full graph critical path,complete device coverage,physical bytes,hardware saturation,task/agent,262144/RESTORE or adoption.",
       "stopping": "Stop first source/provider/owner/fault/validation/body/clock/count/budget/overhead failure;no retry,hash refresh or changed criteria."
+    },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 190,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
+    "window_reader_tests": {
+      "passed": true,
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "summary": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.001s\n\nOK\n"
     },
     "source_inputs": {
       "files": 288,

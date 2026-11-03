@@ -22360,8 +22360,8 @@
   },
   "iq3xxs_iq2s_cpu_resident_views_20261104": {
     "classification": "decision_support",
-    "status": "eligible",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "For the selected Zen3/AVX2 native IQ3_XXS and IQ2_S single-row expert work,compare exact compact/predecoded CPU-resident weight views against on-the-fly lookup,including setup,RAM/cache traffic,GU/Down activation reuse and original GPU-pack coexistence. Audit existing IQ_SINGLE_EXACT/IQ2_PAIR precedence and rank source-feasible experiments without asserting useful-CPU time or saturation.",
     "prerequisites": {
       "selected_native_recipe": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
@@ -22388,7 +22388,23 @@
     "consumer": "CPU layout-method selection alongside Main decode GPU attribution;compare the actually dominant non-affine formats rather than repeating the IQ3_S21 survey",
     "review_point": "Native Luna-max review at completion;retain only novel source-feasible methods until the next CPU candidate decision",
     "main_reads_body_on_arrival": false,
-    "ownership_closed": true,
-    "worker_done_accepted": false
+    "ownership_closed": false,
+    "worker_done_accepted": false,
+    "run": "run_3a590df77264",
+    "task": "task_5fed8ae0098c",
+    "dispatch": "ctx_73777e483b39",
+    "terminal": "term_3811accf-9642-4ab3-95be-62adf147ebfb",
+    "launch": {
+      "sha256": "a90d60ca2b0a59aee6c2944badc85ad65c94a49388324f8c4c1fc168cc75e506",
+      "turn_start_observed": true,
+      "prompt_request": "ae66005a-3ad7-490d-b965-8a5f530df949"
+    },
+    "preflight": {
+      "runtime_id": "9cb50b9b-f8d9-466f-8fef-98360bc7a4fd",
+      "agent_sandbox_runtime_reachable": true,
+      "report_directory_writable": true,
+      "model_screen": "GPT-6-Luna high",
+      "startup": "Exact Main-created terminal;process-local no-update and workspace-write/network permissions;worker-start reused this terminal for the custom-argv expressiveness gap."
+    }
   }
 }
