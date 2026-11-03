@@ -1137,9 +1137,10 @@ that guard;no reader-scoping detour is selected. At the serialized boundary,
 301closed V5raw/research files totaling54251040bytes are deleted after source
 recovery and publication;the sole V5record and both consumed native generations
 remain. Full V6prepare at`e88d0e454`now passes native/dependency/provider admission,
-all nine ELF checks and all15model hashes after that retirement. The three
-inherited processes remain historical evidence;frontend probes precede the
-new39254-read process. This descriptive curve spans
+all nine ELF checks and all15model hashes after that retirement. Current-source
+benchmark/server frontend probes also pass. The three inherited processes
+remain historical evidence;new native execution starts with39254reads.
+This descriptive curve spans
 two controller versions;it does not qualify a causal gain,sustained TG,
 task/agent adoption,hardware saturation,physical262144or RESTORE.
 
