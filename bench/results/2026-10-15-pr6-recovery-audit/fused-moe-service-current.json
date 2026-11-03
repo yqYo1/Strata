@@ -99024,5 +99024,53 @@
       "files": 277,
       "aggregate_sha256": "41de6302f97008741fe36fa518250d40ccfb3d4dc4fced8b64af96f837212fcc"
     }
+  },
+  "cache_map_prefill_package_query_probe_v1": {
+    "source_commit": "72a24c2ec3e0f15c93b07989b5113da48a8596e2",
+    "helper_path": "tools/sycl/host_link_inventory.py",
+    "helper_sha256": "179eec1ce3eaca951362d2f686fa06baacc3445cfb7ae894b6cc16e49839f8a9",
+    "question": "Does the exact failed package-owner query still exceed its original15s budget under the exact build environment?",
+    "command": [
+      "dpkg-query",
+      "-S",
+      "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
+    ],
+    "environment_sha256": "5a015c58e06ca752a45ff7d0ea3ff87a4da23dfc0c0e090cfca9f10c7d86db0e",
+    "plan": "At most3sequential identical host-only samples;15s timeout each;stop on timeout/nonzero;no model/native retry.",
+    "samples": [
+      {
+        "index": 0,
+        "wall_s": 1.3311792251188308,
+        "cpu_s": 0.356556,
+        "exit_code": 0,
+        "output": "libgcc-13-dev:amd64: /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+        "stderr": "",
+        "timeout": false
+      },
+      {
+        "index": 1,
+        "wall_s": 1.2422618749551475,
+        "cpu_s": 0.36482900000000007,
+        "exit_code": 0,
+        "output": "libgcc-13-dev:amd64: /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+        "stderr": "",
+        "timeout": false
+      },
+      {
+        "index": 2,
+        "wall_s": 1.2033159472048283,
+        "cpu_s": 0.346989,
+        "exit_code": 0,
+        "output": "libgcc-13-dev:amd64: /usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+        "stderr": "",
+        "timeout": false
+      }
+    ],
+    "original_timeout_reproduced": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "complete": true,
+    "ownership_closed": true,
+    "limits": "A fast current probe does not identify the cause of the earlier timeout or qualify a native/model trial."
   }
 }

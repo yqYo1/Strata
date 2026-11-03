@@ -5,6 +5,7 @@ Use the maintained bench.sh exact-count mode and serialized request gates.
 Progress-observed curves and a clean117K anchor are descriptive,not adoption
 or a causal speed comparison. No native rebuild or shared context mutation.
 """
+import ast
 import copy
 import fcntl
 import hashlib
@@ -23,8 +24,8 @@ import prefill_scaling_bench as fit
 
 entry, base, comparison = speed.entry, speed.base, speed.comparison
 P, B, RESULT = speed.P, speed.B, speed.RESULT
-ROOT = entry.model.ROOT / 'prefill-curve-v4'
-KEY = 'cache_map_prefill_curve_v4'
+ROOT = entry.model.ROOT / 'prefill-curve-v5'
+KEY = 'cache_map_prefill_curve_v5'
 PARSER_KEY = 'cache_map_prefill_curve_short_route_v4'
 FAILED_KEY = 'cache_map_prefill_curve_v3'
 SOURCE = 'tools/sycl/cache_map_prefill_curve.py'
@@ -265,15 +266,53 @@ def selfcheck():
                 legacy_clock_floor_preserved=True, GPU_executed=False)
 
 
+def scope_projection(source):
+    """Only scope labels and their proof reader may differ from the replayed code."""
+    nodes = []
+    for node in ast.parse(source).body:
+        if isinstance(node, ast.Import) and len(node.names) == 1 and \
+                node.names[0].name == 'ast' and node.names[0].asname is None:
+            continue
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and \
+                isinstance(node.targets[0], ast.Name) and node.targets[0].id in ('ROOT', 'KEY'):
+            name = node.targets[0].id
+            declarations = [f"ROOT = entry.model.ROOT / 'prefill-curve-v{v}'" if name == 'ROOT'
+                            else f"KEY = 'cache_map_prefill_curve_v{v}'" for v in (4, 5)]
+            require(ast.dump(node, include_attributes=False) in
+                    [ast.dump(ast.parse(s).body[0], include_attributes=False) for s in declarations],
+                    'scope declaration contains more than an approved label')
+            nodes.append(name + ' versioned scope label')
+            continue
+        if isinstance(node, ast.FunctionDef) and node.name in ('scope_projection', 'parser_qualification'):
+            continue
+        nodes.append(ast.dump(node, include_attributes=False))
+    return nodes
+
+
 def parser_qualification():
     parser = base.committed(RESULT)[PARSER_KEY]
+    fields = ('source_commit', 'passed', 'complete', 'ownership_closed',
+        'GPU_executed', 'controller_sha256', 'fixture', 'failed_scope', 'actual_route')
+    proof_commit = '7532cbe1b4f8c8e448df58673689faa30ffc1cf8'
+    original = json.loads(speed.shared.gen.git('show', proof_commit + ':' + str(RESULT.relative_to(P))))[PARSER_KEY]
+    frozen = {k: parser[k] for k in fields}
+    require(comparison.fingerprint(frozen) == comparison.fingerprint({k: original[k] for k in fields}),
+            'original immutable parser replay proof changed')
+    legacy = speed.shared.gen.git('show', original['source_commit'] + ':' + SOURCE)
     require(parser['passed'] and parser['complete'] and parser['ownership_closed']
-            and not parser['GPU_executed'] and parser['controller_sha256'] == digest(__file__)
+            and not parser['GPU_executed'] and parser['controller_sha256'] == hashlib.sha256(legacy).hexdigest()
             and parser['failed_scope'] == FAILED_KEY and parser['actual_route']['rows'] == 1285
             and parser['actual_route']['actual_operator_chunk'] == 1536,
-            'commit the same-source captured short-route replay first')
-    return {k: parser[k] for k in ('source_commit', 'passed', 'complete', 'ownership_closed',
-        'GPU_executed', 'controller_sha256', 'fixture', 'failed_scope', 'actual_route')}
+            'recover the unchanged original captured short-route replay')
+    source = Path(__file__).read_text()
+    require(scope_projection(legacy.decode()) == scope_projection(source),
+            'only scope labels and the explicit proof reader may extend the replayed controller')
+    frozen['source_equal_reuse'] = dict(current_controller_sha256=digest(__file__),
+        original_proof_commit=proof_commit, original_controller_sha256=parser['controller_sha256'],
+        unchanged_projection_sha256=comparison.fingerprint(scope_projection(source)),
+        allowed_changes=['ast import', 'ROOT/KEY scope labels', 'scope_projection/parser_qualification proof readers'],
+        raw_fixture_replayed_again=False, model_or_native_qualification_added=False)
+    return frozen
 
 
 def replay():

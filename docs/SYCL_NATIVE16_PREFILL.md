@@ -1139,6 +1139,20 @@ After both original277-input sets are recovered from pushed history,113closed
 failed-curve/research-transaction files totaling11956461bytes are retired. Keep
 the failed outcomes,original command exits/signals and posthoc owner audits;
 no active V4input or native generation is removed.
+The exact stopped package query now completes three host-only probes in
+1.3312,1.2423and1.2033s under the unchanged build environment;its earlier15s
+timeout is not reproduced or explained. Keep the inventory/timeout unchanged.
+The prospective V5scope repeats the frozen ten-process/nine-length plan with
+fresh processes;do not insert V4's short sample into that new cohort. Reuse
+only the immutable parser replay at`7532cbe1b`,recover its original controller
+bytes,and require AST equality outside the narrowly checked ROOT/KEY labels,
+the added stdlib ast import and explicit proof-reader functions. All actual
+route checks,workloads,case order,timers,owners and native/dependency gates stay
+unchanged. This is source-equal parser reuse,not another raw-capture replay or
+new native qualification. Before prepare,check the current and original source
+projections plus negative controls for changed routes,globals,imports,scope
+expressions and dispatch. Then run inherited host controls and the full native
+admission before creating any new model process.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
