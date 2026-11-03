@@ -1076,105 +1076,79 @@ This is single-core GU evidence,not a pool/model speed or resource ceiling.
 The measured engine's pool differs from the worktree in three files;do not
 attribute current-pool timings to that engine. A later model comparison needs
 an answer-eligible route. Preserve the current validated model generation.
-The current safe engine now has the closed117K repeated prefill check below;
-a fresh multi-length time/TTFT fit remains pending. The maintained client rejects
-`--prefill-scaling`with`--profile-request-gates`;that ungated suite cannot simply
-reuse the current supervision. The next curve should use the unchanged exact-count
-bench.sh entry in separate same-configuration processes across short and long
-lengths,with actual route/bank/split checks and first use separate from repeated
-requests. Freeze its lengths,order,repetitions and criteria before collection.
-The throughput selector uses layer-major only above the8192-row operator chunk;
-record that eligibility boundary rather than treating a mixed-route intercept as
-a physical fixed cost. Fit actual counts/time/TTFT with held-out lengths and
-residuals. The older length fit does not qualify this engine. Full262144/RESTORE
-remain pending.
-The current length/TTFT scope`cache_map_prefill_curve_v6`is failed at its
-65537-read first request. Seven earlier processes remain passed:all three
-successful V5prefix processes at`ef6a0269d`,plus fresh39254,4956,78445and19665
-points. The native479a/552bengine is unchanged,with throughput,GDN16/MTP16,
-BF16hidden,INT8resident131072,8192operator chunks and immutable runtime safety.
-Every completed process has four bench.sh requests,thinking on,zero reuse and
-24outputs;first use stays separate from the subsequent three.
+The current length/TTFT scope`cache_map_prefill_curve_v7`now closes passed at
+`51ddbbfaa`:nine observed lengths plus one clean117Kanchor. The native479a/552b
+engine is unchanged,with throughput,GDN16/MTP16,BF16hidden,INT8resident131072,
+8192operator chunks and immutable runtime safety. Seven complete V6processes
+are inherited without speed-based selection from`69ec5bad8`;three fresh
+processes supply65537,24577and8193reads. All ten have native exit0,closed
+owners,quiet validation and no fresh fault;all15model hashes pass before and
+after collection. Each process has four bench.sh exact-count requests,thinking
+on,zero reuse and24outputs. First use stays separate from the subsequent three.
 
 | Actual read | Route | Subsequent median prefill seconds | tok/s | Client TTFT seconds |
 | ---: | --- | ---: | ---: | ---: |
 | 1286 | chunked | 10.0205 | 128.3369 | 10.127 |
 | 4956 | chunked | 16.6403 | 297.8312 | 16.755 |
+| 8193 | chunked | 22.5041 | 364.0670 | 22.631 |
 | 19665 | layer-major | 29.7372 | 661.2929 | 29.891 |
+| 24577 | layer-major | 32.7967 | 749.3742 | 32.916 |
 | 39254 | layer-major | 45.4703 | 863.2888 | 45.603 |
+| 65537 | layer-major | 66.8505 | 980.3517 | 66.991 |
 | 78445 | layer-major | 77.8113 | 1008.1441 | 78.045 |
 | 117489 | layer-major,split | 111.9631 | 1049.3547 | 112.189 |
 
-These observed points are descriptive,one independent process per length.
-The separate clean117Kanchor is112.1692s/1047.4266tok/s/112.348s TTFT;
-the0.9981626observed/clean ratio passes the local1.15cost screen only.
-The prior three-process clean1047.0672milestone remains the repeated reference.
-No native-code gain or short-input observer-cost qualification is implied.
-The intended nine-length fit is incomplete:only three of five homogeneous
-non-split long points and two of three chunked points passed. Do not fit mixed
-routes or interpret an intercept as physical fixed cost. Keep affine/quadratic/
-nlogn comparison,whole-length held-out errors,residuals and adjacent slopes
-pending;do not claim a completed current-engine approximation.
-An explicitly exploratory three-point affine description is now recorded in
-`cache_map_prefill_curve_partial_affine_v1`:for19665..78445actual reads,
-prefill seconds approximately13.5098+0.000818915n,and client TTFT seconds
-approximately13.6130+0.000820449n. Training residuals reach0.4152percent and
-0.4815percent respectively;these are not held-out errors or confidence bounds.
-The original five-point model comparison remains pending. Its frozen exploratory
-predictions for subsequent requests are33.6363s/33.7771s TTFT at24577reads and
-67.1790s/67.3827s TTFT at65537reads. The intercept is not a physical fixed cost;
-do not extrapolate or treat this incomplete curve as an adoption result.
+These points have one independent process per observed length,not an estimate
+of process-to-process variance. The separate clean117Kanchor is112.1692s/
+1047.4266tok/s/112.348s TTFT;the0.9981626observed/clean ratio is only a local
+observer-cost screen. The prior three-process clean1047.0672milestone remains
+the repeated reference. No native-code gain or short-input observer-cost
+qualification follows from this curve. The fresh64Kfirst use is75.6486s/
+866.3logged tok/s/75.794s TTFT;subsequent prompt times are66.8704,66.5611and
+66.8505s. Its exact boundary callback sequence passes on all four requests.
 
-At65537reads,the engine logs65536prefill rows,75468ms(868.4tok/s),zero reuse
-and24generated tokens. The end gate sees eight MTPcallbacks:three batched,
-one token,then four batched,all mode2/cells8192. The strict all-batched checker
-rejects this and the supervisor terminates the owned session. No fresh GPU fault
-or validation error appears;normal native exit is unqualified. Original failed/
-incomplete/ownership flags remain unchanged. The session is empty and all four
-owned PIDs are independently confirmed absent. The compact diagnosis is
-`cache_map_prefill_curve_v6_failure_diagnosis`;24K/8Kremain unrun and final15model
-rehash is not reached. An Orca Luna source-only audit must distinguish legitimate
-empty-window handling from an unexpected fallback before new native execution.
-The independent source review supports a narrow boundary explanation:P65537,
-window32768,F32705,63needed rows at callback index3. B=63,not zero,and the
-minimum64-row batch declines;the effectively unset SYCL sync selects grouped
-upload with a64-cell overlap. Internal runtime bounds/capacity were not logged.
-The host gate at`b97f94395`passes eight tests:24capacity cases,nine invalid
-callback sequences,six unchanged lengths and the existing source/prefix controls.
-Its reduced actual-callback test fails before the correction at`df4e05d14`.
-The new helper also passes the687207-byte capture;the original request_route
-still rejects it. That host proof covers the helper only,not its connection to
-the complete route. The prospective V7controller permits one exact call
-replacement,with byte/AST recovery of the original helper proof and a separate
-full64Kroute replay before native admission. Other lengths keep their original
-MTP contract. Reuse all seven successful V6processes without selection by speed;
-keep the failed64Ksample excluded and collect three fresh processes in the
-unchanged64K,24K,8Korder,with four requests each. All native/configuration,
-source/provider,body,clock,owner,validation/fault and final15model-hash gates
-remain. Commit sources,composed replay,prepared plan and frontend admission
-before the next native process;these tests do not qualify native execution.
-The composed687207-byte replay now passes all full-route checks and four
-negative controls at`89ef02f2c`. The updated continuation suite passes nine
-host tests at`70575d8d9`,including five boundary-proof mutations;V7native
-prepare/frontend admission and all three new processes remain pending.
-Retain the capture within1MiB only through that replay/admission;later admission
-consumes its committed compact result rather than the raw bytes. The settled
-report,review and spec are retired after the corrected digest and host decision.
+For actual reads n=19665..78445,the five non-split long points give a working
+prefill description T_seconds=13.0863+0.000823088*n. Compare whole-length
+leave-one-out errors,not just training residuals:
 
-V6prepare at`e88d0e454`passes full native/dependency/provider admission,all nine
-ELFs and all15model hashes after retirement;current-source frontend probes pass.
-Only its controller and GDN source reader differ from277recovered V5controls,
-with two explicitly pinned host tests added. The reader now compares the exact
-consumed final CMake suffix;its source/contract tests pass. V5stays failed at its
-39Kpost-run gate(`be6629074`);that failed point was not inherited. The unchanged
-parser's strict AST proof is pinned at`7532cbe1b`;the sole original V5record
-remains for prefix qualification. Whole shared-result contents stay frozen for
-active readers. After publication at`007af4203`,351ended V6/research files
-(68019800bytes)are retired after279controller/558native-input recovery and
-all nine ELF checks. The V6root retains five files totaling828403bytes:original
-record/runtime inventory and the failed64Kdiagnostic for its named next reader.
-Both still-consumed native generations remain;no new generation is built.
-This incomplete descriptive curve does not qualify sustained TG,task/agent
+| Hypothesis | Mean prefill error | Maximum prefill error | Mean TTFT error | Maximum TTFT error |
+| --- | ---: | ---: | ---: | ---: |
+| affine | 1.30% | 2.86% | 1.38% | 3.03% |
+| quadratic | 1.57% | 3.35% | 1.64% | 3.37% |
+| n log n | 1.69% | 3.60% | 1.77% | 3.61% |
+
+Use affine as the simpler working description within this measured range;
+the raw candidate table remains unselected. This is retrospective validation,
+not a confidence bound or a physical fixed-cost measurement. Some low-length
+errors exceed the observed within-process spread;independent-process variation
+and internal MTP/chunk boundaries remain distinct limits. Do not extrapolate,
+fit117Ksplit with these points,or derive automatic strategy thresholds here.
+The three chunked points give7.6922+0.00180730*n seconds,with0.0533percent
+maximum training residual and no held-out qualification. Keep that route
+separate. The original three-point exploratory coefficients and prospective
+predictions remain unchanged in`cache_map_prefill_curve_partial_affine_v1`.
+Compared with fresh warmed data,its prefill predictions overestimate64Kby
+0.4914percent and24Kby2.5599percent;TTFT errors are0.5847and2.6161percent.
+These checks did not relax collection gates or change the earlier failed scope.
+
+V6remains failed at its original65537-read request:the all-batched MTPchecker
+rejects one token callback and its supervisor terminates the owned session.
+No fresh fault appears;original incomplete/normal-exit/ownership flags remain.
+All original PIDs are independently absent. The reviewed source explanation is
+P65537,window32768,F32705,63needed rows at callback index3:B=63rather than zero,
+so the minimum64-row batch declines. Unset SYCL sync selects grouped upload
+with a64-cell overlap;internal capacity and bounds were not instrumented.
+V7admits only this exact seven-batched/one-token sequence at65536prefill rows;
+other lengths retain their original MTPcontract. The helper proof at`007af4203`,
+composed687207-byte replay at`89ef02f2c`with four negative controls,and nine
+continuation tests at`70575d8d9`precede fresh native execution. These host proofs
+are not numerical or physical-context qualification. The changed controls are
+the controller and its host test only;all279controller inputs are recoverable.
+The original parser/GDN source-reader contracts and all nine same-build ELFs
+remain verified. Keep only consumed root receipts/runtime inventories after
+raw-output retirement;the replay does not need its capture during later admission.
+Both still-consumed native generations remain until the adaptive fallback's
+actual reader is migrated. This curve does not qualify sustained TG,task/agent
 adoption,hardware saturation,physical262144or RESTORE.
 
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/

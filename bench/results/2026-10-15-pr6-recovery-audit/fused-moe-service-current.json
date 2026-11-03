@@ -106158,6 +106158,66 @@
       "physical_saturation_qualified": false,
       "limits": "Progress-observed descriptive curve;one independent process per length,first use separate from3subsequent requests. The clean/observed cost screen covers117K only,not short inputs. Never infer physical fixed cost from mixed routes or extrapolate past measured counts. Split117K remains distinct. No sustained TG,task/agent,physical262144/RESTORE or inference adoption."
     },
+    "interpretation": {
+      "evidence_commit": "51ddbbfaa44ccf2a3e7a76bea8290f040a34b712",
+      "working_description": "affine within actual19665..78445reads;not an adoption or physical fixed-cost model",
+      "selection_reason": "Lower mean and maximum whole-length leave-one-out errors than quadratic/nlogn for both prompt and TTFT;fewer coefficients. Candidate table remains unselected.",
+      "formula_seconds": {
+        "n": "actual_read_tokens",
+        "prompt_a": 13.086321375275977,
+        "prompt_b": 0.0008230879167375312,
+        "TTFT_a": 13.186651245339498,
+        "TTFT_b": 0.0008243115544065909
+      },
+      "original_three_point_fit_unchanged": true,
+      "prospective_prediction_checks": [
+        {
+          "actual_read_tokens": 24577,
+          "process_index": 8,
+          "actual": {
+            "prompt_ms": 32796.7,
+            "ttft_ms": 32916.0
+          },
+          "prediction": {
+            "actual_read_tokens": 24577,
+            "prompt_ms": 33636.25052660717,
+            "ttft_ms": 33777.12620792308,
+            "implied_pp_tps": 730.6700246080918
+          },
+          "predicted_minus_actual_ms": {
+            "prompt_ms": 839.5505266071705,
+            "ttft_ms": 861.1262079230801
+          },
+          "predicted_minus_actual_relative": {
+            "prompt_ms": 0.025598628112193315,
+            "ttft_ms": 0.026161326039709568
+          }
+        },
+        {
+          "actual_read_tokens": 65537,
+          "process_index": 7,
+          "actual": {
+            "prompt_ms": 66850.5,
+            "ttft_ms": 66991.0
+          },
+          "prediction": {
+            "actual_read_tokens": 65537,
+            "prompt_ms": 67179.02838228758,
+            "ttft_ms": 67382.71091350685,
+            "implied_pp_tps": 975.5574258540405
+          },
+          "predicted_minus_actual_ms": {
+            "prompt_ms": 328.528382287579,
+            "ttft_ms": 391.7109135068458
+          },
+          "predicted_minus_actual_relative": {
+            "prompt_ms": 0.00491437434705169,
+            "ttft_ms": 0.005847216991936914
+          }
+        }
+      ],
+      "remaining_limits": "One process per observed length;some low-length held-out errors exceed within-process spread. Exact64K MTPboundary differs;117Ksplit is excluded. No extrapolation,physical fixed-cost or limiting-hardware identification,automatic dispatch,sustainedTG,task/agent,full262144/RESTORE or new native speedup."
+    },
     "source_inputs": {
       "files": 279,
       "aggregate_sha256": "6c867a8350bbc6ab10f9292a22048bc7eeff1834f57aa2144f872168e541ba1d"
