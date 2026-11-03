@@ -99949,8 +99949,52 @@
     ],
     "descriptive_subsequent_median_ms": 45680.4,
     "performance_eligible": false,
-    "native_equivalence_after_scoped_fix": "pending complete558-input comparison against actual full build record;compact count/hash summaries are not input maps.",
+    "native_equivalence_after_scoped_fix": {
+      "proof_key": "gdn_cmake_appendix_admission_v1",
+      "full_native_input_map_equal": 558,
+      "actual_ELFs_unchanged": 9,
+      "original_failure_retained": true
+    },
     "next_action": "Commit a scoped appendix reader and host regression controls,then a new prospective continuation scope preserving all V5 outcomes and unchanged native/ELFs. Do not refresh old hashes or relabel this failure.",
     "selected_fixture_cmake_sha256": "251f64508460414feb7463df21e7aee02dd4813a89aaee039c8ecf3cb86dd4a4"
+  },
+  "gdn_cmake_appendix_admission_v1": {
+    "stage": "closed",
+    "source_commit": "1cf473cb596510c7a592dc393a37716f1a875f0b",
+    "regression_source_commit": "49fe4c118f2f3e0755dad7d1bf3026f60826ef08",
+    "command": [
+      "timeout",
+      "90s",
+      "python3",
+      "tools/test_sycl_gdn_model_sources.py"
+    ],
+    "original_error": "commit exact unique fixture target",
+    "before_fix": {
+      "tests": 5,
+      "errors": 3,
+      "original_full558_projection_passed": true,
+      "negative_contract_cases_rejected": 9
+    },
+    "after_fix": {
+      "tests": 5,
+      "errors": 0,
+      "positive_full558_projections": 4,
+      "negative_contract_cases_rejected": 9,
+      "wall_seconds": 15.606
+    },
+    "inputs": {
+      "tools/sycl/gdn_model_sources.py": "1829dceed92c38f74b120a571349cddd743b9b52a80452eb885ccc273038b53f",
+      "tools/test_sycl_gdn_model_sources.py": "cb5cd7cbaecbcf04e44307162e306506c1c938e1e3888294793f58569eb9d1e6",
+      "cmake/sycl_backend.cmake": "638ee424c435a1208a39e96abaceb03c7880f0c1b05a8fcc8cb160a3e050a31d"
+    },
+    "native_build_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+    "native_inputs_equal": 558,
+    "same_actual_ELFs_checked": 9,
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_recompiled": false,
+    "limits": "Host admission/source equality only. Preserve failed V5/process3 and original source/proof identities. No new model,math,teardown,performance or physical-context qualification."
   }
 }

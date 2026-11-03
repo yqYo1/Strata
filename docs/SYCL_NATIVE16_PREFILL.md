@@ -1194,8 +1194,10 @@ prelude/current-target cases reproduce the admission failure;all nine contract
 mutations are rejected. The scoped reader now compares the exact consumed final
 GDN appendix,requires one marker and one actual target declaration,and still
 projects the original selected CMake prelude. Changes to the fixture,link,math,
-target or consumed suffix must remain rejected. This source change is not yet
-validated or part of a new model qualification.
+target or consumed suffix remain rejected. All five host tests now pass:four
+positive complete558-input projections and nine rejected contract mutations.
+All nine actual ELFs retain their recorded hashes. This is source/admission
+evidence only,not a new model qualification;the V5failure remains intact.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
