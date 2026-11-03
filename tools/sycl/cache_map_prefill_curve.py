@@ -23,14 +23,15 @@ import prefill_scaling_bench as fit
 
 entry, base, comparison = speed.entry, speed.base, speed.comparison
 P, B, RESULT = speed.P, speed.B, speed.RESULT
-ROOT = entry.model.ROOT / 'prefill-curve-v2'
-KEY = 'cache_map_prefill_curve_v2'
+ROOT = entry.model.ROOT / 'prefill-curve-v3'
+KEY = 'cache_map_prefill_curve_v3'
 SOURCE = 'tools/sycl/cache_map_prefill_curve.py'
 SNAPSHOT = '2880a857f40c94d8bc11824fa513466368079858'
 EXISTING_HELPER = 'tools/sycl/cache_map_prefill_resources.py'
 HELPER_COMMIT = 'b13d99d13bbd975aa8e723907b2f430c64e9e3a0'
 CHANGED = ('tools/sycl/build_cache_map_model.py', 'tools/sycl/compare_official_prefill.py',
            'tools/sycl/official_model_entry.py')
+BENCHMARK_CHANGED = {'tools/strata_bench.py', 'tools/test_strata_bench.py'}
 CASES = ((1286, True), (117489, False), (117489, True), (39254, True),
          (4956, True), (78445, True), (19665, True), (65537, True),
          (24577, True), (8193, True))
@@ -76,7 +77,7 @@ def qualification(revision):
     helper_sha = hashlib.sha256(speed.shared.gen.git('show', HELPER_COMMIT + ':' + EXISTING_HELPER)).hexdigest()
     require(recovered == prior['sources'] and set(current) - set(recovered) == {SOURCE, EXISTING_HELPER}
             and not set(recovered) - set(current) and
-            {n for n in recovered if recovered[n] != current[n]} == set(CHANGED)
+            {n for n in recovered if recovered[n] != current[n]} == set(CHANGED) | BENCHMARK_CHANGED
             and current[EXISTING_HELPER] == helper_sha,
             'only declared policy changes,new curve and unchanged committed resource helper may extend clean inputs')
     inv = prior['runtime_manifest']; providers = json.loads(Path(inv['path']).read_text())
@@ -240,8 +241,16 @@ def selfcheck():
     require(abs(fit.linear_fit(synthetic)['ms_per_token'] - .75) < 1e-9
             and fit.approximation_models(synthetic)['candidates']['affine']['max_held_out_relative_error'] < 1e-9,
             'length model/held-out controls failed')
+    for read, _ in CASES:
+        argv = ['--prefill-exact-tokens', str(read), '--think', '--runs', str(RUNS),
+                '--profile-request-gates', '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error']
+        if read < 32768: argv.append('--prefill-short-diagnostic')
+        args = speed.shared.client.parse_arguments(argv)
+        require(args.prefill_only and args.think and args.prefill_exact_tokens == read
+                and args.prefill_short_diagnostic == (read < 32768), 'actual frozen CLI selection differs')
     return dict(passed=True, inherited=inherited, short_route_negative=len(bad),
-                workload_clock_negative=len(invalid)+1, legacy_clock_floor_preserved=True, GPU_executed=False)
+                workload_clock_negative=len(invalid)+1, actual_CLI_vectors=len(CASES),
+                legacy_clock_floor_preserved=True, GPU_executed=False)
 
 
 def prepare():
@@ -259,6 +268,7 @@ def prepare():
         native_qualification_reuse=dict(original_closed_snapshot=SNAPSHOT, result_key=speed.KEY,
             native_recompiled=False, unchanged_native_files=len(native['native_sources']), same_build_ELFs=9,
             declared_changed_python_policies=list(CHANGED), new_controller=SOURCE,
+            declared_benchmark_changes=sorted(BENCHMARK_CHANGED),
             unchanged_existing_helper=dict(path=EXISTING_HELPER, commit=HELPER_COMMIT)),
         controls=controls, plans=[], processes=[], request_hashes={}, host_passed=False, passed=False,
         complete=False, active=False, ownership_closed=True, inference_adopted=False, whole_bytes=512 << 20,
@@ -283,6 +293,10 @@ def prepare():
             command=['/bin/sh', str(P/'bench.sh'), '--config', str(root/'config.json'), '--port', str(port),
                 '--prefill-exact-tokens', str(read), '--think', '--runs', str(RUNS), '--profile-request-gates',
                 '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root/'bench')])
+        if read < 32768: plan['command'].append('--prefill-short-diagnostic')
+        args = speed.shared.client.parse_arguments(plan['command'][2:])
+        require(args.prefill_exact_tokens == read and args.prefill_short_diagnostic == (read < 32768),
+                'generated command differs from its validated CLI plan')
         plan['environment_sha256'] = comparison.fingerprint(environment(row, plan)); row['plans'].append(plan)
     save(row); print('Prepared nine-length observed curve and one clean anchor;commit before host probes.', flush=True)
 

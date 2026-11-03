@@ -24,6 +24,34 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def test_short_exact_cli_requires_explicit_diagnostic_scope(self):
+        for n in (1286, 4956, 8193, 19665, 24577):
+            args = bench.parse_arguments(['--prefill-exact-tokens', str(n),
+                '--prefill-short-diagnostic', '--profile-request-gates', '--runs', '4'])
+            self.assertEqual(args.prefill_exact_tokens, n)
+            self.assertTrue(args.prefill_only and args.think and args.prefill_short_diagnostic)
+        for argv in (['--prefill-exact-tokens', '1286'],
+                ['--prefill-exact-tokens', '1023', '--prefill-short-diagnostic'],
+                ['--prefill-exact-tokens', '131073'], ['--prefill-short-diagnostic'],
+                ['--prefill-only', '--prefill-tokens', '1286'],
+                ['--prefill-exact-tokens', '32768', '--prefill-short-diagnostic'],
+                ['--prefill-exact-tokens', '1286', '--prefill-short-diagnostic', '--long']):
+            with self.subTest(argv=argv), patch('sys.stderr', io.StringIO()), self.assertRaises(SystemExit):
+                bench.parse_arguments(argv)
+
+    def test_short_exact_result_does_not_qualify_long_input(self):
+        suite = bench.Suite('http://localhost', '', 131072, 2, True, log=lambda _: None,
+            prefill_only=True, prefill_exact_tokens=1286, short_prefill_diagnostic=True)
+        self.assertEqual(suite.prefill_plan()['scope'], 'short-input-diagnostic')
+        raw = response(generated=24)
+        raw['usage']['prompt_tokens'] = raw['timings']['prompt_n'] = 1286
+        result = bench.prefill_eligibility(raw, {'ok': True}, 1286, 131072)
+        self.assertTrue(result['eligible'])
+        self.assertFalse(result['long_input_extent'])
+        with self.assertRaises(ValueError):
+            bench.Suite('http://localhost', '', 131072, 2, True,
+                prefill_only=True, prefill_exact_tokens=1286)
+
     def exact_suite(self, target=32768, runs=2):
         return bench.Suite('http://localhost','',65536,runs,True,log=lambda _:None,
             prefill_only=True,prefill_exact_tokens=target,workload_id='exact-fixture')

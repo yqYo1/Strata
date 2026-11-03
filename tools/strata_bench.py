@@ -63,9 +63,10 @@ LONG_MAX_TOKENS = 24
 PREFILL_TOKEN_BOUNDS = (32768, 131072)
 
 
-def validate_prefill_tokens(value):
-    if type(value) is not int or not PREFILL_TOKEN_BOUNDS[0] <= value <= PREFILL_TOKEN_BOUNDS[1]:
-        raise ValueError('prefill minimum must be an integer from 32768 through 131072')
+def validate_prefill_tokens(value, *, short_diagnostic=False):
+    lower = 1024 if short_diagnostic else PREFILL_TOKEN_BOUNDS[0]
+    if type(value) is not int or not lower <= value <= PREFILL_TOKEN_BOUNDS[1]:
+        raise ValueError(f'prefill minimum must be an integer from {lower} through 131072')
     return value
 
 
@@ -444,6 +445,7 @@ def prefill_eligibility(raw, row, minimum, context):
             "actual_reused_tokens":caches[0] if caches else None,
             "prompt_count_source":"usage.prompt_tokens","read_count_source":"timings.prompt_n",
             "reuse_counts_reported":{"usage":cache_usage,"timings":cache_engine},
+            "long_input_extent":type(prompt) is int and type(read) is int and min(prompt,read)>=PREFILL_TOKEN_BOUNDS[0],
             "thinking_requested":True,"reasoning_observed":bool(raw.get("reasoning_text")),
             "reasoning_tokens_reported":(usage.get("completion_tokens_details") or {}).get("reasoning_tokens")}
 
@@ -469,13 +471,18 @@ class Suite:
     def __init__(self, base, key, ctx, runs, think, log=print, want_clients=0, want_long=False, quick=False,
                  want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False,
                  generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False,
-                 prefill_exact_tokens=None, generation_input_case=long_generation.STANDARD_INPUT_CASE):
+                 prefill_exact_tokens=None, generation_input_case=long_generation.STANDARD_INPUT_CASE,
+                 short_prefill_diagnostic=False):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
         self.prefill_exact_tokens = prefill_exact_tokens
+        self.short_prefill_diagnostic = short_prefill_diagnostic
+        if short_prefill_diagnostic and (not prefill_only or prefill_exact_tokens is None or
+                                        prefill_exact_tokens >= PREFILL_TOKEN_BOUNDS[0]):
+            raise ValueError('short prefill diagnostic requires exact input below32768 in its prefill-only scope')
         self.frozen_prefill_hashes = {}
         if prefill_exact_tokens is not None:
-            validate_prefill_tokens(prefill_exact_tokens)
+            validate_prefill_tokens(prefill_exact_tokens, short_diagnostic=short_prefill_diagnostic)
             if not prefill_only or characterize_prefill:
                 raise ValueError('exact prefill needs its own prefill-only scope')
             self.prefill_tokens = prefill_exact_tokens
@@ -487,7 +494,7 @@ class Suite:
         self.request_gate=request_gate
         if prefill_only and (want_clients or want_long or want_long_generation or long_generation_only or quick):
             raise ValueError("prefill-only cannot be combined with other suite scopes")
-        validate_prefill_tokens(prefill_tokens)
+        validate_prefill_tokens(prefill_tokens, short_diagnostic=short_prefill_diagnostic)
         if prefill_only:
             self.think = True
         self.clients, self.want_long = want_clients, want_long
@@ -587,6 +594,7 @@ class Suite:
             return prefill_scaling.plan(self)
         if self.prefill_exact_tokens is not None:
             return dict(mode='prefill-only', requested_min_tokens=self.prefill_exact_tokens,
+                scope='short-input-diagnostic' if self.short_prefill_diagnostic else 'long-input-prefill',
                 exact_input_tokens=self.prefill_exact_tokens, construction_target_tokens=self.prefill_exact_tokens,
                 initial_word_factory_target_tokens=self.prefill_exact_tokens*5//4, construction_version=2,
                 max_tokens=LONG_MAX_TOKENS, thinking_requested=True, workload=self.workload_identity(),
@@ -1561,7 +1569,8 @@ def server_base(host, port) -> str:
     return f"http://{authority}:{port}"
 
 
-def main(argv=None) -> int:
+def parse_arguments(argv=None):
+    """Validate the actual CLI without starting a server or reading model files."""
     ap = argparse.ArgumentParser(description="Measure this Strata install and write a shareable report (see the top of this file).")
     ap.add_argument("--config", help="the model config to run (default: the newest strata-*.json of this folder)")
     ap.add_argument("--url", help="use the server already running at this address (http://127.0.0.1:8080) instead of starting one")
@@ -1586,8 +1595,10 @@ def main(argv=None) -> int:
     ap.add_argument('--prefill-scaling', action='store_true',
                     help='characterize six short/long input lengths with thinking, total prefill time and TTFT; separate first long request, then ordered warmed rounds')
     ap.add_argument("--prefill-tokens", type=prefill_token_argument, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only, 32768..131072 (default 65536)")
-    ap.add_argument('--prefill-exact-tokens',type=prefill_token_argument,
+    ap.add_argument('--prefill-exact-tokens',type=int,
                     help='opt-in exact prompt/read count,32768..131072;count-only preflight requires this fork server extension;implies --prefill-only')
+    ap.add_argument('--prefill-short-diagnostic',action='store_true',
+                    help='allow exact1024..32767 inputs for length diagnostics;does not qualify long-input speed')
     ap.add_argument('--profile-request-gates',action='store_true',
                     help='diagnostic only: wait for owner acknowledgement around prefill-only or long-generation-only requests')
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
@@ -1599,7 +1610,13 @@ def main(argv=None) -> int:
                     help="stop after the first returned failed request digest (default off; incompatible with --clients)")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
+    if a.prefill_short_diagnostic and (a.prefill_exact_tokens is None or a.prefill_exact_tokens>=PREFILL_TOKEN_BOUNDS[0]):
+        ap.error('--prefill-short-diagnostic requires --prefill-exact-tokens below32768')
     if a.prefill_exact_tokens is not None:
+        try:
+            validate_prefill_tokens(a.prefill_exact_tokens, short_diagnostic=a.prefill_short_diagnostic)
+        except ValueError as error:
+            ap.error(str(error))
         if a.prefill_tokens is not None or a.prefill_scaling:
             ap.error('--prefill-exact-tokens cannot combine with --prefill-tokens or --prefill-scaling')
         a.prefill_only = True
@@ -1631,11 +1648,16 @@ def main(argv=None) -> int:
     if a.prefill_only:
         a.think=True
     a.prefill_tokens=a.prefill_tokens or 65536
+    if a.compare_only and not a.compare:
+        ap.error('--compare-only NEW needs --compare OLD')
+    return a
+
+
+def main(argv=None) -> int:
+    a = parse_arguments(argv)
     say = (lambda *x, **k: None) if a.quiet else (lambda *x, **k: print(*x, **k, flush=True))
 
     if a.compare_only:
-        if not a.compare:
-            ap.error("--compare-only NEW needs --compare OLD")
         print(compare_table(load_results(Path(a.compare)), load_results(Path(a.compare_only))))
         return 0
 
@@ -1698,6 +1720,7 @@ def main(argv=None) -> int:
                       generation_max_tokens=a.long_generation_max_tokens,
                       generation_input_case=a.long_generation_input_case,
                       characterize_prefill=a.prefill_scaling, prefill_exact_tokens=a.prefill_exact_tokens,
+                      short_prefill_diagnostic=a.prefill_short_diagnostic,
                       request_gate=profile_request_gate if a.profile_request_gates else None)
         journal.append("identity", "suite", source=client_fingerprint(), **suite.generation_case_metadata(),
                        long_generation_speed_only=a.long_generation_speed_only,
@@ -1725,7 +1748,7 @@ def main(argv=None) -> int:
             if not machine.get("gpu"):
                 machine["gpu"] = pre.get("gpu")
             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
-                   "params": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                   "params": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_short_diagnostic":a.prefill_short_diagnostic, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
                               "long_generation_speed_only": a.long_generation_speed_only,
                               "long_generation_max_tokens": a.long_generation_max_tokens,
@@ -1737,6 +1760,7 @@ def main(argv=None) -> int:
                                                     f"--long-generation-input-case {a.long_generation_input_case}" if suite.generation_case_metadata() else "",
                                                     f"--long-generation-workload {a.long_generation_workload}" if a.long_generation_workload else "",
                                                     '--prefill-scaling' if a.prefill_scaling else f"--prefill-exact-tokens {a.prefill_exact_tokens}" if a.prefill_exact_tokens is not None else f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
+                                                    '--prefill-short-diagnostic' if a.prefill_short_diagnostic else '',
                                                     f"--workload-id {a.workload_id}" if a.workload_id is not None else "",
                                                     "--fail-fast-engine-error" if a.fail_fast_engine_error else "", f"--runs {a.runs}" if a.runs != 3 else "",
                                                     "--long-generation-only" if a.long_generation_only else
@@ -1779,7 +1803,7 @@ def main(argv=None) -> int:
                           complete=False, qualified=False, error=repr(error)[:300])
             if a.prefill_only:
                 partial={"schema":SCHEMA,"tool":"tools/strata_bench.py","date":datetime.date.today().isoformat(),
-                         "params":{"mode":a.mode,"prefill_exact_tokens":a.prefill_exact_tokens,"prefill_tokens":a.prefill_tokens if not a.prefill_scaling else None,"think":True,
+                         "params":{"mode":a.mode,"prefill_exact_tokens":a.prefill_exact_tokens,"prefill_short_diagnostic":a.prefill_short_diagnostic,"prefill_tokens":a.prefill_tokens if not a.prefill_scaling else None,"think":True,
                                    "runs":suite.runs,"workload":suite.workload_identity(),"started_server":started},
                          "comparison_identity":{"mode":a.mode,"prefill_plan":suite.prefill_plan(),
                                                 "workload":suite.workload_identity(),"client":client_fingerprint()},
