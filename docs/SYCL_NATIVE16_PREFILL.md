@@ -1169,7 +1169,14 @@ owners and no fresh fault. First-use prompt/TTFT is121.2642s/121.464s;subsequent
 prompt times111.7902,112.1692and112.2560s give112.1692s median(1047.4266tok/s),
 with112.348s median TTFT. This single clean process matches the earlier
 three-process milestone level;it is not a new-code gain or a completed curve.
-Next is its observed117K partner and the remaining length points.
+The adjacent observed117K process also passes all four requests,native0,quiet
+validation,closed owners and no fresh fault. First-use prompt/TTFT is
+122.2955s/122.467s;subsequent prompt times111.9631,112.4512and111.9152s give
+111.9631s median(1049.3547tok/s),with112.189s median TTFT. Its observed/clean
+prompt-time ratio0.9981626passes the predeclared local1.15cost screen;one adjacent
+pair does not establish observer benefit or general short-input overhead.
+Three of ten planned processes have closed;the remaining seven length points
+and final whole-model hashes are pending. Next is the39254-read process.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
