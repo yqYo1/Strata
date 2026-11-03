@@ -1164,9 +1164,11 @@ three tests now pass at`3b5000c54`,including nine invalid fixture/recipe control
 and a complete proof with all old-generation file reads forbidden. Before
 retirement,all40original controllers,557projected native files and9311dependency
 source files are recovered;1451old and1452selected compiler inputs and both
-nine-ELF sets match their final records. The948-file/190997035-byte old generation
-is ready for retirement after publishing this evidence. Keep the selected552b
-engine;this host-only migration adds no model/numerical/performance result.
+nine-ELF sets match their final records. After publication at`0d0961f84`,the
+948-file/190997035-byte old generation is deleted under the measurement lock.
+Complete entry admission passes with the old root absent. The selected552b
+engine and all nine required ELFs remain;the separate legacy PR6provenance
+hold is unchanged. This host-only migration adds no model/numerical/performance result.
 This curve does not qualify sustained TG,task/agent
 adoption,hardware saturation,physical262144or RESTORE.
 
