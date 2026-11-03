@@ -98470,6 +98470,46 @@
     "source_inputs": {
       "files": 277,
       "aggregate_sha256": "85fe4552a6f2ac0d3770fc23e741593a6e9e2ee8bbcb6e64933c133a5763e96f"
+    },
+    "retention_review": {
+      "consumer": "Compare the captured CLI exit2 with first fresh V3short-process admission;no later V2case may run.",
+      "next_review": "At first V3short-process closure,retire successful host output and unused V2plans/configs after source recovery;keep only compact failure and posthoc ownership audit.",
+      "failure_excerpt": "strata_bench.py: error: argument --prefill-exact-tokens: invalid prefill_token_argument value: '1286'",
+      "bench_exit_code": 2
     }
+  },
+  "short_exact_prefill_host_v1": {
+    "source_commit": "dd40f26f8f8fa15890d1f8cad61c9523c755021b",
+    "passed": true,
+    "complete": true,
+    "GPU_executed": false,
+    "ownership_closed": true,
+    "files": {
+      "tools/strata_bench.py": "62f4bc1eaa33b4d859712066ee987258711aaec9d82884a146e5cfc58d7c2852",
+      "tools/test_strata_bench.py": "05dff74e5f8f3cba80e313bf1f5ed2058709cc07a05d49d674a8f8153c29c6a9"
+    },
+    "checks": [
+      {
+        "command": "tools/test_strata_bench.py",
+        "tests": 38,
+        "skipped": 1,
+        "exit_code": 0
+      },
+      {
+        "command": "tools/test_strata_bench_failfast.py",
+        "tests": 9,
+        "skipped": 0,
+        "exit_code": 0
+      },
+      {
+        "command": "tools/test_bench_host.py",
+        "tests": 7,
+        "skipped": 0,
+        "exit_code": 0
+      }
+    ],
+    "interpreter": "/home/yayoi/.local/share/strata-sycl/venv/bin/python",
+    "wall_budget_seconds": 180,
+    "limits": "CPU-only CLI,eligibility and frontend regression tests. Explicit short exact input remains diagnostic;no native/kernel/model or long-input speed qualification."
   }
 }
