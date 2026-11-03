@@ -21855,7 +21855,7 @@
   },
   "qsa_subgroup_rows_contract_20261103": {
     "classification": "decision_support",
-    "status": "starting_source_review",
+    "status": "running_source_review",
     "schedulable_now": false,
     "source_candidate_commit": "f984402bfd8d5aac524087b0e6ea5e21a778a7d8",
     "source_sha256": {
@@ -21895,12 +21895,34 @@
       "approval": "on-request",
       "sandbox_workspace_write_network_access": true,
       "report_within_workspace": true,
-      "permissions_bypassed": false
+      "permissions_bypassed": false,
+      "actual_startup_TUI": "GPT-6-Luna high;project directory;verified before task injection.",
+      "command": [
+        "codex",
+        "-m",
+        "gpt-6-luna",
+        "-c",
+        "model_reasoning_effort=\"high\"",
+        "-c",
+        "sandbox_workspace_write.network_access=true",
+        "-s",
+        "workspace-write",
+        "-a",
+        "on-request",
+        "--cd",
+        "/home/yayoi/orca/workspaces/Strata/sycl"
+      ]
     },
     "spec": {
       "path": ".cache/research/2026-11-03/qsa_subgroup_rows_contract_20261103.spec.txt",
       "sha256": "34d544bf37b8c08571e21aa4bf68f5823542ef839810b0cafc9c807f0295ae4f",
       "bytes": 3836
-    }
+    },
+    "task": "task_a2599ad434cd",
+    "dispatch": "ctx_678d38e7555c",
+    "turn_start_observed": true,
+    "worker_done_accepted": false,
+    "ownership_closed": false,
+    "launch_receipt": ".cache/research/2026-11-03/qsa_subgroup_rows_contract_20261103.spec.start.json"
   }
 }
