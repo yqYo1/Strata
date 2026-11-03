@@ -1145,8 +1145,10 @@ continuation tests at`70575d8d9`precede fresh native execution. These host proof
 are not numerical or physical-context qualification. The changed controls are
 the controller and its host test only;all279controller inputs are recoverable.
 The original parser/GDN source-reader contracts and all nine same-build ELFs
-remain verified. Keep only consumed root receipts/runtime inventories after
-raw-output retirement;the replay does not need its capture during later admission.
+remain verified. After publication at`b29c4d81d`,223ended raw/generated/JIT and
+frontend files plus the obsolete V5receipt total41871744bytes and are retired
+with a path/hash/reason manifest. V7and V6each retain only their consumed full
+record/runtime inventory;the replay no longer needs its capture for admission.
 Both still-consumed native generations remain until the adaptive fallback's
 actual reader is migrated. This curve does not qualify sustained TG,task/agent
 adoption,hardware saturation,physical262144or RESTORE.
