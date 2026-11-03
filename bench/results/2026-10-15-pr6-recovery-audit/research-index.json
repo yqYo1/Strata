@@ -22449,7 +22449,7 @@
   },
   "q6_packed_integer_dot_lowering_20261104": {
     "classification": "knowledge collection",
-    "status": "native_review_running",
+    "status": "reviewed_conditional_retrieval_reference",
     "schedulable_now": false,
     "question": "Compare source-expressible packed signed-int8 dot-product paths for the actually observed Q6_K SPMD GEMV on Intel B570:current scalar packed_dot loop,documented SYCL/SPIR-V integer-dot builtins,and ESIMD dp4a alternatives. Check sign/accumulator exactness,device/compiler support and software fallback,original sources/licenses,counterexamples and concrete bounded discriminators;do not repeat generic register/spill or graph surveys.",
     "prerequisites": {
@@ -22496,9 +22496,34 @@
     },
     "worker_done_message": "msg_fab712bcdbca",
     "worker_outcome": "succeeded",
-    "report_bytes": 12633,
-    "report_sha256": "faa694c66d2ae5c51b21a7572b21500db21628f7cb5f52b1b3d07f5a22b7be37",
+    "report_bytes": 13023,
+    "report_sha256": "87ec05b445878b19b0b878576f8f2b9d98589bb4923ebcac95d659dcada9724a",
     "review_agent": "/root/review_q6_packed_dot_20261104",
-    "worker_process_closure": "Exact task/dispatch succeeded;external-terminal release took no process action;Main-owned terminal close confirms ptyKilled;delivery acknowledged."
+    "worker_process_closure": "Exact task/dispatch succeeded;external-terminal release took no process action;Main-owned terminal close confirms ptyKilled;delivery acknowledged.",
+    "review": {
+      "path": ".cache/research/2026-11-04/q6-packed-integer-dot-lowering.review.json",
+      "sha256": "49d7d1851c49d271a6902f666ab66461dad0e71ce4880cbe1c591c04ee4b559f",
+      "verdict": "retain_as_conditional_retrieval_reference",
+      "original_report_sha256": "faa694c66d2ae5c51b21a7572b21500db21628f7cb5f52b1b3d07f5a22b7be37",
+      "original_review_sha256": "e62dd74c73a0a7ffd3e9dd95208dd6d6537f981cd23b30c8da8d9e2e32240b42",
+      "corrections_verified": true
+    },
+    "review_digest": "Corrections are applied. The report remains a conditional retrieval reference, with no generated-code, speed, saturation or adoption evidence. Next work is not eligible until the active column-specialization comparison closes and a fresh decision justifies a committed codegen discriminator; only a distinct favorable lowering can justify a later repeated Q6 kernel comparison.",
+    "conditional_next_scope": {
+      "schedulable_now": false,
+      "reason": "The named consumer is a separate decode-scoped Q6 choice after Main's active column-specialization comparison. Main serializes builds and GPU work; this collection has no generated-code or clean-speed evidence to justify a concurrent candidate.",
+      "prerequisites": [
+        "Close the active column-specialization comparison and preserve its original outcome.",
+        "Recheck whether a Q6-only integer-dot discriminator still addresses a measured production-path cost; the failed profile does not establish a critical-path fraction or hardware limit.",
+        "Before compiling, commit exact source, recipe, compiler/dependencies, environment and a bounded codegen comparison. Inspect emitted SPIR-V and IGC/B570 instructions; stop the expression change if scalar and dot_acc forms lower identically.",
+        "Only if generated-code evidence supports a distinct path, commit a Q6-only repeated matched full-kernel speed and numerical plan. Preserve all other packed_dot call sites and the existing SPMD distribution/reduction."
+      ]
+    },
+    "retention": {
+      "consumer": "Next independently decode-scoped Q6 kernel choice after column-specialization comparison; retrieve only the signed-lane, installed-header and lowering sections needed for that decision.",
+      "review_point": "At that Q6 decision, keep the body only if a concrete implementation question uses it; otherwise transfer corrected arithmetic/lowering conclusions to the compact index/result and retire the report body.",
+      "report_budget_bytes": 18432,
+      "within_budget": true
+    }
   }
 }
