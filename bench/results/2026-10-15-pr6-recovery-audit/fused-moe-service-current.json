@@ -108578,7 +108578,7 @@
     }
   },
   "cache_map_cpu_census_entry_v1": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "f301f8fb49908d0e869f5c0c66b752a602d0ba7e",
     "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "binary": {
@@ -108881,7 +108881,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -108909,6 +108909,26 @@
       "acceptance": "Existing source/build/fixture/provider/owner/route/count/body/journal/clock/validation/fault gates plus one valid census per completed request. Independently conserve every layer membership,format,NT/job/entry/window count and rounded pool clock. Three complete API samples must bind to three native request footers,including the warmup.",
       "limitations": "Qualification of existing counters and short request lifecycle only. No representative long-generation NT mix,clean speed,observer overhead,physical RAM/PCIe traffic,saturation,task/agent,full262144/RESTORE or inference adoption.",
       "next": "If all gates pass,commit a fresh static-cache long-generation census plan using the same engine and both official thinking-on workloads with>=1K output each. Use its actual NT/format mix to select a CPU leaf experiment;new CPU leaf timing remains separate."
+    },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 190,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
+    "census_reader_tests": {
+      "passed": true,
+      "cases": 6,
+      "native_exit_code": 0,
+      "ownership_closed": true
     },
     "source_inputs": {
       "files": 284,
