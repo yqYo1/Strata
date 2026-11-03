@@ -22288,8 +22288,8 @@
   },
   "decode_kv_budget_vs_expert_residency_source_20261104": {
     "classification": "decision_support",
-    "status": "eligible",
-    "schedulable_now": true,
+    "status": "running",
+    "schedulable_now": false,
     "question": "Audit the selected479a native source for trading unused full-context GPU KV allocation for more decode expert residency. Quantify actual GPU/RAM budgets for131072context with131072,65536,32768 or20480resident cells,including the drafter. Determine existing CLI viability versus necessary phase-boundary changes,selected native16 prefill fallback/coupling,cache sizing/allocation bounds and full262144/RESTORE obligations. Compare against the already reviewed layer-scoped long-prefill methods;no implementation or execution.",
     "prerequisites": {
       "selected_native_source_verified": true,
@@ -22315,6 +22315,23 @@
     "consumer": "Main choosing a decode placement experiment after the5/3/9worker sweep,without discarding the measured dedicated native16 prefill path",
     "review_point": "On source feasibility report review;no model trial is authorized by a source report",
     "active_run_reader_audit": "Worker frozen286sources exclude this JSON. Actual ur_validation.committed(path,keys) compares only the canonical consumed subtree;current entry proof consumes checked_worker_retirement_contract_20261102 and preload_qualification consumes UR_silent_validation_native_child_scope/preload_component. Whole-index readers are preparation/run functions not called by the active qualification. Both consumed parent subtrees are unchanged.",
-    "main_reads_body_on_arrival": false
+    "main_reads_body_on_arrival": false,
+    "run": "run_51235a81170b",
+    "task": "task_f8f5d9be4736",
+    "dispatch": "ctx_b362f8fd1420",
+    "terminal": "term_23893f13-feb3-4777-ae2e-d9e6bbd22e8a",
+    "launch": {
+      "sha256": "5cb510d195269b5c39a5e4410bcc97d669711debffb56693fe099eadbb01484a",
+      "turn_start_observed": true
+    },
+    "preflight": {
+      "runtime_id": "9cb50b9b-f8d9-466f-8fef-98360bc7a4fd",
+      "agent_sandbox_runtime_reachable": true,
+      "report_directory_writable": true,
+      "model_screen": "GPT-6-Luna high",
+      "startup": "Process-local no-update plus workspace-write/network true;worker-start reused this exact Main-created terminal because its normal argv does not express those settings."
+    },
+    "worker_done_accepted": false,
+    "ownership_closed": false
   }
 }
