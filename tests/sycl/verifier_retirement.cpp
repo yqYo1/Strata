@@ -91,7 +91,7 @@ struct VerifierRetirementTestAccess {
             throw std::runtime_error("early resident capture");
         // Models resident work sharing the copied kernel's queue/scratch.
         v.cs_->single_task([=] { result[bytes] = uint8_t(0x3c); });
-        finalize(v.work_[1]);
+        finalize(v.window_graphs_.at(VerifyInput::decode, 1).resident);
         if (cudaStreamBeginCapture(v.cs_, cudaStreamCaptureModeThreadLocal) != cudaSuccess)
             throw std::runtime_error("early copied capture");
         auto* stage = v.staging_;
@@ -107,7 +107,7 @@ struct VerifierRetirementTestAccess {
                 word(reinterpret_cast<uint32_t*>(result)[i[0]]);
             word.store(value);
         });
-        finalize(v.pcie_work_[1]);
+        finalize(v.window_graphs_.at(VerifyInput::decode, 1).pcie);
         reset_early(v);
     }
     static void reset_early(Verifier& v) {
@@ -117,8 +117,8 @@ struct VerifierRetirementTestAccess {
     }
     static void publish(Verifier& v) { Verifier::publish_plan(&v); }
     static void warm_early(Verifier& v) {
-        if (cudaGraphLaunch(v.work_[1][0],v.cs_)!=cudaSuccess ||
-            cudaGraphLaunch(v.pcie_work_[1][0],v.cs_)!=cudaSuccess ||
+        if (cudaGraphLaunch(v.window_graphs_.at(VerifyInput::decode, 1).resident[0],v.cs_)!=cudaSuccess ||
+            cudaGraphLaunch(v.window_graphs_.at(VerifyInput::decode, 1).pcie[0],v.cs_)!=cudaSuccess ||
             cudaStreamSynchronize(v.cs_)!=cudaSuccess)
             throw std::runtime_error("early test graph warmup");
     }

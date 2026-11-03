@@ -25,6 +25,7 @@
 
 #include <cstdio>
 #include "strata/core/watchdog_lifecycle.hpp"
+#include "strata/core/verify_window_policy.hpp"
 
 #include "strata/core/expert_source.hpp"
 #include "strata/core/layer.hpp"
@@ -102,8 +103,10 @@ public:
     bool resume_prefill_dense_and_head(const NativeDense& native,const NativeHead& head,std::string& err);
 
     /// One window: `tokens[0..T)` at positions pos0.., the pool served per layer; `out[t]` = argmax after token t.
-    /// The PLE rows are gathered here from `ss.ple_prev` and the tokens.  Captures the T-token graph on first use.
-    bool run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out, std::string& err);
+    /// The PLE rows are gathered here from `ss.ple_prev` and the tokens. SYCL
+    /// captures independent prompt/decode graphs per T; sampling is independent.
+    bool run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out,
+             std::string& err, VerifyInput input = VerifyInput::decode);
     /// Diagnostics: row `t` of the last window's head logits (n_vocab floats) to the host. Valid after run().
     bool copy_logits(int t, float* host) const;
     int64_t vocab() const { return next_ ? next_->vocab() : n_vocab_; }
@@ -228,7 +231,7 @@ public:
 private:
     void signal_gpu_waits();
     bool drain_gpu_waits(int timeout_ms);
-    bool capture(int T, std::string& err);
+    bool capture(int T, std::string& err, VerifyInput input);
     strata::kernels::SamplerParams sampling_ = [] {
         strata::kernels::SamplerParams s;
         s.greedy = true;
@@ -255,7 +258,7 @@ private:
     void* next_user_ = nullptr;
     bool ple_stage() const { return lb_ <= 1 && 1 < le_; }   ///< holds layer 1, where the PLE block runs
     bool capture_commit(std::string& err);
-    bool record_window(int T, cudaStream_t cs, std::string& err);
+    bool record_window(int T, cudaStream_t cs, std::string& err, VerifyInput input);
     static constexpr int kProfPer = 33;              // stamps per layer (32 left the hc-read second
                                       // half's up-stamp at slot 32 = the next layer's slot 0: D8)
     bool prof_on_ = false;
@@ -280,13 +283,13 @@ private:
 #ifdef STRATA_ENABLE_SYCL
     // Segment k completes the routed host payload for step k. Segment k+1
     // consumes its completed CPU results, after the queued shared/hit work.
-    std::vector<cudaGraphExec_t> segments_[9];
     // Shared experts, activation quantization and VRAM hits are submitted when
     // the CPU publishes its plan, before it computes the missed experts.
-    std::vector<cudaGraphExec_t> work_[9];
     // Enqueued after DMA submission, on cs_ after shared/resident work. The
     // runtime barrier snapshots a freshly recorded copy event outside capture.
-    std::vector<cudaGraphExec_t> pcie_work_[9];
+    VerifyWindowGraphCache<cudaGraphExec_t> window_graphs_;
+    VerifyInput last_input_ = VerifyInput::decode;
+    bool decode_q6_columns_ = false; // immutable after init; opt-in model candidate
     cudaEvent_t pcie_copy_ready_ = nullptr, pcie_done_ = nullptr;
     bool early_pcie_ = false, early_pcie_audit_ = false, pcie_launched_ = false, pcie_copy_recorded_ = false;
     cudaError_t pcie_status_ = cudaSuccess;
@@ -306,7 +309,7 @@ private:
     friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};
     enum class SegmentKind { layer, resident, pcie };
-    bool end_segment(int T, std::string& err, SegmentKind kind = SegmentKind::layer);
+    bool end_segment(int T, std::string& err, VerifyInput input, SegmentKind kind = SegmentKind::layer);
     void launch_work();
     void launch_pcie(int groups);
 #endif

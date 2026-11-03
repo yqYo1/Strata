@@ -263,9 +263,7 @@ bool Verifier::retire_prefill_dense(std::string& err) {
         e=nullptr;
     }};
     for(auto& e:exec_) destroy(e);
-    for(auto& v:segments_) { for(auto& e:v) destroy(e); v.clear(); }
-    for(auto& v:work_) { for(auto& e:v) destroy(e); v.clear(); }
-    for(auto& v:pcie_work_) { for(auto& e:v) destroy(e); v.clear(); }
+    window_graphs_.clear(destroy);
     pcie_launched_=false;pcie_copy_recorded_=false;pcie_status_=cudaSuccess;
     work_launched_=false; work_status_=cudaSuccess; reached_.store(0);
     // wait_commit completed. commit_exec_ contains state copies only.
@@ -340,9 +338,7 @@ bool Verifier::retire_prefill_head(const NativeHead& head,std::string& err) {
         e=nullptr;
     }};
     for(auto& e:exec_)destroy(e);
-    for(auto& v:segments_){for(auto& e:v)destroy(e);v.clear();}
-    for(auto& v:work_){for(auto& e:v)destroy(e);v.clear();}
-    for(auto& v:pcie_work_){for(auto& e:v)destroy(e);v.clear();}
+    window_graphs_.clear(destroy);
     pcie_launched_=false;pcie_copy_recorded_=false;pcie_status_=cudaSuccess;
     work_launched_=false;work_status_=cudaSuccess;reached_.store(0);
     // commit_exec_ contains only state commit operations, no output head. Its
@@ -408,9 +404,7 @@ Verifier::~Verifier() {
         if(copy_ && cudaStreamSynchronize(copy_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify teardown copy drain");
         auto checked=[](cudaError_t status){if(status!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify checked owner teardown");};
         for(auto e:exec_)if(e)checked(cudaGraphExecDestroy(e));
-        for(auto& window:segments_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
-        for(auto& window:work_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
-        for(auto& window:pcie_work_)for(auto e:window)if(e)checked(cudaGraphExecDestroy(e));
+        window_graphs_.clear([&](cudaGraphExec_t e){checked(cudaGraphExecDestroy(e));});
         if(pcie_copy_ready_)checked(cudaEventDestroy(pcie_copy_ready_));
         if(pcie_done_)checked(cudaEventDestroy(pcie_done_));
         if(commit_exec_)checked(cudaGraphExecDestroy(commit_exec_));
@@ -429,12 +423,7 @@ Verifier::~Verifier() {
     for (auto& e : exec_)
         if (e) cudaGraphExecDestroy(e);
 #ifdef STRATA_ENABLE_SYCL
-    for (auto& window : segments_)
-        for (auto e : window) cudaGraphExecDestroy(e);
-    for (auto& window : work_)
-        for (auto e : window) cudaGraphExecDestroy(e);
-    for (auto& window : pcie_work_)
-        for (auto e : window) if (e) cudaGraphExecDestroy(e);
+    window_graphs_.clear([](cudaGraphExec_t e){cudaGraphExecDestroy(e);});
     if (pcie_copy_ready_) cudaEventDestroy(pcie_copy_ready_);
     if (pcie_done_) cudaEventDestroy(pcie_done_);
     if (layer_done_) cudaEventDestroy(layer_done_);
@@ -456,6 +445,9 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     if(released_.load()){err="verify: failed or released verifier; restart the engine";return false;}
     if(dense_retired_ || head_detached_){err="verify: init while head detached";return false;}
 #ifdef STRATA_ENABLE_SYCL
+    if (wt_ || g_ || cs_ || copy_) {
+        err = "verify: init requires a fresh owner"; return false;
+    }
     if (hits.cache_owner && (!hits.cache_owner->scratch_tracking_enabled() || !hits.cache_owner->decode_ready() ||
         hits.cache_base != hits.cache_owner->device_slot(0) || hits.n_slots != hits.cache_owner->slots() ||
         hits.slot_off != hits.cache_owner->slot_offsets())) {
@@ -469,6 +461,14 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     ss_ = &ss;
     hits_ = hits;
 #ifdef STRATA_ENABLE_SYCL
+    const char* q6_columns = std::getenv("STRATA_SYCL_DECODE_Q6_COLUMNS");
+    if (q6_columns && std::strcmp(q6_columns, "0") != 0 && std::strcmp(q6_columns, "1") != 0) {
+        err = "verify: STRATA_SYCL_DECODE_Q6_COLUMNS must be 0 or 1"; return false;
+    }
+    decode_q6_columns_ = q6_columns && std::strcmp(q6_columns, "1") == 0;
+    if (decode_q6_columns_ && !strata::kernels::native_mmvq_multi_exact()) {
+        err = "verify: decode Q6 columns requires the exact MMVQ layout"; return false;
+    }
     const char* query_profile = std::getenv("STRATA_SYCL_QUERY_PROFILE");
     query_profile_enabled_ = query_profile && std::strcmp(query_profile, "1") == 0;
     reset_query_profile();
@@ -720,9 +720,26 @@ const float* Verifier::final_R(int t) const {
 // so the CPU computes A's experts of layer l while the GPU runs B's mixer and router of layer l, and B's experts
 // while the GPU combines A and runs A's layer l+1.  B's mixer only needs A's mixer of the same layer (K/V, GDN
 // state), never A's experts, so nothing waits that did not wait before.  Every token's arithmetic is unchanged.
-bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
+bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInput input) {
     if(dense_retired_ || head_detached_){err="verify: head is detached for prompt";return false;}
     using namespace strata::kernels;
+#ifdef STRATA_ENABLE_SYCL
+    auto& graph_window = window_graphs_.at(input, T);
+    graph_window.q6_reference_calls = graph_window.q6_columns_calls = 0;
+#endif
+    auto window_mmvq = [&](int type, const void* weights, const void* x, float* y,
+                           int n_in, int n_out, int columns, void* stream) {
+#ifdef STRATA_ENABLE_SYCL
+        if (verify_q6_columns(decode_q6_columns_, input, native_mmvq_multi_exact(),
+                              type, n_in, n_out, columns)) {
+            native_q6_k_columns_mmvq(weights, x, y, n_in, n_out, columns, stream);
+            ++graph_window.q6_columns_calls;
+            return;
+        }
+        if (type == 14) ++graph_window.q6_reference_calls;
+#endif
+        native_mmvq(type, weights, x, y, n_in, n_out, columns, stream);
+    };
     const ModelGeometry& g = *g_;
     const WeightTable& wt = *wt_;
     SessionState& ss = *ss_;
@@ -898,7 +915,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 float* gate = gate_L_ + (size_t) gi * MT * HV;
                 float* beta = beta_L_ + (size_t) gi * MT * HV;
                 native_quantize_q8_1(xm, xq_, (int) N, n, cs);
-                native_mmvq(wqkv->native_type, wqkv->native_data, xq_, qkv + (size_t) tb * C, (int) N, (int) C, n, cs);
+                window_mmvq(wqkv->native_type, wqkv->native_data, xq_, qkv + (size_t) tb * C, (int) N, (int) C, n, cs);
                 stamp(l, 2, grp);
                 gdn_conv_l2_multi(conv, qkv, (const float*) wc->data, hb, (int) C, (int) (2 * HK), EPS, n, cs, tb);
                 stamp(l, 3, grp);
@@ -906,14 +923,14 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                              (const float*) wsa->data, gate + (size_t) tb * HV, beta + (size_t) tb * HV, (int) N, (int) HV,
                              n, cs);
                 stamp(l, 4, grp);
-                native_mmvq(wg->native_type, wg->native_data, xq_, z_ + (size_t) tb * ZV, (int) N, (int) ZV, n, cs);
+                window_mmvq(wg->native_type, wg->native_data, xq_, z_ + (size_t) tb * ZV, (int) N, (int) ZV, n, cs);
                 stamp(l, 5, grp);
                 // the recurrence from the untouched state over tokens [0, te); outputs only for this group's
                 gdn_step_norm_multi(state, hb, (int) C, gate, beta, z_, (const float*) wnm->data, EPS, y_, (int) HK,
                                     (int) HV, te, nullptr, cs, tb);
                 stamp(l, 6, grp);
                 native_quantize_q8_1(y_ + (size_t) tb * ZV, xq_, (int) ZV, n, cs);
-                native_mmvq(wout->native_type, wout->native_data, xq_, bo_ + tb * N, (int) ZV, (int) N, n, cs);
+                window_mmvq(wout->native_type, wout->native_data, xq_, bo_ + tb * N, (int) ZV, (int) N, n, cs);
             } else {
                 // ======================= QSA =======================
                 const int64_t qi = qsa_idx[(size_t) l];
@@ -942,8 +959,8 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 else for (int t = tb; t < te; ++t)
                     bf16_gemv_fp32_mmvf(mixed_ + t * N, (const uint16_t*) wik->data, idx_raw + t * ID, (int) N, (int) ID, cs);
                 stamp(l, 7, grp);
-                native_mmvq(wk->native_type, wk->native_data, xq_, kcur_ + tb * NKV * HD, (int) N, (int) (NKV * HD), n, cs);
-                native_mmvq(wv->native_type, wv->native_data, xq_, vcur_ + tb * NKV * HD, (int) N, (int) (NKV * HD), n, cs);
+                window_mmvq(wk->native_type, wk->native_data, xq_, kcur_ + tb * NKV * HD, (int) N, (int) (NKV * HD), n, cs);
+                window_mmvq(wv->native_type, wv->native_data, xq_, vcur_ + tb * NKV * HD, (int) N, (int) (NKV * HD), n, cs);
                 if (qb) norm_rope(kcur_ + tb * NKV * HD, wkn, (int) (n * NKV), (int) HD, pos_k + tb * NKV);
                 else for (int t = tb; t < te; ++t) norm_rope(kcur_ + t * NKV * HD, wkn, (int) NKV, (int) HD, pos_ + t * NH);
                 if (st.kv_rot) {   // K and V rotated before they are stored (kv_q4.hpp)
@@ -977,7 +994,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                                               (const float*) wikn->data, EPS, ib, s, st.max_cells,
                                               rope_scaling(), cs);
                 stamp(l, 9, grp);
-                native_mmvq(wq->native_type, wq->native_data, xq_, qfull_ + tb * NH * 2 * HD, (int) N, (int) (NH * 2 * HD),
+                window_mmvq(wq->native_type, wq->native_data, xq_, qfull_ + tb * NH * 2 * HD, (int) N, (int) (NH * 2 * HD),
                             n, cs);
                 if (qb) {
                     if (cudaMemcpy2DAsync(qcur_ + tb * NH * HD, (size_t) HD * 4, qfull_ + tb * NH * 2 * HD, (size_t) HD * 2 * 4,
@@ -1033,7 +1050,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 }
                 stamp(l, 14, grp);
                 native_quantize_q8_1(attn32_ + tb * NH * HD, xq_, (int) (NH * HD), n, cs);
-                native_mmvq(wo->native_type, wo->native_data, xq_, bo_ + tb * N, (int) (NH * HD), (int) N, n, cs);
+                window_mmvq(wo->native_type, wo->native_data, xq_, bo_ + tb * N, (int) (NH * HD), (int) N, n, cs);
             }
         } catch (const std::exception& e) {
             err = "verify layer " + std::to_string(l) + ": " + e.what();
@@ -1196,7 +1213,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
 #ifdef STRATA_ENABLE_SYCL
             // Nothing submitted here may read the host plan/results before the
             // caller completes the preceding segment and serves this group.
-            if (!end_segment(T, err)) return false;
+            if (!end_segment(T, err, input)) return false;
             if (overlap_gpu_) {
                 if (begin_verify_capture(cs, T) != cudaSuccess) {
                     err = "verify: begin shared/hit capture failed";
@@ -1208,7 +1225,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                 const int64_t capx = (int64_t) max_t_ * K;
                 const int64_t ptr_off = ((4 + (capx + 1) + 2 * capx) + 1) & ~1ll;
                 project_group(l, grp, (const unsigned long long*) (pl + ptr_off), pl + 4, pl);
-                if (!end_segment(T, err, SegmentKind::resident)) return false;
+                if (!end_segment(T, err, input, SegmentKind::resident)) return false;
                 if (early_pcie_) {
                     if (begin_verify_capture(cs, T) != cudaSuccess) {
                         err = "verify: begin PCIe expert capture failed";
@@ -1218,7 +1235,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
                     // behind resident work on cs_. Only its enqueue moves.
                     project_group(l, grp, (const unsigned long long*) (pl + ptr_off) + capx,
                                   pl + ptr_off + 4 * capx, pl + 2, kPcieGroupRows);
-                    if (!end_segment(T, err, SegmentKind::pcie)) return false;
+                    if (!end_segment(T, err, input, SegmentKind::pcie)) return false;
                 }
             }
             if (begin_verify_capture(cs, T) != cudaSuccess) {
@@ -1257,7 +1274,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err) {
         if (head_ != nullptr && head_->loaded()) {
             try {
                 native_quantize_q8_1(head_mixed_, xq_, (int) N, T, cs);
-                native_mmvq(head_->type(), head_->weights(), xq_, head_logits_, (int) N, (int) n_vocab_, T, cs);
+                window_mmvq(head_->type(), head_->weights(), xq_, head_logits_, (int) N, (int) n_vocab_, T, cs);
             } catch (const std::exception& e) {
                 err = std::string("verify head: ") + e.what();
                 return false;
@@ -1302,7 +1319,7 @@ std::string Verifier::profile_report() {
 }
 
 #ifdef STRATA_ENABLE_SYCL
-bool Verifier::end_segment(int T, std::string& err, SegmentKind kind) {
+bool Verifier::end_segment(int T, std::string& err, VerifyInput input, SegmentKind kind) {
     cudaGraph_t graph = nullptr;
     const cudaError_t ce = cudaStreamEndCapture(cs_, &graph);
     if (ce != cudaSuccess) {
@@ -1319,49 +1336,66 @@ bool Verifier::end_segment(int T, std::string& err, SegmentKind kind) {
         err = std::string("verify: instantiate segment: ") + cudaGetErrorString(ie);
         return false;
     }
-    auto& target = kind == SegmentKind::pcie ? pcie_work_[T] :
-                   kind == SegmentKind::resident ? work_[T] : segments_[T];
-    target.push_back(exec);
+    auto& window = window_graphs_.at(input, T);
+    auto& target = kind == SegmentKind::pcie ? window.pcie :
+                   kind == SegmentKind::resident ? window.resident : window.layer;
+    try { target.push_back(exec); }
+    catch (...) {
+        if (cudaGraphExecDestroy(exec) != cudaSuccess)
+            strata::sycl_backend::cleanup_fail_stop("verify unowned phase segment retirement");
+        throw;
+    }
     return true;
 }
 #endif
 
-bool Verifier::capture(int T, std::string& err) try {
+bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     if(dense_retired_ || head_detached_){err="verify: head is detached for prompt";return false;}
 #ifdef STRATA_ENABLE_SYCL
-    if (!segments_[T].empty()) return true;
+    auto& window = window_graphs_.at(input, T);
+    if (window.ready) return true;
+    if (!window.layer.empty() || !window.resident.empty() || !window.pcie.empty()) {
+        err = "verify: incomplete phase graph cache"; return false;
+    }
     const auto capture_start = Clock::now();
     if (begin_verify_capture(cs_, T) != cudaSuccess) {
         if(head_recapture_checked_)strata::sycl_backend::cleanup_fail_stop("verify head recapture begin");
         err = "verify: begin capture failed";
         return false;
     }
-    if (!record_window(T, cs_, err) || !end_segment(T, err)) {
+    const bool recorded = record_window(T, cs_, err, input) && end_segment(T, err, input);
+    const size_t steps = static_cast<size_t>(le_ - lb_) * static_cast<size_t>(groups_[T]);
+    if (!recorded || window.layer.size() != steps + 1 ||
+        window.resident.size() != (overlap_gpu_ ? steps : 0) ||
+        window.pcie.size() != (overlap_gpu_ && early_pcie_ ? steps : 0)) {
+        if (recorded) err = "verify: incomplete phase graph families";
         if(head_recapture_checked_)strata::sycl_backend::cleanup_fail_stop("verify head window recapture incomplete");
         // A failed kernel may leave the current segment recording. Close it
         // before releasing already finalized segments; a later call can retry.
         cudaGraph_t unfinished = nullptr;
         cudaStreamEndCapture(cs_, &unfinished);
-        if (unfinished) cudaGraphDestroy(unfinished);
+        if (unfinished && cudaGraphDestroy(unfinished) != cudaSuccess)
+            strata::sycl_backend::cleanup_fail_stop("verify incomplete source phase graph retirement");
         cudaGetLastError();
-        for (auto e : segments_[T]) cudaGraphExecDestroy(e);
-        segments_[T].clear();
-        for (auto e : work_[T]) cudaGraphExecDestroy(e);
-        work_[T].clear();
-        for (auto e : pcie_work_[T])
+        window.clear([](cudaGraphExec_t e) {
             if (cudaGraphExecDestroy(e) != cudaSuccess)
-                strata::sycl_backend::cleanup_fail_stop("verify incomplete PCIe capture retirement");
-        pcie_work_[T].clear();
+                strata::sycl_backend::cleanup_fail_stop("verify incomplete phase capture retirement");
+        });
         return false;
     }
+    window.ready = true;
     std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
-                 T, segments_[T].size());
+                 T, window.layer.size());
+    std::fprintf(stderr, "strata verify: phase=%s tokens=%d q6_reference_calls=%llu q6_columns_calls=%llu\n",
+                 input == VerifyInput::prompt ? "prompt" : "decode", T,
+                 static_cast<unsigned long long>(window.q6_reference_calls),
+                 static_cast<unsigned long long>(window.q6_columns_calls));
     size_t free_bytes = 0, total_bytes = 0;
     if (cudaMemGetInfo(&free_bytes, &total_bytes) == cudaSuccess)
         std::fprintf(stderr, "strata verify: capture %d tokens %.3f ms, free VRAM %.1f MiB\n",
                      T, ms_since(capture_start), double(free_bytes) / (1024 * 1024));
     if (overlap_gpu_)
-        std::fprintf(stderr, "strata verify: %zu shared/hit graphs can overlap CPU experts\n", work_[T].size());
+        std::fprintf(stderr, "strata verify: %zu shared/hit graphs can overlap CPU experts\n", window.resident.size());
     return true;
 #else
     if (exec_[T] != nullptr) return true;
@@ -1370,7 +1404,7 @@ bool Verifier::capture(int T, std::string& err) try {
         return false;
     }
     std::string rerr;
-    const bool ok = record_window(T, cs_, rerr);
+    const bool ok = record_window(T, cs_, rerr, input);
     cudaGraph_t graph = nullptr;
     const cudaError_t ce = cudaStreamEndCapture(cs_, &graph);
     if (!ok) {
@@ -1428,6 +1462,18 @@ bool Verifier::capture(int T, std::string& err) try {
 } catch (...) {
 #ifdef STRATA_ENABLE_SYCL
     if(head_recapture_checked_)strata::sycl_backend::cleanup_fail_stop("verify head recapture exception");
+    // No captured operation has been submitted yet. Close a possibly active
+    // recording and retire all finalized segments; a partial cache cannot
+    // become a successful cache hit on a later request.
+    cudaGraph_t unfinished = nullptr;
+    cudaStreamEndCapture(cs_, &unfinished);
+    if (unfinished && cudaGraphDestroy(unfinished) != cudaSuccess)
+        strata::sycl_backend::cleanup_fail_stop("verify exceptional source phase graph retirement");
+    cudaGetLastError();
+    window_graphs_.at(input, T).clear([](cudaGraphExec_t e) {
+        if (cudaGraphExecDestroy(e) != cudaSuccess)
+            strata::sycl_backend::cleanup_fail_stop("verify exceptional phase capture retirement");
+    });
 #endif
     throw;
 }
@@ -1500,7 +1546,7 @@ bool Verifier::capture_commit(std::string& err) {
 }
 
 bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool, void* user, int32_t* out,
-                   std::string& err) {
+                   std::string& err, VerifyInput input) {
     using namespace strata::kernels;
     const OnDevice on_device(device_);
     if(dense_retired_ || head_detached_){err="verify: run while head detached";return false;}
@@ -1509,6 +1555,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     if (!enter_cache_reader(hits_, cache_reader, err)) return false;
 #endif
     if (T < 1 || T > max_t_) { err = "verify: window size out of range"; return false; }
+    if (!valid_verify_input(input)) { err = "verify: input phase out of range"; return false; }
     if (released_.load()) { err = "verify: an earlier window failed or was released; restart the engine"; return false; }
     const ModelGeometry& g = *g_;
     SessionState& ss = *ss_;
@@ -1532,7 +1579,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         void drained() { first->diag_window_.phase(VerifyPhase::finishing); }
         void finish() { first->diag_window_.phase(VerifyPhase::completed); }
     } window_scope{this};
-    if (!capture(T, err) || !capture_commit(err)) return false;
+    if (!capture(T, err, input) || !capture_commit(err)) return false;
     VDBG("captured; staging\n");
     const Clock::time_point t0 = Clock::now();
     const QsaShapes s = shapes_of(g);
@@ -1564,6 +1611,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #endif
     std::atomic_thread_fence(std::memory_order_seq_cst);
     last_t_ = T;
+#ifdef STRATA_ENABLE_SYCL
+    last_input_ = input; // Fixed until all callbacks and this window have drained.
+#endif
     last_pos0_ = pos0;
     for (int t = 0; t < T; ++t) last_tokens_[t] = tokens[t];
     ms_host += ms_since(t0);
@@ -1571,7 +1621,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     diag_window_.phase(VerifyPhase::running); // Rescuable before the potentially blocking launch.
 #ifdef STRATA_ENABLE_SYCL
     const cudaError_t le = strata::sycl_backend::compat::graph_launch_with_completion(
-        segments_[T][0], cs_, layer_done_);
+        window_graphs_.at(input, T).layer[0], cs_, layer_done_);
 #else
     const cudaError_t le = cudaGraphLaunch(exec_[T], cs_);
 #endif
@@ -1702,7 +1752,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             return false;
         }
         const cudaError_t next = strata::sycl_backend::compat::graph_launch_with_completion(
-            segments_[T][size_t(k + 1)], cs_, layer_done_);
+            window_graphs_.at(input, T).layer[size_t(k + 1)], cs_, layer_done_);
         if (next != cudaSuccess) {
             err = std::string("verify: next segment launch: ") + cudaGetErrorString(next);
             return false;
@@ -1759,7 +1809,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     // the drafts were. Exact: a rejected row's draw is discarded, and no kept decision depends on a reused draw.
     if (le_ < g.n_layers) {   // a layer split's earlier stage: the hand-off is written (synced above)
         ++windows;
-        const bool ok = next_ == nullptr || next_->run(T, tokens, pos0, pool, next_user_, out, err);
+        const bool ok = next_ == nullptr || next_->run(T, tokens, pos0, pool, next_user_, out, err, input);
         if (ok) window_scope.finish();
         return ok;
     }
@@ -1952,7 +2002,8 @@ void Verifier::launch_pcie(int groups) {
     if (!early_pcie_ || released_.load() || pcie_launched_ || !pcie_copy_recorded_ ||
         !pcie_copy_ready_ || !pcie_done_ || !sink_.counts || groups <= 0 ||
         groups > sink_.staging_cap || groups != sink_.counts[2] ||
-        last_t_ < 1 || last_t_ > max_t_ || last_t_ > strata::kernels::kVerifyMaxT || index >= pcie_work_[last_t_].size() ||
+        last_t_ < 1 || last_t_ > max_t_ || last_t_ > strata::kernels::kVerifyMaxT ||
+        index >= window_graphs_.at(last_input_, last_t_).pcie.size() ||
         !work_launched_ || work_status_ != cudaSuccess) {
         pcie_status_ = cudaErrorInvalidValue;
         return;
@@ -1963,7 +2014,7 @@ void Verifier::launch_pcie(int groups) {
     pcie_status_ = cudaStreamWaitEvent(cs_, pcie_copy_ready_);
     if (pcie_status_ != cudaSuccess) return;
     pcie_status_ = strata::sycl_backend::compat::graph_launch_with_completion(
-        pcie_work_[last_t_][index], cs_, pcie_done_);
+        window_graphs_.at(last_input_, last_t_).pcie[index], cs_, pcie_done_);
     if (pcie_status_ == cudaSuccess) {
         pcie_launched_ = true;
         ++early_pcie_stats_.launches;
@@ -1976,14 +2027,14 @@ void Verifier::launch_pcie(int groups) {
 void Verifier::launch_work() {
     const size_t index = cur_layer_.load();
     if (released_.load() || work_launched_ || last_t_ < 1 || last_t_ > max_t_ ||
-        index >= work_[last_t_].size()) {
+        last_t_ > strata::kernels::kVerifyMaxT || index >= window_graphs_.at(last_input_, last_t_).resident.size()) {
         work_status_ = cudaErrorInvalidValue;
         return;
     }
     // pre() completed before the CPU read its payload. The published plan is
     // now stable until the next completed layer; CPU workers write y_miss only.
     work_status_ = strata::sycl_backend::compat::graph_launch_with_completion(
-        work_[last_t_][index], cs_, work_done_);
+        window_graphs_.at(last_input_, last_t_).resident[index], cs_, work_done_);
     if (work_status_ == cudaSuccess) {
         work_launched_ = true;
         const auto status = query_event(work_done_, QueryPoint::resident_launch);
