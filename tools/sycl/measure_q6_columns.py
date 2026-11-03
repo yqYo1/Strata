@@ -25,9 +25,9 @@ import measurement_owner as supervision
 import ur_validation as validation
 
 P, B = selected.P, selected.B
-ROOT = B / 'q6-columns-component-v1'
+ROOT = B / 'q6-columns-component-v2'
 RESULT = selected.model.RESULT
-KEY = 'q6_columns_component_v1'
+KEY = 'q6_columns_component_v2'
 EXE = ROOT / 'sycl_q6_columns_bench'
 CONTROLLER = Path(__file__).resolve()
 CORE = 'src/kernels/sycl/native_mmvq.cpp'
@@ -37,7 +37,7 @@ SOURCES = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_prof
     CORE, 'src/kernels/sycl/native_q5_head.cpp', 'src/kernels/sycl/native_q3_esimd.cpp',
     'src/kernels/sycl/native_q4_esimd.cpp', 'src/kernels/sycl/native_q2_esimd.cpp',
     'src/kernels/sycl/native_iq4xs_esimd.cpp', 'src/kernels/sycl/native_iq_esimd.cpp',
-    'src/kernels/sycl/native_mmq_xmx.cpp', FIXTURE)
+    'src/kernels/sycl/native_mmq_xmx.cpp', 'src/kernels/sycl/iq.cpp', FIXTURE)
 HELPERS = ('tools/sycl/measure_q6_columns.py', 'tools/sycl/build_engine.py',
     'tools/sycl/build_manifest.py', 'tools/sycl/measurement_guards.py',
     'tools/sycl/measurement_owner.py', 'tools/sycl/ur_validation.py')
@@ -91,6 +91,9 @@ def source_current(row):
             'frozen component source changed: ' + name)
     for name, expected in row['external_inputs']['manifests'].items():
         require(digest(expected['path']) == expected['sha256'], 'input manifest changed: ' + name)
+    runtime = row['external_inputs']['manifests']['runtime_manifest']
+    require(all(digest(path) == sha for path, sha in
+        json.loads(Path(runtime['path']).read_text()).items()), 'runtime provider bytes changed')
     require(digest(row['compiler_inputs']['path']) == row['compiler_inputs']['sha256'],
         'compiler changed')
     require(guards.driver_guard() == row['driver'] and
@@ -211,7 +214,7 @@ def build_component():
                     'uncovered/changed compiler input: ' + path)
                 actual[path] = allowed[path]
         link = (ROOT / 'build-commands/link.stdout').read_text()
-        linked = []
+        linked = {}
         for line in link.splitlines():
             if not line.startswith('/'):
                 continue
@@ -221,7 +224,7 @@ def build_component():
                 continue
             name = str(path.resolve())
             require(name in allowed and digest(name) == allowed[name], 'uncovered link input: ' + name)
-            linked.append(name)
+            linked[name] = allowed[name]
         require(len(actual) >= 300 and len(linked) >= 10, 'incomplete compiler/link input accounting')
         source_current(row)
         row.update(stage='compiled', binary=dict(path=str(EXE), sha256=digest(EXE), bytes=EXE.stat().st_size),
@@ -298,7 +301,7 @@ def run(smoke):
     require(digest(row['actual_inputs']['path']) == row['actual_inputs']['sha256'], 'build inputs receipt changed')
     actual = json.loads(Path(row['actual_inputs']['path']).read_text())
     allowed = allowed_inputs(row)
-    for name, sha in actual['compiler'].items():
+    for name, sha in dict(actual['compiler'], **actual['linked']).items():
         require(name in allowed and sha == allowed[name] and digest(name) == sha, 'compiled input changed')
     count = 1 if smoke else 3
     owner = supervision.Owner(ROOT / ('smoke-commands' if smoke else 'speed-commands'))
