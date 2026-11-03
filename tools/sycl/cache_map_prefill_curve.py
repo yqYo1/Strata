@@ -124,6 +124,45 @@ def records(text, prefix):
     return found
 
 
+def mtp_boundary_batch(read, first, cells, workspace_rows, ring_rows):
+    """Selected native draft_kv's mode2 admission; source math,not telemetry."""
+    require(all(type(v) is int for v in (read, first, cells, workspace_rows, ring_rows))
+            and 2 <= read <= 262144 and 0 <= first and 0 < cells
+            and first + cells < read and min(workspace_rows, ring_rows) >= 0,
+            'invalid MTP boundary geometry')
+    needed_from = read - 32768 - 64
+    r0 = max(0, needed_from - first)
+    active = max(0, cells - r0)
+    batch = min(active, workspace_rows & ~63, ring_rows & ~63) if active else None
+    return dict(needed_from=needed_from, r0=r0, active_rows=active, first_batch_rows=batch,
+                skipped=not active, path='batched' if not active or batch >= 64 else 'token')
+
+
+def mtp_boundary_route(text, rows):
+    """Unwired prospective gate for the reviewed exact64K boundary only."""
+    if rows != 65536:
+        return entry.template.mtp_route(text, rows)
+    expected = [mtp_boundary_batch(rows + 1, first, 8192, 64, 64)
+                for first in range(0, rows, 8192)]
+    require([i for i, v in enumerate(expected) if v['path'] == 'token'] == [3]
+            and expected[3]['active_rows'] == expected[3]['first_batch_rows'] == 63,
+            'reviewed source boundary differs')
+    actual = records(text, 'strata serve: DRAFT_PREFILL ')
+    require(len(actual) == len(expected) and all(
+        set(v) == {'path', 'mode', 'cells'} and v['path'] == e['path']
+        and v['mode'] == '2' and v['cells'] == '8192'
+        for v, e in zip(actual, expected)), 'MTP exact63-row boundary path/mode/coverage differs')
+    compatible, replaced = re.subn(r'^strata serve: DRAFT_PREFILL path=token mode=2 cells=8192$',
+        'strata serve: DRAFT_PREFILL path=batched mode=2 cells=8192', text, flags=re.M)
+    require(replaced == 1, 'one exact boundary callback required')
+    nominal = entry.template.mtp_route(compatible, rows)
+    return dict(nominal, path='source-explained-63-row-boundary', fallback_callback_index=3,
+        source_derived_needed_from=expected[3]['needed_from'], source_derived_active_rows=63,
+        batched_callbacks=7, token_callbacks=1,
+        capacity_assumption='workspace/ring each>=64;other batched callbacks,not a capacity measurement',
+        internal_needed_rows_and_shapes_observed=False)
+
+
 def request_route(text, plan):
     n = plan['read'] - 1
     if not plan['trace_progress']:
@@ -304,6 +343,12 @@ def scope_projection(source):
             require(ast.literal_eval(node.value) == ('tools/test_sycl_gdn_model_sources.py',
                 'tools/test_sycl_prefill_curve_continuation.py'), 'undeclared host contract inputs')
             continue
+        if isinstance(node, ast.FunctionDef) and node.name in ('mtp_boundary_batch', 'mtp_boundary_route'):
+            # These are separately host-checked and still uncalled by the frozen
+            # request_route. Its protected AST forbids wiring them without a new plan.
+            require(not node.decorator_list and not node.args.defaults and not node.args.kwonlyargs,
+                    'future MTP helper has definition-time work')
+            continue
         if isinstance(node, ast.FunctionDef) and node.name in (
                 'scope_projection', 'parser_qualification', 'prefix_evidence', 'prefix_qualification', 'inherit_prefix'):
             continue
@@ -351,7 +396,9 @@ def parser_qualification():
         unchanged_projection_sha256=comparison.fingerprint(scope_projection(source)),
         allowed_changes=['ast import', 'ROOT/KEY scope labels', 'explicit GDN appendix admission policy',
             'two named host test inputs', 'source/prefix proof readers',
-            'one final prepare prefix import and one initial current prefix check'],
+            'one final prepare prefix import and one initial current prefix check',
+            'two unwired future MTP boundary helpers;not covered by original replay'],
+        unwired_helpers_not_covered_by_original_replay=['mtp_boundary_batch', 'mtp_boundary_route'],
         raw_fixture_replayed_again=False, model_or_native_qualification_added=False)
     return frozen
 
