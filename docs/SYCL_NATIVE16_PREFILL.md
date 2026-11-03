@@ -4702,16 +4702,40 @@ disables the CUDA-only`STRATA_VERIFY_PROFILE`stamps in SYCL;the existing SYCL
 query profiler measures host event-query calls. Neither flag establishes GPU
 kernel service. See`cache_map_decode_census_v1`in the current service result.
 
-The next unchanged-engine diagnostic is
-`tools/sycl/cache_map_worker_scaling.py`:three fresh processes with5,3and9
-expert workers,each running the same two official long-generation tasks with
-thinking enabled. The host also computes during pool drain,so the baseline
-has six CPU participants on six physical cores. Workers above five are
-unpinned in the selected source;this does not guarantee SMT placement.
-Only worker count varies. Freeze CPU affinity/topology and ancestor cgroup
-quotas,retain actual NT/format/pool-clock evidence,and require a separate clean
-repeated comparison before selecting a configuration. This does not alter the
-prefill or decode math or establish a RAM-bandwidth ceiling.
+The unchanged-engine diagnostic`tools/sycl/cache_map_worker_scaling.py`now
+closes all three fresh processes,with5,3and9expert workers. Each runs the same
+two official long-generation tasks with thinking enabled,33212/33282fresh
+input tokens and3170/7275generated tokens. All18native/API/census joins pass;
+all three native exits are0,owners close,validation stays quiet,no fresh fault
+appears,and all15final model hashes match. Native source479a/engine552b and
+the frozen controller sourceeef68bcd2remain distinct from the result commit.
+
+| Workers | Code TG,tok/s | Prose TG,tok/s | Code CPU-pool seconds | Prose CPU-pool seconds |
+| ---: | ---: | ---: | ---: | ---: |
+| 5 | 13.2946 | 8.6922 | 103.77 | 336.05 |
+| 3 | 12.0226 | 7.8686 | 126.57 | 419.47 |
+| 9 | 12.1366 | 7.8474 | 118.94 | 394.91 |
+
+Only worker count varies. The CPU job counts,NT mix and observed MTP acceptance
+are conserved across these samples;equal generated text is not an acceptance
+requirement. Three workers are9.57%/9.48%slower than five; nine are8.71%/9.72%
+slower. Keep the existing five-worker reference. This one-process-per-count
+diagnostic with observers does not establish repeated clean performance or
+RAM saturation. The host computes during pool drain,so the baseline has six
+CPU participants on six physical cores. Workers above five are unpinned in the
+selected source;this does not guarantee SMT placement. Affinity/topology and
+ancestor cgroup quotas are frozen,but continuous per-thread placement and
+useful CPU service remain unmeasured. The result changes neither prefill nor
+decode math. See`cache_map_worker_scaling_v1`in the current service result.
+
+The next collector control`tools/sycl/profile_selected_compat.py`reuses the
+selected compatibility fixture ELF without rebuilding the engine. It checks
+all62kernel instances through normal command-graph capture/replay and the
+actual completion/lifetime adapter,with collection active from before runtime
+initialization through native exit. This is a necessary active-construction
+control;paused construction,interior model windows and observer overhead still
+need separate evidence. Existing owned launcher,collector admission and trace
+reducers remain the implementation basis.
 
 [Client-resource evidence](../bench/results/2026-10-15-pr6-recovery-audit/client-resources-current.json)
 and [actual-mix CPU calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)

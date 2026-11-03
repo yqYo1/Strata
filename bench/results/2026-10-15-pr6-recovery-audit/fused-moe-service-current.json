@@ -110413,7 +110413,7 @@
       "STRATA_CPU_WORK_CENSUS": "1",
       "STRATA_DECODE_TIMING": "1"
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "eef68bcd2dc43a6acf14e3018260bcb6b0d3b8ae",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "fb4832147382ee0eafa115f587903665819362d4a969e69999305b6546fd4adf",
@@ -111587,11 +111587,542 @@
           }
         ],
         "census_passed": true
+      },
+      {
+        "index": 2,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 3027009,
+          "start_ticks": 207989730,
+          "sid": 3026965
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33212,
+            "reused_tokens": 0,
+            "generated_tokens": 3170,
+            "output_chars": 5578,
+            "reasoning_chars": 3706,
+            "prompt_ms": 50608.4,
+            "prompt_tps": 656.3,
+            "decode_ms": 261192.9,
+            "decode_tps": 12.1,
+            "ttft_s": 50.795,
+            "total_s": 311.828,
+            "drafts_offered": 2739,
+            "drafts_accepted": 2258,
+            "acceptance_rate": 0.8243884629426798,
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "af34a2d690c431c65220f918c7afc407b6b27236f97c5a63e98f653cf2a841b0",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 7275,
+            "output_chars": 4632,
+            "reasoning_chars": 14409,
+            "prompt_ms": 42364.3,
+            "prompt_tps": 785.6,
+            "decode_ms": 927064.4,
+            "decode_tps": 7.8,
+            "ttft_s": 42.578,
+            "total_s": 969.453,
+            "drafts_offered": 10071,
+            "drafts_accepted": 3920,
+            "acceptance_rate": 0.3892364214080032,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "0bbd043abf9212ab45b4bf8794a261534529dd4c28ecff1cdcfc8c836434ad7c",
+            "reasoning_sha256": "d3ec503b2e7266e34b70c5123c07f543b06ff48306decd6e7659660b16581f21",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3027009,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33212,
+            "rows": 33211,
+            "GPU_residual_rows": 33211,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20285,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33211,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false
+          },
+          {
+            "read_tokens": 33282,
+            "rows": 33281,
+            "GPU_residual_rows": 33281,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19987,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33281,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false
+          }
+        ],
+        "cache": [
+          {
+            "hits": 190250,
+            "lookups": 1753440,
+            "hit_percent": 10.9
+          },
+          {
+            "hits": 433265,
+            "lookups": 6445920,
+            "hit_percent": 6.7
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "b8ad600838e690aeefe980ee97aac49111259004b36b65bebd0796fe463f7b1e",
+            "449cd1fc38718491031b395effbc35c6cad07cb79623623a7e4f5460f38e12db",
+            "820e49690239ef1cbb93b7789ecd6de5aa0a998843527deb595eacebd5b0f22c",
+            "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22"
+          ],
+          "valid": true,
+          "journal_sha256": "e64ba6ca0dd89d9a2551674c14a805322c0e8a07c81380f4ee63790ab88bf92a"
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68800
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "pool_workers": 9,
+        "census_boundary_prefixes": [
+          4,
+          5
+        ],
+        "cpu_work": [
+          {
+            "workload": "regular-code",
+            "work": {
+              "windows": 914,
+              "rows": 3653,
+              "cpu_jobs": 1221484,
+              "cpu_entries": 1563190,
+              "vram_entries": 190250,
+              "jobs_NT": [
+                954705,
+                205462,
+                47707,
+                13610,
+                0,
+                0,
+                0,
+                0
+              ],
+              "NT1_fraction": 0.7815943557181265,
+              "pool_ms": 118940.410683,
+              "logical_job_blob_bytes": 2491682304000
+            },
+            "format_bins": [
+              {
+                "gu": 18,
+                "down": 20,
+                "calls": 12796,
+                "pool_ns": 37624301824,
+                "jobs_NT": [
+                  282692,
+                  55827,
+                  13885,
+                  4302,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 453209,
+                "VRAM": 58211
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "calls": 4570,
+                "pool_ns": 9766553755,
+                "jobs_NT": [
+                  95080,
+                  24272,
+                  5700,
+                  1606,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 167148,
+                "VRAM": 15502
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "calls": 13710,
+                "pool_ns": 34169786265,
+                "jobs_NT": [
+                  305663,
+                  67456,
+                  14723,
+                  4008,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 500776,
+                "VRAM": 47174
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "calls": 2742,
+                "pool_ns": 7472167733,
+                "jobs_NT": [
+                  63044,
+                  13719,
+                  2864,
+                  520,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 101154,
+                "VRAM": 8436
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "calls": 8226,
+                "pool_ns": 25090962089,
+                "jobs_NT": [
+                  168165,
+                  36765,
+                  9058,
+                  2913,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 280521,
+                "VRAM": 48249
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "calls": 914,
+                "pool_ns": 2882688048,
+                "jobs_NT": [
+                  22160,
+                  4492,
+                  984,
+                  134,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 34632,
+                "VRAM": 1898
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "calls": 914,
+                "pool_ns": 1933950969,
+                "jobs_NT": [
+                  17901,
+                  2931,
+                  493,
+                  127,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 25750,
+                "VRAM": 10780
+              }
+            ],
+            "timing": {
+              "windows": 914,
+              "ms_per_window": {
+                "average_T": 4.0,
+                "tokens_per_window": 3.47,
+                "total": 285.77,
+                "verify": 251.85,
+                "GPU_reach_wait": 89.65,
+                "per_layer_host": 138.0,
+                "plan": 6.08,
+                "activation_quant": 0.43,
+                "jobs": 0.11,
+                "CPU_pool_run": 130.13,
+                "stage": 3.17,
+                "commit_emit": 0.3,
+                "draft": 33.58,
+                "CPU_experts": 27.84,
+                "CPU_entries": 35.63,
+                "VRAM_hits": 4.34,
+                "PCIe": 0.0
+              },
+              "clock_binding": {
+                "absolute_total_difference_ms": 0.8799999999755528,
+                "rounding_bound_ms": 4.62,
+                "average_quantum_ms": 0.01,
+                "DONE_total_quantum_ms": 0.1
+              }
+            }
+          },
+          {
+            "workload": "varied-prose",
+            "work": {
+              "windows": 3358,
+              "rows": 13429,
+              "cpu_jobs": 3743079,
+              "cpu_entries": 6012655,
+              "vram_entries": 433265,
+              "jobs_NT": [
+                2381683,
+                740976,
+                332660,
+                287760,
+                0,
+                0,
+                0,
+                0
+              ],
+              "NT1_fraction": 0.6362898031273184,
+              "pool_ms": 394905.969487,
+              "logical_job_blob_bytes": 7631673804800
+            },
+            "format_bins": [
+              {
+                "gu": 18,
+                "down": 20,
+                "calls": 47012,
+                "pool_ns": 123647372526,
+                "jobs_NT": [
+                  727484,
+                  201811,
+                  89737,
+                  89158,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 1756949,
+                "VRAM": 123111
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "calls": 16790,
+                "pool_ns": 34570367673,
+                "jobs_NT": [
+                  262548,
+                  79083,
+                  33492,
+                  24937,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 620938,
+                "VRAM": 50512
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "calls": 50370,
+                "pool_ns": 114890578679,
+                "jobs_NT": [
+                  759621,
+                  244371,
+                  107494,
+                  76416,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 1876509,
+                "VRAM": 137841
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "calls": 10074,
+                "pool_ns": 24238356954,
+                "jobs_NT": [
+                  157075,
+                  50292,
+                  21490,
+                  13705,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 376949,
+                "VRAM": 25921
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "calls": 30222,
+                "pool_ns": 83014081568,
+                "jobs_NT": [
+                  389994,
+                  140371,
+                  68717,
+                  64844,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 1136263,
+                "VRAM": 72347
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "calls": 3358,
+                "pool_ns": 8623198380,
+                "jobs_NT": [
+                  50100,
+                  15026,
+                  6548,
+                  6728,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 126708,
+                "VRAM": 7582
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "calls": 3358,
+                "pool_ns": 5922013707,
+                "jobs_NT": [
+                  34861,
+                  10022,
+                  5182,
+                  11972,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "CPU": 118339,
+                "VRAM": 15951
+              }
+            ],
+            "timing": {
+              "windows": 3358,
+              "ms_per_window": {
+                "average_T": 4.0,
+                "tokens_per_window": 2.17,
+                "total": 276.08,
+                "verify": 242.25,
+                "GPU_reach_wait": 90.1,
+                "per_layer_host": 125.67,
+                "plan": 6.42,
+                "activation_quant": 0.42,
+                "jobs": 0.1,
+                "CPU_pool_run": 117.6,
+                "stage": 5.02,
+                "commit_emit": 0.27,
+                "draft": 33.52,
+                "CPU_experts": 23.22,
+                "CPU_entries": 37.3,
+                "VRAM_hits": 2.69,
+                "PCIe": 0.0
+              },
+              "clock_binding": {
+                "absolute_total_difference_ms": 12.239999999874271,
+                "rounding_bound_ms": 16.84,
+                "average_quantum_ms": 0.01,
+                "DONE_total_quantum_ms": 0.1
+              }
+            }
+          }
+        ],
+        "census_passed": true
       }
     ],
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "controls": {
@@ -111731,6 +112262,74 @@
         "passed": true
       }
     ],
+    "decision": {
+      "diagnostic_scaling_complete": true,
+      "workloads": {
+        "regular-code": [
+          {
+            "pool_workers": 5,
+            "exact_TG": 13.294648840933093,
+            "read_tokens": 33212,
+            "generated_tokens": 3170,
+            "acceptance": 0.8243884629426798,
+            "observed_MTP_class": "strong",
+            "TG_over_5workers": 1.0
+          },
+          {
+            "pool_workers": 3,
+            "exact_TG": 12.02259489316578,
+            "read_tokens": 33212,
+            "generated_tokens": 3170,
+            "acceptance": 0.8243884629426798,
+            "observed_MTP_class": "strong",
+            "TG_over_5workers": 0.9043183492104908
+          },
+          {
+            "pool_workers": 9,
+            "exact_TG": 12.136623928138935,
+            "read_tokens": 33212,
+            "generated_tokens": 3170,
+            "acceptance": 0.8243884629426798,
+            "observed_MTP_class": "strong",
+            "TG_over_5workers": 0.9128954117818668
+          }
+        ],
+        "varied-prose": [
+          {
+            "pool_workers": 5,
+            "exact_TG": 8.692214249281234,
+            "read_tokens": 33282,
+            "generated_tokens": 7275,
+            "acceptance": 0.3892364214080032,
+            "observed_MTP_class": "weak",
+            "TG_over_5workers": 1.0
+          },
+          {
+            "pool_workers": 3,
+            "exact_TG": 7.868603514859222,
+            "read_tokens": 33282,
+            "generated_tokens": 7275,
+            "acceptance": 0.3892364214080032,
+            "observed_MTP_class": "weak",
+            "TG_over_5workers": 0.905247303989301
+          },
+          {
+            "pool_workers": 9,
+            "exact_TG": 7.8473512735469075,
+            "read_tokens": 33282,
+            "generated_tokens": 7275,
+            "acceptance": 0.3892364214080032,
+            "observed_MTP_class": "weak",
+            "TG_over_5workers": 0.9028023295900479
+          }
+        ]
+      },
+      "clean_speed_qualified": false,
+      "repeated_gain_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "inference_adopted": false,
+      "next": "Choose a worker configuration only for a new prospectively committed clean repeated comparison. One process per count and nested pool wall do not establish physical RAM bandwidth or a useful-CPU-work ceiling. Preserve dedicated prefill and independent decode qualification."
+    },
     "source_inputs": {
       "files": 286,
       "aggregate_sha256": "21101434bcf2775980e93c608329201b4056fd88aa84e32f5a6f97eee4b30ba2"
