@@ -1147,8 +1147,8 @@ still rejects it. These helpers are unwired and excluded explicitly from the
 old parser replay proof;no new native execution is admitted by these tests.
 Commit a new controller-only plan and replay the full composed route before a
 fresh64Kprocess;do not accept arbitrary token callbacks. Retain the capture
-within1MiB only through that full-route replay/admission. The report/review
-body consumer has ended after the corrected digest and host-gate decision.
+within1MiB only through that full-route replay/admission. The settled report,
+review and spec are retired after the corrected digest and host-gate decision.
 
 V6prepare at`e88d0e454`passes full native/dependency/provider admission,all nine
 ELFs and all15model hashes after retirement;current-source frontend probes pass.
@@ -1158,8 +1158,11 @@ consumed final CMake suffix;its source/contract tests pass. V5stays failed at it
 39Kpost-run gate(`be6629074`);that failed point was not inherited. The unchanged
 parser's strict AST proof is pinned at`7532cbe1b`;the sole original V5record
 remains for prefix qualification. Whole shared-result contents stay frozen for
-active readers. The closed301V5/research files(54251040bytes)are retired after
-source recovery/publication;both still-consumed native generations remain.
+active readers. After publication at`007af4203`,351ended V6/research files
+(68019800bytes)are retired after279controller/558native-input recovery and
+all nine ELF checks. The V6root retains five files totaling828403bytes:original
+record/runtime inventory and the failed64Kdiagnostic for its named next reader.
+Both still-consumed native generations remain;no new generation is built.
 This incomplete descriptive curve does not qualify sustained TG,task/agent
 adoption,hardware saturation,physical262144or RESTORE.
 
