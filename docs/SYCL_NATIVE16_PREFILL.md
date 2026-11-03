@@ -4815,8 +4815,13 @@ and explicit prompt forwarding,including callback selection and retirement of
 both phases. Only complete graph families become reusable. The opt-in
 `STRATA_SYCL_DECODE_Q6_COLUMNS=1`selects only the28component-eligible shapes;
 the default0and all prompt calls keep their reference kernels. Actual captured
-Q6 route counts are logged per phase/token key. The committed host/syntax plan
-is`verify_window_policy_host_v1`;it does not build or select a model engine.
+Q6 route counts are logged per phase/token key. The committed
+`verify_window_policy_host_v1`now closes passed:all28eligible selections,
+prompt/decode/token cache separation,invalid keys and interrupted retirement
+pass the host fixture. The actual selected SYCL compile recipes also pass
+syntax checks for Verifier,generator and retirement fixture;971compiler/link
+inputs are covered,all six commands exit0 and close their owners. It does not
+build or select a model engine.
 GPU lifecycle,whole-model performance and physical-context checks remain pending.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.

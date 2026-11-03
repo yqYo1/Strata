@@ -117072,7 +117072,7 @@
     }
   },
   "verify_window_policy_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "3a0645d89ccee31ede41264d63786f4da20863a8",
     "selected_native_source": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "component_source": "664a280d5aab4e272fef37538634207d38704b4c",
@@ -117234,8 +117234,8 @@
     ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "model_executed": false,
     "inference_adopted": false,
@@ -117244,6 +117244,49 @@
       "review_point": "Retire successful compiler output/temporary host ELF after recording results and recovering source;selected nine ELFs remain unchanged",
       "legacy_gate": "retained_builds_review_20261103 remains partial;no new engine build or CPU-observer gate bypass"
     },
+    "results": [
+      {
+        "label": "compile-host",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "link-host",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "run-host",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax-verify",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax-program",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax-retirement",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ],
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v1/fixture",
+      "bytes": 100264,
+      "sha256": "fe7aed51de4cce2c53e78e5983f77f0e0d7f0d0c73e116ba78daec8631740a6c"
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v1/actual-inputs.json",
+      "sha256": "7f92b63e7289878784872288be27d2be5f8ada0d15b438623120824ed8f7e93e",
+      "files": 971
+    },
+    "decision": "Host phase cache/dispatch/retirement and actual selected SYCL syntax pass only;GPU lifecycle/model speed/prefill preservation remain unqualified.",
     "native_sources": {
       "files": 560,
       "aggregate_sha256": "5d5b881fca5354c01ff49a46f296eaf84a3e2e21d81b125284d7e666044f13c7",
