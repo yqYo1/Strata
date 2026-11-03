@@ -112472,7 +112472,7 @@
     "environment_template_sha256": "2fcedf0fa81900030a0c70e8c4c4caf24ca320c470c70875c74dde8e5d6fdab0"
   },
   "cache_map_compat_collector_active_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "1a70c1efab3f06a84d2487c1aebf70e9ab197421",
     "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "engine": {
@@ -112536,7 +112536,53 @@
         "LD_DEBUG": "libs"
       }
     },
-    "cases": [],
+    "cases": [
+      {
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3154192,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": {
+          "expected_kernels": 62,
+          "observed_kernels": 62,
+          "native_PID": 3154192,
+          "GPU_events": 249,
+          "host_events": 770,
+          "collection_active_from_exec": true,
+          "native_host_flow_joins_unique": true,
+          "all_kernel_names_present": true,
+          "timeline_sha256": "19d3b3b65caff5511ea49df7fa7948fe2c8c05ba6f98dd64c8c32c4b675e910b",
+          "timeline_bytes": 274403
+        },
+        "clocks": {
+          "begin": 2082864116905853,
+          "end": 2082864339571898
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "plan": {
       "question": "Does the existing active-from-exec launcher mode preserve all compatibility graph/kernel flow joins with only kernel-activity Chrome logging?",
       "native": "Reuse selected479a/552b engine and same-build compatibility ELF;no rebuild. Run the no-argument compatibility graph case,not --native or the submission-only early return. cudaStreamBeginCapture uses normal command_graph recording;GraphExec finalizes without per-node profiling. STRATA_SYCL_VERIFY_NATIVE_CAPTURE remains0.",
@@ -112556,8 +112602,8 @@
       "total_cap": 67108864
     },
     "whole_bytes": 134217728,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "sources_sha256": "f42cac7ff196432d8641189657aa43d4ace05dfb66742c1898f0a1ccde6c7004",

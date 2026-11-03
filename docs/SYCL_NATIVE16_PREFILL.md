@@ -4738,8 +4738,16 @@ the315678-byte trace is a bounded fixture diagnostic,not model performance.
 See`cache_map_compat_collector_control_v1`. Paused construction,interior model
 windows and observer overhead remain unqualified. The existing benchmark does
 already record client request/first-nonempty-output/end monotonic timestamps.
-An active-from-exec capture with a separate clock mapping can avoid relying on
-paused graph construction;qualify that collector mode before model execution.
+The separate active-from-exec control also passes,with the same62named kernels,
+249GPU operations and770host activity events,unique native flow joins,normal
+exit,quiet validation,closed owners and no fresh fault. It uses the existing
+aggregate launcher mode and immutable kernel-activity logging,without a paused
+start or full API logging. See`cache_map_compat_collector_active_v1`. These host
+events are an observed activity subset,not total submission or useful CPU time.
+The collector mode is qualified on this fixture;actual model-window coverage,
+clock mapping and observer overhead remain pending. A bounded model capture can
+now use the existing client timestamps to select an interior decode interval
+without relying on paused graph construction.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
