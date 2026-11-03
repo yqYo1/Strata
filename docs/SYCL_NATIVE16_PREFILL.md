@@ -1159,9 +1159,15 @@ Worker-device reuse permits only the declared controller admission changes;
 its native/fixture/provider/environment/error-case checks stay unchanged.
 The original strict entry proof at`c23a2f7ca`already rejects changed controller
 `build_cache_map_model.py`;it is not a successful current admission. Commit
-the new source and host mutation/no-legacy-read tests before execution. Retire
-the old generation only after that proof passes and its original final
-source/recipe is recovered;keep the selected552bengine. This curve does not qualify sustained TG,task/agent
+the new source and host mutation/no-legacy-read tests before execution. The
+three tests now pass at`3b5000c54`,including nine invalid fixture/recipe controls
+and a complete proof with all old-generation file reads forbidden. Before
+retirement,all40original controllers,557projected native files and9311dependency
+source files are recovered;1451old and1452selected compiler inputs and both
+nine-ELF sets match their final records. The948-file/190997035-byte old generation
+is ready for retirement after publishing this evidence. Keep the selected552b
+engine;this host-only migration adds no model/numerical/performance result.
+This curve does not qualify sustained TG,task/agent
 adoption,hardware saturation,physical262144or RESTORE.
 
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/

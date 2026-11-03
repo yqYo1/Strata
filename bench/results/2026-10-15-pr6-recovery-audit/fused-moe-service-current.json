@@ -106250,5 +106250,57 @@
       "files": 279,
       "aggregate_sha256": "6c867a8350bbc6ab10f9292a22048bc7eeff1834f57aa2144f872168e541ba1d"
     }
+  },
+  "adaptive_fixture_basis_retirement_v1": {
+    "stage": "ready-to-retire",
+    "source_commit": "3b5000c542b003ab0eaaf44742a9bb50e0408ce4",
+    "original_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+    "original_recipe_archive": "c23a2f7ca5d177102f347eeabae605903cb2ff9d",
+    "original_controller_inputs_recovered": 40,
+    "original_native_inputs_recovered": 557,
+    "dependency_inputs_recovered": 9311,
+    "original_compiler_inputs_verified": 1451,
+    "selected_compiler_inputs_verified": 1452,
+    "original_ELFs_verified": 9,
+    "selected_ELFs_verified": 9,
+    "selected_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1",
+    "selected_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+    "host_qualification": {
+      "source_commit": "3b5000c542b003ab0eaaf44742a9bb50e0408ce4",
+      "test_command": "timeout 300s python3 tools/test_sycl_retained_fixture_basis.py",
+      "exit_code": 0,
+      "tests": 3,
+      "unittest_seconds": 116.424,
+      "negative_controls": 9,
+      "legacy_reads_blocked_during_complete_proof": true,
+      "worker_device_only_admission_seams": true,
+      "GPU_executed": false
+    },
+    "fixture_basis": {
+      "history_commit": "c23a2f7ca5d177102f347eeabae605903cb2ff9d",
+      "original_build_key": "adaptive_cache_model_build_v1",
+      "original_source_commit": "20f2a971b5fa3c0b2c65ab08712c32febb894f93",
+      "closed_bridge": "cache_map_model_entry_zero_v1",
+      "current_native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+      "mathematical_fixtures": 8,
+      "original_native_sources_recovered": 557,
+      "original_compile_database_reconstructed": true,
+      "old_build_products_reopened": false,
+      "GPU_executed": false
+    },
+    "files": 948,
+    "bytes": 190997035,
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-retirement-20261103-adaptive-generation.json",
+      "sha256": "74835a12a4c1e76877e41cd517a89e44bda36420cc2c05b53a989ae2d3e5848e"
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "deleted_verified": false,
+    "GPU_executed": false,
+    "original_outcomes_retained": true,
+    "next": "Publish source/host proof and recovery first;then delete only these manifest paths under the measurement lock and recheck complete admission before the QSA component build."
   }
 }
