@@ -593,7 +593,7 @@ def replay():
         ('path=token mode=2 cells=8192', 'path=batched mode=2 cells=8192'),
         ('path=token mode=2 cells=8192', 'path=token mode=1 cells=8192'),
         ('path=token mode=2 cells=8192', 'path=token mode=2 cells=8191'),
-        ('tokens=65536 chunk=8192', 'tokens=65535 chunk=8192'),
+        (marker, marker.replace('tokens=65536', 'tokens=65535')),
     ]
     for before, after in mutations:
         require(window.count(before) == 1, 'ambiguous full-route negative control')
