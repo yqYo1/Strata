@@ -34,7 +34,30 @@ constexpr const char *baseline_name="kvec4", *candidate_name="kvvec4";
 #endif
 std::shared_ptr<sycl_backend::Runtime> rt;
 int process_id=0;
+#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
+bool current_timing=false;
+constexpr double minimum_interval_ms=10.0, maximum_clock_fraction=.01;
+constexpr int clock_probe_pairs=4096;
+double maximum_clock_pair_ms=0;
+static_assert(std::chrono::steady_clock::is_steady);
+#endif
 void require(bool x,const char *s) { if (!x) throw std::runtime_error(s); }
+#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
+void probe_clock() {
+  for (int i=0;i<clock_probe_pairs;++i) {
+    const auto begin=std::chrono::steady_clock::now();
+    const auto end=std::chrono::steady_clock::now();
+    const double ms=std::chrono::duration<double,std::milli>(end-begin).count();
+    require(std::isfinite(ms) && ms>=0,"nonmonotonic timing probe");
+    if (ms>maximum_clock_pair_ms) maximum_clock_pair_ms=ms;
+  }
+  require(maximum_clock_pair_ms>0,"clock probe has no positive resolution");
+  std::cout<<"timing_contract minimum_interval_ms="<<minimum_interval_ms
+      <<" clock_probe_pairs="<<clock_probe_pairs
+      <<" maximum_clock_pair_ms="<<std::setprecision(12)<<maximum_clock_pair_ms
+      <<" maximum_clock_fraction="<<maximum_clock_fraction<<'\n';
+}
+#endif
 void drain() noexcept {
   sycl_backend::checked_cleanup([] { if (rt) rt->wait(); },[] {},"QSA pitch performance fixture drain");
 }
@@ -131,6 +154,19 @@ void run(int cells,int queries,int cap,bool clustered,bool valid_only=false) {
   for (int round=0;round<6;++round) for (int index=0;index<2;++index) {
     const int variant=variants[(process_id+round+index)%2];const double ms=invoke(variant);
     guards();require(out.get()==reference,"timed full-output bit comparison");
+#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
+    if (current_timing && !(std::isfinite(ms) && ms>=minimum_interval_ms &&
+          maximum_clock_pair_ms<maximum_clock_fraction*ms)) {
+      std::cerr<<"timing_ineligible process="<<process_id<<" cells="<<cells<<" queries="<<queries
+          <<" cap="<<cap<<" pattern="<<(clustered ? "clustered" : "gather")
+          <<" round="<<round<<" order="<<index<<" variant="<<variant
+          <<" milliseconds="<<std::setprecision(12)<<ms
+          <<" minimum_interval_ms="<<minimum_interval_ms
+          <<" maximum_clock_pair_ms="<<maximum_clock_pair_ms
+          <<" maximum_clock_fraction="<<maximum_clock_fraction<<'\n';
+      throw std::runtime_error("current-prefill timing contract failed;stop and replan before collecting again");
+    }
+#endif
     std::cout<<"sample process="<<process_id<<" cells="<<cells<<" queries="<<queries<<" cap="<<cap
         <<" pattern="<<(clustered ? "clustered" : "gather")<<" round="<<round
         <<" order="<<index<<" variant="<<variant<<" implementation="<<(variant ? candidate_name : baseline_name)
@@ -154,11 +190,17 @@ int main(int argc,char **argv) {
     require(!current,"current-prefill shapes require the subgroup-row comparison arm");
 #endif
     if (argc==3) { process_id=std::stoi(argv[2]);require(process_id>=0 && process_id<3,"process ordinal"); }
+#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
+    current_timing=current;
+#endif
     const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gated=g && std::string(g)=="1";
     gate(gated,"before-runtime");rt=sycl_backend::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
         <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gated,"runtime-ready");
+#if defined(STRATA_QSA_BENCH_SUBGROUP_ROWS)
+    if (current_timing) probe_clock();
+#endif
     if (current) {
       // Same dimensions as current middle/late full chunks and the117488-row
       // request's2800-row tail. IDs are synthetic,not a captured causal replay.

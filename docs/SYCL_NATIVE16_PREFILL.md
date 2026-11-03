@@ -1283,6 +1283,9 @@ or compiled yet. The prospective current-shape comparison uses three fresh
 process ordinals0..2,each with six alternating pairs for all six cases. Require
 each timed interval to reach10ms and clock-pair overhead below1percent of the
 shortest interval;an ineligible interval stops the screen and needs a new plan.
+The uncompiled fixture now enforces these limits for`--current-prefill`and
+records the maximum of4096consecutive steady-clock pairs after runtime-ready,
+before case allocation. This observed clock cost is not a universal bound.
 Compare matched per-case medians and process ratios without a blanket minimum
 gain. Keep traced smoke/component correctness separate from clean timing and
 retain the current engine as fallback. Commit exact compiler/dependency/generated
