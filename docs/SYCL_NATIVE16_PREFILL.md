@@ -1129,6 +1129,10 @@ TTFT. This observed short diagnostic does not qualify clean speed or sustained
 TG. Only one of the ten planned processes has closed;no current-engine time
 formula is fitted yet. The adjacent clean117K anchor is next. The failed V2/V3
 raw-output consumer ends at this successful replay/short-process closure.
+After both original277-input sets are recovered from pushed history,113closed
+failed-curve/research-transaction files totaling11956461bytes are retired. Keep
+the failed outcomes,original command exits/signals and posthoc owner audits;
+no active V4input or native generation is removed.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
