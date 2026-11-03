@@ -21,6 +21,9 @@ using namespace strata;
 using namespace strata::kernels;
 namespace {
 #if defined(STRATA_QSA_TEST_SUBGROUP_ROWS)
+#if !defined(STRATA_QSA_PACKED_GUARD) || STRATA_QSA_PACKED_GUARD != 17
+#error "subgroup-row fixture requires STRATA_QSA_PACKED_GUARD=17"
+#endif
 constexpr auto prefix_attention=qsa_bf16_prefix_subgroup_rows_batch;
 #else
 constexpr auto prefix_attention=qsa_bf16_prefix_batch;
@@ -315,6 +318,18 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     const auto saved_table=table;std::fill(table.begin(),table.end(),-1);dt.put(table);invoke();
     auto z=guarded();for (size_t i=16;i<z.size()-16;++i) require(z[i]==0,"all missing pages zero");immutable();
     table=saved_table;dt.put(table);
+    // Positive IDs beyond the logical page table must be masked before its
+    // lookup. Include the exact boundary, a later page and the largest int32
+    // ID; all-invalid selections must produce zero without touching guards.
+    const auto valid_ids=ids;
+    for (int32_t cell : {int32_t(pages*Page),int32_t((pages+1)*Page),
+                         std::numeric_limits<int32_t>::max()}) {
+      std::fill(ids.begin(),ids.end(),cell);di.put(ids);invoke();z=guarded();
+      for (size_t i=16;i<z.size()-16;++i) require(z[i]==0,"positive logical-page overflow zero");
+      immutable();
+    }
+    ids=valid_ids;di.put(ids);invoke();require(guarded()==y,"restore after logical-page overflow");immutable();
+    std::cout<<"case positive_logical_page_overflow=PASS status=PASS\n";
     const auto saved_steps=steps;
     for (int width : {0,-1,cap+1}) {
       for (int b=0;b<queries;++b) steps[b*kStepCount+kStepWidth]=width;

@@ -1153,6 +1153,11 @@ new native qualification. Before prepare,check the current and original source
 projections plus negative controls for changed routes,globals,imports,scope
 expressions and dispatch. Then run inherited host controls and the full native
 admission before creating any new model process.
+V5prepare now passes full native/provider/package admission and all15whole-model
+hashes,with the same552bengine;no inference has run in V5yet. The ended V4root
+and resource-pair root receipts are retired after original277/276-control
+recovery;the new curve does not read those paths. Keep the clean qualification
+root and both still-consumed native generations.
 The`cache_map_prefill.py`V2diagnostic now closes failed after two117489read/
 117488engine-row requests,thinking on,24outputs each and zero reuse. Native
 and benchmark exit0,owners close,and no new GPU fault is recorded. First-use
@@ -1269,9 +1274,12 @@ bit checks,an independent tensor oracle,tails,masks,NaNs,alignment and bounds.
 Orca Luna's source-contract report and native Luna-max review now close without
 a source blocker;the exact worker is settled and its terminal has exited.
 Keep the initial workgroup barrier in the source inventory. Before device
-qualification,add the missing positive logical-page-overflow fixture,pin
-`STRATA_QSA_PACKED_GUARD=17`for two-byte-only scratch alignment,and describe
-the scale poison as+Inf rather than NaN. None of these reviews is compilation,
+qualification,the fixture now adds exact logical-page boundary,next-page and
+INT32_MAXselected-ID cases,checks zero output/guards/immutable inputs,and
+restores the original output. Its subgroup-row arm requires
+`STRATA_QSA_PACKED_GUARD=17`at preprocessing for the intended two-byte-only
+scratch alignment. These are uncompiled source changes;the future recipe must
+still pin that define. The scale poison is+Inf rather than NaN. None of these reviews is compilation,
 numerical execution or performance evidence. Next:close the baseline curve,
 retire or migrate the adaptive fallback's actual reader,and commit the exact
 build/measurement recipe before any new device execution.

@@ -21942,6 +21942,24 @@
       "source_report_retained_for_component_gate": true,
       "manifest_sha256": "46bde16f3d3c21dc4ec432ebef0a542ca6af44e05bfa6491b6f14d0258a4bd57",
       "deleted_paths_verified": true
+    },
+    "fixture_followup": {
+      "status": "source_only",
+      "file": "tests/sycl/qsa_bf16_prefix.cpp",
+      "sha256": "b73cb8050c4d8a040d85c8d4b5b0eda1fe545382c101d831dba62fb02178d266",
+      "original_candidate_commit": "f984402bfd8d5aac524087b0e6ea5e21a778a7d8",
+      "original_fixture_sha256": "ed70bc4bc67b5edefa75b7ed1ebd5322b68338673c4285cecaa4903bdf86788b",
+      "positive_overflow_IDs": [
+        "logical_pages*page_size",
+        "(logical_pages+1)*page_size",
+        "INT32_MAX"
+      ],
+      "expected": "All selected IDs masked,full output zero,guards/input bytes unchanged;restore original IDs and output.",
+      "compile_admission": "STRATA_QSA_TEST_SUBGROUP_ROWS now requires STRATA_QSA_PACKED_GUARD=17 at preprocessing.",
+      "compiled": false,
+      "executed": false,
+      "production_kernel_changed": false,
+      "next": "After current curve closure and fallback-reader migration,pin exact build/source/macros and run bounded component correctness/performance gates."
     }
   }
 }
