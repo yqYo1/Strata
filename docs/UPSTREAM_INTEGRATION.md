@@ -28,6 +28,14 @@ records actual fetch and remote-ref observations, separately from integration.
 These dates describe the last actual observations, not a new remote check on
 November 4. Fetching a release does not mean that all its functions were ported.
 
+The current bounded functional port is Niko commit `2ba95cf61f3d9187ee30c0410762b112d519cfae`:
+the web page uses an edited API key immediately, including when browser storage
+is blocked or full, and distinguishes saved from page-only keys. Source is
+ported; focused Node syntax and four behavior cases are prepared, not yet run.
+The exact source/runtime pins, commands and budgets are in
+`web_api_key_input_port` in the status file. This changes no inference path and
+does not complete the other UI or server imports.
+
 ## Remaining integration work
 
 The status file's `function_review`, `latest_interval_review`,

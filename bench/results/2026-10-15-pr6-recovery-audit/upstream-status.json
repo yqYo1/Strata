@@ -677,5 +677,71 @@
     "source_tree": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-c62d5e3a",
     "inspection": "Fetched official main/tags and verified ls-remote HEAD/main. Clean detached source prepared for read-only component/function review and prospective unmodified hardware-tuned evaluation. Existing unfinished ports remain open;no source integration or inference adoption."
   },
-  "current_engine_role": "Corrected worker/map generation with closed32K lifecycle checks;117K native/benchmark exit0 but controller split-route gate fails. Fresh corrected extent and clean repeated-speed/length-fit qualification remain pending."
+  "current_engine_role": "Corrected worker/map generation with closed32K lifecycle checks;117K native/benchmark exit0 but controller split-route gate fails. Fresh corrected extent and clean repeated-speed/length-fit qualification remain pending.",
+  "web_api_key_input_port": {
+    "stage": "source_port_validation_prepared",
+    "upstream": "Niko1221/Strata",
+    "upstream_commit": "2ba95cf61f3d9187ee30c0410762b112d519cfae",
+    "covered_by_fetched_target": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
+    "license": "MIT;upstream/fork root LICENSE bytes identical",
+    "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+    "scope": "Web UI edited API key is used on input before blur,including blocked/full browser storage;normal persistence and accurate success/page-only notice. No server/native inference change. Other required UI functions remain pending.",
+    "files": [
+      "serve/web/app.js"
+    ],
+    "tests": "tests/web/api-key.test.cjs;Main-authored behavior checks execute the actual page storage/header/input functions with browser stubs,no copied implementation.",
+    "input_sha256": {
+      "serve/web/app.js": "fd05fefc1a2a21fee524960fdb10393c5c75f0c35fe525ea362bafc47b2e7fe7",
+      "tests/web/api-key.test.cjs": "59c4335517c436e49bb9bd85febc332cf556707de6b0c682d77a5abaa8ba61ff",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+    },
+    "node": {
+      "path": "/nix/store/m0256z6rrjwmvxkbymm7a28n0nw2zll9-nodejs-slim-24.21.0/bin/node",
+      "version": "v24.21.0",
+      "sha256": "f89c69d163e2686ed04cae19f5680668d4c1c64a072a70c1a6e50842a7a9e433"
+    },
+    "validation_plan": {
+      "executor": "tools/sycl/measurement_owner.py::Owner.run;once per listed command,in order,stop on first error;Main holds owned-v0141-measurement.lock and checks actual GPU job terminal first",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v1",
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "commands": [
+        {
+          "label": "syntax",
+          "argv": [
+            "/nix/store/m0256z6rrjwmvxkbymm7a28n0nw2zll9-nodejs-slim-24.21.0/bin/node",
+            "--check",
+            "serve/web/app.js"
+          ]
+        },
+        {
+          "label": "behavior",
+          "argv": [
+            "/nix/store/m0256z6rrjwmvxkbymm7a28n0nw2zll9-nodejs-slim-24.21.0/bin/node",
+            "--test",
+            "--test-reporter=tap",
+            "tests/web/api-key.test.cjs"
+          ]
+        }
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LC_ALL": "C",
+        "HOME": "/home/yayoi",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v1/tmp"
+      },
+      "budgets": {
+        "wall": 30,
+        "cpu": 30,
+        "rss_cap": 536870912,
+        "text_cap": 16384,
+        "file_cap": 1048576,
+        "total_cap": 8388608
+      },
+      "acceptance": "Both normal0,anchored/reaped/empty sessions,no supervisor errors/cleanup,both syntax stderr and behavior stderr empty,exactly4behavior cases pass with0failed/0skipped. Entire browser rendering is outside this focused host scope.",
+      "retention": "Commit useful result/source/commands and counts;retire normal stdout/stderr after verification. No native engine build or model speed claim."
+    },
+    "validation_complete": false,
+    "inference_changed": false,
+    "whole_feature_ledger_complete": false
+  }
 }
