@@ -439,8 +439,11 @@ sign selectors,16 scale nibbles,256 grid indices and signed FP16
 zero/subnormal/normal/max-finite scales, with coverage checks. The arithmetic
 candidate and production dispatch are unchanged. V2 preparation passes at
 `39963e5ab`, with188 project,1376 official GGML and12177 external inputs,
-including all five runtime targets. Compilation, fixture and timing remain
-pending. The observer cohort is closed and its successful full output is
+including all five runtime targets. V2 compilation now passes, with complete
+actual compiler/link input coverage, two hashed CPU ELFs, the same freshly
+compiled expert archive, and only pre-pinned CPU runtime libraries. All five
+owned build/inspection commands exit0 with closed owners. The correctness
+fixture and timing remain pending. The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
 512 MiB process cap before library/scratch overhead. Its prospective measurement
