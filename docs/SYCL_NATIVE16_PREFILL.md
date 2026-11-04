@@ -32,9 +32,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Code prompt/TTFT directions remain mixed. Follow
   `verify_window_generation_speed_v1.decision`, evidence commit
   `dd685c75fd6e77be17f826672bcd3486a70cbdc0`, and the CSV for exact samples.
-  Keep the fallback while this same candidate supplies the imminent dedicated
-  PP/TTFT and bounded sampled-cache entry/feasibility checks; no extra engine
-  generation is required for those comparisons.
+  The dedicated PP/TTFT comparison below is now closed; 117K preservation is
+  inconclusive. Keep the fallback. The next CPU-service observer uses this same
+  recoverable 05a9 source, while the closed a99 binary has no further model-run
+  consumer and is queued for retirement before its replacement is compiled.
+  Sampled-cache execution still needs its sampler/device admission and a newly
+  qualified engine; this does not adopt the candidate's prefill path.
 - `native_prefill_preservation_v1` failed during the first 65537-input request
   of the matched comparison
   of **552b versus a99aa1**, not just Q6 on/off within a99aa1. Source
@@ -201,7 +204,8 @@ and reversing the seven observer/build/test files recovers all 560 measured
 inputs byte for byte. The eight Q6/phase files remain preserved. Follow
 `cache_map_cpu_service_sources_v1.retarget_v2`; no new engine is built.
 The pending builder now targets that snapshot and preserves the 479a fallback.
-Its source-preparation plan keeps the existing build settings and enables only
+Its source preparation passes at `8e2499937969dbfa1dcd950b95025d9712037a83`;
+follow `verify_window_cpu_service_build_v2`. It keeps the existing build settings and enables only
 the observer. The four targets are the engine, real CPU-pool fixture, submission
 fixture and phase-cache fixture. The separately qualified pure writer fixture
 stays excluded because `STRATA_BUILD_TESTS` remains OFF; the target-list
@@ -305,9 +309,10 @@ not infer global cleanup from the current-build inventory. Keep unresolved
 legacy source/recipe recovery holds separate from these two comparison
 executables, with the missing inputs, consumer, next bounded recovery action
 and review point recorded in the retained-build result. The fallback currently
-retains nine ELF artifacts and the candidate three. At frozen comparison
-closure, select the validated generation and retire an extra generation once
-its named comparison ends and original inputs are recovered. The legacy
+retains nine ELF artifacts. The comparison is closed and the candidate's three
+ELFs are queued for retirement after the committed observer-source preparation
+and original-input recovery; they are not a continuing comparison consumer.
+The observer must not compile until that physical retirement is verified. The legacy
 source/recipe holds remain independent.
 
 Niko1221/Strata remains the only upstream. Last actual check:
