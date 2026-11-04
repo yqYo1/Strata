@@ -1,51 +1,132 @@
-# Compressed Q6_K small-column XMX feasibility on Arc B570
+# Q6_K small-column head: source and dispatch reference
 
-**Classification:** bounded decision support, source-only. **Question:** can resident Q6_K use Xe2 XMX/DPAS at T=1/4 without full FP16/BF16 expansion? **Finding:** pinned GGML `3cf03257…` Q6 paths use DP4A or FP32 ESIMD, not DPAS. Mutable current llama.cpp has compressed-Q6 int8-DPAS for multiple columns, but its exact revision/license and Strata dispatch are unverified. SGLang’s documented Xe2 MXFP4 MoE W4A16 path is a different design reference, not a Q6/full-vocabulary-head implementation. Q6→A16 remains a separate proposal with new rounding. No local speed, quality or critical-path claim follows.
+**Scope and status.** This is a source/dispatch reference for the resident Q6_K
+head `[K=2560,N=248320]` at `C=1` and `C=4`; it is not performance evidence.
+`C=1` is ineligible for the pinned GGML Q6 XMX path. `C=4` is conditionally
+source-eligible, but no B570-to-GGML architecture mapping or Strata dispatch is
+proved. `schedulable_now=false`: the separate component gate and a prospective
+numerical, lifetime and residency plan remain open. Source availability does not qualify a component
+or model route.
 
-## Applicability
+## Control and candidate
 
-Supplied frozen source `verify-window-model-v3/source` is the selected `479a` snapshot with eight Q6/phase deltas; candidate Q6 source `225e13889` passed scalar and Q8_1 oracles and repeated 35-shape timings, with 30 shapes eligible for follow-up. At `K=2560,N=248320,T=4`, existing packed-integer service is 10.893660 ms. The fixed-source model reference observed 103 Q6 calls at widths 1 and 4; an earlier 0.342910 s service sum occurred within a 2.153721 s window. These are service observations, not saturation or critical-path fractions. Whole-model column gain is pending. Keep this report as decision support after that comparison closes.
+The fixed local control is native source commit
+`05a9b45c0a3a266779d4757a855b45a3bb42a62e`:
+`src/kernels/sycl/native_mmvq.cpp` SHA-256
+`e11821dc10a71670236d45f9bdb1387b185118389e000d42385abbe9ce7197e4` and
+`include/strata/kernels/native_mmvq.hpp` SHA-256
+`1798072d98d3b15ee8fbdeb067d81df5c45dfed6378907748bb9eb09cc198e13`.
+It keeps Q6_K in 210-byte row-major blocks, quantizes activations to Q8_1,
+and returns FP32. The production control uses DP4A; its calls enqueue on the
+caller queue and use caller-owned scratch, with no allocation or wait inside
+the kernel. Its exact multi-column layout preserves the C1 result when
+`native_mmvq_multi_exact()` is enabled. Keep this fixed source as the semantic
+and dispatch control, not a mutable proposal.
 
-The target computes `T×K` by `K×N`, with `T=1/4`. Q6_K stores 256 values per 210 B: 128 low-bit bytes, 64 high-bit bytes, 16 signed scales (one per 16 values), and a 16-bit super-scale. Full packed head is 521,472,000 B; full FP16/BF16 expansion is 1,271,398,400 B (2.44×). The current reference quantizes activations to Q8_1 (36 B per 32 values) and accumulates scaled Q6_K×Q8_1 into FP32. Preserve this route as the semantic control.
+A Q6_K block stores 256 weights in 210 bytes: 128 low-bit bytes, 64 high-bit
+bytes, 16 signed scales (one per 16 weights), and a 16-bit super-scale. The
+target's logical packed weight payload is `521,472,000 B` (521.472 MB or about
+497.2 MiB); full FP16 expansion is `1,271,398,400 B`. These are storage sizes,
+not measured traffic, peak residency, or a hardware ceiling.
 
-## Path 1: pinned GGML SYCL reorder and small-column MMVQ
+## Official compressed-Q6 int8-DPAS source
 
-At MIT-licensed llama.cpp commit `3cf03257f219afbe7334045ff7c6a06ac68c627d`, SYCL has a reordered Q6_K MMVQ path. Gates: optimization enabled, Intel-GPU reorder capability, `MUL_MAT`, Q6_K MMVQ support, and `ne[1]<=8` with later extents one. Q6_K also passes the ESIMD gate when built/enabled; preference is ESIMD, MMVQ, then DMMV. T=2..8 selects the multi-column switch; T=1 the single-column path. This is source eligibility, not evidence this machine dispatched it.
+The source is llama.cpp commit
+[`34ca79122b44d43eda7efb203b82ec91db94c55c`](https://github.com/ggml-org/llama.cpp/tree/34ca79122b44d43eda7efb203b82ec91db94c55c),
+MIT licensed ([LICENSE](https://github.com/ggml-org/llama.cpp/blob/34ca79122b44d43eda7efb203b82ec91db94c55c/LICENSE));
+the Q6 XMX code is part of PR [#29864](https://github.com/ggml-org/llama.cpp/pull/29864),
+whose reported test device was Arc Pro B70, not B570 or Strata. This is an
+immutable implementation reference. A prior pinned revision,
+[`3cf03257f219afbe7334045ff7c6a06ac68c627d`](https://github.com/ggml-org/llama.cpp/tree/3cf03257f219afbe7334045ff7c6a06ac68c627d),
+uses compressed Q6 MMVQ through DP4A or FP32 ESIMD; that older path is not the
+DPAS specialization below.
 
-Reorder copies the packed tensor to same-size temporary storage, then rearranges the original allocation into `[ql][qh][scales][d]`. Persistent weights remain Q6_K; the head needs an extra full-tensor temporary at reorder time (521,472,000 B for the full head), plus copy/reorder work. Allocation failure skips reorder. The Q6 ESIMD specialization extracts low/high bits and per-16 scales and performs vector FP32 dequant/multiply accumulation. The MMVQ scalar dot reconstructs signed Q6 values and calls `dpct::dp4a` over Q8_1 integer lanes, applying Q6 subscale, Q8_1 block scale and Q6 super-scale to FP32 partials.
+Build-time `GGML_SYCL_MMVQ_HAS_XMX` requires Intel LLVM and the DPAS header
+([`common.hpp`](https://github.com/ggml-org/llama.cpp/blob/34ca79122b44d43eda7efb203b82ec91db94c55c/ggml/src/ggml-sycl/common.hpp)).
+Runtime enable requires `g_ggml_sycl_enable_xmx_esimd` and `gpu_arch` equal to
+BMG G21, BMG G31, or LNL M. The MMVQ selector checks supported op/type and
+dimensions, reordered weights, K divisible by 256, a 64-byte-aligned weight
+pointer, a 64-byte-aligned Q8_1 base, and a 16-byte activation pitch
+([`mmvq.cpp`](https://github.com/ggml-org/llama.cpp/blob/34ca79122b44d43eda7efb203b82ec91db94c55c/ggml/src/ggml-sycl/mmvq.cpp)).
+Q6_K has a two-column minimum; `GGML_SYCL_XMX_MAX_COLS` defaults to 80.
+Therefore C1 fails the Q6 count gate; C4 meets that gate only. No B570 enum
+mapping, compiler/runtime compatibility, successful reorder, or observed
+dispatch is established, and this upstream selector is not Strata's call path.
 
-This pinned path is compressed and supports small T, but is **not XMX/DPAS**. In this revision `common.hpp` labels `SYCL_USE_XMX` as not actually used for XMX; do not describe it as selecting an XMX MMQ kernel. It is a suitable compressed control. T=1 has no cross-column reuse; T=4 may amortize weight access/decode only if the implementation actually shares work. A warm repeated call can amortize reorder, while first-use allocation/copy can erase the gain.
+The Q6 XMX loader rearranges each block as `[ql:128][qh:64][signed
+scales:16][d:FP16]`. It reconstructs signed int8 weights as `q-32`; each K=32
+dot is split into two K=16 halves to apply Q6's signed per-16 scales, with the
+other half masked for each DPAS operation. Q8_1 provides 32 signed activation
+bytes and FP16 `(d,s)` per block; this symmetric Q6 dot uses `qs` and `d`, not
+the stored sum `s`. In the epilogue, `scales_t::get()` forms the FP32 product
+of the signed Q6 scale and its FP16 super-scale. Each int32 partial is
+converted to FP32 and multiplied by that combined row scale; the two half
+results are summed, then multiplied by Q8_1's FP16 `d`. Preserve this FP32
+association/reduction order as a numerical gate
+([`esimd.hpp` traits and epilogue](https://github.com/ggml-org/llama.cpp/blob/34ca79122b44d43eda7efb203b82ec91db94c55c/ggml/src/ggml-sycl/esimd.hpp)).
 
-Mutable upstream checked 2026-11-04: current docs/source describe reordered Q2_K–Q6_K XMX/DPAS. Q6 unpacks to int8 weights for int8 DPAS with Q8_1 activations; split-scale handling follows per-16 Q6 scales across K32. Current gates list Xe2/Q6 and a two-column minimum: T4 is only a source candidate; T1 is excluded. This is absent from pinned `3cf03257…`; it proves no Strata dispatch or B570 performance. Pin exact source, license and gates before code use.
+`reorder_qw_q6_k` copies the full source allocation to a same-sized temporary,
+then rewrites the original device allocation in place; reordered bytes persist
+there, with no separate persistent destination. A full-head reorder temporary
+is `521,472,000 B` (521.472 MB/about 497.2 MiB); this is not measured peak
+memory or total process footprint. `sycl_reorder_temp_buffer` can use host
+memory under `GGML_SYCL_HOST_MEM_FALLBACK`, so device allocation failure does
+not necessarily skip reorder; host staging changes transfer and residency
+costs ([reorder](https://github.com/ggml-org/llama.cpp/blob/34ca79122b44d43eda7efb203b82ec91db94c55c/ggml/src/ggml-sycl/ggml-sycl.cpp#L4494-L4540),
+[temporary/fallback](https://github.com/ggml-org/llama.cpp/blob/34ca79122b44d43eda7efb203b82ec91db94c55c/ggml/src/ggml-sycl/ggml-sycl.cpp#L3979-L4045)).
+K=2560 and N=248320 are multiples of 256, so this logical shape has no K/N
+block tail; alignment, row pitch and per-tile row clamping still apply. A
+Strata implementation must separately prove temporary and weight ownership
+through completion, queue/event dependencies, graph capture/replay lifetime,
+actual admission and maximum single-allocation feasibility. Cold reorder/setup
+and warm reuse must be measured separately.
 
-## Path 2: SGLang Xe2 MXFP4 MoE grouped W4A16 DPAS reference
+## A16 reference and distinct hypothesis
 
-At `sgl-kernel-xpu` commit `22d8550db80f9366c7e263d9e52b01aa1ad57040`, the fused-MoE entry `moe_grouped_mm_nt_xe20_w4a16` accepts packed `[E,N,K/2]`, scales `[E,N,K/group]`, group 32/64/128/256, `K%group==0`, `N%8==0`, BF16/FP16 activations and matching output. It chooses tiles by rows per expert, N padding and K; `avg_m<=8` selects M8/N64/K32. Packed 4-bit weights are dequantized in operand fragments and fed to Xe20 DPAS; global weights/scales stay compressed. MXFP4 can fold E8M0 scaling into E2M1→BF16 conversion. The M8 policy is an MoE grouped-GEMM reference, not a target-head tile or dispatch claim.
+SGLang `sgl-kernel-xpu` commit
+[`22d8550db80f9366c7e263d9e52b01aa1ad57040`](https://github.com/sgl-project/sgl-kernel-xpu/tree/22d8550db80f9366c7e263d9e52b01aa1ad57040)
+is the closest transient A16 example. Its `moe_grouped_mm_nt_xe20_w4a16`
+kernel accepts packed W4 expert weights with grouped scales (32/64/128/256),
+BF16 or FP16 activations, and a grouped MoE shape; it dequantizes operand
+fragments for Xe20 DPAS and accumulates in FP32. It neither unpacks Q6_K's
+planes/per-16 scales nor provides an LM-head route. The XPU docs scope this
+quantized path to MoE experts; attention, router, embeddings and LM head remain
+BF16 ([matching docs revision](https://github.com/sgl-project/sglang/blob/4c7c775cf4adcbd2c7419d13b51ec838a17e559e/docs/docs/hardware-platforms/xpu.mdx)).
+The cited kernel file carries BSD-3-Clause and its repository root LICENSE is
+MIT ([file notice](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/src/sycl/GroupGemmW4A16Xe20.cpp),
+[root license](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/LICENSE)). No source was copied;
+any reuse must preserve file notices and audit transitive provenance.
 
-SGLang docs limit this quantized route to Xe2/BMG Arc B-Series MoE experts; attention, router, embeddings and LM head remain BF16. This does not establish B570 execution/speed or a full-vocabulary head route. The kernel is BSD-3-Clause and cites `fmha-cri`; transitive CuTe/CUTLASS provenance remains to check before reuse. W4 groups start at 32, unlike Q6_K signed per-16 scales. Re-encoding Q6 as W4 changes resolution and the activation/accumulation/rounding contract. vLLM XPU’s cited FP8/MXFP4 GEMM is not Q6 evidence.
+A Q6-to-A16 path would be a separately authored hypothesis: load packed Q6,
+reconstruct codes/scales, convert weight and activation fragments to one
+chosen format (BF16 or FP16), then DPAS with FP32 accumulation. It is not
+implemented by the cited W4 kernel and does not retain the Q8_1 numerical
+contract. Its plan must state scale application, both conversions and rounding,
+reduction order, output type and task/logit acceptance; FP32 references are
+diagnostic, not a universal precision threshold.
 
-A separate Q6→A16 DPAS feasibility proposal would load Q6_K bytes per tile, reconstruct codes/scales, convert weights and activations to BF16 or FP16 fragments, then accumulate in FP32. It keeps persistent weights at 521 MB rather than 1.27 GB, but adds 16-bit rounding and changes the current Q8_1 activation contract. Declare the exact scale application, both conversions/rounding, accumulation/reduction and output format. A SGLang/vLLM-style 16-bit contract is acceptable only when the chosen contract and task behavior are validated; the cited W4A16 kernel does not itself define a Q6 replacement contract. Keep Q6_K×Q8_1 as the semantic control; GGML bit identity need not be the sole acceptance criterion.
+## Conditional next choices and gates
 
-## Shape and dataflow limits
+At most two candidates merit later consideration:
 
-Here K=2560 is divisible by 16/32 and N=248320 by 64/128. K=16 aligns Q6 scales; a new A16 tile with K=32 must apply two Q6 scales, increasing scale work unless the implementation combines them. The SGLang W4A16 K tile/group is 32. Its `avg_m<=8` MoE policy selects M8/N64/K32; the possible T=1/4 padding costs below describe only that illustrative tile, not a full-head kernel. Small-M utilization remains a counterweight.
+1. If the active clean model comparison closes and the component gate permits
+   it, test an isolated C4 Q6×Q8_1 int8-DPAS production route, retaining the
+   current DP4A route as control. Prove B570 build/runtime eligibility and
+   observed dispatch first; include C1 as a negative dispatch control. Compare
+   cold reorder/setup and warm reuse, resident admission and full production
+   path. Check Q6 unpack/scales, Q8_1 `d`/unused `s`, FP32 association, tails,
+   alignment, ownership, queue/graph lifetime and fault behavior.
+2. Only if a distinct A16 question remains after that screen, choose one of
+   Q6→BF16 or Q6→FP16 and write its numerical contract prospectively. Compare
+   against the Q8_1/FP32-order control on identical C1/C4 inputs and validate
+   task/logit effects, residency, conversion scratch, bounds and lifetime.
 
-Counterexamples: T=1 has no reuse; T=4 may not amortize conversion; scale granularity increases loop/work; M padding wastes DPAS; packing/padding adds traffic; fragments lower occupancy; SLM/barriers or launch cost exceed reuse; or warm cache already avoids rereads. Full expansion uses 2.44× the stored weight bytes; a complete expanded-weight pass has that logical payload ratio, not a guaranteed physical-bus ratio. Reorder needs a same-size temporary and setup traffic. Bytes and XMX capability do not identify the limiter.
-
-## Smallest later discriminator
-
-**schedulable_now:false.** First close the pending clean model-column comparison and require the candidate's predeclared component-performance gate to pass. Then verify actual width, caller, route and packed-weight reuse. Commit a phase-specific plan with order, repetitions, acceptance and stopping rules before any implementation or measurement. At resident K=2560,N=248320,T=1/4 compare (a) current Q6_K×Q8_1, (b) a compressed Q6+Q8_1 int8-DPAS candidate only after pinning its exact source/license and proving a Strata T4 dispatch is eligible, and (c) at most one Q6→BF16 or Q6→FP16 tile-DPAS candidate if it tests a distinct A16 hypothesis. Current mutable-upstream gates exclude T1 from the compressed XMX route; T4 is only source-eligible, not proven selected. Do not include a Q6→W4 recode. Separate first-use/setup from warm calls; charge reorder, allocation, conversion and transfer at their actual reuse boundary. Record dispatch, tile, layout, scale grouping, formats and output type.
-
-Numerical screen: compare candidate A16 with current Q6_K×Q8_1 on identical captured inputs; report finite values, max/relative error, top-token agreement and task/logit effects for T1/T4. This defines no generic tolerance. Reject without actual DPAS dispatch or if the declared numerical/task gate fails. Then use matched model requests exercising width1/4, prove route counters, charge setup, and compare client TTFT/PP and decode TG over independent processes. The 103-call census is motivation, not a speed threshold; adoption still requires whole-route gain and existing quality/context/RESTORE/decode/safety gates.
-
-**Prerequisites:** close the pending width1/width4 clean model comparison and candidate performance gate; pin and license-review any compressed-Q6 source; confirm the production invocation/weight-reuse boundary and T4 eligibility; then commit the new phase-specific plan. No DPAS model trial is schedulable now.
-
-## Provenance and primary sources
-
-All local source use is read-only applicability analysis. Pinned GGML is MIT; its path does not prove a newer installed dependency. SGLang `22d8550d…` file `GroupGemmW4A16Xe20.cpp` says BSD-3-Clause and records an `fmha-cri` policy origin; repository Apache-2.0 does not supersede file notices or establish transitive CUTE/CUTLASS provenance. Any future proposal must trace each source/header and license at the same immutable revision. No code was copied. Intel’s API/ISA references establish operand and DPAS semantics, not B570 performance. Marlin is CUDA/NVIDIA algorithmic context only.
-
-- [Pinned GGML Q6 MMVQ](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-sycl/mmvq.cpp), [dispatch/reorder](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-sycl/ggml-sycl.cpp), [Q6 scalar dot](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-sycl/vecdotq.hpp), [block definition](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/ggml/src/ggml-common.h), [MIT license](https://github.com/ggml-org/llama.cpp/blob/3cf03257f219afbe7334045ff7c6a06ac68c627d/LICENSE).
-- [Current SYCL XMX docs](https://github.com/ggml-org/llama.cpp/blob/master/docs/backend/SYCL.md), [mutable gates](https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-sycl/common.hpp), [Q6 int8-DPAS traits](https://github.com/ggml-org/llama.cpp/blob/master/ggml/src/ggml-sycl/esimd.hpp): checked 2026-11-04; no immutable revision/license audit here. Discovery only; no Strata dispatch, B570 execution or performance claim.
-- [SGLang XPU scope and limits](https://github.com/sgl-project/sglang/blob/4c7c775cf4adcbd2c7419d13b51ec838a17e559e/docs/docs/hardware-platforms/xpu.mdx); [pinned Xe20 W4A16 dispatcher](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/src/sycl/GroupGemmW4A16Xe20.cpp), [DPAS mainloop](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/src/sycl/kernels/moe/xe20/w4a16/gemm_xe2.hpp), [fused MXFP4 conversion](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/src/sycl/kernels/moe/xe20/w4a16/mxfp4_dequant.hpp), [file SPDX](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/src/sycl/GroupGemmW4A16Xe20.cpp), [repo license](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/LICENSE).
-- [vLLM XPU kernel repository at `29ba15cf…`](https://github.com/vllm-project/vllm-xpu-kernels/tree/29ba15cf1ea8c99490ef7c8a03df19d77bbfbdbb); [Intel SYCL joint-matrix/XMX guide](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2024-1/joint-matrix.html); [Intel Graphics Compiler DPAS reference](https://github.com/intel/intel-graphics-compiler/blob/master/documentation/visa/instructions/DPAS.md) (`master` is mutable; pin before implementation).
-- Frantar, Ashkboos, Hoefler, and Alistarh, [“Marlin: Mixed-Precision Auto-Regressive Parallel Inference on Large Language Models”](https://arxiv.org/abs/2408.11743): original CUDA/NVIDIA weight-only matrix-kernel method, not Xe2 evidence.
+Before either component execution, close the declared model cohort/gates and
+commit a phase-specific plan with order, repetitions, acceptance and stopping
+rules; pin production caller, helpers, inputs, source, recipe/compiler/runtime
+and executable; prove actual dispatch and memory admission; preserve the
+validated fallback and decode behavior; and pass numerical, bounds, lifetime
+and fault checks. Any later model route also needs the existing full 262144
+physical-context, tail, prefill-to-decode, RESTORE and decode-preservation
+gates. C4 component latency, source presence and B70 results cannot establish
+speed, quality or adoption.
