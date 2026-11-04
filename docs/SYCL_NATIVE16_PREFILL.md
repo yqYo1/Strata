@@ -212,7 +212,7 @@ The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
 thread-CPU clocks. Its replacement build, real-pool off/on parity, small device
 checks and short model/census entry are now closed. Representative long-decode
-collection has four of six processes closed, including two complete off/on
+collection has five of six processes closed, including two complete off/on
 pairs; repeated observer-cost qualification remains pending.
 The retired a99 generation's measured snapshot used two pool files from
 `6e40afc1b`, rather than the plain Git `05a9` pool files. The observer hooks
@@ -326,6 +326,12 @@ the already-emitted outer/nested timing footer for processes 4/5's long requests
 No instrumentation, workload, ordering, acceptance or stopping rule changes.
 Those rounded host clocks can distinguish the next draft/verify/host question;
 they do not measure GPU arithmetic service, physical traffic or saturation.
+Process 4 also closes normally with all six joins, unchanged logical work,
+quiet validation and no fresh fault. Its retained rounded clocks show code/prose
+total 257.72/247.17 ms per window: CPU pool 113.21/100.88, GPU-reach wait
+84.50/84.77, and draft 33.63/33.53. These are nested host scopes, not additive
+device service. Trace the called wait wrapper before attributing its cost to
+GPU arithmetic. Process 5 remains required for the third paired observer bound.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
