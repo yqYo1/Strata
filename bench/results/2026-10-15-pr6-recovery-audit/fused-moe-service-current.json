@@ -143125,7 +143125,7 @@
     }
   },
   "decode_iq3_host_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "45c87f7a1b787664bb3add05ee299def1e41ad79",
     "build_record": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/record.json",
@@ -143230,13 +143230,47 @@
       "file_cap": 65536,
       "total_cap": 1048576
     },
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "kind": "exact",
+        "arm": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "562c438d692c57a065ab95666400c49012545967dfe7133d8098e17e2ebec43b",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "2ed549a94563ab46dd0dbb4a49c842c51f533ce277b6c8ee5b1721d23b64e0f6",
+        "ownership_closed": true
+      },
+      {
+        "kind": "exact",
+        "arm": 1,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "66f72dbe6ed391b1ad7a75acd2006c7726508a6eedb2411c6e2342d75e7269a1",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 1,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "2ed549a94563ab46dd0dbb4a49c842c51f533ce277b6c8ee5b1721d23b64e0f6",
+        "ownership_closed": true
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "native_rebuilt": false,
+    "pool_checksum": "e5d7a50a8e7d5ac5",
     "sources": {
       "files": 98,
       "aggregate_sha256": "5cf183e45dabe47659612102ace85e5550c15be30159759fab0a43d2964ce5b8"

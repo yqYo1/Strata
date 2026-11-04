@@ -494,7 +494,11 @@ session,but its stdout was not recovered;no numerical pass follows. Preserve
 that failure and use a fresh host-v2 controller/root with the same binaries.
 The two actual CPU units have O3/znver3;the fixture body is generic O3.
 An auxiliary assertion mistakenly requiring znver3 on the fixture remains
-recorded as failed;it was not part of the frozen native build acceptance. Only the six
+recorded as failed;it was not part of the frozen native build acceptance.
+The fresh `decode_iq3_host_v2` gate now passes all four same-build children
+with the original exact384/80 and28-pool-case criteria;both pool checksums
+match `e5d7a50a8e7d5ac5`. All native outputs are unchanged. V1 stays failed;
+no GPU or model speed qualification follows. Only the six
 qualified CPU/fixture files and checked per-request IQ3 route-output patch
 `7969ccb9f` differ from the prior fixed-Q6 observer source; GPU math, prefill,
 placement and graph/runtime sources remain byte-identical. Its five targets
