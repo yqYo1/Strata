@@ -39,7 +39,15 @@ def proof():
     native = dict(native, environment=native['recipe']['environment'],
                   boot=row['boot'], driver=row['driver'])
     providers = json.loads(Path(row['runtime_manifest']['path']).read_text())
-    return native, dict(source_commit=row['source_commit'], environment=row['environment']), providers
+    prior = base.committed(RESULT)['cache_map_model_entry_zero_v1']
+    require(prior['passed'] and prior['complete'] and prior['ownership_closed'] and
+            not prior['active'] and prior['binary'] == native['selected_binaries']['strata'],
+            'closed selected-engine model environment required')
+    driver = prior['environment']['ZE_ENABLE_ALT_DRIVERS']
+    require(providers.get(driver) == digest(driver),
+            'selected model driver must belong to the current GPU-qualified provider inventory')
+    environment = dict(row['environment'], ZE_ENABLE_ALT_DRIVERS=driver)
+    return native, dict(source_commit=row['source_commit'], environment=environment), providers
 
 
 def pinned_sources(revision):
@@ -135,6 +143,7 @@ def prepare(ctx, arm):
     row['qualification_basis'] = dict(build_result_key=build.KEY, device_result_key=device.KEY,
         Q6_component_result_key='q6_byte_load_component_v2', qualified_shapes=30,
         unchanged_selected_reference='479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54',
+        driver_environment_basis='Closed cache_map_model_entry_zero_v1 ALT driver;exact current GPU-qualified provider hash required.',
         limits='Only the eight declared phase/Q6 source differences. Same-build small payload lifecycle and standalone Q6 numerics qualify entry,not full model arithmetic or adoption. No unchanged-fixture ELF claim.')
     row['Q6_arm'] = arm
     row['Q6_parser_controls'] = controls

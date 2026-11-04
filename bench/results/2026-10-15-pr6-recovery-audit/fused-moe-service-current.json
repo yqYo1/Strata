@@ -123289,5 +123289,22 @@
       "files": 93,
       "aggregate_sha256": "fcce4d1722c10ad9d3ebb0aaba1c1a7e277899df045a3ca0f243ffcdffabc99b"
     }
+  },
+  "verify_window_model_entry_preparation_v1": {
+    "stage": "failed-before-preparation",
+    "source_commit": "af50ceb99cb75a6d7dd0bb33c999566908fcf5a9",
+    "command": [
+      "/usr/bin/python3",
+      "tools/sycl/verify_window_model_entry.py",
+      "reference",
+      "prepare"
+    ],
+    "exit_code": 1,
+    "error": "KeyError('ZE_ENABLE_ALT_DRIVERS')",
+    "output_root_created": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "ownership_closed": true,
+    "decision": "Original preparation refusal,not a GPU/model failure. New committed adapter derives the ALT driver from the closed selected-engine model evidence and checks its exact current GPU-qualified provider hash before fresh preparation."
   }
 }
