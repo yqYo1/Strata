@@ -195,10 +195,11 @@ Git `05a9` pool files. Reapply the scoped hooks to those measured bytes while
 preserving the eight candidate-specific files; a checkout of the recipe's
 commit alone is not the complete measured source snapshot.
 The observer constructor is now retargeted to that complete 560-file snapshot,
-with the checked output-v2 delta. Its prospective source check must recover
-all 560 bytes-identical inputs after reversing the seven observer/build/test
-files; the eight Q6/phase files remain preserved. This source check is prepared
-in `cache_map_cpu_service_sources_v1.retarget_v2`; no new engine is built.
+with the checked output-v2 delta. Its source check passes at
+`1e791e80bde6366c37469a07476f4518594bc1a9`: all 563 projected files are checked,
+and reversing the seven observer/build/test files recovers all 560 measured
+inputs byte for byte. The eight Q6/phase files remain preserved. Follow
+`cache_map_cpu_service_sources_v1.retarget_v2`; no new engine is built.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
