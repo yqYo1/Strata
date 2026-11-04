@@ -22962,7 +22962,7 @@
   },
   "zen3_store_forwarding_quantized_layout_20261104": {
     "classification": "knowledge_collection",
-    "stage": "completed_review_pending",
+    "stage": "reviewed_corrected_reference",
     "eligibility": {
       "schedulable_now": true,
       "prerequisite_evidence": [
@@ -22978,7 +22978,7 @@
       "gpu_instruction_cache_unroll_dispatch_tradeoffs_20261023"
     ],
     "source_reference": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/source",
-    "report_path": ".cache/research/2026-11-04/zen3-store-forwarding/report.md",
+    "report_path": "docs/research/zen3-store-forwarding.md",
     "report_budget_bytes": 12288,
     "worker_model": "gpt-6-luna",
     "worker_effort": "high",
@@ -22995,7 +22995,7 @@
       "request_id": "9d4fcd6a-f5b5-4818-b3fa-77e42f01ffed",
       "main_created_terminal": true,
       "model_banner_verified": "GPT-6-Luna high",
-      "next_action": "Worker settled,exact Main-created terminal closed and delivery acknowledged;wait for the native Luna-max review without steering."
+      "next_action": "Closed;corrected substantive reference retained. No fresh experiment or research until its stated prerequisites are established."
     },
     "ownership_closed": true,
     "completion": {
@@ -23011,17 +23011,41 @@
       "pty_killed": true
     },
     "report": {
-      "path": ".cache/research/2026-11-04/zen3-store-forwarding/report.md",
-      "bytes": 10236,
-      "sha256": "b4a161bf4cc5208774d9a9e57df2393e7dedd84dd3113ccd5d6a4c7e2a1d9152"
+      "path": "docs/research/zen3-store-forwarding.md",
+      "bytes": 11910,
+      "sha256": "831afb9144508ed98d00a831e26b674b9ce828e84b0022a4eea40c68ac0113f7"
     },
     "review": {
-      "agent": "/root/review_zen3_forwarding_20261104",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/research/2026-11-04/zen3-store-forwarding/review.md",
-      "stage": "running",
-      "main_reads_collection_body": false
-    }
+      "stage": "completed_corrections_applied",
+      "original_report_sha256": "b4a161bf4cc5208774d9a9e57df2393e7dedd84dd3113ccd5d6a4c7e2a1d9152",
+      "review_sha256": "3139d90c62f7ab123ffb79ad08e273c6a7eb6eca01c5f18485a8c2caa7b7c098",
+      "review_bytes": 5914,
+      "main_read_collection_body": false,
+      "corrections": "Separate AMD documented4KiB behavior from inferred delay;split store/load width controls;require unresolved-store and L1-set/layout confound controls;identify Intel-only PMU sources."
+    },
+    "retrieval": {
+      "terms": [
+        "Zen3",
+        "store-to-load forwarding",
+        "partial overlap",
+        "4KiB alias",
+        "quantized pack/dequant/dot"
+      ],
+      "use_when": "Actual CPU critical path and relevant producer/consumer source/instructions have been established. Not current bottleneck or performance evidence."
+    },
+    "next_scopes": [
+      {
+        "question": "Partial-transfer discriminator on the actual CPU expert producer/consumer path",
+        "schedulable_now": false,
+        "prerequisites": "Useful CPU critical-path attribution and relevant emitted source/instructions plus width controls."
+      },
+      {
+        "question": "4KiB alias discriminator for the actual candidate loop",
+        "schedulable_now": false,
+        "prerequisites": "Establish unresolved-store address condition,actual loop and L1-set/layout controls before any trial."
+      }
+    ]
   }
 }

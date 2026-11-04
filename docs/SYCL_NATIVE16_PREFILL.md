@@ -4905,6 +4905,15 @@ not exercise the model's prompt-verify route;that needs a separately configured
 model check. Full record-window arithmetic,dense/head handoff,matched long/
 agent/strong-and-weak-MTP model speed and physical262144/RESTORE checks remain
 pending. Earlier phase-GPU evidence remains scoped to its original source.
+The new engine's reference selector now closes its first bounded model entry
+passed:two32769-input,zero-reuse,thinking-on requests with24outputs each,
+native exit0,quiet validation,closed owners,no fresh fault and all15final model
+hashes. Prompt times are48919.1and39819.5ms,with49.043and39.943s client TTFT.
+These traced first/subsequent samples are not clean repeated speed evidence.
+Each long request captures decode T1andT4with103reference Q6 calls and0column
+calls. No prompt-verify window is observed with short-read0. The same-engine
+columns selector and broader long/agent/task/context qualifications remain
+pending;this entry does not replace the selected479a speed reference.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
