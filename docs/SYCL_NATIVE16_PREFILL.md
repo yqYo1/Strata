@@ -35,7 +35,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep the fallback while this same candidate supplies the imminent dedicated
   PP/TTFT and bounded sampled-cache entry/feasibility checks; no extra engine
   generation is required for those comparisons.
-- `native_prefill_preservation_v1` is prepared for a fresh matched comparison
+- `native_prefill_preservation_v1` failed during the first 65537-input request
+  of the matched comparison
   of **552b versus a99aa1**, not just Q6 on/off within a99aa1. Source
   `tools/sycl/compare_native_prefill.py` fixes 12 processes: three opposite-order
   pairs at each of 65537 and 117489 exact input tokens, four fresh requests per
@@ -45,8 +46,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stays manually 0 at 64K and 1 at 117K in both arms. PP and client TTFT are
   separate decisions; the `ttft` strategy itself is not tested by this plan.
   Native inputs/fixtures and all 15 model assets were checked at preparation.
-  Current-source benchmark/server probes passed; no GPU process in this new
-  comparison has run yet. Keep all samples, mixed directions and pending gates.
+  The inherited 32K MTP checker incorrectly required every callback to be
+  batched: at 64K, the declared 32768-cell MTP window leaves a 63-cell boundary
+  that intentionally takes the token path. The request finished but the end
+  gate stopped the benchmark; supervisor cleanup closed all owned identities,
+  with no fresh driver fault. Keep V1 failed and its bounded parser fixture.
+  A new prospective V2 must recognize only that source-derived boundary and
+  reject other unexpected fallbacks before collecting another comparison.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
   Keep decode independently selected.

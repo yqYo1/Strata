@@ -126229,7 +126229,7 @@
     }
   },
   "native_prefill_preservation_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "f87a1ff07b2ea763026d7febb19dd383e85f7c6c",
     "arms": {
       "reference": {
@@ -126919,7 +126919,44 @@
         "environment_sha256": "3f09328f8ed93646576338f95cf606ccc5bc7553078bc2a7a6dea9b3a1d95b8f"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 65537,
+        "heads": 0,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "reference",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 876094,
+          "start_ticks": 213138997,
+          "sid": 876045
+        },
+        "error": "RuntimeError('model process failed')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false,
+        "post_cleanup_ownership_observed": true,
+        "original_ownership_closed": false
+      }
+    ],
     "request_hashes": {},
     "host_passed": true,
     "passed": false,
@@ -126961,6 +126998,73 @@
         "passed": true
       }
     ],
+    "failure_diagnosis": {
+      "cause": "Prospective V1 controller incorrectly inherited32K all-batched callback expectation. At65537input/default32768MTP window,first_needed=32705;callback cell0=24576 has63remaining needed cells. draft_kv deliberately returns false for B<64,then successful MtpDrafter::prefill handles that boundary.",
+      "original_controller_error": "RuntimeError('model process failed')",
+      "interaction_error": "RuntimeError('MTP callback path/mode/chunk-cell coverage differs')",
+      "benchmark_exit_code": -15,
+      "native_normal_exit_observed": false,
+      "preserved_failed_cohort": true,
+      "speed_eligible": false,
+      "actual_read_tokens": 65537,
+      "native_reported_prompt_ms_rounded": 75319,
+      "native_reported_PP_rounded": 870.1,
+      "client_TTFT_available": false,
+      "observed_callbacks": {
+        "batched": 7,
+        "token": 1,
+        "nominal_cells_per_callback": 8192,
+        "nominal_cells_are_not_actual_processed_work": true
+      },
+      "validation_warning_bytes": 0,
+      "fresh_faults": [],
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/prefill-preservation-v1/0/engine.stderr",
+        "bytes": 10160,
+        "sha256": "9f7515f244aefa303163ca479cd59b1a0e293a7a70a9d7047becff47ab3f7798",
+        "consumer": "Prospective V2 exact geometry-boundary parser replay;retire after replay and compact decision publication."
+      },
+      "source_evidence": {
+        "native": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "files": {
+          "src/program/generate.cpp": "Opts.mtp_window default32768,set_prompt_len(n),on_chunk ordered draft_kv or prefill fallback",
+          "include/strata/core/mtp.hpp": "first_needed=prompt_len-window-64",
+          "src/prefill/prefill.cpp": "r0=max(0,first_needed-cell0);r0>=n skips;B<64 deliberately returnsfalse"
+        }
+      },
+      "post_cleanup_ownership": {
+        "original_ownership_closed": false,
+        "checked_utc": "2026-11-04T09:10:42.879599+00:00",
+        "known_owners": [
+          {
+            "pid": 876045,
+            "start_ticks": 213138860,
+            "sid": 876045
+          },
+          {
+            "pid": 876057,
+            "start_ticks": 213138889,
+            "sid": 876045
+          },
+          {
+            "pid": 876084,
+            "start_ticks": 213138970,
+            "sid": 876045
+          },
+          {
+            "pid": 876094,
+            "start_ticks": 213138997,
+            "sid": 876045
+          }
+        ],
+        "all_known_identities_absent": true,
+        "live_session_members": 0,
+        "anchored_session_empty_before_reap": true,
+        "supervisor_forced_cleanup": true,
+        "normal_exit_qualification": false
+      },
+      "next": "Keep V1 failed. Commit a new bounded V2 policy recognizing only the source-derived sub64 boundary;reject all other unexpected callbacks. No native or safety-setting change."
+    },
     "source_inputs": {
       "files": 295,
       "aggregate_sha256": "1c722e93c41b35ad2be356bebad3bd0ee59e4aca2ae56927a08aafc60e0ba971"
