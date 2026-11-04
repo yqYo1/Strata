@@ -17,8 +17,8 @@ import build_verify_window_model as generation
 import measurement_owner as supervision
 
 P, B, RESULT, base = generation.P, generation.B, generation.RESULT, generation.base
-ROOT = B / 'q6-byte-load-lowering-v2'
-KEY = 'q6_byte_load_lowering_v2'
+ROOT = B / 'q6-byte-load-lowering-v3'
+KEY = 'q6_byte_load_lowering_v3'
 CORE = 'src/kernels/sycl/native_mmvq.cpp'
 SELF = Path(__file__).resolve()
 require, digest, write = generation.require, generation.digest, generation.write
@@ -84,6 +84,10 @@ def inputs(row):
 def prepare():
     data=base.committed(RESULT)
     require(KEY not in data and not ROOT.exists(),'one fresh source-only discriminator')
+    previous=data['q6_byte_load_lowering_v2']
+    require(previous['stage']=='failed' and previous['ownership_closed'] and
+            'IR output is not supported' in previous['error'] and not previous['GPU_executed'],
+            'preserve the failed host IR capability scope')
     phase=data['verify_window_phase_device_v1']
     native=json.loads((generation.ROOT/'record.json').read_text())
     require(phase['passed'] and phase['complete'] and phase['ownership_closed'] and
@@ -112,7 +116,7 @@ def prepare():
         environment=dict(native['recipe']['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')),
         commands=[],budgets=dict(wall=240,cpu=300,rss_cap=6<<30,text_cap=2<<20,
             file_cap=48<<20,total_cap=192<<20),
-        plan='Compile the full actual Q6 translation unit,reference versus local byte-based4B builtin memcpy plus bit_cast only in Q6KTraits,for host and spir64 with the actual -O3 C++20 recipe. No linking/execution. Require compiler/dependency/source closure and little-endian target data layouts. Compare complete optimized IR after replacing only declared source-path/ModuleID identities;retain raw/normalized hashes and load/TBAA counts. Any lowering difference needs a separate prospective numerical plan;equivalent IR does not prove surrounding Block producer lifetime or runtime/model correctness.',
+        plan='Compile the full actual Q6 translation unit,reference versus local byte-based4B builtin memcpy plus bit_cast only in Q6KTraits,for the spir64 GPU hot path with the actual -O3 C++20 recipe. Preserve V2host IR-output refusal;do not change production optimization flags and do not claim host IR qualification. No linking/execution. Require compiler/dependency/source closure and little-endian target data layout. Compare complete optimized device IR after replacing only declared source-path/ModuleID identities;retain raw/normalized hashes and load/TBAA counts. Any lowering difference needs a separate prospective numerical plan;equivalent IR does not prove surrounding Block producer lifetime or runtime/model correctness.',
         retention=dict(owner='Main',byte_budget=192<<20,
             consumer='Immediate source-contract and actual lowering decision before a Q6 load change',
             review_point='Retire successful compiler logs and IR after compact comparison and needed load evidence are recorded;retain a pair only for an explicit unresolved lowering question.'),
@@ -123,12 +127,12 @@ def prepare():
     for arm,raw in arms:
         source=ROOT/arm/'native_mmvq.cpp';source.write_bytes(raw)
         row['generated_sources'][arm]=dict(path=str(source),sha256=digest(source))
-        for mode in ('host','device'):
+        for mode in ('device',):
             label=mode+'-'+arm;out=ROOT/'output'/(label+'.ll');dep=out.with_suffix('.d')
             row['commands'].append([label,[*args,'-fsycl-'+mode+'-only','-S','-emit-llvm',
                 '-MD','-MF',str(dep),str(source),'-o',str(out)]])
     inputs(row);save(row)
-    print('Prepared full-source host/SPIR load discriminator;commit generated plan before compile.',flush=True)
+    print('Prepared full-source SPIR load discriminator;host IR refusal remains failed. Commit before compile.',flush=True)
 
 
 def normalized(path,source):
@@ -155,8 +159,7 @@ def compile_only():
             arm=label.split('-',1)[1];ir=ROOT/'output'/(label+'.ll')
             text=normalized(ir,row['generated_sources'][arm]['path'])
             require('target datalayout = "e-' in text and
-                ('target triple = "spir64-unknown-unknown"' in text if label.startswith('device')
-                 else 'target triple = "x86_64-' in text),'unexpected target/byte order')
+                'target triple = "spir64-unknown-unknown"' in text,'unexpected target/byte order')
             results[label]=dict(raw_sha256=digest(ir),normalized_sha256=hashlib.sha256(text.encode()).hexdigest(),
                 compiler_inputs=len(used),bytes=ir.stat().st_size,
                 scalar_i16_loads=len(re.findall(r'\bload i16\b',text)),
@@ -164,7 +167,7 @@ def compile_only():
         inputs(row)
         row.update(stage='closed',passed=True,complete=True,results=results,
             same_normalized_IR={mode:results[mode+'-reference']['normalized_sha256']==
-                results[mode+'-candidate']['normalized_sha256'] for mode in ('host','device')})
+                results[mode+'-candidate']['normalized_sha256'] for mode in ('device',)})
     except BaseException as error:row.update(stage='failed',error=repr(error));raise
     finally:
         row.update(commands_executed=owner.commands,ownership_closed=owner.active is None and
