@@ -58,8 +58,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes pass for both benchmark and server. Six of 12 processes and
-  all 24 requests pass with normal exits, quiet validation, closed owners and
+  frontend probes pass for both benchmark and server. Seven of 12 processes and
+  all 28 requests pass with normal exits, quiet validation, closed owners and
   no fresh fault. The two completed 64K pairs have reference/candidate warmed
   PP 991.700/992.747 and 990.498/995.386 tok/s; client TTFT is 66.231/66.161
   and 66.396/65.987 s. Their candidate/reference warmed prompt-time ratios
@@ -67,7 +67,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   has reference versus candidate first-use PP
   966.354 versus 968.437, warmed PP 1045.734 versus 1050.393 tok/s, and warmed
   client TTFT 112.527 versus 112.021 s. Its candidate/reference warmed
-  prompt-time/TTFT ratios are 0.995565/0.995503. Remaining independent pairs
+  prompt-time/TTFT ratios are 0.995565/0.995503. The second 117K candidate
+  also passes, with warmed PP 1048.455 tok/s and TTFT 112.225 s; its
+  opposite-order reference is pending. Remaining independent pairs
   are needed for the required three-pair decision per length; no sustained
   decode qualification follows from these short-output checks.
   V1 remains failed.
@@ -177,6 +179,11 @@ service or qualified observer overhead. After the current cohort, reconcile
 the retained generations and update that pending observer recipe to the selected
 native source, preserving the Q6 safety correction. Reuse the existing observer
 and host/pool controls, then qualify observer cost before model attribution.
+The retained build resolves per-file inputs through its recipe: its two pool
+files still match `6e40afc1b`, without observer hooks, rather than the plain
+Git `05a9` pool files. Reapply the scoped hooks to those measured bytes while
+preserving the eight candidate-specific files; a checkout of the recipe's
+commit alone is not the complete measured source snapshot.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
@@ -209,6 +216,18 @@ verifier draws are source-consistent. Its RNG transform is custom, not standard
 Philox4x32-10, and non-finite logits silently select fallback tokens. Pin those
 contracts and resolve invalid-logit handling before sampled qualification;
 parity fixtures sharing the custom RNG are not independent RNG evidence.
+The reviewed compiled path submits the same generic `launch<false>` sampler
+for both runtime modes; FP64 exp/CDF operations remain in that body even with
+greedy parameters, including graph capture. The installed B570 SYCL
+`aspect::fp64` and actual FP64 dispatch remain unverified. Intel's
+[B580 architecture entry](https://www.intel.com/content/www/us/en/docs/oneapi/optimization-guide-gpu/2025-2/intel-xe-gpu-architecture.html)
+does not establish B570's installed capability. After this
+frozen cohort, commit a bounded exact-device query and arithmetic/exp plan
+before sampler or sampled-model execution. A later precision change must
+name the selected production path and invalid-logit policy. SGLang's
+[sampler entry](https://github.com/sgl-project/sglang/blob/27aedf7f93cc7ac3bff43e7150e42a3c0baa6957/python/sglang/srt/layers/sampler.py)
+selects distinct default, deterministic, seeded and XPU behavior. Pin its
+actual kernel, input dtype and non-finite settings for comparison.
 Benchmark source `1f39425ddea4dd98e172d0033f78fb00a8586675` adds the explicit
 profile. Its 73 host tests finish with 72 passes and one optional real-tokenizer
 fixture skipped. They check wire/identity and legacy behavior, not GPU execution.

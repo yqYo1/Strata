@@ -128288,6 +128288,18 @@
           "devcoredump": false
         },
         "passed": true,
+        "artifact_retirement": {
+          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-process5-and-web-api-key-host-retirement-20261104.json",
+          "manifest_sha256": "44d44dbe6b992e4b9ca7a007230d39cd76359c0a1f97abaca0d5b63cba53575c",
+          "completed": true,
+          "evidence_commit": "b215469f998d0d50af9edf576fb4454b510d2cff",
+          "files": 68,
+          "bytes": 12235577,
+          "kept_process_inputs": [
+            "config.json",
+            "plan.json"
+          ]
+        },
         "route_shape": {
           "rows": 65536,
           "residual_gpu_rows": 65536,
@@ -128348,19 +128360,221 @@
             "requested_bank_H2D_bytes": 37190272000,
             "requested_one_routing_map_H2D_bytes": 125829120
           }
+        ]
+      },
+      {
+        "index": 6,
+        "read": 117489,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "candidate",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/build/strata",
+          "sha256": "a99aa1ac98c397933ca76d59361fec32aba335f6904b63c25d95efc52ce22734",
+          "bytes": 24190256
+        },
+        "native_source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
+        "native_identity": {
+          "pid": 1292914,
+          "start_ticks": 214142577,
+          "sid": 1292863
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1292914,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "samples": [
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 121397.0,
+            "prompt_tps": 967.8,
+            "ttft_s": 121.574,
+            "total_s": 123.448,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112059.2,
+            "prompt_tps": 1048.5,
+            "ttft_s": 112.225,
+            "total_s": 113.977,
+            "generated_tokens": 24,
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112413.8,
+            "prompt_tps": 1045.1,
+            "ttft_s": 112.586,
+            "total_s": 114.224,
+            "generated_tokens": 24,
+            "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 111732.3,
+            "prompt_tps": 1051.5,
+            "ttft_s": 111.912,
+            "total_s": 113.653,
+            "generated_tokens": 24,
+            "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
         ],
-        "artifact_retirement": {
-          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-process5-and-web-api-key-host-retirement-20261104.json",
-          "manifest_sha256": "44d44dbe6b992e4b9ca7a007230d39cd76359c0a1f97abaca0d5b63cba53575c",
-          "completed": true,
-          "evidence_commit": "b215469f998d0d50af9edf576fb4454b510d2cff",
-          "files": 68,
-          "bytes": 12235577,
-          "kept_process_inputs": [
-            "config.json",
-            "plan.json"
-          ]
-        }
+        "subsequent_median_ms": 112059.2,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "route_shape": {
+          "rows": 117488,
+          "residual_gpu_rows": 117488,
+          "residual_gpu_bytes": 2406154240,
+          "residual_host_bytes": 0,
+          "prefill_slots": 128,
+          "staged": true,
+          "split": true,
+          "windows": 48,
+          "maximum_window_rows": 117488,
+          "staged_bank_checked_drain": true,
+          "split_guard_checked": true,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "physical_saturation_qualified": false,
+          "head_payload_bytes_verified": false,
+          "MTP_prefill": {
+            "placement_mode": 2,
+            "callbacks": 15,
+            "nominal_cells": 117488,
+            "declared_window": 32768,
+            "source_derived_first_needed": 84657,
+            "source_derived_token_boundaries": [],
+            "internal_processed_rows_and_shapes_observed": false
+          },
+          "prefill_strategy": "throughput",
+          "GDN_FP16_storage": true,
+          "GDN_barriers": 3,
+          "physical_resource_saturation_qualified": false
+        },
+        "request_route_checks": [
+          {
+            "jobs": 23816,
+            "fused_down_jobs": 7441,
+            "requested_bank_H2D_bytes": 38540800000,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 23840,
+            "fused_down_jobs": 7434,
+            "requested_bank_H2D_bytes": 38589209600,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 23820,
+            "fused_down_jobs": 7423,
+            "requested_bank_H2D_bytes": 38507443200,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 23841,
+            "fused_down_jobs": 7433,
+            "requested_bank_H2D_bytes": 38540748800,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          }
+        ]
       }
     ],
     "request_hashes": {
