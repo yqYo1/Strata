@@ -142624,7 +142624,7 @@
     }
   },
   "cpu_iq3_pair_dispatch_v3": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "1ec110452cdd70c425bbc31edd48bbd0421563ca",
     "selected_direct_component_evidence": {
       "commit": "ee5a8e41307a97bdb7155004e4bc9c2a33af5e33",
@@ -143075,6 +143075,121 @@
     "same_build_library": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build/libexpert_cpu.a",
       "sha256": "f6dada1f1c3b2fe23e396d31cab8fd6dbc1f2fe20de5141b52ffe707fad20823"
+    },
+    "correctness": {
+      "passed": true,
+      "single_cases_per_arm": 384,
+      "paired_cases_per_arm": 80,
+      "audited_entry_calls_per_arm": 80,
+      "pool_cases_per_arm": 28,
+      "pool_checksum": "e5d7a50a8e7d5ac5",
+      "prefill_pair_rows": 0,
+      "checks": [
+        {
+          "kind": "exact",
+          "arm": 0,
+          "passed": true,
+          "receipt": {
+            "pid": 2680984,
+            "direct_identity": {
+              "pid": 2680984,
+              "state": "R",
+              "ppid": 2680886,
+              "pgid": 2680984,
+              "sid": 2680984,
+              "start_ticks": 217364136,
+              "rss_bytes": 323584
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.14244132209569216,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 5206016
+          }
+        },
+        {
+          "kind": "pool",
+          "arm": 0,
+          "passed": true,
+          "receipt": {
+            "pid": 2680994,
+            "direct_identity": {
+              "pid": 2680994,
+              "state": "R",
+              "ppid": 2680886,
+              "pgid": 2680994,
+              "sid": 2680994,
+              "start_ticks": 217364150,
+              "rss_bytes": 323584
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.4601481081917882,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 18407424
+          }
+        },
+        {
+          "kind": "exact",
+          "arm": 1,
+          "passed": true,
+          "receipt": {
+            "pid": 2681011,
+            "direct_identity": {
+              "pid": 2681011,
+              "state": "R",
+              "ppid": 2680886,
+              "pgid": 2681011,
+              "sid": 2681011,
+              "start_ticks": 217364197,
+              "rss_bytes": 299008
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.1426867749541998,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 4005888
+          }
+        },
+        {
+          "kind": "pool",
+          "arm": 1,
+          "passed": true,
+          "receipt": {
+            "pid": 2681019,
+            "direct_identity": {
+              "pid": 2681019,
+              "state": "R",
+              "ppid": 2680886,
+              "pgid": 2681019,
+              "sid": 2681019,
+              "start_ticks": 217364211,
+              "rss_bytes": 299008
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.4594867113046348,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 17170432
+          }
+        }
+      ]
     },
     "project_inputs": {
       "files": 189,

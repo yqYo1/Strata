@@ -454,9 +454,8 @@ packing (reuse/stream), and0.9460/0.9408 with packing. For128 rows they are
 0.9490/0.9466 and0.9479/0.8947. The last cell includes one slower reference
 process (63.38us/expert versus roughly53..54us); all samples remain recorded.
 This is typically about5% lower direct-component time, not model gain, RAM
-saturation or production adoption. Next qualify an explicitly decode-only
-production entry, actual dispatch counts and real-pool/prefill behavior before
-a matched model trial. No production dispatch or model speed is qualified.
+saturation or production adoption. This motivates the explicitly decode-only
+production-entry comparison below; no model speed is qualified.
 After original V1 source/recipe recovery from pushed Git history, its failed
 unqualified generation and V2's closed normal build/correctness output are
 retired:89 files,20090636 bytes. The failed outcome remains intact. After the
@@ -471,16 +470,17 @@ eligible/selected row counters; the legacy IQ2 audit retains its own fields.
 No process environment changes between phases. The `cpu_iq3_pair_dispatch_v3`
 build now passes from source `1ec110452cdd70c425bbc31edd48bbd0421563ca`,
 with three hashed CPU ELFs, checked actual compiler/link inputs and the same
-fresh expert archive. No GPU runtime is linked. Its four correctness children
-and six-process comparison remain pending. The plan runs the arithmetic/phase
-and same-library real-pool fixtures in both pre-exec selector processes.
-It checks repeated prefill/decode,
-seven GU/Down format pairs, NT1..4, scratch-batch boundaries and equal output
-checksums. Its six-process benchmark times the actual production entry in
+fresh expert archive. No GPU runtime is linked. All four correctness children
+now close normally with quiet stderr. Each selector passes384 single and80
+paired bitwise GGML cases and80 audited production-entry calls; decode selects
+0/10240 paired rows for selector0/1 while prefill selects none. Both real-pool
+fixtures pass28 cases covering repeated prefill/decode, seven GU/Down format
+pairs, NT1..4 and the scratch-batch boundary; their full output checksums both
+equal `e5d7a50a8e7d5ac5`. Six-process timing remains pending. It times the actual production entry in
 both arms, with independent GGML outputs and actual selected-row counts for
 every timed batch. Counters stay enabled in both arms; this is single-core
-entry timing, not model speed. Retire the closed V2 generation before building
-the three V3 CPU-only targets; keep the validated GPU fallback unchanged.
+entry timing, not model speed. The closed V2 generation was retired before
+building the three V3 CPU-only targets; keep the validated GPU fallback unchanged.
 The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
