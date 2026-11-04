@@ -3,8 +3,9 @@
 **Scope and status.** This is a source/dispatch reference for the resident Q6_K
 head `[K=2560,N=248320]` at `C=1` and `C=4`; it is not performance evidence.
 `C=1` is ineligible for the pinned GGML Q6 XMX path. `C=4` is conditionally
-source-eligible, but no B570-to-GGML architecture mapping or Strata dispatch is
-proved. `schedulable_now=false`: the separate component gate and a prospective
+source-eligible. Intel's device/AOT tables support the B570-to-BMG G21 family
+mapping, but local runtime compatibility and Strata dispatch remain unproved.
+`schedulable_now=false`: the separate component gate and a prospective
 numerical, lifetime and residency plan remain open. Source availability does not qualify a component
 or model route.
 
@@ -49,9 +50,18 @@ dimensions, reordered weights, K divisible by 256, a 64-byte-aligned weight
 pointer, a 64-byte-aligned Q8_1 base, and a 16-byte activation pitch
 ([`mmvq.cpp`](https://github.com/ggml-org/llama.cpp/blob/34ca79122b44d43eda7efb203b82ec91db94c55c/ggml/src/ggml-sycl/mmvq.cpp)).
 Q6_K has a two-column minimum; `GGML_SYCL_XMX_MAX_COLS` defaults to 80.
-Therefore C1 fails the Q6 count gate; C4 meets that gate only. No B570 enum
-mapping, compiler/runtime compatibility, successful reorder, or observed
-dispatch is established, and this upstream selector is not Strata's call path.
+Therefore C1 fails the Q6 count gate; C4 meets that gate only. Local runtime
+enum mapping, compiler/runtime compatibility, successful reorder and observed
+dispatch remain unproved; this upstream selector is not Strata's call path.
+
+Intel's [Xe driver table](https://dgpu-docs.intel.com/overview/supported-hardware/xe-driver-gpus.html)
+maps PCI ID `E20C` to B570, Xe2 and Battlemage. Its [AOT target table](https://www.intel.com/content/www/us/en/docs/fortran-compiler/developer-guide-reference/2026-1/ahead-of-time-compilation.html)
+lists B570 under `bmg-g21`. Together these support family-level compatibility
+with the pinned GGML branch. They do not establish the local runtime's enum,
+installed compiler/headers, IGC/runtime/driver pairing, DPAS execution, Strata
+dispatch, numerical correctness or speed. A later C4 screen must pin and verify
+those local inputs and the executed route; C1 remains a negative selector
+control and the existing DP4A path remains the numerical/dispatch control.
 
 The Q6 XMX loader rearranges each block as `[ql:128][qh:64][signed
 scales:16][d:FP16]`. It reconstructs signed int8 weights as `q-32`; each K=32

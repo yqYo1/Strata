@@ -62,10 +62,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   normally with all eight requests passing and no fresh fault. Reference versus
   candidate: subsequent-three PP 991.700 versus 992.747 tok/s, client TTFT
   66.231 versus 66.161 s; first-use PP 868.7 versus 870.3 tok/s. The candidate's
-  warmed prompt-time/TTFT ratios are 0.998945/0.998943. The first 117K reference
-  also passes all four requests: first-use PP 966.4, warmed PP 1045.734 tok/s,
-  warmed client TTFT 112.527 s. Three of 12 processes are closed; the remaining
-  independent pairs are needed before a decision.
+  warmed prompt-time/TTFT ratios are 0.998945/0.998943. The first 117K pair also
+  passes all eight requests: reference versus candidate first-use PP
+  966.354 versus 968.437, warmed PP 1045.734 versus 1050.393 tok/s, and warmed
+  client TTFT 112.527 versus 112.021 s. Its candidate/reference warmed
+  prompt-time/TTFT ratios are 0.995565/0.995503. Four of 12 processes are closed;
+  these are one pair per length, not the required three-pair decision or
+  sustained decode evidence. The remaining independent pairs are needed.
   V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.

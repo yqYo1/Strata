@@ -23073,8 +23073,8 @@
     "report_path": "docs/research/q6-small-columns-xmx.md",
     "report": {
       "path": "docs/research/q6-small-columns-xmx.md",
-      "bytes": 12059,
-      "sha256": "4bc3f08874a20b484341d263542030c21b65297bd428f735b9762ffd706738bc"
+      "bytes": 9754,
+      "sha256": "7e72289490163b7acf3572b5b54689405031b73dc853003ac50d1aa1d9770239"
     },
     "review": {
       "model": "gpt-6-luna",
@@ -23096,7 +23096,7 @@
       "per16 scales",
       "transient dequantization"
     ],
-    "review_point": "After the clean same-binary Q6 cohort,review an immutable compatible source,license and actual dispatch before designing the next bounded component. Model/task/physical-context gates remain separate.",
+    "review_point": "After the frozen native PP cohort,commit the independent C4 compatibility/component plan;Intel family mapping is source-supported,but local runtime/compiler/DPAS dispatch and numerical/lifetime/residency gates remain open.",
     "eligibility": {
       "schedulable_now": false,
       "reason": "This investigation is complete;do not duplicate it. The next architecture trial has unmet prerequisites."
@@ -23115,12 +23115,12 @@
     "classification": "decision_support",
     "stage": "curated_reference",
     "reference_path": "docs/research/q6-small-columns-xmx.md",
-    "reference_sha256": "aa01d6b5a74c04c776aa5beafe795afca73720d10fd1fe3a212f0f5836662713",
-    "reference_bytes": 8918,
-    "retrieval_synopsis": "Q6 DPAS/reorder dispatch,scale order and storage alternatives;C1 excluded,C4 conditional.",
+    "reference_sha256": "7e72289490163b7acf3572b5b54689405031b73dc853003ac50d1aa1d9770239",
+    "reference_bytes": 9754,
+    "retrieval_synopsis": "Q6 DPAS/reorder dispatch,scale order and storage alternatives;Intel E20C/B570/Xe2/Battlemage and bmg-g21 family mapping;C1 excluded,C4 conditional.",
     "eligibility": {
       "schedulable_now": false,
-      "reason": "Prospective independent numerics,lifetime/residency and actual B570 dispatch mapping remain missing."
+      "reason": "Intel family mapping is source-supported;local compiler/runtime enum,DPAS and Strata dispatch remain unproved. Close the frozen PP cohort and commit independent numerics,lifetime/residency and execution criteria first."
     },
     "source_review": {
       "report_sha256": "174937cf431e70f2d44e31702fd01cc083d4861b96435cb4f12686de2177be11",
@@ -23373,55 +23373,27 @@
   },
   "q6_b570_xmx_device_toolchain_compatibility_20261104": {
     "classification": "decision_support",
-    "stage": "report_received_native_review_pending",
-    "question": "For the observed Q6 decode widths T=1 and T=4, do primary Intel device/driver and compiler sources map B570 device ID 0xe20c to the architecture and ESIMD/DPAS capabilities required by the pinned llama.cpp compressed-Q6 XMX selector? Reconcile the BMG G21 runtime gate, build gate and C>=2 selector; state whether a C4 source-feasibility screen is justified and what only Main runtime evidence can prove.",
-    "schedulable_now": false,
-    "eligibility_basis": {
-      "review_sha256": "38b16093abf72404b2c9ca60dbd1970b6366eb02a5c6a05b94f1a2d4677a58c7",
-      "prerequisites": [
-        "The frozen Q6 model cohort is closed with three favorable pairs.",
-        "The candidate route captured Q6 at T=1/T=4 and the result records device ID 0xe20c.",
-        "Existing references pin llama.cpp 34ca79122b44d43eda7efb203b82ec91db94c55c and Strata source 05a9b45c0a3a266779d4757a855b45a3bb42a62e."
-      ],
-      "eligible_before_dispatch": true
-    },
-    "policy_revision": "49c20a41c360da05111b8203f1d6ef480875f3dd",
-    "native_source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
-    "inputs_manifest": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/b570-q6-xmx-compatibility/inputs.json",
-      "sha256": "1a9ad700664878417016004417dc605ce55a3fd1903bf24f7f02f7d6052fe26d"
-    },
-    "worker_model": "gpt-6-luna",
-    "worker_effort": "high",
-    "startup_model_verified": true,
-    "terminal": "term_33abc2db-b067-47b0-96d7-395658c14859",
-    "task": "task_943ea01dcac9",
-    "dispatch": "ctx_06ac0a49c40b",
-    "input_accepted": true,
-    "turn_started": true,
-    "ownership_closed": true,
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/b570-q6-xmx-compatibility/report.md",
-    "report_budget_bytes": 12288,
-    "whole_folder_budget_bytes": 131072,
-    "main_reads_body_on_arrival": false,
-    "prior_scope_ids": [
-      "compressed_q6_small_columns_xmx_20261104",
-      "q6_dpas_immutable_dispatch_source_20261104",
-      "q6_packed_integer_dot_lowering_20261104",
-      "q6_resident_weight_prepacking_20261104",
-      "target_q6k_multicolumn_resource_methods_20261024",
-      "mtp_q6_head_resource_design_20261022",
-      "gpu_register_operand_issue_methods_collection_20261104"
-    ],
-    "consumer": "Main source-only decision on a later C4 feasibility screen;native Luna-max reviews the report before Main retrieval.",
-    "review_point": "Exact worker_done settlement and terminal closure,then native report review;no steering or duplicate worker.",
-    "report_bytes": 8706,
-    "report_sha256": "4f92761fcd510ea7d02cbbb4dff5ded1cea72e709106615e515f4d52226a4515",
-    "native_review": {
-      "model": "gpt-6-luna",
+    "stage": "reviewed_reference_curated",
+    "reference_path": "docs/research/q6-small-columns-xmx.md",
+    "reference_sha256": "7e72289490163b7acf3572b5b54689405031b73dc853003ac50d1aa1d9770239",
+    "reference_bytes": 9754,
+    "source_review": {
+      "report_sha256": "4f92761fcd510ea7d02cbbb4dff5ded1cea72e709106615e515f4d52226a4515",
+      "review_sha256": "c7c2903e2fc5b4db26a0296a5e6aa2a2c592804722c3de811212a8adb785435c",
+      "review_model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "stage": "running",
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/b570-q6-xmx-compatibility/review.json"
-    }
+      "worker_and_review_closed": true,
+      "main_read_original_body": false,
+      "pin_scope": "Eight current pins match;the ninth research-index pin is recovered exactly at49c20a41c360da05111b8203f1d6ef480875f3dd with append-only context continuity,no hash refresh."
+    },
+    "review_digest": "Intel maps E20C to B570/Xe2/Battlemage and names bmg-g21 as its AOT target. This supports family-level source compatibility only;installed compiler/runtime enum,DPAS execution,Strata dispatch,numerics and performance remain unproved. C4 meets the minimum-column selector;C1 is excluded.",
+    "eligibility": {
+      "schedulable_now": false,
+      "reason": "Source question complete;do not repeat it. A local C4 compatibility/component screen requires closure of the frozen12-process PP cohort and a committed phase-specific numerical/alignment/lifetime/residency/fault plan with exact toolchain/runtime/executable identities."
+    },
+    "consumer": "Retrieve the existing Q6 reference for the later C4 compatibility decision;no local speed or adoption claim.",
+    "review_point": "After native_prefill_preservation_v2 closure,or when a concrete local compatibility plan is prepared.",
+    "local_transaction_retirement_pending": true,
+    "local_report_directory": ".cache/research/2026-11-04/b570-q6-xmx-compatibility"
   }
 }
