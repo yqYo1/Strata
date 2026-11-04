@@ -124,7 +124,8 @@ def prepare():
         'preserve actual host/device IR refusals;no compiler-debug retry here')
     prior = committed()['q6_byte_load_component_v1']
     require(prior['stage'] == 'failed-build' and prior['ownership_closed'] and
-        "no member named 'endian_little'" in prior['error'],
+        all(token in prior['error'] for token in
+            ('no member named', 'endian_little', 'sycl::info::device')),
         'preserve the unsupported-info-query compile refusal')
     require(not (B / 'q6-byte-load-component-v1').exists(),
         'retire closed failed-v1 partial build after exact source/recipe recovery before fresh build')
