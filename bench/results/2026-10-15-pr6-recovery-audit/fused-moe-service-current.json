@@ -108761,9 +108761,11 @@
       "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2",
       "source_commit": "8e2499937969dbfa1dcd950b95025d9712037a83",
       "result_key": "verify_window_cpu_service_build_v2",
-      "stage": "prepared_not_built",
+      "stage": "built_not_executed",
       "fallback_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1",
-      "purpose": "Same-source observer0/1 parity,then bounded device/model overhead and CPU service attribution;no inference adoption."
+      "purpose": "Same-source observer0/1 parity,then bounded device/model overhead and CPU service attribution;no inference adoption.",
+      "engine_sha256": "6e0730b3641563e6da311b9ac3d93bd99241cacae74da7c0767eed46a18327f6",
+      "binaries": 4
     },
     "workspace_retirement_decision": {
       "stage": "retired-unused-binaries",
@@ -109100,6 +109102,30 @@
         "sha256": "1e7ddd541fdf644bca94c82deba3887efebe4a606c885c40eb09cf429fbc490c",
         "bytes": 91792856,
         "consumer": "Existing configured serving output until validated migration"
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/strata",
+        "sha256": "6e0730b3641563e6da311b9ac3d93bd99241cacae74da7c0767eed46a18327f6",
+        "bytes": 24203232,
+        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/cpu_service_pool_test",
+        "sha256": "212effaa935b45fbc249cc33de7db07869a7aa96be58630de8d2e53593962961",
+        "bytes": 3464328,
+        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/sycl_submission_test",
+        "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+        "bytes": 343384,
+        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
+      },
+      {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/sycl_verifier_retirement_test",
+        "sha256": "ad8204c80bb3e46d97276c6aecaccd2032061cf0b57f7247803c6583ccb79fac",
+        "bytes": 17741544,
+        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
       }
     ],
     "retained_vendor_dependencies": [
@@ -130032,7 +130058,7 @@
     }
   },
   "verify_window_cpu_service_build_v2": {
-    "stage": "prepared",
+    "stage": "built-not-executed",
     "source_commit": "8e2499937969dbfa1dcd950b95025d9712037a83",
     "selected_basis": {
       "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3",
@@ -130113,12 +130139,114 @@
     "retention": "One imminent observer on/off comparison on the measured05a9 source. Keep validated479a as fallback;retire the closed a99aa1 comparison outputs only after exact source/recipe recovery and consumer updates, before building this replacement. No third engine generation and no inference adoption.",
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "model_executed": false,
     "observer_overhead_qualified": false,
     "inference_adopted": false,
+    "supersedes_unbuilt_preparation": {
+      "source_commit": "df31c372ca55009012b541d9c190100ccfaafa28",
+      "historical_key": "cache_map_cpu_service_build_v1",
+      "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+      "build_executed": false,
+      "source_files_recovered": 561,
+      "source_recipe_history_commit": "aa14395fc164545ff8b8de0e348cfd2a0b659254"
+    },
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/compiler-inputs.json",
+      "sha256": "f10f63100c69901d13072b1edab88d9e55f70a147ba432bba6322ed685e656e8",
+      "files": 1448,
+      "uncovered": 0
+    },
+    "compile_database": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/compile_commands.json",
+      "sha256": "d5202787a9220a5060b13bd11a355adeecf2aadb4738586a6b8abcb563f6043d"
+    },
+    "actual_link_inputs": {
+      "frozen_inputs": {
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0": "07fe6d52f3350f6e30f4bdcdf3c7def120736dbe440e046e51ab3df9fd166055",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl-devicelib-host.a": "770b0944b181690a21d78a0cb2e1d091d38b3caa209e185e276a943dea7bd8e9",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so.6": "51d6c16990701a5aaf9fbbde5d86f5a7197b81357b66b19cbb912206564cf4ee",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so.3": "ffbbeff402fdf09baa53f8226b86f27046592d984ae2916b1bbc2e59132c7c89",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so.3": "4e7ff529bec90a1b0ce70299258a64a2ebae7a5a6f3ec031306a6ddb39b5a650",
+        "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so.3": "b4f086651ee5a8471140d53fedfdbbaba606287784763b0739f282872c31aa9b",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5"
+      },
+      "owned_build_or_compiler_products": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/CMakeFiles/cpu_service_pool_test.dir/tests/core/cpu_service_pool_test.cpp.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/ggml/src/libggml-base.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/ggml/src/libggml-cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/libstrata_core.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/libstrata_engine.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/libstrata_kernels.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/libstrata_kernels_cpu.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/libstrata_prefill.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/libstrata_spec.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/libstrata_sycl_runtime.a",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-8d9fb2b270/sycl_verifier_retirement_test-wrapper-cf5b29.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-8d9fb2b270/verifier_retirement-c4c758.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-8d9fb2b270/verifier_retirement-e97ab5.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/dense_prefill_nll-9e6b5e.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/dense_prefill_nll-c20040.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/generate-7997d0.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/generate-880f4d.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/strata-wrapper-7d5ae2.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/strata_vllm_xe2_host-002772.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/strata_vllm_xe2_host-664889.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/strata_vllm_xe2_image-930e28.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-c96daa23f0/strata_vllm_xe2_image-a77ae9.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-f0f989154e/compat-9fbb34.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-f0f989154e/compat-ce5c06.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/tmp/icpx-f0f989154e/sycl_submission_test-wrapper-e34075.o"
+      ],
+      "uncovered_external_inputs": 0,
+      "scope": "Observed GNU ld -t input paths;private generated objects are owned outputs,not external source evidence."
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/strata",
+        "sha256": "6e0730b3641563e6da311b9ac3d93bd99241cacae74da7c0767eed46a18327f6",
+        "bytes": 24203232
+      },
+      "cpu_service_pool_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/cpu_service_pool_test",
+        "sha256": "212effaa935b45fbc249cc33de7db07869a7aa96be58630de8d2e53593962961",
+        "bytes": 3464328
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/sycl_submission_test",
+        "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+        "bytes": 343384
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/sycl_verifier_retirement_test",
+        "sha256": "ad8204c80bb3e46d97276c6aecaccd2032061cf0b57f7247803c6583ccb79fac",
+        "bytes": 17741544
+      }
+    },
     "controller_inputs": {
       "files": 96,
       "aggregate_sha256": "b63bc32c3708f701d32b0af3491cc888dff32ee3b88fe487f236d1ac3164369c"
@@ -130146,14 +130274,6 @@
           "STRATA_CPU_SERVICE": "1"
         }
       ]
-    },
-    "supersedes_unbuilt_preparation": {
-      "source_commit": "df31c372ca55009012b541d9c190100ccfaafa28",
-      "historical_key": "cache_map_cpu_service_build_v1",
-      "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
-      "build_executed": false,
-      "source_files_recovered": 561,
-      "source_recipe_history_commit": "aa14395fc164545ff8b8de0e348cfd2a0b659254"
     }
   }
 }

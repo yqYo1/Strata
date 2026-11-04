@@ -217,7 +217,11 @@ build receipt remains a source-only input to the replacement; its deleted ELF
 is not reused as qualification. Follow
 `retained_builds_review_20261103.current_replacement_retirement` for the manifest
 and remaining consumers. All nine fallback ELFs and the research-pinned
-runtime/configuration inputs remain intact. The observer is still uncompiled.
+runtime/configuration inputs remain intact. The observer build is now closed
+with actual compiler/link input coverage and four hashed outputs, from source
+`8e2499937969dbfa1dcd950b95025d9712037a83`. The real-pool off/on parity and
+new same-build device/model admission remain pending; no measured CPU service
+or speed gain follows from compilation.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
@@ -319,7 +323,9 @@ retains nine ELF artifacts. The comparison is closed and its three candidate
 ELFs are retired after committed observer-source preparation and original-input
 recovery. Seventeen named project ELFs remain before the observer build,
 including the existing configured serving and validation/profiling consumers.
-This is not a claim of global cleanup. The legacy
+The new observer adds four named outputs for its immediate qualification and
+comparison, bringing the current retained count to 21. This is not a claim of
+global cleanup. The legacy
 source/recipe holds remain independent.
 
 Niko1221/Strata remains the only upstream. Last actual check:
