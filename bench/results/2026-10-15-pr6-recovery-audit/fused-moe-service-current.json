@@ -122387,5 +122387,40 @@
       },
       "sha256": "3f75e8df64c30d9c40a51ed2a1c3ac7e7301dbcc5944c507e6a7524fc0145577"
     }
+  },
+  "host_link_inventory_batch_v1": {
+    "stage": "prepared",
+    "source_commit": "ba3f62d12d18e3cbcf2dcc3810ce059c79c70ca0",
+    "sources": {
+      "tools/sycl/host_link_inventory.py": "3e6e0fc60e8876d766da7f93689d17dba6fb5de55a973685d511b47b2350a3b7",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+    },
+    "selected_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/record.json",
+      "sha256": "d5765dbb3f72339c547d5b77139ddd8c343f6f27dbd9edbb33e4bbfd2bcdb513"
+    },
+    "interpreter": {
+      "path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "expected_sha256": "a919c9f551c75ec310c127add91964a8df84524e728365934425a0eeb494eca8",
+    "command": [
+      "/usr/bin/python3",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/host_link_inventory.py",
+      "--emit"
+    ],
+    "budgets": {
+      "wall": 180,
+      "cpu": 120,
+      "rss_cap": 536870912,
+      "text_cap": 1048576,
+      "file_cap": 1048576,
+      "total_cap": 2097152
+    },
+    "plan": "Query every original compiler/linker path;one batched dpkg ownership lookup must cover every resolved file;compare the entire result with the unchanged selected native inventory,including bytes,driver queries and package versions. No engine/GPU execution.",
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true
   }
 }
