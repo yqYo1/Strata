@@ -118389,5 +118389,125 @@
       ],
       "changes": "Only generation paths;compiler,optimization,dependencies unchanged"
     }
+  },
+  "verify_window_phase_device_v1": {
+    "stage": "prepared",
+    "source_commit": "4f65deaca167711489d6f979ffce52d11490df13",
+    "native_source_commit": "097e2ac90288db3ccb89136884c9a4d474645a91",
+    "build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/record.json",
+      "sha256": "82a158b2947e51861a1765aa2bd72a039e3426e8aa10201f521ab95a13e8faaf"
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/build/strata",
+        "sha256": "4b3f48c774068805eb68afa13c5b65ad65ec9e2b0f4f48b5d70db264f5133a23",
+        "bytes": 24194352
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/build/sycl_submission_test",
+        "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+        "bytes": 343384
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/build/sycl_verifier_retirement_test",
+        "sha256": "56d259ea9677866e0c865c553cd1643a60c3bd22e33b997162bb3b6b30f83039",
+        "bytes": 17745640
+      }
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-phase-device-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-phase-device-v1/cache",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+    },
+    "cases": [
+      {
+        "name": "submission",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/build/sycl_submission_test",
+          "--submission"
+        ]
+      },
+      {
+        "name": "phase-cache",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/build/sycl_verifier_retirement_test",
+          "--phase-cache"
+        ]
+      }
+    ],
+    "budgets": {
+      "wall": 180,
+      "cpu": 240,
+      "rss_cap": 4294967296,
+      "text_cap": 8388608,
+      "file_cap": 8388608,
+      "total_cap": 67108864
+    },
+    "plan": "Stop on first failure. Same-build submission10 then direct no-fork phase16windows/12captures/48graphs;require exact payload/guards,phase/T roundtrip,clear/recapture,copy conservation and destructor. Exit0,strict pre-main validation proof,closed owners,unchanged source/ELFs/boot/driver/provider,no fresh fault. Full traces allow only the one precisely matched pre-main null-platform validation probe already qualified in Q6 V4.",
+    "limits": "Synthetic payload only;does not execute Q6 math or full record_window/run,dense/head handoff,model,physical262144 or RESTORE. The validation preload holds a runtime reference until exit;ordinary runtime teardown is not qualified. No speed/adoption evidence.",
+    "retention": {
+      "owner": "Main",
+      "byte_budget": 67108864,
+      "consumer": "Immediate phase-separated decode model prerequisite",
+      "review_point": "After recording/committing compact outcomes,retire successful full traces and duplicate runtime cache;keep one diagnostic only for a distinct unresolved failure."
+    },
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "controller_inputs": {
+      "files": 95,
+      "aggregate_sha256": "95b5046b2b5b3ba5f5ce85fed54f8ff89b8c87d05caafd51311bc0ca5e1e07d2"
+    }
   }
 }
