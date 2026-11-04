@@ -244,8 +244,9 @@ complete model/census/service joins, including the warmup. Its preparation now
 passes at controller `40c4efeaec6427a81db5181840b27fabddf38086`, with all fifteen
 model assets hashed and the current source/provider/configuration pinned.
 The owned preparation exits normally in 111.821 s, with quiet stderr and no
-GPU/model execution. Frontend probes and model execution remain pending;
-no actual model or observer-cost result is established yet.
+GPU/model execution. Both current-source frontend probes now pass with normal
+exit and closed owners. Model execution remains pending; no actual model or
+observer-cost result is established yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
