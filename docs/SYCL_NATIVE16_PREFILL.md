@@ -183,6 +183,30 @@ Read-only `lscpu -J` on 2026-11-04 identifies a Ryzen 5 5600X with six physical
 cores, 12 SMT threads and 32 MiB L3; the earlier 256 MiB read buffer is eight
 times that L3 capacity. Configured DIMM speed and physical RAM bandwidth remain
 unknown; the current user cannot read the DMI table, and no ceiling is inferred.
+The observer build's actual GGML x86 quantizer compile command already uses
+`icx -O3 -march=native -fno-associative-math`. Static disassembly of
+`ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o`, SHA256
+`b8942d84db7db78a72afeb43896206c0196a8e49e205601f860897106bd8a72e`,
+finds AVX2 `vpsignb`, `vpmaddubsw`, `vpmaddwd` and vector FMA in
+`ggml_vec_dot_iq3_xxs_q8_K`. Missing vector code is therefore not the premise
+for the next pair experiment. This is static code evidence, not measured
+dispatch frequency, arithmetic throughput or saturation.
+
+The current native-expert inventory has 17 IQ3_XXS, 20 IQ2_S, ten IQ3_S and one
+IQ4_XS GU layers, each with 512 experts. Its `native_experts.txt` SHA256 is
+`d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`.
+For a possible future exact 4-bit IQ3_XXS CPU view, 128 code bytes, two scale
+bytes and four group-scale bytes make 134 bytes per 256-value block, versus
+98 in the original packed form. At 2560x640 per GU matrix, all 8704 affected
+experts would need `17*512*2*640*10*134 = 14929100800` additional bytes
+(13.9038 GiB). The original GU payload is 10918297600 bytes; both would total
+25847398400 bytes. The current raw arena remains necessary for GPU cache fill
+and fallback, so the proposed CPU view adds its full size, rather than only the
+4.01 GB representation-size difference. Down, activations, other formats and
+allocator overhead are outside these GU payload totals. No such view, owner,
+conversion or allocation admission is implemented or qualified. Compare its
+conversion/reuse cost only after a named component plan; the immediate pair
+candidate below avoids this expansion.
 
 The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
@@ -329,6 +353,11 @@ independent reference/candidate pairs. No minimum gain is imposed; compare all
 three paired median directions separately for each cell. This is a direct
 single-core component experiment, not a production-pool route or model gain.
 It has not been compiled or run; the observer cohort remains serialized first.
+The CPU-only CMake project also exposes `cpu_iq_single_exact_test`, reusing the
+maintained correctness fixture and the same freshly compiled `expert_cpu`
+library as the benchmark. This permits the compiler/ISA and correctness gate
+without linking or rebuilding a GPU engine. Compilation and execution remain
+pending a committed exact recipe and closure of the observer cohort.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
 write/flush cannot qualify attribution. The source review supplies no measured
