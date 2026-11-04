@@ -4877,8 +4877,13 @@ build now passes all796 compiler inputs and24 external link inputs;the32-case
 GPU smoke and3x35case resident comparison close passed,as recorded above.
 Grouped/prompt arithmetic,whole-model speed and physical-context qualification
 remain pending. The phase selection now follows the new30-shape decision;its fresh
-`verify_window_policy_host_v2`host/syntax plan must pass before the next model
-composition. Earlier host/phase-GPU evidence remains scoped to its original source.
+`verify_window_policy_host_v2`runs all six host/link/SYCL-syntax commands at
+exit0,but its final provider check times out in the original per-file dpkg query.
+That whole scope remains failed. The actual971-input map is written before the
+refusal;it is not whole-run qualification. Batch the same ownership queries and
+compare the entire returned inventory against the selected reference before a
+new committed policy check. Earlier host/phase-GPU evidence remains scoped to
+its original source.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 

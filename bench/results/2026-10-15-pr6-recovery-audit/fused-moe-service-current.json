@@ -122159,7 +122159,7 @@
     }
   },
   "verify_window_policy_host_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "8a7d22532f3a0efa6202e5fd6765c9075d777f30",
     "selected_native_source": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
     "component_source": "225e13889f5ace66fb26fa054952ae588d87d159",
@@ -122331,6 +122331,39 @@
       "review_point": "Retire successful compiler output/temporary host ELF after recording results and recovering source;selected nine ELFs remain unchanged",
       "legacy_gate": "retained_builds_review_20261103 remains partial;no new engine build or CPU-observer gate bypass"
     },
+    "error": "TimeoutExpired(['dpkg-query', '-S', '/usr/lib/x86_64-linux-gnu/libc_nonshared.a'], 15)",
+    "results": [
+      {
+        "label": "compile-host",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "link-host",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "run-host",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax-verify",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax-program",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "syntax-retirement",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ],
     "native_sources": {
       "files": 560,
       "aggregate_sha256": "35c684356c218d29d057bb3742b1e9f76e16fc68d11f91fcde43662ce1db83d3",
