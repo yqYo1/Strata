@@ -187,7 +187,7 @@ unknown; the current user cannot read the DMI table, and no ceiling is inferred.
 The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
 thread-CPU clocks. Its replacement build and real-pool off/on parity are now
-closed; device/model admission and observer-cost qualification remain pending.
+closed; model admission and observer-cost qualification remain pending.
 No useful CPU-service or overhead measurement is established yet.
 The retained build resolves per-file inputs through its recipe: its two pool
 files still match `6e40afc1b`, without observer hooks, rather than the plain
@@ -218,8 +218,8 @@ runtime/configuration inputs remain intact. The observer build is now closed
 with actual compiler/link input coverage and four hashed outputs, from source
 `8e2499937969dbfa1dcd950b95025d9712037a83`. The real-pool off/on checks both
 pass 28 cases with identical output checksums and normal closed processes.
-New same-build device/model admission remains pending; no measured CPU service
-or speed gain follows from these host checks. The
+The same-build small device gate now passes; model admission remains pending.
+No measured CPU service or speed gain follows from these host/device checks. The
 `tools/sycl/cpu_service_device.py` reuses the maintained small submission/phase
 runner in a private context and requires that exact real-pool parity. Its
 prospective preparation does not execute a GPU kernel.
@@ -231,7 +231,12 @@ and the closed exit-1 failure retained. V3 preparation passes at controller
 explicit result-size admission; raw output retains its 4 MiB private budget.
 The normal exit-0 process is closed with quiet stderr. The exact same-build
 submission/phase-cache plan is prepared under
-`verify_window_cpu_service_device_v3`; GPU execution is still pending.
+`verify_window_cpu_service_device_v3`. Both device cases now pass: submission
+has ten checks, and phase-cache covers sixteen windows with twelve captures.
+Both processes exit normally with closed owners, checked validation, unchanged
+boot/providers and no fresh driver fault. These synthetic payloads do not
+qualify model arithmetic, measured CPU service, observer overhead or ordinary
+provider teardown. The next check is the same-build short model/census entry.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
