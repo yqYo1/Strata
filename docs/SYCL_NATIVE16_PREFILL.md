@@ -216,6 +216,12 @@ project-only sync skill. Required tracking/recovery/alias/API/CLI imports and
 hardware-tuned unmodified-upstream measurements remain incomplete. PR 180 is
 blocked by a squash-only ruleset; preserve measured source commit identities
 and do not claim default-branch integration.
+Remote publication also remains pending: the actual push at
+2026-11-04 09:58 UTC returned GitHub's `Internal Server Error`.
+The remote feature branch remains `a09b16159`; the 64K evidence at `0521c1d67`
+and CSV/retirement at `877010bd4` are committed locally. Recheck the actual
+remote and PR before the next publication attempt; tuning can continue from
+the committed inputs.
 
 ## Evidence pointers
 
