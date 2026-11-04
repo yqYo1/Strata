@@ -279,6 +279,10 @@ Both current-source frontend probes now pass with normal exits and closed
 owners. The cohort is ready; no overhead or long-service result exists yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
+Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
+single-token GU selector to `NativeGuPhase::Decode`, preserving the prefill
+dispatch. This source-only containment is outside the frozen observer build;
+its compiled qualification and matched model comparison remain pending.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
 write/flush cannot qualify attribution. The source review supplies no measured
