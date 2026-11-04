@@ -447,6 +447,11 @@ correctness fixture exits0 and passes384 single plus80 paired cases, including
 the explicit sign/grid/scale and FP16-edge coverage, bit parity and refusal
 targets. Its process closes with quiet stderr. The six-process component
 comparison remains pending; no production dispatch or model speed is qualified.
+After original V1 source/recipe recovery from pushed Git history, its failed
+unqualified generation and V2's closed normal build/correctness output are
+retired:89 files,20090636 bytes. The failed outcome remains intact. V2's two
+exact CPU executables, expert archive and input proof stay for the imminent
+six-process timing comparison; the validated GPU fallback is unchanged.
 The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
