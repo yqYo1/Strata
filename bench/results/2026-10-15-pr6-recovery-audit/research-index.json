@@ -22761,7 +22761,7 @@
     "classification": "decision_support",
     "stage": "reviewed_source_contract_decision_support",
     "source_revision": "097e2ac90288db3ccb89136884c9a4d474645a91",
-    "schedulable_now": true,
+    "schedulable_now": false,
     "eligibility": "New actual-source gap after the previous zero-new-scope review:Q6/Q8 byte payload reads through uint16_t/int need matching C++/SYCL/IntelLLVM contract verification before model qualification. Exact -### omits an explicit relaxed-alias flag;that omission establishes no compiler default.",
     "question": "Confirm typed packed-load type accessibility/object lifetime and documented compiler semantics;compare minimal defined byte/memcpy alternatives and a prospective Main-owned discriminator. Distinct from the earlier local_accessor allocation/noalias study.",
     "report_path": ".cache/research/2026-11-04/q6-typed-load-contract/report.md",
@@ -22827,14 +22827,13 @@
       "Main-owned next check"
     ],
     "next_action": {
-      "schedulable_now": true,
-      "prerequisite_evidence": "6dab2468e:closed same-build submission10 and phase16 GPU gate;no active build/GPU job.",
-      "scope": "Commit whole-source host/SPIR comparison with local Q6 memcpy/bit_cast reads before compile. No product/kernel adoption or numerical/speed claim."
+      "schedulable_now": false,
+      "scope": "The proposed host/device IR attempts closed failed. Main normal compilation and q6_byte_load_component_v2 numerical/timing checks now close passed on a separately committed all-byte source. Do not repeat this source-contract/IR survey."
     }
   },
   "q6_usm_block_producer_contract_20261104": {
     "classification": "decision_support",
-    "stage": "reviewed_main_source_decision_pending",
+    "stage": "reviewed_byte_span_source_follow_up_component_passed",
     "schedulable_now": false,
     "prerequisites_evidence": [
       "q6_typed_payload_contract_20261104:reviewed actual producer/lifetime unknown",
@@ -22886,11 +22885,12 @@
       "numerical_qualified": false,
       "model_qualified": false,
       "performance_qualified": false
-    }
+    },
+    "follow_up": "Main source225e13889uses byte-span reads/writes for the consumed Q6/Q81 fields;independent source audit is reviewed consistent,and q6_byte_load_component_v2closes passed. This does not resolve other formats/contracts or qualify whole-model grouped/prompt routes."
   },
   "q6_byte_span_source_audit_20261104": {
     "classification": "decision_support",
-    "stage": "report_returned_native_review_running",
+    "stage": "reviewed_source_consistent_component_passed",
     "eligibility": {
       "schedulable_now": false,
       "prerequisite_evidence": [
@@ -22936,7 +22936,21 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "path": ".cache/research/2026-11-04/q6-byte-span-source-audit/review.json",
-      "status": "running"
+      "status": "reviewed_corrected",
+      "sha256": "2c621f6935cafd81eac58731e293a6fb8f39d948016fd418bd617b974043b529",
+      "bytes": 3342
+    },
+    "report_identity": {
+      "sha256": "0e03822b932678a795c6404d016f207ee3abde51f0c54ce12fa761f5d3a017fc",
+      "bytes": 8137,
+      "original_before_reviewer_correction_sha256": "ab9f58f21c4628b88153a35791f5a44bc0f03cd4ea175b7e352fc326ac2f3b0a"
+    },
+    "retrieval_digest": "All four Q6 byte-span caller families and Q81 writer/reader offsets are consistent in the inspected source. Reviewer corrected the alleged signed-QH-shift defect:only bits30..31 differ and final masks never consume them. No shift fix/regression test or another broad lifetime survey justified. Static review itself provides no GPU/numerical/model qualification;Main separately closed q6_byte_load_component_v2 with32+3x35numerical cases and30/35eligible shapes.",
+    "next_action": {
+      "owner": "Main",
+      "scope": "Use the new30-shape screen in the decode-only policy and a fresh fixed-Q6 engine comparison;preserve selected479a and both prefill routes. Retire prior phase generation after exact original source/recipe recovery before another engine build.",
+      "research_schedulable_now": false,
+      "model_qualified": false
     }
   }
 }

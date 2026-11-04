@@ -17,7 +17,7 @@ constexpr bool valid_verify_input(VerifyInput input) {
 }
 
 // Only these shapes passed all three independent process medians in
-// 75186d6a7:q6_columns_component_v4. This is eligibility for a model comparison,
+// 733500802:q6_byte_load_component_v2. This is eligibility for a model comparison,
 // not model adoption. Every other type, phase and shape keeps its reference.
 constexpr bool verify_q6_columns(bool enabled, VerifyInput input, bool exact,
                                  int type, int n_in, int n_out, int columns) {
@@ -26,8 +26,8 @@ constexpr bool verify_q6_columns(bool enabled, VerifyInput input, bool exact,
     if (n_in == 6144 && n_out == 2560) return true;
     if (n_in != 2560) return false;
     if (n_out == 10240 || n_out == 12288 || n_out == 248320) return true;
-    if (n_out == 6144) return columns != 1;
-    if (n_out == 640) return columns == 3 || columns == 4 || columns == 8;
+    if (n_out == 6144) return true;
+    if (n_out == 640) return columns != 2;
     return n_out == 512 && columns == 8;
 }
 

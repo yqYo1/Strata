@@ -17,8 +17,8 @@ int main() try {
     // Expected selections come from the committed component decision, not a
     // second implementation of the dispatch predicate. Bit c means columns c.
     const int eligible[][3] = {
-        {2560, 10240, 0x11e}, {6144, 2560, 0x11e}, {2560, 6144, 0x11c},
-        {2560, 640, 0x118}, {2560, 512, 0x100}, {2560, 12288, 0x11e},
+        {2560, 10240, 0x11e}, {6144, 2560, 0x11e}, {2560, 6144, 0x11e},
+        {2560, 640, 0x11a}, {2560, 512, 0x100}, {2560, 12288, 0x11e},
         {2560, 248320, 0x11e},
     };
     int selected = 0;
@@ -37,7 +37,7 @@ int main() try {
             need(!verify_q6_columns(true, VerifyInput::decode, true, type, row[0], row[1], c),
                  "Q6 candidate changed another weight format");
     }
-    need(selected == 28, "wrong number of qualified shapes");
+    need(selected == 30, "wrong number of qualified shapes");
     for (const auto& shape : {std::array<int, 2>{-2560, 10240}, {2560, 10239},
                               {2561, 10240}, {0, 0}, {2560, -1}})
         need(!verify_q6_columns(true, VerifyInput::decode, true, 14, shape[0], shape[1], 4),
@@ -92,7 +92,7 @@ int main() try {
     cache.at(VerifyInput::prompt, 4).layer = {51};
     need(cache.at(VerifyInput::decode, 4).layer.empty(), "retired decode graph survived prompt recapture");
     cache.clear([](int) {});
-    std::puts("verify-window-policy: passed selections=28 phase-roundtrip=1 invalid-keys=4 retirement=1");
+    std::puts("verify-window-policy: passed selections=30 phase-roundtrip=1 invalid-keys=4 retirement=1");
     return 0;
 } catch (const std::exception& error) {
     std::fprintf(stderr, "verify-window-policy: %s\n", error.what());

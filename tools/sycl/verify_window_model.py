@@ -20,11 +20,11 @@ import measurement_owner as supervision
 P, B, RESULT = selected.P, selected.B, selected.RESULT
 base = selected.base
 require, digest, write = base.require, base.digest, base.write
-ROOT = B / 'verify-window-policy-host-v1'
-KEY = 'verify_window_policy_host_v1'
+ROOT = B / 'verify-window-policy-host-v2'
+KEY = 'verify_window_policy_host_v2'
 SELF = Path(__file__).resolve()
 BEFORE = '0ec7f128ea973658e9653076a93f534658b2dfd6'
-Q6 = '664a280d5aab4e272fef37538634207d38704b4c'
+Q6 = '225e13889f5ace66fb26fa054952ae588d87d159'
 POLICY = 'include/strata/core/verify_window_policy.hpp'
 FIXTURE = 'tests/core/verify_window_policy_test.cpp'
 Q6_FILES = ('src/kernels/sycl/native_mmvq.cpp', 'include/strata/kernels/native_mmvq.hpp')
@@ -103,9 +103,9 @@ def prepare():
     require(base.basis.build.git(P, 'show', revision+':'+str(SELF.relative_to(P))) == SELF.read_bytes(),
             'commit the exact projection/check controller first')
     native, values = projection(revision)
-    data = base.committed(RESULT); component = data['q6_columns_component_v4']
+    data = base.committed(RESULT); component = data['q6_byte_load_component_v2']
     require(component['source_commit'] == Q6 and component['passed'] and component['complete']
-            and component['ownership_closed'] and component['decision']['qualified_shapes'] == 28,
+            and component['ownership_closed'] and component['decision']['qualified_shapes'] == 30,
             'closed repeated Q6 component qualification required')
     environment = dict(native['environment'])
     environment.update(TMPDIR=str(ROOT/'tmp'), XDG_CACHE_HOME=str(ROOT/'cache'))
@@ -172,7 +172,7 @@ def check():
                     label+' failed: '+err.read_text()[-4000:])
             if label=='run-host':
                 require(not err.read_text(), label+' runtime diagnostics')
-                require(out.read_text()=='verify-window-policy: passed selections=28 phase-roundtrip=1 invalid-keys=4 retirement=1\n',
+                require(out.read_text()=='verify-window-policy: passed selections=30 phase-roundtrip=1 invalid-keys=4 retirement=1\n',
                         'host contract output differs')
             results.append(dict(label=label,exit_code=command['exit_code'],ownership_closed=True))
         actual={}

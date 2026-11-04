@@ -4817,7 +4817,7 @@ Keep phase-distinct graph selection and state handoff in the next model plan.
 The source candidate at`3a0645d89`now supplies those separate phase/token caches
 and explicit prompt forwarding,including callback selection and retirement of
 both phases. Only complete graph families become reusable. The opt-in
-`STRATA_SYCL_DECODE_Q6_COLUMNS=1`selects only the28component-eligible shapes;
+`STRATA_SYCL_DECODE_Q6_COLUMNS=1`now selects only the30component-eligible shapes;
 the default0and all prompt calls keep their reference kernels. Actual captured
 Q6 route counts are logged per phase/token key. The committed
 `verify_window_policy_host_v1`now closes passed:all28eligible selections,
@@ -4876,8 +4876,9 @@ zero and constant blocks,before its scalar Q6 dot check. Its actual C++20
 build now passes all796 compiler inputs and24 external link inputs;the32-case
 GPU smoke and3x35case resident comparison close passed,as recorded above.
 Grouped/prompt arithmetic,whole-model speed and physical-context qualification
-remain pending. The current phase selection still reflects the earlier28-shape
-screen;replace it with the new30-shape decision before the next model comparison.
+remain pending. The phase selection now follows the new30-shape decision;its fresh
+`verify_window_policy_host_v2`host/syntax plan must pass before the next model
+composition. Earlier host/phase-GPU evidence remains scoped to its original source.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
