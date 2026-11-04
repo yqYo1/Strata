@@ -4881,9 +4881,19 @@ remain pending. The phase selection now follows the new30-shape decision;its fre
 exit0,but its final provider check times out in the original per-file dpkg query.
 That whole scope remains failed. The actual971-input map is written before the
 refusal;it is not whole-run qualification. Batch the same ownership queries and
-compare the entire returned inventory against the selected reference before a
-new committed policy check. Earlier host/phase-GPU evidence remains scoped to
-its original source.
+the batched inventory now matches all14file hashes,14driver queries and4package
+versions exactly under its separately committed CPU check. The fresh
+`verify_window_policy_host_v3`then closes passed:all six host/link/SYCL-syntax
+commands exit0,all971compiler/link inputs match,the host executable is hashed
+before and after its run,and owners close. The updated30shape selection,prompt
+exclusion,phase/token separation and interrupted retirement pass the host fixture.
+The original V2post-check failure stays failed. Before the next engine build,
+recover and retire the superseded pre-fix phase generation and old host-policy
+outputs;then compose selected479a with the fixed225Q6 source and only the declared
+phase/selection changes. New-engine GPU lifecycle,record-window arithmetic,
+dense/head handoff,matched long/agent/strong-and-weak-MTP model speed and physical
+262144/RESTORE checks remain pending. Earlier phase-GPU evidence remains scoped
+to its original source.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
