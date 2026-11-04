@@ -228,6 +228,26 @@ name the selected production path and invalid-logit policy. SGLang's
 [sampler entry](https://github.com/sgl-project/sglang/blob/27aedf7f93cc7ac3bff43e7150e42a3c0baa6957/python/sglang/srt/layers/sampler.py)
 selects distinct default, deterministic, seeded and XPU behavior. Pin its
 actual kernel, input dtype and non-finite settings for comparison.
+The Main-authored [exact-device diagnostic](../tools/sycl/device_fp64_probe.cpp)
+is source-prepared only, without a build or device execution. It separates a
+no-kernel capability query from 64-element FP64 arithmetic and exponential
+checks. It requires the exact Level Zero B570 at `0000:05:00.0`, fixed runtime
+safety and an in-order queue; an absent `aspect::fp64` refuses arithmetic before
+submission. Arithmetic must preserve a `2^-40` increment that FP32 loses;
+exponentials over -63..0 need relative error at most `1e-12`, checked finite
+outputs, unchanged source and allocation guards. These are bounded capability
+and numerical checks, not sampler equivalence, native arithmetic throughput,
+absence of software emulation or model qualification. The diagnostic deliberately
+skips provider teardown after completed copies and freed allocations.
+After the frozen cohort closes, pin its source/compiler/provider identities
+and a new owned-controller plan before building or running. Use query,
+arithmetic, then exp in separate processes, once each; stop on the first
+unsupported capability, error, timeout, validation message or fresh fault.
+Keep the existing compiler/runtime without emulation flags. Prospective caps:
+180 seconds/4 GiB RSS for compilation, 60 seconds/1 GiB per device child,
+1 MiB text per command and 16 MiB total in a fresh private output root.
+Retain the small diagnostic executable only until its recorded capability
+consumer ends; preserve source and compact outcomes, then retire normal traces.
 Benchmark source `1f39425ddea4dd98e172d0033f78fb00a8586675` adds the explicit
 profile. Its 73 host tests finish with 72 passes and one optional real-tokenizer
 fixture skipped. They check wire/identity and legacy behavior, not GPU execution.
