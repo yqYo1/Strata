@@ -367,6 +367,31 @@ diagnostic build after the current IQ3 cohort. The measured engine/source remain
 unchanged;no model attribution,physical-resource ceiling or speedup follows yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
+The six closed CPU-service processes also agree exactly on logical work volume
+for each workload. Dividing `logical_job_blob_bytes` by generated tokens gives
+the following target-verifier demand, including rejected verification rows but
+excluding separate MTP draft work. GB below means decimal10^9 bytes.
+
+| Workload | Resident expert entry share | CPU logical blob GB/output | At70 output/s,logical GB/s |
+| --- | ---: | ---: | ---: |
+| Code,33212 input /3170 output | 10.8501% | 0.786020 | 55.0214 |
+| Prose,33282 input /7275 output | 6.7215% | 1.049027 | 73.4319 |
+
+The numerator is one full native expert blob per unique CPU job,not one per
+token entry:the existing jobs already group repeated experts across NT1..4.
+Code/prose have1221484/3743079 CPU jobs;78.1594%/63.6290% are NT1 expert jobs,
+which does not mean that the verifier itself mostly runs one-token windows.
+Resident-entry share measures expert placement,not GPU compute share;dense,
+attention and recurrent work are outside that count. Source is
+`verify_window_cpu_service_overhead_v1.processes[*].cpu_census.long_requests`
+at commit `c74d1539cceec80c13e9356ff73d54dfa4545587`.
+These logical bytes are not measured DRAM/PCIe traffic or a physical lower
+bound:cache reuse,partial reads and actual memory access still matter. The
+55/73 GB/s demand exceeds the prior achieved30.642 GB/s read reference,which
+is itself not a hardware ceiling. Before treating a wider CPU weight view as
+the next model route,compare its extra bytes with compatible read capacity
+and evaluate fewer CPU jobs through expert placement/reuse. Neither cache
+placement nor arithmetic is established as the limiting physical resource yet.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
 single-token GU selector to `NativeGuPhase::Decode`, preserving the prefill
 dispatch. This source-only containment is outside the frozen observer build;
