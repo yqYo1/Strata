@@ -48,7 +48,7 @@ def pinned_sources(revision):
     return pins
 
 
-def captures(text, arm, *, prompt_required=False):
+def captures(text, arm):
     require(arm in ARMS, 'unknown Q6 arm')
     result = []
     prefix = 'strata verify: phase='
@@ -69,9 +69,6 @@ def captures(text, arm, *, prompt_required=False):
             'missing actual decoded Q6 capture')
     if arm == 'columns':
         require(any(r['columns'] > 0 for r in decoded), 'candidate never selected Q6 columns')
-    if prompt_required:
-        require(any(r['phase'] == 'prompt' and r['reference'] > 0 for r in result),
-                'short prompt did not prove its independent reference capture')
     return result
 
 
@@ -79,16 +76,16 @@ def parser_check():
     prompt = 'strata verify: phase=prompt tokens=4 q6_reference_calls=2 q6_columns_calls=0\n'
     reference = 'strata verify: phase=decode tokens=4 q6_reference_calls=2 q6_columns_calls=0\n'
     columns = 'strata verify: phase=decode tokens=4 q6_reference_calls=1 q6_columns_calls=1\n'
-    captures(prompt + reference, 'reference', prompt_required=True)
-    captures(prompt + columns, 'columns', prompt_required=True)
+    captures(prompt + reference, 'reference')
+    captures(prompt + columns, 'columns')
     bad = [(prompt + columns, 'reference'),
            (prompt.replace('q6_columns_calls=0', 'q6_columns_calls=1') + columns, 'columns'),
            (prompt + reference, 'columns'), (prompt, 'reference'),
            (prompt + reference.replace('tokens=4', 'tokens=8'), 'reference'),
-           (reference, 'reference')]
+           (prompt + reference + 'strata verify: phase=invalid tokens=1 q6_reference_calls=2 q6_columns_calls=0', 'reference')]
     for text, arm in bad:
         try:
-            captures(text, arm, prompt_required=True)
+            captures(text, arm)
         except RuntimeError:
             continue
         raise RuntimeError('invalid phase/selection evidence accepted')
@@ -109,18 +106,20 @@ def context(arm):
     def current(row):
         require(row['environment'].get('STRATA_SYCL_DECODE_Q6_COLUMNS') == ARMS[arm] and
                 row['environment'].get('STRATA_SYCL_ADAPT_SYNC') == '1' and
-                row['configuration']['args'][row['configuration']['args'].index('--spec') + 1] == '4',
-                'freeze Q6 arm,checked adaptation and qualified MTP4 before startup')
+                row['configuration']['args'][row['configuration']['args'].index('--spec') + 1] == '4' and
+                row['configuration']['args'][row['configuration']['args'].index('--short-read') + 1] == '0',
+                'freeze Q6 arm,checked adaptation,MTP4 and selected short-read0 before startup')
         return original_current(row)
 
     def route(text):
         result = original_route(text)
         result['Q6_request_captures'] = captures(text, arm)
-        # Inspect the complete bounded engine log before the inherited outcome
-        # is published. The short warmup is outside long-request log windows.
+        # The selected short-read0 configuration bypasses prompt verify windows.
+        # Check any that are observed without claiming this route was exercised.
+        # The complete bounded log also includes the benchmark's short warmup.
         full = (ctx.ROOT / 'engine.stderr').read_text()
-        all_captures = captures(full, arm, prompt_required=True)
-        result['Q6_short_prompt_reference_observed'] = any(r['phase'] == 'prompt' for r in all_captures)
+        all_captures = captures(full, arm)
+        result['Q6_prompt_window_observed'] = any(r['phase'] == 'prompt' for r in all_captures)
         return result
 
     ctx.current, ctx.profile_route = current, route
@@ -143,7 +142,8 @@ def prepare(ctx, arm):
         'Two frozen current-source Python frontend probes,then two fresh32769-input bench.sh requests '
         'with thinking enabled,zero prefix reuse and1..24outputs. Keep default5workers,1256decode slots,'
         'spec4,8192prefill chunk,throughput,GDN16/MTP16 and immutable runtime safety. '
-        'Require observed short-prompt reference graph,per-long-request decoded Q6 captures with only '
+        'Keep selected short-read0;this entry does not qualify the model prompt-verify route. '
+        'Any observed prompt graph must use reference Q6;require per-long-request decoded Q6 captures with only '
         'the declared arm selected,actual GDN/native16/MTP/dense/head restore markers,valid counts/clocks,'
         'normal streams/native exit,quiet final parameter validation,unchanged inputs/providers and no fresh fault. '
         'Stop on the first failure;no retry,hash refresh or post-result criterion change. '

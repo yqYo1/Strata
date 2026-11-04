@@ -4895,13 +4895,16 @@ two GPU fixtures from the fixed225Q6 source plus only the declared phase/selecti
 changes,native source05a9b45c0. All three build commands exit0,all1446actual
 compiler inputs and external link inputs match,and owners close. The new engine
 hash is`a99aa1ac98c397933ca76d59361fec32aba335f6904b63c25d95efc52ce22734`.
-Compilation does not qualify GPU execution or select this engine. Its fresh
-same-build submission/phase-cache gate precedes the bounded32K model entries;
-these use one binary with separate immutable Q6 selectors and observed phase
-capture counts. New-engine GPU lifecycle,record-window arithmetic,dense/head
-handoff,matched long/agent/strong-and-weak-MTP model speed and physical262144/
-RESTORE checks remain pending. Earlier phase-GPU evidence remains scoped to
-its original source.
+Compilation does not select this engine. Its fresh same-build GPU gate now
+passes10submission cases and16synthetic phase-cache windows in two exit0
+processes,with strict tracing/validation,closed owners and no fresh fault.
+This qualifies only the small payload/graph lifecycle. The bounded32K model
+entries use one binary with separate immutable Q6 selectors and observed phase
+capture counts. Their matched configuration keeps`--short-read 0`,so they do
+not exercise the model's prompt-verify route;that needs a separately configured
+model check. Full record-window arithmetic,dense/head handoff,matched long/
+agent/strong-and-weak-MTP model speed and physical262144/RESTORE checks remain
+pending. Earlier phase-GPU evidence remains scoped to its original source.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
