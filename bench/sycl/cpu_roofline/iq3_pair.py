@@ -176,7 +176,8 @@ def prepare():
             limits='Logical footprint is not physical DRAM traffic/saturation. No model speed,quality,PP preservation,70TG,262144/RESTORE or adoption qualification.'),
         retention='Auxiliary CPU-only build,not a third inference generation. Keep two named CPU ELFs/library/objects only through this immediate correctness/comparison;after compact evidence and exact source/recipe recovery,retire successful output/build. Preserve479a fallback and live observer consumer unchanged.',
         budgets=dict(build_wall=300, build_cpu=1200, build_rss=8 << 30, check_wall=60,
-            measure_wall=180, text_cap=1 << 20, file_cap=16 << 20, total_cap=384 << 20))
+            measure_wall=180, measure_rss=1 << 30,
+            text_cap=1 << 20, file_cap=16 << 20, total_cap=384 << 20))
     save(row)
     print('Prepared CPU-only pair plan;commit before compilation.', flush=True)
 
@@ -334,7 +335,8 @@ def execute(stage):
             need(fixture_hash(f) == f['sha256'], 'actual model range drift')
             argv = [row['binaries']['cpu_iq3_pair']['path'], f['shard'], *[str(f[k]) for k in
                 ('gate', 'up', 'down', 'blob_bytes', 'total_experts')], str(ORDER[index]), str(index)]
-            entry, out, err = run('measure', argv, 180)
+            entry, out, err = run('measure', argv, row['budgets']['measure_wall'],
+                rss=row['budgets']['measure_rss'])
             need(not err.stat().st_size, 'CPU component stderr')
             rows = [json.loads(line) for line in out.read_text().splitlines()]
             samples = [v for v in rows if v['kind'] == 'sample']

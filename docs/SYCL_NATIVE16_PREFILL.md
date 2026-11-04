@@ -406,6 +406,9 @@ requires actual compile/link coverage and CPU-only linkage, the same archive,
 before/after each process. This controller is source-only; neither its plan
 preparation nor a compiler/test/benchmark has executed. The live observer
 cohort still owns serialized execution. No production pair dispatch is selected.
+The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
+512 MiB process cap before library/scratch overhead. Its prospective measurement
+cap is therefore 1 GiB; the small correctness fixture keeps its 512 MiB cap.
 Prospective build limits are 300 s wall,1200 s CPU,8 GiB RSS,1 MiB text and384 MiB
 private artifacts; the correctness child gets 60 s wall/CPU,512 MiB RSS and64 KiB
 text. Normal exit0 plus supported ISA, all numerical/refusal cases and closed
