@@ -142622,5 +142622,408 @@
       },
       "next_consumer": "V3 uses immutable committed component evidence; no V2 executable reuse"
     }
+  },
+  "cpu_iq3_pair_dispatch_v3": {
+    "stage": "prepared",
+    "source_commit": "1ec110452cdd70c425bbc31edd48bbd0421563ca",
+    "selected_direct_component_evidence": {
+      "commit": "ee5a8e41307a97bdb7155004e4bc9c2a33af5e33",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "cpu_iq3_pair_component_v2",
+      "winning_cells": 8,
+      "native_source": "39963e5ab2c33edd3d54f30ff55a0532fb4123bc",
+      "unchanged_pair_arithmetic_sha256": "feea1a669cf8eb713fe7e22878005517de3afec8c8a4af247fe938ad93fee585"
+    },
+    "dependency": {
+      "origin": "https://github.com/ggml-org/llama.cpp",
+      "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d"
+    },
+    "official_sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-expert-staging-v3/sdk-inputs.json",
+      "sha256": "c8879f0b8d772979bf2096dc64a3bba49853bd15dad221b46427a922030647d8",
+      "files": 10945
+    },
+    "host_link_inputs": {
+      "files": {
+        "/usr/bin/x86_64-linux-gnu-ld.bfd": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+      },
+      "compiler_queries": [
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-prog-name=ld"
+          ],
+          "reported": "/usr/bin/ld",
+          "resolved": "/usr/bin/x86_64-linux-gnu-ld.bfd"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtbeginS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtendS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc.a"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc_s.so"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=Scrt1.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/Scrt1.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/Scrt1.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crti.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crti.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crti.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtn.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crtn.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crtn.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc_nonshared.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc_nonshared.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc_nonshared.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libdl.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libdl.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libdl.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libm.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libm.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libmvec.so.1"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libmvec.so.1",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libmvec.so.1"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libpthread.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libpthread.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libpthread.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libm.so.6"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libm.so.6",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so.6"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libstdc++.so.6"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libgcc_s.so.1"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libc.so.6"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc.so.6",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=ld-linux-x86-64.so.2"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64/ld-linux-x86-64.so.2",
+          "resolved": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+        }
+      ],
+      "packages": [
+        "binutils-x86-64-linux-gnu 2.42-4ubuntu2.10",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1"
+      ],
+      "scope": "Exact host linker,CRT,archive/linker-script and math-library bytes from official driver queries. No GPU runtime,safety key or old failure status is changed. CPU V2 also freezes all five shared-object/loader targets exposed by V1; V1 remains failed."
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/external-inputs.json",
+      "sha256": "353b6875f070e20678d9c2937253c593ae0c1f716f3eb1283094844f25cabe09",
+      "files": 12177
+    },
+    "tools": {
+      "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
+      "/usr/bin/git": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201",
+      "/usr/bin/ldd": "752803b8baa217b821bd4566c4fbdaec50c01cb32d2796ec056d22d190d4290f",
+      "/usr/bin/python3.12": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "machine": {
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "kernel": "7.0.0-38-generic",
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cpuinfo_sha256": "b76b714d9c601674e41e94536b65107b50ec8428fcf179057a3bb14a8b17cb87"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "0",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/cache"
+    },
+    "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "fixture": {
+      "layer": 0,
+      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "gate": 1386491904,
+      "up": 1711166464,
+      "down": 913711104,
+      "blob_bytes": 2176000,
+      "total_experts": 512,
+      "measured_experts": 252,
+      "file_identity": {
+        "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "dev": 40,
+        "ino": 2640848,
+        "bytes": 54817524224,
+        "mtime_ns": 1791009083688077826,
+        "ctime_ns": 1791009083692077878
+      },
+      "sha256": "4e09195c6c1760378dc8a44256726a2b372ae4a57699c2036d87c3eeca696164"
+    },
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "configure": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_roofline",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icx",
+      "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+      "-DGGML_CCACHE=OFF",
+      "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
+    ],
+    "build": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build",
+      "--target",
+      "cpu_iq_single_exact_test",
+      "cpu_iq3_pair",
+      "cpu_service_pool_test",
+      "--parallel",
+      "4"
+    ],
+    "check_plan": [
+      {
+        "label": "exact-0",
+        "kind": "exact",
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build/cpu_iq_single_exact_test",
+          "--dispatch"
+        ]
+      },
+      {
+        "label": "pool-0",
+        "kind": "pool",
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build/cpu_service_pool_test",
+          "0"
+        ]
+      },
+      {
+        "label": "exact-1",
+        "kind": "exact",
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build/cpu_iq_single_exact_test",
+          "--dispatch"
+        ]
+      },
+      {
+        "label": "pool-1",
+        "kind": "pool",
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-dispatch-v3/build/cpu_service_pool_test",
+          "0"
+        ]
+      }
+    ],
+    "order": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      1
+    ],
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "production_selected": false,
+    "protocol": {
+      "question": "Does the measured IQ3_XXS pair gain survive the real native_gu_rows decode entry with phase containment and actual route evidence?",
+      "correctness": "Four separate pre-exec0/1 children. Each exact fixture passes384single/80pair cases plus80audited production NT1 calls:prefill pair rows0,decode pair rows0/10240. Finite bit parity,explicit sign/grid/FP16 edges,padded/unaligned helper cases,canaries and actual refusal targets remain. Each real-pool fixture covers28cases/seven format pairs/NT1..4/repeated prefill/decode;IQ3 NT1 row and selected-row deltas must match each phase,with equal full-output checksums across arms. Same-library normal exit0,no skip77. Each timing process independently checks2016 actual-model cases before/after against GGML and every timed output.",
+      "comparison": "One freshly linked CPU-only production library and benchmark,six independent processes0/1,1/0,0/1. Both arms time native_gu_rows/decode NT1;only STRATA_IQ3_PAIR differs before exec. SINGLE_EXACT0,IQ3_PAIR_AUDIT1,CPU_SERVICE0 in both. Eight cells:640/128rows,prequant/one production quantization per six experts,reuse6/stream252. Every timed batch must conserve actual native dispatch calls,IQ3 NT1 rows and selected pair rows. Pool fixture is correctness evidence;timing remains single-core rather than pool/model gain.",
+      "timing": "Four warm passes;five samples per cell,target0.35s,floor0.25s,cap1e6passes,timer<0.1percent fastest warm pass. Setup/load/hash/reference outside timing;pack cells include activation quantization. Preserve all individual values and all process results.",
+      "decision": "For each cell,three candidate/reference median ns-per-expert directions separately;all three<1 supports component gain,no arbitrary minimum. Require identical input fingerprints,geometry and actual pinned core across all6. No model trial follows from a cell that failed its performance gate.",
+      "stopping": "Stop first source,ELF,ownership,ISA,numerical,nonfinite,canary,timer,duration,budget or input mismatch. No retry,replacement,hash refresh or changed criteria. Keep original failure.",
+      "limits": "Logical footprint is not physical DRAM traffic/saturation. No model speed,quality,PP preservation,70TG,262144/RESTORE or adoption qualification."
+    },
+    "retention": "Auxiliary CPU-only build,not a third inference generation. Keep three named CPU ELFs/library/objects only through this immediate correctness/comparison;after compact evidence and exact source/recipe recovery,retire successful output/build. Closed V2 direct component has no executable consumer;retire it before building V3. Preserve479a fallback and observer generation until its separately recorded consumer ends.",
+    "budgets": {
+      "build_wall": 300,
+      "build_cpu": 1200,
+      "build_rss": 8589934592,
+      "check_wall": 60,
+      "check_text_cap": 65536,
+      "measure_wall": 180,
+      "measure_rss": 1073741824,
+      "text_cap": 1048576,
+      "file_cap": 16777216,
+      "total_cap": 402653184
+    },
+    "project_inputs": {
+      "files": 189,
+      "aggregate_sha256": "e4202bd741b89816a66d66bd3c6e39d0eafbdb7204e751d0937a67075d99b067"
+    },
+    "ggml_inputs": {
+      "files": 1376,
+      "aggregate_sha256": "42a9bbef65afb765d411387d418035051e24e5379daa12034fa116981b671a43"
+    }
   }
 }
