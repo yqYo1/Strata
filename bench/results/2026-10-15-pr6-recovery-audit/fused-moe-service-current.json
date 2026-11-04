@@ -117995,6 +117995,69 @@
       "configure_command_closed": true,
       "error": "monitor() called io.poll()/pidfd polling without io.read(),so stdout/EOF never drained even after CMake became a zombie. Interrupted exact owned controller before any engine compile command. CMake unused-variable warning is not the cause.",
       "next_action": "Fix and CPU-regress the monitor with real stdout beyond pipe/pending capacity,then create a new prospective build scope with unchanged native source. Preserve this failed attempt."
+    },
+    "source_contract_followup": {
+      "status": "unresolved-not-a-demonstrated-fault",
+      "source": "74ffd383a2100e13d4bc75c9fd3455b614267355:src/kernels/sycl/native_mmvq.cpp",
+      "scope": "Inherited Q6 load_int_b2 reads byte payload through uint16_t*,and Q8_1 apply reads int8_t qs through int*. 210-byte Q6 stride is2-aligned and Q8_1 words4-aligned;bounds are consistent,but compiler aliasing contract needs confirmation.",
+      "actual_compiler_dry_run": {
+        "exit_code": 0,
+        "command_source": "V1 actual compile_commands.json native_mmvq.cpp command plus -###;no compilation or GPU execution",
+        "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "optimization": "-O3 -std=c++20 -fsycl",
+        "cc1_device_triple": "spir64-unknown-unknown",
+        "host_and_device_alias_flags": [
+          "-mconstructor-aliases"
+        ],
+        "explicit_relaxed_aliasing_flag": false,
+        "stderr_sha256": "27c7ea662206b1ff3236e325768769d5e0201832eb55f2e8cd6cf04445501ae2"
+      },
+      "next_action": "Before changing these loads or qualifying Q6 model execution,check matching IntelLLVM/SYCL aliasing semantics;prefer defined byte/memcpy loads if no documented guarantee. Do not infer a GPU fault or treat the dry-run as correctness evidence. Small phase-cache payload fixture does not execute this Q6 arithmetic."
+    }
+  },
+  "verify_window_build_monitor_host_v1": {
+    "stage": "closed",
+    "source_commit": "6f79f4b1a3b9d3400f404f88c8d562b4acdc35c2",
+    "command": [
+      "/usr/bin/python3",
+      "-c",
+      "import sys;sys.stdout.buffer.write(b\"x\"*(2<<20));sys.stdout.buffer.flush()"
+    ],
+    "interpreter": {
+      "path": "/usr/bin/python3",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "budgets": {
+      "wall": 15,
+      "cpu": 10,
+      "rss_cap": 134217728,
+      "text_cap": 3145728,
+      "file_cap": 3145728,
+      "total_cap": 4194304
+    },
+    "expected_stdout_bytes": 2097152,
+    "expected_stdout_sha256": "6932fd31e5daf4739b9fa78ff777b2831b0995cc1d0b0093cac80601902013bc",
+    "plan": "Real child writes2MiB without a newline, exceeding pipe and pending-buffer capacity. Require exact bytes/hash,EOF,exit0 and closed owners through the production build monitor.",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "stdout_bytes": 2097152,
+    "stdout_sha256": "6932fd31e5daf4739b9fa78ff777b2831b0995cc1d0b0093cac80601902013bc",
+    "native_exit": 0,
+    "retention": "Keep compact CPU outcome;retire successful2MiB stdout after first candidate build closes.",
+    "controller_inputs": {
+      "files": 91,
+      "aggregate_sha256": "d0ffa488d8eaa6476324248698082c196f231dcf92d1aeaaf5a98a6a2f3f41a3"
     }
   }
 }
