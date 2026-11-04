@@ -237,6 +237,11 @@ Both processes exit normally with closed owners, checked validation, unchanged
 boot/providers and no fresh driver fault. These synthetic payloads do not
 qualify model arithmetic, measured CPU service, observer overhead or ordinary
 provider teardown. The next check is the same-build short model/census entry.
+The Main-authored `tools/sycl/cpu_service_model_entry.py` now defines that entry
+using the maintained model supervisor in a private context. It requires the
+closed device gate, unchanged twelve-case reader qualification and three
+complete model/census/service joins, including the warmup. Its source is
+prepared only; no actual model or observer-cost result is established yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
