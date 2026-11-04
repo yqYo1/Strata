@@ -5947,6 +5947,17 @@ int main(int argc, char** argv) {
         const bool cpu_census_enabled = census_env && std::strcmp(census_env, "1") == 0;
         const char* iq2_audit_env = std::getenv("STRATA_IQ2_PAIR_AUDIT");
         const bool iq2_audit_enabled = iq2_audit_env && std::strcmp(iq2_audit_env, "1") == 0;
+#ifdef STRATA_ENABLE_SYCL
+        const char* iq3_audit_env = std::getenv("STRATA_IQ3_PAIR_AUDIT");
+        const bool iq3_audit_enabled = iq3_audit_env && std::strcmp(iq3_audit_env, "1") == 0;
+        const char* iq3_pair_env = std::getenv("STRATA_IQ3_PAIR");
+        if (iq3_audit_enabled && (!iq3_pair_env ||
+            (std::strcmp(iq3_pair_env, "0") && std::strcmp(iq3_pair_env, "1")))) {
+            std::printf("ERR IQ3 audit requires an explicit startup selector 0 or 1\n");
+            return 1;
+        }
+        const bool iq3_pair_selected = iq3_pair_env && std::strcmp(iq3_pair_env, "1") == 0;
+#endif
         uint64_t census_request = 0;
         const int S = o.spec;
         const int S_mtp = o.mtp_max_t > 0 ? std::min(o.mtp_max_t, S) : S;   // the MTP's windows; suffixes go up to S
@@ -6736,6 +6747,8 @@ int main(int argc, char** argv) {
             // decode clock; optional callback counters themselves remain charged.
             strata::kernels::cpu::Iq2GuAudit iq2_audit_begin;
             if (iq2_audit_enabled) iq2_audit_begin = strata::kernels::cpu::iq2_gu_audit_snapshot();
+            strata::kernels::cpu::Iq3GuAudit iq3_audit_begin;
+            if (iq3_audit_enabled) iq3_audit_begin = strata::kernels::cpu::iq3_gu_audit_snapshot();
             auto mtp_observation = mtp.observe_draft_request(census_request);
 #endif
             const Clock::time_point d0 = Clock::now();
@@ -6916,6 +6929,30 @@ int main(int argc, char** argv) {
 #endif
 #ifdef STRATA_ENABLE_SYCL
             mtp_observation.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
+            if (iq3_audit_enabled) {
+                // All CPU work and the final commit are drained. Charge the
+                // optional counters to decode, but emit their delta afterwards.
+                const auto end = strata::kernels::cpu::iq3_gu_audit_snapshot();
+                if (!iq3_audit_begin.enabled || !end.enabled || iq3_audit_begin.overflow || end.overflow ||
+                    end.calls < iq3_audit_begin.calls || end.nt1_rows < iq3_audit_begin.nt1_rows ||
+                    end.pair_rows < iq3_audit_begin.pair_rows) {
+                    std::printf("ERR invalid IQ3 dispatch audit\n");
+                    return 1;
+                }
+                const auto rows = end.nt1_rows - iq3_audit_begin.nt1_rows;
+                const auto paired = end.pair_rows - iq3_audit_begin.pair_rows;
+                if (paired != (iq3_pair_selected ? rows : 0)) {
+                    std::printf("ERR unexpected IQ3 decode dispatch\n");
+                    return 1;
+                }
+                if (std::fprintf(stderr, "strata IQ3_GU_DELTA request=%llu arm=%d calls=%llu "
+                    "nt1_rows=%llu pair_rows=%llu\n", (unsigned long long)census_request,
+                    iq3_pair_selected ? 1 : 0, (unsigned long long)(end.calls - iq3_audit_begin.calls),
+                    (unsigned long long)rows, (unsigned long long)paired) < 0 || std::fflush(stderr) != 0) {
+                    std::printf("ERR IQ3 dispatch audit output failed\n");
+                    return 1;
+                }
+            }
             if (iq2_audit_enabled) {
                 const auto iq2_audit_end = strata::kernels::cpu::iq2_gu_audit_snapshot();
                 // This prints existing host counters only, after the synchronous
