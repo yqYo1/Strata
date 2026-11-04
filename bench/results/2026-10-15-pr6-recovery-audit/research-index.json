@@ -23788,19 +23788,64 @@
   },
   "iq3xxs_paired_gu_contract_20261105": {
     "classification": "decision support",
-    "stage": "coordinator_reserved_before_dispatch",
-    "eligibility": {
-      "schedulable_now": true,
-      "prerequisite_evidence": "New paired component source40686a960 is committed and thirteen source pins match. First actual long off/on pair is closed at 8a83e0d42fe4ac2c749b8c52ea92a0fbceaff597 with matching logical work and observed GU69-70percent/largest IQ3_XXS NT1 bin. This source-contract/next-component-plan question requires neither an unmeasured hardware ceiling nor a completed three-pair overhead bound."
-    },
-    "assignment_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/iq3xxs-paired-gu-contract/assignment.json",
-    "assignment_sha256": "e57714385730341f1b8868901b524573f689a7a07be72c17355722f8cea1e5ea",
+    "stage": "native_reviewed_corrective_fixture_committed_uncompiled",
     "source_commit": "40686a960d2311dba22827f3ecbb328d32249e39",
-    "question": "Audit the newly authored IQ3_XXS NT1 paired Gate/Up component against the exact frozen reference: packed byte layout and sign decoding; integer saturation/overflow and combining lanes; per-output FP32/FMA/horizontal-reduction order; input/output extents,overlap and refusal without writes; compiler/ISA eligibility and test coverage. Assess the activation-load sharing/independent gate-up instruction streams hypothesis,register pressure/code-size and hot-versus-stream counterregimes on Zen3. Recommend at most three concrete code or component-plan corrections,with source evidence. No claim of measured speed or hardware saturation;no generic LUT survey.",
-    "previous_report_index": "/home/yayoi/orca/workspaces/Strata/sycl/bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
-    "report_budget_bytes": 12288,
-    "consumer": "Main bounded CPU paired-component correctness/hot-stream test before decode-only production selection. New function is not wired to production.",
-    "next_review": "After scoped Luna source review;do not duplicate pending task or turn source review into performance qualification.",
-    "reserved_native_coordinator": "coordinate_iq3_pair_audit_20261105"
+    "inputs": {
+      "path": ".cache/research/2026-11-05/iq3xxs-paired-gu-contract/inputs.json",
+      "bytes": 5332,
+      "sha256": "27126b95060b9e72aebe3d4f75e9f7b0be32fcbc3a143ca1331b2e00669edc4d"
+    },
+    "report": {
+      "path": ".cache/research/2026-11-05/iq3xxs-paired-gu-contract/report.md",
+      "bytes": 9491,
+      "sha256": "47b5898deb71fdb06386af43dee72f5a8148c4136da71267eb7d4581b8011949"
+    },
+    "review": {
+      "path": ".cache/research/2026-11-05/iq3xxs-paired-gu-contract/review.json",
+      "bytes": 6942,
+      "sha256": "d0c0fb56c64d21ff7e91399e891b46b0e8311fad7a6e7ed037714c9587df7d91",
+      "verdict": "accepted_with_corrections",
+      "reviewer": "native Codex gpt-6-luna max"
+    },
+    "operational_digest": "Accept as conditional source decision support. The packed-byte/sign/scale decode, integer saturation bounds, FP32/FMA/reduction order and source extents match the exact frozen scalar reference; the scalar function body is byte-identical to the pinned external snapshot. Fix the fixture's alias-output no-write check and use the direct AMD guide link before retaining the findings. Main's next bounded step is a committed CPU-only compiler/ISA and correctness gate, then setup-inclusive hot/stream comparison only if that gate passes. No production selection or speed/saturation claim follows.",
+    "frozen_scalar_oracle": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/source/src/kernels/cpu/iq_single_avx2.cpp",
+      "sha256": "8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f",
+      "iq3xxs_dot_function_body_matches_candidate": true,
+      "function_body_bytes": 3136,
+      "function_body_sha256": "d4288d719c5a376fd8beb78c60a8a79d018bd6ddc539d23c6ea46ebd5fe7bdaf"
+    },
+    "corrections": {
+      "alias_refusal_actual_buffers_and_misaligned_output": {
+        "source_commit": "b51730208721ddc52bebd60a135aa9bd604f823f",
+        "compiled_or_executed": false
+      },
+      "exact_frozen_oracle": "Path/hash preserved in maintained prefill decision and inputs;source comparison only.",
+      "AMD_citation": "Use direct Family19h optimization guide https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/software-optimization-guides/56665.zip;original report uProf link is not that guide. Retained review carries correction."
+    },
+    "worker": {
+      "runtime_id": "9cb50b9b-f8d9-466f-8fef-98360bc7a4fd",
+      "run_id": "run_c09a9cbdb4c9",
+      "task_id": "task_75e75b5b1ac9",
+      "dispatch_id": "ctx_336846393f7d",
+      "terminal": "term_492dbdd7-1871-4552-b76f-88727c0c5701",
+      "provider": "Orca codex gpt-6-luna high",
+      "task_dispatch_outcome": "completed/succeeded",
+      "completed_at": "2026-11-04T17:57:29.327Z",
+      "terminal_observation": {
+        "status": "exited",
+        "exactWorker": true
+      },
+      "release": "worker-release explicitly retained operator-created external terminal;Main verified exact unchanged incarnation and closed its own terminal;ptyKilled true.",
+      "managed_resource_state": "external",
+      "protected_Main_terminal_untouched": true
+    },
+    "source_pins_verified": 13,
+    "eligibility": {
+      "schedulable_now": false,
+      "reason": "Source question reviewed;do not duplicate. Main owns the committed CPU-only compiler/ISA/correctness gate,then setup-inclusive hot/stream component comparison. More research requires a new concrete anomaly or implementation/resource question."
+    },
+    "consumer": "Immediate paired-IQ3 component qualification;helper remains unselected. No build,component speed,hardware saturation or model/adoption qualification.",
+    "next_review": "At component qualification or retirement;retire completed transaction files after this index is committed."
   }
 }

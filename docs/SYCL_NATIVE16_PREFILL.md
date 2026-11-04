@@ -212,8 +212,8 @@ The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
 thread-CPU clocks. Its replacement build, real-pool off/on parity, small device
 checks and short model/census entry are now closed. Representative long-decode
-collection has three of six processes closed, including one complete off/on
-pair; repeated observer-cost qualification remains pending.
+collection has four of six processes closed, including two complete off/on
+pairs; repeated observer-cost qualification remains pending.
 The retired a99 generation's measured snapshot used two pool files from
 `6e40afc1b`, rather than the plain Git `05a9` pool files. The observer hooks
 are applied to those recovered bytes while preserving the eight
@@ -307,9 +307,11 @@ any other work. This conditional accounting is not a physical CPU ceiling or
 clean-speed prediction: observer cost, CPU frequency, memory stalls, cache
 residency and the MTP/NT mix still matter. Reaching70 requires lower CPU-service
 cost or less CPU work, alongside GPU and transfer improvements.
-The second on process also passes all six native/API joins, closed ownership
-and quiet validation with no fresh fault. Its logical work matches the first
-pair in both long workloads; its paired off process remains pending.
+The second pair also passes all six native/API joins per process, closed
+ownership and quiet validation with no fresh fault. Logical work matches in
+both long workloads. Its on/off per-output latency ratios are 1.017201 for code
+and 1.016185 for prose, each below the declared 1.05 bound. The final pair is
+still required; these two pairs do not establish the full repeated bound.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
