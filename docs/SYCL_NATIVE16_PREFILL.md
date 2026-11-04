@@ -199,6 +199,9 @@ Neither the modified prototype nor fixture has been compiled or run. The
 component still needs a committed pinned build recipe,bounded traced admission
 and repeated actual-placement timing before any decode-only route proposal.
 The existing production copy and measured engine remain unchanged.
+Every lane reaches the two-dimensional group broadcast with the same valid
+source ID before the hit-dependent branch,following the
+[Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved
@@ -563,11 +566,15 @@ quiet validation, all15 final asset hashes, closed owners and no fresh fault.
 IQ3-on now passes the same probes and both short requests, with identical
 calls/eligible rows and selected paired rows1400960/1378560. Both selectors
 close normally with all15 final asset hashes, quiet validation and no new fault.
-The six-process long-generation comparison has closed its first reference
-process:code3170/prose7275 generated tokens,exact TG10.2352/6.6905 and observed
-MTP acceptance0.82439/0.38924. Both requests satisfy their extent/answer/route
-gates;native exit0,quiet validation,closed ownership and no fresh fault.
-Five independent processes remain;no candidate comparison or gain is qualified.
+The six-process long-generation comparison has closed its first matched pair:
+reference/candidate code TG10.2352/10.4004 and prose6.6905/6.8850,with exact
+candidate/reference ratios1.016142/1.029070. Both arms generate3170/7275 tokens
+with MTP acceptance0.82439/0.38924. All four requests satisfy their extent,
+answer and actual-route gates;both native exits0,quiet validation,closed
+ownership and no fresh fault. Candidate selected NT1 rows221271040/566117760
+equal the eligible rows,while reference selected rows are0.
+Four independent processes remain;one pair does not qualify repeated gain,
+prefill/TTFT preservation or inference adoption.
 Both arms retain the common IQ3 audit,whose incremental cost is not separately
 measured;these are not a matched comparison against the older clean TG values.
 The diagnostic preset's
