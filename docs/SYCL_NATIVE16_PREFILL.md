@@ -4764,38 +4764,42 @@ kernels and physical PCIe/RAM traffic remains unknown. The profiled prompt is
 1.10785times its same-body unprofiled diagnostic reference;the short decode
 interval is also affected by collection and is not clean sustained TG evidence.
 
-The explicit Q6_K column candidate now passes the32-case GPU smoke and
-three fresh resident component processes across seven actual model geometries
-and columns1,2,3,4,8. All1050timing batches pass the10ms floor;all output bits,
-guards,read-only inputs,normal exits,quiet validation and fresh-fault checks pass.
-The separately scoped V4gate accounts for exactly one intentional null-platform
-validation-probe error before main in the full-trace smoke;all other diagnostics
-still reject. Earlier source/link/trace-parser refusals remain failed.
+The corrected Q6_K byte-span component now passes its32-case traced GPU smoke
+and three fresh resident processes across seven actual model geometries and
+columns1,2,3,4,8. Every encoded Q81 byte matches the host quantizer reference;
+first/middle/last Q6 output rows in every column match the scalar dequantized-dot
+oracle within the prospective tolerance. Both references share the tested half
+converter. All reference/candidate output bits,guards,read-only inputs,normal
+exits,strict validation and fresh-fault checks pass. All1050timing batches meet
+the10ms floor. The earlier IR and fixture/API failures remain failed.
 
-In28of35geometry/column combinations,the candidate is faster in all three
+In30of35geometry/column combinations,the candidate is faster in all three
 process medians,meeting the prospective component follow-up screen. The table
-shows milliseconds per public call,using geometric means of the three process
-medians,each from five batches per arm. It includes dispatch/submission and
-queue completion;weights and Q8_1 activations are already resident.
+shows milliseconds per public call,using geometric means of three process
+medians,each from five paired batches per arm. It includes dispatch/submission
+and queue completion;weights and Q8_1 activations are already resident.
 
 | Input width | Output rows | Columns | Reference ms | Candidate ms | Candidate/reference time |
 | ---: | ---: | ---: | ---: | ---: | ---: |
-| 2560 | 10240 | 4 | 0.493024 | 0.444126 | 0.900820 |
-| 6144 | 2560 | 4 | 0.247354 | 0.215991 | 0.873206 |
-| 2560 | 6144 | 4 | 0.266403 | 0.228655 | 0.858304 |
-| 2560 | 12288 | 4 | 0.592440 | 0.535173 | 0.903337 |
-| 2560 | 248320 | 4 | 11.815285 | 10.738417 | 0.908858 |
+| 2560 | 10240 | 4 | 0.500653 | 0.450714 | 0.900250 |
+| 6144 | 2560 | 4 | 0.252505 | 0.222815 | 0.882419 |
+| 2560 | 6144 | 4 | 0.270719 | 0.234060 | 0.864586 |
+| 2560 | 12288 | 4 | 0.601654 | 0.543630 | 0.903560 |
+| 2560 | 248320 | 4 | 11.993176 | 10.893660 | 0.908322 |
 
-The smaller512-row cases at columns1..4 do not meet that screen;keep their
-reference. The640-row columns1/2 and6144-row single-column case also remain
-unqualified despite some favorable samples;do not discard their individual
-values or call the decrease noise. Compiled native source664a280d5 composes
-selected479a with the explicit candidate;ELF SHA-256 is
-bb63479f9f4290525cd1fef1475033292f7ccc64a1ac3c4a0879f53d0b58bc26.
-See`q6_columns_component_v4`;all individual samples remain there.
+Keep the reference for2560x640at columns2 and2560x512at columns1..4;the five
+combinations do not meet the all-three-process screen. Preserve their individual
+values. Source225e13889composes selected479a with the byte-span Q6 source and
+fixture,using the selected engine's actual C++20/optimization recipe;ELF SHA-256
+is`caa515675427ec42024b4b85646058169453a3b856c4717e7e6adec8b7646654`.
+See`q6_byte_load_component_v2`. Both arms contain the scalar/Block-view repair;
+this does not measure that repair's speed effect. Earlier664/C++17timings remain
+historical component evidence,not a matched comparison with this build. This
+is not a model TG gain or adoption;update the phase-specific selection and qualify
+the new model route before using these30eligible shapes there.
 
 The change preserves weight mapping,ascending partial sums and XOR reduction.
-Offline inspection of this component's actual B570 native cache now finds
+Offline inspection of the earlier664component's actual B570 native cache finds
 0static`dp4a`instructions in the reference ROWS1/NW4 kernel and2,4,6,8,16in
 the constant-column1,2,3,4,8kernels. Both routes report GRF128/SIMD32,with no
 reported private/spill fields or per-thread scratch buffers. The C4 native
@@ -4868,8 +4872,12 @@ and Q81 consumer field uses byte access or a copy into a live scalar;the Q81
 scratch writer copies a live local half pair into its encoded byte span. Other
 formats retain their legacy consumers. The new fixture checks every encoded
 Q81 byte against a host XOR-sum/rounding reference outside timers,including
-zero and constant blocks,before its scalar Q6 dot check. This remains unbuilt
-and unqualified source;the new component plan precedes all execution.
+zero and constant blocks,before its scalar Q6 dot check. Its actual C++20
+build now passes all796 compiler inputs and24 external link inputs;the32-case
+GPU smoke and3x35case resident comparison close passed,as recorded above.
+Grouped/prompt arithmetic,whole-model speed and physical-context qualification
+remain pending. The current phase selection still reflects the earlier28-shape
+screen;replace it with the new30-shape decision before the next model comparison.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
