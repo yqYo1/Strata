@@ -4852,7 +4852,16 @@ those failed scopes stay failed and the production optimization flags stay intac
 The next normal-compile component adds a scalar dequantized-dot oracle at sampled
 rows,then repeats resident reference/specialized timings with the actual model
 C++20recipe. This is unqualified source,not a numerical or performance result.
-The separate actual Block-producer lifetime review remains pending.
+The actual native Q6 translation unit now compiles,while the first new
+component fixture fails on the removed SYCL device-endianness info query. That
+scope remains failed;the corrected fixture uses a guarded4B device representation
+check and awaits a fresh build. The separate Block-producer review now establishes
+allocation alignment,but does not establish typed Block lifetime from the inspected
+raw device allocations and SYCL byte copies. Before full Q6 numerical/model
+qualification,resolve every consumed Q6 field and the used Q81 scratch view
+through a documented object-creation contract or byte-based field access. The
+local scalar-load correction alone does not settle that separate contract debt.
+No new numerical or speed result follows from the review.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 

@@ -22834,8 +22834,8 @@
   },
   "q6_usm_block_producer_contract_20261104": {
     "classification": "decision_support",
-    "stage": "report_returned_native_review_running",
-    "schedulable_now": true,
+    "stage": "reviewed_main_source_decision_pending",
+    "schedulable_now": false,
     "prerequisites_evidence": [
       "q6_typed_payload_contract_20261104:reviewed actual producer/lifetime unknown",
       "6dab2468e:closed phase GPU10+16 and unchanged retained actual097native snapshot"
@@ -22848,7 +22848,7 @@
     "worker_effort": "high",
     "main_reads_body_on_arrival": false,
     "consumer": "Resolve the actual-producer caveat before Q6 load/model qualification;Main keeps compilation moving.",
-    "review_point": "After reviewed source decision retain only useful findings/citations and retire lifecycle transactions.",
+    "review_point": "After the bounded Main Q6/Q81 source decision, retain only its useful contract findings and citations; retire consumed report/transaction files and review the old frozen snapshot consumer.",
     "model_evidence": "Actual startup GPT-6-Luna high;workspace-write network_access=true;worker-start receipt proves turn_started.",
     "ownership": {
       "run": "run_c09a9cbdb4c9",
@@ -22870,7 +22870,22 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "path": ".cache/research/2026-11-04/q6-usm-block-lifetime/review.json",
-      "status": "running"
+      "status": "accept_as_bounded_decision_support_after_corrections",
+      "sha256": "e21f0b49d8bc5ba8928e0e604da7fc6286543928d3031c4ef0c8fd9180c422ef",
+      "bytes": 6709
+    },
+    "report_identity": {
+      "sha256": "27f89a0cef531f25fc25f9de76c0c7bbee440474bf5feb8345966ef52e2d9337",
+      "bytes": 8085
+    },
+    "retrieval_digest": "Accept as bounded decision support. SYCL guarantees alignment here, but the actual raw device allocations and SYCL byte copies do not establish Block lifetime in the inspected contract. The local scalar-load compile check may continue as limited lowering evidence; it does not settle the remaining Q6 typed Block accesses or Q81 scratch lifetime. No defect, numerical, model, or performance qualification follows.",
+    "next_action": {
+      "owner": "Main",
+      "scope": "Resolve every consumed Q6 Block field and Q81 scratch view through a documented object-creation contract or byte-based field access before full Q6 numerical/model qualification. Preserve original IR and fixture-info-query failures. The scalar-load normal compile alone does not qualify this route.",
+      "GPU_trial_qualified": false,
+      "numerical_qualified": false,
+      "model_qualified": false,
+      "performance_qualified": false
     }
   }
 }
