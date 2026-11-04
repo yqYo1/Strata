@@ -142600,7 +142600,7 @@
     }
   },
   "cpu_iq3_pair_component_v2": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "39963e5ab2c33edd3d54f30ff55a0532fb4123bc",
     "dependency": {
       "origin": "https://github.com/ggml-org/llama.cpp",
@@ -142997,6 +142997,33 @@
     "same_build_library": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-component-v2/build/libexpert_cpu.a",
       "sha256": "b01be248e9f8f0859b7eca0964305012dbb7a9bc2049ad2359d62bdabda2f7f9"
+    },
+    "correctness": {
+      "passed": true,
+      "single_cases": 384,
+      "paired_cases": 80,
+      "source": "tests/core/iq_single_exact_test.cpp",
+      "receipt": {
+        "pid": 2594902,
+        "direct_identity": {
+          "pid": 2594902,
+          "state": "R",
+          "ppid": 2594797,
+          "pgid": 2594902,
+          "sid": 2594902,
+          "start_ticks": 217158826,
+          "rss_bytes": 282624
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.130476008169353,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 5251072
+      }
     },
     "project_inputs": {
       "files": 188,

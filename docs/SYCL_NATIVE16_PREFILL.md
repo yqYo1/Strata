@@ -356,15 +356,15 @@ Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
 single-token GU selector to `NativeGuPhase::Decode`, preserving the prefill
 dispatch. This source-only containment is outside the frozen observer build;
 its compiled qualification and matched model comparison remain pending.
-The source-only `iq3xxs_pair_gu_rows` component is the next IQ3_XXS NT1 GU
+The unselected `iq3xxs_pair_gu_rows` component is the next IQ3_XXS NT1 GU
 candidate. It shares activation loads between gate/up, keeps packed weights
 unchanged and preserves each output's block FMA and final float reduction.
 Its integer lane bound is 7872512; byte loads avoid unaligned scale/sign objects.
 The maintained single-exact fixture now defines GGML parity, padded/unaligned
 input, output-canary, invalid-layout, overlap and overflow checks for this
-component. Neither those new checks nor a speed comparison has run. The helper
-is not selected by production; after the observer cohort, qualify the CPU
-component and its setup-inclusive hot/stream cost before a decode-only model
+component. Its V2 same-build correctness fixture now passes as detailed below;
+no speed comparison has run. The helper
+is not selected by production; qualify its setup-inclusive hot/stream cost before a decode-only model
 trial. Retire it if the component does not justify that trial.
 The independent source audit uses the frozen scalar oracle at
 `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/source/src/kernels/cpu/iq_single_avx2.cpp`,
@@ -397,8 +397,8 @@ admission fails before any correctness or timing execution, as detailed below.
 The CPU-only CMake project also exposes `cpu_iq_single_exact_test`, reusing the
 maintained correctness fixture and the same freshly compiled `expert_cpu`
 library as the benchmark. This permits the compiler/ISA and correctness gate
-without linking or rebuilding a GPU engine. The new fixture has not executed;
-a fresh V2 pins the complete linker inputs before rebuilding.
+without linking or rebuilding a GPU engine. V2 pins the complete linker inputs
+before rebuilding and now passes the new fixture.
 The benchmark emits deterministic weight/activation input fingerprints before
 timing; require them to match across all six processes in addition to the
 pinned model-range hashes. FNV fingerprints are consistency checks, not
@@ -442,8 +442,12 @@ candidate and production dispatch are unchanged. V2 preparation passes at
 including all five runtime targets. V2 compilation now passes, with complete
 actual compiler/link input coverage, two hashed CPU ELFs, the same freshly
 compiled expert archive, and only pre-pinned CPU runtime libraries. All five
-owned build/inspection commands exit0 with closed owners. The correctness
-fixture and timing remain pending. The observer cohort is closed and its successful full output is
+owned build/inspection commands exit0 with closed owners. The same-build
+correctness fixture exits0 and passes384 single plus80 paired cases, including
+the explicit sign/grid/scale and FP16-edge coverage, bit parity and refusal
+targets. Its process closes with quiet stderr. The six-process component
+comparison remains pending; no production dispatch or model speed is qualified.
+The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
 512 MiB process cap before library/scratch overhead. Its prospective measurement
