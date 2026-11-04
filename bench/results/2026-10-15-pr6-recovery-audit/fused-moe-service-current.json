@@ -123809,7 +123809,7 @@
     }
   },
   "verify_window_model_entry_columns_v1": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "8b204b81e518b7d12d6eaab105448278a75c9cc4",
     "native_source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
     "binary": {
@@ -124111,7 +124111,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -124145,6 +124145,20 @@
       "normalized_environment_sha256": "ada8dddceac7f945adebce365c8797dec76627c241727d8220befc66e4699144",
       "intentional_difference": "Immutable STRATA_SYCL_DECODE_Q6_COLUMNS=0 versus1;private output/cache paths and HTTP port are per-process."
     },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 190,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 293,
       "aggregate_sha256": "0555bca49240991884d81325a63f1d354713857e25aa3ca6618befe2a153f71c"
