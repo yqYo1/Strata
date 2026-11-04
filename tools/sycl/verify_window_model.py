@@ -20,8 +20,8 @@ import measurement_owner as supervision
 P, B, RESULT = selected.P, selected.B, selected.RESULT
 base = selected.base
 require, digest, write = base.require, base.digest, base.write
-ROOT = B / 'verify-window-policy-host-v2'
-KEY = 'verify_window_policy_host_v2'
+ROOT = B / 'verify-window-policy-host-v3'
+KEY = 'verify_window_policy_host_v3'
 SELF = Path(__file__).resolve()
 BEFORE = '0ec7f128ea973658e9653076a93f534658b2dfd6'
 Q6 = '225e13889f5ace66fb26fa054952ae588d87d159'
@@ -103,7 +103,18 @@ def prepare():
     require(base.basis.build.git(P, 'show', revision+':'+str(SELF.relative_to(P))) == SELF.read_bytes(),
             'commit the exact projection/check controller first')
     native, values = projection(revision)
-    data = base.committed(RESULT); component = data['q6_byte_load_component_v2']
+    data = base.committed(RESULT)
+    previous=data['verify_window_policy_host_v2']
+    require(previous['stage']=='failed' and previous['ownership_closed'] and
+            'TimeoutExpired' in previous['error'] and 'dpkg-query' in previous['error'] and
+            len(previous['results'])==6 and all(x['exit_code']==0 for x in previous['results']),
+            'preserve the completed-six-command scope with failed post-check')
+    inventory=data['host_link_inventory_batch_v1']
+    require(inventory['passed'] and inventory['complete'] and inventory['ownership_closed'] and
+            inventory['actual_sha256']==inventory['expected_sha256'] and
+            inventory['sources']['tools/sycl/host_link_inventory.py']==digest(P/'tools/sycl/host_link_inventory.py'),
+            'qualify the same provider inventory before allowing batched-query control reuse')
+    component = data['q6_byte_load_component_v2']
     require(component['source_commit'] == Q6 and component['passed'] and component['complete']
             and component['ownership_closed'] and component['decision']['qualified_shapes'] == 30,
             'closed repeated Q6 component qualification required')
@@ -133,7 +144,8 @@ def prepare():
         require(not skip and args[0] == compiler['path'], 'unexpected selected compiler recipe')
         commands.append((label, [*args, '-fsyntax-only', '-MD', '-MF', str(ROOT/(label+'.d'))]))
     controls = {str(SELF.relative_to(P)), *PHASE_FILES, POLICY, FIXTURE,
-                'tools/sycl/measurement_owner.py'}
+                'tools/sycl/measurement_owner.py', 'tools/sycl/host_link_inventory.py',
+                'tools/sycl/cache_map_model_entry.py'}
     pins = {n:hashlib.sha256(base.basis.build.git(P,'show',revision+':'+n)).hexdigest() for n in controls}
     row = dict(stage='prepared', source_commit=revision, selected_native_source=native['source_commit'],
         component_source=Q6, controller_inputs=pins, compiler=compiler,
@@ -166,11 +178,15 @@ def check():
     try:
         results=[]
         for label,argv in row['commands']:
+            if label=='run-host':
+                row['binary_before_run']=dict(path=row['binary_path'],sha256=digest(row['binary_path']))
+                write(ROOT/'record.json',row)
             print(label,flush=True)
             command,out,err=owner.run(label,argv,row['environment'],selected.model.ROOT/'build',**row['budgets'])
             require(supervision.closed(command) and command['exit_code']==0,
                     label+' failed: '+err.read_text()[-4000:])
             if label=='run-host':
+                require(digest(row['binary_path'])==row['binary_before_run']['sha256'], 'host executable changed')
                 require(not err.read_text(), label+' runtime diagnostics')
                 require(out.read_text()=='verify-window-policy: passed selections=30 phase-roundtrip=1 invalid-keys=4 retirement=1\n',
                         'host contract output differs')

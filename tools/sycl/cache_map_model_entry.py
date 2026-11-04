@@ -25,7 +25,8 @@ INDEX = P / 'bench/results/2026-10-15-pr6-recovery-audit/research-index.json'
 require, digest, write = base.require, base.digest, base.write
 HISTORY_COMMIT = 'c23a2f7ca5d177102f347eeabae605903cb2ff9d'
 NATIVE_CONTROLS = ('tools/sycl/build_cache_map_model.py', 'tools/sycl/compare_official_prefill.py',
-                   'tools/sycl/official_model_entry.py', 'tools/sycl/gdn_model_sources.py')
+                   'tools/sycl/official_model_entry.py', 'tools/sycl/gdn_model_sources.py',
+                   'tools/sycl/host_link_inventory.py')
 
 
 @lru_cache(maxsize=1)

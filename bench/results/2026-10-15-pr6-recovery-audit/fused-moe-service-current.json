@@ -122389,7 +122389,7 @@
     }
   },
   "host_link_inventory_batch_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "ba3f62d12d18e3cbcf2dcc3810ce059c79c70ca0",
     "sources": {
       "tools/sycl/host_link_inventory.py": "3e6e0fc60e8876d766da7f93689d17dba6fb5de55a973685d511b47b2350a3b7",
@@ -122419,8 +122419,13 @@
       "total_cap": 2097152
     },
     "plan": "Query every original compiler/linker path;one batched dpkg ownership lookup must cover every resolved file;compare the entire result with the unchanged selected native inventory,including bytes,driver queries and package versions. No engine/GPU execution.",
-    "passed": false,
-    "complete": false,
-    "ownership_closed": true
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
+    "native_exit": 0,
+    "actual_sha256": "a919c9f551c75ec310c127add91964a8df84524e728365934425a0eeb494eca8",
+    "files": 14,
+    "queries": 14,
+    "packages": 4
   }
 }
