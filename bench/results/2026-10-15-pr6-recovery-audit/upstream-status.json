@@ -819,7 +819,9 @@
     "engine_sha256": "b310353872d29bd7fdd8ad7ba67ad75a0700edaa284a6f3460d4df9549cbfbb6",
     "host_result_key": "decode_iq3_host_v2",
     "device_result_key": "decode_iq3_phase_device_v1",
-    "model_executed": false
+    "model_executed": false,
+    "model_entry_result_key": "decode_iq3_model_entry_arm0_v1",
+    "model_entry_stage": "reference_frontends_passed_native_model_unexecuted"
   },
   "remote_check_command": [
     "git",
@@ -854,31 +856,40 @@
         "scope": "server-api",
         "classification": "decision_support",
         "schedulable_now": true,
-        "state": "dispatched",
+        "state": "closed_awaiting_native_review",
         "task": "task_d07c1702ee8d",
         "dispatch": "ctx_b3da33c7cf97",
         "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/server-api/report.md",
-        "report_budget_bytes": 18432
+        "report_budget_bytes": 18432,
+        "report_bytes": 17348,
+        "report_sha256": "84cfab62542bdbdce3b584e1206498fa4c6d654285b3c9f0d6d69ff67e0615d7",
+        "ownership_closed": true
       },
       {
         "scope": "launch-setup",
         "classification": "decision_support",
         "schedulable_now": true,
-        "state": "dispatched",
+        "state": "closed_awaiting_native_review",
         "task": "task_c488bfb9a52a",
         "dispatch": "ctx_9e49efbbbb79",
         "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/launch-setup/report.md",
-        "report_budget_bytes": 18432
+        "report_budget_bytes": 18432,
+        "report_bytes": 13900,
+        "report_sha256": "4381c3c8c262153171fd4634048a91f8e3a76cc9be1df60ab9c08c5e39a61726",
+        "ownership_closed": true
       },
       {
         "scope": "inference-admission",
         "classification": "decision_support",
         "schedulable_now": true,
-        "state": "dispatched",
+        "state": "closed_awaiting_native_review",
         "task": "task_7dc2c67a778e",
         "dispatch": "ctx_e5278492b695",
         "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/inference-admission/report.md",
-        "report_budget_bytes": 18432
+        "report_budget_bytes": 18432,
+        "report_bytes": 13638,
+        "report_sha256": "c65db1121391d697e99632a19af13ec1364002261a966550d6392b0a520f220f",
+        "ownership_closed": true
       }
     ],
     "input_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/inputs.json",
@@ -887,6 +898,14 @@
     "whole_function_ledger_complete": false,
     "performance_evaluation_complete": false,
     "code_imported": false,
-    "coverage_limit": "Three coherent source-delta scopes;unrelated desktop chat/agent/artifact changes and earlier functional backlog still need coverage. Main does not steer active researchers;native Codex Luna-max reviews completed reports before indexing/integration. Per-file provenance is required;uncertain XeStrata-derived material remains excluded."
+    "coverage_limit": "Three coherent source-delta scopes;unrelated desktop chat/agent/artifact changes and earlier functional backlog still need coverage. Main does not steer active researchers;native Codex Luna-max reviews completed reports before indexing/integration. Per-file provenance is required;uncertain XeStrata-derived material remains excluded.",
+    "native_review": {
+      "state": "running",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "agent": "/root/review_upstream_v0210_wave_20261105",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/review.json",
+      "consumer": "Correct source/coverage/provenance findings before indexing or selecting an import;not implementation or runtime admission."
+    }
   }
 }
