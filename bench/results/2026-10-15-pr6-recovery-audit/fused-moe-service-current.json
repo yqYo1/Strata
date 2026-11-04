@@ -148918,5 +148918,113 @@
       "files": 1376,
       "aggregate_sha256": "42a9bbef65afb765d411387d418035051e24e5379daa12034fa116981b671a43"
     }
+  },
+  "decode_iq3_pair_model_build_v1": {
+    "stage": "prepared",
+    "source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
+    "selected_basis": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2",
+      "native_source_commit": "1ec110452cdd70c425bbc31edd48bbd0421563ca",
+      "source_construction_aggregate": "4fe176ab0bda4c30c25450404c5dea35895a69f78fbc30db9fff5017ec5a3f73",
+      "original_observer_source_commit": "8e2499937969dbfa1dcd950b95025d9712037a83",
+      "original_observer_source_aggregate": "bec3ad152ff310419940fb55e41663a52f2e0122db77953e0e9e4d35b83ce110",
+      "original_observer_engine_sha256": "6e0730b3641563e6da311b9ac3d93bd99241cacae74da7c0767eed46a18327f6",
+      "component_evidence_commit": "cf0a6b175261f013099965dcb9ca19d1e840ad2d",
+      "component_source_commit": "1ec110452cdd70c425bbc31edd48bbd0421563ca",
+      "generator_route_patch_commit": "7969ccb9f5fe3c4900e79df7937e709830e4d7e4",
+      "changed_files": [
+        "include/strata/kernels/cpu/native_expert.hpp",
+        "include/strata/kernels/cpu/iq_avx2.hpp",
+        "src/kernels/cpu/native_expert.cpp",
+        "src/kernels/cpu/iq_single_avx2.cpp",
+        "tests/core/iq_single_exact_test.cpp",
+        "tests/core/cpu_service_pool_test.cpp",
+        "src/program/generate.cpp"
+      ],
+      "scope": "Exact-source reconstruction and closed component qualification only;all new outputs need their own admission."
+    },
+    "monitor_qualification": {
+      "original_source_commit": "6f79f4b1a3b9d3400f404f88c8d562b4acdc35c2",
+      "evidence_key": "verify_window_build_monitor_host_v1",
+      "monitor_AST_sha256": "2141f05cc05e364bae5480b2420a349ae4b30c306b13c7caa21d2b8a97206924",
+      "unchanged_helpers": {
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+      },
+      "scope": "Reuse only the identical monitor function,owner,guard and interpreter;not the new preparation or metadata-query code."
+    },
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 7200,
+      "rss_cap": 12884901888,
+      "text_cap": 8388608,
+      "file_cap": 536870912,
+      "total_cap": 2147483648
+    },
+    "whole_wall_seconds": 3600,
+    "host_plan": {
+      "arms": [
+        0,
+        1
+      ],
+      "CPU_SERVICE": 0,
+      "IQ3_PAIR_AUDIT": 1,
+      "SINGLE_EXACT": 0,
+      "wall_each": 60,
+      "expected_exact_single": 384,
+      "expected_exact_pair": 80,
+      "expected_pool_cases": 28,
+      "scope": "Four fresh same-build CPU children:exact0,pool0,exact1,pool1. Require actual decode routing,prefill exclusion,bitwise GGML/canaries and equal real-pool checksums;not pool/model speed."
+    },
+    "retention": "Imminent same-binary decode IQ3 on/off comparison. Keep479a fallback;retire the closed observer engine and closed CPU-only comparison products before building.New five-output generation needs same-build arithmetic/pool and small traced device gates,then short actual-model route admission before long generation. No third inference generation.",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "observer_overhead_qualified": false,
+    "inference_adopted": false,
+    "model_comparison_plan": {
+      "question": "Does the winning exact CPU IQ3 NT1 gate/up path improve sustained model decode?",
+      "selector": "One binary,immutable STRATA_IQ3_PAIR0/1 in separate owned processes;prefill unchanged.",
+      "qualification": "First four same-build host cases,then existing traced submission/phase GPU checks,then two thinking-on short-output actual32K requests in each selector with complete IQ3_GU_DELTA and final model hashes. These stages do not authorize an automatic long run.",
+      "comparison": "After entry admission,commit six fresh processes0,1,1,0,0,1 through maintained bench.sh long-generation workloads with thinking on and >=1K output;actual strong/weak MTP classes,all individual samples and same-request dispatch;all three pairs faster per workload qualifies reproducible gain without a minimum percent floor.",
+      "remaining": "Dedicated64K/117K PP/TTFT preservation,agent/task,prompt-verify,physical262144/RESTORE and ordinary provider teardown remain separate;no component-to-model speed projection."
+    },
+    "controller_inputs": {
+      "files": 97,
+      "aggregate_sha256": "7f465d6c9547fd2392dc520c7915243a915ce41c582f96f0d3f62b007d217a58"
+    },
+    "native_sources": {
+      "files": 563,
+      "aggregate_sha256": "4fe176ab0bda4c30c25450404c5dea35895a69f78fbc30db9fff5017ec5a3f73"
+    },
+    "recipe": {
+      "helper": "tools/sycl/cpu_service_sources.py:recipe",
+      "sha256": "d7ab72239b2a1c3b079e3c800a9eedaa2b98a00835f9fcb24ca35bac79a439eb",
+      "selected_native": "1ec110452cdd70c425bbc31edd48bbd0421563ca",
+      "observer_build_option": "STRATA_CPU_SERVICE_PROFILE=ON",
+      "targets": [
+        "strata",
+        "cpu_service_pool_test",
+        "iq_single_exact_test",
+        "sycl_submission_test",
+        "sycl_verifier_retirement_test"
+      ],
+      "host_modes": [
+        {
+          "STRATA_IQ3_PAIR": "0",
+          "STRATA_CPU_SERVICE": "0"
+        },
+        {
+          "STRATA_IQ3_PAIR": "1",
+          "STRATA_CPU_SERVICE": "0"
+        }
+      ]
+    }
   }
 }

@@ -485,8 +485,15 @@ time ratios are0.9390/0.9425 (640 rows,prequantized,reuse/stream),0.9385/0.9627
 0.9504/0.9619 (128 rows,packing included):3.7..7.4% lower time. Both arms use
 the actual production entry with the same audit counters enabled. This is
 single-core entry timing; the pool fixtures qualify phase/output behavior,
-not pool speed. Next prepare an explicitly decode-only model build/comparison
-with actual request dispatch evidence; no model gain or adoption follows. The closed V2 generation was retired before
+not pool speed. `decode_iq3_pair_model_build_v1` is now prepared from
+controller source `9922f8a5a`, with563 recovered source files. Only the six
+qualified CPU/fixture files and checked per-request IQ3 route-output patch
+`7969ccb9f` differ from the prior fixed-Q6 observer source; GPU math, prefill,
+placement and graph/runtime sources remain byte-identical. Its five targets
+need fresh same-build arithmetic/pool, traced device and short-model admission
+before a committed long-generation comparison. Retire the closed observer and
+CPU-only build outputs before compiling; protect479a. No model gain or adoption
+follows from the component result or prepared build. The closed V2 generation was retired before
 building the three V3 CPU-only targets; keep the validated GPU fallback unchanged.
 The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
