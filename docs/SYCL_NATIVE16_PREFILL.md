@@ -58,12 +58,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes pass for both benchmark and server. Nine of 12 processes and
-  all 36 requests pass with normal exits, quiet validation, closed owners and
-  no fresh fault. The two completed 64K pairs have reference/candidate warmed
-  PP 991.700/992.747 and 990.498/995.386 tok/s; client TTFT is 66.231/66.161
-  and 66.396/65.987 s. Their candidate/reference warmed prompt-time ratios
-  are 0.998945/0.995090 and TTFT ratios 0.998943/0.993840. The first 117K pair
+  frontend probes pass for both benchmark and server. Ten of 12 processes and
+  all 40 requests pass with normal exits, quiet validation, closed owners and
+  no fresh fault. All three completed 64K pairs support warmed prompt-time and
+  client-TTFT nonregression separately: candidate/reference prompt-time ratios
+  are 0.998945/0.995090/0.998678 and TTFT ratios are
+  0.998943/0.993840/0.999426. Reference/candidate process-median PP is
+  991.250/992.747 tok/s and client TTFT is 66.258/66.161 s. Each arm has three
+  independent processes and nine subsequent requests; first use remains separate.
+  The first 117K pair
   has reference versus candidate first-use PP
   966.354 versus 968.437, warmed PP 1045.734 versus 1050.393 tok/s, and warmed
   client TTFT 112.527 versus 112.021 s. Its candidate/reference warmed
@@ -71,10 +74,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   pair has reference/candidate warmed PP 1051.058/1048.455 tok/s and client
   TTFT 111.949/112.225 s. Its candidate/reference prompt-time/TTFT ratios are
   1.002483/1.002465: directions are mixed across the two 117K pairs, so neither
-  nonregression nor a consistent slowdown is established. The third 64K
-  reference passes with warmed PP 991.250 tok/s and client TTFT 66.258 s;
-  its paired candidate is pending. Remaining independent pairs
-  are needed for the required three-pair decision per length; no sustained
+  nonregression nor a consistent slowdown is established. The final 117K pair
+  is still needed for its required three-pair decision; no sustained
   decode qualification follows from these short-output checks.
   V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and

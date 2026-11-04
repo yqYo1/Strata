@@ -128859,6 +128859,18 @@
           "devcoredump": false
         },
         "passed": true,
+        "artifact_retirement": {
+          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-preservation-v2-process8-raw-retirement-20261104.json",
+          "manifest_sha256": "414c497dc007d8b86e5f2faca5c743d141bb9671ae9789fda6aa861f7e7758ed",
+          "completed": true,
+          "evidence_commit": "5837133739375876c5e31cc929b36911dcf0e99a",
+          "files": 68,
+          "bytes": 12235631,
+          "kept_process_inputs": [
+            "config.json",
+            "plan.json"
+          ]
+        },
         "route_shape": {
           "rows": 65536,
           "residual_gpu_rows": 65536,
@@ -128919,19 +128931,226 @@
             "requested_bank_H2D_bytes": 37190272000,
             "requested_one_routing_map_H2D_bytes": 125829120
           }
+        ]
+      },
+      {
+        "index": 9,
+        "read": 65537,
+        "heads": 0,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "candidate",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/build/strata",
+          "sha256": "a99aa1ac98c397933ca76d59361fec32aba335f6904b63c25d95efc52ce22734",
+          "bytes": 24190256
+        },
+        "native_source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
+        "native_identity": {
+          "pid": 1444117,
+          "start_ticks": 214492424,
+          "sid": 1444067
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1444117,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 74932.4,
+            "prompt_tps": 874.6,
+            "ttft_s": 75.076,
+            "total_s": 76.878,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 65594.9,
+            "prompt_tps": 999.1,
+            "ttft_s": 65.75,
+            "total_s": 67.428,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 66028.1,
+            "prompt_tps": 992.6,
+            "ttft_s": 66.22,
+            "total_s": 67.899,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 66295.0,
+            "prompt_tps": 988.6,
+            "ttft_s": 66.456,
+            "total_s": 68.076,
+            "generated_tokens": 24,
+            "request_sha256": "9875bea89238c9b12914f2e96653fd3244c8f2d3b315c6c2f2ffa377223d7c7f",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
         ],
-        "artifact_retirement": {
-          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-preservation-v2-process8-raw-retirement-20261104.json",
-          "manifest_sha256": "414c497dc007d8b86e5f2faca5c743d141bb9671ae9789fda6aa861f7e7758ed",
-          "completed": true,
-          "evidence_commit": "5837133739375876c5e31cc929b36911dcf0e99a",
-          "files": 68,
-          "bytes": 12235631,
-          "kept_process_inputs": [
-            "config.json",
-            "plan.json"
-          ]
-        }
+        "subsequent_median_ms": 66028.1,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "route_shape": {
+          "rows": 65536,
+          "residual_gpu_rows": 65536,
+          "residual_gpu_bytes": 1342177280,
+          "residual_host_bytes": 0,
+          "prefill_slots": 384,
+          "staged": true,
+          "split": false,
+          "windows": 48,
+          "maximum_window_rows": 65536,
+          "staged_bank_checked_drain": true,
+          "split_guard_checked": false,
+          "target_snapshot_bytes": 0,
+          "draft_rebuilt_bytes": 0,
+          "physical_saturation_qualified": false,
+          "head_payload_bytes_verified": false,
+          "MTP_prefill": {
+            "placement_mode": 2,
+            "callbacks": 8,
+            "nominal_cells": 65536,
+            "declared_window": 32768,
+            "source_derived_first_needed": 32705,
+            "source_derived_token_boundaries": [
+              {
+                "callback": 3,
+                "source_derived_needed_cells": 63
+              }
+            ],
+            "internal_processed_rows_and_shapes_observed": false
+          },
+          "prefill_strategy": "throughput",
+          "GDN_FP16_storage": true,
+          "GDN_barriers": 3,
+          "physical_resource_saturation_qualified": false
+        },
+        "request_route_checks": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_one_routing_map_H2D_bytes": 125829120,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_one_routing_map_H2D_bytes": 125829120,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_one_routing_map_H2D_bytes": 125829120,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 20595,
+            "fused_down_jobs": 4215,
+            "requested_bank_H2D_bytes": 37190272000,
+            "requested_one_routing_map_H2D_bytes": 125829120,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          }
+        ]
       }
     ],
     "request_hashes": {
