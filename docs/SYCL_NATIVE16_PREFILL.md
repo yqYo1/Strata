@@ -397,6 +397,15 @@ keep the known-good engine and active observer generation unchanged.
 Before execution, commit the exact argv/environment and complete transitive
 project, compiler and dependency identities in the compact result. Check the
 actual compile/link inputs and CPU-only configuration before the fixture.
+`bench/sycl/cpu_roofline/iq3_pair.py` now defines that serialized lifecycle:
+prepare/commit, build/commit, correctness/commit, then six separately committed
+processes. Its prospective input map covers committed project/GGML bytes,
+official SDK and host linker inputs, generated version header and tools. It
+requires actual compile/link coverage and CPU-only linkage, the same archive,
+384 original plus 80 paired fixture cases, and complete real-model validation
+before/after each process. This controller is source-only; neither its plan
+preparation nor a compiler/test/benchmark has executed. The live observer
+cohort still owns serialized execution. No production pair dispatch is selected.
 Prospective build limits are 300 s wall,1200 s CPU,8 GiB RSS,1 MiB text and384 MiB
 private artifacts; the correctness child gets 60 s wall/CPU,512 MiB RSS and64 KiB
 text. Normal exit0 plus supported ISA, all numerical/refusal cases and closed
