@@ -821,7 +821,7 @@
     "device_result_key": "decode_iq3_phase_device_v1",
     "model_executed": true,
     "model_entry_result_key": "decode_iq3_model_entry_arm0_v1",
-    "model_entry_stage": "reference_short_model_passed_candidate_prepared",
+    "model_entry_stage": "both_selectors_short_model_passed_long_generation_pending",
     "candidate_model_entry_result_key": "decode_iq3_model_entry_arm1_v1",
     "matched_entry_inputs": {
       "native_elf_identical": true,
@@ -837,7 +837,8 @@
         ]
       },
       "scope": "Preparation identity,not model performance or candidate admission;per-entry output roots and ephemeral benchmark ports differ."
-    }
+    },
+    "short_observer_note": "STRATA_DECODE_TIMING is presence-enabled in the measured generator;the admitted short0/1 value0 emits timing in both. They are diagnostics,not clean-speed evidence. The new long controller omits the variable entirely."
   },
   "remote_check_command": [
     "git",
@@ -940,34 +941,50 @@
           "scope": "compiled-iq-moe",
           "classification": "decision_support",
           "schedulable_now": true,
-          "state": "dispatched",
+          "state": "closed_awaiting_native_review",
           "task": "task_d627f9d93fbb",
           "dispatch": "ctx_3428039bdc85",
           "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-iq-moe/report.md",
-          "report_budget_bytes": 18432
+          "report_budget_bytes": 18432,
+          "ownership_closed": true,
+          "report_sha256": "6d42ab824a1fe8cdfe9efce011cfa26f81ecaf9ec45eee3e86cce684a66656f2",
+          "report_bytes": 12544
         },
         {
           "scope": "compiled-attention-state",
           "classification": "decision_support",
           "schedulable_now": true,
-          "state": "dispatched",
+          "state": "closed_awaiting_native_review",
           "task": "task_fa72fd034d60",
           "dispatch": "ctx_a539e0a34e5f",
           "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-attention-state/report.md",
-          "report_budget_bytes": 18432
+          "report_budget_bytes": 18432,
+          "ownership_closed": true,
+          "report_sha256": "4d01c900e0d8e07af9862c7f633b2727cf33e672b63b60a66fa095b9741a6eeb",
+          "report_bytes": 17987
         },
         {
           "scope": "desktop-conversation-tools",
           "classification": "decision_support",
           "schedulable_now": true,
-          "state": "dispatched",
+          "state": "closed_awaiting_native_review",
           "task": "task_e886c963f61b",
           "dispatch": "ctx_e3d740c73410",
           "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/desktop-conversation-tools/report.md",
-          "report_budget_bytes": 18432
+          "report_budget_bytes": 18432,
+          "ownership_closed": true,
+          "report_sha256": "339528c1b8bbd9ebd1a09bebc9d0392a0e89e0ac2f130d804963a2bd7e296f4c",
+          "report_bytes": 16371
         }
       ],
-      "coverage": "New complete-source pins for the actual Arc resolver,omitted compiled DPCT quantized-MoE and attention/state changes,and desktop conversation/tool behavior outside the first launch/API scopes. Origin checks are part of the source investigation;held/Xe-derived material remains ineligible for implementation. No runtime or whole-function qualification."
+      "coverage": "New complete-source pins for the actual Arc resolver,omitted compiled DPCT quantized-MoE and attention/state changes,and desktop conversation/tool behavior outside the first launch/API scopes. Origin checks are part of the source investigation;held/Xe-derived material remains ineligible for implementation. No runtime or whole-function qualification.",
+      "native_review": {
+        "state": "running",
+        "model": "gpt-6-luna",
+        "reasoning_effort": "max",
+        "agent": "/root/review_upstream_v0210_followup_20261105",
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/review.json"
+      }
     }
   }
 }

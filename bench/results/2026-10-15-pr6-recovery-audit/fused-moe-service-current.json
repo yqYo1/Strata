@@ -143994,7 +143994,7 @@
     }
   },
   "decode_iq3_model_entry_arm1_v1": {
-    "stage": "frontend-qualified",
+    "stage": "closed",
     "source_commit": "a6735243856f5fd072e655592533eb6f48d34b2a",
     "native_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
     "binary": {
@@ -144302,11 +144302,11 @@
       }
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "Two frozen current-source frontend probes,then one thinking-on warmup and two fresh32769-input/1..24-output requests through maintained bench.sh. Only immutable IQ3 arm0/1 differs;Q6columns1,static1256cache,split,spec4,short-read0,throughput,GDN16/MTP16 and runtime safety remain identical. Require existing source/build/ELF/provider/token/body/route/clock/validation/fault/owner gates, one exact IQ3 footer per long request with positive actual calls/NT1 rows and pair_rows=arm*NT1_rows,and exact warmup/long request IDs1/2/3. Stop on first failure;no retry or hash refresh. No sustained TG,clean speed,quality,agent,ordinary-provider-teardown,physical262144,RESTORE or adoption qualification.",
     "retention": "Keep compact actual routes,request/selector counters,source/ELF identities and correctness/fault/owner outcomes;retire successful logs/journals/JIT after commit. Preserve479a fallback and the same five candidate outputs for the imminent six-process thinking-on strong/weak-MTP IQ3-only comparison;no new native generation.",
@@ -144338,6 +144338,182 @@
         "passed": true
       }
     ],
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "model_executed": true,
+      "native_identity": {
+        "pid": 2953061,
+        "start_ticks": 217862204,
+        "sid": 2953005
+      },
+      "warmup_route": {
+        "requested": "throughput",
+        "route": "chunked",
+        "tokens": "73",
+        "chunk": "256"
+      },
+      "native_exit_code": 0,
+      "routes": [
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18228,
+          "checkpoint_pairs": 2257,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 427,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false,
+          "strategy": "throughput",
+          "actual_route": "layer-major",
+          "GDN3_calls": 144,
+          "GDN_FP16_storage_calls": 144,
+          "GDN_FP16_storage_tokens": 1179648,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 4,
+            "nominal_cells": 32768,
+            "internal_needed_rows_and_shapes_observed": false
+          },
+          "Q6_request_captures": [
+            {
+              "phase": "decode",
+              "tokens": 1,
+              "reference": 21,
+              "columns": 82
+            },
+            {
+              "phase": "decode",
+              "tokens": 4,
+              "reference": 21,
+              "columns": 82
+            }
+          ],
+          "Q6_prompt_window_observed": false,
+          "IQ3_dispatch": {
+            "request": 2,
+            "arm": 1,
+            "calls": 13034,
+            "nt1_rows": 1400960,
+            "pair_rows": 1400960
+          }
+        },
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18275,
+          "checkpoint_pairs": 2261,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 429,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false,
+          "strategy": "throughput",
+          "actual_route": "layer-major",
+          "GDN3_calls": 144,
+          "GDN_FP16_storage_calls": 144,
+          "GDN_FP16_storage_tokens": 1179648,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 4,
+            "nominal_cells": 32768,
+            "internal_needed_rows_and_shapes_observed": false
+          },
+          "Q6_request_captures": [
+            {
+              "phase": "decode",
+              "tokens": 1,
+              "reference": 21,
+              "columns": 82
+            },
+            {
+              "phase": "decode",
+              "tokens": 4,
+              "reference": 21,
+              "columns": 82
+            }
+          ],
+          "Q6_prompt_window_observed": false,
+          "IQ3_dispatch": {
+            "request": 3,
+            "arm": 1,
+            "calls": 12812,
+            "nt1_rows": 1378560,
+            "pair_rows": 1378560
+          }
+        }
+      ],
+      "validation": {
+        "pid": 2953061,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "samples": [
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 62398.9,
+          "prompt_tps": 525.2,
+          "ttft_s": 62.604,
+          "total_s": 64.909,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+          "timing_frontend_state": "post-count-preflight"
+        },
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 54749.0,
+          "prompt_tps": 598.5,
+          "ttft_s": 54.93,
+          "total_s": 57.13,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+          "timing_frontend_state": "post-count-preflight"
+        }
+      ],
+      "clean_speed_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
     "source_inputs": {
       "files": 302,
       "aggregate_sha256": "fa9c2b4a5d50dcbba0577f9ffda758fae943ab9d96f2f193e3d59bf669c25b9d"

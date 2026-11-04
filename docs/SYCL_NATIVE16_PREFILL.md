@@ -509,8 +509,13 @@ The IQ3-off model entry now also passes its two frontend probes, warmup and
 two fresh32769-input/24-output thinking-on requests. Actual eligible NT1 rows
 are1400960/1378560 and selected paired rows are0/0, with normal native exit,
 quiet validation, all15 final asset hashes, closed owners and no fresh fault.
-IQ3-on admission still precedes the committed long-generation comparison;
-these short diagnostics do not qualify sustained TG. The preload retains a
+IQ3-on now passes the same probes and both short requests, with identical
+calls/eligible rows and selected paired rows1400960/1378560. Both selectors
+close normally with all15 final asset hashes, quiet validation and no new fault.
+Long-generation comparison still follows. The diagnostic preset's
+`STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
+timing in both short arms; the new speed controller omits that variable.
+These short diagnostics do not qualify sustained TG. The preload retains a
 runtime reference until exit, so ordinary
 runtime teardown and model speed remain unqualified. The closed observer and
 CPU-only comparison outputs are now retired after original Git source/recipe
