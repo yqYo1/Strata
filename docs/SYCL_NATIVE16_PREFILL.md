@@ -184,14 +184,11 @@ cores, 12 SMT threads and 32 MiB L3; the earlier 256 MiB read buffer is eight
 times that L3 capacity. Configured DIMM speed and physical RAM bandwidth remain
 unknown; the current user cannot read the DMI table, and no ceiling is inferred.
 
-The existing decode-only `service_profile.hpp` observer separates GU, hidden
+The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
-thread-CPU clocks. `cache_map_cpu_service_sources_v1` is source-checked;
-`cache_map_cpu_service_build_v1` is only prepared. Neither supplies measured
-service or qualified observer overhead. After the current cohort, reconcile
-the retained generations and update that pending observer recipe to the selected
-native source, preserving the Q6 safety correction. Reuse the existing observer
-and host/pool controls, then qualify observer cost before model attribution.
+thread-CPU clocks. Its replacement build and real-pool off/on parity are now
+closed; device/model admission and observer-cost qualification remain pending.
+No useful CPU-service or overhead measurement is established yet.
 The retained build resolves per-file inputs through its recipe: its two pool
 files still match `6e40afc1b`, without observer hooks, rather than the plain
 Git `05a9` pool files. Reapply the scoped hooks to those measured bytes while
@@ -202,8 +199,8 @@ with the checked output-v2 delta. Its source check passes at
 `1e791e80bde6366c37469a07476f4518594bc1a9`: all 563 projected files are checked,
 and reversing the seven observer/build/test files recovers all 560 measured
 inputs byte for byte. The eight Q6/phase files remain preserved. Follow
-`cache_map_cpu_service_sources_v1.retarget_v2`; no new engine is built.
-The pending builder now targets that snapshot and preserves the 479a fallback.
+`cache_map_cpu_service_sources_v1.retarget_v2` for the source-only proof.
+The replacement builder targets that snapshot and preserves the 479a fallback.
 Its source preparation passes at `8e2499937969dbfa1dcd950b95025d9712037a83`;
 follow `verify_window_cpu_service_build_v2`. It keeps the existing build settings and enables only
 the observer. The four targets are the engine, real CPU-pool fixture, submission
@@ -222,16 +219,20 @@ with actual compiler/link input coverage and four hashed outputs, from source
 `8e2499937969dbfa1dcd950b95025d9712037a83`. The real-pool off/on checks both
 pass 28 cases with identical output checksums and normal closed processes.
 New same-build device/model admission remains pending; no measured CPU service
-or speed gain follows from these host checks. The source-prepared
+or speed gain follows from these host checks. The
 `tools/sycl/cpu_service_device.py` reuses the maintained small submission/phase
 runner in a private context and requires that exact real-pool parity. Its
 prospective preparation does not execute a GPU kernel.
 V2 preparation failed before GPU execution: the supervising process allowed a
 1 MiB file while preparation writes the maintained result JSON (about 5 MiB).
 The exact committed prefix was verified, the complete committed state restored,
-and the closed exit-1 failure retained. V3 is a new prospective preparation with
-a 16 MiB file cap and explicit result-size admission; raw output retains its
-4 MiB private budget. No engine rebuild or GPU fault follows from that failure.
+and the closed exit-1 failure retained. V3 preparation passes at controller
+`1ef6e18ec5e266ed6ced67b704f6cf08aa038314`, with a 16 MiB file cap and
+explicit result-size admission; raw output retains its 4 MiB private budget.
+The normal exit-0 process is closed with quiet stderr. The exact same-build
+submission/phase-cache plan is prepared under
+`verify_window_cpu_service_device_v3`; GPU execution is still pending.
+No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
@@ -239,7 +240,8 @@ write/flush cannot qualify attribution. The source review supplies no measured
 CPU service or observer-overhead result.
 The source-only output-v2 fix adds a versioned completion trailer, checks every
 write and the final flush, and propagates failure at the generator call site.
-The retargeted engine is still pending; the active PP engines are unchanged.
+The retargeted engine is built but not model-qualified; the validated fallback
+and recorded PP reference remain unchanged.
 The reader now requires version 2 and an exact completion trailer, including
 row counts and ordered thread slots; its host plan and result are in
 `cache_map_cpu_service_sources_v1.reader_v2_host`. All 12 tests pass at source
