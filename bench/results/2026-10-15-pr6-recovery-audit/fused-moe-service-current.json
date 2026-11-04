@@ -118591,5 +118591,194 @@
       "sha256": "bc044dc8b33843fa0d17654b190af83142efe884968ec2c13c2b9392128dd579"
     },
     "next_action": "Use the verified atomic include anchor and generate both alternatives before creating a new V2root. Preserve this failed preparation."
+  },
+  "q6_byte_load_lowering_v2": {
+    "stage": "prepared",
+    "source_commit": "9c13c0721c611b870f6f58130f7cdf3d354de0a5",
+    "native_source_commit": "097e2ac90288db3ccb89136884c9a4d474645a91",
+    "q6_source_commit": "664a280d5aab4e272fef37538634207d38704b4c",
+    "native_build_record_sha256": "82a158b2947e51861a1765aa2bd72a039e3426e8aa10201f521ab95a13e8faaf",
+    "generated_sources": {
+      "reference": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/reference/native_mmvq.cpp",
+        "sha256": "22c39693c9bb64e233ab796764e9de70d5965fa1c15e9e86c4fccb44d88b664a"
+      },
+      "candidate": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/candidate/native_mmvq.cpp",
+        "sha256": "2ef95d62bcfb93a6811dbcd49786c2f481ee78e863c049477b1ac3904f9356af"
+      }
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/cache"
+    },
+    "commands": [
+      [
+        "host-reference",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fsycl-host-only",
+          "-S",
+          "-emit-llvm",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/host-reference.d",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/reference/native_mmvq.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/host-reference.ll"
+        ]
+      ],
+      [
+        "device-reference",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fsycl-device-only",
+          "-S",
+          "-emit-llvm",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/device-reference.d",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/reference/native_mmvq.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/device-reference.ll"
+        ]
+      ],
+      [
+        "host-candidate",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fsycl-host-only",
+          "-S",
+          "-emit-llvm",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/host-candidate.d",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/candidate/native_mmvq.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/host-candidate.ll"
+        ]
+      ],
+      [
+        "device-candidate",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v2/source/include/strata/sycl/compat",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-ffp-contract=off",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fsycl-device-only",
+          "-S",
+          "-emit-llvm",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/device-candidate.d",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/candidate/native_mmvq.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-lowering-v2/output/device-candidate.ll"
+        ]
+      ]
+    ],
+    "budgets": {
+      "wall": 240,
+      "cpu": 300,
+      "rss_cap": 6442450944,
+      "text_cap": 2097152,
+      "file_cap": 50331648,
+      "total_cap": 201326592
+    },
+    "plan": "Compile the full actual Q6 translation unit,reference versus local byte-based4B builtin memcpy plus bit_cast only in Q6KTraits,for host and spir64 with the actual -O3 C++20 recipe. No linking/execution. Require compiler/dependency/source closure and little-endian target data layouts. Compare complete optimized IR after replacing only declared source-path/ModuleID identities;retain raw/normalized hashes and load/TBAA counts. Any lowering difference needs a separate prospective numerical plan;equivalent IR does not prove surrounding Block producer lifetime or runtime/model correctness.",
+    "retention": {
+      "owner": "Main",
+      "byte_budget": 201326592,
+      "consumer": "Immediate source-contract and actual lowering decision before a Q6 load change",
+      "review_point": "Retire successful compiler logs and IR after compact comparison and needed load evidence are recorded;retain a pair only for an explicit unresolved lowering question."
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "controller_inputs": {
+      "files": 92,
+      "aggregate_sha256": "aa30d0751c1ce30ffde117411132adb927ec54a85482fdd382ef222f036ba17d"
+    }
   }
 }
