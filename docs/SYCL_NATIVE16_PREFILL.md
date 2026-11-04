@@ -362,9 +362,9 @@ unchanged and preserves each output's block FMA and final float reduction.
 Its integer lane bound is 7872512; byte loads avoid unaligned scale/sign objects.
 The maintained single-exact fixture now defines GGML parity, padded/unaligned
 input, output-canary, invalid-layout, overlap and overflow checks for this
-component. Its V2 same-build correctness fixture now passes as detailed below;
-no speed comparison has run. The helper
-is not selected by production; qualify its setup-inclusive hot/stream cost before a decode-only model
+component. Its V2 same-build correctness fixture and direct single-core
+component comparison now pass as detailed below. The helper
+is not selected by production; qualify the actual decode entry/pool dispatch before a model
 trial. Retire it if the component does not justify that trial.
 The independent source audit uses the frozen scalar oracle at
 `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/source/src/kernels/cpu/iq_single_avx2.cpp`,
@@ -445,8 +445,18 @@ compiled expert archive, and only pre-pinned CPU runtime libraries. All five
 owned build/inspection commands exit0 with closed owners. The same-build
 correctness fixture exits0 and passes384 single plus80 paired cases, including
 the explicit sign/grid/scale and FP16-edge coverage, bit parity and refusal
-targets. Its process closes with quiet stderr. The six-process component
-comparison remains pending; no production dispatch or model speed is qualified.
+targets. Its process closes with quiet stderr. All six component processes
+and240 individual samples now pass, with identical actual weight/activation
+fingerprints and2016 real-model comparisons before and after each process.
+All eight cells favor the pair in all three independent pairs. For640 rows,
+candidate/reference geometric time ratios are0.9474/0.9461 without activation
+packing (reuse/stream), and0.9460/0.9408 with packing. For128 rows they are
+0.9490/0.9466 and0.9479/0.8947. The last cell includes one slower reference
+process (63.38us/expert versus roughly53..54us); all samples remain recorded.
+This is typically about5% lower direct-component time, not model gain, RAM
+saturation or production adoption. Next qualify an explicitly decode-only
+production entry, actual dispatch counts and real-pool/prefill behavior before
+a matched model trial. No production dispatch or model speed is qualified.
 After original V1 source/recipe recovery from pushed Git history, its failed
 unqualified generation and V2's closed normal build/correctness output are
 retired:89 files,20090636 bytes. The failed outcome remains intact. V2's two
