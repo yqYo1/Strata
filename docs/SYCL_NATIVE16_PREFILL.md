@@ -491,9 +491,12 @@ qualified CPU/fixture files and checked per-request IQ3 route-output patch
 `7969ccb9f` differ from the prior fixed-Q6 observer source; GPU math, prefill,
 placement and graph/runtime sources remain byte-identical. Its five targets
 need fresh same-build arithmetic/pool, traced device and short-model admission
-before a committed long-generation comparison. Retire the closed observer and
-CPU-only build outputs before compiling; protect479a. No model gain or adoption
-follows from the component result or prepared build. The closed V2 generation was retired before
+before a committed long-generation comparison. The closed observer and
+CPU-only comparison outputs are now retired after original Git source/recipe
+recovery and consumer checks:859 files,160869493 bytes. All240 samples and
+the original CPU recipe remain at `cf0a6b175261f013099965dcb9ca19d1e840ad2d`;
+the observer source is reconstructed by the pinned constructor. Protect479a.
+No model gain or adoption follows from the component result or prepared build. The closed V2 generation was retired before
 building the three V3 CPU-only targets; keep the validated GPU fallback unchanged.
 The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.

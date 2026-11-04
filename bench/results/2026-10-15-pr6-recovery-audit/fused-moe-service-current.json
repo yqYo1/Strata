@@ -108957,7 +108957,7 @@
     "ownership_closed": true,
     "source_boundary": "e409619e6651d7d2c1434c961660068857d2cfe7",
     "selected_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1",
-    "next_comparison_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2",
+    "next_comparison_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1",
     "inventory": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/artifact-review-20261103-inventory.json",
       "sha256": "7080ae3bcd12874442e79daa48e25e69e50ee6e1687b9be8f5f20012539172de",
@@ -109114,13 +109114,13 @@
       "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2",
       "source_commit": "8e2499937969dbfa1dcd950b95025d9712037a83",
       "result_key": "verify_window_cpu_service_build_v2",
-      "stage": "source_recovered_outputs_retirement_pending",
+      "stage": "retired_after_exact_source_recovery",
       "fallback_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1",
-      "purpose": "Closed CPU component qualifies preparing the next decode-only IQ3 model comparison;old observer is a recovered source basis,not a retained executable reference.",
+      "purpose": "Original observer source/recipe recovered and closed outputs retired;prepared decode-IQ3 candidate replaces it after independent build/host/device/model gates.",
       "engine_sha256": "6e0730b3641563e6da311b9ac3d93bd99241cacae74da7c0767eed46a18327f6",
-      "binaries": 4,
+      "binaries": 0,
       "closed_evidence_commit": "7ff9f8a82897290ec70a0ff06c46ea07c52ef037",
-      "next_review": "Retire planned old outputs,then build the prepared candidate;keep479a fallback."
+      "next_review": "New candidate build closure;keep479a fallback and retire transaction manifest after its final reader ends."
     },
     "workspace_retirement_decision": {
       "stage": "retired-unused-binaries",
@@ -109457,30 +109457,6 @@
         "sha256": "1e7ddd541fdf644bca94c82deba3887efebe4a606c885c40eb09cf429fbc490c",
         "bytes": 91792856,
         "consumer": "Existing configured serving output until validated migration"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/strata",
-        "sha256": "6e0730b3641563e6da311b9ac3d93bd99241cacae74da7c0767eed46a18327f6",
-        "bytes": 24203232,
-        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/cpu_service_pool_test",
-        "sha256": "212effaa935b45fbc249cc33de7db07869a7aa96be58630de8d2e53593962961",
-        "bytes": 3464328,
-        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/sycl_submission_test",
-        "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
-        "bytes": 343384,
-        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/build/sycl_verifier_retirement_test",
-        "sha256": "ad8204c80bb3e46d97276c6aecaccd2032061cf0b57f7247803c6583ccb79fac",
-        "bytes": 17741544,
-        "consumer": "One admitted CPU-service observer comparison:real-pool off/on parity,next same-build device admission,then model/observer-overhead attribution;retire at that comparison closure."
       }
     ],
     "retained_vendor_dependencies": [
@@ -109718,9 +109694,9 @@
       "retained_project_ELF_bytes": 223166896
     },
     "iq3_model_replacement": {
-      "completed": false,
+      "completed": true,
       "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-model-replacement-retirement-20261105.json",
-      "manifest_sha256": "0af476e22b70b6ebb85882bd4fc691726bef8e96084ac46f4cd80021dd1422b6",
+      "manifest_sha256": "98546ba39da98c8713bd1106f3d78eabdeb87acc1c72848ea38226f4327985e2",
       "original_inputs_recovered": true,
       "source_recovery": {
         "cpu": {
@@ -109759,7 +109735,9 @@
       },
       "next_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1",
       "old_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2",
-      "source_consumer": "Prepared model source/recipe and closed native report review replace the old executable/source consumers;no old runtime fixture is needed by the new controller."
+      "source_consumer": "Prepared model source/recipe and closed native report review replace the old executable/source consumers;no old runtime fixture is needed by the new controller.",
+      "deleted_files": 859,
+      "deleted_bytes": 160869493
     }
   },
   "cache_map_cpu_census_entry_v1": {
@@ -130702,6 +130680,14 @@
           "STRATA_CPU_SERVICE": "1"
         }
       ]
+    },
+    "retirement": {
+      "completed": true,
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-model-replacement-retirement-20261105.json",
+      "manifest_sha256": "98546ba39da98c8713bd1106f3d78eabdeb87acc1c72848ea38226f4327985e2",
+      "original_inputs_recovered": true,
+      "replacement_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1",
+      "no_qualification_transferred": true
     }
   },
   "verify_window_cpu_service_device_v2": {
@@ -142855,9 +142841,9 @@
       "prefill_pair_rows": 0
     },
     "retirement": {
-      "completed": false,
+      "completed": true,
       "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-model-replacement-retirement-20261105.json",
-      "manifest_sha256": "0af476e22b70b6ebb85882bd4fc691726bef8e96084ac46f4cd80021dd1422b6",
+      "manifest_sha256": "98546ba39da98c8713bd1106f3d78eabdeb87acc1c72848ea38226f4327985e2",
       "original_inputs_recovered": true,
       "source_recovery": {
         "cpu": {
@@ -142896,7 +142882,9 @@
       },
       "next_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1",
       "old_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2",
-      "source_consumer": "Prepared model source/recipe and closed native report review replace the old executable/source consumers;no old runtime fixture is needed by the new controller."
+      "source_consumer": "Prepared model source/recipe and closed native report review replace the old executable/source consumers;no old runtime fixture is needed by the new controller.",
+      "deleted_files": 859,
+      "deleted_bytes": 160869493
     }
   },
   "decode_iq3_pair_model_build_v1": {
