@@ -485,8 +485,16 @@ time ratios are0.9390/0.9425 (640 rows,prequantized,reuse/stream),0.9385/0.9627
 0.9504/0.9619 (128 rows,packing included):3.7..7.4% lower time. Both arms use
 the actual production entry with the same audit counters enabled. This is
 single-core entry timing; the pool fixtures qualify phase/output behavior,
-not pool speed. `decode_iq3_pair_model_build_v1` is now prepared from
-controller source `9922f8a5a`, with563 recovered source files. Only the six
+not pool speed. `decode_iq3_pair_model_build_v1` now compiles from controller
+source `9922f8a5a`, with563 recovered source files,1449 actual compiler inputs,
+29 frozen linker inputs and five hashed outputs. Its first host gate fails
+at the observer artifact cap:the launcher counts the entire compiled tree
+against a1MiB host-output budget. The child exits0 and is reaped with an empty
+session,but its stdout was not recovered;no numerical pass follows. Preserve
+that failure and use a fresh host-v2 controller/root with the same binaries.
+The two actual CPU units have O3/znver3;the fixture body is generic O3.
+An auxiliary assertion mistakenly requiring znver3 on the fixture remains
+recorded as failed;it was not part of the frozen native build acceptance. Only the six
 qualified CPU/fixture files and checked per-request IQ3 route-output patch
 `7969ccb9f` differ from the prior fixed-Q6 observer source; GPU math, prefill,
 placement and graph/runtime sources remain byte-identical. Its five targets

@@ -143063,6 +143063,35 @@
         "bytes": 17750456
       }
     },
+    "host_result": {
+      "passed": false,
+      "complete": false,
+      "cases": [],
+      "GPU_executed": false,
+      "error": "RuntimeError('same-build IQ3 fixture failed: ')",
+      "active": false,
+      "ownership_closed": false
+    },
+    "host_failure_evidence": {
+      "label": "exact-0",
+      "pid": 2773615,
+      "exit_code": 0,
+      "observation_complete": false,
+      "direct_child_reaped": true,
+      "session_empty": true,
+      "survivors": [],
+      "active": false,
+      "cleanup": [],
+      "error": "RuntimeError('artifact cap')",
+      "scope": "Owner(ROOT/host) accounts its output.parent,which is the entire compiled ROOT;1MiB cap was intended only for host logs. Preserve failed/incomplete observation;exit0 without recovered stdout is not a numerical pass.",
+      "next": "Fresh versioned host controller/root with Owner(host_root/commands),same five binary identities and original arithmetic/phase/checksum criteria;no native rebuild or failed-stage retry."
+    },
+    "extra_recipe_inspection": {
+      "original_assertion": "Require -march=znver3 on both production units and the generic exact fixture",
+      "passed": false,
+      "failed_unit": "tests/core/iq_single_exact_test.cpp",
+      "correction": "The frozen native build recipe applies znver3 to strata_kernels_cpu,not the standalone fixture body. Both iq_single_avx2.cpp and native_expert.cpp have O3/znver3/CPU_SERVICE_PROFILE1;the fixture has O3/CPU_SERVICE_PROFILE1. No source,binary or frozen build criterion changed;keep this auxiliary mistaken assertion as failed."
+    },
     "controller_inputs": {
       "files": 97,
       "aggregate_sha256": "7f465d6c9547fd2392dc520c7915243a915ce41c582f96f0d3f62b007d217a58"
