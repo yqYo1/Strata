@@ -242,11 +242,18 @@ def selfcheck():
     failure = failed_basis(); fixture = failure['fixture']; raw = Path(fixture['path']).read_bytes()
     require(len(raw) == fixture['bytes'] <= 256 << 10 and hashlib.sha256(raw).hexdigest() == fixture['sha256'],
             'original failed parser fixture changed')
-    actual = request_route(raw.decode(), dict(read=65537, heads=0, kernel='reference'))
+    text = raw.decode()
+    headers = list(re.finditer(r'^strata serve: prompt (\d+) tokens = [^\n]+$', text, re.M))
+    require([int(v.group(1)) for v in headers] == [74, 65537], 'one warmup then the failed long fixture required')
+    # Live request gates exclude the warmup. Match that scope in offline replay.
+    actual = request_route(text[headers[0].end():headers[1].end()], dict(read=65537, heads=0, kernel='reference'))
     require(actual['MTP_prefill']['source_derived_token_boundaries'] == [dict(callback=3, source_derived_needed_cells=63)],
             'real64K boundary replay differs')
     result['MTP_boundary'] = dict(explicit_shapes=5, invalid_variants=25, actual_failed_fixture_replayed=True,
-                                 original_failure_preserved=True, fixture_sha256=fixture['sha256'])
+        original_failure_preserved=True, fixture_sha256=fixture['sha256'],
+        fixture_request_window=[headers[0].end(), headers[1].end()],
+        original_replay_failure=dict(source='96e3ce6d5', exit_code=1,
+            reason='Whole-log replay included73-cell warmup callback;live route gates are scoped to the long request.'))
     rows = [dict(read=read, kernel=arm, passed=True, complete=True, ownership_closed=True,
         fresh_faults=[], native_identity=dict(pid=i+1, start_ticks=i+10),
         subsequent_median_ms=99999 if arm == 'candidate' else 100000,
