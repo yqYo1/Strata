@@ -128463,6 +128463,18 @@
           "devcoredump": false
         },
         "passed": true,
+        "artifact_retirement": {
+          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-process6-and-sampler-review-transactions-retirement-20261104.json",
+          "manifest_sha256": "707a239e1a33878da799674460877ebfda13f72dc33bad4df9afaca7e283ef4d",
+          "completed": true,
+          "evidence_commit": "c4a98c837a7e48afdac5b8db880f03b2f3cc85c0",
+          "files": 68,
+          "bytes": 12545588,
+          "kept_process_inputs": [
+            "config.json",
+            "plan.json"
+          ]
+        },
         "route_shape": {
           "rows": 117488,
           "residual_gpu_rows": 117488,
@@ -128574,19 +128586,165 @@
               }
             ]
           }
+        ]
+      },
+      {
+        "index": 7,
+        "read": 117489,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "reference",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 1366573,
+          "start_ticks": 214328615,
+          "sid": 1366533
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1366573,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "samples": [
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 122389.0,
+            "prompt_tps": 960.0,
+            "ttft_s": 122.556,
+            "total_s": 124.354,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112277.5,
+            "prompt_tps": 1046.4,
+            "ttft_s": 112.443,
+            "total_s": 114.244,
+            "generated_tokens": 24,
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 111781.7,
+            "prompt_tps": 1051.1,
+            "ttft_s": 111.949,
+            "total_s": 113.654,
+            "generated_tokens": 24,
+            "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 111628.9,
+            "prompt_tps": 1052.5,
+            "ttft_s": 111.805,
+            "total_s": 113.561,
+            "generated_tokens": 24,
+            "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
         ],
-        "artifact_retirement": {
-          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-process6-and-sampler-review-transactions-retirement-20261104.json",
-          "manifest_sha256": "707a239e1a33878da799674460877ebfda13f72dc33bad4df9afaca7e283ef4d",
-          "completed": true,
-          "evidence_commit": "c4a98c837a7e48afdac5b8db880f03b2f3cc85c0",
-          "files": 68,
-          "bytes": 12545588,
-          "kept_process_inputs": [
-            "config.json",
-            "plan.json"
-          ]
-        }
+        "subsequent_median_ms": 111781.7,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "route_shape": {
+          "rows": 117488,
+          "residual_gpu_rows": 117488,
+          "residual_gpu_bytes": 2406154240,
+          "residual_host_bytes": 0,
+          "prefill_slots": 128,
+          "staged": true,
+          "split": true,
+          "windows": 48,
+          "maximum_window_rows": 117488,
+          "staged_bank_checked_drain": true,
+          "split_guard_checked": true,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "physical_saturation_qualified": false,
+          "head_payload_bytes_verified": false,
+          "MTP_prefill": {
+            "placement_mode": 2,
+            "callbacks": 15,
+            "nominal_cells": 117488,
+            "declared_window": 32768,
+            "source_derived_first_needed": 84657,
+            "source_derived_token_boundaries": [],
+            "internal_processed_rows_and_shapes_observed": false
+          },
+          "prefill_strategy": "throughput",
+          "GDN_FP16_storage": true,
+          "GDN_barriers": 3,
+          "physical_resource_saturation_qualified": false
+        },
+        "request_route_checks": [
+          {
+            "jobs": 23816,
+            "fused_down_jobs": 7441,
+            "requested_bank_H2D_bytes": 38540800000,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          },
+          {
+            "jobs": 23840,
+            "fused_down_jobs": 7434,
+            "requested_bank_H2D_bytes": 38589209600,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          },
+          {
+            "jobs": 23820,
+            "fused_down_jobs": 7423,
+            "requested_bank_H2D_bytes": 38507443200,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          },
+          {
+            "jobs": 23841,
+            "fused_down_jobs": 7433,
+            "requested_bank_H2D_bytes": 38540748800,
+            "requested_one_routing_map_H2D_bytes": 225576960
+          }
+        ]
       }
     ],
     "request_hashes": {
