@@ -4880,8 +4880,8 @@ remain pending. The phase selection now follows the new30-shape decision;its fre
 `verify_window_policy_host_v2`runs all six host/link/SYCL-syntax commands at
 exit0,but its final provider check times out in the original per-file dpkg query.
 That whole scope remains failed. The actual971-input map is written before the
-refusal;it is not whole-run qualification. Batch the same ownership queries and
-the batched inventory now matches all14file hashes,14driver queries and4package
+refusal;it is not whole-run qualification. The batched replacement now matches
+all14file hashes,14driver queries and4package
 versions exactly under its separately committed CPU check. The fresh
 `verify_window_policy_host_v3`then closes passed:all six host/link/SYCL-syntax
 commands exit0,all971compiler/link inputs match,the host executable is hashed
