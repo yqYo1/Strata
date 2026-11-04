@@ -16,8 +16,9 @@ import build_cpu_service_model as build
 import check_verify_window_phase as original
 
 SELF = Path(__file__).resolve()
-ROOT = build.B / 'cpu-service-phase-device-v2'
-KEY = 'verify_window_cpu_service_device_v2'
+ROOT = build.B / 'cpu-service-phase-device-v3'
+KEY = 'verify_window_cpu_service_device_v3'
+PREVIOUS = 'verify_window_cpu_service_device_v2'
 
 
 def context():
@@ -42,6 +43,15 @@ def context():
     return ctx
 
 
+def prepare(ctx):
+    prior = build.base.committed(build.RESULT)[PREVIOUS]
+    build.require(prior['stage'] == 'failed-preparation' and prior['ownership_closed']
+        and not prior['GPU_executed'] and not prior['active']
+        and prior['preparation_failure']['exact_prefix_verified'],
+        'preserve the closed V2 metadata-size failure before the corrected plan')
+    ctx.prepare()
+
+
 if __name__ == '__main__':
     build.require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'run'),
                   'usage: cpu_service_device.py prepare|run')
@@ -49,4 +59,4 @@ if __name__ == '__main__':
     with (build.B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         build.base.guards.no_model_owners([])
-        {'prepare': ctx.prepare, 'run': ctx.run}[sys.argv[1]]()
+        {'prepare': lambda: prepare(ctx), 'run': ctx.run}[sys.argv[1]]()

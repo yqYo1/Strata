@@ -226,6 +226,12 @@ or speed gain follows from these host checks. The source-prepared
 `tools/sycl/cpu_service_device.py` reuses the maintained small submission/phase
 runner in a private context and requires that exact real-pool parity. Its
 prospective preparation does not execute a GPU kernel.
+V2 preparation failed before GPU execution: the supervising process allowed a
+1 MiB file while preparation writes the maintained result JSON (about 5 MiB).
+The exact committed prefix was verified, the complete committed state restored,
+and the closed exit-1 failure retained. V3 is a new prospective preparation with
+a 16 MiB file cap and explicit result-size admission; raw output retains its
+4 MiB private budget. No engine rebuild or GPU fault follows from that failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
