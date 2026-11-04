@@ -4834,6 +4834,14 @@ qualify full window recording,Q6 arithmetic,dense/head resume or model speed.
 `build_verify_window_model.py`prepares its same-generation engine/fixture from
 the selected479a source and only the eight declared phase/Q6 changes. A syntax
 check may precede legacy artifact reconciliation;engine compilation may not.
+V2 now builds all three targets from native source097e2ac90 after the repaired
+stdout monitor passes its real2MiB pipe/EOF check. All1446 actual compiler
+inputs and external link inputs match their pins;all build owners close at exit0.
+The new engine hash is`4b3f48c774068805eb68afa13c5b65ad65ec9e2b0f4f48b5d70db264f5133a23`;
+the selected479a fallback remains unchanged. The small same-build submission
+and phase-cache GPU gate is prepared by`check_verify_window_phase.py`;
+compilation does not qualify either GPU execution or a model route. The inherited
+typed packed loads remain under compiler-contract review before Q6 model trials.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
