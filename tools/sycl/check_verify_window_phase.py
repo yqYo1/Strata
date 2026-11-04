@@ -19,8 +19,8 @@ import measurement_owner as supervision
 from run_q6_columns import validation_log
 
 P, B, RESULT, base = build.P, build.B, build.RESULT, build.base
-ROOT = B / 'verify-window-phase-device-v1'
-KEY = 'verify_window_phase_device_v1'
+ROOT = B / 'verify-window-phase-device-v2'
+KEY = 'verify_window_phase_device_v2'
 SELF = Path(__file__).resolve()
 require, digest, write = build.require, build.digest, build.write
 SUBMISSION = [

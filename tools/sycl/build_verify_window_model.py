@@ -5,6 +5,7 @@ Only the eight phase/Q6 source changes enter the engine. Main owns all builds
 and tests. Syntax checks may precede legacy retention reconciliation; creating
 the engine generation may not. No GPU or model execution in this controller.
 """
+import ast
 import copy
 import fcntl
 import hashlib
@@ -22,9 +23,9 @@ import measurement_owner as supervision
 
 selected, base = phase.selected, phase.base
 P, B, RESULT = phase.P, phase.B, phase.RESULT
-ROOT = B / 'verify-window-model-v2'
-KEY = 'verify_window_model_build_v2'
-PREVIOUS = 'verify_window_model_build_v1'
+ROOT = B / 'verify-window-model-v3'
+KEY = 'verify_window_model_build_v3'
+PREVIOUS = 'verify_window_model_build_v2'
 HOST_ROOT = B / 'verify-window-build-monitor-host-v1'
 HOST_KEY = 'verify_window_build_monitor_host_v1'
 SELF = Path(__file__).resolve()
@@ -146,26 +147,60 @@ def check_monitor():
     print('Production build monitor passes real2MiB pipe/backpressure/EOF control;no GPU.', flush=True)
 
 
+def monitor_qualification(data):
+    host=data[HOST_KEY]
+    original=json.loads((HOST_ROOT/'record.json').read_text())
+    require(host['passed'] and host['complete'] and host['ownership_closed'] and
+            not host['GPU_executed'], 'closed real pipe/EOF control required')
+    old=base.basis.build.git(P,'show',original['source_commit']+':'+str(SELF.relative_to(P)))
+    def body(raw):
+        return ast.dump(next(node for node in ast.parse(raw).body
+                             if isinstance(node,ast.FunctionDef) and node.name=='monitor'))
+    require(body(old)==body(SELF.read_bytes()), 'changed monitor needs a fresh CPU qualification')
+    names=('tools/sycl/measurement_owner.py','tools/sycl/measurement_guards.py')
+    require(all(digest(P/name)==original['controller_inputs'][name] for name in names) and
+            digest(host['interpreter']['path'])==host['interpreter']['sha256'],
+            'monitor owner/guard/interpreter changed')
+    return dict(original_source_commit=original['source_commit'],evidence_key=HOST_KEY,
+        monitor_AST_sha256=hashlib.sha256(body(old).encode()).hexdigest(),
+        unchanged_helpers={name:original['controller_inputs'][name] for name in names},
+        scope='Reuse only the identical monitor function,owner,guard and interpreter;not the new preparation or metadata-query code.')
+
+
 def prepare():
     data = base.committed(RESULT)
     require(KEY not in data and not ROOT.exists(), 'one fresh prospective phase/Q6 generation')
     previous = data[PREVIOUS]
-    host_control = data[HOST_KEY]
-    original_host = json.loads((HOST_ROOT / 'record.json').read_text())
-    require(previous['stage'] == 'failed-build' and not previous['passed'] and
-            previous['failure_diagnosis']['kind'] == 'controller-stdout-not-drained' and
-            previous['failure_diagnosis']['configure_command_closed'] and
-            host_control['passed'] and host_control['complete'] and host_control['ownership_closed'] and
-            base.controls(original_host['source_commit'], controller=SELF) == original_host['controller_inputs'],
-            'preserve failedV1 and qualify the repaired CPU monitor before new preparation')
+    require(previous['stage']=='built-not-executed' and previous['passed'] and
+            previous['complete'] and previous['ownership_closed'] and
+            not (B/'verify-window-model-v2').exists(),
+            'recover and retire the superseded pre-fix generation before new preparation')
+    monitor_basis=monitor_qualification(data)
     host = data[phase.KEY]
     require(host['passed'] and host['complete'] and host['ownership_closed'] and
             not host['GPU_executed'], 'closed phase-policy host/syntax evidence required')
-    component = data['q6_columns_component_v4']
+    component = data['q6_byte_load_component_v2']
     require(component['passed'] and component['complete'] and component['ownership_closed'] and
-            component['decision']['qualified_shapes'] == 28, 'closed 28-shape Q6 evidence required')
+            component['source_commit']==phase.Q6 and
+            component['decision']['qualified_shapes'] == 30, 'closed fixed-source 30-shape Q6 evidence required')
     revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     native, values = phase.projection(revision)
+    host_record=json.loads((phase.ROOT/'record.json').read_text())
+    phase.source_current(host_record)
+    require(phase.compact(host_record)==host and
+            host_record['native_sources']=={n:hashlib.sha256(raw).hexdigest() for n,raw in values.items()} and
+            digest(host['binary']['path'])==host['binary']['sha256'],
+            'same-source current30 host fixture and composition required')
+    # The closed component's record/map remain as provenance,not its retired
+    # standalone ELF. Bind its actual tested native fields and build recipe.
+    component_root=B/'q6-byte-load-component-v2'
+    component_record=json.loads((component_root/'record.json').read_text())
+    for name in phase.Q6_FILES:
+        require(hashlib.sha256(values[name]).hexdigest()==component_record['project_inputs']['files'][name],
+                'model Q6 source differs from the numerical component')
+    require(component_record['build_input_pins']==component['build_input_pins'] and
+            digest(component['actual_inputs']['path'])==component['actual_inputs']['sha256'],
+            'component source/compile evidence changed')
     old = str(selected.model.ROOT)
     recipe = dict(configure=[x.replace(old, str(ROOT)) for x in native['configure_argv']],
         environment={k:v.replace(old,str(ROOT)) for k,v in native['environment'].items()})
@@ -184,6 +219,7 @@ def prepare():
     row = dict(stage='prepared',source_commit=revision,controller_inputs=base.controls(revision,controller=SELF),
         selected_record_sha256=digest(selected.model.ROOT/'record.json'),selected_binaries=native['binaries'],
         selected_native_source=native['source_commit'],q6_source=phase.Q6,
+        monitor_qualification=monitor_basis,
         native_sources={n:hashlib.sha256(b).hexdigest() for n,b in values.items()},
         changed_files=sorted((*phase.Q6_FILES,*phase.PHASE_FILES,phase.POLICY,phase.FIXTURE)),
         recipe=recipe,generated_expected={n.replace(old,str(ROOT)):h for n,h in native['generated_expected'].items()},
