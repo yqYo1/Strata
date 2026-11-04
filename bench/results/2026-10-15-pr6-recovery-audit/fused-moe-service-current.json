@@ -117781,7 +117781,7 @@
     }
   },
   "verify_window_model_build_v1": {
-    "stage": "syntax-checked",
+    "stage": "failed-build",
     "source_commit": "74ffd383a2100e13d4bc75c9fd3455b614267355",
     "selected_record_sha256": "d5765dbb3f72339c547d5b77139ddd8c343f6f27dbd9edbb33e4bbfd2bcdb513",
     "selected_binaries": {
@@ -117943,7 +117943,7 @@
     },
     "whole_wall_seconds": 3600,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "passed": false,
     "complete": false,
     "GPU_executed": false,
@@ -117968,6 +117968,7 @@
       "compiler_inputs": 727,
       "exit_code": 0
     },
+    "error": "RuntimeError('configure failed: CMake Warning:\\n  Manually-specified variables were not used by the project:\\n\\n    STRATA_MMQ_KQUANTS\\n\\n\\n')",
     "controller_inputs": {
       "files": 91,
       "aggregate_sha256": "4fb53873f7a82be559898a04a9ef90caea5d47eebc493af94c1e2c8a456ebd0d"
@@ -117985,6 +117986,15 @@
         "sycl_verifier_retirement_test"
       ],
       "changes": "Only generation paths;compiler,optimization,dependencies unchanged"
+    },
+    "failure_diagnosis": {
+      "kind": "controller-stdout-not-drained",
+      "production_bug": false,
+      "GPU_executed": false,
+      "configure_native_exit": 0,
+      "configure_command_closed": true,
+      "error": "monitor() called io.poll()/pidfd polling without io.read(),so stdout/EOF never drained even after CMake became a zombie. Interrupted exact owned controller before any engine compile command. CMake unused-variable warning is not the cause.",
+      "next_action": "Fix and CPU-regress the monitor with real stdout beyond pipe/pending capacity,then create a new prospective build scope with unchanged native source. Preserve this failed attempt."
     }
   }
 }
