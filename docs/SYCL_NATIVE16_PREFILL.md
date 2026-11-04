@@ -459,9 +459,11 @@ production entry, actual dispatch counts and real-pool/prefill behavior before
 a matched model trial. No production dispatch or model speed is qualified.
 After original V1 source/recipe recovery from pushed Git history, its failed
 unqualified generation and V2's closed normal build/correctness output are
-retired:89 files,20090636 bytes. The failed outcome remains intact. V2's two
-exact CPU executables, expert archive and input proof stay for the imminent
-six-process timing comparison; the validated GPU fallback is unchanged.
+retired:89 files,20090636 bytes. The failed outcome remains intact. After the
+direct comparison closes, V2's two CPU executables, archive and remaining
+outputs are also retired:83 files,19278175 bytes. Its original source/recipe
+and all240 samples remain at `ee5a8e41307a97bdb7155004e4bc9c2a33af5e33`;
+the validated GPU fallback is unchanged.
 The source now offers default-off `STRATA_IQ3_PAIR=1` only at the decode NT1
 production entry, below the unchanged multi-token dispatch. Prefill keeps its
 existing selection. `STRATA_IQ3_PAIR_AUDIT=1` uses separate per-thread IQ3
