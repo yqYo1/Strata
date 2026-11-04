@@ -283,6 +283,16 @@ Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
 single-token GU selector to `NativeGuPhase::Decode`, preserving the prefill
 dispatch. This source-only containment is outside the frozen observer build;
 its compiled qualification and matched model comparison remain pending.
+The source-only `iq3xxs_pair_gu_rows` component is the next IQ3_XXS NT1 GU
+candidate. It shares activation loads between gate/up, keeps packed weights
+unchanged and preserves each output's block FMA and final float reduction.
+Its integer lane bound is 7872512; byte loads avoid unaligned scale/sign objects.
+The maintained single-exact fixture now defines GGML parity, padded/unaligned
+input, output-canary, invalid-layout, overlap and overflow checks for this
+component. Neither those new checks nor a speed comparison has run. The helper
+is not selected by production; after the observer cohort, qualify the CPU
+component and its setup-inclusive hot/stream cost before a decode-only model
+trial. Retire it if the component does not justify that trial.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
 write/flush cannot qualify attribution. The source review supplies no measured

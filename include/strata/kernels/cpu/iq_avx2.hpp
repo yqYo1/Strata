@@ -10,10 +10,19 @@
 
 namespace strata::kernels::cpu {
 
+struct NativeFmt;
+
 // Experimental single-token IQ3_XXS/IQ3_S/IQ2_S gate/up, matching GGML's float tree.
 // Returns false without writing for other formats or compiler/CPU targets.
 bool iq256_single_gu_rows(int ggml_type, const uint8_t* blob, size_t gu_row, size_t up_off,
                           int n, const void* act, float* ff, int r0, int r1);
+
+// Experimental IQ3_XXS NT1 component for H2560/FF640. Shares activation loads
+// between gate/up without expanded weights or a different floating-point tree.
+// Not selected by the production dispatcher. Invalid layouts return false
+// without writing; the whole640-float output must not alias weights/activation.
+bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
+                        float* ff, int r0, int r1);
 
 bool iq256_supported(int ggml_type) noexcept;
 /// ff[t][r] = silu(gate_r . a[t]) * (up_r . a[t]), rows [r0, r1); gate rows at blob, up rows at blob + up_off.

@@ -3,7 +3,10 @@
 // Copyright (c) 2023-2026 The ggml authors; MIT, see third_party/ggml/LICENSE.
 // Keep the original integer lanes, FMA order and horizontal float reduction.
 #include "strata/kernels/cpu/iq_avx2.hpp"
+#include "strata/kernels/cpu/native_expert.hpp"
 #include <cmath>
+#include <cstring>
+#include <limits>
 #if defined(__clang__) && (defined(__znver3__) || defined(__znver3))
 #include <immintrin.h>
 #include <stdint.h>
@@ -134,6 +137,60 @@ __attribute__((noinline)) void iq3xxs_dot(int n, float * GGML_RESTRICT s, size_t
 
     *s = 0.25f * hsum_float_8(accumf);
 
+}
+
+// Main-authored pair scheduling of the GGML IQ3_XXS arithmetic above. Decode
+// packed bytes with memcpy so neither scale/sign loads nor padded rows assume
+// an unaligned typed object. Only the activation is shared between gate/up.
+static inline __m256i iq3xxs_pair_chunk(const uint8_t* block, int p, __m256i q8) {
+    const auto* q3 = block + offsetof(block_iq3_xxs, qs) + 8 * p;
+    uint32_t gas;
+    std::memcpy(&gas, block + offsetof(block_iq3_xxs, qs) + QK_K / 4 + 4 * p, sizeof gas);
+    const auto grid = _mm256_set_epi32(iq3xxs_grid[q3[7]], iq3xxs_grid[q3[6]],
+        iq3xxs_grid[q3[5]], iq3xxs_grid[q3[4]], iq3xxs_grid[q3[3]],
+        iq3xxs_grid[q3[2]], iq3xxs_grid[q3[1]], iq3xxs_grid[q3[0]]);
+    const auto sign = [&](unsigned shift) {
+        int64_t value;
+        std::memcpy(&value, keven_signs_q2xs + 8 * ((gas >> shift) & 127), sizeof value);
+        return value;
+    };
+    const auto signs = _mm256_set_epi64x(sign(21), sign(14), sign(7), sign(0));
+    const auto dot = _mm256_maddubs_epi16(grid, _mm256_sign_epi8(q8, signs));
+    return _mm256_madd_epi16(dot, _mm256_set1_epi16(2 * (gas >> 28) + 1));
+}
+
+__attribute__((noinline)) void iq3xxs_pair_dot(const uint8_t* GGML_RESTRICT g,
+    const uint8_t* GGML_RESTRICT u, const uint8_t* GGML_RESTRICT activation,
+    float& gout, float& uout) {
+    __m256 ga = _mm256_setzero_ps(), ua = _mm256_setzero_ps();
+    for (int b = 0; b < 10; ++b) {
+        const auto* gb = g + b * sizeof(block_iq3_xxs);
+        const auto* ub = u + b * sizeof(block_iq3_xxs);
+        const auto* ab = activation + b * sizeof(block_q8_K);
+        __m256i gi = _mm256_setzero_si256(), ui = _mm256_setzero_si256();
+        #pragma clang loop unroll(full)
+        for (int p = 0; p < 8; ++p) {
+            const auto a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+                ab + offsetof(block_q8_K, qs) + 32 * p));
+            gi = _mm256_add_epi32(gi, iq3xxs_pair_chunk(gb, p, a));
+            ui = _mm256_add_epi32(ui, iq3xxs_pair_chunk(ub, p, a));
+        }
+        // Combining the two integer streams is exact: even with |q8|=128,
+        // each lane is bounded by8*4*62*128*31=7872512, below INT32_MAX.
+        // Keep GGML's per-block FMA order and its final horizontal float tree.
+        uint16_t gd, ud;
+        float ad;
+        std::memcpy(&gd, gb + offsetof(block_iq3_xxs, d), sizeof gd);
+        std::memcpy(&ud, ub + offsetof(block_iq3_xxs, d), sizeof ud);
+        std::memcpy(&ad, ab + offsetof(block_q8_K, d), sizeof ad);
+        ga = _mm256_fmadd_ps(_mm256_set1_ps(GGML_CPU_FP16_TO_FP32(gd) * ad),
+            _mm256_cvtepi32_ps(gi), ga);
+        ua = _mm256_fmadd_ps(_mm256_set1_ps(GGML_CPU_FP16_TO_FP32(ud) * ad),
+            _mm256_cvtepi32_ps(ui), ua);
+    }
+    gout = .25f * hsum_float_8(ga);
+    uout = .25f * hsum_float_8(ua);
+    _mm256_zeroupper();
 }
 __attribute__((noinline)) void iq2s_dot(int n, float * GGML_RESTRICT s, size_t bs, const void * GGML_RESTRICT vx, size_t bx, const void * GGML_RESTRICT vy, size_t by, int nrc) {
     assert(n % QK_K == 0);
@@ -311,6 +368,37 @@ __attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t b
 }
 
 } // namespace
+bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
+                        float* ff, int r0, int r1) {
+    constexpr size_t rows = 640, blocks = 10;
+    if (f.gu_type != 18 || f.gu_act != 15 || f.n_embd != 2560 || f.n_ff != 640 ||
+        !blob || !act || !ff || r0 < 0 || r1 < r0 || r1 > 640 ||
+        f.gu_row < blocks * sizeof(block_iq3_xxs) ||
+        f.act_bytes != blocks * sizeof(block_q8_K) || f.gu_row > f.bytes / rows)
+        return false;
+    const size_t gate_bytes = rows * f.gu_row;
+    if (f.up_off < gate_bytes || f.up_off > f.bytes || gate_bytes > f.bytes - f.up_off ||
+        f.down_off < f.up_off + gate_bytes || f.down_off > f.bytes)
+        return false;
+    const auto w = reinterpret_cast<uintptr_t>(blob), a = reinterpret_cast<uintptr_t>(act),
+               o = reinterpret_cast<uintptr_t>(ff);
+    constexpr size_t output_bytes = rows * sizeof(float);
+    const auto max = std::numeric_limits<uintptr_t>::max();
+    if (f.bytes > max - w || f.act_bytes > max - a || output_bytes > max - o ||
+        o % alignof(float) || (w < a + f.act_bytes && a < w + f.bytes) ||
+        (w < o + output_bytes && o < w + f.bytes) ||
+        (a < o + output_bytes && o < a + f.act_bytes))
+        return false;
+    const auto* activation = static_cast<const uint8_t*>(act);
+    for (int r = r0; r < r1; ++r) {
+        const auto* g = blob + size_t(r) * f.gu_row;
+        float gv, uv;
+        iq3xxs_pair_dot(g, g + f.up_off, activation, gv, uv);
+        ff[r] = (gv / (1.f + std::exp(-gv))) * uv;
+    }
+    return true;
+}
+
 bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_off,
                           int n, const void* act, float* ff, int r0, int r1) {
     if (type != 18 && type != 21 && type != 22) return false;
@@ -327,6 +415,9 @@ bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_o
 } // namespace strata::kernels::cpu
 #else
 namespace strata::kernels::cpu {
+bool iq3xxs_pair_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
+    return false;
+}
 bool iq256_single_gu_rows(int, const uint8_t*, size_t, size_t, int, const void*, float*, int, int) {
     return false;
 }
