@@ -138663,6 +138663,12 @@
           "peak_live_owned_identities": 4,
           "peak_session_rss_bytes": 56101392384,
           "cleanup_used": false
+        },
+        "raw_retirement": {
+          "files": 68,
+          "bytes": 14028720,
+          "evidence_commit": "c13490d22dbda641eb5d06ec5d6a630409060ae4",
+          "manifest_scope": "process3"
         }
       }
     ],
@@ -138732,14 +138738,25 @@
     ],
     "raw_retirement": {
       "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-overhead-raw-retirement-20261105.json",
-      "manifest_sha256": "a0773a471870ad4a393b88245f3855ccd30de23b188050e75554149b467b62c8",
+      "manifest_sha256": "f6d3d99ef2a0af9ea313d53d1e0be44eadcb3ac15b5c5d854d9eab7b580ad26b",
       "completed": true,
-      "files": 204,
-      "bytes": 42187988,
+      "files": 272,
+      "bytes": 56216708,
       "evidence_commit": "03831ea05b07b1cd16fcb78a0ecca50c7cbf42da",
       "protected_generated_inputs": 13,
-      "consumer": "Current six-process observer comparison;normal process0/1/2 output retired after committed evidence. Prepared plans/runtime/build and short-model qualification inputs remain.",
-      "latest_evidence_commit": "ef483479e3002e18e0df2b36a5e65b02d40b9e25"
+      "consumer": "Current six-process observer comparison;normal process0/1/2/3 output retired after committed evidence. Prepared plans/runtime/build and short-model qualification inputs remain.",
+      "latest_evidence_commit": "c13490d22dbda641eb5d06ec5d6a630409060ae4"
+    },
+    "retention_addendum": {
+      "question": "Which existing outer and nested decode scopes remain outside the CPU pool before choosing the next GPU/draft/host-path discriminator?",
+      "process_indices": [
+        4,
+        5
+      ],
+      "source": "Unchanged existing STRATA_DECODE_TIMING footer and native/API requests.jsonl;generation_engine.decode_timing_evidence already checks all six request joins. No added instrumentation,environment change or execution gate.",
+      "extract_before_raw_retirement": "For long requests4:6 of each remaining process,retain windows,all existing ms_per_window values,outer_residual_ms_per_window,host_nested_residual_ms_per_window and clock_binding from the existing reader. Keep the workload name,existing sample identity and scope limits;use the committed raw-less earlier processes unchanged.",
+      "comparison_preserved": "All six original processes,arms,order,workloads,criteria,stopping rules and observer-overhead decision stay unchanged. The added evidence serves a separate whole-decode attribution question on the final pair,not a new speed/adoption gate.",
+      "limits": "Rounded nested host wall scopes;CPU_pool includes scheduling/waits. GPU_reach_wait is not GPU arithmetic service. Do not sum nested scopes,claim hardware saturation or use conditional zero-pool accounting as a physical ceiling."
     },
     "source_inputs": {
       "files": 300,

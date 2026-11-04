@@ -312,6 +312,20 @@ ownership and quiet validation with no fresh fault. Logical work matches in
 both long workloads. Its on/off per-output latency ratios are 1.017201 for code
 and 1.016185 for prose, each below the declared 1.05 bound. The final pair is
 still required; these two pairs do not establish the full repeated bound.
+The 69–70% GU figure is a share of summed leaf CPU time, not of total decode
+latency. In the two on processes, nested pool wall is 44.53/44.91% of code decode
+and 41.23/41.49% of prose decode. A deliberately optimistic counterfactual that
+removes all recorded pool wall while holding everything else fixed gives only
+about 24.0–24.1 code or 14.8 prose output/s
+(`generated_tokens*1000/(decode_ms-pool_ms)`). This is conditional accounting,
+not a physical ceiling: pool includes waits and can overlap device progress,
+and changing it may affect other scopes. CPU tuning alone under that fixed-rest
+assumption does not reach 70; retain the whole-decode question alongside the
+CPU component. Before the final pair, a prospective retention addendum keeps
+the already-emitted outer/nested timing footer for processes 4/5's long requests.
+No instrumentation, workload, ordering, acceptance or stopping rule changes.
+Those rounded host clocks can distinguish the next draft/verify/host question;
+they do not measure GPU arithmetic service, physical traffic or saturation.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
