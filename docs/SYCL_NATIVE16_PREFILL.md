@@ -231,8 +231,8 @@ The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
 thread-CPU clocks. Its replacement build, real-pool off/on parity, small device
 checks and short model/census entry are now closed. Representative long-decode
-collection has five of six processes closed, including two complete off/on
-pairs; repeated observer-cost qualification remains pending.
+collection is closed: all six processes and twelve long requests pass, and all
+three paired incremental observer-cost bounds qualify as detailed below.
 The retired a99 generation's measured snapshot used two pool files from
 `6e40afc1b`, rather than the plain Git `05a9` pool files. The observer hooks
 are applied to those recovered bytes while preserving the eight
@@ -303,7 +303,7 @@ they are not request critical-path fractions or hardware saturation evidence.
 The different 74-token warmup remains separate. Follow
 `verify_window_cpu_service_model_entry_v1.cpu_service`; no representative
 long-generation mix, observer overhead or clean-speed gain is qualified.
-The Main-authored `tools/sycl/cpu_service_overhead.py` now defines the next
+The Main-authored `tools/sycl/cpu_service_overhead.py` closes the repeated
 comparison: three alternating off/on pairs in six independent processes, each
 with both fixed thinking-on long-generation workloads. Common census, decode
 clocks and trace settings stay identical. A five-percent per-pair latency bound
@@ -312,29 +312,28 @@ classes are observed; changed work is inconclusive and keeps every sample.
 Preparation passes at controller `dab5a31d91a6c724e944ab921915526ec144556e`:
 the six generated plans have one invariant configuration/runtime signature,
 all fifteen model assets match, and the bounded decision controls pass.
-Both current-source frontend probes now pass with normal exits and closed
-owners. The first off/on pair is closed: both processes pass six native/API
-census joins and both thinking-on workloads, with normal exits, closed owners
-and no fresh fault. Logical work matches in each workload. Its on/off per-output
-latency ratios are 1.002853 for code and 1.008799 for prose; the full three-pair
-overhead bound remains pending. In the on process, summed leaf CPU is
-520.298/1686.105 s for 3170/7275 generated tokens; GU accounts for
-68.94/69.74%, and IQ3_XXS NT1 GU is the largest individual bin in both.
+Both current-source frontend probes pass. All six processes pass six native/API
+census joins apiece and both thinking-on workloads, with normal exits, closed
+owners, quiet validation and no fresh fault. All fifteen final model-asset
+hashes match. Logical work and actual MTP classes match in all three pairs.
+On/off per-output latency ratios are 1.002853/1.017201/1.026476 for code and
+1.008799/1.016185/1.017022 for prose, each below the predeclared 1.05 bound;
+geometric means are 1.015464/1.013995. This qualifies incremental CPU_SERVICE
+cost with common observers retained, not clean speed or model adoption.
+In the three on processes, GU is 68.94..68.99% of code leaf CPU and
+69.72..69.74% for prose. IQ3_XXS NT1 GU, the selected component, is
+20.27..20.29% / 16.15..16.16% of total leaf CPU; it is not the entire GU stage.
+The first on process has summed leaf CPU 520.298/1686.105 s for 3170/7275 outputs.
 If those instrumented CPU costs per output stayed fixed, six concurrent leaf
 threads would have optimistic aggregate budgets of 36.6/25.9 output/s before
 any other work. This conditional accounting is not a physical CPU ceiling or
 clean-speed prediction: observer cost, CPU frequency, memory stalls, cache
 residency and the MTP/NT mix still matter. Reaching70 requires lower CPU-service
 cost or less CPU work, alongside GPU and transfer improvements.
-The second pair also passes all six native/API joins per process, closed
-ownership and quiet validation with no fresh fault. Logical work matches in
-both long workloads. Its on/off per-output latency ratios are 1.017201 for code
-and 1.016185 for prose, each below the declared 1.05 bound. The final pair is
-still required; these two pairs do not establish the full repeated bound.
 The 69–70% GU figure is a share of summed leaf CPU time, not of total decode
-latency. In the two on processes, nested pool wall is 44.53/44.91% of code decode
-and 41.23/41.49% of prose decode. A deliberately optimistic counterfactual that
-removes all recorded pool wall while holding everything else fixed gives only
+latency. In the three on processes, nested pool wall is 44.53..45.01% of code
+decode and 41.23..41.70% of prose decode. Removing all recorded pool wall in
+the first two on processes while holding everything else fixed would yield only
 about 24.0–24.1 code or 14.8 prose output/s
 (`generated_tokens*1000/(decode_ms-pool_ms)`). This is conditional accounting,
 not a physical ceiling: pool includes waits and can overlap device progress,
@@ -345,12 +344,12 @@ the already-emitted outer/nested timing footer for processes 4/5's long requests
 No instrumentation, workload, ordering, acceptance or stopping rule changes.
 Those rounded host clocks can distinguish the next draft/verify/host question;
 they do not measure GPU arithmetic service, physical traffic or saturation.
-Process 4 also closes normally with all six joins, unchanged logical work,
-quiet validation and no fresh fault. Its retained rounded clocks show code/prose
+The final off process's retained rounded clocks show code/prose
 total 257.72/247.17 ms per window: CPU pool 113.21/100.88, GPU-reach wait
-84.50/84.77, and draft 33.63/33.53. These are nested host scopes, not additive
-device service. Trace the called wait wrapper before attributing its cost to
-GPU arithmetic. Process 5 remains required for the third paired observer bound.
+84.50/84.77, and draft 33.63/33.53. In the final on process these are
+264.54/251.37 total,119.07/104.81 pool,84.51/84.64 wait and33.63/33.56 draft.
+These are nested host scopes, not additive device service. Trace the called
+wait wrapper before attributing its cost to GPU arithmetic.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
@@ -393,7 +392,7 @@ frozen plan must pin the full build/fixture/source inputs and alternate three
 independent reference/candidate pairs. No minimum gain is imposed; compare all
 three paired median directions separately for each cell. This is a direct
 single-core component experiment, not a production-pool route or model gain.
-It has not been compiled or run; the observer cohort remains serialized first.
+It has not been compiled or run; the required observer cohort is now closed.
 The CPU-only CMake project also exposes `cpu_iq_single_exact_test`, reusing the
 maintained correctness fixture and the same freshly compiled `expert_cpu`
 library as the benchmark. This permits the compiler/ISA and correctness gate
@@ -423,8 +422,9 @@ official SDK and host linker inputs, generated version header and tools. It
 requires actual compile/link coverage and CPU-only linkage, the same archive,
 384 original plus 80 paired fixture cases, and complete real-model validation
 before/after each process. This controller is source-only; neither its plan
-preparation nor a compiler/test/benchmark has executed. The live observer
-cohort still owns serialized execution. No production pair dispatch is selected.
+preparation nor a compiler/test/benchmark has executed. The observer cohort is
+closed; Main owns the next serialized preparation. No production pair dispatch
+is selected.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
 512 MiB process cap before library/scratch overhead. Its prospective measurement
 cap is therefore 1 GiB; the small correctness fixture keeps its 512 MiB cap.
