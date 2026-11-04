@@ -186,14 +186,14 @@ unknown; the current user cannot read the DMI table, and no ceiling is inferred.
 
 The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
-thread-CPU clocks. Its replacement build and real-pool off/on parity are now
-closed; model admission and observer-cost qualification remain pending.
-No useful CPU-service or overhead measurement is established yet.
-The retained build resolves per-file inputs through its recipe: its two pool
-files still match `6e40afc1b`, without observer hooks, rather than the plain
-Git `05a9` pool files. Reapply the scoped hooks to those measured bytes while
-preserving the eight candidate-specific files; a checkout of the recipe's
-commit alone is not the complete measured source snapshot.
+thread-CPU clocks. Its replacement build, real-pool off/on parity, small device
+checks and short model/census entry are now closed. Representative long-decode
+service and observer-cost qualification remain pending.
+The retired a99 generation's measured snapshot used two pool files from
+`6e40afc1b`, rather than the plain Git `05a9` pool files. The observer hooks
+are applied to those recovered bytes while preserving the eight
+candidate-specific files; a checkout of the recipe's commit alone would not
+recover the complete measured source snapshot.
 The observer constructor is now retargeted to that complete 560-file snapshot,
 with the checked output-v2 delta. Its source check passes at
 `1e791e80bde6366c37469a07476f4518594bc1a9`: all 563 projected files are checked,
@@ -218,8 +218,8 @@ runtime/configuration inputs remain intact. The observer build is now closed
 with actual compiler/link input coverage and four hashed outputs, from source
 `8e2499937969dbfa1dcd950b95025d9712037a83`. The real-pool off/on checks both
 pass 28 cases with identical output checksums and normal closed processes.
-The same-build small device gate now passes; model admission remains pending.
-No measured CPU service or speed gain follows from these host/device checks. The
+The same-build small device gate passes. No measured CPU service or speed gain
+follows from those host/device checks alone. The
 `tools/sycl/cpu_service_device.py` reuses the maintained small submission/phase
 runner in a private context and requires that exact real-pool parity. Its
 prospective preparation does not execute a GPU kernel.
@@ -245,8 +245,20 @@ passes at controller `40c4efeaec6427a81db5181840b27fabddf38086`, with all fiftee
 model assets hashed and the current source/provider/configuration pinned.
 The owned preparation exits normally in 111.821 s, with quiet stderr and no
 GPU/model execution. Both current-source frontend probes now pass with normal
-exit and closed owners. Model execution remains pending; no actual model or
-observer-cost result is established yet.
+exit and closed owners. The actual model entry now passes: one short warmup
+and both fresh 32769-input/24-output thinking-on requests bind complete v2
+service records to their independent censuses and native/API clocks. All three
+requests conserve rows, jobs, entries, format/NT bins and six thread slots;
+the benchmark/native exit normally, validation is quiet, all fifteen final
+model hashes match, owners close and there is no fresh fault.
+For the two 32K requests, summed leaf CPU time is 3.310/3.091 s, while nested
+pool wall is 0.676/0.650 s. GU consumes 69.33/70.06% of that CPU time, Down
+30.49/29.75%, and hidden quantization 0.185/0.190%; NT1 is 72.88/72.36% of
+CPU jobs. These concurrent leaf sums include memory stalls and observer cost;
+they are not request critical-path fractions or hardware saturation evidence.
+The different 74-token warmup remains separate. Follow
+`verify_window_cpu_service_model_entry_v1.cpu_service`; no representative
+long-generation mix, observer overhead or clean-speed gain is qualified.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
@@ -255,8 +267,9 @@ write/flush cannot qualify attribution. The source review supplies no measured
 CPU service or observer-overhead result.
 The source-only output-v2 fix adds a versioned completion trailer, checks every
 write and the final flush, and propagates failure at the generator call site.
-The retargeted engine is built but not model-qualified; the validated fallback
-and recorded PP reference remain unchanged.
+The retargeted engine passes this short model entry, with representative
+long-generation attribution and overhead still unqualified. The validated
+fallback and recorded PP reference remain unchanged.
 The reader now requires version 2 and an exact completion trailer, including
 row counts and ordered thread slots; its host plan and result are in
 `cache_map_cpu_service_sources_v1.reader_v2_host`. All 12 tests pass at source
