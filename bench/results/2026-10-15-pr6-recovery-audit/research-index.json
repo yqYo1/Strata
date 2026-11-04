@@ -23241,7 +23241,7 @@
   },
   "cpu_avx2_swiglu_math_methods_collection_20261104": {
     "classification": "knowledge_collection",
-    "stage": "native_review_running",
+    "stage": "corrected_reference_curation_ready_pending_cohort_closure",
     "question": "Compare SIMD CPU sigmoid/SiLU/SwiGLU evaluation methods for AVX2/FMA Zen3: standard scalar libm, compiler vector math, vendor and open vector libraries, and original approximations. Trace range reduction, exp/division, saturation/overflow/subnormal/NaN semantics, rounding and FMA, lane/tail handling, setup, dependency chains and fusion. Identify legal per-function/per-TU compiler controls versus unsafe global fast-math assumptions, provenance/licenses, and transferable original numerical/HPC/image-processing evidence. Compare the actual SGLang/vLLM activation numerical contract where sourced; exact libc or llama.cpp FP32 bits are not universally required. Use the supplied immutable Strata source only to anchor what functions exist at H2560/FF640/NT1..4,not to assert how expensive they are. Do not repeat low-bit/codebook representation, quantized-dot ISA or generic LUT surveys;focus on nonlinear activation math and counterregimes. No code proposal, local timing, bottleneck claim or blanket fast-math recommendation.",
     "eligibility": {
       "schedulable_now": false,
@@ -23261,8 +23261,8 @@
     ],
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/cpu-avx2-swiglu-math-methods/report.md",
     "report_budget_bytes": 12288,
-    "report_bytes": 11483,
-    "report_sha256": "b7a3489c2e39461a38e684e334cd4cbe5b7e089d07883554ed002bbbd8e73709",
+    "report_bytes": 12211,
+    "report_sha256": "9cc07aaa441c45931c380630f32fe161c2738410fa908a05982d5c2e87b3a516",
     "worker_model": "gpt-6-luna",
     "worker_effort": "high",
     "startup_model_banner_verified": "GPT-6-Luna high",
@@ -23282,19 +23282,34 @@
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/cpu-avx2-swiglu-math-methods/review.md",
-      "stage": "running",
-      "main_read_report_body": false
+      "stage": "completed_essential_corrections_verified",
+      "main_read_report_body": false,
+      "sha256": "fe1458082b320c097f8d7651772e39ab062c29345250b395bf3dfad09953fd57",
+      "next_action": "Main integrates the reviewed single-reference proposal after the frozen Q6 cohort closes;no implementation or speed claim."
     },
     "consumer": "Reusable methods reference only for a concrete future activation-math or GPU operand-issue question;not a current bottleneck or speed claim.",
-    "review_point": "Native Luna-max review decides novelty,essential corrections and retention;Main reads only its short operational digest.",
+    "review_point": "Whole Q6 generation cohort closure and completed streaming-store report review;then curate and retire consumed transaction files.",
     "inputs_manifest": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/cpu-avx2-swiglu-math-methods/inputs.json",
       "sha256": "c022ec40dc68b66649f3416bb6817dc6e4a349cd51470ce44764da43364d1f63"
+    },
+    "reviewed_input_sha256": "b7a3489c2e39461a38e684e334cd4cbe5b7e089d07883554ed002bbbd8e73709",
+    "curation": {
+      "actor": "/root/curate_two_method_references_20261104",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "proposal": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/cpu-avx2-swiglu-math-methods/curation-proposal.md",
+      "proposal_bytes": 9324,
+      "proposal_sha256": "0d732a46f32b57a149e2c12483af880fcb3235ac5c673a00e8c9a4e062d64b72",
+      "corrected_input_sha256": "9cc07aaa441c45931c380630f32fe161c2738410fa908a05982d5c2e87b3a516",
+      "essential_corrections_verified": true,
+      "main_read_collection_body": false,
+      "next_action": "Promote one substantive reference at cohort closure;retire consumed report/review/spec/lifecycle/proposal after current streaming-store review releases its prior-input consumer."
     }
   },
   "gpu_register_operand_issue_methods_collection_20261104": {
     "classification": "knowledge_collection",
-    "stage": "native_review_essential_correction_in_progress",
+    "stage": "corrected_reference_curation_ready_pending_cohort_closure",
     "question": "Compare register-operand supply and instruction-issue constraints in SIMD GPU arithmetic: register-file read banks/ports, operand reuse, source operand count, scoreboarding/dependency chains, and instruction scheduling under an otherwise fixed register allocation. Prioritize documented Intel Xe/IGC/Xe2/SYCL evidence;compare original NVIDIA/AMD/non-LLM GPU/HPC examples only with explicit transfer limits. Distinguish documented architecture, compiler lowering, actual emitted source mapping and measured performance. Explain when scheduling/operand reuse or independent accumulators helps or hurts,and what can be expressed in portable SYCL versus architecture-specific assembly/compiler controls. Do not infer B570 bank geometry or a local bottleneck from another GPU. Exclude repeat surveys of register capacity/spills/occupancy,code size/unrolling,SLM banks,DRAM mapping,or Q6 DPAS public dispatch. Existing source is only an applicability anchor;no code,ISA dump,local profiling or speed/adoption claim. A reusable methods comparison should include strongest counterexamples and falsifiable future discriminators.",
     "eligibility": {
       "schedulable_now": false,
@@ -23315,7 +23330,7 @@
     ],
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/report.md",
     "report_budget_bytes": 12288,
-    "report_bytes": 12175,
+    "report_bytes": 10424,
     "worker_model": "gpt-6-luna",
     "worker_effort": "high",
     "startup_model_banner_verified": "GPT-6-Luna high",
@@ -23335,21 +23350,85 @@
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/review.md",
-      "stage": "essential_correction_in_progress",
+      "stage": "completed_essential_corrections_verified",
       "main_read_report_body": false,
       "sha256": "9a4344cf861ae226b13421b03a65b1acf185b26ad03de97b29c0f8e857832784",
       "essential_corrections": [
         "Scope Intel IGC BCR flags and VTune Pipe/GRF explanations accurately",
         "Replace mutable master citations with immutable revisions"
       ],
-      "next_action": "Completed reviewer performs one report-only correction within12288bytes;Main reads only the short digest. Do not treat an internal compiler flag as a validated B570/SYCL public control."
+      "next_action": "Main integrates the reviewed single-reference proposal after the frozen Q6 cohort closes;no implementation or speed claim."
     },
     "consumer": "Reusable methods reference only for a concrete future activation-math or GPU operand-issue question;not a current bottleneck or speed claim.",
-    "review_point": "Native Luna-max review decides novelty,essential corrections and retention;Main reads only its short operational digest.",
+    "review_point": "Whole Q6 generation cohort closure and completed streaming-store report review;then curate and retire consumed transaction files.",
     "inputs_manifest": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/inputs.json",
       "sha256": "ef0e6aa5aed2738ab62955b11f1d0fdb18d0c0ad203dcc70cbcce8e265800d95"
     },
-    "reviewed_input_sha256": "60bb5917d151424d9f600f22eff63de6d1c7e0b2519c02a978c7c11584655c25"
+    "reviewed_input_sha256": "60bb5917d151424d9f600f22eff63de6d1c7e0b2519c02a978c7c11584655c25",
+    "report_sha256": "77b8e46a1d9cb3b3fb06b1fd457a6e4b534fde8d7d8403fadc70e927b3a4d54e",
+    "curation": {
+      "actor": "/root/curate_two_method_references_20261104",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "proposal": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/curation-proposal.md",
+      "proposal_bytes": 8462,
+      "proposal_sha256": "8015258d3bb198519bd04ed2e48e9ecf5c180a5971bf290f96e5d4e2f07a6f3d",
+      "corrected_input_sha256": "77b8e46a1d9cb3b3fb06b1fd457a6e4b534fde8d7d8403fadc70e927b3a4d54e",
+      "essential_corrections_verified": true,
+      "main_read_collection_body": false,
+      "next_action": "Promote one substantive reference at cohort closure;retire consumed report/review/spec/lifecycle/proposal after current streaming-store review releases its prior-input consumer."
+    }
+  },
+  "zen3_streaming_store_output_methods_collection_20261104": {
+    "classification": "knowledge_collection",
+    "stage": "native_review_running",
+    "question": "Compare Zen3 cached temporal stores/RFO against AVX2 non-temporal stores and write combining for one-pass CPU outputs:line/alignment/partial stores,fences and publication,size/reuse/accumulation,compiler/library thresholds and rejecting counterexamples. No local bottleneck or speed claim.",
+    "eligibility": {
+      "schedulable_now": false,
+      "reason": "Collection completed and owned terminal closed;no duplicate session. Future implementation remains separately gated.",
+      "reviewed_proposal": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/curation-proposal.md",
+      "proposal_sha256": "8015258d3bb198519bd04ed2e48e9ecf5c180a5971bf290f96e5d4e2f07a6f3d"
+    },
+    "policy_revision": "4f8bbc8d87459f3f9b7b558d7f18da3e40c5b847",
+    "prior_topics": [
+      "zen3_store_forwarding_quantized_layout_20261104",
+      "dram_bank_row_locality_collection_20261104",
+      "host_dma_source_preparation_collection_scope",
+      "linux_host_arena_thp_methods_20261102",
+      "cpu_avx2_swiglu_math_methods_collection_20261104"
+    ],
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/zen3-streaming-store-output-methods/report.md",
+    "report_bytes": 13238,
+    "report_sha256": "4acb5e79266e551ed69c8ec7a3724a18c8a0d6957deadfcbff56bea0c8a80300",
+    "report_budget_bytes": 14336,
+    "worker_model": "gpt-6-luna",
+    "worker_effort": "high",
+    "startup_model_banner_verified": "GPT-6-Luna high",
+    "main_reads_body_on_arrival": false,
+    "ownership_closed": true,
+    "completion": {
+      "task_id": "task_2ea461f9754b",
+      "dispatch_id": "ctx_c19b47dcf296",
+      "worker_done_verified": true,
+      "authoritative_dispatch_status": "completed",
+      "owned_terminal_closed": true,
+      "delivery_acknowledged": true
+    },
+    "review": {
+      "agent": "/root/review_zen3_streaming_store_methods_20261104",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/zen3-streaming-store-output-methods/review.md",
+      "stage": "running",
+      "main_read_report_body": false
+    },
+    "inputs_manifest": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/zen3-streaming-store-output-methods/inputs.json",
+      "sha256": "5922b6a1473d630503ad1e2b08a6ce9551e530a61e1fe0546aadac1afb68b229"
+    },
+    "consumer": "Reusable methods reference for a concrete future streaming-output/cache-policy decision,not a present Strata optimization or saturation claim.",
+    "review_point": "Native Luna-max completed report review,then cohort-closure curation and transaction retirement.",
+    "whole_folder_budget_bytes": 131072
   }
 }
