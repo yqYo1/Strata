@@ -22759,7 +22759,7 @@
   },
   "q6_typed_payload_contract_20261104": {
     "classification": "decision_support",
-    "stage": "report_returned_native_review_running",
+    "stage": "reviewed_source_contract_decision_support",
     "source_revision": "097e2ac90288db3ccb89136884c9a4d474645a91",
     "schedulable_now": true,
     "eligibility": "New actual-source gap after the previous zero-new-scope review:Q6/Q8 byte payload reads through uint16_t/int need matching C++/SYCL/IntelLLVM contract verification before model qualification. Exact -### omits an explicit relaxed-alias flag;that omission establishes no compiler default.",
@@ -22788,10 +22788,48 @@
       "model": "gpt-6-luna",
       "reasoning": "max",
       "path": ".cache/research/2026-11-04/q6-typed-load-contract/review.json",
-      "status": "running"
+      "status": "complete",
+      "bytes": 5705,
+      "sha256": "9cfade258ac9a285ca6990aed5a303c10ff14c2b612ab777e4ab46fb3a093479"
     },
     "main_read_report_body": false,
     "consumer": "Gate the next Q6 arithmetic/model trial without modifying or qualifying the already frozen phase build.",
-    "retention": "Retain only reviewed substantive findings/citations and the concrete implementation decision;retire task/launch/dispatch/release/closed transactions after review and source decision."
+    "retention": "Retain only reviewed substantive findings/citations and the concrete implementation decision;retire task/launch/dispatch/release/closed transactions after review and source decision.",
+    "report_identity": {
+      "path": ".cache/research/2026-11-04/q6-typed-load-contract/report.md",
+      "bytes": 14425,
+      "sha256": "3bdedb9923c8a22b157a5e3fd2a1431acd017ca32954705d115f54d1b77a4353",
+      "source_revision": "664a280d5aab4e272fef37538634207d38704b4c",
+      "phase_revision": "097e2ac90288db3ccb89136884c9a4d474645a91",
+      "task_sha256": "d45f60ebe4953f0b5bd1a7b85d59f4ab22f36f3cb4c1526a7beb6e752668192a"
+    },
+    "accepted_findings": [
+      "The byte ranges and alignments are favorable: Q6 ql covers bytes 0..127, qh covers 0..63, and each Q81 qs packed int covers a group within bytes 0..31. These limits do not make uint16_t*/int* subscripting valid over byte-member arrays.",
+      "Given the declared byte-array members, the cast-and-read expressions have no evidenced C++20 lifetime/type-accessibility justification. A pointer cast alone does not create overlaid uint16_t/int objects.",
+      "IntelLLVM source at 504366f4b82ff00bbac7b0c956635eed8bc599d8 (clang/lib/Driver/ToolChains/Clang.cpp, lines 6106-6118) defaults strict aliasing for both Linux host and spir64-unknown-unknown triples unless overridden. The absent relaxed flag is consistent with this source; absence by itself would not establish the default. -mconstructor-aliases is unrelated.",
+      "SYCL 2020 provides no identified type-punning exception for global weight bytes. Its C++-based memory model and USM access rules do not change the C++ object type or lifetime.",
+      "The load pattern is shared with the inherited reference, so it is source-contract debt rather than a demonstrated candidate-only defect. No compiler miscompile, GPU fault, throughput effect, or model-route qualification follows from the report.",
+      "Byte-based fixed-size memcpy into initialized unsigned words, or unsigned-char assembly, are narrow defined candidates. Keep byte order and signed consumer interpretation unchanged; device availability and lowering remain unverified."
+    ],
+    "primary_references": [
+      "https://timsong-cpp.github.io/cppwp/n4861/basic.lval",
+      "https://timsong-cpp.github.io/cppwp/n4861/intro.object",
+      "https://timsong-cpp.github.io/cppwp/n4861/cstring.syn",
+      "https://timsong-cpp.github.io/cppwp/n4861/expr.add",
+      "https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html",
+      "https://clang.llvm.org/docs/UsersManual.html",
+      "https://raw.githubusercontent.com/intel/llvm/504366f4b82ff00bbac7b0c956635eed8bc599d8/clang/lib/Driver/ToolChains/Clang.cpp#L6106-L6118"
+    ],
+    "review_digest": "Accept the source-contract finding; IntelLLVM's pinned driver defaults strict aliasing for these triples. Corrected byte extents and C++20 memcpy lifetime wording. No fault/performance evidence. Defer a committed compile-only discriminator until the frozen phase/Q6 build closes; numerical work is conditional on different lowering.",
+    "main_read_sections_for_concrete_question": [
+      "Narrow defined alternatives",
+      "Counterevidence and unresolved facts",
+      "Main-owned next check"
+    ],
+    "next_action": {
+      "schedulable_now": true,
+      "prerequisite_evidence": "6dab2468e:closed same-build submission10 and phase16 GPU gate;no active build/GPU job.",
+      "scope": "Commit whole-source host/SPIR comparison with local Q6 memcpy/bit_cast reads before compile. No product/kernel adoption or numerical/speed claim."
+    }
   }
 }

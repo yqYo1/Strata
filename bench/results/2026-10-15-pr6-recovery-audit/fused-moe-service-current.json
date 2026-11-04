@@ -118033,7 +118033,7 @@
       "next_action": "Fix and CPU-regress the monitor with real stdout beyond pipe/pending capacity,then create a new prospective build scope with unchanged native source. Preserve this failed attempt."
     },
     "source_contract_followup": {
-      "status": "unresolved-not-a-demonstrated-fault",
+      "status": "reviewed_source_contract_debt_not_a_demonstrated_fault",
       "source": "74ffd383a2100e13d4bc75c9fd3455b614267355:src/kernels/sycl/native_mmvq.cpp",
       "scope": "Inherited Q6 load_int_b2 reads byte payload through uint16_t*,and Q8_1 apply reads int8_t qs through int*. 210-byte Q6 stride is2-aligned and Q8_1 words4-aligned;bounds are consistent,but compiler aliasing contract needs confirmation.",
       "actual_compiler_dry_run": {
@@ -118048,7 +118048,10 @@
         "explicit_relaxed_aliasing_flag": false,
         "stderr_sha256": "27c7ea662206b1ff3236e325768769d5e0201832eb55f2e8cd6cf04445501ae2"
       },
-      "next_action": "Before changing these loads or qualifying Q6 model execution,check matching IntelLLVM/SYCL aliasing semantics;prefer defined byte/memcpy loads if no documented guarantee. Do not infer a GPU fault or treat the dry-run as correctness evidence. Small phase-cache payload fixture does not execute this Q6 arithmetic."
+      "next_action": "Committed full translation-unit host/SPIR compile-only comparison after the now-closed phase boundary;new numerical plan if lowering differs,then Q6/model qualification.",
+      "review_scope": "q6_typed_payload_contract_20261104",
+      "strict_aliasing_default_verified": true,
+      "remaining": "Original scalar overlays have no evidenced lifetime/type-accessibility guarantee. Producer Block lifetime remains unestablished;do not infer a fault. Local byte-based Q6 helper is a generated prospective alternative,not adopted source."
     }
   },
   "verify_window_build_monitor_host_v1": {
@@ -118556,6 +118559,16 @@
       "devcoredump": false
     },
     "boot_unchanged": true,
+    "closed_output_retirement": {
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/phase-device-closed-trace-retirement-20261104.json",
+        "sha256": "23c0fd7a30ab26eeba7a5af86d68a56bbcc096d1ae0c5ea73f5089323713523a"
+      },
+      "files": 4,
+      "bytes": 1291360,
+      "physically_retired": true,
+      "original_outcomes_unchanged": true
+    },
     "controller_inputs": {
       "files": 95,
       "aggregate_sha256": "95b5046b2b5b3ba5f5ce85fed54f8ff89b8c87d05caafd51311bc0ca5e1e07d2"
