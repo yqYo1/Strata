@@ -58,7 +58,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes and model execution are pending. V1 remains failed.
+  frontend probes pass for both benchmark and server. Model execution is next;
+  no V2 GPU result is established yet. V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
   Keep decode independently selected.
@@ -156,6 +157,10 @@ the retained generations and update that pending observer recipe to the selected
 native source, preserving the Q6 safety correction. Reuse the existing observer
 and host/pool controls, then qualify observer cost before model attribution.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
+The reviewed retarget contract preserves the candidate's Q6/phase behavior and
+requires checked observer-output completion: a truncated record or failed
+write/flush cannot qualify attribution. The source review supplies no measured
+CPU service or observer-overhead result.
 
 The prospective next cache feasibility test uses the [official thinking-mode
 sampling parameters](https://huggingface.co/Qwen/Qwen3.8-Flash-Next): temperature

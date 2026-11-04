@@ -23309,5 +23309,45 @@
     "completed": true,
     "build_generations_retired": 0,
     "reference_count": 4
+  },
+  "cpu_service_observer_retarget_contract_20261104": {
+    "classification": "decision_support",
+    "stage": "reviewed_with_material_corrections",
+    "schedulable_now": false,
+    "question": "Retarget the existing CPU-service observer to the retained decode candidate without reverting its Q6/phase safety behavior.",
+    "native_source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
+    "policy_revision": "d4745bceab0c1ddbeed463c45e2182b48fbc0f7d",
+    "inputs_manifest": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/cpu-service-observer-retarget-contract/inputs.json",
+      "sha256": "ba3c0c2a31926c77e27de58d624a39fa6c7143c20b4818294dfb87ec97422b88"
+    },
+    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/cpu-service-observer-retarget-contract/report.md",
+    "report_sha256": "e085cc0fb26639894f597d4fa54900bdf2d236001de942efd05312f7b6ac7d34",
+    "report_bytes": 14314,
+    "report_budget_bytes": 14336,
+    "whole_folder_budget_bytes": 131072,
+    "worker_model": "gpt-6-luna",
+    "worker_effort": "high",
+    "ownership_closed": true,
+    "main_reads_body_on_arrival": false,
+    "review": {
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "stage": "completed",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/cpu-service-observer-retarget-contract/review.json",
+      "sha256": "43d435d4a051823b2518ff1340e9be8db7de06ebc95a2027b5157c1c0a851438",
+      "bytes": 6902,
+      "source_pins_verified_at_review": 27,
+      "main_read": "Operational digest,material corrections and execution blockers only."
+    },
+    "decision_essentials": [
+      "Retarget minimally onto exact candidate source;preserve all eight candidate-specific files apart from deliberate observer hooks in generate.cpp. Never copy the old whole generator.",
+      "Retarget both cpu_service_sources.py and build_cpu_service_model.py and pin their complete transitive helper/qualification-reader closure prospectively.",
+      "Observer fprintf/fflush failures and truncated records must invalidate attribution;add checked completion/parser and failure coverage before consuming it.",
+      "Thread CPU clocks distinguish consumed CPU service from waits;they do not establish request critical path,RAM/PCIe traffic,hardware saturation or speed.",
+      "No observer build/model/overhead qualification. Finish dedicated PP comparison and reconcile two retained generations before observer execution;preserve project-owned provenance."
+    ],
+    "consumer": "Main retargets the existing source-checked observer after dedicated PP/TTFT comparison and retained-generation reconciliation;no third engine now.",
+    "review_point": "At retarget source/plan commit,extract the required contracts then retire superseded local report/review transactions with a deletion manifest."
   }
 }
