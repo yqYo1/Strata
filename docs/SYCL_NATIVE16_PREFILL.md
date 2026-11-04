@@ -236,7 +236,7 @@ has ten checks, and phase-cache covers sixteen windows with twelve captures.
 Both processes exit normally with closed owners, checked validation, unchanged
 boot/providers and no fresh driver fault. These synthetic payloads do not
 qualify model arithmetic, measured CPU service, observer overhead or ordinary
-provider teardown. The next check is the same-build short model/census entry.
+provider teardown. The short model/census entry below uses that same build.
 The Main-authored `tools/sycl/cpu_service_model_entry.py` now defines that entry
 using the maintained model supervisor in a private context. It requires the
 closed device gate, unchanged twelve-case reader qualification and three
@@ -266,6 +266,13 @@ cost or less CPU work as well as attention to GPU and transfer costs.
 The different 74-token warmup remains separate. Follow
 `verify_window_cpu_service_model_entry_v1.cpu_service`; no representative
 long-generation mix, observer overhead or clean-speed gain is qualified.
+The Main-authored `tools/sycl/cpu_service_overhead.py` now defines the next
+comparison: three alternating off/on pairs in six independent processes, each
+with both fixed thinking-on long-generation workloads. Common census, decode
+clocks and trace settings stay identical. A five-percent per-pair latency bound
+is interpreted only when aggregate logical work matches and both actual MTP
+classes are observed; changed work is inconclusive and keeps every sample.
+This is source-prepared only, with no overhead or long-service result yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
