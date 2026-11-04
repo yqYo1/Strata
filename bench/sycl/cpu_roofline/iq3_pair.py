@@ -175,7 +175,7 @@ def prepare():
             stopping='Stop first source,ELF,ownership,ISA,numerical,nonfinite,canary,timer,duration,budget or input mismatch. No retry,replacement,hash refresh or changed criteria. Keep original failure.',
             limits='Logical footprint is not physical DRAM traffic/saturation. No model speed,quality,PP preservation,70TG,262144/RESTORE or adoption qualification.'),
         retention='Auxiliary CPU-only build,not a third inference generation. Keep two named CPU ELFs/library/objects only through this immediate correctness/comparison;after compact evidence and exact source/recipe recovery,retire successful output/build. Preserve479a fallback and live observer consumer unchanged.',
-        budgets=dict(build_wall=300, build_cpu=1200, build_rss=8 << 30, check_wall=60,
+        budgets=dict(build_wall=300, build_cpu=1200, build_rss=8 << 30, check_wall=60, check_text_cap=64 << 10,
             measure_wall=180, measure_rss=1 << 30,
             text_cap=1 << 20, file_cap=16 << 20, total_cap=384 << 20))
     save(row)
@@ -296,19 +296,20 @@ def execute(stage):
     def persist():
         write(ROOT / 'execution.json', dict(stage=stage, active=bool(owner.active), commands=owner.commands))
     owner = owned.Owner(root, persist=persist)
-    deadline = time.monotonic() + (300 if stage == 'build' else 240)
-    def run(label, argv, wall, *, cpu=180, rss=512 << 20):
+    deadline = time.monotonic() + (row['budgets']['build_wall'] if stage == 'build' else 240)
+    def run(label, argv, wall, *, cpu=180, rss=512 << 20, text=None):
         need(time.monotonic() < deadline, 'whole stage deadline')
         entry, out, err = owner.run(label, argv, row['environment'], ROOT,
             wall=min(wall, deadline - time.monotonic()), cpu=cpu,
-            rss_cap=rss, text_cap=row['budgets']['text_cap'], file_cap=row['budgets']['file_cap'], total_cap=row['budgets']['total_cap'])
+            rss_cap=rss, text_cap=text if text is not None else row['budgets']['text_cap'],
+            file_cap=row['budgets']['file_cap'], total_cap=row['budgets']['total_cap'])
         need(owned.closed(entry) and entry['exit_code'] == 0, label + ' failed: ' + err.read_text(errors='replace')[-1500:])
         return entry, out, err
     try:
         if stage == 'build':
             allowed = input_map(row)
             run('configure', row['configure'], 60, cpu=120, rss=2 << 30)
-            run('compile', row['build'], 240, cpu=1200, rss=8 << 30)
+            run('compile', row['build'], 240, cpu=row['budgets']['build_cpu'], rss=row['budgets']['build_rss'])
             run('deps', ['/usr/bin/ninja', '-C', str(ROOT / 'build'), '-t', 'deps'], 20)
             row['build_evidence'] = build_check(row, root)
             row['binaries'] = {name:dict(path=str(ROOT / 'build' / name), sha256=digest(ROOT / 'build' / name)) for name in TARGETS}
@@ -324,7 +325,8 @@ def execute(stage):
                 sha256=digest(ROOT / 'build/libexpert_cpu.a'))
             row['stage'] = 'built'
         elif stage == 'check':
-            entry, out, err = run('correctness', [row['binaries'][TARGETS[0]]['path']], 60, cpu=60)
+            entry, out, err = run('correctness', [row['binaries'][TARGETS[0]]['path']],
+                row['budgets']['check_wall'], cpu=60, text=row['budgets']['check_text_cap'])
             need(not err.stat().st_size and out.read_text().strip() ==
                 'IQ single exact PASS: 384 single and 80 paired cases, bitwise GGML parity and row canaries',
                 'complete GGML/paired fixture required;skip77 is not a pass')
@@ -356,6 +358,9 @@ def execute(stage):
             need(all(s['arm'] == ORDER[index] and s['process'] == index and s['wall_s'] >= .25 and
                 s['passes'] < 1000000 and s['timer_s'] < .001 * s['fastest_warm_pass_s'] and
                 s['outputs_match_untimed_reference'] for s in samples), 'sample identity/duration/output gate')
+            need({(s['rows'], s['pack'], s['stream'], s['rep']) for s in samples} ==
+                {(n, q, t, k) for n in (640, 128) for q in (0, 1) for t in (0, 1) for k in range(5)},
+                'complete unique eight-cell/five-sample matrix')
             need(fixture_hash(f) == f['sha256'], 'post-run model range drift')
             row['processes'].append(dict(index=index, arm=ORDER[index], input=inputs[0], samples=samples,
                 validation_cases=2016, validation_before_and_after=True, passed=True, receipt=receipt(entry)))
