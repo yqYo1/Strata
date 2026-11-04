@@ -4905,15 +4905,30 @@ not exercise the model's prompt-verify route;that needs a separately configured
 model check. Full record-window arithmetic,dense/head handoff,matched long/
 agent/strong-and-weak-MTP model speed and physical262144/RESTORE checks remain
 pending. Earlier phase-GPU evidence remains scoped to its original source.
-The new engine's reference selector now closes its first bounded model entry
-passed:two32769-input,zero-reuse,thinking-on requests with24outputs each,
-native exit0,quiet validation,closed owners,no fresh fault and all15final model
-hashes. Prompt times are48919.1and39819.5ms,with49.043and39.943s client TTFT.
-These traced first/subsequent samples are not clean repeated speed evidence.
-Each long request captures decode T1andT4with103reference Q6 calls and0column
-calls. No prompt-verify window is observed with short-read0. The same-engine
-columns selector and broader long/agent/task/context qualifications remain
-pending;this entry does not replace the selected479a speed reference.
+Both selectors now close their bounded model entries passed:two32769-input,
+zero-reuse,thinking-on requests with24outputs each per selector,native exit0,
+quiet validation,closed owners,no fresh fault and all15final model hashes.
+The same ELF,293controller inputs,arguments,normalized environment and request
+body vector match;only the immutable Q6 selector differs. These are traced
+first/subsequent long requests in one fresh process per selector:
+
+| Q6 selector | Long request | Prompt ms | Client TTFT s |
+| --- | --- | ---: | ---: |
+| reference0 | first | 48919.1 | 49.043 |
+| reference0 | subsequent | 39819.5 | 39.943 |
+| columns1 | first | 49251.3 | 49.404 |
+| columns1 | subsequent | 39848.6 | 39.984 |
+
+Every long request captures decode T1andT4. Reference0records103reference Q6
+calls and0column calls;columns1records21reference and82column calls. These
+capture counts are not time fractions. No prompt-verify window is observed
+with short-read0. The next step is a clean same-binary columns0/1 long-generation
+cohort with three counterbalanced R/C,C/R,R/C pairs,thinking enabled,at least32K
+fresh input and1Kgenerated tokens,and MTP-strong/weak classification from actual
+acceptance. Keep all samples and evaluate dedicated long-prefill/TTFT separately;
+agent,task-quality,prompt-verify and physical262144/RESTORE gates remain pending.
+The short-output entries establish neither sustained TG nor a repeated speed
+decision,and do not replace the selected479a speed reference.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 

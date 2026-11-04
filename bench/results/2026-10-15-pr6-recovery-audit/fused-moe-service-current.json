@@ -123809,7 +123809,7 @@
     }
   },
   "verify_window_model_entry_columns_v1": {
-    "stage": "frontend-qualified",
+    "stage": "closed",
     "source_commit": "8b204b81e518b7d12d6eaab105448278a75c9cc4",
     "native_source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
     "binary": {
@@ -124112,11 +124112,11 @@
       }
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "Two frozen current-source Python frontend probes,then two fresh32769-input bench.sh requests with thinking enabled,zero prefix reuse and1..24outputs. Keep default5workers,1256decode slots,spec4,8192prefill chunk,throughput,GDN16/MTP16 and immutable runtime safety. Keep selected short-read0;this entry does not qualify the model prompt-verify route. Any observed prompt graph must use reference Q6;require per-long-request decoded Q6 captures with only the declared arm selected,actual GDN/native16/MTP/dense/head restore markers,valid counts/clocks,normal streams/native exit,quiet final parameter validation,unchanged inputs/providers and no fresh fault. Stop on the first failure;no retry,hash refresh or post-result criterion change. This is traced model-entry/handoff qualification,not a clean paired speed comparison,sustained TG,task quality,ordinary provider teardown,physical262144 or RESTORE qualification.",
     "retention": "Main-owned bounded32K entry;64MiB maximum raw output per native owner. Keep compact samples,actual route/capture evidence and original failures. Retire successful logs/JIT after source recovery and outcome commit. Preserve selected479a and this one candidate only for the imminent same-binary selector and selected-engine long/agent/thinking-on strong/weak-MTP comparisons.",
@@ -124143,7 +124143,8 @@
       "same_controller_sources": true,
       "same_native_args": true,
       "normalized_environment_sha256": "ada8dddceac7f945adebce365c8797dec76627c241727d8220befc66e4699144",
-      "intentional_difference": "Immutable STRATA_SYCL_DECODE_Q6_COLUMNS=0 versus1;private output/cache paths and HTTP port are per-process."
+      "intentional_difference": "Immutable STRATA_SYCL_DECODE_Q6_COLUMNS=0 versus1;private output/cache paths and HTTP port are per-process.",
+      "request_body_vector_equal": true
     },
     "host_results": [
       {
@@ -124159,6 +124160,174 @@
         "passed": true
       }
     ],
+    "outcome": {
+      "complete": true,
+      "host_probe_accepted": true,
+      "model_executed": true,
+      "native_identity": {
+        "pid": 142590,
+        "start_ticks": 211269277,
+        "sid": 142540
+      },
+      "warmup_route": {
+        "requested": "throughput",
+        "route": "chunked",
+        "tokens": "73",
+        "chunk": "256"
+      },
+      "native_exit_code": 0,
+      "routes": [
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18228,
+          "checkpoint_pairs": 2257,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 427,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false,
+          "strategy": "throughput",
+          "actual_route": "layer-major",
+          "GDN3_calls": 144,
+          "GDN_FP16_storage_calls": 144,
+          "GDN_FP16_storage_tokens": 1179648,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 4,
+            "nominal_cells": 32768,
+            "internal_needed_rows_and_shapes_observed": false
+          },
+          "Q6_request_captures": [
+            {
+              "phase": "decode",
+              "tokens": 1,
+              "reference": 21,
+              "columns": 82
+            },
+            {
+              "phase": "decode",
+              "tokens": 4,
+              "reference": 21,
+              "columns": 82
+            }
+          ],
+          "Q6_prompt_window_observed": false
+        },
+        {
+          "rows": 32768,
+          "mode": 10,
+          "GPU_residual_rows": 32768,
+          "split_active": false,
+          "windows": 48,
+          "jobs": 18275,
+          "checkpoint_pairs": 2261,
+          "interval_jobs": 8,
+          "maximum_jobs_per_window": 429,
+          "maximum_tail_jobs": 7,
+          "requested_expert_H2D_bytes": 62914560,
+          "resource_saturation_qualified": false,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "restored_dense_layers": 48,
+          "head_payload_bytes_verified": false,
+          "strategy": "throughput",
+          "actual_route": "layer-major",
+          "GDN3_calls": 144,
+          "GDN_FP16_storage_calls": 144,
+          "GDN_FP16_storage_tokens": 1179648,
+          "MTP_prefill": {
+            "path": "batched",
+            "placement_mode": 2,
+            "callbacks": 4,
+            "nominal_cells": 32768,
+            "internal_needed_rows_and_shapes_observed": false
+          },
+          "Q6_request_captures": [
+            {
+              "phase": "decode",
+              "tokens": 1,
+              "reference": 21,
+              "columns": 82
+            },
+            {
+              "phase": "decode",
+              "tokens": 4,
+              "reference": 21,
+              "columns": 82
+            }
+          ],
+          "Q6_prompt_window_observed": false
+        }
+      ],
+      "validation": {
+        "pid": 142590,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "samples": [
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 49251.3,
+          "prompt_tps": 665.3,
+          "ttft_s": 49.404,
+          "total_s": 50.915,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+          "timing_frontend_state": "post-count-preflight"
+        },
+        {
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "prompt_ms": 39848.6,
+          "prompt_tps": 822.3,
+          "ttft_s": 39.984,
+          "total_s": 41.684,
+          "generated_tokens": 24,
+          "reasoning_observed": true,
+          "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+          "timing_frontend_state": "post-count-preflight"
+        }
+      ],
+      "clean_speed_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
+    "model_entry_decision": {
+      "route_follow_up_eligible": true,
+      "inference_adopted": false,
+      "limits": "Both traced32K/24-output entries close cleanly with the declared Q6 captures. One fresh process per selector and one subsequent long request do not establish a clean repeated PP/TTFT gain or sustained TG. No model prompt-verify,physical262144,RESTORE or ordinary provider teardown qualification.",
+      "next": "Prepare a same-binary clean columns0/1 long-generation cohort,three counterbalanced pairs R/C,C/R,R/C,thinking on,>=32Kfresh and>=1Kgenerated,strong/weak MTP classified from observed acceptance. Keep source/config/placement fixed and all samples;judge both workloads and dedicated long-prefill/TTFT separately,then agent/context gates."
+    },
     "source_inputs": {
       "files": 293,
       "aggregate_sha256": "0555bca49240991884d81325a63f1d354713857e25aa3ca6618befe2a153f71c"
