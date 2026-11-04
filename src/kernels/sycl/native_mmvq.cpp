@@ -32,6 +32,7 @@
 #include "strata/sycl/native_mmq.hpp"
 #include <bit>
 #include <atomic>
+#include <type_traits>
 #include <sycl/ext/intel/math.hpp>
 
 namespace strata::kernels {
@@ -228,6 +229,11 @@ inline int load_q6_word(const void *ptr, int i32) {
                    sizeof(word));
   return std::bit_cast<int>(word);
 }
+inline float load_q6_half(const void *ptr) {
+  uint16_t bits = 0;
+  __builtin_memcpy(&bits, ptr, sizeof(bits));
+  return f32_from_f16(bits);
+}
 inline int load_int_b2(const void *ptr, int i32) {
   const auto *x = static_cast<const uint16_t *>(ptr);
   int value = x[2 * i32] << 0;
@@ -304,14 +310,14 @@ inline float q4_q8_dot_impl(const int *__restrict__ v,
   return dm4f.x * sumf_d - dm4f.y * sumf_m;
 }
 inline float q6_q8_dot_impl(int vl, int vh, const int *__restrict__ u,
-                            const int8_t *__restrict__ scales, float d,
+                            const unsigned char *__restrict__ scales, float d,
                             const float *__restrict__ d8) {
   float sumf = 0.0f;
 #pragma unroll
   for (int i = 0; i < 2; ++i) {
-    const int sc = scales[4 * i];
-    const int vil = (vl >> (4 * i)) & 0x0f0f0f0f;
-    const int vih = ((vh >> (4 * i)) << 4) & 0x30303030;
+    const int sc = std::bit_cast<int8_t>(scales[4 * i]);
+    const int vil = int((uint32_t(vl) >> (4 * i)) & 0x0f0f0f0fu);
+    const int vih = int(((uint32_t(vh) >> (4 * i)) << 4) & 0x30303030u);
     const int vi = subtract_saturating_bytes(vil | vih, 0x20202020);
     sumf += d8[i] * (packed_dot(vi, u[i], 0) * sc);
   }
@@ -579,27 +585,28 @@ struct Q6KTraits {
   struct W {
     int vl, vh;
     float d;
-    const int8_t *scales;
+    const unsigned char *scales;
     int bq8_offset;
   };
-  static W load(const Block *__restrict__ w, int iqs) {
+  static W load(const unsigned char *__restrict__ w, int iqs) {
     W r;
     r.bq8_offset = 4 * (iqs / 16) + (iqs % 16) / 8;
     const int scale_offset = 8 * (iqs / 16) + (iqs % 16) / 4;
     const int vh_shift = 2 * ((iqs % 16) / 8);
-    r.vl = load_q6_word(w->ql, iqs);
-    r.vh = load_q6_word(w->qh, 8 * (iqs / 16) + iqs % 8) >> vh_shift;
-    r.scales = w->scales + scale_offset;
-    r.d = w->d;
+    r.vl = load_q6_word(w + offsetof(Block, ql), iqs);
+    r.vh = load_q6_word(w + offsetof(Block, qh), 8 * (iqs / 16) + iqs % 8) >> vh_shift;
+    r.scales = w + offsetof(Block, scales) + scale_offset;
+    r.d = load_q6_half(w + offsetof(Block, d));
     return r;
   }
-  static float apply(const W &r, const Q81Block *__restrict__ x, int iqs) {
+  static float apply(const W &r, const unsigned char *__restrict__ x, int iqs) {
     int u[2];
     float d8[2];
 #pragma unroll
     for (int i = 0; i < 2; ++i) {
-      u[i] = load_q6_word(x[r.bq8_offset + 2 * i].qs, iqs % 8);
-      d8[i] = half_low(x[r.bq8_offset + 2 * i].ds);
+      const auto *block = x + size_t(r.bq8_offset + 2 * i) * sizeof(Q81Block);
+      u[i] = load_q6_word(block + offsetof(Q81Block, qs), iqs % 8);
+      d8[i] = load_q6_half(block + offsetof(Q81Block, ds));
     }
     return q6_q8_dot_impl(r.vl, r.vh, u, r.scales, r.d, d8);
   }
@@ -915,14 +922,32 @@ Format format(int type) {
   }
 }
 
+// Q6 packed payloads are byte spans, not arrays of constructed Block objects.
+// Keep the other formats' legacy views unchanged. Layout types above supply
+// sizeof/offsetof constants only for Q6; its kernels never dereference them.
+template <typename F>
+auto weight_block_at(const void *base, size_t index) {
+  if constexpr (std::is_same_v<F, Q6KTraits>)
+    return static_cast<const unsigned char *>(base) + index * sizeof(Q6KBlock);
+  else
+    return static_cast<const typename F::Block *>(base) + index;
+}
+template <typename F>
+auto activation_block_at(const void *base, size_t index) {
+  if constexpr (std::is_same_v<F, Q6KTraits>)
+    return static_cast<const unsigned char *>(base) + index * sizeof(Q81Block);
+  else
+    return static_cast<const Q81Block *>(base) + index;
+}
+
 // Preserve the native thread-to-block mapping and ascending cross-subgroup
 // partial sum, followed by XOR reduction. Each column uses the same arithmetic
 // regardless of the total column count when multi_exact is enabled.
 template <typename F, int ROWS, int NW>
 void launch(const void *weights, const void *activations, float *y, int n_in,
             int n_out, int ncols, void *stream) {
-  const auto *w = static_cast<const typename F::Block *>(weights);
-  const auto *x = static_cast<const Q81Block *>(activations);
+  const void *w = weights;
+  const void *x = activations;
   const size_t groups = (size_t(n_out) + ROWS - 1) / ROWS;
   queue_for(stream).submit([&](sycl::handler &h) {
     sycl::local_accessor<float, 1> partial((NW - 1) * ncols * ROWS * 32, h);
@@ -939,10 +964,12 @@ void launch(const void *weights, const void *activations, float *y, int n_in,
             const int kqs = F::kqs(tid);
             for (int i = 0; i < ROWS; ++i)
               if (row0 + i < size_t(n_out)) {
-                const auto weight = F::load(w + (row0 + i) * blocks + kbx, kqs);
+                const auto weight = F::load(
+                    weight_block_at<F>(w, (row0 + i) * blocks + kbx), kqs);
                 for (int j = 0; j < ncols; ++j)
                   tmp[j][i] +=
-                      F::apply(weight, x + j * stride + kbx * F::KBY, kqs);
+                      F::apply(weight,
+                          activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
               }
           }
           if (warp > 0)
@@ -990,8 +1017,8 @@ void launch_q6_columns(const void *weights, const void *activations, float *y,
                        int n_in, int n_out, void *stream) {
   using F = Q6KTraits;
   constexpr int NW = 4;
-  const auto *w = static_cast<const F::Block *>(weights);
-  const auto *x = static_cast<const Q81Block *>(activations);
+  const void *w = weights;
+  const void *x = activations;
   const size_t groups = (size_t(n_out) + ROWS - 1) / ROWS;
   queue_for(stream).submit([&](sycl::handler &h) {
     sycl::local_accessor<float, 1> partial((NW - 1) * COLS * ROWS * 32, h);
@@ -1008,11 +1035,13 @@ void launch_q6_columns(const void *weights, const void *activations, float *y,
             const int kqs = F::kqs(tid);
             for (int i = 0; i < ROWS; ++i)
               if (row0 + i < size_t(n_out)) {
-                const auto weight = F::load(w + (row0 + i) * blocks + kbx, kqs);
+                const auto weight = F::load(
+                    weight_block_at<F>(w, (row0 + i) * blocks + kbx), kqs);
 #pragma unroll
                 for (int j = 0; j < COLS; ++j)
                   tmp[j][i] +=
-                      F::apply(weight, x + j * stride + kbx * F::KBY, kqs);
+                      F::apply(weight,
+                          activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
               }
           }
           if (warp > 0)
@@ -1071,8 +1100,7 @@ void grouped_projection(const NativeExpertLayout &L,
           if (begin < 0 || end < begin || end > entries || !pointers[g])
             return;
           const auto blob = reinterpret_cast<const uint8_t *>(pointers[g]);
-          const auto weights = reinterpret_cast<const typename F::Block *>(
-              blob + (Down ? L.down_off : 0));
+          const auto *weights = blob + (Down ? L.down_off : 0);
           const int tid = int(it.get_local_linear_id()), lane = tid % 32,
                     warp = tid / 32;
           const int blocks = ni / F::DIV;
@@ -1082,12 +1110,13 @@ void grouped_projection(const NativeExpertLayout &L,
             for (int b = tid / F::T; b < blocks; b += F::BPI) {
               const int kqs = F::kqs(tid);
               const auto weight =
-                  F::load(weights + size_t(row) * blocks + b, kqs);
+                  F::load(weight_block_at<F>(weights, size_t(row) * blocks + b), kqs);
               for (int j = 0; j < used; ++j) {
                 const int input = Down ? first + j : tokens[first + j];
                 if (input >= 0 && input < entries)
                   sum[j] += F::apply(
-                      weight, x + size_t(input) * (ni / 32) + b * F::KBY, kqs);
+                      weight, activation_block_at<F>(x,
+                          size_t(input) * (ni / 32) + b * F::KBY), kqs);
               }
             }
             if (warp)
@@ -1196,15 +1225,16 @@ void prompt_product(NativeMmq p, sycl::queue &q) {
           if (!used)
             return;
           const int tid = it.get_local_linear_id(), lane = tid % 32, warp = tid / 32;
-          const auto *w = reinterpret_cast<const typename F::Block *>(
-              static_cast<const uint8_t *>(p.weights) + size_t(expert) * p.expert_bytes);
-          const auto *x = static_cast<const Q81Block *>(p.activation);
+          const auto *w = static_cast<const uint8_t *>(p.weights) +
+                          size_t(expert) * p.expert_bytes;
+          const void *x = p.activation;
           float sum[TILE] = {};
           const int kqs = F::kqs(tid);
           for (int b = tid / F::T; b < blocks; b += F::BPI) {
-            const auto weight = F::load(w + row * blocks + b, kqs);
+            const auto weight = F::load(weight_block_at<F>(w, row * blocks + b), kqs);
             for (int j = 0; j < used; ++j)
-              sum[j] += F::apply(weight, x + size_t(first + j) * x_stride + b * F::KBY, kqs);
+              sum[j] += F::apply(weight, activation_block_at<F>(x,
+                  size_t(first + j) * x_stride + b * F::KBY), kqs);
           }
           if (warp)
             for (int j = 0; j < used; ++j)
@@ -1303,7 +1333,9 @@ void native_quantize_q8_1(const float *x, void *scratch, int n_in, int ncols,
   const auto total = checked_count(n_in, ncols);
   validate_stream(stream);
   validate_spans({{scratch, bytes}}, {{x, checked_count(total, 4)}});
-  auto *out = static_cast<Q81Block *>(scratch);
+  // The scratch allocation is an encoded byte span. Write its representation
+  // without assuming that a Q81Block array was constructed in device storage.
+  auto *out = static_cast<unsigned char *>(scratch);
   queue_for(stream).parallel_for(
       sycl::nd_range<1>((total + 255) / 256 * 256, 256),
       [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
@@ -1323,9 +1355,12 @@ void native_quantize_q8_1(const float *x, void *scratch, int n_in, int ncols,
             maximum == 0
                 ? 0
                 : int(sycl::round(sycl::ext::intel::math::fdiv_rn(v, d)));
-        out[i / 32].qs[i % 32] = int8_t(q);
-        if (!(i % 32))
-          out[i / 32].ds = {{f16_from_f32(d)}, {f16_from_f32(sum)}};
+        auto *block = out + (i / 32) * sizeof(Q81Block);
+        block[offsetof(Q81Block, qs) + i % 32] = std::bit_cast<unsigned char>(int8_t(q));
+        if (!(i % 32)) {
+          const half2 ds{{f16_from_f32(d)}, {f16_from_f32(sum)}};
+          __builtin_memcpy(block + offsetof(Q81Block, ds), &ds, sizeof(ds));
+        }
       });
 }
 bool native_mmvq_supported(int type) noexcept {

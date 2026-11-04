@@ -126,6 +126,8 @@ def prepare():
     require(prior['stage'] == 'failed-build' and prior['ownership_closed'] and
         "no member named 'endian_little'" in prior['error'],
         'preserve the unsupported-info-query compile refusal')
+    require(not (B / 'q6-byte-load-component-v1').exists(),
+        'retire closed failed-v1 partial build after exact source/recipe recovery before fresh build')
     print('Verifying selected engine/source and qualified providers before component preparation.', flush=True)
     native, _, _ = selected.proof()
     require(native['source_commit'] == '479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54',
@@ -184,7 +186,7 @@ def prepare():
         driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         native_reference=dict(source_commit=native['source_commit'], binaries=native['binaries'],
             validation=native['native_validation_probe']),
-        plan=dict(reference='Public native_q6_k_mmvq exact layout with the same defined Q6 byte loads as candidate',
+        plan=dict(reference='Public native_q6_k_mmvq exact layout;both arms use Q6/Q81 byte-span access and the same byte-writing Q81 quantizer',
             candidate='Explicit native_q6_k_columns_mmvq;specialize 1,2,3,4,8 only;no model caller',
             compile_recipe=dict(compiler=compiler,flags=[x.replace(str(ROOT / 'source'),'<source>')
                 for x in flags],origin='Actual selected479a native_mmvq.cpp compile database;only source paths and build outputs change.'),
@@ -192,9 +194,9 @@ def prepare():
             process_repetitions=3, batches_per_arm_shape=5, timing_floor_seconds=.01,
             timer='Host steady clock including public dispatch,submission and final queue completion;weights/Q8_1 already resident;no conversion,reset or correctness work inside timing',
             order='For each shape/column,batch+column+position modulo2;five rotated paired batches',
-            acceptance='All reference/candidate output bits,guards,read-only inputs and finite values match. Scalar dequantized-dot checks on first/middle/last rows of every column require abs_error<=2e-5+2e-6*sum_abs_terms in double,outside timers. Shared half-bit converter and GPU quantizer are not independent oracles. Require actual little-endian device,normal exits,strict validation,no fresh fault. Any shape may advance separately only when all three independent process median candidate/reference ratios are below1;no arbitrary minimum gain.',
+            acceptance='All reference/candidate output bits,guards,read-only inputs and finite values match. Scalar dequantized-dot checks on first/middle/last rows of every column require abs_error<=2e-5+2e-6*sum_abs_terms in double,outside timers. Check every Q81 encoded byte against a host FP32 XOR-sum/rounding reference outside timers,including all-zero and negative-constant smoke blocks. Both host references share the tested half-bit converter. Require actual little-endian device,normal exits,strict validation,no fresh fault. Any shape may advance separately only when all three independent process median candidate/reference ratios are below1;no arbitrary minimum gain.',
             stopping='Stop on first source/provider/geometry/numerical/fault/owner/budget/timing-floor failure;retain original failure. No model execution from this component alone.',
-            limits='Synthetic packed weights at actual model geometries. Scalar loads are repaired in both arms;this comparison does not attribute a speed change to that repair. Actual production C++20/optimization recipe replaces the earlier component C++17/-fno-fast-math recipe,so old timings are descriptive only. Host/device IR output is unavailable. Validation preload retains UR until exit. No sustained TG,prefill,PCIe traffic,register-spill proof,ordinary provider teardown,Block producer lifetime or model adoption.'),
+            limits='Synthetic packed weights at actual model geometries. All consumed Q6/Q81 fields and Q81 scratch writes use byte spans in both arms;this comparison does not attribute a speed change to that repair. Actual production C++20/optimization recipe replaces the earlier component C++17/-fno-fast-math recipe,so old timings are descriptive only. Host/device IR output is unavailable. Validation preload retains UR until exit. No sustained TG,prefill,PCIe traffic,register-spill proof,ordinary provider teardown or model adoption. Other formats retain their legacy typed consumers;this component does not qualify them or all grouped/prompt call paths.'),
         budgets=dict(wall=1200, cpu=2400, rss_cap=8 << 30, text_cap=4 << 20,
             file_cap=128 << 20, total_cap=768 << 20),
         passed=False, complete=False, active=False, ownership_closed=True, processes=[],
@@ -349,8 +351,9 @@ def run(smoke):
                 row['native_reference']['validation']['loader']['path'], smoke)
             expected_cases = 32 if smoke else 35
             require(text.count('Q6_TARGET_ENDIAN_LITTLE=1') == 1 and
-                text.count(' scalar_oracle=PASS') == expected_cases,
-                'missing actual endian/scalar-oracle proof')
+                text.count(' scalar_oracle=PASS') == expected_cases and
+                text.count(' q8_oracle=PASS') == expected_cases,
+                'missing actual endian/Q6-scalar/Q81-byte-oracle proof')
             faults = fresh_faults(cursor)
             require(faults == [], 'new GPU fault')
             source_current(row)

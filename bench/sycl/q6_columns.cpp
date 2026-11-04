@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cfenv>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -64,6 +65,41 @@ struct Shape {
 constexpr std::array<Shape, 7> Shapes{{{2560, 10240, 256}, {6144, 2560, 256},
     {2560, 6144, 256}, {2560, 640, 1024}, {2560, 512, 1024},
     {2560, 12288, 256}, {2560, 248320, 8}}};
+
+// Check every encoded Q8_1 byte outside the timed region. The host follows
+// the quantizer's FP32 XOR-sum order and shares the tested half converter;
+// this is independent of the device scratch writer, not a half-format oracle.
+void quantized_reference(const std::vector<float> &input,
+                         const std::vector<uint8_t> &packed) {
+  need(std::fegetround() == FE_TONEAREST, "Q8 host reference rounding mode");
+  std::vector<uint8_t> expected(input.size() / 32 * 36);
+  for (size_t base = 0; base < input.size(); base += 32) {
+    std::array<float, 32> sums{}, next{};
+    float maximum = 0;
+    for (size_t lane = 0; lane < 32; ++lane) {
+      sums[lane] = input[base + lane];
+      maximum = std::fmax(maximum, std::fabs(sums[lane]));
+    }
+    for (int offset = 16; offset; offset >>= 1) {
+      for (size_t lane = 0; lane < 32; ++lane)
+        next[lane] = sums[lane] + sums[lane ^ offset];
+      sums = next;
+    }
+    const float scale = maximum / 127.f;
+    const uint16_t half_scale = k::f16_from_f32(scale);
+    const uint16_t half_sum = k::f16_from_f32(sums[0]);
+    auto *block = expected.data() + (base / 32) * 36;
+    std::memcpy(block, &half_scale, sizeof(half_scale));
+    std::memcpy(block + 2, &half_sum, sizeof(half_sum));
+    for (size_t lane = 0; lane < 32; ++lane) {
+      const int q = maximum == 0 ? 0 : int(std::round(input[base + lane] / scale));
+      block[4 + lane] = uint8_t(int8_t(q));
+    }
+  }
+  need(packed.size() == expected.size() + 2 * Pad &&
+           std::memcmp(expected.data(), packed.data() + Pad, expected.size()) == 0,
+       "Q8 encoded-byte host reference mismatch");
+}
 
 // Decode scalar Q6_K/Q8_1 values rather than reproducing the GPU's packed-dot
 // lane decomposition. Share only the already tested half-bit converter. The
@@ -127,12 +163,18 @@ void one_shape(Shape shape, bool smoke) {
     std::vector<float> input(size_t(ni) * nc);
     for (size_t i = 0; i < input.size(); ++i)
       input[i] = float(int((i * 37 + i / 101 + 17) % 127) - 63) / 32.f;
+    if (smoke) for (int column = 0; column < nc; ++column) {
+      const auto first = input.begin() + size_t(column) * ni;
+      std::fill(first, first + 32, 0.f);
+      std::fill(first + 32, first + 64, -0.5f);
+    }
     Buffer<float> x(input.size()), reference(size_t(no) * nc), candidate(size_t(no) * nc);
     Buffer<uint8_t> packed(k::native_q8_1_bytes(ni, nc));
     x.set(input);
     k::native_quantize_q8_1(x.data(), packed.data(), ni, nc, &rt->compute());
     rt->wait();
     auto packed_before = packed.get();
+    quantized_reference(input, packed_before);
     auto call = [&](int arm) {
       Arms[arm](w.data(), packed.data(), arm ? candidate.data() : reference.data(),
                 ni, no, nc, &rt->compute());
@@ -177,7 +219,7 @@ void one_shape(Shape shape, bool smoke) {
     x.unchanged(input);
     need(packed.get() == packed_before, "quantized activation/guard changed");
     std::cout << "Q6_CASE_PASS ni=" << ni << " no=" << no << " nc=" << nc
-              << " scalar_oracle=PASS" << '\n' << std::flush;
+              << " scalar_oracle=PASS q8_oracle=PASS" << '\n' << std::flush;
   }
   w.unchanged(weights);
 }
