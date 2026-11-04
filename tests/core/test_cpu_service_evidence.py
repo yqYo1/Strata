@@ -12,7 +12,11 @@ from test_cpu_work_census import fixture as census_fixture
 
 def fixture(request=1):
     text, binding, formats, membership = census_fixture(request)
-    lines = [f'strata CPU_SERVICE request={request} ' + ' '.join(f'{k}={v}' for k, v in service.HEADER.items())]
+    # Literal native producer contract, independent of the reader's constants.
+    lines = [f'strata CPU_SERVICE request={request} valid=1 error_mask=0 record_version=2 '
+        'formats=7 nt_max=4 operations=GU,HQ,DOWN wall_clock=CLOCK_MONOTONIC '
+        'cpu_clock=CLOCK_THREAD_CPUTIME_ID scope=decode_pool_leaves overhead=charged '
+        'physical_RAM_bytes=unknown critical_path=unknown']
     calls = wall = cpu = 0
     for gu in (18, 22):
         for nt, jobs in ((1, 312), (4, 192)):
@@ -25,6 +29,7 @@ def fixture(request=1):
                 wall += 20000
                 cpu += 10000
     lines.append(f'strata CPU_SERVICE_THREAD request={request} slot=64 tid=9123 calls={calls} wall_ns={wall} cpu_ns={cpu}')
+    lines.append(f'strata CPU_SERVICE_END request={request} complete=1 bins=12 threads=1')
     marker = f'strata cpu work: bin request={request} bin=0 '
     text = text.replace(marker, '\n'.join(lines) + '\n' + marker)
     return text, binding, formats, membership
@@ -44,6 +49,8 @@ class ServiceEvidenceTests(unittest.TestCase):
         self.assertEqual(row['calls'], 5040)
         self.assertEqual((row['wall_ns'], row['cpu_ns']), (240000, 120000))
         self.assertTrue(row['same_request_census'])
+        self.assertEqual(row['record_version'], 2)
+        self.assertTrue(row['completion_checked'])
 
     def test_requests_stay_separate_and_pool_owner_stays_fixed(self):
         one, binding, formats, membership = fixture()
@@ -60,7 +67,7 @@ class ServiceEvidenceTests(unittest.TestCase):
             old = f'strata CPU_SERVICE_THREAD request={request} slot=64 tid=9123 calls=5040 wall_ns=240000 cpu_ns=120000'
             new = f'strata CPU_SERVICE_THREAD request={request} slot={slot} tid=9100 calls=2520 wall_ns=120000 cpu_ns=60000\n'
             new += f'strata CPU_SERVICE_THREAD request={request} slot=64 tid=9123 calls=2520 wall_ns=120000 cpu_ns=60000'
-            return text.replace(old, new)
+            return text.replace(old, new).replace('bins=12 threads=1', 'bins=12 threads=2')
         first = split(one, 1, 0)
         rows = service.extract(first + split(two, 2, 0), [binding, second], formats, membership)
         self.assertEqual([r['thread_count'] for r in rows], [2, 2])
@@ -71,7 +78,7 @@ class ServiceEvidenceTests(unittest.TestCase):
         text, _, _, _ = fixture()
         variants = [text.replace('valid=1 error_mask=0', 'valid=0 error_mask=0'),
             text.replace('scope=decode_pool_leaves', 'scope=prefill'),
-            text.replace('op=GU calls=624', 'op=GU calls=623'),
+            text.replace('op=GU calls=624', 'op=GU calls=311'),
             text.replace('op=HQ calls=312', 'op=HQ calls=311'),
             text.replace('rows=199680 token_rows=199680', 'rows=199679 token_rows=199680', 1),
             text.replace('token_rows=199680', 'token_rows=199679', 1),
@@ -106,6 +113,73 @@ class ServiceEvidenceTests(unittest.TestCase):
         text, _, _, _ = fixture()
         with self.assertRaises(RuntimeError):
             self.extract(text.replace('jobs_NT=312,0,0,192,0,0,0,0', 'jobs_NT=311,0,0,192,0,0,0,0', 1))
+
+    def test_refuses_missing_unknown_or_duplicate_record_version(self):
+        text, _, _, _ = fixture()
+        for version in ('', 'record_version=1 ', 'record_version=3 ',
+                'record_version=2 record_version=2 '):
+            with self.subTest(version=version), self.assertRaises(RuntimeError):
+                self.extract(text.replace('record_version=2 ', version, 1))
+
+    def test_accepts_valid_variable_gu_fragmentation_with_conserved_totals(self):
+        text, _, _, _ = fixture()
+        row, = self.extract(text.replace('op=GU calls=624', 'op=GU calls=623', 1)
+            .replace('calls=5040', 'calls=5039', 1))
+        self.assertEqual(row['calls'], 5039)
+        self.assertTrue(row['completion_checked'])
+
+    def test_refuses_missing_duplicate_or_inconsistent_completion(self):
+        text, _, _, _ = fixture()
+        end = 'strata CPU_SERVICE_END request=1 complete=1 bins=12 threads=1\n'
+        variants = ['', end + end, end.replace('request=1', 'request=2'),
+            end.replace('complete=1', 'complete=0'), end.replace('bins=12', 'bins=11'),
+            end.replace('bins=12', 'bins=13'), end.replace('threads=1', 'threads=0'),
+            end.replace('threads=1', 'threads=2'), end.replace('bins=12', 'bins=-1'),
+            end.replace('bins=12', 'bins=18446744073709551616'),
+            end.replace('threads=1', 'threads=1.0'), end.replace('complete=1', 'complete='),
+            end.replace('bins=12', 'bins=12 bins=12'), end.replace('threads=1', ''),
+            end.replace('CPU_SERVICE_END', 'CPU_SERVICE_DONE')]
+        for replacement in variants:
+            with self.subTest(completion=replacement), self.assertRaises(RuntimeError):
+                self.extract(text.replace(end, replacement, 1))
+
+    def test_refuses_early_late_or_trailing_completion_records(self):
+        text, _, _, _ = fixture()
+        lines = text.splitlines()
+        end = next(line for line in lines if line.startswith('strata CPU_SERVICE_END'))
+        rest = [line for line in lines if line != end]
+        for prefix in ('strata CPU_SERVICE_BIN', 'strata CPU_SERVICE_THREAD', 'strata cpu work: end'):
+            pos = next(i for i, line in enumerate(rest) if line.startswith(prefix))
+            # Immediately before the census footer is the valid location.
+            if prefix == 'strata cpu work: end': pos += 1
+            changed = rest[:pos] + [end] + rest[pos:]
+            with self.subTest(position=prefix), self.assertRaises(RuntimeError):
+                self.extract('\n'.join(changed) + '\n')
+        for prefix in ('strata CPU_SERVICE_BIN', 'strata CPU_SERVICE_THREAD'):
+            extra = next(line for line in lines if line.startswith(prefix))
+            with self.subTest(trailing=prefix), self.assertRaises(RuntimeError):
+                self.extract(text.replace(end + '\n', end + '\n' + extra + '\n', 1))
+
+    def test_refuses_every_truncated_service_block_even_with_complete_census(self):
+        text, binding, formats, membership = fixture()
+        observer = [line for line in text.splitlines() if line.startswith('strata CPU_SERVICE')]
+        rest = '\n'.join(line for line in text.splitlines() if not line.startswith('strata CPU_SERVICE')) + '\n'
+        marker = 'strata cpu work: bin request=1 bin=0 '
+        for kept in range(len(observer)):
+            changed = rest.replace(marker, '\n'.join(observer[:kept]) + '\n' + marker, 1)
+            # The independent census remains valid, including the missing-END case
+            # where every leaf and thread total already conserves.
+            self.assertEqual(service.census.extract(changed, [binding], formats, membership)[0]['cpu_jobs'], 1008)
+            with self.subTest(kept_lines=kept), self.assertRaises(RuntimeError):
+                self.extract(changed)
+
+    def test_refuses_reordered_thread_slots(self):
+        text, _, _, _ = fixture()
+        old = 'strata CPU_SERVICE_THREAD request=1 slot=64 tid=9123 calls=5040 wall_ns=240000 cpu_ns=120000'
+        new = 'strata CPU_SERVICE_THREAD request=1 slot=64 tid=9123 calls=2520 wall_ns=120000 cpu_ns=60000\n'
+        new += 'strata CPU_SERVICE_THREAD request=1 slot=0 tid=9100 calls=2520 wall_ns=120000 cpu_ns=60000'
+        with self.assertRaises(RuntimeError):
+            self.extract(text.replace(old, new).replace('bins=12 threads=1', 'bins=12 threads=2'))
 
 
 if __name__ == '__main__':

@@ -8,11 +8,12 @@ from measurement_guards import require
 
 TYPES = ((18, 20), (18, 42), (21, 20), (21, 42), (22, 20), (22, 42), (23, 20))
 OPS = ('GU', 'HQ', 'DOWN')
-HEADER = dict(valid='1', error_mask='0', formats='7', nt_max='4', operations='GU,HQ,DOWN',
+HEADER = dict(valid='1', error_mask='0', record_version='2', formats='7', nt_max='4', operations='GU,HQ,DOWN',
     wall_clock='CLOCK_MONOTONIC', cpu_clock='CLOCK_THREAD_CPUTIME_ID', scope='decode_pool_leaves',
     overhead='charged', physical_RAM_bytes='unknown', critical_path='unknown')
 BIN = {'request', 'gu', 'down', 'nt', 'op', 'calls', 'rows', 'token_rows', 'wall_ns', 'cpu_ns'}
 THREAD = {'request', 'slot', 'tid', 'calls', 'wall_ns', 'cpu_ns'}
+END = {'request', 'complete', 'bins', 'threads'}
 
 
 def records(text):
@@ -26,7 +27,7 @@ def records(text):
         kind = words[1]
         values = dict(word.split('=', 1) for word in words[2:])
         expected = {'CPU_SERVICE': {*HEADER, 'request'}, 'CPU_SERVICE_BIN': BIN,
-            'CPU_SERVICE_THREAD': THREAD}.get(kind)
+            'CPU_SERVICE_THREAD': THREAD, 'CPU_SERVICE_END': END}.get(kind)
         require(expected is not None and set(values) == expected and len(values) == len(words) - 2,
             'unknown/duplicate/missing CPU service fields')
         found.append((line_index, kind, values))
@@ -38,7 +39,9 @@ def extract(text, bindings, formats, membership, workers=5):
 
     Independent census admission checks source-format geometry, static residency,
     native request/footer counts and pool clocks. This reader adds leaf work and
-    per-thread timing conservation, not physical RAM traffic or CPU saturation.
+    per-thread timing conservation and complete versioned output, not physical
+    RAM traffic or CPU saturation. The caller must still check process completion
+    and native write/flush errors; an END row alone cannot establish those.
     """
     require(len(text) <= 64 << 20 and 0 < len(bindings) <= 64 and
         type(workers) is int and 1 <= workers <= 64, 'bounded CPU service input required')
@@ -90,14 +93,16 @@ def extract(text, bindings, formats, membership, workers=5):
         require(set(bins) == {(*key, op) for key in expected for op in OPS}, 'missing CPU leaf bins')
         threads = {}
         thread_sums = dict(calls=0, wall_ns=0, cpu_ns=0)
+        previous_slot = -1
         while offset < len(rows) and rows[offset][1] == 'CPU_SERVICE_THREAD':
             _, _, raw = rows[offset]
             offset += 1
             value = {k: census.integer(v) for k, v in raw.items()}
             slot, tid = value['slot'], value['tid']
             require(value['request'] == request and (slot < workers or slot == 64) and
-                slot not in threads and tid > 0 and tid not in threads.values() and value['calls'] > 0 and
+                slot > previous_slot and tid > 0 and tid not in threads.values() and value['calls'] > 0 and
                 0 < value['cpu_ns'] <= value['wall_ns'], 'CPU service thread identity/clocks differ')
+            previous_slot = slot
             require(slot not in owners or owners[slot] == tid, 'CPU service pool slot owner changed')
             require(all(other == slot or owner != tid for other, owner in owners.items()),
                 'CPU service TID moved between pool slots')
@@ -105,7 +110,15 @@ def extract(text, bindings, formats, membership, workers=5):
             threads[slot] = tid
             for k in thread_sums:
                 thread_sums[k] += value[k]
+                require(thread_sums[k] <= (1 << 64) - 1, 'CPU thread sum overflow')
         require(thread_sums == sums and (not expected or 64 in threads), 'CPU service thread/bin totals differ')
+        require(offset < len(rows) and rows[offset][1] == 'CPU_SERVICE_END',
+            'missing CPU service completion')
+        _, _, raw = rows[offset]
+        offset += 1
+        completion = {k: census.integer(v) for k, v in raw.items()}
+        require(completion == dict(request=request, complete=1, bins=len(bins), threads=len(threads)),
+            'CPU service completion counts/request differ')
         begin = f'strata cpu work: begin request={request} '
         end = f'strata cpu work: end request={request} '
         begins = [i for i, line in enumerate(lines) if line.startswith(begin)]
@@ -113,7 +126,7 @@ def extract(text, bindings, formats, membership, workers=5):
         require(len(begins) == len(ends) == 1 and begins[0] < first <= rows[offset - 1][0] < ends[0],
             'CPU leaf observer lies outside its independent census request')
         output.append(dict(request=request, cpu_jobs=work['cpu_jobs'], cpu_entries=work['cpu_entries'],
-            same_request_census=True, thread_count=len(threads), **sums,
+            same_request_census=True, record_version=2, completion_checked=True, thread_count=len(threads), **sums,
             format_bins=[bins[k] for k in sorted(bins, key=lambda k: (TYPES.index(k[:2]), k[2], OPS.index(k[3])))],
             limits='Concurrent leaf sums are not an additive critical path. CPU time includes memory stalls. '
                 'Clock/counter costs remain charged; physical RAM traffic and model overhead are unqualified.'))

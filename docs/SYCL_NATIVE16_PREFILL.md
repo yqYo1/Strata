@@ -201,8 +201,12 @@ write/flush cannot qualify attribution. The source review supplies no measured
 CPU service or observer-overhead result.
 The source-only output-v2 fix adds a versioned completion trailer, checks every
 write and the final flush, and propagates failure at the generator call site.
-The reader and retargeted engine are still pending; the active PP engines are
-unchanged. The host-only check passes at source `49c20a41c` using
+The retargeted engine is still pending; the active PP engines are unchanged.
+The reader now requires version 2 and an exact completion trailer, including
+row counts and ordered thread slots; its prospective 12-test host plan is in
+`cache_map_cpu_service_sources_v1.reader_v2_host`. That check is prepared,
+not yet executed, and cannot qualify native write/flush handling or observer
+overhead. The writer's host-only check passes at source `49c20a41c` using
 `/usr/bin/g++ -std=c++17 -O2 -pthread -DSTRATA_CPU_SERVICE_PROFILE=1 -Iinclude tests/core/cpu_service_profile_test.cpp -o /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-output-v2/profile_test`,
 then running that fixture without `--clock-screen`. GCC is Ubuntu 13.3.0-6ubuntu2~24.04.1,
 executable SHA256 `1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`;

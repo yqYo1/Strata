@@ -108321,7 +108321,61 @@
     "model_executed": false,
     "observer_overhead_qualified": false,
     "inference_adopted": false,
-    "limits": "Source/recipe construction only. Historical observer overall failure remains failed;no numerical/model/overhead,resource saturation,clean speed or full262144/RESTORE qualification is reused."
+    "limits": "Source/recipe construction only. Historical observer overall failure remains failed;no numerical/model/overhead,resource saturation,clean speed or full262144/RESTORE qualification is reused.",
+    "reader_v2_host": {
+      "stage": "prepared",
+      "source_inputs": {
+        "tools/sycl/cpu_service_evidence.py": "3bf72fa64a0f68970749445dab4528d81350e6f22b42e284dc79cb44a1c22b00",
+        "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tests/core/test_cpu_service_evidence.py": "45cb65801ebc3d28d75627e6b705643b9019ba9d09e2bec8d2eb1eb26f4952dc",
+        "tests/core/test_cpu_work_census.py": "8deb79e03e53088de1026c6371807acecd5dec2506d8e86375733467e2f8c36f"
+      },
+      "python": {
+        "path": "/usr/bin/python3",
+        "resolved": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+      },
+      "validation_plan": {
+        "executor": "Unchanged measurement_owner.Owner(output=root/commands).run;Main holds owned-v0141-measurement.lock,requires no model owners and verifies committed source hashes immediately before execution. One attempt;stop on failure.",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-reader-v2",
+        "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+        "label": "reader-v2",
+        "argv": [
+          "/usr/bin/python3",
+          "-S",
+          "-B",
+          "tests/core/test_cpu_service_evidence.py",
+          "-v"
+        ],
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "LC_ALL": "C",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-reader-v2/tmp",
+          "PYTHONNOUSERSITE": "1"
+        },
+        "budgets": {
+          "wall": 30,
+          "cpu": 20,
+          "rss_cap": 268435456,
+          "text_cap": 65536,
+          "file_cap": 1048576,
+          "total_cap": 4194304
+        },
+        "expected_tests": 12,
+        "acceptance": "Normal0,complete/anchored/reaped/empty session,no owner errors or cleanup,empty stdout,exactly12passing unittest methods and final OK without skips/failures. Literal producer-v2 header/trailer;complete independent census survives every service-block truncation;missing/duplicate/mismatched/reordered completion and slots refused. GU call fragmentation remains valid within declared row/job bounds.",
+        "retention": "Commit source,recipe and useful counts/outcome;then retire successful stdout/stderr/lifecycle files with path/hash/reason manifest. No new engine or GPU execution."
+      },
+      "passed": false,
+      "complete": false,
+      "active": false,
+      "ownership_closed": true,
+      "GPU_executed": false,
+      "model_executed": false,
+      "observer_overhead_qualified": false
+    }
   },
   "cache_map_cpu_service_build_v1": {
     "stage": "prepared",
