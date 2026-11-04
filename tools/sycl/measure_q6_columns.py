@@ -26,9 +26,9 @@ import ur_validation as validation
 from run_q6_columns import validation_log
 
 P, B = selected.P, selected.B
-ROOT = B / 'q6-byte-load-component-v1'
+ROOT = B / 'q6-byte-load-component-v2'
 RESULT = selected.model.RESULT
-KEY = 'q6_byte_load_component_v1'
+KEY = 'q6_byte_load_component_v2'
 EXE = ROOT / 'sycl_q6_columns_bench'
 CONTROLLER = Path(__file__).resolve()
 CORE = 'src/kernels/sycl/native_mmvq.cpp'
@@ -122,6 +122,10 @@ def prepare():
     require(failed['stage'] == 'failed' and failed['ownership_closed'] and
         'IR output is not supported' in failed['error'] and not failed['GPU_executed'],
         'preserve actual host/device IR refusals;no compiler-debug retry here')
+    prior = committed()['q6_byte_load_component_v1']
+    require(prior['stage'] == 'failed-build' and prior['ownership_closed'] and
+        "no member named 'endian_little'" in prior['error'],
+        'preserve the unsupported-info-query compile refusal')
     print('Verifying selected engine/source and qualified providers before component preparation.', flush=True)
     native, _, _ = selected.proof()
     require(native['source_commit'] == '479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54',
@@ -159,7 +163,8 @@ def prepare():
         'retain actual production optimization/language flags')
     compiler = native['compiler']
     require(original[0] == compiler['path'], 'actual production compiler differs')
-    commands = []
+    commands = [('fixture-syntax', [compiler['path'], *flags, '-fsyntax-only',
+        '-MD', '-MF', str(ROOT / 'objects/fixture.syntax.d'), str(ROOT / 'source' / FIXTURE)])]
     objects = []
     for i, name in enumerate(SOURCES):
         obj = ROOT / 'objects' / (str(i) + '.o')

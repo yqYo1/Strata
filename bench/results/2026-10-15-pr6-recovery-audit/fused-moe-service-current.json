@@ -118937,7 +118937,7 @@
     }
   },
   "q6_byte_load_component_v1": {
-    "stage": "prepared",
+    "stage": "failed-build",
     "source_commit": "b43cb3aae2d8c5517dccdd60b5c376c9f41aac94",
     "native_reference": {
       "source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
@@ -119090,6 +119090,7 @@
     "complete": false,
     "active": false,
     "ownership_closed": true,
+    "error": "RuntimeError('compile-12 failed: /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-byte-load-component-v1/source/bench/sycl/q6_columns.cpp:192:52: error: no member named \\'endian_little\\' in namespace \\'sycl::info::device\\'\\n  192 |     need(rt->device().get_info<sycl::info::device::endian_little>(), \"Q6 packed-word target must be little endian\");\\n      |                                                    ^~~~~~~~~~~~~\\n1 error generated.\\n')",
     "retention": {
       "consumer": "Immediate Q6_K column specialization comparison only;selected nine-ELF fallback remains unchanged",
       "review_point": "After component decision,retire rejected candidate ELF/objects/raw logs after source recovery;no extra engine generation",

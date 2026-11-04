@@ -189,7 +189,19 @@ int main(int argc, char **argv) {
                           std::string(argv[1]) == "--speed"), "expected --smoke or --speed");
     const bool smoke = std::string(argv[1]) == "--smoke";
     rt = sb::runtime_for();
-    need(rt->device().get_info<sycl::info::device::endian_little>(), "Q6 packed-word target must be little endian");
+    // Check the representation on the actual device; SYCL2020 has no
+    // info::device::endian_little query in the pinned headers.
+    {
+      Buffer<uint8_t> representation(4);
+      auto *bytes = representation.data();
+      rt->wait(rt->compute().single_task([=] {
+        const uint32_t word = 0x04030201u;
+        __builtin_memcpy(bytes, &word, sizeof(word));
+      }));
+      const auto observed = representation.get();
+      for (unsigned i = 0; i < 4; ++i)
+        need(observed[Pad + i] == i + 1, "Q6 device word representation is not little endian");
+    }
     std::cout << "Q6_TARGET_ENDIAN_LITTLE=1\n";
     need(k::native_mmvq_multi_exact(), "fixed exact-layout production reference");
     if (smoke) {
