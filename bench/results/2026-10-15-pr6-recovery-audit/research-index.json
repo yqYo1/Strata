@@ -23294,7 +23294,7 @@
   },
   "gpu_register_operand_issue_methods_collection_20261104": {
     "classification": "knowledge_collection",
-    "stage": "native_review_running",
+    "stage": "native_review_essential_correction_in_progress",
     "question": "Compare register-operand supply and instruction-issue constraints in SIMD GPU arithmetic: register-file read banks/ports, operand reuse, source operand count, scoreboarding/dependency chains, and instruction scheduling under an otherwise fixed register allocation. Prioritize documented Intel Xe/IGC/Xe2/SYCL evidence;compare original NVIDIA/AMD/non-LLM GPU/HPC examples only with explicit transfer limits. Distinguish documented architecture, compiler lowering, actual emitted source mapping and measured performance. Explain when scheduling/operand reuse or independent accumulators helps or hurts,and what can be expressed in portable SYCL versus architecture-specific assembly/compiler controls. Do not infer B570 bank geometry or a local bottleneck from another GPU. Exclude repeat surveys of register capacity/spills/occupancy,code size/unrolling,SLM banks,DRAM mapping,or Q6 DPAS public dispatch. Existing source is only an applicability anchor;no code,ISA dump,local profiling or speed/adoption claim. A reusable methods comparison should include strongest counterexamples and falsifiable future discriminators.",
     "eligibility": {
       "schedulable_now": false,
@@ -23316,7 +23316,6 @@
     "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/report.md",
     "report_budget_bytes": 12288,
     "report_bytes": 12175,
-    "report_sha256": "60bb5917d151424d9f600f22eff63de6d1c7e0b2519c02a978c7c11584655c25",
     "worker_model": "gpt-6-luna",
     "worker_effort": "high",
     "startup_model_banner_verified": "GPT-6-Luna high",
@@ -23336,14 +23335,21 @@
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/review.md",
-      "stage": "running",
-      "main_read_report_body": false
+      "stage": "essential_correction_in_progress",
+      "main_read_report_body": false,
+      "sha256": "9a4344cf861ae226b13421b03a65b1acf185b26ad03de97b29c0f8e857832784",
+      "essential_corrections": [
+        "Scope Intel IGC BCR flags and VTune Pipe/GRF explanations accurately",
+        "Replace mutable master citations with immutable revisions"
+      ],
+      "next_action": "Completed reviewer performs one report-only correction within12288bytes;Main reads only the short digest. Do not treat an internal compiler flag as a validated B570/SYCL public control."
     },
     "consumer": "Reusable methods reference only for a concrete future activation-math or GPU operand-issue question;not a current bottleneck or speed claim.",
     "review_point": "Native Luna-max review decides novelty,essential corrections and retention;Main reads only its short operational digest.",
     "inputs_manifest": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-04/gpu-register-operand-issue-methods/inputs.json",
       "sha256": "ef0e6aa5aed2738ab62955b11f1d0fdb18d0c0ad203dcc70cbcce8e265800d95"
-    }
+    },
+    "reviewed_input_sha256": "60bb5917d151424d9f600f22eff63de6d1c7e0b2519c02a978c7c11584655c25"
   }
 }
