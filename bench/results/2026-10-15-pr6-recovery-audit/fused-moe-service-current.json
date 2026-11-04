@@ -143123,5 +143123,123 @@
         }
       ]
     }
+  },
+  "decode_iq3_host_v2": {
+    "stage": "prepared",
+    "source_commit": "45c87f7a1b787664bb3add05ee299def1e41ad79",
+    "build_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/record.json",
+      "sha256": "87cae677454210e77df2d4ea4b82432dc1e5a64bad5a6b4be922218603edb2e0"
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/strata",
+        "sha256": "b310353872d29bd7fdd8ad7ba67ad75a0700edaa284a6f3460d4df9549cbfbb6",
+        "bytes": 24212144
+      },
+      "cpu_service_pool_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/cpu_service_pool_test",
+        "sha256": "8babfb2389cac46252321308c934c12e47d6f98e3c5d5e0becf239f41305495f",
+        "bytes": 3469136
+      },
+      "iq_single_exact_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/iq_single_exact_test",
+        "sha256": "6221535ca1a716c43486d2e8590cf12ecf74ac46b4377e300bc44fe41dbca9ac",
+        "bytes": 3434440
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/sycl_submission_test",
+        "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+        "bytes": 343384
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/sycl_verifier_retirement_test",
+        "sha256": "530594555c4509a8cd2a0c4e21ec0aed906f943324549a604df0605a72b061ec",
+        "bytes": 17750456
+      }
+    },
+    "native_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-host-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-host-v2/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "0",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0"
+    },
+    "cases": [
+      {
+        "kind": "exact",
+        "arm": 0,
+        "target": "iq_single_exact_test",
+        "args": [
+          "--dispatch"
+        ]
+      },
+      {
+        "kind": "pool",
+        "arm": 0,
+        "target": "cpu_service_pool_test",
+        "args": [
+          "0"
+        ]
+      },
+      {
+        "kind": "exact",
+        "arm": 1,
+        "target": "iq_single_exact_test",
+        "args": [
+          "--dispatch"
+        ]
+      },
+      {
+        "kind": "pool",
+        "arm": 1,
+        "target": "cpu_service_pool_test",
+        "args": [
+          "0"
+        ]
+      }
+    ],
+    "plan": "Same five admitted native outputs and same384single/80pair arithmetic,80entry-call,prefill exclusion and28real-pool-case criteria. Fresh exact0,pool0,exact1,pool1 children;PAIR0/1 fixed before exec,AUDIT1,SINGLE_EXACT0,CPU_SERVICE0. The owned commands directoryis under this private host root,so its parent byte budget excludes the compiled model tree.Stop first failure;no retry or reinterpretation of V1;no native rebuild/GPU/model/speed claim.",
+    "budgets": {
+      "wall": 60,
+      "cpu": 60,
+      "rss_cap": 536870912,
+      "text_cap": 65536,
+      "file_cap": 65536,
+      "total_cap": 1048576
+    },
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_rebuilt": false,
+    "sources": {
+      "files": 98,
+      "aggregate_sha256": "5cf183e45dabe47659612102ace85e5550c15be30159759fab0a43d2964ce5b8"
+    }
   }
 }
