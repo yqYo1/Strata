@@ -17,8 +17,8 @@ import build_verify_window_model as generation
 import measurement_owner as supervision
 
 P, B, RESULT, base = generation.P, generation.B, generation.RESULT, generation.base
-ROOT = B / 'q6-byte-load-lowering-v1'
-KEY = 'q6_byte_load_lowering_v1'
+ROOT = B / 'q6-byte-load-lowering-v2'
+KEY = 'q6_byte_load_lowering_v2'
 CORE = 'src/kernels/sycl/native_mmvq.cpp'
 SELF = Path(__file__).resolve()
 require, digest, write = generation.require, generation.digest, generation.write
@@ -26,9 +26,9 @@ require, digest, write = generation.require, generation.digest, generation.write
 
 def alternative(raw):
     text = raw.decode()
-    require('#include <bit>' not in text and text.count('#include <cstdint>') == 1,
+    require('#include <bit>' not in text and text.count('#include <atomic>') == 1,
             'unexpected native include layout')
-    text = text.replace('#include <cstdint>', '#include <bit>\n#include <cstdint>')
+    text = text.replace('#include <atomic>', '#include <bit>\n#include <atomic>')
     helper = '''inline int load_q6_word(const void *ptr, int i32) {
   static_assert(sizeof(int) == sizeof(uint32_t));
   uint32_t word = 0;
@@ -105,6 +105,7 @@ def prepare():
         args.append(arg)
     require(not skip and '-O3' in args and '-std=c++20' in args and '-fsycl' in args,
             'preserve actual compiler,optimization,language and SYCL recipe')
+    arms = (('reference',original),('candidate',alternative(original)))
     row=dict(stage='prepared',source_commit=revision,controller_inputs=controls,
         native_source_commit=native['source_commit'],q6_source_commit=generation.phase.Q6,
         native_build_record_sha256=digest(generation.ROOT/'record.json'),generated_sources={},
@@ -119,7 +120,7 @@ def prepare():
         model_executed=False,inference_adopted=False)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache','output','reference','candidate'):(ROOT/name).mkdir()
-    for arm,raw in (('reference',original),('candidate',alternative(original))):
+    for arm,raw in arms:
         source=ROOT/arm/'native_mmvq.cpp';source.write_bytes(raw)
         row['generated_sources'][arm]=dict(path=str(source),sha256=digest(source))
         for mode in ('host','device'):

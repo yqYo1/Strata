@@ -118573,5 +118573,23 @@
       "files": 95,
       "aggregate_sha256": "95b5046b2b5b3ba5f5ce85fed54f8ff89b8c87d05caafd51311bc0ca5e1e07d2"
     }
+  },
+  "q6_byte_load_lowering_v1": {
+    "stage": "failed-preparation",
+    "source_commit": "5d6847541",
+    "controller_sha256": "32fab10e66fa4c115fa6861156f3d33c71af725515f969eb2a9012769b1bb28f",
+    "error": "RuntimeError('unexpected native include layout')",
+    "failure": "Controller assumed a direct cstdint include;the actual native translation unit includes atomic and obtains integer types transitively. Failed before generated sources or compiler commands.",
+    "compiler_executed": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "empty_root_retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-load-preparation-empty-retirement-20261104.json",
+      "sha256": "bc044dc8b33843fa0d17654b190af83142efe884968ec2c13c2b9392128dd579"
+    },
+    "next_action": "Use the verified atomic include anchor and generate both alternatives before creating a new V2root. Preserve this failed preparation."
   }
 }
