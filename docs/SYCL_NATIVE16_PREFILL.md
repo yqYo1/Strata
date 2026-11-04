@@ -476,10 +476,17 @@ paired bitwise GGML cases and80 audited production-entry calls; decode selects
 0/10240 paired rows for selector0/1 while prefill selects none. Both real-pool
 fixtures pass28 cases covering repeated prefill/decode, seven GU/Down format
 pairs, NT1..4 and the scratch-batch boundary; their full output checksums both
-equal `e5d7a50a8e7d5ac5`. Six-process timing remains pending. It times the actual production entry in
-both arms, with independent GGML outputs and actual selected-row counts for
-every timed batch. Counters stay enabled in both arms; this is single-core
-entry timing, not model speed. The closed V2 generation was retired before
+equal `e5d7a50a8e7d5ac5`. All six timing processes and240 samples now pass,
+including2016 real-model output cases before and after each process and
+actual dispatch/eligible/selected-row counts for every timed batch. All eight
+cells improve in all three independent pairs. Candidate/reference geometric
+time ratios are0.9390/0.9425 (640 rows,prequantized,reuse/stream),0.9385/0.9627
+(640 rows,packing included),0.9417/0.9257 (128 rows,prequantized),and
+0.9504/0.9619 (128 rows,packing included):3.7..7.4% lower time. Both arms use
+the actual production entry with the same audit counters enabled. This is
+single-core entry timing; the pool fixtures qualify phase/output behavior,
+not pool speed. Next prepare an explicitly decode-only model build/comparison
+with actual request dispatch evidence; no model gain or adoption follows. The closed V2 generation was retired before
 building the three V3 CPU-only targets; keep the validated GPU fallback unchanged.
 The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
