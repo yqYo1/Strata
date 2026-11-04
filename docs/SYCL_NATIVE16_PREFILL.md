@@ -58,8 +58,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes pass for both benchmark and server. Ten of 12 processes and
-  all 40 requests pass with normal exits, quiet validation, closed owners and
+  frontend probes pass for both benchmark and server. Eleven of 12 processes and
+  all 44 requests pass with normal exits, quiet validation, closed owners and
   no fresh fault. All three completed 64K pairs support warmed prompt-time and
   client-TTFT nonregression separately: candidate/reference prompt-time ratios
   are 0.998945/0.995090/0.998678 and TTFT ratios are
@@ -74,8 +74,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   pair has reference/candidate warmed PP 1051.058/1048.455 tok/s and client
   TTFT 111.949/112.225 s. Its candidate/reference prompt-time/TTFT ratios are
   1.002483/1.002465: directions are mixed across the two 117K pairs, so neither
-  nonregression nor a consistent slowdown is established. The final 117K pair
-  is still needed for its required three-pair decision; no sustained
+  nonregression nor a consistent slowdown is established. The final 117K
+  reference passes with warmed PP 1048.981 tok/s and client TTFT 112.180 s;
+  its candidate remains pending for the required three-pair decision. No sustained
   decode qualification follows from these short-output checks.
   V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
@@ -175,6 +176,10 @@ threads. For six of seven formats the six-job stream/reuse latency ratio is
 not physical DRAM traffic, a bandwidth ceiling, current model CPU service or
 proof of saturation. Reuse this evidence when selecting the next resource
 question rather than repeating the same calibration without a changed question.
+Read-only `lscpu -J` on 2026-11-04 identifies a Ryzen 5 5600X with six physical
+cores, 12 SMT threads and 32 MiB L3; the earlier 256 MiB read buffer is eight
+times that L3 capacity. Configured DIMM speed and physical RAM bandwidth remain
+unknown; the current user cannot read the DMI table, and no ceiling is inferred.
 
 The existing decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
