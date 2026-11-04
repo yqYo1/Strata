@@ -374,6 +374,27 @@ maintained correctness fixture and the same freshly compiled `expert_cpu`
 library as the benchmark. This permits the compiler/ISA and correctness gate
 without linking or rebuilding a GPU engine. Compilation and execution remain
 pending a committed exact recipe and closure of the observer cohort.
+The benchmark emits deterministic weight/activation input fingerprints before
+timing; require them to match across all six processes in addition to the
+pinned model-range hashes. FNV fingerprints are consistency checks, not
+cryptographic source provenance. The inspected CPU reference dependency is
+official `ggml-org/llama.cpp` commit
+`3cf03257f219afbe7334045ff7c6a06ac68c627d`; its CPU subtree is
+`c38dca42a07f0aa703bdbe3e55639ad56c91dc1e`, and the selected working CPU,
+headers and CMake paths have no diff from that revision. The checkout's old
+directory name is not implementation provenance.
+The prospective CPU recipe uses a fresh external
+`cpu-iq3-pair-component-v1/build`, icpx/icx 2026.2, CMake Release/Ninja with
+compile commands, and this CPU-only project with its pinned GGML directory.
+Build only `cpu_iq_single_exact_test` and `cpu_iq3_pair`, with four compile jobs;
+keep the known-good engine and active observer generation unchanged.
+Before execution, commit the exact argv/environment and complete transitive
+project, compiler and dependency identities in the compact result. Check the
+actual compile/link inputs and CPU-only configuration before the fixture.
+Prospective build limits are 300 s wall,1200 s CPU,8 GiB RSS,1 MiB text and384 MiB
+private artifacts; the correctness child gets 60 s wall/CPU,512 MiB RSS and64 KiB
+text. Normal exit0 plus supported ISA, all numerical/refusal cases and closed
+owned processes are required before timing. A skip77 is not a correctness pass.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
 write/flush cannot qualify attribution. The source review supplies no measured

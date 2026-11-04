@@ -176,6 +176,10 @@ int main(int argc, char** argv) try {
     std::cout << "{\"kind\":\"input\",\"arm\":" << arm << ",\"process\":" << process <<
         ",\"CPU\":" << cores[0] << ",\"experts\":" << experts << ",\"group\":" << group <<
         ",\"blob_bytes\":" << in.fmt.bytes << ",\"setup_s_excluded\":" << setup_s <<
+        ",\"weight_input_fingerprint_fnv1a64\":\"" << hash(in.weight_hashes.data(),
+            in.weight_hashes.size() * sizeof(in.weight_hashes[0])) <<
+        "\",\"activation_input_fingerprint_fnv1a64\":\"" << hash(in.act_hashes.data(),
+            sizeof(in.act_hashes)) << "\",\"activation_bytes\":" << in.fmt.act_bytes <<
         ",\"reference\":\"native_gu_rows/decode NT1\",\"candidate\":\"direct pair entry\"}" << std::endl;
     in.validate();
     for (int rows : {FF, 128}) for (bool pack : {false, true}) for (bool stream : {false, true}) {
