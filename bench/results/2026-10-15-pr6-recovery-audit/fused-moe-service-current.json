@@ -122796,5 +122796,217 @@
       "bytes": 22939,
       "physically_retired": true
     }
+  },
+  "verify_window_model_build_v3": {
+    "stage": "prepared",
+    "source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
+    "selected_record_sha256": "d5765dbb3f72339c547d5b77139ddd8c343f6f27dbd9edbb33e4bbfd2bcdb513",
+    "selected_binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+        "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+        "bytes": 24058712
+      },
+      "sycl_qsa_topk_prefill_entry_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_qsa_topk_prefill_entry_test",
+        "sha256": "4ba024ef4386be7192ffd78624c4f6aeee9d7ccd43f16f37b5ff893d0a60fbe0",
+        "bytes": 316784
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_submission_test",
+        "sha256": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+        "bytes": 343384
+      },
+      "sycl_vllm_native16_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_vllm_native16_test",
+        "sha256": "d1b28549a77c8ed457130477a8d6ec2a99957d8e6ebc1a55e797c4718d4ef4db",
+        "bytes": 2452528
+      },
+      "sycl_moe_gu_swiglu_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_gu_swiglu_bench",
+        "sha256": "dd1e9a93301c418b935063f600bc7bf126db908d9c3891453179e2ba342cd0d2",
+        "bytes": 13837112
+      },
+      "sycl_moe_down_scatter_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_down_scatter_bench",
+        "sha256": "506e0bc8f4af9a7579318941f93493ad435b3e914d622a60b7b9200ebf8e22ab",
+        "bytes": 13857912
+      },
+      "sycl_moe_accum_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_accum_test",
+        "sha256": "e93b9b0d50e357acc928c01b8dd7e6bcd0d38655b5d4f5994b04bf26ff762839",
+        "bytes": 3055560
+      },
+      "sycl_gdn_columns_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_gdn_columns_bench",
+        "sha256": "debfc1279965b3d6628095a9066dc74c58152ab25cb0baf55c265f799d53d37e",
+        "bytes": 422792
+      },
+      "sycl_gdn_storage_pipeline_bench": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_gdn_storage_pipeline_bench",
+        "sha256": "7d0fb7492fefd0c5c3874d099c51282b91a787698059b1250d8b3ee45a0196cc",
+        "bytes": 14019960
+      }
+    },
+    "selected_native_source": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+    "q6_source": "225e13889f5ace66fb26fa054952ae588d87d159",
+    "monitor_qualification": {
+      "original_source_commit": "6f79f4b1a3b9d3400f404f88c8d562b4acdc35c2",
+      "evidence_key": "verify_window_build_monitor_host_v1",
+      "monitor_AST_sha256": "2141f05cc05e364bae5480b2420a349ae4b30c306b13c7caa21d2b8a97206924",
+      "unchanged_helpers": {
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+      },
+      "scope": "Reuse only the identical monitor function,owner,guard and interpreter;not the new preparation or metadata-query code."
+    },
+    "changed_files": [
+      "include/strata/core/verify.hpp",
+      "include/strata/core/verify_window_policy.hpp",
+      "include/strata/kernels/native_mmvq.hpp",
+      "src/core/verify.cpp",
+      "src/kernels/sycl/native_mmvq.cpp",
+      "src/program/generate.cpp",
+      "tests/core/verify_window_policy_test.cpp",
+      "tests/sycl/verifier_retirement.cpp"
+    ],
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "syntax_command": [
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-DSTRATA_ENABLE_SYCL=1",
+      "-DSTRATA_NATIVE_EXPERTS=1",
+      "-DSTRATA_VERSION=\"0.1.38\"",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/source/include",
+      "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/source/include/strata/sycl/compat",
+      "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+      "-fsycl-id-queries-range=size_t",
+      "-Wno-error=deprecated-declarations",
+      "-O3",
+      "-DNDEBUG",
+      "-std=c++20",
+      "-fsycl",
+      "-fsycl-id-queries-range=size_t",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/source/tests/sycl/verifier_retirement.cpp",
+      "-fsyntax-only",
+      "-MD",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/syntax.d"
+    ],
+    "commands": [
+      [
+        "configure",
+        [
+          "/usr/bin/cmake",
+          "-S",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/source",
+          "-B",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/build",
+          "-G",
+          "Ninja",
+          "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DCMAKE_BUILD_TYPE=Release",
+          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+          "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+          "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+          "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+          "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+          "-DSTRATA_CPU_ARCH:STRING=znver3",
+          "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+          "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+          "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+          "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+          "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+          "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+          "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+          "-DSTRATA_PORTABLE:BOOL=OFF",
+          "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+          "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+          "-DSTRATA_SYCL_TESTS:BOOL=ON",
+          "-DSTRATA_WERROR:BOOL=ON",
+          "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+          "-DSTRATA_SYCL_DEVICE_ARCH=",
+          "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+          "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations",
+          "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t"
+        ]
+      ],
+      [
+        "compile",
+        [
+          "/usr/bin/cmake",
+          "--build",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/build",
+          "--target",
+          "strata",
+          "sycl_submission_test",
+          "sycl_verifier_retirement_test",
+          "-j",
+          "4"
+        ]
+      ],
+      [
+        "dependencies",
+        [
+          "/usr/bin/ninja",
+          "-C",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/build",
+          "-t",
+          "deps"
+        ]
+      ]
+    ],
+    "budgets": {
+      "wall": 1800,
+      "cpu": 7200,
+      "rss_cap": 12884901888,
+      "text_cap": 16777216,
+      "file_cap": 536870912,
+      "total_cap": 4294967296
+    },
+    "whole_wall_seconds": 3600,
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "GPU_plan": {
+      "first_case": [
+        "sycl_verifier_retirement_test",
+        "--phase-cache"
+      ],
+      "contract": "16 callback windows;prompt/decode T1,4,8;12 lazy captures;drained clear/recapture;48 real graph owners;guards and copy counts;normal destructor",
+      "limits": "Synthetic payload kernels. Does not qualify record_window/run,Q6 arithmetic,dense/head resume,physical262144 or model performance.",
+      "prerequisites": "Committed bounded validation/log/fault/owner plan after this build;no GPU execution here"
+    },
+    "retention": {
+      "consumer": "One imminent decode-only Q6 model comparison against selected479a",
+      "review_point": "At comparison closure select the validated generation, recover source/recipe and retire the extra",
+      "legacy_gate": "Preparation/syntax may precede inventory closure;engine compilation must pass retention_gate"
+    },
+    "controller_inputs": {
+      "files": 91,
+      "aggregate_sha256": "6c4602a05cb287b0e25b6bc470b037bbb220e3808d8b9fbde2fcf9ea57bfef6c"
+    },
+    "native_sources": {
+      "files": 560,
+      "aggregate_sha256": "35c684356c218d29d057bb3742b1e9f76e16fc68d11f91fcde43662ce1db83d3"
+    },
+    "recipe": {
+      "inherit_selected_native": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+      "sha256": "972bbbb62e3bee07d5fd8f79a353547c60f4a654a7f58ef96092e8d3d5d79233",
+      "targets": [
+        "strata",
+        "sycl_submission_test",
+        "sycl_verifier_retirement_test"
+      ],
+      "changes": "Only generation paths;compiler,optimization,dependencies unchanged"
+    }
   }
 }
