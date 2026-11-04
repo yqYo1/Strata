@@ -181,13 +181,24 @@ row (`src/kernels/sycl/elementwise.cpp`), whereas the hit decision is row-unifor
 A bounded row-mask/broadcast/vector-copy component can test this concrete
 redundancy after the CPU component; compare actual host-USM and device input
 placement and preserve hit zeros, source lifetime and graph ordering. The
-unselected `src/kernels/sycl/mapped_row_copy.hpp` prototype now defines one
-hit-list scan per row and a converged group broadcast, with 64..1024 work-items
-and scalar/four-element source groupings. It preserves the existing production
-entry and has not been compiled or run. A new component still needs committed
-source/recipe, bounded traced admission, bitwise tails/hit/canary/lifetime checks
+unselected `src/kernels/sycl/mapped_row_copy.hpp` prototype defines a hit-list
+scan and converged broadcast per row group. An optional column-tiled variant
+repeats that scan per tile:at the actual40x2560 shape,one group per row provides
+40 groups,while256x4 and64x4 column tiles provide120/400 groups. This tests
+whether more independent work offsets the extra membership work;these are
+group counts,not occupancy measurements. Scalar/four-element source groupings
+allow four-byte-aligned rows without promising emitted vector instructions.
+The independent `tests/sycl/mapped_row_copy.cpp` fixture compares the existing
+production entry with four unselected variants,using device metadata and both
+host-USM/device sources. Its prepared checks include changed/duplicate/unsorted
+hit lists,positive-zero hit output,NaN/signed-zero bit copies,odd tails,offset
+alignment and source/output/metadata guards. The timing path separates untimed
+checks and warmups from dependent-batch wall/host CPU clocks,with one/64 source
+banks and two hit ratios. It does not measure physical traffic or kernel service.
+Neither the modified prototype nor fixture has been compiled or run. The
+component still needs a committed pinned build recipe,bounded traced admission
 and repeated actual-placement timing before any decode-only route proposal.
-No physical PCIe, emitted vector-instruction or performance claim follows.
+The existing production copy and measured engine remain unchanged.
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved

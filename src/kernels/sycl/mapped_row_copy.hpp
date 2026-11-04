@@ -14,7 +14,10 @@ namespace strata::kernels::component {
 // - input stores complete before submission/replay, and no source is changed
 //   until completion. The destination is disjoint from every input.
 // No model dispatch, environment selector, extra queue or host readback here.
-template <int Workgroup, int Elements>
+// Tiled groups repeat the row decision for each column tile. This trades more
+// membership work for more independent groups when there are only a few rows.
+// Elements groups scalar accesses; it does not promise vector instructions.
+template <int Workgroup, int Elements, bool Tiled = false>
 void mapped_row_copy(float* dst, const float* src, int64_t rows, int64_t width,
                      const int32_t* hit_rows, const int32_t* count, void* stream) {
     static_assert(Workgroup == 64 || Workgroup == 128 || Workgroup == 256 ||
@@ -23,14 +26,18 @@ void mapped_row_copy(float* dst, const float* src, int64_t rows, int64_t width,
     using namespace strata::sycl_backend;
     const size_t n = checked_count(rows, width);
     if (!n) return;
-    if (n > SIZE_MAX / sizeof(float) || size_t(rows) > SIZE_MAX / Workgroup)
+    constexpr size_t tile = Workgroup * Elements;
+    const size_t tiles = Tiled ? 1 + (size_t(width) - 1) / tile : 1;
+    if (n > SIZE_MAX / sizeof(float) || tiles > SIZE_MAX / Workgroup ||
+        size_t(rows) > SIZE_MAX / (tiles * Workgroup))
         throw std::invalid_argument("mapped row copy extent overflow");
     validate_spans({{dst, n * sizeof(float)}}, {{src, n * sizeof(float)},
         {hit_rows, size_t(rows) * sizeof(int32_t)}, {count, sizeof(int32_t)}});
     auto event = queue_for(stream).parallel_for(
-        sycl::nd_range<1>(size_t(rows) * Workgroup, Workgroup),
-        [=](sycl::nd_item<1> item) {
-            const size_t row = item.get_group_linear_id();
+        sycl::nd_range<2>(sycl::range<2>(size_t(rows), tiles * Workgroup),
+                          sycl::range<2>(1, Workgroup)),
+        [=](sycl::nd_item<2> item) {
+            const size_t row = item.get_group(0);
             const size_t lane = item.get_local_linear_id();
             int hit = 0;
             if (lane == 0) {
@@ -39,19 +46,22 @@ void mapped_row_copy(float* dst, const float* src, int64_t rows, int64_t width,
                     hit |= hit_rows[j] == int64_t(row);
             }
             // Every work-item participates before any row-dependent branch.
-            hit = sycl::group_broadcast(item.get_group(), hit, 0);
+            hit = sycl::group_broadcast(item.get_group(), hit, sycl::id<2>(0, 0));
             const size_t base = row * size_t(width);
-            const size_t bulk = size_t(width) / Elements * Elements;
+            const size_t begin = Tiled ? item.get_group(1) * tile : 0;
+            const size_t end = Tiled && size_t(width) - begin > tile
+                                 ? begin + tile : size_t(width);
+            const size_t bulk = end - (end - begin) % Elements;
             if (hit) {
-                for (size_t c = lane * Elements; c < bulk;
+                for (size_t c = begin + lane * Elements; c < bulk;
                      c += Workgroup * Elements) {
 #pragma unroll
                     for (int j = 0; j < Elements; ++j) dst[base + c + j] = 0.f;
                 }
-                for (size_t c = bulk + lane; c < size_t(width); c += Workgroup)
+                for (size_t c = bulk + lane; c < end; c += Workgroup)
                     dst[base + c] = 0.f;
             } else {
-                for (size_t c = lane * Elements; c < bulk;
+                for (size_t c = begin + lane * Elements; c < bulk;
                      c += Workgroup * Elements) {
                     // Scalar float accesses also permit four-byte-aligned rows.
                     // Elements4 is a source grouping, not an emitted-ISA claim.
@@ -59,7 +69,7 @@ void mapped_row_copy(float* dst, const float* src, int64_t rows, int64_t width,
                     for (int j = 0; j < Elements; ++j)
                         dst[base + c + j] = src[base + c + j];
                 }
-                for (size_t c = bulk + lane; c < size_t(width); c += Workgroup)
+                for (size_t c = bulk + lane; c < end; c += Workgroup)
                     dst[base + c] = src[base + c];
             }
         });
