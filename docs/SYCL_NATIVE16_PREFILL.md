@@ -219,9 +219,13 @@ is not reused as qualification. Follow
 and remaining consumers. All nine fallback ELFs and the research-pinned
 runtime/configuration inputs remain intact. The observer build is now closed
 with actual compiler/link input coverage and four hashed outputs, from source
-`8e2499937969dbfa1dcd950b95025d9712037a83`. The real-pool off/on parity and
-new same-build device/model admission remain pending; no measured CPU service
-or speed gain follows from compilation.
+`8e2499937969dbfa1dcd950b95025d9712037a83`. The real-pool off/on checks both
+pass 28 cases with identical output checksums and normal closed processes.
+New same-build device/model admission remains pending; no measured CPU service
+or speed gain follows from these host checks. The source-prepared
+`tools/sycl/cpu_service_device.py` reuses the maintained small submission/phase
+runner in a private context and requires that exact real-pool parity. Its
+prospective preparation does not execute a GPU kernel.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
