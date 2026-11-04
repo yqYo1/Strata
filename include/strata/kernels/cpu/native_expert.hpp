@@ -58,6 +58,17 @@ public:
 /// callers pass the actual phase, so CPU/window prefill retains its reference.
 void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* act, int nt, float* const* ff,
                     int r0, int r1, NativeGuPhase phase = NativeGuPhase::Decode);
+
+// Optional IQ3_XXS dispatch evidence, fixed before exec with
+// STRATA_IQ3_PAIR_AUDIT=1. Snapshot only after the synchronous pool drains.
+// calls covers all GU entries; nt1_rows/pair_rows cover IQ3_XXS only.
+struct Iq3GuAudit {
+    bool enabled = false, overflow = false;
+    unsigned threads = 0;
+    uint64_t calls = 0, nt1_rows = 0, pair_rows = 0;
+};
+Iq3GuAudit iq3_gu_audit_snapshot() noexcept;
+
 /// out[t][r] = down_r . hq[t] for rows r in [r0, r1).
 void native_down_rows(const NativeFmt& f, const uint8_t* blob, const void* const* hq, int nt, float* const* out,
                       int r0, int r1);

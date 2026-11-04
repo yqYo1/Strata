@@ -1,8 +1,10 @@
-// Main-authored IQ3_XXS NT1 component comparison; repository LICENSE.
+// Main-authored IQ3_XXS NT1 production-entry comparison; repository LICENSE.
 // Inference arithmetic comes from the linked Strata/ggml implementations.
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
 #include "strata/kernels/cpu/pool.hpp"
+#include "ggml.h"
+#include "ggml-cpu.h"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -27,6 +29,7 @@ namespace cpu = strata::kernels::cpu;
 using Clock = std::chrono::steady_clock;
 constexpr int H = 2560, FF = 640, experts = 252, group = 6, repetitions = 5;
 constexpr float sentinel = 123.0f;
+enum class Entry { Oracle, Production };
 void need(bool b, const char* why) { if (!b) throw std::runtime_error(why); }
 double elapsed(Clock::time_point t) {
     return std::chrono::duration<double>(Clock::now() - t).count();
@@ -124,10 +127,16 @@ struct Inputs {
         }
         scratch.check();
     }
-    void call(bool pair, int e, const void* act, float* out, int begin, int end) {
-        if (pair) need(cpu::iq3xxs_pair_gu_rows(fmt, weights[e].data(), act,
-            out, begin, end), "pair producer refused");
-        else { const void* ap[]{act}; float* fp[]{out};
+    void call(Entry entry, int e, const void* act, float* out, int begin, int end) {
+        if (entry == Entry::Oracle) {
+            const auto dot = ggml_get_type_traits_cpu(GGML_TYPE_IQ3_XXS)->vec_dot;
+            for (int r = begin; r < end; ++r) {
+                float g, u;
+                dot(H, &g, 0, weights[e].data() + r * fmt.gu_row, 0, act, 0, 1);
+                dot(H, &u, 0, weights[e].data() + fmt.up_off + r * fmt.gu_row, 0, act, 0, 1);
+                out[r] = (g / (1.f + std::exp(-g))) * u;
+            }
+        } else { const void* ap[]{act}; float* fp[]{out};
             cpu::native_gu_rows(fmt, weights[e].data(), ap, 1, fp, begin, end,
                 cpu::NativeGuPhase::Decode); }
     }
@@ -136,8 +145,8 @@ struct Inputs {
         for (int e = 0; e < experts; ++e) for (int t = 0; t < 4; ++t)
             for (auto range : {std::pair{0, FF}, std::pair{128, 256}}) {
                 std::array<float, FF + 2> ref, got; ref.fill(sentinel); got = ref;
-                call(false, e, acts[t].data(), ref.data() + 1, range.first, range.second);
-                call(true, e, acts[t].data(), got.data() + 1, range.first, range.second);
+                call(Entry::Oracle, e, acts[t].data(), ref.data() + 1, range.first, range.second);
+                call(Entry::Production, e, acts[t].data(), got.data() + 1, range.first, range.second);
                 need(!std::memcmp(ref.data(), got.data(), sizeof ref), "real-model GU bits");
                 for (int r = range.first; r < range.second; ++r)
                     need(std::isfinite(ref[r + 1]), "nonfinite real-model GU");
@@ -147,14 +156,14 @@ struct Inputs {
         std::cout << "{\"kind\":\"validation\",\"cases\":" << checked <<
             ",\"bitwise\":true,\"finite\":true,\"inputs_unchanged\":true}" << std::endl;
     }
-    void run(bool pair, bool stream, bool pack, int rows) {
+    void run(Entry entry, bool stream, bool pack, int rows) {
         const int count = stream ? experts : group, begin = rows == FF ? 0 : 128;
         for (int b = 0; b < count; b += group) {
             const int t = (b / group) % 4;
             const void* act = acts[t].data();
             if (pack) { cpu::native_quant_act(fmt, x[t].data(), scratch.data()); act = scratch.data(); }
             for (int e = b; e < b + group; ++e)
-                call(pair, e, act, outputs[e].data() + 1, begin, begin + rows);
+                call(entry, e, act, outputs[e].data() + 1, begin, begin + rows);
         }
     }
 };
@@ -164,6 +173,10 @@ int main(int argc, char** argv) try {
     need(arm <= 1 && process < 6, "arm/process");
     const char* single = std::getenv("STRATA_IQ_SINGLE_EXACT");
     need(single && std::string(single) == "0", "reference requires SINGLE_EXACT=0");
+    const char* pair = std::getenv("STRATA_IQ3_PAIR");
+    const char* audit = std::getenv("STRATA_IQ3_PAIR_AUDIT");
+    need(pair && std::string(pair) == std::to_string(arm) && audit &&
+        std::string(audit) == "1", "production selection/audit must be fixed before exec");
     need(!std::getenv("STRATA_IQ_MT_MIN") && !std::getenv("STRATA_IQ2_PAIR_AUDIT"),
         "no alternate NT rule or GU audit");
     const auto cores = cpu::physical_cores(false);
@@ -180,13 +193,13 @@ int main(int argc, char** argv) try {
             in.weight_hashes.size() * sizeof(in.weight_hashes[0])) <<
         "\",\"activation_input_fingerprint_fnv1a64\":\"" << hash(in.act_hashes.data(),
             sizeof(in.act_hashes)) << "\",\"activation_bytes\":" << in.fmt.act_bytes <<
-        ",\"reference\":\"native_gu_rows/decode NT1\",\"candidate\":\"direct pair entry\"}" << std::endl;
+        ",\"reference\":\"native_gu_rows/decode IQ3PAIR0\",\"candidate\":\"native_gu_rows/decode IQ3PAIR1\"}" << std::endl;
     in.validate();
     for (int rows : {FF, 128}) for (bool pack : {false, true}) for (bool stream : {false, true}) {
         for (auto& out : in.outputs) out.fill(sentinel);
-        in.run(false, stream, pack, rows);
+        in.run(Entry::Oracle, stream, pack, rows);
         const auto expected = in.outputs;
-        auto pass = [&] { in.run(arm, stream, pack, rows); };
+        auto pass = [&] { in.run(Entry::Production, stream, pack, rows); };
         pass(); double fastest = std::numeric_limits<double>::max();
         for (int i = 0; i < 3; ++i) { const auto t = Clock::now(); pass();
             fastest = std::min(fastest, elapsed(t)); }
@@ -197,10 +210,17 @@ int main(int argc, char** argv) try {
         need(cost < fastest * .001, "timer overhead");
         const uint64_t jobs = stream ? experts : group;
         for (int rep = 0; rep < repetitions; ++rep) {
+            const auto before = cpu::iq3_gu_audit_snapshot();
             const double cpu0 = cpu_seconds(); const auto start = Clock::now();
             uint64_t passes = 0; double wall;
             do { pass(); ++passes; wall = elapsed(start); } while (wall < .35 && passes < 1000000);
             const double scheduled = cpu_seconds() - cpu0;
+            const auto after = cpu::iq3_gu_audit_snapshot();
+            const uint64_t calls = passes * jobs, active = calls * rows;
+            need(before.enabled && after.enabled && !before.overflow && !after.overflow &&
+                before.threads == 1 && after.threads == 1 && after.calls - before.calls == calls &&
+                after.nt1_rows - before.nt1_rows == active &&
+                after.pair_rows - before.pair_rows == (arm ? active : 0), "actual timed production dispatch");
             need(wall >= .25 && passes < 1000000, "timing duration/pass budget");
             need(!std::memcmp(in.outputs.data(), expected.data(),
                 expected.size() * sizeof(expected[0])), "timed output or inactive rows differ");
@@ -211,6 +231,9 @@ int main(int argc, char** argv) try {
                 ",\"wall_s\":" << wall << ",\"cpu_s\":" << scheduled << ",\"timer_s\":" << cost <<
                 ",\"fastest_warm_pass_s\":" << fastest <<
                 ",\"unique_GU_bytes\":" << jobs * 2 * rows * in.fmt.gu_row <<
+                ",\"timed_dispatch_calls\":" << after.calls - before.calls <<
+                ",\"timed_nt1_rows\":" << after.nt1_rows - before.nt1_rows <<
+                ",\"timed_pair_rows\":" << after.pair_rows - before.pair_rows <<
                 ",\"outputs_match_untimed_reference\":true}" << std::endl;
         }
         in.check();

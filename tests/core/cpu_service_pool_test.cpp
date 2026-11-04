@@ -141,9 +141,22 @@ void run(cpu::ExpertPool& pool,bool enabled,uint64_t& checksum) {
                 }
             }
             const auto before=pool.service_snapshot();
+            const auto route_before=cpu::iq3_gu_audit_snapshot();
             pool.run_split_multi_native(f,jobs.data(),n,phase);
+            const auto route_after=cpu::iq3_gu_audit_snapshot();
             const auto after=pool.service_snapshot();
             counters(before,after,fmt,n,enabled && phase==cpu::NativeGuPhase::Decode);
+            if (route_before.enabled) {
+                const char* selected=std::getenv("STRATA_IQ3_PAIR");
+                require(selected && (!std::strcmp(selected,"0") || !std::strcmp(selected,"1")),
+                        "IQ3 selection fixed before exec");
+                const uint64_t rows=f.gu_type==18 ? uint64_t((n+kT-1)/kT)*kF : 0;
+                const uint64_t paired=phase==cpu::NativeGuPhase::Decode && selected[0]=='1' ? rows : 0;
+                require(route_after.enabled && !route_before.overflow && !route_after.overflow &&
+                        route_after.nt1_rows-route_before.nt1_rows==rows &&
+                        route_after.pair_rows-route_before.pair_rows==paired,
+                        "actual pool IQ3 NT1/phase routing");
+            }
             for (int e=0;e<n;++e) for (int t=0;t<kT;++t) {
                 const auto& got=output[e][t];
                 require(got.front()==kGuard && got.back()==kGuard,"output row canary");
@@ -173,6 +186,8 @@ int main(int argc,char** argv) {
         cpu::NativeFmt initial;std::string format_error;
         const bool available=cpu::native_fmt(18,20,kH,kF,initial,format_error);
         require(available,format_error.c_str()); // initialize GGML before creating workers
+        if (const char* audit=std::getenv("STRATA_IQ3_PAIR_AUDIT"); audit && !std::strcmp(audit,"1"))
+            require(cpu::iq3_gu_audit_snapshot().enabled,"IQ3 dispatch audit active");
         cpu::ExpertPool pool(5,false,true);
         require(pool.service_snapshot().enabled==enabled,"pool observer mode");
         uint64_t checksum=14695981039346656037ull;std::exception_ptr error;

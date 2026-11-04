@@ -462,6 +462,20 @@ unqualified generation and V2's closed normal build/correctness output are
 retired:89 files,20090636 bytes. The failed outcome remains intact. V2's two
 exact CPU executables, expert archive and input proof stay for the imminent
 six-process timing comparison; the validated GPU fallback is unchanged.
+The source now offers default-off `STRATA_IQ3_PAIR=1` only at the decode NT1
+production entry, below the unchanged multi-token dispatch. Prefill keeps its
+existing selection. `STRATA_IQ3_PAIR_AUDIT=1` uses separate per-thread IQ3
+eligible/selected row counters; the legacy IQ2 audit retains its own fields.
+No process environment changes between phases. This connection is not yet
+compiled or qualified. The prospective `cpu_iq3_pair_dispatch_v3` first runs
+the arithmetic/phase fixture in two pre-exec selector processes, then the
+same-library real-pool fixture in both. It checks repeated prefill/decode,
+seven GU/Down format pairs, NT1..4, scratch-batch boundaries and equal output
+checksums. Its six-process benchmark times the actual production entry in
+both arms, with independent GGML outputs and actual selected-row counts for
+every timed batch. Counters stay enabled in both arms; this is single-core
+entry timing, not model speed. Retire the closed V2 generation before building
+the three V3 CPU-only targets; keep the validated GPU fallback unchanged.
 The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a

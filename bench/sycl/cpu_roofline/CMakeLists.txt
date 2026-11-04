@@ -24,7 +24,7 @@ add_library(expert_cpu STATIC
   ${CPU}/native_expert.cpp ${CPU}/iq_avx512.cpp ${CPU}/iq_avx2.cpp
   ${CPU}/iq_single_avx2.cpp ${CPU}/iq2_pair_avx2.cpp ${CPU}/kq_avx2.cpp)
 target_include_directories(expert_cpu PUBLIC "${STRATA_ROOT}/include" PRIVATE "${STRATA_ROOT}/third_party/ggml")
-target_compile_definitions(expert_cpu PUBLIC STRATA_NATIVE_EXPERTS=1)
+target_compile_definitions(expert_cpu PUBLIC STRATA_NATIVE_EXPERTS=1 STRATA_CPU_SERVICE_PROFILE=1)
 target_compile_options(expert_cpu PRIVATE -march=znver3 -mtune=znver3)
 set_source_files_properties(${CPU}/expert.cpp ${CPU}/iq_avx512.cpp PROPERTIES
   COMPILE_OPTIONS "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")
@@ -42,3 +42,6 @@ add_executable(cpu_iq_single_exact_test "${STRATA_ROOT}/tests/core/iq_single_exa
 target_include_directories(cpu_iq_single_exact_test PRIVATE "${STRATA_ROOT}/third_party/ggml")
 target_compile_options(cpu_iq_single_exact_test PRIVATE -march=znver3 -mtune=znver3)
 target_link_libraries(cpu_iq_single_exact_test PRIVATE expert_cpu)
+add_executable(cpu_service_pool_test "${STRATA_ROOT}/tests/core/cpu_service_pool_test.cpp")
+target_compile_options(cpu_service_pool_test PRIVATE -march=znver3 -mtune=znver3)
+target_link_libraries(cpu_service_pool_test PRIVATE expert_cpu)

@@ -26,9 +26,10 @@ import measurement_guards as guards
 import host_link_inventory as links
 
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'cpu-iq3-pair-component-v2'
+ROOT = B / 'cpu-iq3-pair-dispatch-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'cpu_iq3_pair_component_v2'
+KEY = 'cpu_iq3_pair_dispatch_v3'
+PRIOR_EVIDENCE = 'ee5a8e41307a97bdb7155004e4bc9c2a33af5e33'
 GGML = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011')
 GGML_REV = '3cf03257f219afbe7334045ff7c6a06ac68c627d'
 SDK = B / 'prefill-expert-staging-v3/sdk-inputs.json'
@@ -38,9 +39,10 @@ CXX = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
 METADATA = Path('/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt')
 MODEL = Path('/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S')
 ORDER = (0, 1, 1, 0, 0, 1)
-TARGETS = ('cpu_iq_single_exact_test', 'cpu_iq3_pair')
+TARGETS = ('cpu_iq_single_exact_test', 'cpu_iq3_pair', 'cpu_service_pool_test')
 PROJECT = ('bench/sycl/cpu_roofline', 'src/kernels/cpu', 'include', 'third_party/ggml',
-    'tests/core/iq_single_exact_test.cpp', 'tools/sycl/measurement_owner.py',
+    'tests/core/iq_single_exact_test.cpp', 'tests/core/cpu_service_pool_test.cpp',
+    'tools/sycl/measurement_owner.py',
     'tools/sycl/measurement_guards.py', 'tools/sycl/host_link_inventory.py')
 need, digest = owned.require, owned.sha
 
@@ -154,6 +156,14 @@ def save(row):
 def prepare():
     need(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'one fresh component plan')
     revision = git(P, 'rev-parse', 'HEAD').decode().strip()
+    prior = json.loads(git(P, 'show', PRIOR_EVIDENCE + ':' + str(RESULT.relative_to(P))))['cpu_iq3_pair_component_v2']
+    need(prior['stage'] == 'closed' and prior['passed'] and prior['complete'] and
+         prior['ownership_closed'] and not prior['active'] and len(prior['processes']) == 6 and
+         len(prior['decision']['cells']) == 8 and all(c['component_gain_qualified'] for c in prior['decision']['cells']),
+         'committed direct component gain required before production entry')
+    helper = 'src/kernels/cpu/iq_single_avx2.cpp'
+    need(hashlib.sha256(git(P, 'show', prior['source_commit'] + ':' + helper)).hexdigest() == digest(P / helper),
+         'preserve measured pair arithmetic')
     need(git(GGML, 'rev-parse', 'HEAD').decode().strip() == GGML_REV, 'official GGML revision')
     project, dependency = pins(P, revision, PROJECT), pins(GGML, GGML_REV, ('ggml',))
     need(digest(SDK) == SDK_SHA, 'existing official SDK inventory changed')
@@ -162,6 +172,7 @@ def prepare():
     env = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8',
         LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib', OMP_NUM_THREADS='1',
         PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1', STRATA_IQ_SINGLE_EXACT='0',
+        STRATA_IQ3_PAIR='0', STRATA_IQ3_PAIR_AUDIT='1', STRATA_CPU_SERVICE='0',
         TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
     host = host_inventory(env)
     allowed.update(host['files'])
@@ -187,6 +198,9 @@ def prepare():
     need(not git(GGML, 'diff', '--name-only', 'HEAD', '--', 'ggml').strip(), 'dirty GGML source')
     header = '#pragma once\n\n#define GGML_VERSION "0.24.0"\n#define GGML_COMMIT  "' + short + '"\n'
     row = dict(stage='prepared', source_commit=revision, project_inputs=project, ggml_inputs=dependency,
+        selected_direct_component_evidence=dict(commit=PRIOR_EVIDENCE,
+            path=str(RESULT.relative_to(P)), key='cpu_iq3_pair_component_v2', winning_cells=8,
+            native_source=prior['source_commit'], unchanged_pair_arithmetic_sha256=digest(P / helper)),
         dependency=dict(origin='https://github.com/ggml-org/llama.cpp', revision=GGML_REV),
         official_sdk=dict(path=str(SDK), sha256=SDK_SHA, files=10945), host_link_inputs=host,
         external_inputs=dict(path=str(ROOT / 'external-inputs.json'), sha256=digest(ROOT / 'external-inputs.json'), files=len(allowed)),
@@ -197,16 +211,19 @@ def prepare():
             '-DCMAKE_C_COMPILER=' + CC, '-DCMAKE_CXX_COMPILER=' + CXX,
             '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t', '-DGGML_CCACHE=OFF', '-DSTRATA_GGML_DIR=' + str(GGML)],
         build=['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', *TARGETS, '--parallel', '4'],
+        check_plan=[dict(label=kind + '-' + str(arm), kind=kind, arm=arm,
+            argv=[str(ROOT / 'build' / ('cpu_iq_single_exact_test' if kind == 'exact' else 'cpu_service_pool_test')),
+                  '--dispatch' if kind == 'exact' else '0']) for arm in (0, 1) for kind in ('exact', 'pool')],
         order=list(ORDER), processes=[], commands=[], active=False, ownership_closed=True,
         passed=False, complete=False, GPU_executed=False, production_selected=False,
-        protocol=dict(question='Does sharing packed IQ3_XXS gate/up activation loads lower actual NT1 GU cost?',
-            correctness='Same-library fixture must exit0,not ISA-skip77:384 original cases,80 pair cases,GGML bit parity,finite outputs,padded/unaligned inputs,canaries and actual alias/refusal target snapshots. Pair inputs explicitly cover all128 sign selectors,16 scale nibbles,256 grid indices,and signed FP16 zero/subnormal/normal/max-finite scales. Each measured process also validates all252 actual experts/four activations/full640 and128 rows before/after timing and checks every sample output.',
-            comparison='Single binary,six independent processes off/on,on/off,off/on. Eight cells:640/128rows,prequant/one production quantization per six experts,reuse6/stream252. Direct candidate entry includes bounds/layout checks;reference is actual native_gu_rows/decode NT1 with SINGLE_EXACT0. Not production-pool dispatch.',
+        protocol=dict(question='Does the measured IQ3_XXS pair gain survive the real native_gu_rows decode entry with phase containment and actual route evidence?',
+            correctness='Four separate pre-exec0/1 children. Each exact fixture passes384single/80pair cases plus80audited production NT1 calls:prefill pair rows0,decode pair rows0/10240. Finite bit parity,explicit sign/grid/FP16 edges,padded/unaligned helper cases,canaries and actual refusal targets remain. Each real-pool fixture covers28cases/seven format pairs/NT1..4/repeated prefill/decode;IQ3 NT1 row and selected-row deltas must match each phase,with equal full-output checksums across arms. Same-library normal exit0,no skip77. Each timing process independently checks2016 actual-model cases before/after against GGML and every timed output.',
+            comparison='One freshly linked CPU-only production library and benchmark,six independent processes0/1,1/0,0/1. Both arms time native_gu_rows/decode NT1;only STRATA_IQ3_PAIR differs before exec. SINGLE_EXACT0,IQ3_PAIR_AUDIT1,CPU_SERVICE0 in both. Eight cells:640/128rows,prequant/one production quantization per six experts,reuse6/stream252. Every timed batch must conserve actual native dispatch calls,IQ3 NT1 rows and selected pair rows. Pool fixture is correctness evidence;timing remains single-core rather than pool/model gain.',
             timing='Four warm passes;five samples per cell,target0.35s,floor0.25s,cap1e6passes,timer<0.1percent fastest warm pass. Setup/load/hash/reference outside timing;pack cells include activation quantization. Preserve all individual values and all process results.',
             decision='For each cell,three candidate/reference median ns-per-expert directions separately;all three<1 supports component gain,no arbitrary minimum. Require identical input fingerprints,geometry and actual pinned core across all6. No model trial follows from a cell that failed its performance gate.',
             stopping='Stop first source,ELF,ownership,ISA,numerical,nonfinite,canary,timer,duration,budget or input mismatch. No retry,replacement,hash refresh or changed criteria. Keep original failure.',
             limits='Logical footprint is not physical DRAM traffic/saturation. No model speed,quality,PP preservation,70TG,262144/RESTORE or adoption qualification.'),
-        retention='Auxiliary CPU-only build,not a third inference generation. Keep two named CPU ELFs/library/objects only through this immediate correctness/comparison;after compact evidence and exact source/recipe recovery,retire successful output/build. Preserve479a fallback and live observer consumer unchanged.',
+        retention='Auxiliary CPU-only build,not a third inference generation. Keep three named CPU ELFs/library/objects only through this immediate correctness/comparison;after compact evidence and exact source/recipe recovery,retire successful output/build. Closed V2 direct component has no executable consumer;retire it before building V3. Preserve479a fallback and observer generation until its separately recorded consumer ends.',
         budgets=dict(build_wall=300, build_cpu=1200, build_rss=8 << 30, check_wall=60, check_text_cap=64 << 10,
             measure_wall=180, measure_rss=1 << 30,
             text_cap=1 << 20, file_cap=16 << 20, total_cap=384 << 20))
@@ -253,17 +270,19 @@ def build_check(row, root):
         (root / 'deps.stdout').read_text().splitlines() if line.startswith('    ') and line.strip()}
     need(len(paths) > 150 and all(allowed.get(p) == digest(p) for p in paths),
         'missing/unplanned actual compiler inputs: ' + str([p for p in paths if allowed.get(p) != digest(p)][:5]))
-    need(all(p in paths for p in (str(P / 'src/kernels/cpu/iq_single_avx2.cpp'),
-        str(P / 'tests/core/iq_single_exact_test.cpp'), str(P / 'bench/sycl/cpu_roofline/iq3_pair.cpp'))),
+    required_units = ('src/kernels/cpu/iq_single_avx2.cpp', 'src/kernels/cpu/native_expert.cpp',
+        'tests/core/iq_single_exact_test.cpp', 'tests/core/cpu_service_pool_test.cpp',
+        'bench/sycl/cpu_roofline/iq3_pair.cpp')
+    need(all(str(P / name) in paths for name in required_units),
         'required real production/fixture units absent')
     units = json.loads((ROOT / 'build/compile_commands.json').read_text())
-    for name in ('src/kernels/cpu/iq_single_avx2.cpp', 'tests/core/iq_single_exact_test.cpp',
-                 'bench/sycl/cpu_roofline/iq3_pair.cpp'):
+    for name in required_units:
         matches = [x for x in units if x['file'] == str(P / name)]
         need(len(matches) == 1, 'unique compile unit: ' + name)
         argv = shlex.split(matches[0]['command'])
         need(Path(argv[0]).resolve() == Path(CXX).resolve() and '-O3' in argv and
-            '-march=znver3' in argv and '-DNDEBUG' in argv and not any(x in argv
+            '-march=znver3' in argv and '-DNDEBUG' in argv and
+            '-DSTRATA_CPU_SERVICE_PROFILE=1' in argv and not any(x in argv
                 for x in ('-ffast-math', '-Ofast', '-fsycl')), 'unplanned CPU flags')
     cache = (ROOT / 'build/CMakeCache.txt').read_text()
     need(all(re.search('^' + key + ':BOOL=OFF$', cache, re.M) for key in
@@ -312,7 +331,7 @@ def decision(processes):
                     paired_candidate_over_reference=ratios, geometric_mean_ratio=math.exp(statistics.mean(map(math.log, ratios))),
                     component_gain_qualified=all(x < 1 for x in ratios)))
     return dict(cells=cells, complete=True, inference_adopted=False, model_trial_qualified=False,
-        next='Only winning production-relevant cells may motivate an explicit decode-only production-dispatch plan;this direct component does not qualify model gain.')
+        next='Only winning production-entry cells plus the real-pool phase correctness may motivate an explicit decode-only model-build plan;this single-core comparison does not qualify model gain or adoption.')
 
 
 def execute(stage):
@@ -329,9 +348,9 @@ def execute(stage):
         write(ROOT / 'execution.json', dict(stage=stage, active=bool(owner.active), commands=owner.commands))
     owner = owned.Owner(root, persist=persist)
     deadline = time.monotonic() + (row['budgets']['build_wall'] if stage == 'build' else 240)
-    def run(label, argv, wall, *, cpu=180, rss=512 << 20, text=None):
+    def run(label, argv, wall, *, cpu=180, rss=512 << 20, text=None, environment=None):
         need(time.monotonic() < deadline, 'whole stage deadline')
-        entry, out, err = owner.run(label, argv, row['environment'], ROOT,
+        entry, out, err = owner.run(label, argv, row['environment'] if environment is None else environment, ROOT,
             wall=min(wall, deadline - time.monotonic()), cpu=cpu,
             rss_cap=rss, text_cap=text if text is not None else row['budgets']['text_cap'],
             file_cap=row['budgets']['file_cap'], total_cap=row['budgets']['total_cap'])
@@ -339,6 +358,10 @@ def execute(stage):
         return entry, out, err
     try:
         if stage == 'build':
+            direct = json.loads(git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))))['cpu_iq3_pair_component_v2']
+            need(direct.get('retirement', {}).get('completed') and
+                 not (B / 'cpu-iq3-pair-component-v2').exists(),
+                 'retire closed direct-component generation before a new auxiliary build')
             allowed = input_map(row)
             run('configure', row['configure'], 60, cpu=120, rss=2 << 30)
             run('compile', row['build'], 240, cpu=row['budgets']['build_cpu'], rss=row['budgets']['build_rss'])
@@ -357,20 +380,33 @@ def execute(stage):
                 sha256=digest(ROOT / 'build/libexpert_cpu.a'))
             row['stage'] = 'built'
         elif stage == 'check':
-            entry, out, err = run('correctness', [row['binaries'][TARGETS[0]]['path']],
-                row['budgets']['check_wall'], cpu=60, text=row['budgets']['check_text_cap'])
-            need(not err.stat().st_size and out.read_text().strip() ==
-                'IQ single exact PASS: 384 single and 80 paired cases, bitwise GGML parity and row canaries',
-                'complete GGML/paired fixture required;skip77 is not a pass')
-            row.update(stage='checked', correctness=dict(passed=True, single_cases=384, paired_cases=80,
-                source='tests/core/iq_single_exact_test.cpp', receipt=receipt(entry)))
+            checks, checksums = [], []
+            for case in row['check_plan']:
+                env = dict(row['environment'], STRATA_IQ3_PAIR=str(case['arm']))
+                entry, out, err = run(case['label'], case['argv'], row['budgets']['check_wall'],
+                    cpu=60, text=row['budgets']['check_text_cap'], environment=env)
+                need(not err.stat().st_size, 'fixture stderr')
+                content = out.read_text().strip()
+                if case['kind'] == 'exact':
+                    expected = ('IQ single exact PASS: 384 single and 80 paired cases, bitwise GGML parity and row canaries\n'
+                        f'IQ3 production dispatch PASS arm={case["arm"]} calls=80 nt1_rows=20480 pair_rows={10240 * case["arm"]} prefill_pair_rows=0')
+                    need(content == expected, 'complete arithmetic/phase/dispatch fixture;skip77 is not a pass')
+                else:
+                    match = re.fullmatch(r'cpu_service_pool PASS observer=0 formats=7 nt=1\.\.4 cases=28 checksum_fnv1a64_le=([0-9a-f]{16})', content)
+                    need(match is not None, 'complete real-pool fixture')
+                    checksums.append(match[1])
+                checks.append(dict(kind=case['kind'], arm=case['arm'], passed=True, receipt=receipt(entry)))
+            need(len(checksums) == 2 and checksums[0] == checksums[1], 'pool output checksum differs across selectors')
+            row.update(stage='checked', correctness=dict(passed=True, single_cases_per_arm=384,
+                paired_cases_per_arm=80, audited_entry_calls_per_arm=80, pool_cases_per_arm=28,
+                pool_checksum=checksums[0], prefill_pair_rows=0, checks=checks))
         else:
             f = row['fixture']
             need(fixture_hash(f) == f['sha256'], 'actual model range drift')
             argv = [row['binaries']['cpu_iq3_pair']['path'], f['shard'], *[str(f[k]) for k in
                 ('gate', 'up', 'down', 'blob_bytes', 'total_experts')], str(ORDER[index]), str(index)]
             entry, out, err = run('measure', argv, row['budgets']['measure_wall'],
-                rss=row['budgets']['measure_rss'])
+                rss=row['budgets']['measure_rss'], environment=dict(row['environment'], STRATA_IQ3_PAIR=str(ORDER[index])))
             need(not err.stat().st_size, 'CPU component stderr')
             rows = [json.loads(line) for line in out.read_text().splitlines()]
             samples = [v for v in rows if v['kind'] == 'sample']
@@ -389,7 +425,9 @@ def execute(stage):
                     'stop first actual input/core/fingerprint mismatch')
             need(all(s['arm'] == ORDER[index] and s['process'] == index and s['wall_s'] >= .25 and
                 s['passes'] < 1000000 and s['timer_s'] < .001 * s['fastest_warm_pass_s'] and
-                s['outputs_match_untimed_reference'] for s in samples), 'sample identity/duration/output gate')
+                s['outputs_match_untimed_reference'] and s['timed_dispatch_calls'] == s['expert_calls'] and
+                s['timed_nt1_rows'] == s['row_ops'] and s['timed_pair_rows'] == ORDER[index] * s['row_ops']
+                for s in samples), 'sample identity/duration/output/actual dispatch gate')
             need({(s['rows'], s['pack'], s['stream'], s['rep']) for s in samples} ==
                 {(n, q, t, k) for n in (640, 128) for q in (0, 1) for t in (0, 1) for k in range(5)},
                 'complete unique eight-cell/five-sample matrix')

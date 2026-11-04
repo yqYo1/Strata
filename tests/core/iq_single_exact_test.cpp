@@ -5,8 +5,10 @@
 #include "ggml-cpu.h"
 #define GGML_COMMON_DECL_CPP
 #include "ggml-common.h"
+#include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include <limits>
@@ -14,7 +16,7 @@
 #include <vector>
 
 namespace {
-bool pair_cases(unsigned& cases) {
+bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
     namespace cpu = strata::kernels::cpu;
     constexpr int rows = 640, n = 2560;
     constexpr float canary = 123.f;
@@ -109,6 +111,25 @@ bool pair_cases(unsigned& cases) {
                     }
                 }
                 ++cases;
+                if (dispatch_arm >= 0 && padding == 0) {
+                    for (auto phase : {cpu::NativeGuPhase::Prefill, cpu::NativeGuPhase::Decode}) {
+                        std::fill(got.begin(), got.end(), canary);
+                        const void* ap[]{a}; float* fp[]{got.data() + 1};
+                        const auto before = cpu::iq3_gu_audit_snapshot();
+                        cpu::native_gu_rows(f, weights, ap, 1, fp, bounds.first, bounds.second, phase);
+                        const auto after = cpu::iq3_gu_audit_snapshot();
+                        const uint64_t active = bounds.second - bounds.first;
+                        const uint64_t selected = phase == cpu::NativeGuPhase::Decode && dispatch_arm ? active : 0;
+                        if (!before.enabled || !after.enabled || before.overflow || after.overflow ||
+                            after.calls - before.calls != 1 || after.nt1_rows - before.nt1_rows != active ||
+                            after.pair_rows - before.pair_rows != selected) return false;
+                        for (int r = -1; r <= rows; ++r) {
+                            const float value = r >= bounds.first && r < bounds.second ? expected[r] : canary;
+                            if (!std::isfinite(got[r + 1]) || std::memcmp(&got[r + 1], &value, sizeof value))
+                                return false;
+                        }
+                    }
+                }
             }
         }
         const auto complete = [](const auto& seen) {
@@ -168,8 +189,19 @@ bool pair_cases(unsigned& cases) {
 }
 } // namespace
 
-int main() {
+int main(int argc, char** argv) {
     using strata::kernels::cpu::iq256_single_gu_rows;
+    int dispatch_arm = -1;
+    if (argc != 1) {
+        const char* arm = std::getenv("STRATA_IQ3_PAIR");
+        const char* audit = std::getenv("STRATA_IQ3_PAIR_AUDIT");
+        const char* single = std::getenv("STRATA_IQ_SINGLE_EXACT");
+        if (argc != 2 || std::strcmp(argv[1], "--dispatch") || !arm ||
+            (std::strcmp(arm, "0") && std::strcmp(arm, "1")) || !audit ||
+            std::strcmp(audit, "1") || !single || std::strcmp(single, "0") ||
+            std::getenv("STRATA_IQ_MT_MIN") || std::getenv("STRATA_NO_IQ256")) return 1;
+        dispatch_arm = arm[0] - '0';
+    }
     ggml_cpu_init();
     float untouched = 123.f;
     for (int type : {0, 16, 17, 19, 20, 23}) {
@@ -232,7 +264,14 @@ int main() {
         }
     }
     unsigned paired = 0;
-    if (!pair_cases(paired)) return 1;
+    if (!pair_cases(paired, dispatch_arm)) return 1;
     std::printf("IQ single exact PASS: %u single and %u paired cases, bitwise GGML parity and row canaries\n",
         cases, paired);
+    if (dispatch_arm >= 0) {
+        const auto audit = strata::kernels::cpu::iq3_gu_audit_snapshot();
+        if (!audit.enabled || audit.overflow || audit.threads != 1 || audit.calls != 80 ||
+            audit.nt1_rows != 20480 || audit.pair_rows != uint64_t(dispatch_arm ? 10240 : 0)) return 1;
+        std::printf("IQ3 production dispatch PASS arm=%d calls=80 nt1_rows=20480 pair_rows=%llu prefill_pair_rows=0\n",
+            dispatch_arm, static_cast<unsigned long long>(audit.pair_rows));
+    }
 }

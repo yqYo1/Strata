@@ -19,7 +19,8 @@ bool iq256_single_gu_rows(int ggml_type, const uint8_t* blob, size_t gu_row, siz
 
 // Experimental IQ3_XXS NT1 component for H2560/FF640. Shares activation loads
 // between gate/up without expanded weights or a different floating-point tree.
-// Not selected by the production dispatcher. Invalid layouts return false
+// Decode-only opt-in via STRATA_IQ3_PAIR; model qualification pending.
+// Invalid layouts return false
 // without writing; the whole640-float output must not alias weights/activation.
 bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
                         float* ff, int r0, int r1);
