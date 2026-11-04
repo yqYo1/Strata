@@ -272,7 +272,10 @@ with both fixed thinking-on long-generation workloads. Common census, decode
 clocks and trace settings stay identical. A five-percent per-pair latency bound
 is interpreted only when aggregate logical work matches and both actual MTP
 classes are observed; changed work is inconclusive and keeps every sample.
-This is source-prepared only, with no overhead or long-service result yet.
+Preparation passes at controller `dab5a31d91a6c724e944ab921915526ec144556e`:
+the six generated plans have one invariant configuration/runtime signature,
+all fifteen model assets match, and the bounded decision controls pass.
+This is a prepared cohort only, with no overhead or long-service result yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
