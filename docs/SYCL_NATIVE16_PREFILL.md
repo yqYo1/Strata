@@ -45,8 +45,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   stays manually 0 at 64K and 1 at 117K in both arms. PP and client TTFT are
   separate decisions; the `ttft` strategy itself is not tested by this plan.
   Native inputs/fixtures and all 15 model assets were checked at preparation.
-  No process in this new comparison has run yet; current-source frontend probes
-  precede GPU execution. Keep all samples, mixed directions and pending gates.
+  Current-source benchmark/server probes passed; no GPU process in this new
+  comparison has run yet. Keep all samples, mixed directions and pending gates.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
   Keep decode independently selected.
