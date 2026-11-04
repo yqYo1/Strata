@@ -30,6 +30,7 @@
 #include "strata/artifact/iq_codebooks.hpp"
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/native_mmq.hpp"
+#include <bit>
 #include <atomic>
 #include <sycl/ext/intel/math.hpp>
 
@@ -220,6 +221,13 @@ static_assert(sizeof(Q80Block) == 34 && alignof(Q80Block) == 2 &&
 static_assert(sizeof(IQ4NLBlock) == 18 && alignof(IQ4NLBlock) == 2 &&
               offsetof(IQ4NLBlock, qs) == 2);
 
+inline int load_q6_word(const void *ptr, int i32) {
+  static_assert(sizeof(int) == sizeof(uint32_t));
+  uint32_t word = 0;
+  __builtin_memcpy(&word, static_cast<const unsigned char *>(ptr) + 4 * i32,
+                   sizeof(word));
+  return std::bit_cast<int>(word);
+}
 inline int load_int_b2(const void *ptr, int i32) {
   const auto *x = static_cast<const uint16_t *>(ptr);
   int value = x[2 * i32] << 0;
@@ -579,8 +587,8 @@ struct Q6KTraits {
     r.bq8_offset = 4 * (iqs / 16) + (iqs % 16) / 8;
     const int scale_offset = 8 * (iqs / 16) + (iqs % 16) / 4;
     const int vh_shift = 2 * ((iqs % 16) / 8);
-    r.vl = load_int_b2(w->ql, iqs);
-    r.vh = load_int_b2(w->qh, 8 * (iqs / 16) + iqs % 8) >> vh_shift;
+    r.vl = load_q6_word(w->ql, iqs);
+    r.vh = load_q6_word(w->qh, 8 * (iqs / 16) + iqs % 8) >> vh_shift;
     r.scales = w->scales + scale_offset;
     r.d = w->d;
     return r;
@@ -590,7 +598,7 @@ struct Q6KTraits {
     float d8[2];
 #pragma unroll
     for (int i = 0; i < 2; ++i) {
-      u[i] = reinterpret_cast<const int *>(x[r.bq8_offset + 2 * i].qs)[iqs % 8];
+      u[i] = load_q6_word(x[r.bq8_offset + 2 * i].qs, iqs % 8);
       d8[i] = half_low(x[r.bq8_offset + 2 * i].ds);
     }
     return q6_q8_dot_impl(r.vl, r.vh, u, r.scales, r.d, d8);

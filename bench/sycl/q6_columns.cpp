@@ -1,5 +1,6 @@
 // Main-authored Q6_K column-specialization comparison; repository LICENSE.
 #include "strata/kernels/native_mmvq.hpp"
+#include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
 #include <array>
@@ -64,6 +65,45 @@ constexpr std::array<Shape, 7> Shapes{{{2560, 10240, 256}, {6144, 2560, 256},
     {2560, 6144, 256}, {2560, 640, 1024}, {2560, 512, 1024},
     {2560, 12288, 256}, {2560, 248320, 8}}};
 
+// Decode scalar Q6_K/Q8_1 values rather than reproducing the GPU's packed-dot
+// lane decomposition. Share only the already tested half-bit converter. The
+// GPU quantizer is not independently checked by this oracle.
+void scalar_reference(const Shape &shape, int columns,
+                      const std::vector<uint8_t> &weights,
+                      const std::vector<uint8_t> &packed,
+                      const std::vector<float> &output) {
+  const auto half_at = [](const uint8_t *p) {
+    return double(k::f32_from_f16(uint16_t(p[0]) | (uint16_t(p[1]) << 8)));
+  };
+  const auto signed_byte = [](uint8_t v) { return v < 128 ? int(v) : int(v) - 256; };
+  std::vector<int> rows{0, shape.no / 2, shape.no - 1};
+  std::sort(rows.begin(), rows.end());
+  rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+  for (int column = 0; column < columns; ++column) for (int row : rows) {
+    double expected = 0, magnitude = 0;
+    for (int block = 0; block < shape.ni / 256; ++block) {
+      const auto *w = weights.data() + (size_t(row) * (shape.ni / 256) + block) * 210;
+      const double scale = half_at(w + 208);
+      for (int index = 0; index < 256; ++index) {
+        const int half = index / 128, part = (index % 128) / 32, lane = index % 32;
+        const int low = (w[half * 64 + (part % 2) * 32 + lane] >> (part >= 2 ? 4 : 0)) & 15;
+        const int high = (w[128 + half * 32 + lane] >> (2 * part)) & 3;
+        const int quant = (low | (high << 4)) - 32;
+        const int subscale = signed_byte(w[192 + half * 8 + part * 2 + lane / 16]);
+        const int input_index = block * 256 + index;
+        const auto *x = packed.data() + Pad +
+            (size_t(column) * (shape.ni / 32) + input_index / 32) * 36;
+        const double term = scale * subscale * quant * half_at(x) * signed_byte(x[4 + input_index % 32]);
+        expected += term;
+        magnitude += std::abs(term);
+      }
+    }
+    const double actual = output[Pad + size_t(column) * shape.no + row];
+    need(std::isfinite(expected) && std::abs(actual - expected) <= 2e-5 + 2e-6 * magnitude,
+         "Q6 scalar dequantized-dot oracle mismatch");
+  }
+}
+
 void one_shape(Shape shape, bool smoke) {
   const int ni = shape.ni, no = shape.no;
   std::cout << "Q6_SHAPE_BEGIN ni=" << ni << " no=" << no << '\n' << std::flush;
@@ -97,19 +137,20 @@ void one_shape(Shape shape, bool smoke) {
       Arms[arm](w.data(), packed.data(), arm ? candidate.data() : reference.data(),
                 ni, no, nc, &rt->compute());
     };
-    auto compare = [&] {
+    auto compare = [&](bool oracle = false) {
       auto a = reference.get(), b = candidate.get();
       need(a.size() == b.size() &&
                std::memcmp(a.data(), b.data(), a.size() * sizeof(float)) == 0,
            "Q6 specialization differs from the production reference");
       for (size_t i = 0; i < size_t(no) * nc; ++i)
         need(std::isfinite(a[Pad + i]), "nonfinite reference output");
+      if (oracle) scalar_reference(shape, nc, weights, packed_before, a);
     };
     for (int arm : {0, 1}) {
       call(arm);
       rt->wait();
     }
-    compare();
+    compare(true);
     if (!smoke) {
       for (int warmup = 0; warmup < 4; ++warmup) {
         call(0);
@@ -135,7 +176,8 @@ void one_shape(Shape shape, bool smoke) {
     }
     x.unchanged(input);
     need(packed.get() == packed_before, "quantized activation/guard changed");
-    std::cout << "Q6_CASE_PASS ni=" << ni << " no=" << no << " nc=" << nc << '\n' << std::flush;
+    std::cout << "Q6_CASE_PASS ni=" << ni << " no=" << no << " nc=" << nc
+              << " scalar_oracle=PASS" << '\n' << std::flush;
   }
   w.unchanged(weights);
 }
@@ -147,6 +189,8 @@ int main(int argc, char **argv) {
                           std::string(argv[1]) == "--speed"), "expected --smoke or --speed");
     const bool smoke = std::string(argv[1]) == "--smoke";
     rt = sb::runtime_for();
+    need(rt->device().get_info<sycl::info::device::endian_little>(), "Q6 packed-word target must be little endian");
+    std::cout << "Q6_TARGET_ENDIAN_LITTLE=1\n";
     need(k::native_mmvq_multi_exact(), "fixed exact-layout production reference");
     if (smoke) {
       for (auto shape : {Shape{256, 1, 0}, Shape{512, 3, 0}, Shape{1024, 13, 0},

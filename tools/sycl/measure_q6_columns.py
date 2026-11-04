@@ -23,11 +23,12 @@ import cache_map_model_entry as selected
 import measurement_guards as guards
 import measurement_owner as supervision
 import ur_validation as validation
+from run_q6_columns import validation_log
 
 P, B = selected.P, selected.B
-ROOT = B / 'q6-columns-component-v2'
+ROOT = B / 'q6-byte-load-component-v1'
 RESULT = selected.model.RESULT
-KEY = 'q6_columns_component_v2'
+KEY = 'q6_byte_load_component_v1'
 EXE = ROOT / 'sycl_q6_columns_bench'
 CONTROLLER = Path(__file__).resolve()
 CORE = 'src/kernels/sycl/native_mmvq.cpp'
@@ -40,7 +41,8 @@ SOURCES = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_prof
     'src/kernels/sycl/native_mmq_xmx.cpp', 'src/kernels/sycl/iq.cpp', FIXTURE)
 HELPERS = ('tools/sycl/measure_q6_columns.py', 'tools/sycl/build_engine.py',
     'tools/sycl/build_manifest.py', 'tools/sycl/measurement_guards.py',
-    'tools/sycl/measurement_owner.py', 'tools/sycl/ur_validation.py')
+    'tools/sycl/measurement_owner.py', 'tools/sycl/ur_validation.py',
+    'tools/sycl/run_q6_columns.py')
 SHAPES = ((2560, 10240, 256), (6144, 2560, 256), (2560, 6144, 256),
     (2560, 640, 1024), (2560, 512, 1024), (2560, 12288, 256), (2560, 248320, 8))
 require, digest = guards.require, build.digest
@@ -116,6 +118,10 @@ def allowed_inputs(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in committed(), 'fresh prospective comparison only')
+    failed = committed()['q6_byte_load_lowering_v3']
+    require(failed['stage'] == 'failed' and failed['ownership_closed'] and
+        'IR output is not supported' in failed['error'] and not failed['GPU_executed'],
+        'preserve actual host/device IR refusals;no compiler-debug retry here')
     print('Verifying selected engine/source and qualified providers before component preparation.', flush=True)
     native, _, _ = selected.proof()
     require(native['source_commit'] == '479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54',
@@ -138,10 +144,21 @@ def prepare():
         path.write_bytes(raw)
     environment = dict(native['environment'])
     environment.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
-    flags = ['-O3', '-DNDEBUG', '-std=c++17', '-fsycl', '-fsycl-id-queries-range=size_t',
-        '-fno-fast-math', '-ffp-contract=off', '-DSTRATA_ENABLE_SYCL=1', '-pthread',
-        '-I' + str(ROOT / 'source/include'), '-I' + str(ROOT / 'source/include/strata/sycl/compat')]
+    database = json.loads(Path(native['compile_database']['path']).read_text())
+    native_root = str(selected.model.ROOT / 'source')
+    units = [x for x in database if x['file'] == native_root + '/' + CORE]
+    require(len(units) == 1, 'one actual production Q6 compile recipe')
+    original, flags, skip = shlex.split(units[0]['command']), [], False
+    for arg in original[1:]:
+        if skip: skip = False; continue
+        if arg in ('-o', '-MF', '-MT', '-MQ'): skip = True; continue
+        if arg in ('-c', '-MD', '-MMD', '-MP', units[0]['file']): continue
+        flags.append(arg.replace(native_root, str(ROOT / 'source')))
+    require(not skip and '-O3' in flags and '-std=c++20' in flags and
+        '-ffp-contract=off' in flags and '-fsycl' in flags,
+        'retain actual production optimization/language flags')
     compiler = native['compiler']
+    require(original[0] == compiler['path'], 'actual production compiler differs')
     commands = []
     objects = []
     for i, name in enumerate(SOURCES):
@@ -162,21 +179,23 @@ def prepare():
         driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         native_reference=dict(source_commit=native['source_commit'], binaries=native['binaries'],
             validation=native['native_validation_probe']),
-        plan=dict(reference='Original public native_q6_k_mmvq exact layout in unchanged production dispatch',
+        plan=dict(reference='Public native_q6_k_mmvq exact layout with the same defined Q6 byte loads as candidate',
             candidate='Explicit native_q6_k_columns_mmvq;specialize 1,2,3,4,8 only;no model caller',
+            compile_recipe=dict(compiler=compiler,flags=[x.replace(str(ROOT / 'source'),'<source>')
+                for x in flags],origin='Actual selected479a native_mmvq.cpp compile database;only source paths and build outputs change.'),
             model_shapes=[list(shape) for shape in SHAPES], smoke_cases=32,
             process_repetitions=3, batches_per_arm_shape=5, timing_floor_seconds=.01,
             timer='Host steady clock including public dispatch,submission and final queue completion;weights/Q8_1 already resident;no conversion,reset or correctness work inside timing',
             order='For each shape/column,batch+column+position modulo2;five rotated paired batches',
-            acceptance='All output bits,guards,read-only inputs and finite values match. Normal exits,quiet validation,no fresh fault. Any shape may advance separately only when all three independent process median candidate/reference ratios are below1;no arbitrary minimum gain.',
+            acceptance='All reference/candidate output bits,guards,read-only inputs and finite values match. Scalar dequantized-dot checks on first/middle/last rows of every column require abs_error<=2e-5+2e-6*sum_abs_terms in double,outside timers. Shared half-bit converter and GPU quantizer are not independent oracles. Require actual little-endian device,normal exits,strict validation,no fresh fault. Any shape may advance separately only when all three independent process median candidate/reference ratios are below1;no arbitrary minimum gain.',
             stopping='Stop on first source/provider/geometry/numerical/fault/owner/budget/timing-floor failure;retain original failure. No model execution from this component alone.',
-            limits='Synthetic packed weights at actual model geometries;not sustained TG,prefill,PCIe traffic,register-spill proof or model adoption.'),
+            limits='Synthetic packed weights at actual model geometries. Scalar loads are repaired in both arms;this comparison does not attribute a speed change to that repair. Actual production C++20/optimization recipe replaces the earlier component C++17/-fno-fast-math recipe,so old timings are descriptive only. Host/device IR output is unavailable. Validation preload retains UR until exit. No sustained TG,prefill,PCIe traffic,register-spill proof,ordinary provider teardown,Block producer lifetime or model adoption.'),
         budgets=dict(wall=1200, cpu=2400, rss_cap=8 << 30, text_cap=4 << 20,
             file_cap=128 << 20, total_cap=768 << 20),
         passed=False, complete=False, active=False, ownership_closed=True, processes=[],
         retention=dict(consumer='Immediate Q6_K column specialization comparison only;selected nine-ELF fallback remains unchanged',
             review_point='After component decision,retire rejected candidate ELF/objects/raw logs after source recovery;no extra engine generation',
-            legacy_build_inventory='retained_builds_review_20261103 remains partial;CPU observer build gate is unchanged and not consumed or bypassed'))
+            legacy_build_inventory='Preserve selected nine-ELF engine and the already built phase generation;this is one standalone numerical/performance fixture,not another engine generation. Retire fixture/objects/logs after the scoped decision and original input recovery.'))
     row['build_input_pins'] = manifest.pins(row)
     source_current(row)
     save(row)
@@ -218,10 +237,11 @@ def build_component():
         for line in link.splitlines():
             if not line.startswith('/'):
                 continue
-            path = Path(line)
-            require(path.is_file(), 'nonfile link input: ' + line)
-            if path.parent == ROOT / 'objects':
+            path = Path(line).resolve()
+            if path.is_relative_to(ROOT / 'objects') or path.is_relative_to(ROOT / 'tmp'):
+                # Owned compiler products can disappear after the driver exits.
                 continue
+            require(path.is_file(), 'nonfile external link input: ' + line)
             name = str(path.resolve())
             require(name in allowed and digest(name) == allowed[name], 'uncovered link input: ' + name)
             linked[name] = allowed[name]
@@ -320,11 +340,12 @@ def run(smoke):
                 'component failed: ' + (err.read_text() + out.read_text())[-4000:])
             text = out.read_text()
             require('Q6_COLUMNS_PASS mode=' + ('smoke' if smoke else 'speed') in text, 'missing normal completion')
-            evidence = validation.preload_evidence(err.read_text(), entry['pid'])
-            require(evidence['loader'] == row['native_reference']['validation']['loader']['path'] and
-                not any(value in err.read_text() for value in
-                    ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', '[WARNING]', '[ERROR]')),
-                'parameter validation diagnostic')
+            evidence = validation_log(err.read_text(), entry['pid'],
+                row['native_reference']['validation']['loader']['path'], smoke)
+            expected_cases = 32 if smoke else 35
+            require(text.count('Q6_TARGET_ENDIAN_LITTLE=1') == 1 and
+                text.count(' scalar_oracle=PASS') == expected_cases,
+                'missing actual endian/scalar-oracle proof')
             faults = fresh_faults(cursor)
             require(faults == [], 'new GPU fault')
             source_current(row)

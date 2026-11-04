@@ -4843,8 +4843,16 @@ inputs and external link inputs match their pins;all build owners close at exit0
 The new engine hash is`4b3f48c774068805eb68afa13c5b65ad65ec9e2b0f4f48b5d70db264f5133a23`;
 the selected479a fallback remains unchanged. The small same-build submission
 and phase-cache GPU gate is recorded by`check_verify_window_phase.py`;
-neither compilation nor that synthetic gate qualifies a model route. The inherited
-typed packed loads remain under compiler-contract review before Q6 model trials.
+neither compilation nor that synthetic gate qualifies a model route. The compiler
+review confirms default strict aliasing in the pinned Linux/SPIR driver. The new
+Q6 source replaces its byte-array overlay reads with4B builtin copies into a live
+unsigned word and a signed bit cast;other formats keep their existing code.
+Both host and device optimized-IR emission refuse with`IR output is not supported`;
+those failed scopes stay failed and the production optimization flags stay intact.
+The next normal-compile component adds a scalar dequantized-dot oracle at sampled
+rows,then repeats resident reference/specialized timings with the actual model
+C++20recipe. This is unqualified source,not a numerical or performance result.
+The separate actual Block-producer lifetime review remains pending.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
