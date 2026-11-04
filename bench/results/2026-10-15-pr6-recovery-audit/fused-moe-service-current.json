@@ -127780,7 +127780,7 @@
     }
   },
   "cpu_service_output_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "49c20a41c360da05111b8203f1d6ef480875f3dd",
     "sources": {
       "include/strata/kernels/cpu/service_profile.hpp": "118bd5aaf8384daffc713c33e337e5a4e54132b990ab5b521395df81a5922dae",
@@ -127831,8 +127831,8 @@
       "file_cap_bytes": 8388608,
       "total_cap_bytes": 16777216
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "checks": [
@@ -127855,6 +127855,61 @@
       "-c",
       "ulimit -v 1048576; exec \"$@\"",
       "cpu-service-output-v2"
-    ]
+    ],
+    "host_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-output-v2/profile_test",
+      "sha256": "85966ceb905d166c6437ddf79ef56eb34278a7a0dda9832ebf5a6b8bd04bab9e",
+      "bytes": 43840
+    },
+    "results": [
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "elapsed_seconds": 1.666089029982686,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "peak_session_rss_bytes": 95997952,
+        "logs": {
+          "compile.stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "compile.stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      {
+        "label": "fixture",
+        "exit_code": 0,
+        "elapsed_seconds": 0.11784824496135116,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "peak_session_rss_bytes": 3358720,
+        "logs": {
+          "fixture.stdout": {
+            "bytes": 83,
+            "sha256": "b3c035725808b8aa2a129c82fd3580a14dfd16846758d9564f9504445991779d"
+          },
+          "fixture.stderr": {
+            "bytes": 261,
+            "sha256": "e45ac32b40a8c59160ae4020681889e24bba03e99476aba038ce2b54079efcad"
+          }
+        }
+      }
+    ],
+    "IO_failure_checks": {
+      "unbuffered_write": "passed",
+      "buffered_final_flush": "passed",
+      "preexisting_error": "passed",
+      "null_stream": "passed",
+      "complete_trailer_counts": "passed",
+      "invalid_snapshot_completion_absent": "passed"
+    }
   }
 }

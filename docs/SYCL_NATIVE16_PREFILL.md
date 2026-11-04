@@ -171,16 +171,17 @@ CPU service or observer-overhead result.
 The source-only output-v2 fix adds a versioned completion trailer, checks every
 write and the final flush, and propagates failure at the generator call site.
 The reader and retargeted engine are still pending; the active PP engines are
-unchanged. After the current GPU process closes, the host-only check will use
+unchanged. The host-only check passes at source `49c20a41c` using
 `/usr/bin/g++ -std=c++17 -O2 -pthread -DSTRATA_CPU_SERVICE_PROFILE=1 -Iinclude tests/core/cpu_service_profile_test.cpp -o /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-output-v2/profile_test`,
-then run that fixture without `--clock-screen`. GCC is Ubuntu 13.3.0-6ubuntu2~24.04.1,
+then running that fixture without `--clock-screen`. GCC is Ubuntu 13.3.0-6ubuntu2~24.04.1,
 executable SHA256 `1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`;
 development packages are libstdc++ 13.3.0-6ubuntu2~24.04.1,
 libc 2.39-0ubuntu8.9 and linux-libc 6.8.0-147.147. Pin the three project inputs
 (header, test and native_expert.hpp) to the committed source before execution.
 Budgets: 60 s compile, 30 s fixture, 1 GiB address space and 64 KiB text.
-The fixture covers buffered flush and unbuffered write failure through
-`/dev/full`; no model, engine-call-site execution or observer-cost claim follows.
+The fixture passes buffered flush and unbuffered write failure through
+`/dev/full`, preexisting/null stream refusals and the exact completion counts;
+no model, engine-call-site execution or observer-cost claim follows.
 
 The prospective next cache feasibility test uses the [official thinking-mode
 sampling parameters](https://huggingface.co/Qwen/Qwen3.8-Flash-Next): temperature
