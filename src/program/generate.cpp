@@ -6909,7 +6909,10 @@ int main(int argc, char** argv) {
                 return 1;
             }
 #ifdef STRATA_CPU_SERVICE_PROFILE
-            (void)strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot());
+            if (!strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot())) {
+                std::printf("ERR cpu service profile output failed or snapshot invalid\n");
+                return 1;
+            }
 #endif
 #ifdef STRATA_ENABLE_SYCL
             mtp_observation.finish(!cancelled && std::strcmp(finish, "cancel") != 0);

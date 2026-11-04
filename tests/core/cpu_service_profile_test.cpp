@@ -87,6 +87,7 @@ int main(int argc,char** argv) {
         Profile p(false);{Profile::Scope s(p,900,fmt,Op::Gu,999,-1,NativeGuPhase::Decode);}
         const auto a=p.snapshot(true);require(!a.enabled && !a.valid && !total(a).calls,"disabled");
         require(output(a,a,true).empty(),"disabled emits nothing");
+        require(write_delta(nullptr,9,a,a),"disabled needs no output stream");
     }
     {
         Profile p(true);{Profile::BatchScope batch(p,NativeGuPhase::Prefill);
@@ -111,14 +112,30 @@ int main(int argc,char** argv) {
         require(after.threads[64].total.calls==1,"calling thread slot");
         const auto text=output(before,after,true);
         require(text.find("valid=1")!=std::string::npos && text.find("op=HQ")!=std::string::npos,"valid output");
+        require(text.find("record_version=2")!=std::string::npos &&
+            text.find("strata CPU_SERVICE_END request=9 complete=1 bins=9 threads=5\n")!=std::string::npos,
+            "complete versioned record and exact emitted row counts");
+        require(!write_delta(nullptr,9,before,after),"enabled null output refused");
         auto bad=after;--bad.threads[0].total.calls;
         const auto invalid=output(before,bad,false);
         require(invalid.find("valid=0")!=std::string::npos && invalid.find("CPU_SERVICE_BIN")==std::string::npos,
             "reject mismatched totals before any valid bins");
+        require(invalid.find("CPU_SERVICE_END")==std::string::npos,"invalid snapshot has no completion trailer");
         bad=before;bad.cells[0].calls=1;
         require(output(bad,after,false).find("valid=0")!=std::string::npos,"nonmonotonic cells");
         bad=after;bad.threads[0].tid+=1;
         require(!write_delta(stderr,9,after,bad),"thread identity mismatch");
+        // /dev/full deterministically rejects writes without changing process
+        // limits or signals. Exercise fprintf failure and delayed fflush failure.
+        for (bool buffered:{false,true}) {
+            FILE* full=std::fopen("/dev/full","w");require(full!=nullptr,"open /dev/full");
+            char buffer[16384];
+            require(std::setvbuf(full,buffer,buffered?_IOFBF:_IONBF,sizeof(buffer))==0,"output buffering");
+            require(!write_delta(full,9,before,after) && std::ferror(full),
+                buffered?"flush failure invalidates complete-looking record":"write failure propagates");
+            require(!write_delta(full,10,before,after),"preexisting stream failure refused");
+            std::fclose(full);
+        }
     }
     {
         Profile p(true);{Profile::Scope s(p,0,fmt,Op::Gu,1,640,NativeGuPhase::Decode);

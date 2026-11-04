@@ -148,6 +148,7 @@ public:
 // Aggregate CPU/wall service sums overlap across workers; neither is a critical path.
 inline bool write_delta(FILE* file,uint64_t request,const Snapshot& before,const Snapshot& after) noexcept {
     if (!before.enabled && !after.enabled) return true;
+    if (!file || std::ferror(file)) return false;
     std::array<Counts,kCells> delta{};
     std::array<Counts,kWorkers+1> thread_delta{};
     Counts bin_sum{},thread_sum{};
@@ -164,30 +165,39 @@ inline bool write_delta(FILE* file,uint64_t request,const Snapshot& before,const
         bin_sum.token_rows!=thread_sum.token_rows || bin_sum.wall_ns!=thread_sum.wall_ns ||
         bin_sum.cpu_ns!=thread_sum.cpu_ns) valid=false;
     if (!valid) error_mask|=32;
-    std::fprintf(file,"strata CPU_SERVICE request=%llu valid=%d error_mask=%llu formats=7 nt_max=4 operations=GU,HQ,DOWN "
+    if (std::fprintf(file,"strata CPU_SERVICE request=%llu valid=%d error_mask=%llu record_version=2 formats=7 nt_max=4 operations=GU,HQ,DOWN "
         "wall_clock=CLOCK_MONOTONIC cpu_clock=CLOCK_THREAD_CPUTIME_ID scope=decode_pool_leaves "
         "overhead=charged physical_RAM_bytes=unknown critical_path=unknown\n",
-        static_cast<unsigned long long>(request),int(valid),static_cast<unsigned long long>(error_mask));
+        static_cast<unsigned long long>(request),int(valid),static_cast<unsigned long long>(error_mask)) < 0)
+        return false;
     if (!valid) return false; // never publish partial timing as valid attribution
     constexpr const char* names[]={"GU","HQ","DOWN"};
+    unsigned bins=0,threads=0;
     for (unsigned f=0;f<kFormats;++f) for (unsigned nt=1;nt<=kWidths;++nt) for (unsigned op=0;op<kOps;++op) {
         const auto& d=delta[(f*kWidths+nt-1)*kOps+op]; if (!d.calls) continue;
-        std::fprintf(file,"strata CPU_SERVICE_BIN request=%llu gu=%d down=%d nt=%u op=%s "
+        if (std::fprintf(file,"strata CPU_SERVICE_BIN request=%llu gu=%d down=%d nt=%u op=%s "
             "calls=%llu rows=%llu token_rows=%llu wall_ns=%llu cpu_ns=%llu\n",
             static_cast<unsigned long long>(request),kTypes[f][0],kTypes[f][1],nt,names[op],
             static_cast<unsigned long long>(d.calls),static_cast<unsigned long long>(d.rows),
             static_cast<unsigned long long>(d.token_rows),static_cast<unsigned long long>(d.wall_ns),
-            static_cast<unsigned long long>(d.cpu_ns));
+            static_cast<unsigned long long>(d.cpu_ns)) < 0) return false;
+        ++bins;
     }
     for (unsigned i=0;i<after.threads.size();++i) {
         const auto& d=thread_delta[i];
         if (!d.calls) continue;
-        std::fprintf(file,"strata CPU_SERVICE_THREAD request=%llu slot=%u tid=%llu calls=%llu wall_ns=%llu cpu_ns=%llu\n",
+        if (std::fprintf(file,"strata CPU_SERVICE_THREAD request=%llu slot=%u tid=%llu calls=%llu wall_ns=%llu cpu_ns=%llu\n",
             static_cast<unsigned long long>(request),i,static_cast<unsigned long long>(after.threads[i].tid),
             static_cast<unsigned long long>(d.calls),static_cast<unsigned long long>(d.wall_ns),
-            static_cast<unsigned long long>(d.cpu_ns));
+            static_cast<unsigned long long>(d.cpu_ns)) < 0) return false;
+        ++threads;
     }
-    return true;
+    // A valid header alone is insufficient. Readers need this matching trailer,
+    // all declared rows and a successful native request/exit; the caller must
+    // propagate false, including a failure flushing the trailer itself.
+    if (std::fprintf(file,"strata CPU_SERVICE_END request=%llu complete=1 bins=%u threads=%u\n",
+        static_cast<unsigned long long>(request),bins,threads) < 0) return false;
+    return std::fflush(file)==0 && !std::ferror(file);
 }
 
 } // namespace strata::kernels::cpu::service
