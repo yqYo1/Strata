@@ -22890,9 +22890,9 @@
   },
   "q6_byte_span_source_audit_20261104": {
     "classification": "decision_support",
-    "stage": "eligible_not_dispatched",
+    "stage": "dispatched_source_audit_running",
     "eligibility": {
-      "schedulable_now": true,
+      "schedulable_now": false,
       "prerequisite_evidence": [
         "bada8801c:committed all-field byte-span Q6/Q81 fix and every-byte quantizer oracle",
         "6dab2468e:closed phase-cache/submission device gates",
@@ -22913,6 +22913,16 @@
     "worker_effort": "high",
     "main_reads_body_on_arrival": false,
     "consumer": "Independent source audit of the new concrete byte-span implementation while Main rebuilds its normal-production component. No GPU/model/performance eligibility inferred from research.",
-    "review_point": "After native Luna-max review and the bounded Main source/numerical decision;retain compact actionable findings,retire transaction files."
+    "review_point": "After native Luna-max review and the bounded Main source/numerical decision;retain compact actionable findings,retire transaction files.",
+    "ownership": {
+      "run": "run_c09a9cbdb4c9",
+      "task": "task_1abc010b62b5",
+      "dispatch": "ctx_5a74ae89158a",
+      "terminal": "term_b23decf0-9de6-40b9-96c3-bff0191800a3",
+      "main_owned_external_terminal": true,
+      "settled": false,
+      "turn_started": true
+    },
+    "model_evidence": "Main verified actual idle TUI GPT-6-Luna high before dispatch;custom workspace-write explicitly enables sandbox network and disables startup updates. worker-start reports turn_started."
   }
 }
