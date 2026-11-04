@@ -180,8 +180,14 @@ The current mapped-row copy checks the same hit-row list for every float in a
 row (`src/kernels/sycl/elementwise.cpp`), whereas the hit decision is row-uniform.
 A bounded row-mask/broadcast/vector-copy component can test this concrete
 redundancy after the CPU component; compare actual host-USM and device input
-placement and preserve hit zeros, source lifetime and graph ordering. No such
-candidate is implemented or qualified yet, and no physical PCIe claim follows.
+placement and preserve hit zeros, source lifetime and graph ordering. The
+unselected `src/kernels/sycl/mapped_row_copy.hpp` prototype now defines one
+hit-list scan per row and a converged group broadcast, with 64..1024 work-items
+and scalar/four-element source groupings. It preserves the existing production
+entry and has not been compiled or run. A new component still needs committed
+source/recipe, bounded traced admission, bitwise tails/hit/canary/lifetime checks
+and repeated actual-placement timing before any decode-only route proposal.
+No physical PCIe, emitted vector-instruction or performance claim follows.
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved
