@@ -819,9 +819,9 @@
     "engine_sha256": "b310353872d29bd7fdd8ad7ba67ad75a0700edaa284a6f3460d4df9549cbfbb6",
     "host_result_key": "decode_iq3_host_v2",
     "device_result_key": "decode_iq3_phase_device_v1",
-    "model_executed": false,
+    "model_executed": true,
     "model_entry_result_key": "decode_iq3_model_entry_arm0_v1",
-    "model_entry_stage": "reference_frontends_passed_native_model_unexecuted"
+    "model_entry_stage": "reference_short_model_passed_candidate_not_prepared"
   },
   "remote_check_command": [
     "git",
@@ -900,12 +900,21 @@
     "code_imported": false,
     "coverage_limit": "Three coherent source-delta scopes;unrelated desktop chat/agent/artifact changes and earlier functional backlog still need coverage. Main does not steer active researchers;native Codex Luna-max reviews completed reports before indexing/integration. Per-file provenance is required;uncertain XeStrata-derived material remains excluded.",
     "native_review": {
-      "state": "running",
+      "state": "completed",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "agent": "/root/review_upstream_v0210_wave_20261105",
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/review.json",
-      "consumer": "Correct source/coverage/provenance findings before indexing or selecting an import;not implementation or runtime admission."
-    }
+      "consumer": "Correct source/coverage/provenance findings before indexing or selecting an import;not implementation or runtime admission.",
+      "sha256": "0ff01d1e28d59d0699e960fa43eea0320c2f0e570612d6382c80adc252ca76d8",
+      "bytes": 18647,
+      "verdict": "Useful bounded decision support, with a material scope/resolver correction in inference-admission and a path-count correction in server-api. None of the reports qualifies runtime behavior, inference adoption, model performance, or the complete 798-path interval.",
+      "corrections": [
+        "Server report covers23serve paths plus the shared generator,not24serve paths.",
+        "Niko SYCL source resolver compiles sycl/src/kernels/cuda/*.dp.cpp into its Arc target;omitted compiled kernel deltas still require review.",
+        "Current fork SYCL enters CMakeLists.txt217-219 and cmake/sycl_backend.cmake;CUDA/HIP branch392-472 is not its resolver."
+      ]
+    },
+    "existing_port_state": "Existing exact incremental prompt-encoding port4f9495d8 and bounded parser suffix/call-scan portaa27c557 remain recorded as implemented;new parser/context/history obligations require behavior-level reconciliation,not reopening the whole earlier port."
   }
 }

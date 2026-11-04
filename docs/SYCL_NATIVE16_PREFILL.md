@@ -504,9 +504,14 @@ qualified CPU/fixture files and checked per-request IQ3 route-output patch
 placement and graph/runtime sources remain byte-identical. The same-build
 `decode_iq3_phase_device_v1` gate now passes submission10 and phase-cache16
 windows/12 captures, with strict traced validation, normal exits, closed owners
-and no fresh driver fault. Arithmetic/pool and small device prerequisites pass;
-short actual-model admission still precedes the committed long-generation
-comparison. The preload retains a runtime reference until exit, so ordinary
+and no fresh driver fault. Arithmetic/pool and small device prerequisites pass.
+The IQ3-off model entry now also passes its two frontend probes, warmup and
+two fresh32769-input/24-output thinking-on requests. Actual eligible NT1 rows
+are1400960/1378560 and selected paired rows are0/0, with normal native exit,
+quiet validation, all15 final asset hashes, closed owners and no fresh fault.
+IQ3-on admission still precedes the committed long-generation comparison;
+these short diagnostics do not qualify sustained TG. The preload retains a
+runtime reference until exit, so ordinary
 runtime teardown and model speed remain unqualified. The closed observer and
 CPU-only comparison outputs are now retired after original Git source/recipe
 recovery and consumer checks:859 files,160869493 bytes. All240 samples and
