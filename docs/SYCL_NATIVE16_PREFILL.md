@@ -140,9 +140,16 @@ Keep the existing greedy benchmark available and choose the new profile
 explicitly. Retain the 16K total output allowance, uncapped thought/xhigh and a
 prospectively fixed positive seed; do not combine a new output cap with sampling
 or compare it with old greedy TG as a cache gain. The compiled-source sampler
-and uncoupled-MTP audit is under native Luna-max review. New host wire/identity
-checks and bounded sampler validation must precede a sampled model trial;
-no such execution or sampling-causality claim is established yet.
+and uncoupled-MTP audit is closed: greedy proposals with independently sampled
+verifier draws are source-consistent. Its RNG transform is custom, not standard
+Philox4x32-10, and non-finite logits silently select fallback tokens. Pin those
+contracts and resolve invalid-logit handling before sampled qualification;
+parity fixtures sharing the custom RNG are not independent RNG evidence.
+Benchmark source `1f39425ddea4dd98e172d0033f78fb00a8586675` adds the explicit
+profile. Its 73 host tests finish with 72 passes and one optional real-tokenizer
+fixture skipped. They check wire/identity and legacy behavior, not GPU execution.
+Bounded sampler/device and actual draft-route validation must precede a sampled
+model trial; no such execution or sampling-causality claim is established yet.
 
 ## Qualification and operating constraints
 
