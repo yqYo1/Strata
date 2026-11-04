@@ -34,8 +34,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `dd685c75fd6e77be17f826672bcd3486a70cbdc0`, and the CSV for exact samples.
   The dedicated PP/TTFT comparison below is now closed; 117K preservation is
   inconclusive. Keep the fallback. The next CPU-service observer uses this same
-  recoverable 05a9 source, while the closed a99 binary has no further model-run
-  consumer and is queued for retirement before its replacement is compiled.
+  recoverable 05a9 source. The closed a99 binary is retired after source/recipe
+  recovery and consumer updates; the 479a fallback remains available.
   Sampled-cache execution still needs its sampler/device admission and a newly
   qualified engine; this does not adopt the candidate's prefill path.
 - `native_prefill_preservation_v1` failed during the first 65537-input request
@@ -210,8 +210,14 @@ the observer. The four targets are the engine, real CPU-pool fixture, submission
 fixture and phase-cache fixture. The separately qualified pure writer fixture
 stays excluded because `STRATA_BUILD_TESTS` remains OFF; the target-list
 correction is checked separately from the unchanged source constructor.
-Compilation must wait for recovery and physical retirement of the closed a99
-comparison outputs; preparation alone does not clear that gate.
+The closed a99 comparison outputs and superseded unbuilt observer archive are
+now physically retired: 1293 files and 141950711 bytes, with original source,
+recipe and compile evidence checked before deletion. The original immutable
+build receipt remains a source-only input to the replacement; its deleted ELF
+is not reused as qualification. Follow
+`retained_builds_review_20261103.current_replacement_retirement` for the manifest
+and remaining consumers. All nine fallback ELFs and the research-pinned
+runtime/configuration inputs remain intact. The observer is still uncompiled.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
@@ -309,10 +315,11 @@ not infer global cleanup from the current-build inventory. Keep unresolved
 legacy source/recipe recovery holds separate from these two comparison
 executables, with the missing inputs, consumer, next bounded recovery action
 and review point recorded in the retained-build result. The fallback currently
-retains nine ELF artifacts. The comparison is closed and the candidate's three
-ELFs are queued for retirement after the committed observer-source preparation
-and original-input recovery; they are not a continuing comparison consumer.
-The observer must not compile until that physical retirement is verified. The legacy
+retains nine ELF artifacts. The comparison is closed and its three candidate
+ELFs are retired after committed observer-source preparation and original-input
+recovery. Seventeen named project ELFs remain before the observer build,
+including the existing configured serving and validation/profiling consumers.
+This is not a claim of global cleanup. The legacy
 source/recipe holds remain independent.
 
 Niko1221/Strata remains the only upstream. Last actual check:
