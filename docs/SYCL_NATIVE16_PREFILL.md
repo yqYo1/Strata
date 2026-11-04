@@ -170,6 +170,19 @@ from measured physical traffic. Current source result pointers are
 and `cache_map_decode_gpu_service_v2`; diagnostic observations are not
 clean speed comparisons.
 
+The compact, originally failed `cache_map_decode_gpu_service_v2` capture is
+useful only for selecting a new question. Its 2.154 s interior window observes
+342.910 ms summed Q6K service (868 launches) and 76.589 ms mapped-row copy
+service (316 launches); these overlapping services are not critical-path costs.
+That earlier 479a, short-output configuration does not establish today's
+long-decode ranking, and its original artifact-cap failure remains unchanged.
+The current mapped-row copy checks the same hit-row list for every float in a
+row (`src/kernels/sycl/elementwise.cpp`), whereas the hit decision is row-uniform.
+A bounded row-mask/broadcast/vector-copy component can test this concrete
+redundancy after the CPU component; compare actual host-USM and device input
+placement and preserve hit zeros, source lifetime and graph ordering. No such
+candidate is implemented or qualified yet, and no physical PCIe claim follows.
+
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved
 256 MiB read references of 30.642 GB/s with one thread and 29.403 GB/s with
