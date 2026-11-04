@@ -66,9 +66,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   passes all eight requests: reference versus candidate first-use PP
   966.354 versus 968.437, warmed PP 1045.734 versus 1050.393 tok/s, and warmed
   client TTFT 112.527 versus 112.021 s. Its candidate/reference warmed
-  prompt-time/TTFT ratios are 0.995565/0.995503. Four of 12 processes are closed;
-  these are one pair per length, not the required three-pair decision or
-  sustained decode evidence. The remaining independent pairs are needed.
+  prompt-time/TTFT ratios are 0.995565/0.995503. The second 64K candidate
+  process also passes all four requests, with warmed PP 995.386 tok/s and
+  TTFT 65.987 s; its opposite-order reference remains pending. Five of 12
+  processes are closed. These results do not establish the required
+  three-pair decision or sustained decode evidence.
   V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
@@ -157,6 +159,16 @@ from measured physical traffic. Current source result pointers are
 `cache_map_decode_census_v1.decision`, `cache_map_worker_scaling_v1.decision`,
 and `cache_map_decode_gpu_service_v2`; diagnostic observations are not
 clean speed comparisons.
+
+The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
+at source `6e40afc1b` already records five samples per cell and achieved
+256 MiB read references of 30.642 GB/s with one thread and 29.403 GB/s with
+six. Its 28-job stream cells scale 2.69..4.10 times from one to six compute
+threads. For six of seven formats the six-job stream/reuse latency ratio is
+1.014..1.098; IQ4_XS is 1.563. These are prior-source calibration sensitivities,
+not physical DRAM traffic, a bandwidth ceiling, current model CPU service or
+proof of saturation. Reuse this evidence when selecting the next resource
+question rather than repeating the same calibration without a changed question.
 
 The existing decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
