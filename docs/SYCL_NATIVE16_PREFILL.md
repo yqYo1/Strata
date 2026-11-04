@@ -38,7 +38,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Maintain the short-input path and avoid environment mutation after runtime
   initialization. No automatic length threshold is selected.
 - The candidate's BF16 residual/interlayer storage does not make every hidden
-  or intermediate tensor 16-bit. The primary FP32 accumulator split begins at
+  or intermediate tensor 16-bit. At 117488 rows, the HC bank's BF16 payload is
+  `117488 * (4 * 2560) * 2 = 2406154240` bytes. Conditional PLE processing and
+  final float callbacks still materialize chunk-sized FP32 HC residuals
+  (`05a9b45c:src/prefill/prefill.cpp` and `src/prefill/layer_major.inc`).
+  This HC payload differs from the MoE accumulator. Its FP32 split begins at
   65,536 of 117,488 rows; at width 2,560, its full payload extent is
   1,203,077,120 bytes, including a 531,988,480-byte FP32 tail
   (source `05a9b45c`, [accumulator plan](../include/strata/prefill/moe_accum_plan.hpp)). Keep local FP32
