@@ -256,6 +256,13 @@ pool wall is 0.676/0.650 s. GU consumes 69.33/70.06% of that CPU time, Down
 30.49/29.75%, and hidden quantization 0.185/0.190%; NT1 is 72.88/72.36% of
 CPU jobs. These concurrent leaf sums include memory stalls and observer cost;
 they are not request critical-path fractions or hardware saturation evidence.
+If that instrumented CPU cost per output stayed fixed, six concurrent leaf
+threads would have an optimistic aggregate budget of
+`6 * 24 / (3.310..3.091) = 43.5..46.6 output/s`, before any other work.
+This conditional budget is not a physical CPU ceiling or long-decode prediction:
+observer cost, CPU frequency, contention, cache residency and actual MTP/NT mix
+still need separation. It shows why the 70 tok/s goal needs a lower CPU-service
+cost or less CPU work as well as attention to GPU and transfer costs.
 The different 74-token warmup remains separate. Follow
 `verify_window_cpu_service_model_entry_v1.cpu_service`; no representative
 long-generation mix, observer overhead or clean-speed gain is qualified.
