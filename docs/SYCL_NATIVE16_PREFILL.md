@@ -468,10 +468,13 @@ The source now offers default-off `STRATA_IQ3_PAIR=1` only at the decode NT1
 production entry, below the unchanged multi-token dispatch. Prefill keeps its
 existing selection. `STRATA_IQ3_PAIR_AUDIT=1` uses separate per-thread IQ3
 eligible/selected row counters; the legacy IQ2 audit retains its own fields.
-No process environment changes between phases. This connection is not yet
-compiled or qualified. The prospective `cpu_iq3_pair_dispatch_v3` first runs
-the arithmetic/phase fixture in two pre-exec selector processes, then the
-same-library real-pool fixture in both. It checks repeated prefill/decode,
+No process environment changes between phases. The `cpu_iq3_pair_dispatch_v3`
+build now passes from source `1ec110452cdd70c425bbc31edd48bbd0421563ca`,
+with three hashed CPU ELFs, checked actual compiler/link inputs and the same
+fresh expert archive. No GPU runtime is linked. Its four correctness children
+and six-process comparison remain pending. The plan runs the arithmetic/phase
+and same-library real-pool fixtures in both pre-exec selector processes.
+It checks repeated prefill/decode,
 seven GU/Down format pairs, NT1..4, scratch-batch boundaries and equal output
 checksums. Its six-process benchmark times the actual production entry in
 both arms, with independent GGML outputs and actual selected-row counts for
