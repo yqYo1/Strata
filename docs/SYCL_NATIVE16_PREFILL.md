@@ -4887,13 +4887,21 @@ versions exactly under its separately committed CPU check. The fresh
 commands exit0,all971compiler/link inputs match,the host executable is hashed
 before and after its run,and owners close. The updated30shape selection,prompt
 exclusion,phase/token separation and interrupted retirement pass the host fixture.
-The original V2post-check failure stays failed. Before the next engine build,
-recover and retire the superseded pre-fix phase generation and old host-policy
-outputs;then compose selected479a with the fixed225Q6 source and only the declared
-phase/selection changes. New-engine GPU lifecycle,record-window arithmetic,
-dense/head handoff,matched long/agent/strong-and-weak-MTP model speed and physical
-262144/RESTORE checks remain pending. Earlier phase-GPU evidence remains scoped
-to its original source.
+The original V2post-check failure stays failed. The superseded pre-fix phase
+generation,old host-policy outputs and closed standalone Q6 binary are now
+physically retired after exact Git source/recipe recovery;the selected479a
+fallback remains intact. `verify_window_model_build_v3`builds the engine and
+two GPU fixtures from the fixed225Q6 source plus only the declared phase/selection
+changes,native source05a9b45c0. All three build commands exit0,all1446actual
+compiler inputs and external link inputs match,and owners close. The new engine
+hash is`a99aa1ac98c397933ca76d59361fec32aba335f6904b63c25d95efc52ce22734`.
+Compilation does not qualify GPU execution or select this engine. Its fresh
+same-build submission/phase-cache gate precedes the bounded32K model entries;
+these use one binary with separate immutable Q6 selectors and observed phase
+capture counts. New-engine GPU lifecycle,record-window arithmetic,dense/head
+handoff,matched long/agent/strong-and-weak-MTP model speed and physical262144/
+RESTORE checks remain pending. Earlier phase-GPU evidence remains scoped to
+its original source.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
