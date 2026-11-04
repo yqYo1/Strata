@@ -10,6 +10,7 @@ import fcntl
 import hashlib
 import json
 from pathlib import Path
+import select
 import shlex
 import subprocess
 import sys
@@ -21,8 +22,11 @@ import measurement_owner as supervision
 
 selected, base = phase.selected, phase.base
 P, B, RESULT = phase.P, phase.B, phase.RESULT
-ROOT = B / 'verify-window-model-v1'
-KEY = 'verify_window_model_build_v1'
+ROOT = B / 'verify-window-model-v2'
+KEY = 'verify_window_model_build_v2'
+PREVIOUS = 'verify_window_model_build_v1'
+HOST_ROOT = B / 'verify-window-build-monitor-host-v1'
+HOST_KEY = 'verify_window_build_monitor_host_v1'
 SELF = Path(__file__).resolve()
 require, digest, write = phase.require, phase.digest, phase.write
 TARGETS = ['strata', 'sycl_submission_test', 'sycl_verifier_retirement_test']
@@ -85,9 +89,75 @@ def retention_gate():
             'protect all nine selected fallback ELFs')
 
 
+def monitor(root, deadline, io, entry, total_cap=4 << 30):
+    next_size = 0.
+    while not io.exit_watch.poll(0) or not io.eof:
+        io.poll()
+        require(time.monotonic() < deadline, 'whole generation deadline')
+        if time.monotonic() >= next_size:
+            require(supervision.artifact_bytes(root) <= total_cap, 'generation byte budget')
+            next_size = time.monotonic() + 1
+        if select.select([io.proc.stdout], [], [], .02)[0]:
+            io.read()
+            io.pending.clear()
+    io.exit(1)
+
+
+def check_monitor():
+    data = base.committed(RESULT)
+    require(HOST_KEY not in data and not HOST_ROOT.exists(), 'one fresh CPU monitor control')
+    revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
+    controls = base.controls(revision, controller=SELF)
+    env = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C', LC_ALL='C',
+               PYTHONNOUSERSITE='1', PYTHONDONTWRITEBYTECODE='1')
+    size = 2 << 20
+    argv = ['/usr/bin/python3', '-c',
+            'import sys;sys.stdout.buffer.write(b"x"*(2<<20));sys.stdout.buffer.flush()']
+    HOST_ROOT.mkdir(mode=0o700)
+    owner = supervision.Owner(HOST_ROOT / 'owned')
+    row = dict(stage='prepared', source_commit=revision, controller_inputs=controls,
+        command=argv, interpreter=dict(path=argv[0], sha256=digest(argv[0])), environment=env,
+        budgets=dict(wall=15, cpu=10, rss_cap=128 << 20, text_cap=3 << 20,
+                     file_cap=3 << 20, total_cap=4 << 20),
+        expected_stdout_bytes=size, expected_stdout_sha256=hashlib.sha256(b'x' * size).hexdigest(),
+        plan='Real child writes2MiB without a newline, exceeding pipe and pending-buffer capacity. Require exact bytes/hash,EOF,exit0 and closed owners through the production build monitor.',
+        passed=False, complete=False, active=False, ownership_closed=True, GPU_executed=False)
+    try:
+        deadline = time.monotonic() + row['budgets']['wall']
+        entry, out, err = owner.run('pipe-eof', argv, env, HOST_ROOT,
+            interaction=lambda io, e: monitor(HOST_ROOT, deadline, io, e, 4 << 20),
+            **row['budgets'])
+        require(supervision.closed(entry) and entry['exit_code'] == 0 and
+                not err.stat().st_size and out.stat().st_size == size and
+                digest(out) == row['expected_stdout_sha256'], 'stdout/EOF monitor control failed')
+        row.update(stage='closed', passed=True, complete=True, stdout_bytes=out.stat().st_size,
+                   stdout_sha256=digest(out), native_exit=entry['exit_code'])
+    except BaseException as error:
+        row.update(stage='failed', error=repr(error)); raise
+    finally:
+        row.update(ownership_closed=owner.active is None and all(supervision.closed(e) for e in owner.commands),
+                   commands_executed=owner.commands,
+                   retention='Keep compact CPU outcome;retire successful2MiB stdout after first candidate build closes.')
+        write(HOST_ROOT / 'record.json', row)
+        out = {k:v for k,v in row.items() if k not in ('controller_inputs', 'commands_executed')}
+        out['controller_inputs'] = dict(files=len(controls), aggregate_sha256=hashlib.sha256(
+            json.dumps(controls, sort_keys=True).encode()).hexdigest())
+        data[HOST_KEY] = out; write(RESULT, data)
+    print('Production build monitor passes real2MiB pipe/backpressure/EOF control;no GPU.', flush=True)
+
+
 def prepare():
     data = base.committed(RESULT)
     require(KEY not in data and not ROOT.exists(), 'one fresh prospective phase/Q6 generation')
+    previous = data[PREVIOUS]
+    host_control = data[HOST_KEY]
+    original_host = json.loads((HOST_ROOT / 'record.json').read_text())
+    require(previous['stage'] == 'failed-build' and not previous['passed'] and
+            previous['failure_diagnosis']['kind'] == 'controller-stdout-not-drained' and
+            previous['failure_diagnosis']['configure_command_closed'] and
+            host_control['passed'] and host_control['complete'] and host_control['ownership_closed'] and
+            base.controls(original_host['source_commit'], controller=SELF) == original_host['controller_inputs'],
+            'preserve failedV1 and qualify the repaired CPU monitor before new preparation')
     host = data[phase.KEY]
     require(host['passed'] and host['complete'] and host['ownership_closed'] and
             not host['GPU_executed'], 'closed phase-policy host/syntax evidence required')
@@ -170,18 +240,11 @@ def build():
     retention_gate();allowed=inputs(row);frozen=copy.deepcopy(row)
     owner=supervision.Owner(ROOT/'owned-build');deadline=time.monotonic()+row['whole_wall_seconds']
     owner.persist=lambda:write(ROOT/'execution.json',dict(commands=owner.commands))
-    def monitor(io,entry):
-        next_size=0.
-        while not io.exit_watch.poll(0) or not io.eof:
-            io.poll();require(time.monotonic()<deadline,'whole generation deadline')
-            if time.monotonic()>=next_size:
-                require(supervision.artifact_bytes(ROOT)<=4<<30,'generation byte budget')
-                next_size=time.monotonic()+1
-            io.exit_watch.poll(30)
     try:
         for label,argv in row['commands']:
             print('Phase build:',label,flush=True)
-            entry,out,err=owner.run(label,argv,row['recipe']['environment'],ROOT,interaction=monitor,
+            entry,out,err=owner.run(label,argv,row['recipe']['environment'],ROOT,
+                interaction=lambda io, e: monitor(ROOT, deadline, io, e),
                 **dict(row['budgets'],wall=min(row['budgets']['wall'],deadline-time.monotonic())))
             require(supervision.closed(entry) and entry['exit_code']==0,
                     label+' failed: '+(out.read_text(errors='replace')+err.read_text(errors='replace'))[-4000:])
@@ -206,7 +269,8 @@ def build():
 
 
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','syntax','build'),'use prepare|syntax|build')
+    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','syntax','build','check-monitor'),
+            'use prepare|syntax|build|check-monitor')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);base.guards.no_model_owners([])
-        {'prepare':prepare,'syntax':syntax,'build':build}[sys.argv[1]]()
+        {'prepare':prepare,'syntax':syntax,'build':build,'check-monitor':check_monitor}[sys.argv[1]]()
