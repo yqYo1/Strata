@@ -58,8 +58,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes pass for both benchmark and server. Eight of 12 processes and
-  all 32 requests pass with normal exits, quiet validation, closed owners and
+  frontend probes pass for both benchmark and server. Nine of 12 processes and
+  all 36 requests pass with normal exits, quiet validation, closed owners and
   no fresh fault. The two completed 64K pairs have reference/candidate warmed
   PP 991.700/992.747 and 990.498/995.386 tok/s; client TTFT is 66.231/66.161
   and 66.396/65.987 s. Their candidate/reference warmed prompt-time ratios
@@ -71,7 +71,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   pair has reference/candidate warmed PP 1051.058/1048.455 tok/s and client
   TTFT 111.949/112.225 s. Its candidate/reference prompt-time/TTFT ratios are
   1.002483/1.002465: directions are mixed across the two 117K pairs, so neither
-  nonregression nor a consistent slowdown is established. Remaining independent pairs
+  nonregression nor a consistent slowdown is established. The third 64K
+  reference passes with warmed PP 991.250 tok/s and client TTFT 66.258 s;
+  its paired candidate is pending. Remaining independent pairs
   are needed for the required three-pair decision per length; no sustained
   decode qualification follows from these short-output checks.
   V1 remains failed.

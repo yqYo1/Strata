@@ -128689,6 +128689,18 @@
           "devcoredump": false
         },
         "passed": true,
+        "artifact_retirement": {
+          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-process7-and-cpu-research-transactions-retirement-20261104.json",
+          "manifest_sha256": "22bc7670c9333bbade291df8c87d1b100c62e9f7c268f1052ba1cf085b0ba47d",
+          "completed": true,
+          "evidence_commit": "8c22e23386be7390f22f6c447b6b10d313ebb890",
+          "files": 68,
+          "bytes": 12239554,
+          "kept_process_inputs": [
+            "config.json",
+            "plan.json"
+          ]
+        },
         "route_shape": {
           "rows": 117488,
           "residual_gpu_rows": 117488,
@@ -128744,19 +128756,170 @@
             "requested_bank_H2D_bytes": 38540748800,
             "requested_one_routing_map_H2D_bytes": 225576960
           }
+        ]
+      },
+      {
+        "index": 8,
+        "read": 65537,
+        "heads": 0,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "reference",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 1414907,
+          "start_ticks": 214427706,
+          "sid": 1414825
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1414907,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 75703.2,
+            "prompt_tps": 865.7,
+            "ttft_s": 75.855,
+            "total_s": 77.831,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 65474.4,
+            "prompt_tps": 1001.0,
+            "ttft_s": 65.616,
+            "total_s": 67.34,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 66115.5,
+            "prompt_tps": 991.3,
+            "ttft_s": 66.258,
+            "total_s": 68.0,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 66389.6,
+            "prompt_tps": 987.2,
+            "ttft_s": 66.535,
+            "total_s": 68.134,
+            "generated_tokens": 24,
+            "request_sha256": "9875bea89238c9b12914f2e96653fd3244c8f2d3b315c6c2f2ffa377223d7c7f",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
         ],
-        "artifact_retirement": {
-          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-process7-and-cpu-research-transactions-retirement-20261104.json",
-          "manifest_sha256": "22bc7670c9333bbade291df8c87d1b100c62e9f7c268f1052ba1cf085b0ba47d",
-          "completed": true,
-          "evidence_commit": "8c22e23386be7390f22f6c447b6b10d313ebb890",
-          "files": 68,
-          "bytes": 12239554,
-          "kept_process_inputs": [
-            "config.json",
-            "plan.json"
-          ]
-        }
+        "subsequent_median_ms": 66115.5,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "route_shape": {
+          "rows": 65536,
+          "residual_gpu_rows": 65536,
+          "residual_gpu_bytes": 1342177280,
+          "residual_host_bytes": 0,
+          "prefill_slots": 384,
+          "staged": true,
+          "split": false,
+          "windows": 48,
+          "maximum_window_rows": 65536,
+          "staged_bank_checked_drain": true,
+          "split_guard_checked": false,
+          "target_snapshot_bytes": 0,
+          "draft_rebuilt_bytes": 0,
+          "physical_saturation_qualified": false,
+          "head_payload_bytes_verified": false,
+          "MTP_prefill": {
+            "placement_mode": 2,
+            "callbacks": 8,
+            "nominal_cells": 65536,
+            "declared_window": 32768,
+            "source_derived_first_needed": 32705,
+            "source_derived_token_boundaries": [
+              {
+                "callback": 3,
+                "source_derived_needed_cells": 63
+              }
+            ],
+            "internal_processed_rows_and_shapes_observed": false
+          },
+          "prefill_strategy": "throughput",
+          "GDN_FP16_storage": true,
+          "GDN_barriers": 3,
+          "physical_resource_saturation_qualified": false
+        },
+        "request_route_checks": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          },
+          {
+            "jobs": 20595,
+            "fused_down_jobs": 4215,
+            "requested_bank_H2D_bytes": 37190272000,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          }
+        ]
       }
     ],
     "request_hashes": {
