@@ -58,19 +58,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes pass for both benchmark and server. The first 64K pair closes
-  normally with all eight requests passing and no fresh fault. Reference versus
-  candidate: subsequent-three PP 991.700 versus 992.747 tok/s, client TTFT
-  66.231 versus 66.161 s; first-use PP 868.7 versus 870.3 tok/s. The candidate's
-  warmed prompt-time/TTFT ratios are 0.998945/0.998943. The first 117K pair also
-  passes all eight requests: reference versus candidate first-use PP
+  frontend probes pass for both benchmark and server. Six of 12 processes and
+  all 24 requests pass with normal exits, quiet validation, closed owners and
+  no fresh fault. The two completed 64K pairs have reference/candidate warmed
+  PP 991.700/992.747 and 990.498/995.386 tok/s; client TTFT is 66.231/66.161
+  and 66.396/65.987 s. Their candidate/reference warmed prompt-time ratios
+  are 0.998945/0.995090 and TTFT ratios 0.998943/0.993840. The first 117K pair
+  has reference versus candidate first-use PP
   966.354 versus 968.437, warmed PP 1045.734 versus 1050.393 tok/s, and warmed
   client TTFT 112.527 versus 112.021 s. Its candidate/reference warmed
-  prompt-time/TTFT ratios are 0.995565/0.995503. The second 64K candidate
-  process also passes all four requests, with warmed PP 995.386 tok/s and
-  TTFT 65.987 s; its opposite-order reference remains pending. Five of 12
-  processes are closed. These results do not establish the required
-  three-pair decision or sustained decode evidence.
+  prompt-time/TTFT ratios are 0.995565/0.995503. Remaining independent pairs
+  are needed for the required three-pair decision per length; no sustained
+  decode qualification follows from these short-output checks.
   V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
