@@ -62,6 +62,25 @@ input plus the requested budget and256 reserved context slots. Thinking remains
 enabled; a thinking-only output still fails the answer-body gate. Preserve an
 earlier capped failure and use a fresh committed plan, rather than replacing it.
 
+Greedy remains the default for the long-generation requests. For a separate
+comparison using the model's thinking-mode sampling parameters, pass
+`--long-generation-sampling qwen-thinking` on both engines. This sets temperature
+1, top-p .95 and top-k 20, with neutral penalties and a positive seed. The
+optional `--long-generation-seed N` defaults to1; run0 uses N, run1 uses N+1,
+and both workloads share the seed within a run. Seeds are bounded before any
+server work. These values follow the [official model guidance](https://huggingface.co/Qwen/Qwen3.8-Flash-Next)
+and [pinned generation configuration](https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/de4b8e4d43b917e7706784d8bb445c9af86a3540/generation_config.json);
+the fixed seed and neutral history/penalty controls are benchmark choices.
+
+This option affects long-generation requests only. Warmups, the standard chat,
+agent session and prefill-only requests keep their existing settings. Thinking,
+xhigh and the total output allowance are unchanged. The request journal and
+result/comparison identity bind the sampling profile and seed policy; different
+profiles or seeds are descriptive values rather than a matched speed comparison.
+A fixed seed does not require identical output across engines or placements.
+Sampling support and a completed answer must be validated before collecting
+clean model speed results; this option alone proves neither.
+
 - `regular-code`: a long Python module with regularly formatted individual tests.
 - `varied-prose`: an original Japanese story with distinct viewpoints and vocabulary.
 

@@ -24,6 +24,93 @@ def response(offered=1600, accepted=1200, generated=1152):
 
 
 class BenchmarkTest(unittest.TestCase):
+    def test_sampling_profile_is_explicit_scoped_and_seed_is_bounded_before_launch(self):
+        args = bench.parse_arguments(['--long-generation-only', '--long-generation-sampling',
+            'qwen-thinking', '--long-generation-seed', '11'])
+        self.assertEqual(args.long_generation_sampling, 'qwen-thinking')
+        self.assertEqual(args.long_generation_seed, 11)
+        for argv in (['--long-generation-sampling', 'qwen-thinking'],
+                ['--long-generation-only', '--long-generation-seed', '1'],
+                ['--long-generation-only', '--long-generation-sampling', 'qwen-thinking', '--long-generation-seed', '0'],
+                ['--long-generation-only', '--long-generation-sampling', 'qwen-thinking', '--long-generation-seed', '-1'],
+                ['--long-generation-only', '--long-generation-sampling', 'qwen-thinking',
+                 '--long-generation-seed', str((1 << 63) - 1), '--runs', '2']):
+            with self.subTest(argv=argv), patch('sys.stderr', io.StringIO()), self.assertRaises(SystemExit):
+                bench.parse_arguments(argv)
+        for seed in (True, 0, -1, 1.5, 1 << 63):
+            with self.subTest(seed=seed), self.assertRaises(ValueError):
+                lg.sampling_plan('qwen-thinking', seed)
+        with self.assertRaises(ValueError):
+            bench.Suite('', '', 131072, 1, True, generation_sampling='qwen-thinking')
+
+    def test_default_greedy_wire_is_unchanged(self):
+        messages = [{'role': 'user', 'content': 'wire control'}]
+        overrides = {'chat_template_kwargs': {'enable_thinking': True}, 'reasoning_budget_tokens': 0}
+        actual = bench.chat_body(messages, 16384, True,
+            request_overrides={**overrides, **lg.sampling_request(lg.sampling_plan(), 0)})
+        expected = {'model': 'strata', 'stream': True, 'max_tokens': 16384, 'temperature': 0,
+            'messages': messages, 'chat_template_kwargs': {'enable_thinking': True},
+            'reasoning_budget_tokens': 0, 'reasoning_effort': 'xhigh'}
+        self.assertEqual(json.dumps(actual).encode(), json.dumps(expected).encode())
+
+    def test_sampling_parameters_wire_journal_and_partial_identity_agree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            journal = bench.RequestJournal(Path(tmp), lambda text: text)
+            suite = bench.Suite('http://localhost', '', 131072, 2, True, log=lambda _: None,
+                want_long_generation=True, long_generation_only=True, workload_id='sampling-wire',
+                generation_sampling='qwen-thinking', generation_seed=11, journal=journal)
+            bodies = []
+            def chat(_base, _key, messages, cap, think, **kwargs):
+                body = bench.chat_body(messages, cap, think, request_overrides=kwargs.get('request_overrides'))
+                bodies.append(body)
+                raw = response()
+                raw['request_sha256'] = hashlib.sha256(json.dumps(body).encode()).hexdigest()
+                return raw
+            with patch.object(bench, 'chat', side_effect=chat):
+                suite.request('warm-up/chat', None, None, [], 24, True)
+                suite.run_long_generation()
+            self.assertEqual(bodies[0]['temperature'], 0)
+            self.assertNotIn('seed', bodies[0])
+            self.assertEqual([b['seed'] for b in bodies[1:]], [11, 11, 12, 12])
+            for body in bodies[1:]:
+                for key, value in dict(temperature=1.0, top_p=.95, top_k=20, min_p=0.0,
+                        repetition_penalty=1.0, presence_penalty=0.0, frequency_penalty=0.0,
+                        penalty_last_n=0, max_tokens=16384, reasoning_budget_tokens=0,
+                        reasoning_effort='xhigh').items():
+                    self.assertEqual(body[key], value)
+                self.assertIs(body['chat_template_kwargs']['enable_thinking'], True)
+            events = [json.loads(line) for line in (Path(tmp)/'requests.jsonl').read_text().splitlines()]
+            self.assertEqual(len(events), 2 * len(bodies))
+            for body, start, end in zip(bodies, events[::2], events[1::2]):
+                sha = hashlib.sha256(json.dumps(body).encode()).hexdigest()
+                self.assertEqual(start['request_sha256'], sha)
+                self.assertEqual(end['sample']['request_sha256'], sha)
+            result = suite.out['long_generation']
+            self.assertEqual(result['sampling'], suite.generation_sampling_metadata()['long_generation_sampling'])
+            self.assertEqual(result['temperature'], 1.0)
+            self.assertTrue(result['complete'])
+            plan = lg.sampling_plan('qwen-thinking', 11)
+            first = lg.sampling_request(plan, 0); first['seed'] = 99
+            self.assertEqual(lg.sampling_request(plan, 0)['seed'], 11)
+            failed = bench.Suite('http://localhost', '', 131072, 1, True, log=lambda _: None,
+                want_long_generation=True, long_generation_only=True,
+                generation_sampling='qwen-thinking', generation_seed=11)
+            with patch.object(bench, 'chat', side_effect=KeyboardInterrupt), self.assertRaises(KeyboardInterrupt):
+                failed.run_long_generation()
+            self.assertFalse(failed.out['long_generation']['complete'])
+            self.assertEqual(failed.out['long_generation']['sampling'], plan)
+
+    def test_sampling_profile_or_seed_difference_blocks_a_speed_comparison(self):
+        metric = {'median': 10, 'min': 10, 'max': 10, 'n': 3}
+        result = {'machine': {}, 'complete': True, 'comparison_identity': {
+            'workload': {'nonce': 'sampling-control', 'nonce_policy': 'fixed-id'},
+            'long_generation_sampling': lg.sampling_plan('qwen-thinking', 11)}, 'results': {
+            'long_generation': {'workloads': {'regular-code': {'decode_tps': metric, 'eligible_runs': 3}}}}}
+        for plan in (lg.sampling_plan(), lg.sampling_plan('qwen-thinking', 12)):
+            other = json.loads(json.dumps(result)); other['comparison_identity']['long_generation_sampling'] = plan
+            comparison = bench.compare_table(result, other)
+            self.assertIn('not comparable', comparison); self.assertNotIn('+0.0%', comparison)
+
     def test_short_exact_cli_requires_explicit_diagnostic_scope(self):
         for n in (1286, 4956, 8193, 19665, 24577):
             args = bench.parse_arguments(['--prefill-exact-tokens', str(n),

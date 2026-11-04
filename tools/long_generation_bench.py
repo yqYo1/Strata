@@ -13,6 +13,8 @@ TARGET_INPUT_TOKENS = 33792  # calibration is approximate; check actual usage af
 MIN_DRAFTS = 256
 WORKLOAD_VERSION = 5
 THINKING = True
+SAMPLING_PROFILES = ("greedy", "qwen-thinking")
+DEFAULT_SAMPLING_SEED = 1
 STANDARD_INPUT_CASE = "standard-v5-33k"
 SPLIT_INPUT_CASE = "split-v1-96k"
 INPUT_CASES = (STANDARD_INPUT_CASE, SPLIT_INPUT_CASE)
@@ -48,6 +50,41 @@ WORKLOADS = {
         ),
     },
 }
+
+
+def sampling_plan(profile="greedy", seed=None):
+    """Keep legacy wire requests; opt in to a separate reproducible distribution.
+
+    Qwen/Qwen3.8-Flash-Next generation_config at de4b8e4d43b917e7706784d8bb445c9af86a3540
+    supplies temperature/top-p/top-k. Neutral penalties and positive seeds are
+    explicit benchmark controls, not a claim of bit-identical model output.
+    """
+    if profile not in SAMPLING_PROFILES:
+        raise ValueError("unsupported long-generation sampling profile")
+    if profile == "greedy":
+        if seed is not None:
+            raise ValueError("a long-generation seed requires qwen-thinking sampling")
+        return dict(profile=profile, version=1, request_parameters={"temperature": 0}, seed_policy="unused")
+    seed = DEFAULT_SAMPLING_SEED if seed is None else seed
+    if type(seed) is not int or not 1 <= seed <= (1 << 63) - 1:
+        raise ValueError("long-generation seed must be an integer in 1..2**63-1")
+    return dict(profile=profile, version=1, seed_policy="base-plus-run; same seed for both workloads",
+        request_parameters=dict(temperature=1.0, top_p=.95, top_k=20, min_p=0.0,
+            repetition_penalty=1.0, presence_penalty=0.0, frequency_penalty=0.0,
+            penalty_last_n=0, seed=seed))
+
+
+def sampling_request(plan, run):
+    """Fresh overrides; greedy keeps chat_body's defaults and existing wire bytes."""
+    if type(run) is not int or run < 0:
+        raise ValueError("long-generation run must be a nonnegative integer")
+    if plan["profile"] == "greedy":
+        return {}
+    parameters = dict(plan["request_parameters"])
+    parameters["seed"] += run
+    if parameters["seed"] > (1 << 63) - 1:
+        raise ValueError("long-generation seed plus run exceeds 2**63-1")
+    return parameters
 
 
 def sample_eligibility(raw, sample, minimum=MIN_OUTPUT_TOKENS,

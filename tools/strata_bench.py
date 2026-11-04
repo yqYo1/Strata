@@ -472,7 +472,7 @@ class Suite:
                  want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False,
                  generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False,
                  prefill_exact_tokens=None, generation_input_case=long_generation.STANDARD_INPUT_CASE,
-                 short_prefill_diagnostic=False):
+                 short_prefill_diagnostic=False, generation_sampling="greedy", generation_seed=None):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
         self.prefill_exact_tokens = prefill_exact_tokens
@@ -513,6 +513,10 @@ class Suite:
         if generation_max_tokens != long_generation.MAX_OUTPUT_TOKENS and not want_long_generation:
             raise ValueError('custom output budget requires a long-generation scope')
         self.generation_max_tokens = generation_max_tokens
+        if (generation_sampling != "greedy" or generation_seed is not None) and not want_long_generation:
+            raise ValueError("custom sampling requires a long-generation scope")
+        self.generation_sampling = long_generation.sampling_plan(generation_sampling, generation_seed)
+        long_generation.sampling_request(self.generation_sampling, max(0, runs - 1))
         if generation_input_case not in long_generation.INPUT_CASES:
             raise ValueError("unsupported long-generation input case")
         if generation_input_case != long_generation.STANDARD_INPUT_CASE and not (want_long_generation and long_generation_only):
@@ -686,6 +690,9 @@ class Suite:
     def generation_version(self):
         return "split-v1" if self.generation_case_metadata() else long_generation.WORKLOAD_VERSION
 
+    def generation_sampling_metadata(self):
+        return {"long_generation_sampling": self.generation_sampling} if self.want_long_generation else {}
+
     def generation_eligibility(self, raw, sample, maximum, phase, run):
         lg = long_generation
         if self.generation_case_metadata():
@@ -710,15 +717,15 @@ class Suite:
         cases = {name: {"expected_mtp": spec["expected_mtp"], "requests": []}
                  for name, spec in lg.WORKLOADS.items()}
         order = []
-        if split:
-            self.out["long_generation"] = dict(workload_version=self.generation_version(),
-                **self.generation_case_metadata(), complete=False, workloads=cases, order=order,
-                minimum_input_tokens=minimum, target_input_tokens=target,
-                minimum_generated_tokens=lg.MIN_OUTPUT_TOKENS, max_tokens=maximum,
-                minimum_body_chars=lg.MIN_BODY_CHARS, thinking=lg.THINKING,
-                reasoning_budget_tokens=0, temperature=0, speed_only=self.generation_speed_only,
-                selected_workloads=selected, diagnostic_subset=self.generation_workload is not None,
-                classification=lg.classify_pair(cases, self.runs), quality_qualified=False)
+        self.out["long_generation"] = dict(workload_version=self.generation_version(),
+            **self.generation_case_metadata(), complete=False, workloads=cases, order=order,
+            minimum_input_tokens=minimum, target_input_tokens=target,
+            minimum_generated_tokens=lg.MIN_OUTPUT_TOKENS, max_tokens=maximum,
+            minimum_body_chars=lg.MIN_BODY_CHARS, thinking=lg.THINKING,
+            reasoning_budget_tokens=0, temperature=self.generation_sampling["request_parameters"]["temperature"],
+            sampling=self.generation_sampling, speed_only=self.generation_speed_only,
+            selected_workloads=selected, diagnostic_subset=self.generation_workload is not None,
+            classification=lg.classify_pair(cases, self.runs), quality_qualified=False)
         for run in range(self.runs):
             names = selected if run % 2 == 0 else list(reversed(selected))
             for name in names:
@@ -731,6 +738,7 @@ class Suite:
                             {"role": "user", "content": f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]\n"
                              f"<background>\n{filler}\n</background>\n\nTask:\n{lg.WORKLOADS[name]['instruction']}"}]
                 overrides = {"chat_template_kwargs": {"enable_thinking": lg.THINKING}, "reasoning_budget_tokens": 0}
+                overrides.update(lg.sampling_request(self.generation_sampling, run))
                 phase = "long-generation/" + name
                 if split:
                     old = f"[long-generation-v{lg.WORKLOAD_VERSION} {name} run {run}]"
@@ -788,13 +796,15 @@ class Suite:
                         pooled_drafts_offered=offered, pooled_drafts_accepted=accepted,
                         pooled_acceptance_rate=accepted / offered if offered else None)
         self.out["long_generation"] = {"workload_version": self.generation_version(),
-            **self.generation_case_metadata(), **({"complete": True} if split else {}),
+            **self.generation_case_metadata(), "complete": True,
             "speed_only": self.generation_speed_only,
             "selected_workloads": selected, "diagnostic_subset": self.generation_workload is not None,
             "minimum_generated_tokens": lg.MIN_OUTPUT_TOKENS, "max_tokens": maximum,
             "minimum_body_chars": lg.MIN_BODY_CHARS,
             "minimum_input_tokens": minimum, "target_input_tokens": target,
-            "thinking": lg.THINKING, "reasoning_budget_tokens": 0, "temperature": 0,
+            "thinking": lg.THINKING, "reasoning_budget_tokens": 0,
+            "temperature": self.generation_sampling["request_parameters"]["temperature"],
+            "sampling": self.generation_sampling,
             "lifecycle": "warm server; alternating workload order; fresh request prefixes",
             "order": order, "workloads": cases, "classification": lg.classify_pair(cases, self.runs),
             "quality_qualified": False}
@@ -1591,6 +1601,10 @@ def parse_arguments(argv=None):
                     help=f"input geometry: {long_generation.STANDARD_INPUT_CASE} (default), or split-v1-96k with --long-generation-only")
     ap.add_argument("--long-generation-max-tokens", type=int, choices=long_generation.OUTPUT_TOKEN_CHOICES,
                     help="finite output budget including thinking (default 16384); use the same budget in both arms")
+    ap.add_argument("--long-generation-sampling", choices=long_generation.SAMPLING_PROFILES,
+                    help="long-generation requests only: greedy (default) or official qwen-thinking parameters")
+    ap.add_argument("--long-generation-seed", type=int,
+                    help="qwen-thinking base seed (default 1); each run adds its index, shared by both workloads")
     ap.add_argument("--prefill-only", action="store_true", help="only one short warmup and fresh long prefill requests; thinking on, output capped at 24")
     ap.add_argument('--prefill-scaling', action='store_true',
                     help='characterize six short/long input lengths with thinking, total prefill time and TTFT; separate first long request, then ordered warmed rounds')
@@ -1635,6 +1649,14 @@ def parse_arguments(argv=None):
     if a.long_generation_max_tokens is not None and not (a.long_generation or a.long_generation_only):
         ap.error("--long-generation-max-tokens requires --long-generation or --long-generation-only")
     a.long_generation_max_tokens = a.long_generation_max_tokens or long_generation.MAX_OUTPUT_TOKENS
+    if a.long_generation_sampling is not None and not (a.long_generation or a.long_generation_only):
+        ap.error("--long-generation-sampling requires --long-generation or --long-generation-only")
+    a.long_generation_sampling = a.long_generation_sampling or "greedy"
+    try:
+        plan = long_generation.sampling_plan(a.long_generation_sampling, a.long_generation_seed)
+        long_generation.sampling_request(plan, max(1, a.runs) - 1)
+    except ValueError as error:
+        ap.error(str(error))
     if a.fail_fast_engine_error and a.clients:
         ap.error("--fail-fast-engine-error cannot be combined with --clients")
     if a.prefill_tokens is not None and not a.prefill_only:
@@ -1718,11 +1740,13 @@ def main(argv=None) -> int:
                       generation_workload=a.long_generation_workload,
                       generation_speed_only=a.long_generation_speed_only,
                       generation_max_tokens=a.long_generation_max_tokens,
+                      generation_sampling=a.long_generation_sampling, generation_seed=a.long_generation_seed,
                       generation_input_case=a.long_generation_input_case,
                       characterize_prefill=a.prefill_scaling, prefill_exact_tokens=a.prefill_exact_tokens,
                       short_prefill_diagnostic=a.prefill_short_diagnostic,
                       request_gate=profile_request_gate if a.profile_request_gates else None)
         journal.append("identity", "suite", source=client_fingerprint(), **suite.generation_case_metadata(),
+                       **suite.generation_sampling_metadata(),
                        long_generation_speed_only=a.long_generation_speed_only,
                        long_generation_max_tokens=a.long_generation_max_tokens,
                        model=pre.get("model"), quant=pre.get("quant"), context=pre.get("context"),
@@ -1748,7 +1772,7 @@ def main(argv=None) -> int:
             if not machine.get("gpu"):
                 machine["gpu"] = pre.get("gpu")
             res = {"schema": SCHEMA, "tool": "tools/strata_bench.py", "date": datetime.date.today().isoformat(),
-                   "params": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_short_diagnostic":a.prefill_short_diagnostic, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
+                   "params": {**suite.generation_case_metadata(), **suite.generation_sampling_metadata(), "mode":a.mode, "prefill_exact_tokens":a.prefill_exact_tokens, "prefill_short_diagnostic":a.prefill_short_diagnostic, "prefill_tokens":a.prefill_tokens if a.prefill_only and not a.prefill_scaling else None, "workload": suite.workload_identity(), "fail_fast_engine_error": suite.fail_fast_engine_error, "runs": suite.runs, "think": a.think, "clients": a.clients, "long": a.long, "started_server": started,
                               "long_generation": suite.want_long_generation, "long_generation_only": a.long_generation_only,
                               "long_generation_speed_only": a.long_generation_speed_only,
                               "long_generation_max_tokens": a.long_generation_max_tokens,
@@ -1757,6 +1781,7 @@ def main(argv=None) -> int:
                                                     "--think" if a.think else "",
                                                     "--long-generation-speed-only" if a.long_generation_speed_only else "",
                                                     f"--long-generation-max-tokens {a.long_generation_max_tokens}" if suite.want_long_generation else "",
+                                                    f"--long-generation-sampling {a.long_generation_sampling} --long-generation-seed {suite.generation_sampling['request_parameters']['seed']}" if suite.want_long_generation and a.long_generation_sampling != "greedy" else "",
                                                     f"--long-generation-input-case {a.long_generation_input_case}" if suite.generation_case_metadata() else "",
                                                     f"--long-generation-workload {a.long_generation_workload}" if a.long_generation_workload else "",
                                                     '--prefill-scaling' if a.prefill_scaling else f"--prefill-exact-tokens {a.prefill_exact_tokens}" if a.prefill_exact_tokens is not None else f"--prefill-only --prefill-tokens {a.prefill_tokens}" if a.prefill_only else "",
@@ -1766,7 +1791,7 @@ def main(argv=None) -> int:
                                                     "--long-generation-only" if a.long_generation_only else
                                                     "--long-generation" if a.long_generation else "") if x)},
                    "elapsed_s": time.time() - t0, "machine": machine, "results": out,
-                   "comparison_identity": {**suite.generation_case_metadata(), "mode":a.mode, "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
+                   "comparison_identity": {**suite.generation_case_metadata(), **suite.generation_sampling_metadata(), "mode":a.mode, "prefill_plan":suite.prefill_plan() if a.prefill_only else None, "workload": suite.workload_identity(), "client": client_fingerprint(), "thinking": a.think,
                        "long_generation_speed_only": a.long_generation_speed_only,
                        "long_generation_max_tokens": a.long_generation_max_tokens,
                        "reasoning_budget_tokens": 0, "temperature": 0, "model": machine.get("model"),
@@ -1815,16 +1840,16 @@ def main(argv=None) -> int:
                     handle.flush();os.fsync(handle.fileno())
                 os.replace(target,directory/"results.json")
                 (directory/"README.md").write_text(red(render_readme(partial)),encoding="utf-8")
-            elif suite.generation_case_metadata():
+            elif suite.want_long_generation:
                 partial = dict(schema=SCHEMA, tool="tools/strata_bench.py",
                     date=datetime.date.today().isoformat(), complete=False, qualified=False,
                     terminal="interrupted" if isinstance(error, (KeyboardInterrupt, SystemExit)) else "failed",
                     terminal_failure=repr(error)[:300], elapsed_s=time.time()-t0, machine=pre, results=suite.out,
-                    params=dict(**suite.generation_case_metadata(), mode=a.mode, runs=suite.runs,
-                        workload=suite.workload_identity(), long_generation=True, long_generation_only=True,
+                    params=dict(**suite.generation_case_metadata(), **suite.generation_sampling_metadata(), mode=a.mode, runs=suite.runs,
+                        workload=suite.workload_identity(), long_generation=True, long_generation_only=a.long_generation_only,
                         long_generation_max_tokens=a.long_generation_max_tokens,
                         long_generation_speed_only=a.long_generation_speed_only, started_server=started),
-                    comparison_identity=dict(**suite.generation_case_metadata(), mode=a.mode,
+                    comparison_identity=dict(**suite.generation_case_metadata(), **suite.generation_sampling_metadata(), mode=a.mode,
                         workload=suite.workload_identity(), client=client_fingerprint(),
                         long_generation_version=suite.generation_version()))
                 target = directory / "results.tmp"
