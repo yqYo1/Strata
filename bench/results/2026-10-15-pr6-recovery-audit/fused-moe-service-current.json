@@ -125448,6 +125448,20 @@
     "source_inputs": {
       "files": 294,
       "aggregate_sha256": "50859d2c450ea7c47787e1b497f17cd5802863d1f4b2eb2a375536504a50833e"
-    }
+    },
+    "host_preflight_refusals": [
+      {
+        "index": 3,
+        "utc": "2026-11-04T06:02:18.742665+00:00",
+        "outcome": "refused_before_process_creation",
+        "error": "commit exact repeated comparison state",
+        "cause": "Main recorded process2 retirement only in the committed compact result;external current record still had retirement indices0,1.",
+        "model_executed": false,
+        "native_attempt_created": false,
+        "original_refusal_preserved": true,
+        "correction": "Copy only the already committed closed-output retirement metadata into the external current record. Preserve all source hashes,plans,configs,binary and original samples.",
+        "prospective_next": "Fresh ordered index3 remains required under the unchanged comparison plan and all original gates. No executed process is retried or replaced."
+      }
+    ]
   }
 }
