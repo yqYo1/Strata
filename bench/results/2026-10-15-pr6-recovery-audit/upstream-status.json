@@ -821,7 +821,23 @@
     "device_result_key": "decode_iq3_phase_device_v1",
     "model_executed": true,
     "model_entry_result_key": "decode_iq3_model_entry_arm0_v1",
-    "model_entry_stage": "reference_short_model_passed_candidate_not_prepared"
+    "model_entry_stage": "reference_short_model_passed_candidate_prepared",
+    "candidate_model_entry_result_key": "decode_iq3_model_entry_arm1_v1",
+    "matched_entry_inputs": {
+      "native_elf_identical": true,
+      "controller_source_files": 302,
+      "controller_sources_identical": true,
+      "model_assets": 15,
+      "model_assets_identical": true,
+      "normalized_configuration_identical": true,
+      "only_normalized_environment_difference": {
+        "STRATA_IQ3_PAIR": [
+          "0",
+          "1"
+        ]
+      },
+      "scope": "Preparation identity,not model performance or candidate admission;per-entry output roots and ephemeral benchmark ports differ."
+    }
   },
   "remote_check_command": [
     "git",
@@ -915,6 +931,43 @@
         "Current fork SYCL enters CMakeLists.txt217-219 and cmake/sycl_backend.cmake;CUDA/HIP branch392-472 is not its resolver."
       ]
     },
-    "existing_port_state": "Existing exact incremental prompt-encoding port4f9495d8 and bounded parser suffix/call-scan portaa27c557 remain recorded as implemented;new parser/context/history obligations require behavior-level reconciliation,not reopening the whole earlier port."
+    "existing_port_state": "Existing exact incremental prompt-encoding port4f9495d8 and bounded parser suffix/call-scan portaa27c557 remain recorded as implemented;new parser/context/history obligations require behavior-level reconciliation,not reopening the whole earlier port.",
+    "followup": {
+      "input_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/inputs.json",
+      "sha256": "d4c8ec6ff07272a3361739d6b823ad172e43880f981b2850ecdce593f1368573",
+      "scopes": [
+        {
+          "scope": "compiled-iq-moe",
+          "classification": "decision_support",
+          "schedulable_now": true,
+          "state": "dispatched",
+          "task": "task_d627f9d93fbb",
+          "dispatch": "ctx_3428039bdc85",
+          "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-iq-moe/report.md",
+          "report_budget_bytes": 18432
+        },
+        {
+          "scope": "compiled-attention-state",
+          "classification": "decision_support",
+          "schedulable_now": true,
+          "state": "dispatched",
+          "task": "task_fa72fd034d60",
+          "dispatch": "ctx_a539e0a34e5f",
+          "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-attention-state/report.md",
+          "report_budget_bytes": 18432
+        },
+        {
+          "scope": "desktop-conversation-tools",
+          "classification": "decision_support",
+          "schedulable_now": true,
+          "state": "dispatched",
+          "task": "task_e886c963f61b",
+          "dispatch": "ctx_e3d740c73410",
+          "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/desktop-conversation-tools/report.md",
+          "report_budget_bytes": 18432
+        }
+      ],
+      "coverage": "New complete-source pins for the actual Arc resolver,omitted compiled DPCT quantized-MoE and attention/state changes,and desktop conversation/tool behavior outside the first launch/API scopes. Origin checks are part of the source investigation;held/Xe-derived material remains ineligible for implementation. No runtime or whole-function qualification."
+    }
   }
 }
