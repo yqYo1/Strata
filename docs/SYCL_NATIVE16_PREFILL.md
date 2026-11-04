@@ -188,7 +188,8 @@ The decode-only `service_profile.hpp` observer separates GU, hidden
 quantization and Down by format, token count and worker, with nested wall and
 thread-CPU clocks. Its replacement build, real-pool off/on parity, small device
 checks and short model/census entry are now closed. Representative long-decode
-service and observer-cost qualification remain pending.
+collection has one closed off/on pair; repeated observer-cost qualification
+remains pending.
 The retired a99 generation's measured snapshot used two pool files from
 `6e40afc1b`, rather than the plain Git `05a9` pool files. The observer hooks
 are applied to those recovered bytes while preserving the eight
@@ -256,13 +257,6 @@ pool wall is 0.676/0.650 s. GU consumes 69.33/70.06% of that CPU time, Down
 30.49/29.75%, and hidden quantization 0.185/0.190%; NT1 is 72.88/72.36% of
 CPU jobs. These concurrent leaf sums include memory stalls and observer cost;
 they are not request critical-path fractions or hardware saturation evidence.
-If that instrumented CPU cost per output stayed fixed, six concurrent leaf
-threads would have an optimistic aggregate budget of
-`6 * 24 / (3.310..3.091) = 43.5..46.6 output/s`, before any other work.
-This conditional budget is not a physical CPU ceiling or long-decode prediction:
-observer cost, CPU frequency, contention, cache residency and actual MTP/NT mix
-still need separation. It shows why the 70 tok/s goal needs a lower CPU-service
-cost or less CPU work as well as attention to GPU and transfer costs.
 The different 74-token warmup remains separate. Follow
 `verify_window_cpu_service_model_entry_v1.cpu_service`; no representative
 long-generation mix, observer overhead or clean-speed gain is qualified.
@@ -276,7 +270,19 @@ Preparation passes at controller `dab5a31d91a6c724e944ab921915526ec144556e`:
 the six generated plans have one invariant configuration/runtime signature,
 all fifteen model assets match, and the bounded decision controls pass.
 Both current-source frontend probes now pass with normal exits and closed
-owners. The cohort is ready; no overhead or long-service result exists yet.
+owners. The first off/on pair is closed: both processes pass six native/API
+census joins and both thinking-on workloads, with normal exits, closed owners
+and no fresh fault. Logical work matches in each workload. Its on/off per-output
+latency ratios are 1.002853 for code and 1.008799 for prose; the full three-pair
+overhead bound remains pending. In the on process, summed leaf CPU is
+520.298/1686.105 s for 3170/7275 generated tokens; GU accounts for
+68.94/69.74%, and IQ3_XXS NT1 GU is the largest individual bin in both.
+If those instrumented CPU costs per output stayed fixed, six concurrent leaf
+threads would have optimistic aggregate budgets of 36.6/25.9 output/s before
+any other work. This conditional accounting is not a physical CPU ceiling or
+clean-speed prediction: observer cost, CPU frequency, memory stalls, cache
+residency and the MTP/NT mix still matter. Reaching70 requires lower CPU-service
+cost or less CPU work, alongside GPU and transfer improvements.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
