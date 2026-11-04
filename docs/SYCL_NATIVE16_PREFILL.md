@@ -4922,10 +4922,18 @@ first/subsequent long requests in one fresh process per selector:
 Every long request captures decode T1andT4. Reference0records103reference Q6
 calls and0column calls;columns1records21reference and82column calls. These
 capture counts are not time fractions. No prompt-verify window is observed
-with short-read0. The next step is a clean same-binary columns0/1 long-generation
-cohort with three counterbalanced R/C,C/R,R/C pairs,thinking enabled,at least32K
-fresh input and1Kgenerated tokens,and MTP-strong/weak classification from actual
-acceptance. Keep all samples and evaluate dedicated long-prefill/TTFT separately;
+with short-read0. The clean same-binary columns0/1 long-generation cohort is
+running under controller5d15d4cfb,with294frozen source inputs and three
+counterbalanced R/C,C/R,R/C pairs. Each process uses thinking,at least32Kfresh
+input and1Kgenerated tokens;MTP classes come from observed acceptance.
+The first reference process closes passed at native exit0,with quiet validation,
+closed owners and no fresh fault. Code reads33212tokens and generates3170at
+13.2594096844tok/s;prose reads33282and generates7275at8.6940746923tok/s.
+Acceptance is82.4388%and38.9236%;both requests reach their planned MTP class
+and contain an answer. These two samples establish neither a paired gain nor
+process-to-process variance. See`verify_window_generation_speed_v1`in the
+current service result;the remaining five processes are required for its decision.
+Keep all samples and evaluate dedicated long-prefill/TTFT separately;
 agent,task-quality,prompt-verify and physical262144/RESTORE gates remain pending.
 The short-output entries establish neither sustained TG nor a repeated speed
 decision,and do not replace the selected479a speed reference.
