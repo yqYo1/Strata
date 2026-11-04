@@ -91,6 +91,15 @@ sample qualified locally; the prose benchmark failed its answer gate and no
 repeat decision exists. Preserve it as a failed observation via the CSV row
 (`cache_map_generation_speed_v1.processes[1].samples[0]`), never as adopted
 speed.
+The separate **32K-output feasibility probe also failed**: its code sample was
+15.5924 tok/s, but prose consumed all 32768 generated tokens in thought with
+zero answer characters. It is not an unexecuted next experiment or a repeated
+speed gain. Preserve `cache_map_generation_room_v1.failure_diagnosis` and the
+original evidence at commit `a24593e1f84402244d8660914bb5e80587bcdc7d`;
+do not repeat it or merely escalate its output allowance. Before another cache
+comparison, choose and commit a distinct answer-eligible workload/sampling plan
+and verify it on the safety-corrected native source. Keep thinking enabled;
+do not waive the answer gate or assume sampling caused the previous failure.
 
 ## Decode and resource evidence
 
