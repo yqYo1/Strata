@@ -21,17 +21,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   [`fused-moe-service-current.json`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json);
   cumulative row in [`performance-records.csv`](../bench/performance-records.csv).
 - Keep **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1** as
-  the named candidate for its frozen decode comparison. It is not a replacement
-  for the fallback. Its active generation
-  record's initial pair was code TG **13.259 -> 13.456** tok/s and weak-MTP prose
-  **8.694 -> 8.832** tok/s (reference -> candidate). These are provisional
-  observations, not the frozen three-pair decision; the live cohort remains
-  undecided until its current samples satisfy that plan. They do not establish
-  the 70 tok/s target, repeated gain, prefill preservation, agent/task quality
-  or physical-context behavior.
-  Do not freeze a running-process count in this document; follow
-  `verify_window_generation_speed_v1` in the current service result and preserve
-  its frozen plan and actual samples.
+  the named decode candidate. Its six-process, three-pair comparison is closed:
+  code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
+  **8.6795 -> 8.8299** tok/s (reference -> candidate). All three paired TG ratios
+  exceed one in each workload; their geometric means are **1.017949 / 1.016802**.
+  All 12 long requests pass, with normal exits, quiet validation, no fresh fault
+  and final hashes for all 15 model assets. This qualifies reproducible decode
+  gain, not the 70 tok/s target, inference adoption, dedicated prefill/TTFT
+  preservation, agent/task quality, prompt-verify or physical-context behavior.
+  Code prompt/TTFT directions remain mixed. Follow
+  `verify_window_generation_speed_v1.decision`, evidence commit
+  `dd685c75fd6e77be17f826672bcd3486a70cbdc0`, and the CSV for exact samples.
+  Keep the fallback while this same candidate supplies the imminent dedicated
+  PP/TTFT and bounded sampled-cache entry/feasibility checks; no extra engine
+  generation is required for those comparisons.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
   Keep decode independently selected.
@@ -104,8 +107,8 @@ do not waive the answer gate or assume sampling caused the previous failure.
 ## Decode and resource evidence
 
 Keep prefill and decode kernels, placement, scheduling and selectors independent.
-The 05a9 comparison changes only its decode selector; review all three matched
-pairs before selecting. Required evidence includes both observed MTP-strong
+The completed 05a9 comparison changes only its decode selector. Required
+adoption evidence still includes both observed MTP-strong
 and MTP-weak long generation, dedicated PP/TTFT preservation, long-input and
 agent-session benchmarks, prompt-verify behavior, and the prefill-to-decode
 handoff. A component pass or one request does not qualify a route.
@@ -129,6 +132,17 @@ the retained generations and update that pending observer recipe to the selected
 native source, preserving the Q6 safety correction. Reuse the existing observer
 and host/pool controls, then qualify observer cost before model attribution.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
+
+The prospective next cache feasibility test uses the [official thinking-mode
+sampling parameters](https://huggingface.co/Qwen/Qwen3.8-Flash-Next): temperature
+1, top-p .95 and top-k 20 (also in the [pinned generation configuration](https://huggingface.co/Qwen/Qwen3.8-Flash-Next/blob/de4b8e4d43b917e7706784d8bb445c9af86a3540/generation_config.json)).
+Keep the existing greedy benchmark available and choose the new profile
+explicitly. Retain the 16K total output allowance, uncapped thought/xhigh and a
+prospectively fixed positive seed; do not combine a new output cap with sampling
+or compare it with old greedy TG as a cache gain. The compiled-source sampler
+and uncoupled-MTP audit is under native Luna-max review. New host wire/identity
+checks and bounded sampler validation must precede a sampled model trial;
+no such execution or sampling-causality claim is established yet.
 
 ## Qualification and operating constraints
 
