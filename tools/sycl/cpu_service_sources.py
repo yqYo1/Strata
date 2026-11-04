@@ -107,7 +107,7 @@ def recipe(native, root):
     environment = {name: value.replace(old, str(root))
                    for name, value in native['recipe']['environment'].items()}
     return dict(configure=configure, environment=environment,
-                targets=['strata', 'cpu_service_profile_test', 'cpu_service_pool_test',
+                targets=['strata', 'cpu_service_pool_test',
                          'sycl_submission_test', 'sycl_verifier_retirement_test'],
                 host_modes=[{'STRATA_CPU_SERVICE': '0'}, {'STRATA_CPU_SERVICE': '1'}],
                 retention='One imminent observer on/off comparison on the measured05a9 source. '

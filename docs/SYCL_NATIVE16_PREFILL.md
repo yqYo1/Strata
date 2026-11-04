@@ -200,6 +200,14 @@ with the checked output-v2 delta. Its source check passes at
 and reversing the seven observer/build/test files recovers all 560 measured
 inputs byte for byte. The eight Q6/phase files remain preserved. Follow
 `cache_map_cpu_service_sources_v1.retarget_v2`; no new engine is built.
+The pending builder now targets that snapshot and preserves the 479a fallback.
+Its source-preparation plan keeps the existing build settings and enables only
+the observer. The four targets are the engine, real CPU-pool fixture, submission
+fixture and phase-cache fixture. The separately qualified pure writer fixture
+stays excluded because `STRATA_BUILD_TESTS` remains OFF; the target-list
+correction is checked separately from the unchanged source constructor.
+Compilation must wait for recovery and physical retirement of the closed a99
+comparison outputs; preparation alone does not clear that gate.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed

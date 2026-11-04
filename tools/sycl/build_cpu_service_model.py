@@ -2,28 +2,30 @@
 """Build and check one observer-only comparison; Main owns serialization.
 
 Repository LICENSE; independently authored. Preserve selected552b and its eight
-fixtures. Compilation/host parity never imply model attribution or a speed gain.
+fixtures. Replace the closed Q6 comparison only after source recovery; do not
+create a third engine generation. Compilation/host parity imply no speed gain.
 """
+import ast
 import copy
 import fcntl
 import hashlib
 import json
 from pathlib import Path
 import re
-import select
 import shlex
 import sys
 import time
 
 sys.dont_write_bytecode = True
 import cpu_service_sources as source
+import verify_window_model_entry as measured
 
 selected, P, B = source.selected, source.P, source.B
 base = selected.base
 require, digest, write = base.require, base.digest, base.write
-ROOT = B / 'cpu-service-cache-map-v1'
+ROOT = B / 'cpu-service-verify-window-v2'
 RESULT = selected.RESULT
-KEY = 'cache_map_cpu_service_build_v1'
+KEY = 'verify_window_cpu_service_build_v2'
 CONTROLLER = Path(__file__).resolve()
 
 
@@ -47,17 +49,79 @@ def save(row):
     write(RESULT, data)
 
 
+def source_basis():
+    """Recover the measured inputs without depending on its retired ELF.
+
+    This is a build-source bridge, not model qualification for the observer.
+    Preparation separately reopens the original measured executable and gates.
+    Every new observer executable needs its own pool/device/model admission.
+    """
+    native, _ = source.projection()
+    data = base.committed(RESULT)
+    checked = data['cache_map_cpu_service_sources_v1']['retarget_v2']
+    reader = data['cache_map_cpu_service_sources_v1']['reader_v2_host']
+    helper = P / 'tools/sycl/cpu_service_sources.py'
+    original = base.basis.build.git(P, 'show', checked['source_commit'] + ':' + str(helper.relative_to(P)))
+    require(hashlib.sha256(original).hexdigest() == checked['source_helper_sha256'],
+            'original source-construction evidence changed')
+    # The qualified constructor is unchanged. Correct only the target list:
+    # this pure header fixture is inside STRATA_BUILD_TESTS, which stays OFF.
+    # Its writer contract already passed; do not enable unrelated tests or
+    # claim a new qualification by silently refreshing the old helper hash.
+    expected = ast.parse(original)
+    recipe_node = next(n for n in expected.body if isinstance(n, ast.FunctionDef) and n.name == 'recipe')
+    lists = [n for n in ast.walk(recipe_node) if isinstance(n, ast.List) and
+             any(isinstance(v, ast.Constant) and v.value == 'cpu_service_profile_test' for v in n.elts)]
+    require(len(lists) == 1, 'one declared build-target correction required')
+    lists[0].elts = [v for v in lists[0].elts if not
+                    (isinstance(v, ast.Constant) and v.value == 'cpu_service_profile_test')]
+    require(ast.dump(expected) == ast.dump(ast.parse(helper.read_bytes())),
+            'unqualified source constructor or recipe change')
+    revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
+    controls = base.controls(checked['source_commit'], controller=helper,
+        reuse_revision=revision, controller_changes=(str(helper.relative_to(P)),))
+    require(len(controls) == checked['source_inputs']['files'] and
+            hashlib.sha256(json.dumps(controls, sort_keys=True).encode()).hexdigest() ==
+                checked['source_inputs']['aggregate_sha256'],
+            'qualified transitive source-construction controls changed')
+    require(checked['passed'] and checked['complete'] and checked['ownership_closed'] and
+            checked['selected_native_source'] == source.NATIVE and
+            checked['selected_engine_sha256'] == source.ENGINE and
+            reader['passed'] and reader['complete'] and reader['ownership_closed'] and
+            reader['result']['passed'] == reader['result']['tests'] == 12 and
+            all(digest(P / name) == sha for name, sha in reader['source_inputs'].items()),
+            'qualified exact-source construction and output-v2 reader required')
+    fallback = json.loads((selected.model.ROOT / 'record.json').read_text())
+    require(digest(selected.model.ROOT / 'record.json') == native['selected_record_sha256'],
+            'original measured recipe basis changed')
+    old = str(selected.model.ROOT)
+    expected = dict(configure=[x.replace(old, str(source.NATIVE_ROOT)) for x in fallback['configure_argv']],
+        environment={k:v.replace(old, str(source.NATIVE_ROOT)) for k,v in fallback['environment'].items()})
+    require(expected == native['recipe'], 'recover the original measured configure/environment recipe')
+    device = json.loads((measured.device.ROOT / 'record.json').read_text())
+    require(data[measured.device.KEY] == measured.device.compact(device) and
+            device['passed'] and device['complete'] and device['ownership_closed'] and
+            device['native_source_commit'] == source.NATIVE and not device['fresh_faults'],
+            'closed original phase device evidence changed')
+    return native, dict(root=str(source.NATIVE_ROOT),
+        native_source_commit=native['source_commit'],
+        record_sha256=digest(source.NATIVE_ROOT / 'record.json'),
+        binaries=native['binaries'], runtime_manifest=device['runtime_manifest'],
+        validation_provider=device['native_validation_probe'],
+        source_construction_commit=checked['source_commit'],
+        source_construction_aggregate=checked['result']['construction']['source_aggregate_sha256'],
+        recipe_target_correction='Remove only unavailable cpu_service_profile_test;STRATA_BUILD_TESTS remains OFF;constructor AST otherwise identical to the qualified original.',
+        reader_source_commit=reader['source_commit'],
+        original_phase_evidence=measured.device.KEY,
+        scope='Recoverable source/recipe basis only;new observer qualification remains required.')
+
+
 def selected_basis():
-    native, gate, providers = selected.proof()
+    native, _, _ = measured.proof()
     require(native['source_commit'] == source.NATIVE and
             native['binaries']['strata']['sha256'] == source.ENGINE,
-            'preserve the named validated engine generation')
-    return native, dict(root=str(selected.model.ROOT),
-        native_source_commit=native['source_commit'],
-        record_sha256=digest(selected.model.ROOT / 'record.json'),
-        binaries=native['binaries'], runtime_manifest=native['runtime_manifest'],
-        validation_provider=native['native_validation_probe'],
-        unchanged_fixture_basis=gate['mathematical_fixture_basis'])
+            'reopen the actual measured generation before preparing its replacement')
+    return source_basis()
 
 
 def retention_gate():
@@ -68,6 +132,17 @@ def retention_gate():
             review.get('next_comparison_root') == str(ROOT) and
             review.get('original_inputs_recovered_or_failure_recorded') is True,
             'finish the bounded existing-build recovery/retirement review before compiling')
+    replacement = review.get('current_replacement_retirement', {})
+    require(replacement.get('native_source_commit') == source.NATIVE and
+            replacement.get('original_inputs_recovered') is True and
+            replacement.get('consumers_updated') is True,
+            'recover and retire the closed Q6 generation before its observer replacement')
+    require(digest(replacement['manifest_path']) == replacement['manifest_sha256'],
+            'replacement retirement evidence changed')
+    removed = json.loads(Path(replacement['manifest_path']).read_text())
+    require(removed['completed'] and removed['files'] and
+            all(not Path(x['path']).exists() for x in removed['files']),
+            'replacement generation retirement is not physically complete')
     manifest = review['retirement_manifest']
     require(digest(manifest['path']) == manifest['sha256'], 'retirement evidence changed')
     retired = json.loads(Path(manifest['path']).read_text())['files']
@@ -77,8 +152,11 @@ def retention_gate():
     require(retained and all(type(item.get('consumer')) is str and item['consumer'] and
             Path(item['path']).is_file() and digest(item['path']) == item['sha256']
             for item in retained), 'named retained binary consumers changed')
-    require({asset['path'] for asset in selected_basis()[0]['binaries'].values()} <=
+    fallback = json.loads((selected.model.ROOT / 'record.json').read_text())
+    require({asset['path'] for asset in fallback['binaries'].values()} <=
             {item['path'] for item in retained}, 'selected same-build fixtures are not protected')
+    require(all(not Path(asset['path']).exists() for asset in source_basis()[0]['binaries'].values()),
+            'closed Q6 comparison still retains an engine/fixture generation')
     return review
 
 
@@ -86,12 +164,16 @@ def inputs(row):
     revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     require(base.controls(row['source_commit'], controller=CONTROLLER) == row['controller_inputs'],
             'commit and freeze the exact observer build controller')
-    native, proof = selected_basis()
+    native, proof = source_basis()
     require(proof == row['selected_basis'], 'selected qualification inputs changed')
+    require(measured.build.monitor_qualification(base.committed(RESULT)) == row['monitor_qualification'],
+            'qualified pipe/EOF monitor changed')
     _, values = source.projection()
-    require(source.aggregate(values)[0] == row['native_sources'] and
+    pins, fingerprint = source.aggregate(values)
+    require(pins == row['native_sources'] and fingerprint == proof['source_construction_aggregate'] and
             source.recipe(native, ROOT) == row['recipe'], 'observer source/recipe changed')
-    allowed = selected.model.inputs(native, reuse_revision=revision,
+    fallback = json.loads((selected.model.ROOT / 'record.json').read_text())
+    allowed = selected.model.inputs(fallback, reuse_revision=revision,
                                     controller_changes=selected.NATIVE_CONTROLS)
     # The extra build must not silently compile or link from selected build outputs.
     allowed = {path: sha for path, sha in allowed.items()
@@ -110,12 +192,15 @@ def prepare():
             'one fresh observer generation;inspect an existing owner before any retry')
     native, proof = selected_basis()
     _, values = source.projection()
+    require(len(values) == 563 and sum(map(len, values.values())) < 16 << 20,
+            'bounded exact observer source archive required')
     revision = base.basis.build.git(P, 'rev-parse', 'HEAD').decode().strip()
     recipe = source.recipe(native, ROOT)
-    old = str(selected.model.ROOT)
+    old = str(source.NATIVE_ROOT)
     row = dict(stage='prepared', source_commit=revision,
         controller_inputs=base.controls(revision, controller=CONTROLLER),
         native_sources=source.aggregate(values)[0], selected_basis=proof, recipe=recipe,
+        monitor_qualification=measured.build.monitor_qualification(base.committed(RESULT)),
         generated_expected={path.replace(old, str(ROOT)): sha
                             for path, sha in native['generated_expected'].items()},
         commands=[['configure', recipe['configure']],
@@ -127,9 +212,7 @@ def prepare():
         host_plan=dict(modes=[0, 1], wall_each=300, text_cap_each=1 << 20,
             expected_cases=28, require_identical_checksum=True,
             scope='Five real pool workers and a dedicated dispatch host;seven formats,NT1..4,96-expert boundary,canaries,phase isolation and counter/owner conservation. Same-leaf parity,not an independent mathematical oracle.'),
-        retention='Retire this extra generation after its named observer comparison closes, '
-            'recovering exact original inputs first. Selected552b/eight fixtures remain the fallback. '
-            'Prepare may precede retention reconciliation;compile may not.',
+        retention=recipe['retention'],
         commands_executed=[], active=False, ownership_closed=True, passed=False,
         complete=False, GPU_executed=False, model_executed=False,
         observer_overhead_qualified=False, inference_adopted=False)
@@ -148,20 +231,6 @@ def prepare():
     save(row)
     require(row['stage'] == 'prepared', 'observer source admission failed;inspect the preserved result')
     print('Prepared observer-only source/recipe;commit before compilation. No build/GPU execution.', flush=True)
-
-
-def monitor(deadline, io, entry):
-    next_size = 0.
-    while not io.exit_watch.poll(0) or not io.eof:
-        io.poll()
-        require(time.monotonic() < deadline, 'observer build deadline')
-        if time.monotonic() >= next_size:
-            require(base.supervision.artifact_bytes(ROOT) <= 2 << 30, 'observer generation byte budget')
-            next_size = time.monotonic() + 1
-        if select.select([io.proc.stdout], [], [], .02)[0]:
-            io.read()
-            io.pending.clear()
-    io.exit(1)
 
 
 def build():
@@ -183,7 +252,8 @@ def build():
         for label, argv in row['commands']:
             print('CPU build:', label, flush=True)
             entry, out, err = owner.run(label, argv, row['recipe']['environment'], ROOT,
-                interaction=lambda io, entry: monitor(deadline, io, entry),
+                interaction=lambda io, entry: measured.build.monitor(ROOT, deadline, io, entry,
+                    row['budgets']['total_cap']),
                 **dict(row['budgets'], wall=min(row['budgets']['wall'], deadline-time.monotonic())))
             require(base.supervision.closed(entry) and entry['exit_code'] == 0,
                     label + ' failed: ' + (out.read_text(errors='replace') +
@@ -247,7 +317,7 @@ def verify():
 
 def host():
     row = verify()
-    require('host_result' not in row and not (ROOT / 'owned-host').exists(),
+    require('host_result' not in row and not (ROOT / 'host').exists(),
             'one same-build host parity check;never retry a live/failed owner')
     owner, result = None, dict(passed=False, complete=False, cases=[], GPU_executed=False)
     def persist():
@@ -255,7 +325,10 @@ def host():
             ownership_closed=bool(owner and all(base.supervision.closed(item) for item in owner.commands)))
         write(ROOT / 'record.json', dict(row, host_result=result))
     try:
-        owner = base.supervision.Owner(ROOT / 'owned-host', persist=persist)
+        # Its size budget covers host output, not the already built engine tree.
+        host_root = ROOT / 'host'
+        host_root.mkdir()
+        owner = base.supervision.Owner(host_root / 'commands', persist=persist)
         for mode in row['host_plan']['modes']:
             env = dict(row['recipe']['environment'], STRATA_CPU_SERVICE=str(mode))
             argv = [row['binaries']['cpu_service_pool_test']['path'], str(mode)]
@@ -264,6 +337,7 @@ def host():
                 file_cap=1 << 20, total_cap=4 << 20)
             require(base.supervision.closed(entry) and entry['exit_code'] == 0,
                     'same-build pool check failed: ' + err.read_text(errors='replace')[-3000:])
+            require(not err.stat().st_size, 'same-build pool runtime diagnostics')
             match = re.fullmatch(r'cpu_service_pool PASS observer=' + str(mode) +
                 r' formats=7 nt=1\.\.4 cases=28 checksum_fnv1a64_le=([0-9a-f]{16})\n', out.read_text())
             require(match is not None, 'incomplete or unexpected real-pool parity footer')
@@ -287,4 +361,5 @@ if __name__ == '__main__':
             'usage: build_cpu_service_model.py prepare|build|host|verify')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        base.guards.no_model_owners([])
         {'prepare': prepare, 'build': build, 'host': host, 'verify': verify}[sys.argv[1]]()
