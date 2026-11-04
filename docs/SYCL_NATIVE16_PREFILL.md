@@ -350,6 +350,19 @@ total 257.72/247.17 ms per window: CPU pool 113.21/100.88, GPU-reach wait
 264.54/251.37 total,119.07/104.81 pool,84.51/84.64 wait and33.63/33.56 draft.
 These are nested host scopes, not additive device service. Trace the called
 wait wrapper before attributing its cost to GPU arithmetic.
+The next diagnostic source adds `STRATA_SYCL_DECODE_SERVICE_PROFILE=1`, fixed
+before native exec. It partitions the main thread's decode-through-final-commit
+interval into capture/cache lookup, staging, complete layer-wait wrappers,
+pool calls, expert-copy retirement, graph submission and final stream drains.
+Nested native blocking calls are recorded inside each region; do not add them
+to the containing region. Draft/commit and other uncovered work stay explicitly
+unclassified. One integer-nanosecond record per request replaces per-call logs.
+The host-only `decode_service_profile_test.cpp` checks exact conservation,
+nested waits, invalid nesting/clocks, exceptions and disabled observation.
+This source is prepared but not compiled or measured. Its next consumers are
+the serialized host contract check and a separately qualified diagnostic engine
+after the current IQ3 cohort. The running engine/source remain unchanged;
+no attribution result, physical-resource ceiling or speedup follows yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that

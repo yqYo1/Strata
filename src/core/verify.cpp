@@ -8,6 +8,7 @@
 #include "strata/core/native_head.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/sycl/decode_service_profile.hpp"
 #include "strata/core/expert_cache.hpp"
 #include <optional>
 #endif
@@ -1579,7 +1580,15 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         void drained() { first->diag_window_.phase(VerifyPhase::finishing); }
         void finish() { first->diag_window_.phase(VerifyPhase::completed); }
     } window_scope{this};
+#ifdef STRATA_ENABLE_SYCL
+    namespace service = strata::sycl_backend::decode_service_profile;
+    if (!service::measure(service::capture_setup, [&] {
+            return capture(T, err, input) && capture_commit(err);
+        })) return false;
+    service::Part stage_service(service::staging);
+#else
     if (!capture(T, err, input) || !capture_commit(err)) return false;
+#endif
     VDBG("captured; staging\n");
     const Clock::time_point t0 = Clock::now();
     const QsaShapes s = shapes_of(g);
@@ -1617,11 +1626,16 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     last_pos0_ = pos0;
     for (int t = 0; t < T; ++t) last_tokens_[t] = tokens[t];
     ms_host += ms_since(t0);
+#ifdef STRATA_ENABLE_SYCL
+    stage_service.finish();
+#endif
     VDBG("staged; launching\n");
     diag_window_.phase(VerifyPhase::running); // Rescuable before the potentially blocking launch.
 #ifdef STRATA_ENABLE_SYCL
-    const cudaError_t le = strata::sycl_backend::compat::graph_launch_with_completion(
-        window_graphs_.at(input, T).layer[0], cs_, layer_done_);
+    const cudaError_t le = service::measure(service::graph_submission, [&] {
+        return strata::sycl_backend::compat::graph_launch_with_completion(
+            window_graphs_.at(input, T).layer[0], cs_, layer_done_);
+    });
 #else
     const cudaError_t le = cudaGraphLaunch(exec_[T], cs_);
 #endif
@@ -1645,7 +1659,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
         // The graph submission's event covers all payload stores; the host
         // never races a device-written mapped sequence word.
-        const cudaError_t es = cudaEventSynchronize(layer_done_);
+        const cudaError_t es = service::measure(service::layer_completion, [&] {
+            return cudaEventSynchronize(layer_done_);
+        });
         if (es != cudaSuccess) {
             err = std::string("verify: layer completion: ") + cudaGetErrorString(es);
             return false;
@@ -1690,9 +1706,13 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #endif
         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
         progress_at("verify window: the CPU experts of layer", l);
-        if (pool != nullptr)
+        if (pool != nullptr) {
+#ifdef STRATA_ENABLE_SYCL
+            service::Part pool_service(service::cpu_pool);
+#endif
             pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
                  h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
+        }
 #ifdef STRATA_ENABLE_SYCL
         if (overlap_gpu_ && work_launched_ && work_status_ == cudaSuccess) {
             const auto status = query_event(work_done_, QueryPoint::resident_pool_return);
@@ -1734,7 +1754,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
         // DMA callbacks and staging sources must finish before the next graph
         // consumes them or the next CPU layer can reuse its transient storage.
-        if (!finish_expert_copies(err)) return false;
+        if (!service::measure(service::expert_retirement, [&] { return finish_expert_copies(err); })) return false;
         if (early_pcie_ && sink_.counts[2] > 0 && !pcie_launched_ && pcie_status_ == cudaSuccess)
             pcie_status_ = cudaErrorInvalidValue;
         if (pcie_status_ != cudaSuccess) {
@@ -1751,8 +1771,10 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             err = "verify: host results withheld" + released_note(release_gpu_waits(5000));
             return false;
         }
-        const cudaError_t next = strata::sycl_backend::compat::graph_launch_with_completion(
-            window_graphs_.at(input, T).layer[size_t(k + 1)], cs_, layer_done_);
+        const cudaError_t next = service::measure(service::graph_submission, [&] {
+            return strata::sycl_backend::compat::graph_launch_with_completion(
+                window_graphs_.at(input, T).layer[size_t(k + 1)], cs_, layer_done_);
+        });
         if (next != cudaSuccess) {
             err = std::string("verify: next segment launch: ") + cudaGetErrorString(next);
             return false;
@@ -1765,10 +1787,18 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     // spin kernel outlives the process - the case that left Windows GPUs "lost" until a power cycle.  The wait
     // itself stays a blocking sync: a cudaStreamQuery poll here cost IQ3_S ~3% decode (a core calling the driver
     // beside the expert workers).
+#ifdef STRATA_ENABLE_SYCL
+    const cudaError_t se = service::measure(service::final_compute, [&] { return cudaStreamSynchronize(cs_); });
+#else
     const cudaError_t se = cudaStreamSynchronize(cs_);
+#endif
     if (se != cudaSuccess) { err = std::string("verify: ") + cudaGetErrorString(se); return false; }
     progress_at("verify window: waiting for the expert copies", (int64_t) T);
+#ifdef STRATA_ENABLE_SYCL
+    const cudaError_t copy_status = service::measure(service::final_copies, [&] { return cudaStreamSynchronize(copy_); });
+#else
     const cudaError_t copy_status = cudaStreamSynchronize(copy_); // Host callbacks cannot reach the next window.
+#endif
     if (copy_status != cudaSuccess) { err = std::string("verify: copies: ") + cudaGetErrorString(copy_status); return false; }
     window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.
     if (prof_on_ && G == 1) {       // the window's GPU stage stamps
@@ -1818,7 +1848,12 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         SamplerParams sp = sampling_;
         sp.counter = (uint64_t) pos0;
         sample_tokens(head_logits_, T, (int) n_vocab_, hist_d_, hist_len_, sp, m_out_, cs_);
-        if (cudaStreamSynchronize(cs_) != cudaSuccess) {   // m_out_ is the mapped h_out_: synced, it is readable
+#ifdef STRATA_ENABLE_SYCL
+        const cudaError_t sample_status = service::measure(service::head_sampling, [&] { return cudaStreamSynchronize(cs_); });
+#else
+        const cudaError_t sample_status = cudaStreamSynchronize(cs_);
+#endif
+        if (sample_status != cudaSuccess) {   // m_out_ is the mapped h_out_: synced, it is readable
             err = "verify: the head sampling failed";
             return false;
         }

@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <exception>
 #include <cmath>
+#include "strata/sycl/decode_service_profile.hpp"
 #if defined(__linux__)
 #include <time.h>
 #endif
@@ -156,6 +157,7 @@ public:
 // Wrap exactly the blocking call, not argument lookup, submission or error check.
 template<class F> inline void blocking(Kind k, F&& f) {
     Wait observation(k);
+    decode_service_profile::NativeWait decode_observation;
     f();
 }
 // Regions must not overlap or begin inside an explicit wait. Invalid nesting

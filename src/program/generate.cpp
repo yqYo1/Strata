@@ -23,6 +23,9 @@
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/expert_source.hpp"
 #include "strata/core/cpu_work_census.hpp"
+#ifdef STRATA_ENABLE_SYCL
+#include "strata/sycl/decode_service_profile.hpp"
+#endif
 #include "strata/core/pinned.hpp"
 #include "strata/core/remote_experts.hpp"
 #include "strata/core/on_device.hpp"
@@ -6751,6 +6754,14 @@ int main(int argc, char** argv) {
             if (iq3_audit_enabled) iq3_audit_begin = strata::kernels::cpu::iq3_gu_audit_snapshot();
             auto mtp_observation = mtp.observe_draft_request(census_request);
 #endif
+#ifdef STRATA_ENABLE_SYCL
+            static const bool decode_service_enabled = [] {
+                const char* value = std::getenv("STRATA_SYCL_DECODE_SERVICE_PROFILE");
+                return value && std::strcmp(value, "1") == 0;
+            }();
+            strata::sycl_backend::decode_service_profile::Scope decode_service(
+                decode_service_enabled, census_request);
+#endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
             static const bool dec_timing = std::getenv("STRATA_DECODE_TIMING") != nullptr;
@@ -6921,6 +6932,9 @@ int main(int argc, char** argv) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+#ifdef STRATA_ENABLE_SYCL
+            decode_service.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
+#endif
 #ifdef STRATA_CPU_SERVICE_PROFILE
             if (!strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot())) {
                 std::printf("ERR cpu service profile output failed or snapshot invalid\n");
