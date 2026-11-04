@@ -299,6 +299,25 @@ component. Neither those new checks nor a speed comparison has run. The helper
 is not selected by production; after the observer cohort, qualify the CPU
 component and its setup-inclusive hot/stream cost before a decode-only model
 trial. Retire it if the component does not justify that trial.
+The prospective CPU-only `cpu_iq3_pair` benchmark uses 252 actual IQ3_XXS/IQ4_NL
+experts from one pinned model layer. It compares the existing decode NT1
+`native_gu_rows` entry with the direct pair entry, including that helper's
+layout checks, at 640 and 128 rows. Each shape has six-expert reuse and 252-expert
+stream access, with prequantized activation or one production activation
+quantization per six experts. Even the 128-row stream's requested GU footprint
+is about 60.3 MiB, above this CPU's 32 MiB L3; this does not prove DRAM traffic or
+saturation. Both entries keep the packed weights unchanged. All 252 experts and
+four deterministic activations need finite, bit-equal reference outputs before
+and after timing; every sample also checks its timed outputs against an untimed
+reference. Five samples per cell target 0.35 s with a 0.25 s eligibility floor,
+four warm passes and timer cost below 0.1% of the fastest warm pass. Model
+loading, hashing, allocation and reference checking stay outside timed work;
+the pack-inclusive cells include the specified activation setup. The eventual
+frozen plan must pin the full build/fixture/source inputs and alternate three
+independent reference/candidate pairs. No minimum gain is imposed; compare all
+three paired median directions separately for each cell. This is a direct
+single-core component experiment, not a production-pool route or model gain.
+It has not been compiled or run; the observer cohort remains serialized first.
 The reviewed retarget contract preserves the candidate's Q6/phase behavior and
 requires checked observer-output completion: a truncated record or failed
 write/flush cannot qualify attribution. The source review supplies no measured
