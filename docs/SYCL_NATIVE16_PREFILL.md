@@ -4929,6 +4929,10 @@ acceptance. Keep all samples and evaluate dedicated long-prefill/TTFT separately
 agent,task-quality,prompt-verify and physical262144/RESTORE gates remain pending.
 The short-output entries establish neither sustained TG nor a repeated speed
 decision,and do not replace the selected479a speed reference.
+Successful build/device/model raw output,JIT and the superseded host3fixture
+are now retired after source recovery. Both actual model-admission readers pass
+after deletion against84provider files and293controller inputs;the selected
+nine-ELF fallback and new three-ELF candidate remain for the imminent comparison.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
