@@ -22890,7 +22890,7 @@
   },
   "q6_byte_span_source_audit_20261104": {
     "classification": "decision_support",
-    "stage": "dispatched_source_audit_running",
+    "stage": "report_returned_native_review_running",
     "eligibility": {
       "schedulable_now": false,
       "prerequisite_evidence": [
@@ -22920,9 +22920,23 @@
       "dispatch": "ctx_5a74ae89158a",
       "terminal": "term_b23decf0-9de6-40b9-96c3-bff0191800a3",
       "main_owned_external_terminal": true,
-      "settled": false,
-      "turn_started": true
+      "settled": true,
+      "turn_started": true,
+      "worker_done_accepted": true,
+      "outcome": "succeeded",
+      "worker_done_message": "msg_146fd02d70bd",
+      "release_process_action": "none:external_terminal",
+      "main_closed_after_settlement": true,
+      "pty_killed": true,
+      "delivery_acknowledged": "delivery_86293fe5444c"
     },
-    "model_evidence": "Main verified actual idle TUI GPT-6-Luna high before dispatch;custom workspace-write explicitly enables sandbox network and disables startup updates. worker-start reports turn_started."
+    "model_evidence": "Main verified actual idle TUI GPT-6-Luna high before dispatch;custom workspace-write explicitly enables sandbox network and disables startup updates. worker-start reports turn_started.",
+    "review": {
+      "agent": "/root/review_q6_byte_span_audit_20261104",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "path": ".cache/research/2026-11-04/q6-byte-span-source-audit/review.json",
+      "status": "running"
+    }
   }
 }
