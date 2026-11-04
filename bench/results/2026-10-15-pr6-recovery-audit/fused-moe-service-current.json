@@ -126434,7 +126434,7 @@
     }
   },
   "native_prefill_preservation_v2": {
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "0e30be00f1d68b10827b9608b7cb13eb73e011a7",
     "arms": {
       "reference": {
@@ -127144,8 +127144,179 @@
         "environment_sha256": "da738eb0f43d30f8a92230b64563f33a60a50dcb9f34e2544874043cacee3626"
       }
     ],
-    "processes": [],
-    "request_hashes": {},
+    "processes": [
+      {
+        "index": 0,
+        "read": 65537,
+        "heads": 0,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "reference",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+          "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+          "bytes": 24058712
+        },
+        "native_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+        "native_identity": {
+          "pid": 980915,
+          "start_ticks": 213409262,
+          "sid": 980860
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 980915,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "samples": [
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 75440.4,
+            "prompt_tps": 868.7,
+            "ttft_s": 75.611,
+            "total_s": 77.555,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 66085.5,
+            "prompt_tps": 991.7,
+            "ttft_s": 66.231,
+            "total_s": 68.024,
+            "generated_tokens": 24,
+            "request_sha256": "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 66149.8,
+            "prompt_tps": 990.7,
+            "ttft_s": 66.3,
+            "total_s": 67.855,
+            "generated_tokens": 24,
+            "request_sha256": "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 65949.1,
+            "prompt_tps": 993.8,
+            "ttft_s": 66.093,
+            "total_s": 67.88,
+            "generated_tokens": 24,
+            "request_sha256": "9875bea89238c9b12914f2e96653fd3244c8f2d3b315c6c2f2ffa377223d7c7f",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 66085.5,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "route_shape": {
+          "rows": 65536,
+          "residual_gpu_rows": 65536,
+          "residual_gpu_bytes": 1342177280,
+          "residual_host_bytes": 0,
+          "prefill_slots": 384,
+          "staged": true,
+          "split": false,
+          "windows": 48,
+          "maximum_window_rows": 65536,
+          "staged_bank_checked_drain": true,
+          "split_guard_checked": false,
+          "target_snapshot_bytes": 0,
+          "draft_rebuilt_bytes": 0,
+          "physical_saturation_qualified": false,
+          "head_payload_bytes_verified": false,
+          "MTP_prefill": {
+            "placement_mode": 2,
+            "callbacks": 8,
+            "nominal_cells": 65536,
+            "declared_window": 32768,
+            "source_derived_first_needed": 32705,
+            "source_derived_token_boundaries": [
+              {
+                "callback": 3,
+                "source_derived_needed_cells": 63
+              }
+            ],
+            "internal_processed_rows_and_shapes_observed": false
+          },
+          "prefill_strategy": "throughput",
+          "GDN_FP16_storage": true,
+          "GDN_barriers": 3,
+          "physical_resource_saturation_qualified": false
+        },
+        "request_route_checks": [
+          {
+            "jobs": 20621,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37214720000,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          },
+          {
+            "jobs": 20591,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37173094400,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          },
+          {
+            "jobs": 20568,
+            "fused_down_jobs": 4217,
+            "requested_bank_H2D_bytes": 37137228800,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          },
+          {
+            "jobs": 20595,
+            "fused_down_jobs": 4215,
+            "requested_bank_H2D_bytes": 37190272000,
+            "requested_one_routing_map_H2D_bytes": 125829120
+          }
+        ]
+      }
+    ],
+    "request_hashes": {
+      "65537": [
+        "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+        "801d77e5b121cf8bf776cfa38b484555a49167e0afe15dc53e4cdbeac8c880da",
+        "e4290e599d3ac0e475fa0f5dad13de909a4f34eec5134c39d7c7c62302b9607d",
+        "9875bea89238c9b12914f2e96653fd3244c8f2d3b315c6c2f2ffa377223d7c7f"
+      ]
+    },
     "host_passed": true,
     "passed": false,
     "complete": false,

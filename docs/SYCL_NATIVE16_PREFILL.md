@@ -58,8 +58,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes pass for both benchmark and server. Model execution is next;
-  no V2 GPU result is established yet. V1 remains failed.
+  frontend probes pass for both benchmark and server. The first 64K reference
+  process passes all four requests and closes normally, without a fresh fault:
+  first-use PP 868.7 tok/s, subsequent-three median 991.700 tok/s and client
+  TTFT 66.231 s. One of 12 processes is closed; no paired decision exists yet.
+  V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
   Keep decode independently selected.
