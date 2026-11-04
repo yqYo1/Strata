@@ -53,6 +53,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with no fresh driver fault. Keep V1 failed and its bounded parser fixture.
   A new prospective V2 must recognize only that source-derived boundary and
   reject other unexpected fallbacks before collecting another comparison.
+- `native_prefill_preservation_v2` is now prepared with the same two engines,
+  cases and runtime safety. It explicitly fixes the existing 32768 MTP window
+  in both argument lists and checks the source-derived callback boundary.
+  Five explicit shapes, 25 corrupt variants and the actual failed long-request
+  window pass offline controls. All 15 model assets were hashed again; fresh
+  frontend probes and model execution are pending. V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
   Keep decode independently selected.
