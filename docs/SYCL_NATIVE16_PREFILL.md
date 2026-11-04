@@ -392,12 +392,13 @@ frozen plan must pin the full build/fixture/source inputs and alternate three
 independent reference/candidate pairs. No minimum gain is imposed; compare all
 three paired median directions separately for each cell. This is a direct
 single-core component experiment, not a production-pool route or model gain.
-It has not been compiled or run; the required observer cohort is now closed.
+The required observer cohort is now closed. V1 compiles, but its linker-input
+admission fails before any correctness or timing execution, as detailed below.
 The CPU-only CMake project also exposes `cpu_iq_single_exact_test`, reusing the
 maintained correctness fixture and the same freshly compiled `expert_cpu`
 library as the benchmark. This permits the compiler/ISA and correctness gate
-without linking or rebuilding a GPU engine. Compilation and execution remain
-pending a committed exact recipe and closure of the observer cohort.
+without linking or rebuilding a GPU engine. The new fixture has not executed;
+a fresh V2 pins the complete linker inputs before rebuilding.
 The benchmark emits deterministic weight/activation input fingerprints before
 timing; require them to match across all six processes in addition to the
 pinned model-range hashes. FNV fingerprints are consistency checks, not
@@ -408,7 +409,7 @@ official `ggml-org/llama.cpp` commit
 headers and CMake paths have no diff from that revision. The checkout's old
 directory name is not implementation provenance.
 The prospective CPU recipe uses a fresh external
-`cpu-iq3-pair-component-v1/build`, icpx/icx 2026.2, CMake Release/Ninja with
+`cpu-iq3-pair-component-v2/build`, icpx/icx 2026.2, CMake Release/Ninja with
 compile commands, and this CPU-only project with its pinned GGML directory.
 Build only `cpu_iq_single_exact_test` and `cpu_iq3_pair`, with four compile jobs;
 keep the known-good engine and active observer generation unchanged.
@@ -425,8 +426,19 @@ before/after each process. Preparation now passes at source
 `229fe7376dfeeb4c478b322934ce6fda882506cf`: 188 committed project files,
 1376 official GGML files and 12172 external inputs are frozen, including the
 exact generated header, tools, environment and 252-expert model-range hash.
-Compilation, fixture and timing remain pending; no production pair dispatch
-is selected. The observer cohort is closed and its successful full output is
+V1 configure, compile and dependency collection all exit0 with closed owners;
+compilation takes20.035s. Actual linker-input admission then fails on
+`/usr/lib/x86_64-linux-gnu/libm.so.6`. Static inspection of the complete trace
+finds four additional missing runtime objects: libc, libgcc_s, libstdc++ and
+the loader. The pinned `.so` linker scripts do not cover these selected ELF
+targets. V1 remains failed, and neither unadmitted executable may feed a test.
+V2 uses a fresh root and queries/hashes all five targets and their package
+versions before compilation, preserving the shared helper's existing contract
+for the retained engine. The same80 pair cases now explicitly cover all128
+sign selectors,16 scale nibbles,256 grid indices and signed FP16
+zero/subnormal/normal/max-finite scales, with coverage checks. The arithmetic
+candidate and production dispatch are unchanged. V2 preparation, compilation,
+fixture and timing remain pending. The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
 512 MiB process cap before library/scratch overhead. Its prospective measurement

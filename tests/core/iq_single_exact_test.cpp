@@ -5,6 +5,7 @@
 #include "ggml-cpu.h"
 #define GGML_COMMON_DECL_CPP
 #include "ggml-common.h"
+#include <array>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -17,7 +18,13 @@ bool pair_cases(unsigned& cases) {
     namespace cpu = strata::kernels::cpu;
     constexpr int rows = 640, n = 2560;
     constexpr float canary = 123.f;
+    constexpr uint16_t edge_scales[] = {0x0000, 0x8000, 0x0001, 0x8001,
+        0x03ff, 0x83ff, 0x0400, 0x8400, 0x3c00, 0xbc00, 0x7bff, 0xfbff};
     for (int padding : {0, 17}) {
+        std::array<bool, 128> sign_seen{};
+        std::array<bool, 16> nibble_seen{};
+        std::array<bool, 256> grid_seen{};
+        std::array<bool, sizeof(edge_scales) / sizeof(edge_scales[0])> edge_seen{};
         cpu::NativeFmt f;
         std::string error;
         if (!cpu::native_fmt(18, 20, n, rows, f, error)) return false;
@@ -37,10 +44,33 @@ bool pair_cases(unsigned& cases) {
             for (auto& byte : storage) byte = random() >> 24;
             for (size_t offset : {size_t(0), f.up_off}) for (int r = 0; r < rows; ++r)
                 for (int b = 0; b < n / 256; ++b) {
-                    const uint16_t scale = uint16_t(0x1400 + (random() & 1023) +
+                    auto* block = weights + offset + r * f.gu_row + b * sizeof(block_iq3_xxs);
+                    uint16_t scale = uint16_t(0x1400 + (random() & 1023) +
                         (seed == 5 ? 0x8000 : 0));
-                    std::memcpy(weights + offset + r * f.gu_row + b * sizeof(block_iq3_xxs),
-                        &scale, sizeof scale);
+                    if (seed >= 6) {
+                        const size_t edge = (r * 10 + b + seed + (offset != 0)) % edge_seen.size();
+                        scale = edge_scales[edge];
+                        edge_seen[edge] = true;
+                        auto* packed = block + offsetof(block_iq3_xxs, qs);
+                        for (unsigned group = 0; group < 8; ++group) {
+                            const unsigned ordinal = (r * 10 + b) * 8 + group + seed + (offset != 0);
+                            const unsigned nibble = (ordinal / 128) % 16;
+                            uint32_t gas = nibble << 28;
+                            nibble_seen[nibble] = true;
+                            for (unsigned j = 0; j < 4; ++j) {
+                                const unsigned sign = (ordinal + 31 * j) % 128;
+                                gas |= sign << (7 * j);
+                                sign_seen[sign] = true;
+                            }
+                            std::memcpy(packed + 64 + 4 * group, &gas, sizeof gas);
+                            for (unsigned j = 0; j < 8; ++j) {
+                                const uint8_t grid = uint8_t(8 * ordinal + j);
+                                packed[8 * group + j] = grid;
+                                grid_seen[grid] = true;
+                            }
+                        }
+                    }
+                    std::memcpy(block, &scale, sizeof scale);
                 }
             for (auto& a : act) {
                 a.d = seed == 1 ? 0.f : (seed % 2 ? -.002f : .001f);
@@ -81,6 +111,12 @@ bool pair_cases(unsigned& cases) {
                 ++cases;
             }
         }
+        const auto complete = [](const auto& seen) {
+            for (bool covered : seen) if (!covered) return false;
+            return true;
+        };
+        if (!complete(sign_seen) || !complete(nibble_seen) || !complete(grid_seen) ||
+            !complete(edge_seen)) return false;
         std::vector<float> untouched(rows + 2, canary);
         const auto weights_before = storage;
         const auto act_before = raw_act;

@@ -26,9 +26,9 @@ import measurement_guards as guards
 import host_link_inventory as links
 
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'cpu-iq3-pair-component-v1'
+ROOT = B / 'cpu-iq3-pair-component-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'cpu_iq3_pair_component_v1'
+KEY = 'cpu_iq3_pair_component_v2'
 GGML = Path('/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011')
 GGML_REV = '3cf03257f219afbe7334045ff7c6a06ac68c627d'
 SDK = B / 'prefill-expert-staging-v3/sdk-inputs.json'
@@ -43,6 +43,38 @@ PROJECT = ('bench/sycl/cpu_roofline', 'src/kernels/cpu', 'include', 'third_party
     'tests/core/iq_single_exact_test.cpp', 'tools/sycl/measurement_owner.py',
     'tools/sycl/measurement_guards.py', 'tools/sycl/host_link_inventory.py')
 need, digest = owned.require, owned.sha
+
+
+def host_inventory(environment):
+    # Keep the shared helper's historical contract intact. CPU V1 stopped on
+    # the actual shared objects selected by its already-pinned linker scripts.
+    host = links.inventory(CXX, environment)
+    runtime = {}
+    for name in ('libm.so.6', 'libstdc++.so.6', 'libgcc_s.so.1', 'libc.so.6',
+                 'ld-linux-x86-64.so.2'):
+        argv = [CXX, '-print-file-name=' + name]
+        reported = subprocess.check_output(argv, env=environment, text=True, timeout=15).strip()
+        path = Path(reported)
+        need(path.is_absolute() and path.is_file(), 'unresolved CPU runtime input: ' + name)
+        path = path.resolve()
+        need(path.is_relative_to('/usr'), 'non-system CPU runtime input: ' + str(path))
+        runtime[str(path)] = digest(path)
+        host['compiler_queries'].append(dict(argv=argv, reported=reported, resolved=str(path)))
+    ownership = subprocess.check_output(['/usr/bin/dpkg-query', '-S', *runtime],
+        env=environment, text=True, timeout=45)
+    covered, packages = set(), set()
+    for line in ownership.splitlines():
+        package, separator, name = line.partition(': /')
+        if separator and '/' + name in runtime:
+            covered.add('/' + name); packages.add(package)
+    need(covered == set(runtime), 'unowned CPU runtime input')
+    versions = subprocess.check_output(['/usr/bin/dpkg-query', '-W',
+        '-f=${binary:Package} ${Version}\n', *sorted(packages)],
+        env=environment, text=True, timeout=15).splitlines()
+    host['files'].update(runtime)
+    host['packages'] = sorted(set(host['packages']) | set(versions))
+    host['scope'] += ' CPU V2 also freezes all five shared-object/loader targets exposed by V1; V1 remains failed.'
+    return host
 
 
 def write(path, value):
@@ -131,7 +163,7 @@ def prepare():
         LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib', OMP_NUM_THREADS='1',
         PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1', STRATA_IQ_SINGLE_EXACT='0',
         TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
-    host = links.inventory(CXX, env)
+    host = host_inventory(env)
     allowed.update(host['files'])
     tools = {str(Path(p).resolve()):digest(p) for p in
         (CC, CXX, '/usr/bin/cmake', '/usr/bin/ninja', '/usr/bin/git', '/usr/bin/ldd', sys.executable)}
@@ -168,7 +200,7 @@ def prepare():
         order=list(ORDER), processes=[], commands=[], active=False, ownership_closed=True,
         passed=False, complete=False, GPU_executed=False, production_selected=False,
         protocol=dict(question='Does sharing packed IQ3_XXS gate/up activation loads lower actual NT1 GU cost?',
-            correctness='Same-library fixture must exit0,not ISA-skip77:384 original cases,80 pair cases,GGML bit parity,finite outputs,padded/unaligned inputs,canaries and actual alias/refusal target snapshots. Each measured process also validates all252 actual experts/four activations/full640 and128 rows before/after timing and checks every sample output.',
+            correctness='Same-library fixture must exit0,not ISA-skip77:384 original cases,80 pair cases,GGML bit parity,finite outputs,padded/unaligned inputs,canaries and actual alias/refusal target snapshots. Pair inputs explicitly cover all128 sign selectors,16 scale nibbles,256 grid indices,and signed FP16 zero/subnormal/normal/max-finite scales. Each measured process also validates all252 actual experts/four activations/full640 and128 rows before/after timing and checks every sample output.',
             comparison='Single binary,six independent processes off/on,on/off,off/on. Eight cells:640/128rows,prequant/one production quantization per six experts,reuse6/stream252. Direct candidate entry includes bounds/layout checks;reference is actual native_gu_rows/decode NT1 with SINGLE_EXACT0. Not production-pool dispatch.',
             timing='Four warm passes;five samples per cell,target0.35s,floor0.25s,cap1e6passes,timer<0.1percent fastest warm pass. Setup/load/hash/reference outside timing;pack cells include activation quantization. Preserve all individual values and all process results.',
             decision='For each cell,three candidate/reference median ns-per-expert directions separately;all three<1 supports component gain,no arbitrary minimum. Require identical input fingerprints,geometry and actual pinned core across all6. No model trial follows from a cell that failed its performance gate.',
