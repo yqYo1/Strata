@@ -437,8 +437,10 @@ versions before compilation, preserving the shared helper's existing contract
 for the retained engine. The same80 pair cases now explicitly cover all128
 sign selectors,16 scale nibbles,256 grid indices and signed FP16
 zero/subnormal/normal/max-finite scales, with coverage checks. The arithmetic
-candidate and production dispatch are unchanged. V2 preparation, compilation,
-fixture and timing remain pending. The observer cohort is closed and its successful full output is
+candidate and production dispatch are unchanged. V2 preparation passes at
+`39963e5ab`, with188 project,1376 official GGML and12177 external inputs,
+including all five runtime targets. Compilation, fixture and timing remain
+pending. The observer cohort is closed and its successful full output is
 retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
 512 MiB process cap before library/scratch overhead. Its prospective measurement
