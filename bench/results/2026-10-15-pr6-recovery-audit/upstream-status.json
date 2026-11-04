@@ -679,7 +679,7 @@
   },
   "current_engine_role": "Corrected worker/map generation with closed32K lifecycle checks;117K native/benchmark exit0 but controller split-route gate fails. Fresh corrected extent and clean repeated-speed/length-fit qualification remain pending.",
   "web_api_key_input_port": {
-    "stage": "source_port_validation_prepared",
+    "stage": "source_port_validation_v2_prepared",
     "upstream": "Niko1221/Strata",
     "upstream_commit": "2ba95cf61f3d9187ee30c0410762b112d519cfae",
     "covered_by_fetched_target": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
@@ -701,8 +701,8 @@
       "sha256": "f89c69d163e2686ed04cae19f5680668d4c1c64a072a70c1a6e50842a7a9e433"
     },
     "validation_plan": {
-      "executor": "tools/sycl/measurement_owner.py::Owner.run;once per listed command,in order,stop on first error;Main holds owned-v0141-measurement.lock and checks actual GPU job terminal first",
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v1",
+      "executor": "tools/sycl/measurement_owner.py::Owner(output=owner_output).run;owner_output.parent is the private plan root. Once per listed command,in order,stop on first error;Main holds owned-v0141-measurement.lock and checks actual GPU job terminal first",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v2",
       "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
       "commands": [
         {
@@ -727,7 +727,7 @@
         "PATH": "/usr/bin:/bin",
         "LC_ALL": "C",
         "HOME": "/home/yayoi",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v1/tmp"
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v2/tmp"
       },
       "budgets": {
         "wall": 30,
@@ -738,10 +738,28 @@
         "total_cap": 8388608
       },
       "acceptance": "Both normal0,anchored/reaped/empty sessions,no supervisor errors/cleanup,both syntax stderr and behavior stderr empty,exactly4behavior cases pass with0failed/0skipped. Entire browser rendering is outside this focused host scope.",
-      "retention": "Commit useful result/source/commands and counts;retire normal stdout/stderr after verification. No native engine build or model speed claim."
+      "retention": "Commit useful result/source/commands and counts;retire normal stdout/stderr after verification. No native engine build or model speed claim.",
+      "owner_output": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v2/commands"
     },
     "validation_complete": false,
     "inference_changed": false,
-    "whole_feature_ledger_complete": false
+    "whole_feature_ledger_complete": false,
+    "source_commit": "792d9e668d33483c2818dbd65ee2c2337cbb684f",
+    "validation_attempts": [
+      {
+        "stage": "failed_supervisor_output_scope",
+        "source_commit": "792d9e668d33483c2818dbd65ee2c2337cbb684f",
+        "execution_recipe_commit": "c15e200176043458e3b648949a9c9454c5a7ecc2",
+        "original_plan_commit": "792d9e668d33483c2818dbd65ee2c2337cbb684f",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v1",
+        "native_syntax_exit_code": 0,
+        "observation_complete": false,
+        "ownership_closed": true,
+        "behavior_executed": false,
+        "speed_or_function_qualified": false,
+        "error": "Owner output was the plan root,so its output.parent budget scanned all post-reboot-tuning state and raised RuntimeError('artifact cap') at measurement_owner.py:224. Budget remains8MiB;new plan scopes output inside its private root.",
+        "outcome_unchanged": true
+      }
+    ]
   }
 }

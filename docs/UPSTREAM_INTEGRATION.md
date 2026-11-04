@@ -31,7 +31,11 @@ November 4. Fetching a release does not mean that all its functions were ported.
 The current bounded functional port is Niko commit `2ba95cf61f3d9187ee30c0410762b112d519cfae`:
 the web page uses an edited API key immediately, including when browser storage
 is blocked or full, and distinguishes saved from page-only keys. Source is
-ported; focused Node syntax and four behavior cases are prepared, not yet run.
+ported. The first host run failed its supervisor's artifact cap because the
+output directory made it scan the enclosing state root; the syntax child exited
+zero, but observation was incomplete and behavior tests were not run. A new
+plan keeps output inside a private root with the same 8 MiB budget; syntax and
+four behavior cases remain unqualified until that run closes.
 The exact source/runtime pins, commands and budgets are in
 `web_api_key_input_port` in the status file. This changes no inference path and
 does not complete the other UI or server imports.
