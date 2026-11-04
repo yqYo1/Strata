@@ -126443,7 +126443,7 @@
     }
   },
   "native_prefill_preservation_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "0e30be00f1d68b10827b9608b7cb13eb73e011a7",
     "arms": {
       "reference": {
@@ -129265,6 +129265,18 @@
           "devcoredump": false
         },
         "passed": true,
+        "artifact_retirement": {
+          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-preservation-v2-process10-raw-retirement-20261104.json",
+          "manifest_sha256": "9fd2c40c7ec3fa6034117e4d374035369f8c3c53b770633e7f68507b3c46e89d",
+          "completed": true,
+          "evidence_commit": "605013256639672c02a9bf2fa4d71e4253904043",
+          "files": 68,
+          "bytes": 12239516,
+          "kept_process_inputs": [
+            "config.json",
+            "plan.json"
+          ]
+        },
         "route_shape": {
           "rows": 117488,
           "residual_gpu_rows": 117488,
@@ -129320,19 +129332,221 @@
             "requested_bank_H2D_bytes": 38540748800,
             "requested_one_routing_map_H2D_bytes": 225576960
           }
+        ]
+      },
+      {
+        "index": 11,
+        "read": 117489,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "kernel": "candidate",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/build/strata",
+          "sha256": "a99aa1ac98c397933ca76d59361fec32aba335f6904b63c25d95efc52ce22734",
+          "bytes": 24190256
+        },
+        "native_source_commit": "05a9b45c0a3a266779d4757a855b45a3bb42a62e",
+        "native_identity": {
+          "pid": 1519677,
+          "start_ticks": 214662479,
+          "sid": 1519627
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1519677,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "samples": [
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 121260.9,
+            "prompt_tps": 968.9,
+            "ttft_s": 121.431,
+            "total_s": 123.279,
+            "generated_tokens": 24,
+            "request_sha256": "cc93e6f7fa6df4b490e4e46d6b912c1c2e3c357bec2f7b3bb7ef7dfb115284ba",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112344.1,
+            "prompt_tps": 1045.8,
+            "ttft_s": 112.518,
+            "total_s": 114.111,
+            "generated_tokens": 24,
+            "request_sha256": "8f5b6250117fe11200c61a8ce2a00e19276e131c11168db63d7432fe1902a835",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 111964.5,
+            "prompt_tps": 1049.3,
+            "ttft_s": 112.167,
+            "total_s": 114.009,
+            "generated_tokens": 24,
+            "request_sha256": "b870e7d84061a708cf99a59b37116fa012a9681a0a1f537cc9f6143007a26660",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 117489,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112180.7,
+            "prompt_tps": 1047.3,
+            "ttft_s": 112.354,
+            "total_s": 114.114,
+            "generated_tokens": 24,
+            "request_sha256": "06aa6dae3f0706f55e8d3ff0ebc048f9fa024ca06367921843738fd5d57604a2",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
         ],
-        "artifact_retirement": {
-          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-preservation-v2-process10-raw-retirement-20261104.json",
-          "manifest_sha256": "9fd2c40c7ec3fa6034117e4d374035369f8c3c53b770633e7f68507b3c46e89d",
-          "completed": true,
-          "evidence_commit": "605013256639672c02a9bf2fa4d71e4253904043",
-          "files": 68,
-          "bytes": 12239516,
-          "kept_process_inputs": [
-            "config.json",
-            "plan.json"
-          ]
-        }
+        "subsequent_median_ms": 112180.7,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "route_shape": {
+          "rows": 117488,
+          "residual_gpu_rows": 117488,
+          "residual_gpu_bytes": 2406154240,
+          "residual_host_bytes": 0,
+          "prefill_slots": 128,
+          "staged": true,
+          "split": true,
+          "windows": 48,
+          "maximum_window_rows": 117488,
+          "staged_bank_checked_drain": true,
+          "split_guard_checked": true,
+          "target_snapshot_bytes": 521472000,
+          "draft_rebuilt_bytes": 223227900,
+          "physical_saturation_qualified": false,
+          "head_payload_bytes_verified": false,
+          "MTP_prefill": {
+            "placement_mode": 2,
+            "callbacks": 15,
+            "nominal_cells": 117488,
+            "declared_window": 32768,
+            "source_derived_first_needed": 84657,
+            "source_derived_token_boundaries": [],
+            "internal_processed_rows_and_shapes_observed": false
+          },
+          "prefill_strategy": "throughput",
+          "GDN_FP16_storage": true,
+          "GDN_barriers": 3,
+          "physical_resource_saturation_qualified": false
+        },
+        "request_route_checks": [
+          {
+            "jobs": 23816,
+            "fused_down_jobs": 7441,
+            "requested_bank_H2D_bytes": 38540800000,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 23840,
+            "fused_down_jobs": 7434,
+            "requested_bank_H2D_bytes": 38589209600,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 23820,
+            "fused_down_jobs": 7423,
+            "requested_bank_H2D_bytes": 38507443200,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          },
+          {
+            "jobs": 23841,
+            "fused_down_jobs": 7433,
+            "requested_bank_H2D_bytes": 38540748800,
+            "requested_one_routing_map_H2D_bytes": 225576960,
+            "Q6_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "reference": 21,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "reference": 21,
+                "columns": 82
+              }
+            ]
+          }
+        ]
       }
     ],
     "request_hashes": {
@@ -129350,8 +129564,8 @@
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "inference_adopted": false,
@@ -129390,6 +129604,123 @@
         "passed": true
       }
     ],
+    "decision": {
+      "lengths": {
+        "65537": {
+          "candidate_over_reference_prompt_time": [
+            0.9989453057024612,
+            0.9950896008052511,
+            0.9986780709515923
+          ],
+          "candidate_over_reference_TTFT": [
+            0.9989430931134968,
+            0.993839990360865,
+            0.9994264843490598
+          ],
+          "warmed_prompt_nonregression_evidence": true,
+          "warmed_TTFT_nonregression_evidence": true,
+          "consistent_prompt_regression": false,
+          "consistent_TTFT_regression": false,
+          "mixed_directions_require_further_evidence": true,
+          "minimum_percentage_gain_required": false,
+          "arms": {
+            "reference": {
+              "first_use_pp": [
+                868.7255104691916,
+                867.705295045221,
+                865.7097718458401
+              ],
+              "subsequent_process_pp": [
+                991.7001460229551,
+                990.4980979570987,
+                991.2501607036171
+              ],
+              "subsequent_process_TTFT": [
+                66.231,
+                66.396,
+                66.258
+              ]
+            },
+            "candidate": {
+              "first_use_pp": [
+                870.2562951730035,
+                865.7715283667425,
+                874.6149863076587
+              ],
+              "subsequent_process_pp": [
+                992.7471908240149,
+                995.3858397832347,
+                992.5622575842708
+              ],
+              "subsequent_process_TTFT": [
+                66.161,
+                65.987,
+                66.22
+              ]
+            }
+          }
+        },
+        "117489": {
+          "candidate_over_reference_prompt_time": [
+            0.9955647806377708,
+            1.0024825172635592,
+            1.00158656464559
+          ],
+          "candidate_over_reference_TTFT": [
+            0.9955033014298791,
+            1.0024654083555904,
+            1.0015510786236406
+          ],
+          "warmed_prompt_nonregression_evidence": false,
+          "warmed_TTFT_nonregression_evidence": false,
+          "consistent_prompt_regression": false,
+          "consistent_TTFT_regression": false,
+          "mixed_directions_require_further_evidence": true,
+          "minimum_percentage_gain_required": false,
+          "arms": {
+            "reference": {
+              "first_use_pp": [
+                966.3537580698094,
+                959.963722229939,
+                969.472376114585
+              ],
+              "subsequent_process_pp": [
+                1045.7344725043993,
+                1051.0575523542764,
+                1048.9808308706017
+              ],
+              "subsequent_process_TTFT": [
+                112.527,
+                111.949,
+                112.18
+              ]
+            },
+            "candidate": {
+              "first_use_pp": [
+                968.4367226022147,
+                967.8081006944159,
+                968.8943426941413
+              ],
+              "subsequent_process_pp": [
+                1050.3931967485723,
+                1048.454745348887,
+                1047.3191912690863
+              ],
+              "subsequent_process_TTFT": [
+                112.021,
+                112.225,
+                112.354
+              ]
+            }
+          }
+        }
+      },
+      "inference_adopted": false,
+      "physical262144_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "TTFT_strategy_qualified": false,
+      "limits": "Matched throughput-route PP/client-TTFT preservation only;not a sustained TG or task/agent/full-context/RESTORE test."
+    },
     "source_inputs": {
       "files": 295,
       "aggregate_sha256": "d2621e36df556eea2b5d160e203a23659d38b1b58316e691cf72b5003a4c2d00"

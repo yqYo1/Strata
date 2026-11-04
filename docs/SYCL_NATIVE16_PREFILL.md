@@ -53,31 +53,31 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with no fresh driver fault. Keep V1 failed and its bounded parser fixture.
   A new prospective V2 must recognize only that source-derived boundary and
   reject other unexpected fallbacks before collecting another comparison.
-- `native_prefill_preservation_v2` is now prepared with the same two engines,
+- `native_prefill_preservation_v2` is closed with the same two engines,
   cases and runtime safety. It explicitly fixes the existing 32768 MTP window
   in both argument lists and checks the source-derived callback boundary.
   Five explicit shapes, 25 corrupt variants and the actual failed long-request
   window pass offline controls. All 15 model assets were hashed again; fresh
-  frontend probes pass for both benchmark and server. Eleven of 12 processes and
-  all 44 requests pass with normal exits, quiet validation, closed owners and
-  no fresh fault. All three completed 64K pairs support warmed prompt-time and
+  frontend probes pass for both benchmark and server. All 12 processes and
+  48 requests pass with normal exits, quiet validation, closed owners and
+  no fresh fault; all 15 model-asset hashes pass again at final closure.
+  All three completed 64K pairs support warmed prompt-time and
   client-TTFT nonregression separately: candidate/reference prompt-time ratios
   are 0.998945/0.995090/0.998678 and TTFT ratios are
   0.998943/0.993840/0.999426. Reference/candidate process-median PP is
   991.250/992.747 tok/s and client TTFT is 66.258/66.161 s. Each arm has three
   independent processes and nine subsequent requests; first use remains separate.
-  The first 117K pair
-  has reference versus candidate first-use PP
-  966.354 versus 968.437, warmed PP 1045.734 versus 1050.393 tok/s, and warmed
-  client TTFT 112.527 versus 112.021 s. Its candidate/reference warmed
-  prompt-time/TTFT ratios are 0.995565/0.995503. The opposite-order second 117K
-  pair has reference/candidate warmed PP 1051.058/1048.455 tok/s and client
-  TTFT 111.949/112.225 s. Its candidate/reference prompt-time/TTFT ratios are
-  1.002483/1.002465: directions are mixed across the two 117K pairs, so neither
-  nonregression nor a consistent slowdown is established. The final 117K
-  reference passes with warmed PP 1048.981 tok/s and client TTFT 112.180 s;
-  its candidate remains pending for the required three-pair decision. No sustained
-  decode qualification follows from these short-output checks.
+  All three 117K pairs are also complete. Their candidate/reference warmed
+  prompt-time ratios are 0.995565/1.002483/1.001587, and TTFT ratios are
+  0.995503/1.002465/1.001551. One pair favors the candidate and two favor the
+  reference, so neither nonregression nor a consistent slowdown is established.
+  Reference/candidate aggregate warmed PP is 1048.981/1048.455 tok/s and client
+  TTFT is 112.180/112.225 s, each from three process medians and nine warmed
+  requests. First-use PP remains separate: reference
+  966.354/959.964/969.472 and candidate 968.437/967.808/968.894 tok/s.
+  Successful execution does not satisfy the 117K performance-preservation gate;
+  no inference adoption or sustained decode qualification follows from these
+  short-output checks.
   V1 remains failed.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
