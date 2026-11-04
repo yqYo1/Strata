@@ -23056,15 +23056,6 @@
   },
   "compressed_q6_small_columns_xmx_20261104": {
     "classification": "decision_support",
-    "stage": "completed_review_pending",
-    "eligibility": {
-      "schedulable_now": true,
-      "prerequisite_evidence": [
-        "Corrected Q6 source225 passed actual numerical/Q81 and3x35resident timing cases;30eligible shapes.",
-        "The full target2560x248320,T4 component remains10.893660ms;model Q6 service is material observed service,not a critical-path or saturation proof.",
-        "Prior October22/24 relevant sections cover original-contract row/column reuse and persistent expansion,not a verified compressed/reordered XMX or prospectively A16 fused-dequant implementation."
-      ]
-    },
     "question": "Compare concrete compressed/reordered Q6_K small-column Xe2 XMX dispatch versus production16-bit fused-dequant matrix methods for resident T1/T4,without full persistent expansion. Trace source gates,scale/rounding/packing/scratch and counterexamples.",
     "prior_topics": [
       "target_q6k_multicolumn_resource_methods_20261024",
@@ -23072,49 +23063,52 @@
       "mtp_q8_projection_gpu_methods_20261022"
     ],
     "source_reference": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-model-v3/source",
-    "report_path": ".cache/research/2026-11-04/q6-xmx-small-columns/report.md",
     "report_budget_bytes": 12288,
     "worker_model": "gpt-6-luna",
     "worker_effort": "high",
     "consumer": "Next independent decode-kernel architecture choice after the current same-binary Q6 model screen;no current XMX speed/quality claim.",
-    "review_point": "Native Luna-max source/provenance/novelty review;Main reads short digest first.",
-    "dispatch": {
-      "run_id": "run_c09a9cbdb4c9",
-      "task_id": "task_9101b4c98c4d",
-      "dispatch_id": "ctx_4c6cd49fcc12",
-      "terminal": "term_e378682a-60a9-4067-8f14-ca4a41951b0e",
-      "request_id": "be33bc57-7784-4408-a4e6-d3fef139237a",
-      "turn_start": "observed",
-      "input_accepted": true,
-      "main_created_terminal": true,
-      "model_banner_verified": "GPT-6-Luna high",
-      "next_action": "Worker settled,exact Main-created terminal closed and delivery acknowledged;wait for native Luna-max review without steering while Main prepares the clean long-generation comparison."
-    },
+    "stage": "reviewed_corrected_reference",
+    "main_reads_body_on_arrival": false,
     "ownership_closed": true,
-    "completion": {
-      "worker_state": "succeeded",
-      "dispatch_status": "completed",
-      "worker_done_id": "msg_d59647a62324",
-      "delivery_id": "delivery_fa55e7e6daf4",
-      "acknowledged": true,
-      "release_state": "retained",
-      "release_reason": "external_terminal",
-      "release_process_action": "none",
-      "main_created_terminal_closed": true,
-      "pty_killed": true
-    },
+    "report_path": "docs/research/q6-small-columns-xmx.md",
     "report": {
-      "path": ".cache/research/2026-11-04/q6-xmx-small-columns/report.md",
-      "bytes": 10220,
-      "sha256": "575981236239afd790084c4087df496ec046ac4cc8ad83cc91e2dd9134dab522"
+      "path": "docs/research/q6-small-columns-xmx.md",
+      "bytes": 12059,
+      "sha256": "4bc3f08874a20b484341d263542030c21b65297bd428f735b9762ffd706738bc"
     },
     "review": {
-      "agent": "/root/review_q6_xmx_small_columns_20261104",
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "path": ".cache/research/2026-11-04/q6-xmx-small-columns/review.md",
-      "stage": "running",
-      "main_read_report_body": false
+      "stage": "completed_corrections_applied",
+      "original_report_sha256": "575981236239afd790084c4087df496ec046ac4cc8ad83cc91e2dd9134dab522",
+      "review_sha256": "31454a8e77621b6365871239d0935f1379c0ac87fbc8fc883169beb6dba099e9",
+      "verdict": "conditional_reference",
+      "main_read_report_body": false,
+      "transaction_archive_commit": "dbf1af263d88ffcb3c14aa57563b013941bb497d"
+    },
+    "review_digest": "Separate fixed GGML from the unpinned current XMX route. SGLang W4A16 is a MoE-specific reference,not direct Q6 full-head evidence;retain license,scale and rounding differences. Compressed Q6 int8-DPAS precedes the prospective A16 alternative as a conditional architecture choice. Logical payload is not measured physical traffic. No model speed,quality or saturation claim follows.",
+    "retrieval_terms": [
+      "compressed Q6_K",
+      "small columns",
+      "Xe2 XMX",
+      "int8 DPAS",
+      "W4A16 MoE",
+      "per16 scales",
+      "transient dequantization"
+    ],
+    "review_point": "After the clean same-binary Q6 cohort,review an immutable compatible source,license and actual dispatch before designing the next bounded component. Model/task/physical-context gates remain separate.",
+    "eligibility": {
+      "schedulable_now": false,
+      "reason": "This investigation is complete;do not duplicate it. The next architecture trial has unmet prerequisites."
+    },
+    "conditional_next_scope": {
+      "name": "Compressed Q6 small-column int8-DPAS component",
+      "schedulable_now": false,
+      "prerequisites": [
+        "Close the frozen same-binary clean Q6 generation comparison and inspect its decision.",
+        "Pin immutable source and compatible license;verify actual Xe2/B570 dispatch and Q6 per16 scale,packing,padding and numerical contract.",
+        "Commit a bounded numerical/lifetime/residency and repeated production-entry comparison before executing a component;model speed and adoption remain separate."
+      ]
     }
   }
 }
