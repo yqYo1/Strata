@@ -501,9 +501,13 @@ match `e5d7a50a8e7d5ac5`. All native outputs are unchanged. V1 stays failed;
 no GPU or model speed qualification follows. Only the six
 qualified CPU/fixture files and checked per-request IQ3 route-output patch
 `7969ccb9f` differ from the prior fixed-Q6 observer source; GPU math, prefill,
-placement and graph/runtime sources remain byte-identical. Its five targets
-need fresh same-build arithmetic/pool, traced device and short-model admission
-before a committed long-generation comparison. The closed observer and
+placement and graph/runtime sources remain byte-identical. The same-build
+`decode_iq3_phase_device_v1` gate now passes submission10 and phase-cache16
+windows/12 captures, with strict traced validation, normal exits, closed owners
+and no fresh driver fault. Arithmetic/pool and small device prerequisites pass;
+short actual-model admission still precedes the committed long-generation
+comparison. The preload retains a runtime reference until exit, so ordinary
+runtime teardown and model speed remain unqualified. The closed observer and
 CPU-only comparison outputs are now retired after original Git source/recipe
 recovery and consumer checks:859 files,160869493 bytes. All240 samples and
 the original CPU recipe remain at `cf0a6b175261f013099965dcb9ca19d1e840ad2d`;
