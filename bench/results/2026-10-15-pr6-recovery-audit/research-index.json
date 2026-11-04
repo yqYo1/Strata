@@ -22887,5 +22887,32 @@
       "model_qualified": false,
       "performance_qualified": false
     }
+  },
+  "q6_byte_span_source_audit_20261104": {
+    "classification": "decision_support",
+    "stage": "eligible_not_dispatched",
+    "eligibility": {
+      "schedulable_now": true,
+      "prerequisite_evidence": [
+        "bada8801c:committed all-field byte-span Q6/Q81 fix and every-byte quantizer oracle",
+        "6dab2468e:closed phase-cache/submission device gates",
+        "q6_usm_block_producer_contract_20261104:reviewed independent Block-view debt"
+      ]
+    },
+    "source_commit": "bada8801c48561cb9c9bae9eadcea3112933ccc9",
+    "source_files": {
+      "src/kernels/sycl/native_mmvq.cpp": "e11821dc10a71670236d45f9bdb1387b185118389e000d42385abbe9ce7197e4",
+      "bench/sycl/q6_columns.cpp": "0247b7f88f3e6114a618e56901f725e5a5b4c3ca4abc5f714d2373ba22a63f2f",
+      "include/strata/kernels/native_mmvq.hpp": "1798072d98d3b15ee8fbdeb067d81df5c45dfed6378907748bb9eb09cc198e13",
+      "tools/sycl/measure_q6_columns.py": "fc0eb61a9490123b6768ff2a308dce5ac7b61ff857599b370fad13a3bb0ea7af"
+    },
+    "question": "Check all four trait caller families preserve Q6 byte offsets,avoid typed Block pointer arithmetic/member access,and keep Q81 writer/reader fields consistent;identify concrete bounds/type/ordering defects without duplicating the prior contract survey.",
+    "report_path": ".cache/research/2026-11-04/q6-byte-span-source-audit/report.md",
+    "report_budget_bytes": 12288,
+    "worker_model": "gpt-6-luna",
+    "worker_effort": "high",
+    "main_reads_body_on_arrival": false,
+    "consumer": "Independent source audit of the new concrete byte-span implementation while Main rebuilds its normal-production component. No GPU/model/performance eligibility inferred from research.",
+    "review_point": "After native Luna-max review and the bounded Main source/numerical decision;retain compact actionable findings,retire transaction files."
   }
 }

@@ -4861,7 +4861,15 @@ raw device allocations and SYCL byte copies. Before full Q6 numerical/model
 qualification,resolve every consumed Q6 field and the used Q81 scratch view
 through a documented object-creation contract or byte-based field access. The
 local scalar-load correction alone does not settle that separate contract debt.
-No new numerical or speed result follows from the review.
+No new numerical or speed result follows from the review. The Main-authored
+source at`bada8801c`now removes Q6 typed Block arithmetic/member access across
+reference,specialized,grouped and prompt trait callers. Every Q6 scale/half/word
+and Q81 consumer field uses byte access or a copy into a live scalar;the Q81
+scratch writer copies a live local half pair into its encoded byte span. Other
+formats retain their legacy consumers. The new fixture checks every encoded
+Q81 byte against a host XOR-sum/rounding reference outside timers,including
+zero and constant blocks,before its scalar Q6 dot check. This remains unbuilt
+and unqualified source;the new component plan precedes all execution.
 Existing owned launcher,collector admission and trace reducers remain the
 implementation basis.
 
