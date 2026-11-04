@@ -23928,5 +23928,146 @@
     "ownership_closed": true,
     "implementation_adopted": false,
     "next": "Retrieve corrected sections only for the named functional/component decision;inference inventory/resolver is incomplete and uncertain source lineage stays held."
+  },
+  "upstream_v0210_compiled_iq_moe_20261105": {
+    "classification": "decision_support",
+    "state": "closed_reviewed_source_only",
+    "report_path": ".cache/research/2026-11-05/upstream-v0210-followup/compiled-iq-moe/report.md",
+    "report_sha256": "6d42ab824a1fe8cdfe9efce011cfa26f81ecaf9ec45eee3e86cce684a66656f2",
+    "report_bytes": 12544,
+    "native_review_path": ".cache/research/2026-11-05/upstream-v0210-followup/review.json",
+    "native_review_sha256": "f50ee99bcb4bf83dfe98abd617962f2e02518c2e3bd2a191219221483a4c6a67",
+    "source_upstream": "Niko1221/Strata",
+    "upstream_revision": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "fork_source_revision": "a6735243856f5fd072e655592533eb6f48d34b2a",
+    "ownership_closed": true,
+    "verdict": "Accept as a useful bounded Arc quantized-kernel map, with one material selector omission. It correctly separates the current fork and measured IQ3 source from Niko, and does not claim model reachability or adoption.",
+    "material_corrections": [
+      {
+        "report_anchor": "report.md:19",
+        "correction": "The selector inventory omits the new default-on STRATA_IQ4NL_FAST path. It is distinct from default-off STRATA_IQ4NL_LUT_SWAR: iq_kernels.dp.cpp:458-480 enables aligned wider loads plus iq4nl_pair by default, while :416-432 gates the optional SWAR lookup. The surrounding prose partly describes the fast path's load/codebook mechanism but does not identify its selector or default. Include it separately in any route/candidate decision.",
+        "source_anchors": [
+          "Niko ffa80d7 sycl/src/kernels/cuda/iq_kernels.dp.cpp:412-480",
+          "Niko c62d5e3a sycl/src/kernels/cuda/iq_kernels.dp.cpp SHA-256 2f03a9f0bb499fe066cb1c273f108eec4f9678f814b7b66ff9e0d963ca34a1ab",
+          "Niko ffa80d7 sycl/src/kernels/cuda/iq_kernels.dp.cpp SHA-256 c48b1bbdd3a0ac56a9c66ef043383dd5f5f6885dda55381f09d0b83795dc3568"
+        ]
+      }
+    ],
+    "retrieval": {
+      "question": "Which individually eligible Niko quantized-kernel changes map to a measured fork GPU path and active model shape?",
+      "sections": [
+        "What changed and where it can matter",
+        "Fork and measured-source counterparts",
+        "Bounded next decision and gates for Main",
+        "Coverage limits"
+      ]
+    },
+    "retention": {
+      "consumer": "A current model format/shape/dispatch join and per-component candidate decision.",
+      "review_point": "After that join and lineage decision are recorded in the existing compact result; retain only useful findings, then retire this raw report if the compact source map suffices."
+    },
+    "implementation_adopted": false,
+    "local_measurement_qualified": false
+  },
+  "upstream_v0210_compiled_attention_state_20261105": {
+    "classification": "decision_support",
+    "state": "closed_reviewed_source_only",
+    "report_path": ".cache/research/2026-11-05/upstream-v0210-followup/compiled-attention-state/report.md",
+    "report_sha256": "4d01c900e0d8e07af9862c7f633b2727cf33e672b63b60a66fa095b9741a6eeb",
+    "report_bytes": 17987,
+    "native_review_path": ".cache/research/2026-11-05/upstream-v0210-followup/review.json",
+    "native_review_sha256": "f50ee99bcb4bf83dfe98abd617962f2e02518c2e3bd2a191219221483a4c6a67",
+    "source_upstream": "Niko1221/Strata",
+    "upstream_revision": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "fork_source_revision": "a6735243856f5fd072e655592533eb6f48d34b2a",
+    "ownership_closed": true,
+    "verdict": "Accept as a careful phase/shape/lifetime source map with two metadata/anchor corrections. It explicitly leaves runtime route and all qualification gates open.",
+    "material_corrections": [
+      {
+        "report_anchor": "report.md:7",
+        "correction": "The follow-up packet's rules.revision and fork.revision are a6735243856f5fd072e655592533eb6f48d34b2a. The reported 6e1d7097d802320b6689cf49789d834a2cc751b5 is stale from the prior review; a673 is not merely a short policy label.",
+        "source_anchor": "inputs.json rules.revision and fork.revision"
+      },
+      {
+        "report_anchor": "report.md:24",
+        "correction": "The path-selection logic is at sycl/CMakeLists.txt:119-124 (and the non-.cu fallback at :126-131). Lines :132-135 close the function and return the list; they do not choose the migrated file. The overall resolver conclusion is correct.",
+        "source_anchor": "Niko ffa80d7 sycl/CMakeLists.txt:115-135"
+      }
+    ],
+    "retrieval": {
+      "question": "Which independently eligible QSA/GR/GDN component is active in a specific prefill, decode, MTP, or verifier path?",
+      "sections": [
+        "Actual compiled units and reachable work",
+        "Fork and measured-source counterpart / uncovered delta",
+        "Previously indexed deltas this path map must retain",
+        "Discriminating Main-owned checks",
+        "Coverage gaps and schedulability"
+      ]
+    },
+    "retention": {
+      "consumer": "A phase-specific QSA, fused-GR, or verifier candidate decision against the current measured path.",
+      "review_point": "At Main's exact caller/hash reconciliation. If no component is selected, record only the holds and concise source anchors in the existing index, then retire the raw report."
+    },
+    "implementation_adopted": false,
+    "local_measurement_qualified": false
+  },
+  "upstream_v0210_desktop_conversation_tools_20261105": {
+    "classification": "decision_support",
+    "state": "closed_reviewed_source_only",
+    "report_path": ".cache/research/2026-11-05/upstream-v0210-followup/desktop-conversation-tools/report.md",
+    "report_sha256": "339528c1b8bbd9ebd1a09bebc9d0392a0e89e0ac2f130d804963a2bd7e296f4c",
+    "report_bytes": 16371,
+    "native_review_path": ".cache/research/2026-11-05/upstream-v0210-followup/review.json",
+    "native_review_sha256": "f50ee99bcb4bf83dfe98abd617962f2e02518c2e3bd2a191219221483a4c6a67",
+    "source_upstream": "Niko1221/Strata",
+    "upstream_revision": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "fork_source_revision": "a6735243856f5fd072e655592533eb6f48d34b2a",
+    "ownership_closed": true,
+    "verdict": "Accept as a useful Python serve/web history and MCP map, but not as closure of the stated desktop apps/ scope. Its no-per-call-approval finding is correct for serve/web and must not be generalized to apps/host.",
+    "material_corrections": [
+      {
+        "report_anchor": "report.md:9",
+        "correction": "The report focuses on serve/web, while the scoped desktop-app review also needs to reconcile changed apps/host behavior. Niko apps/host/src/screens/Chat.tsx changes from c62d5e3a SHA-256 5ab34feac0c8eb9377e6cfe5e079598ffc18943e1a3e6bfba329f9e754400a2f to ffa80d7 SHA-256 0dd00034077ec89225c2cdf268aa66690299f345a5d42101fc8a864e29c72da7; new apps/host/src/components/ApprovalCard.tsx is SHA-256 d2d8db94a3c6788df4673a687457097c79e023280a046d1a601d6b49a2bd73c0. New Chat.tsx mounts ApprovalDock at :635 and leaves proposed calls waiting at :818-820; ApprovalCard.tsx:1,23-42 keeps per-action approve/deny. The upstream serve/web history.js, chatstore.js, and chats-ui.js are unchanged from c62 to ffa, as the report says. Thus retain its current-fork web-history finding, but leave desktop Chat/tool-permission coverage explicitly open.",
+        "source_anchors": [
+          "Niko c62/ffa apps/host/src/screens/Chat.tsx",
+          "Niko ffa apps/host/src/components/ApprovalCard.tsx:1-42",
+          "Niko c62/ffa serve/web/history.js, chatstore.js, chats-ui.js (same hashes)"
+        ]
+      }
+    ],
+    "retrieval": {
+      "question": "Which browser history/MCP behavior can be retained in the fork web UI, and which desktop Host tool behaviors still need reconciliation?",
+      "sections": [
+        "Conversation/history behavior and fork target",
+        "Tool/session execution, status, cancellation, and authority",
+        "Dependency-complete slices and Main validation",
+        "Coverage exclusions / open checks"
+      ]
+    },
+    "retention": {
+      "consumer": "The current fork's Python web UI history/MCP behavior decision, plus any selected required non-inference port.",
+      "review_point": "After reconciling web findings against the fork and the Host gap against prior indexed coverage; retain only nonduplicated current obligations, then retire the raw report if the compact ledger is sufficient."
+    },
+    "implementation_adopted": false,
+    "local_measurement_qualified": false
+  },
+  "decode_service_clock_contract_20261105": {
+    "classification": "decision_support",
+    "state": "closed_reviewed_source_only",
+    "source_commit": "96b9cc511b81e5fe4c18e53030019a2ad34c6b4d",
+    "report_path": ".cache/research/2026-11-05/decode-service-contract/report.md",
+    "report_sha256": "2e31f5d6bbad0d3db9da76159291fbb90b308f64c6db8100c08e133e4810ebe3",
+    "report_bytes": 10732,
+    "native_review_path": ".cache/research/2026-11-05/decode-service-contract/review.json",
+    "native_review_sha256": "1aaf293522ccbb2aafbc9f144f04bf137a7cf8e926c9f5ff8195c665d83f24fd",
+    "ownership_closed": true,
+    "verdict": "Accepted with correction:returned errors propagate to an incomplete request;missing/malformed output must fail later attribution.",
+    "useful_findings": "Caller regions cover full event/stream wrappers and expert-copy drains;native blocking waits are nested,not additive. Main-thread CPU excludes expert/runtime worker CPU. Repeated monotonic readings and clock resolution limit short-interval interpretation.",
+    "host_contract_result_key": "decode_service_host_contract_v1",
+    "host_contract_passed": true,
+    "model_attribution_qualified": false,
+    "hardware_saturation_qualified": false,
+    "next_consumer": "Separate committed diagnostic-engine qualification and model-attribution plan after the IQ3 cohort.",
+    "retention_review": "At that attribution decision,curate only useful interpretation/source corrections and retire completed raw research paperwork."
   }
 }

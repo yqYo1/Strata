@@ -941,7 +941,7 @@
           "scope": "compiled-iq-moe",
           "classification": "decision_support",
           "schedulable_now": true,
-          "state": "closed_awaiting_native_review",
+          "state": "closed_reviewed_source_only",
           "task": "task_d627f9d93fbb",
           "dispatch": "ctx_3428039bdc85",
           "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-iq-moe/report.md",
@@ -954,7 +954,7 @@
           "scope": "compiled-attention-state",
           "classification": "decision_support",
           "schedulable_now": true,
-          "state": "closed_awaiting_native_review",
+          "state": "closed_reviewed_source_only",
           "task": "task_fa72fd034d60",
           "dispatch": "ctx_a539e0a34e5f",
           "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-attention-state/report.md",
@@ -967,7 +967,7 @@
           "scope": "desktop-conversation-tools",
           "classification": "decision_support",
           "schedulable_now": true,
-          "state": "closed_awaiting_native_review",
+          "state": "closed_reviewed_source_only",
           "task": "task_e886c963f61b",
           "dispatch": "ctx_e3d740c73410",
           "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/desktop-conversation-tools/report.md",
@@ -979,11 +979,19 @@
       ],
       "coverage": "New complete-source pins for the actual Arc resolver,omitted compiled DPCT quantized-MoE and attention/state changes,and desktop conversation/tool behavior outside the first launch/API scopes. Origin checks are part of the source investigation;held/Xe-derived material remains ineligible for implementation. No runtime or whole-function qualification.",
       "native_review": {
-        "state": "running",
+        "state": "completed",
         "model": "gpt-6-luna",
         "reasoning_effort": "max",
         "agent": "/root/review_upstream_v0210_followup_20261105",
-        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/review.json"
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/review.json",
+        "sha256": "f50ee99bcb4bf83dfe98abd617962f2e02518c2e3bd2a191219221483a4c6a67",
+        "bytes": 16853,
+        "verdict": "Corrected source maps retained for component/function decisions;no implementation or runtime qualification.",
+        "corrections": [
+          "Include default-on STRATA_IQ4NL_FAST separately from default-off LUT_SWAR;origin and actual format/shape/dispatch remain gates.",
+          "Followup source revision is a67352438;Niko migrated-source resolver selection is at sycl/CMakeLists.txt119-124.",
+          "The desktop report covers Python serve/web;apps/host Chat/ApprovalDock retains per-action approve/deny and remains an open functional review."
+        ]
       }
     }
   }

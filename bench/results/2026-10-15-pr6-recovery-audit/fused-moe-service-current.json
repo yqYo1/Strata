@@ -145218,7 +145218,7 @@
     }
   },
   "decode_service_host_contract_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "65f7bb4389595bd2f4d13f6863bda8b2f397e0fd",
     "sources": {
       "include/strata/sycl/decode_service_profile.hpp": "1567e2154e23741154e5fd2467e7f30bea5b3a4cc1efdd6a6ccab72d42901547",
@@ -145289,12 +145289,35 @@
     },
     "plan": "One owned compile then one owned seven-case host accounting fixture;stop first failure,no retry.Require normal0,quiet stderr,exact fixture footer,closed identities and unchanged inputs.No GPU,engine build,model timing or hardware-saturation claim. Compiler/system-package identities are pinned before build;retain actual dependency hashes with the result.",
     "retention": "Keep compact contract/dependency/source/compiler outcome. Retire fixture,objects and successful output after result commit and consumer review;rebuild from this source/recipe.",
-    "results": [],
+    "results": [
+      {
+        "name": "compile",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "test",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "35f42ae7aa92d0189370f6b0200c188252c8e5c34483da45c285002459f4d863",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
-    "model_executed": false
+    "model_executed": false,
+    "dependencies": {
+      "files": 168,
+      "aggregate_sha256": "24158478e053b0fbe0f677d92b4d60c0545d20a001752ebc60c0605fe168c775"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v1/fixture",
+      "sha256": "9e6d4c1f2b3ee5b66eb442070f9d93a6efca823c40ba9ee6fd309611b50a9a86"
+    }
   }
 }

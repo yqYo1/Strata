@@ -359,10 +359,12 @@ to the containing region. Draft/commit and other uncovered work stay explicitly
 unclassified. One integer-nanosecond record per request replaces per-call logs.
 The host-only `decode_service_profile_test.cpp` checks exact conservation,
 nested waits, invalid nesting/clocks, exceptions and disabled observation.
-This source is prepared but not compiled or measured. Its next consumers are
-the serialized host contract check and a separately qualified diagnostic engine
-after the current IQ3 cohort. The running engine/source remain unchanged;
-no attribution result, physical-resource ceiling or speedup follows yet.
+The host-only fixture now compiles with GCC13.3/O2 and passes all seven cases,
+with normal exits, quiet stderr and closed owners;168 actual dependency files
+are fingerprinted. See `decode_service_host_contract_v1`. This does not compile
+or qualify the diagnostic engine. Its next consumer is a separately qualified
+diagnostic build after the current IQ3 cohort. The measured engine/source remain
+unchanged;no model attribution,physical-resource ceiling or speedup follows yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
@@ -525,7 +527,14 @@ quiet validation, all15 final asset hashes, closed owners and no fresh fault.
 IQ3-on now passes the same probes and both short requests, with identical
 calls/eligible rows and selected paired rows1400960/1378560. Both selectors
 close normally with all15 final asset hashes, quiet validation and no new fault.
-Long-generation comparison still follows. The diagnostic preset's
+The six-process long-generation comparison has closed its first reference
+process:code3170/prose7275 generated tokens,exact TG10.2352/6.6905 and observed
+MTP acceptance0.82439/0.38924. Both requests satisfy their extent/answer/route
+gates;native exit0,quiet validation,closed ownership and no fresh fault.
+Five independent processes remain;no candidate comparison or gain is qualified.
+Both arms retain the common IQ3 audit,whose incremental cost is not separately
+measured;these are not a matched comparison against the older clean TG values.
+The diagnostic preset's
 `STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
 timing in both short arms; the new speed controller omits that variable.
 These short diagnostics do not qualify sustained TG. The preload retains a
