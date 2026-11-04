@@ -122427,5 +122427,204 @@
     "files": 14,
     "queries": 14,
     "packages": 4
+  },
+  "verify_window_policy_host_v3": {
+    "stage": "prepared",
+    "source_commit": "07e385ae39ec457ddb1bcea95b4fd684243d1fa9",
+    "selected_native_source": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+    "component_source": "225e13889f5ace66fb26fa054952ae588d87d159",
+    "controller_inputs": {
+      "src/core/verify.cpp": "ce53f5c2b56e6ace16000d807c84e3f6307e58ff14e1baa8e7168c143114e22c",
+      "tests/sycl/verifier_retirement.cpp": "84b441f1e085699e59c5ec65f563a372deefbf44e18ad0ca816bc45a6b10b8de",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "tools/sycl/host_link_inventory.py": "3e6e0fc60e8876d766da7f93689d17dba6fb5de55a973685d511b47b2350a3b7",
+      "include/strata/core/verify.hpp": "217684f181ad506f6c5de4935895c9669028d2b6075213163e5ec8e1a4164c20",
+      "tools/sycl/cache_map_model_entry.py": "bb68a90a33ff35b71ed98910cbb5f55fa76202aa6677677a7d9c6db4eda1bd43",
+      "tests/core/verify_window_policy_test.cpp": "e5a8a43695ba5c9fbd76552c03c5004be6dcdf050911260f7f307ecb550b11ad",
+      "src/program/generate.cpp": "d1c341902e485000699862a6fc237147a4dbd8370dab67869ec6d8c12a2e3ea0",
+      "include/strata/core/verify_window_policy.hpp": "d836320219d4d3abbb2debcb7aa1b1fe0cc53fe56f8b486d3d14ed10b60c3d44",
+      "tools/sycl/verify_window_model.py": "35229c6e517c36ec09826012346414df5147350deb43eccdf1b45a9ff94f35f5"
+    },
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "commands": [
+      [
+        "compile-host",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/fixture.d",
+          "-c",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/tests/core/verify_window_policy_test.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/fixture.o"
+        ]
+      ],
+      [
+        "link-host",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/fixture.o",
+          "-Wl,-t",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/fixture"
+        ]
+      ],
+      [
+        "run-host",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/fixture"
+        ]
+      ],
+      [
+        "syntax-verify",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/src/core/verify.cpp",
+          "-fsyntax-only",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/syntax-verify.d"
+        ]
+      ],
+      [
+        "syntax-program",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-isystem",
+          "/opt/intel/oneapi/mkl/2026.1/include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-DMKL_ILP64",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/src/program/generate.cpp",
+          "-fsyntax-only",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/syntax-program.d"
+        ]
+      ],
+      [
+        "syntax-retirement",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-DSTRATA_VERSION=\"0.1.38\"",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/include",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/source/tests/sycl/verifier_retirement.cpp",
+          "-fsyntax-only",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/syntax-retirement.d"
+        ]
+      ]
+    ],
+    "binary_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/fixture",
+    "budgets": {
+      "wall": 180,
+      "cpu": 180,
+      "rss_cap": 3221225472,
+      "text_cap": 1048576,
+      "file_cap": 16777216,
+      "total_cap": 268435456
+    },
+    "changed_files": [
+      "include/strata/core/verify.hpp",
+      "include/strata/core/verify_window_policy.hpp",
+      "include/strata/kernels/native_mmvq.hpp",
+      "src/core/verify.cpp",
+      "src/kernels/sycl/native_mmvq.cpp",
+      "src/program/generate.cpp",
+      "tests/core/verify_window_policy_test.cpp",
+      "tests/sycl/verifier_retirement.cpp"
+    ],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "retention": {
+      "consumer": "Immediate host policy/phase-cache and actual SYCL translation-unit checks before the decode-only model comparison",
+      "review_point": "Retire successful compiler output/temporary host ELF after recording results and recovering source;selected nine ELFs remain unchanged",
+      "legacy_gate": "retained_builds_review_20261103 remains partial;no new engine build or CPU-observer gate bypass"
+    },
+    "native_sources": {
+      "files": 560,
+      "aggregate_sha256": "35c684356c218d29d057bb3742b1e9f76e16fc68d11f91fcde43662ce1db83d3",
+      "changed": {
+        "include/strata/core/verify.hpp": "217684f181ad506f6c5de4935895c9669028d2b6075213163e5ec8e1a4164c20",
+        "include/strata/core/verify_window_policy.hpp": "d836320219d4d3abbb2debcb7aa1b1fe0cc53fe56f8b486d3d14ed10b60c3d44",
+        "include/strata/kernels/native_mmvq.hpp": "1798072d98d3b15ee8fbdeb067d81df5c45dfed6378907748bb9eb09cc198e13",
+        "src/core/verify.cpp": "ce53f5c2b56e6ace16000d807c84e3f6307e58ff14e1baa8e7168c143114e22c",
+        "src/kernels/sycl/native_mmvq.cpp": "e11821dc10a71670236d45f9bdb1387b185118389e000d42385abbe9ce7197e4",
+        "src/program/generate.cpp": "3579723a067bf74c44008eb652615fce6bbebebff027590d081e2ea5eea8d153",
+        "tests/core/verify_window_policy_test.cpp": "e5a8a43695ba5c9fbd76552c03c5004be6dcdf050911260f7f307ecb550b11ad",
+        "tests/sycl/verifier_retirement.cpp": "84b441f1e085699e59c5ec65f563a372deefbf44e18ad0ca816bc45a6b10b8de"
+      },
+      "projection": "tools/sycl/verify_window_model.py:projection"
+    },
+    "environment": {
+      "inherit_selected_native": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+      "overrides": {
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/verify-window-policy-host-v3/cache"
+      },
+      "sha256": "fbc6c013cd27a8195183d1faa4426b3048fd441117b86d62eb71238a13f3abb9"
+    }
   }
 }
