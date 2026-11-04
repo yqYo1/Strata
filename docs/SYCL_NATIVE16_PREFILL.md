@@ -421,10 +421,13 @@ processes. Its prospective input map covers committed project/GGML bytes,
 official SDK and host linker inputs, generated version header and tools. It
 requires actual compile/link coverage and CPU-only linkage, the same archive,
 384 original plus 80 paired fixture cases, and complete real-model validation
-before/after each process. This controller is source-only; neither its plan
-preparation nor a compiler/test/benchmark has executed. The observer cohort is
-closed; Main owns the next serialized preparation. No production pair dispatch
-is selected.
+before/after each process. Preparation now passes at source
+`229fe7376dfeeb4c478b322934ce6fda882506cf`: 188 committed project files,
+1376 official GGML files and 12172 external inputs are frozen, including the
+exact generated header, tools, environment and 252-expert model-range hash.
+Compilation, fixture and timing remain pending; no production pair dispatch
+is selected. The observer cohort is closed and its successful full output is
+retired (408 files,84331126 bytes), with both final requests' clocks preserved.
 The benchmark's 252 full blobs alone occupy 548352000 bytes, exceeding a
 512 MiB process cap before library/scratch overhead. Its prospective measurement
 cap is therefore 1 GiB; the small correctness fixture keeps its 512 MiB cap.
