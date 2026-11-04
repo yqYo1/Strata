@@ -302,6 +302,14 @@ component. Neither those new checks nor a speed comparison has run. The helper
 is not selected by production; after the observer cohort, qualify the CPU
 component and its setup-inclusive hot/stream cost before a decode-only model
 trial. Retire it if the component does not justify that trial.
+The independent source audit uses the frozen scalar oracle at
+`/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/source/src/kernels/cpu/iq_single_avx2.cpp`,
+SHA256 `8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f`.
+Its `iq3xxs_dot` body is byte-identical to the candidate's scalar reference.
+The refusal fixture now snapshots the actual weight and activation allocations,
+so aliased output cases check those targets as well as the ordinary output.
+It also defines a separate misaligned-output refusal. These source changes
+still need the committed compiler/ISA and correctness gate before timing.
 The prospective CPU-only `cpu_iq3_pair` benchmark uses 252 actual IQ3_XXS/IQ4_NL
 experts from one pinned model layer. It compares the existing decode NT1
 `native_gu_rows` entry with the direct pair entry, including that helper's

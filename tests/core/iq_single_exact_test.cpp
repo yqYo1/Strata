@@ -81,10 +81,15 @@ bool pair_cases(unsigned& cases) {
                 ++cases;
             }
         }
-        std::vector<float> untouched(rows, canary);
+        std::vector<float> untouched(rows + 2, canary);
+        const auto weights_before = storage;
+        const auto act_before = raw_act;
         const auto refused = [&](const cpu::NativeFmt& fmt, const uint8_t* w, const void* a,
                                  float* out, int begin, int end) {
             if (cpu::iq3xxs_pair_gu_rows(fmt, w, a, out, begin, end)) return false;
+            // An aliased output points into these actual input buffers, rather
+            // than untouched. Check both complete targets on every refusal.
+            if (storage != weights_before || raw_act != act_before) return false;
             for (float value : untouched) if (value != canary) return false;
             return true;
         };
@@ -116,6 +121,8 @@ bool pair_cases(unsigned& cases) {
             !refused(f, weights, weights, untouched.data(), 0, rows) ||
             !refused(f, weights, raw_act.data(), reinterpret_cast<float*>(weights), 0, rows) ||
             !refused(f, weights, raw_act.data(), reinterpret_cast<float*>(raw_act.data()), 0, rows) ||
+            !refused(f, weights, raw_act.data(), reinterpret_cast<float*>(
+                reinterpret_cast<uint8_t*>(untouched.data()) + 1), 0, rows) ||
             !refused(f, reinterpret_cast<const uint8_t*>(max - 16), raw_act.data(), untouched.data(), 0, rows) ||
             !refused(f, weights, reinterpret_cast<const void*>(max - 16), untouched.data(), 0, rows) ||
             !refused(f, weights, raw_act.data(), reinterpret_cast<float*>(max - 16), 0, rows))
