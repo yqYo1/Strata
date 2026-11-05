@@ -379,11 +379,14 @@ It replaces the binary16 subnormal normalization loop with a nonzero32-bit
 `clz` argument and integer selects. There is no production caller. The
 [`host screen`](../bench/sycl/f16_widen_clz.cpp) covers all65536patterns against
 an independent exact dyadic oracle,including zero signs and raw NaN payloads.
-Source is prepared but uncompiled and unexecuted. At the next serialized process
-boundary,pin GCC13,headers and an owned finite recipe before this host screen;
-then qualify SYCL device lowering/semantics and compare against a native-half
-cast before any Q6-only timed integration. Keep the original shared converter
-and current model/benchmark inputs frozen. This is not GPU or model evidence.
+The GCC13 UBSan host screen now passes all65536patterns with zero reference or
+candidate mismatches. All139actual source/header inputs match their prebuild
+images,both preprocessor and final MD lists agree,and all3owned children exit0
+with quiet stderr and closed ownership. Checksum is `8c8d4b0224882325`;see
+`q6_f16_widen_clz_host_v1` in the linked result. SYCL device lowering/semantics
+and a native-half cast comparison remain pending before any Q6-only timed
+integration. Keep the original shared converter and current model/benchmark
+inputs frozen. This host pass is not GPU,model or speed evidence.
 The prospective host command is `g++-13 -std=c++17 -O3 -march=znver3
 -fno-fast-math -ffp-contract=off -fsanitize=undefined -fno-sanitize-recover=undefined
 -Iinclude bench/sycl/f16_widen_clz.cpp -o <private-output>`,with180s compile and

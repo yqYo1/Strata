@@ -156308,7 +156308,7 @@
     "next_review": "Retire remaining ISA bytes at conversion-code-choice closure and the policy-audit3files at six-process cohort adjudication. No active run or last qualification fixture removed."
   },
   "q6_f16_widen_clz_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "afe18f91996ff95dbb10dce648407e2d894568f8",
     "sources": {
       "bench/sycl/f16_widen_clz.cpp": "e4befc92cae633d6204812b11c646a235e660cfeaecac850ddba4b072eb0592b",
@@ -156523,7 +156523,72 @@
     "model_executed": false,
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false
+    "passed": true,
+    "complete": true,
+    "results": [
+      {
+        "name": "dependencies",
+        "exit_code": 0,
+        "closed": true,
+        "pid": 903383,
+        "identity": {
+          "pid": 903383,
+          "state": "R",
+          "ppid": 903290,
+          "pgid": 903383,
+          "sid": 903383,
+          "start_ticks": 222657502,
+          "rss_bytes": 999424
+        }
+      },
+      {
+        "name": "compile",
+        "exit_code": 0,
+        "closed": true,
+        "pid": 903410,
+        "identity": {
+          "pid": 903410,
+          "state": "R",
+          "ppid": 903290,
+          "pgid": 903410,
+          "sid": 903410,
+          "start_ticks": 222657571,
+          "rss_bytes": 454656
+        }
+      },
+      {
+        "name": "run",
+        "exit_code": 0,
+        "closed": true,
+        "pid": 903444,
+        "identity": {
+          "pid": 903444,
+          "state": "R",
+          "ppid": 903290,
+          "pgid": 903444,
+          "sid": 903444,
+          "start_ticks": 222657658,
+          "rss_bytes": 487424
+        }
+      }
+    ],
+    "actual_dependencies": 139,
+    "dependency_signature": "12b422b871af6e5f28781e57955f7043a893f780676cd9e82f9405e9dd427455",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-f16-widen-clz-host-v1/host-screen",
+      "sha256": "63a0d9924877c3d04281a54de4cb2dcaee64730691227e72b25a6faa0a323b60",
+      "bytes": 16440
+    },
+    "semantic_result": {
+      "patterns": 65536,
+      "zeros": 2,
+      "subnormals": 2046,
+      "normals": 61440,
+      "infinities": 2,
+      "nans": 2046,
+      "reference_mismatches": 0,
+      "candidate_mismatches": 0,
+      "checksum": "8c8d4b0224882325"
+    }
   }
 }
