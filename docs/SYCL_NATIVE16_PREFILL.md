@@ -369,9 +369,13 @@ six fresh processes in centering0/1/1/0/0/1 order,with four official warmups and
 thinking-on code/prose requests per process. Both actual MTP regimes need three
 paired TG gains;keep every sample and judge PP/TTFT independently. All15model
 assets pass fresh hashes,and fresh benchmark/server frontend probes pass.
-The first reference process now closes with two eligible long requests,native
-exit0,quiet validation,closed ownership and no fresh fault. Five processes and
-all paired decisions remain pending;the clean speed reference is unchanged.
+The first reference/candidate pair now closes with four eligible long requests,
+native exit0,quiet validation,closed ownership and no fresh fault. Exact TG is
+13.3656/13.4934 code and8.7974/8.7231 prose (reference/candidate),giving ratios
+1.009562/0.991553. The first pair favors different arms by workload;it does not
+qualify a model gain. Code prompt/TTFT ratios are1.056792/1.055678 and prose
+ratios0.992763/0.992394. Keep the four remaining processes and every sample under
+the original plan;the clean speed reference is unchanged.
 
 The next bounded conversion candidate is the independently authored
 [`q6_f16_widen_clz.hpp`](../include/strata/kernels/q6_f16_widen_clz.hpp).
