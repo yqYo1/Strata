@@ -439,6 +439,10 @@ assumption was corrected to six. This completes the current code-choice
 inspection,not final GPU-ISA,timing or production-flag qualification. Native
 half remains a prospective Q6-only candidate after the current model service
 attribution. No converter or engine change is adopted from static IL alone.
+The standalone executable,device IR and receipt are now retired after recovering
+the original6038 source/recipe and checking all705 compiler inputs. Restore that
+source when a production-flag numerical comparison is selected;no closed-test
+binary is required by the current diagnostic model admission.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
@@ -784,6 +788,14 @@ wall/CPU conservation,nested waits and observer effects. Keep clean speed
 separate. This can distinguish CPU service from wait/submission/copy envelopes;
 physical RAM/PCIe traffic remains unknown. The measured engine/source remain
 unchanged;no model attribution,physical-resource ceiling or speedup follows yet.
+The new [schema2 reader](../tools/sycl/decode_service_evidence.py) requires exact
+request joins,complete field sets,unsigned counters,closed clean scopes,integer
+caller conservation and nested-wait containment. Its prospective
+[host contract](../bench/sycl/qualify_decode_service_reader.py) compiles a real
+C++ producer using the same header as5c5e25d0,covering all nine regions,nested
+wait suppression,disabled observation and an empty caller interval,then corrupts
+the emitted records. Reader implementation is committed before qualification;
+this new contract and the first model/overhead comparison are still pending.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The six closed CPU-service processes also agree exactly on logical work volume
@@ -1195,13 +1207,13 @@ executables, with the missing inputs, consumer, next bounded recovery action
 and review point recorded in the retained-build result. The fallback currently
 retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
 probe binaries and the two schema2 host fixtures are retired after original-input
-recovery. Eighteen retained project runtime/tool ELF outputs remain across the scanned
+recovery. Seventeen retained project runtime/tool ELF outputs remain across the scanned
 state directory and both project worktrees;three installed Python dependency
 extensions are separate assets. This includes the configured deployment
-outputs,qualified validation/profiling tools and the standalone widening ELF.
-The latter retains one7500-byte device IR image for the imminent converter
-lowering/code-choice inspection;its other compiler intermediates and successful
-tracing output are retired. The new diagnostic adds five candidate outputs for
+outputs and qualified validation/profiling tools. The standalone widening
+executable,IR and receipt are retired after numerical/IL choice;successful
+host/device/build output and superseded source reviews are also retired. The
+new diagnostic adds five candidate outputs for
 its immediate same-build admission;compilation does not make it the validated
 fallback. This is not global
 cleanup:the configured deployments' original source/recipe recovery and
