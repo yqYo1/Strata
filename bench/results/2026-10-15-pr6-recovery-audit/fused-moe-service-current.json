@@ -149685,7 +149685,7 @@
     }
   },
   "q6_centering_component_v2": {
-    "stage": "compiled",
+    "stage": "smoke-passed",
     "source_commit": "f18b8e548391a9c4981f216d30c410aeceae2aad",
     "cohort_signature": "d7223d5e9c2339a55f359ca4cb2645087e22b386ff5ab75db82d88f36a0afbef",
     "tools": {
@@ -149959,7 +149959,7 @@
     "ownership_closed": true,
     "passed": false,
     "complete": false,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "final_owner_guard": {
       "passed": true,
@@ -149974,6 +149974,12 @@
         "sha256": "86c39ff28a6597ba4083fe25a50f03d558f1e395dde3381da7021cd5d8bb5d55",
         "closed": true,
         "commands": 14
+      },
+      "smoke": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v2/smoke-owner.json",
+        "sha256": "57fa921c9ab5a2e97ec0947a38012a0f126cce80a9350ec4c4e2f1a1c03ab15a",
+        "closed": true,
+        "commands": 1
       }
     },
     "actual_inputs": {
@@ -149988,6 +149994,47 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v2/sycl_q6_columns_bench",
       "sha256": "4fffe92ef0a21500ef97632f096df42b5dfe3cf380a55dec935450bef6f30282",
       "bytes": 11523624
+    },
+    "GPU_execution_attempted": true,
+    "native_postchecks": [
+      {
+        "phase": "smoke",
+        "process": 0,
+        "passed": true,
+        "faults": {
+          "passed": true,
+          "evidence": []
+        },
+        "inputs_boot_driver": {
+          "passed": true,
+          "evidence": null
+        },
+        "model_owners": {
+          "passed": true,
+          "evidence": {
+            "same_uid_model_owners": [],
+            "scope": "bounded read-only cmdline scan; cannot prove hidden foreign GPU use absent"
+          }
+        }
+      }
+    ],
+    "smoke": {
+      "passed_cases": 32,
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "validation": {
+        "pid": 386910,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "fresh_faults": []
     },
     "source_inputs": {
       "files": 373,
