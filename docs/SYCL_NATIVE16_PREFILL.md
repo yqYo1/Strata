@@ -333,7 +333,12 @@ recovery and keep552b before compiling. Fresh device/model gates remain required
 V1 preparation stops before compiler/GPU execution because it published its new
 result before the inherited committed-input check. Preserve that failure;
 V2 performs all admission checks before publishing its prospective result and
-corrects the inherited compact recipe-helper label.
+corrects the inherited compact recipe-helper label. V2 preparation now passes
+with101controller inputs,564native files and6239toolchain members pinned.
+The closed b310 products and failed V1 preparation are retired after563native,
+1449actual compiler and9311external dependency source inputs are recovered and
+matched. The9validated552b outputs remain. Only the b310 metadata bridge remains
+for replacement qualification;the next build does not consume its retired ELF.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
