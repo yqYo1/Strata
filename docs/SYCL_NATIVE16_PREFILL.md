@@ -677,7 +677,13 @@ are fingerprinted. See `decode_service_host_contract_v1`. This does not compile
 or qualify the diagnostic engine. The post-centering review confirms that the
 92832/a1b0 projection lacks both this profile call and header;an environment
 flag cannot enable it. After the frozen Q6 cohort closes,explicitly add the
-profile to that source projection and qualify a diagnostic build. Compare
+profile to that source projection and qualify a diagnostic build. The prospective
+[`decode_service_sources.py`](../bench/sycl/decode_service_sources.py) now
+recovers the564native inputs and applies only the pinned96b9 observer delta:
+generator,Verifier and native-wait bridge,plus the header and host fixture.
+It requires all other bytes and the complete reverse projection to remain
+unchanged,and selects the original cohort's qualified arm. It has not been
+executed;no new source image,build or attribution is qualified yet. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf
 service/census enabled in both,checking clock resolution/read overhead,depths,
 wall/CPU conservation,nested waits and observer effects. Keep clean speed
