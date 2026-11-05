@@ -753,9 +753,19 @@ The final process's raw output,the two one-use host fixtures and closed audit
 transports are also retired,884files/186722689bytes in total. All nine552b
 outputs and the three configured deployment outputs remain unchanged. See
 `retained_builds_review_20261103.decode_service_model_replacement` for the
-manifest and exact closed-consumer bindings. The builder itself is unexecuted;
-no diagnostic root or build exists yet.
-Separate host fixtures and fresh device/model qualification remain required. Compare
+manifest and exact closed-consumer bindings. The diagnostic now builds all five
+targets with1451 actual compiler inputs and29 covered external link inputs;
+all configure,compile and dependency children exit0 with closed ownership.
+Both profile/wait headers and the actual production flags pass their native
+recipe checks. Engine hash is `5c5e25d04e8ea8a8abcd9d26ed8f70a32d78b8aa93a89a49e7232ec8f47f6d76`;
+the build source is70169d388,distinct from the later admission controller.
+The prospective [same-build checks](../bench/sycl/decode_service_checks.py)
+prepare six owned host children:exact/pool with IQ3 pairing0/1,then real-pool
+service-observer1 with pairing0/1. Require all arithmetic/canary/dispatch and
+pool checksums before the unchanged bounded traced submission10/phase16 GPU
+runners. Both Python import roots are pinned without mutating a shared module.
+These checks are unexecuted;no device/model or observer-overhead qualification
+follows from compilation. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf
 service/census enabled in both,checking clock resolution/read overhead,depths,
 wall/CPU conservation,nested waits and observer effects. Keep clean speed
@@ -1173,13 +1183,15 @@ executables, with the missing inputs, consumer, next bounded recovery action
 and review point recorded in the retained-build result. The fallback currently
 retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
 probe binaries and the two schema2 host fixtures are retired after original-input
-recovery. Eighteen project runtime/tool ELF outputs remain across the scanned
+recovery. Eighteen retained project runtime/tool ELF outputs remain across the scanned
 state directory and both project worktrees;three installed Python dependency
 extensions are separate assets. This includes the configured deployment
 outputs,qualified validation/profiling tools and the standalone widening ELF.
 The latter retains one7500-byte device IR image for the imminent converter
 lowering/code-choice inspection;its other compiler intermediates and successful
-tracing output are retired. No diagnostic engine exists yet. This is not global
+tracing output are retired. The new diagnostic adds five candidate outputs for
+its immediate same-build admission;compilation does not make it the validated
+fallback. This is not global
 cleanup:the configured deployments' original source/recipe recovery and
 validated migration remain explicit independent holds.
 
