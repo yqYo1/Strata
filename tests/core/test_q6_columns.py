@@ -1,7 +1,9 @@
-"""Reject invalid evidence before advancing a column-specialization candidate."""
+"""Reject invalid evidence before advancing the complete Q6 centering candidate."""
+import copy
 import sys
 from pathlib import Path
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/sycl'))
 import measure_q6_columns as comparison
@@ -19,6 +21,38 @@ def samples():
                         f'batch={batch} position={position} calls={calls} '
                         f'seconds={.125 if arm else .25}')
     return lines
+
+
+class ClosedAudit(unittest.TestCase):
+    def valid(self):
+        return dict(stage='closed', passed=True, complete=True, active=False,
+            ownership_closed=True, processes=[dict(index=i, passed=True, complete=True,
+                ownership_closed=True, native_exit_code=0, fresh_faults=[]) for i in range(6)])
+
+    def test_complete_six_process_audit(self):
+        row = self.valid()
+        with mock.patch.object(comparison, 'committed', return_value=row):
+            self.assertIs(comparison.cohort(), row)
+
+    def test_incomplete_failed_or_unclosed_audit(self):
+        changes = [('stage', 'running'), ('passed', False), ('complete', False),
+                   ('active', True), ('ownership_closed', False)]
+        for key, value in changes:
+            row = self.valid(); row[key] = value
+            with self.subTest(key=key), mock.patch.object(comparison, 'committed', return_value=row):
+                with self.assertRaises(RuntimeError): comparison.cohort()
+        for key, value in [('passed', False), ('complete', False), ('ownership_closed', False),
+                           ('native_exit_code', 1), ('fresh_faults', ['new fault'])]:
+            row = self.valid(); row['processes'][2][key] = value
+            with self.subTest(process_key=key), mock.patch.object(comparison, 'committed', return_value=row):
+                with self.assertRaises(RuntimeError): comparison.cohort()
+
+    def test_wrong_count_or_duplicate_process(self):
+        short = self.valid(); short['processes'].pop()
+        duplicate = self.valid(); duplicate['processes'][-1] = copy.deepcopy(duplicate['processes'][0])
+        for row in (short, duplicate):
+            with mock.patch.object(comparison, 'committed', return_value=row):
+                with self.assertRaises(RuntimeError): comparison.cohort()
 
 
 class Evidence(unittest.TestCase):

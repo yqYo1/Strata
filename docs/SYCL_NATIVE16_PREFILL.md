@@ -300,18 +300,37 @@ uses `(word + 0x60606060u) ^ 0x80808080u`. Each reconstructed Q6 byte is0..63;
 adding96 cannot carry between bytes,and XOR128 yields value minus32's byte
 representation. Compilation passes the fixture's all64 repeated-byte values
 and per-lane mixed-word assertions. These are compile-time algebra checks,
-not a device numerical gate. The fixture has no production caller and omits
+not a device numerical gate. The retired expression fixture had no production caller and omitted
 full Q6 reconstruction,scales,column reductions and surrounding optimization.
 
-Next,after all six frozen model-audit processes close,prepare a complete
-Q6-kernel centering comparison. Preserve dot/scaling/reduction order,byte-safe
-loads,launch geometry and phase ownership;scope a later production change to
-decode and retain prefill. Use the existing representative Q6 shapes and
-columns1/2/4/8 with bitwise reference results,a small traced bounds/lifetime
-check and independent repeated production-entry timing. The limiting physical
-resource remains unqualified;this tests arithmetic sensitivity at unchanged
-logical data volume. A component gain is still separate from model speed,
-prefill preservation,task quality and physical262144/RESTORE qualification.
+The complete Q6-kernel centering candidate is now source-prepared,without a
+build or device execution. The explicit
+`native_q6_k_centered_columns_mmvq` entry and existing column entry instantiate
+the same checks,geometry,byte-safe loads,dot/scaling and reduction code with
+only the Q6 centering expression selected at compile time. Generic MMVQ,prompt
+products and columns5..7 retain the scalar reference. No production caller
+selects the new entry. A later integration must use explicit decode ownership
+and preserve prefill. This implements the reviewed design seam,not a speed gain.
+
+After all six frozen model-audit processes close,prepare the comparison with
+`tools/sycl/measure_q6_columns.py prepare`,commit its exact generated plan,then
+build and run its traced smoke before timing. The maintained fixture's
+`--centering` argument compares the two complete column entries. It is designed to check
+256per-lane compile-time helper cases,32device smoke cases including tail rows
+and columns1..8,and35actual-model shape/column combinations for timing. Each
+case retains full output-bit,read-only input,guard,Q81-byte and scalar-dot
+checks outside timing. Three independent timing processes use five paired
+batches per arm and a10ms batch floor;each shape advances separately only if
+all three median candidate/reference time ratios are below1. Commit every
+phase transition. Stop on the first failed input,validation,fault,owner,budget
+or numerical gate;do not retry by refreshing hashes. The controller reuses the
+actual b310 native optimization recipe with explicit GCC13 host headers and
+records a full prebuild compiler/package image,including `linux-libc-dev`.
+Count its temporary standalone fixture with retained project builds and retire
+it after the named comparison closes. The limiting physical resource remains
+unqualified;this tests arithmetic sensitivity at unchanged logical data volume.
+A component gain is separate from model speed,prefill preservation,task quality
+and physical262144/RESTORE qualification.
 
 The compiler-only fixture/controller,separate result and generated outputs are
 retired after exact source recovery and remote-evidence verification. Their
@@ -865,9 +884,10 @@ dependencies and host-link trace paths against that prebuild image. Private
 compiler temporaries are derived inputs; their disposable names are not retained.
 The image has a180-second traversal/hash deadline,16 GiB unique-payload limit
 and8 MiB manifest limit; it is not collected during the live model comparison.
-Before FP64 preparation,extend that image with the full `linux-libc-dev` package:
+The shared package image now includes the full `linux-libc-dev` package after
 Q6's closed compiler check found20 actual headers missing from the inherited
-SDK/host-package image. Q6's local expansion does not fix this shared helper.
+SDK/host-package image. This source correction has not been executed for the
+unprepared FP64 diagnostic and does not change its earlier outcomes.
 An exclusive operation receipt now precedes cursor,Owner and directory setup,
 so an early setup failure is terminal and preserves the no-retry decision.
 At source `fdd2de5a1`, all five host regression tests pass via

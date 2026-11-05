@@ -38,7 +38,8 @@ FIELDS = ('wall_ns', 'cpu_ns', 'submit_wall_ns', 'submit_cpu_ns')
 HELPERS = ('tools/sycl/mapped_row_copy_component.py', 'tools/sycl/benchmark_runtime.py',
     'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py',
     'tools/sycl/ur_validation.py', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md')
-PACKAGES = ('libc6', 'libc6-dev', 'libstdc++6', 'libstdc++-13-dev', 'libgcc-s1', 'libgcc-13-dev', 'binutils')
+PACKAGES = ('libc6', 'libc6-dev', 'linux-libc-dev', 'libstdc++6',
+            'libstdc++-13-dev', 'libgcc-s1', 'libgcc-13-dev', 'binutils')
 require, sha = guards.require, owner.sha
 
 

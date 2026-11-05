@@ -1,7 +1,9 @@
 // Main-authored Q6_K column-specialization comparison; repository LICENSE.
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/kernels/f16_bits.hpp"
+#include "strata/kernels/q6_packed_center.hpp"
 #include "strata/sycl/runtime.hpp"
+#include <sycl/ext/intel/info/device.hpp>
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -57,7 +59,10 @@ template <class T> struct Buffer {
   }
 };
 using Kernel = void (*)(const void *, const void *, float *, int, int, int, void *);
-constexpr std::array<Kernel, 2> Arms{k::native_q6_k_mmvq, k::native_q6_k_columns_mmvq};
+constexpr std::array<Kernel, 2> ColumnArms{k::native_q6_k_mmvq,
+                                         k::native_q6_k_columns_mmvq};
+constexpr std::array<Kernel, 2> CenterArms{k::native_q6_k_columns_mmvq,
+                                         k::native_q6_k_centered_columns_mmvq};
 struct Shape {
   int ni, no, iterations;
 };
@@ -65,6 +70,22 @@ struct Shape {
 constexpr std::array<Shape, 7> Shapes{{{2560, 10240, 256}, {6144, 2560, 256},
     {2560, 6144, 256}, {2560, 640, 1024}, {2560, 512, 1024},
     {2560, 12288, 256}, {2560, 248320, 8}}};
+
+// Independent byte-wise oracle for the packed helper's six-bit precondition.
+// Vary each lane through every value with other lanes at mixed endpoints.
+constexpr bool centering_byte_contract() {
+  for (unsigned lane = 0; lane < 4; ++lane)
+    for (unsigned value = 0; value < 64; ++value) {
+      const unsigned shift = 8 * lane;
+      const uint32_t word = (0x003f201fu & ~(0xffu << shift)) | (value << shift);
+      uint32_t expected = 0;
+      for (unsigned j = 0; j < 4; ++j)
+        expected |= uint32_t(uint8_t(int((word >> (8 * j)) & 0xffu) - 32)) << (8 * j);
+      if (k::component::q6_center_bytes(word) != expected) return false;
+    }
+  return true;
+}
+static_assert(centering_byte_contract());
 
 // Check every encoded Q8_1 byte outside the timed region. The host follows
 // the quantizer's FP32 XOR-sum order and shares the tested half converter;
@@ -140,7 +161,7 @@ void scalar_reference(const Shape &shape, int columns,
   }
 }
 
-void one_shape(Shape shape, bool smoke) {
+void one_shape(Shape shape, bool smoke, const std::array<Kernel, 2> &arms) {
   const int ni = shape.ni, no = shape.no;
   std::cout << "Q6_SHAPE_BEGIN ni=" << ni << " no=" << no << '\n' << std::flush;
   std::vector<uint8_t> weights(k::native_mmvq_weight_bytes(14, ni, no));
@@ -176,14 +197,14 @@ void one_shape(Shape shape, bool smoke) {
     auto packed_before = packed.get();
     quantized_reference(input, packed_before);
     auto call = [&](int arm) {
-      Arms[arm](w.data(), packed.data(), arm ? candidate.data() : reference.data(),
+      arms[arm](w.data(), packed.data(), arm ? candidate.data() : reference.data(),
                 ni, no, nc, &rt->compute());
     };
     auto compare = [&](bool oracle = false) {
       auto a = reference.get(), b = candidate.get();
       need(a.size() == b.size() &&
                std::memcmp(a.data(), b.data(), a.size() * sizeof(float)) == 0,
-           "Q6 specialization differs from the production reference");
+           "Q6 candidate differs from the selected bitwise reference");
       for (size_t i = 0; i < size_t(no) * nc; ++i)
         need(std::isfinite(a[Pad + i]), "nonfinite reference output");
       if (oracle) scalar_reference(shape, nc, weights, packed_before, a);
@@ -227,10 +248,27 @@ void one_shape(Shape shape, bool smoke) {
 
 int main(int argc, char **argv) {
   try {
-    need(argc == 2 && (std::string(argv[1]) == "--smoke" ||
-                          std::string(argv[1]) == "--speed"), "expected --smoke or --speed");
+    need((argc == 2 || argc == 3) && (std::string(argv[1]) == "--smoke" ||
+                          std::string(argv[1]) == "--speed") &&
+             (argc == 2 || std::string(argv[2]) == "--centering"),
+         "expected --smoke or --speed, optionally followed by --centering");
     const bool smoke = std::string(argv[1]) == "--smoke";
+    const bool centering = argc == 3;
+    const auto &arms = centering ? CenterArms : ColumnArms;
+    std::cout << "Q6_COMPARISON=" << (centering ? "centering" : "columns") << '\n';
     rt = sb::runtime_for();
+    if (centering) {
+      const auto &device = rt->device();
+      need(device.get_backend() == sycl::backend::ext_oneapi_level_zero &&
+               device.get_info<sycl::info::device::vendor_id>() == 0x8086 &&
+               device.get_info<sycl::ext::intel::info::device::device_id>() == 0xe20c &&
+               device.get_info<sycl::ext::intel::info::device::pci_address>() == "0000:05:00.0" &&
+               device.get_info<sycl::info::device::name>() == "Intel Arc B570 Graphics",
+           "Q6 centering comparison requires the exact B570");
+      need(rt->compute().has_property<sycl::property::queue::in_order>(),
+           "Q6 centering comparison requires the qualified in-order queue");
+      std::cout << "Q6_TARGET_B570=1\n";
+    }
     // Check the representation on the actual device; SYCL2020 has no
     // info::device::endian_little query in the pinned headers.
     {
@@ -249,18 +287,19 @@ int main(int argc, char **argv) {
     if (smoke) {
       for (auto shape : {Shape{256, 1, 0}, Shape{512, 3, 0}, Shape{1024, 13, 0},
                           Shape{2560, 129, 0}})
-        one_shape(shape, true);
+        one_shape(shape, true, arms);
       // Refuse invalid geometry before submitting any candidate work.
       for (int columns : {0, 9}) {
-        bool rejected = false;
-        try {
-          k::native_q6_k_columns_mmvq(nullptr, nullptr, nullptr, 256, 1, columns,
-                                     &rt->compute());
-        } catch (const std::invalid_argument &) { rejected = true; }
-        need(rejected, "invalid column count accepted");
+        for (auto kernel : arms) {
+          bool rejected = false;
+          try {
+            kernel(nullptr, nullptr, nullptr, 256, 1, columns, &rt->compute());
+          } catch (const std::invalid_argument &) { rejected = true; }
+          need(rejected, "invalid column count accepted");
+        }
       }
     } else {
-      for (auto shape : Shapes) one_shape(shape, false);
+      for (auto shape : Shapes) one_shape(shape, false, arms);
     }
     rt->wait();
     std::cout << "Q6_COLUMNS_PASS mode=" << (smoke ? "smoke" : "speed") << '\n';

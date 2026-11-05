@@ -26,6 +26,7 @@
 
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/kernels/f16_bits.hpp"
+#include "strata/kernels/q6_packed_center.hpp"
 #include "strata/kernels/iq_kernels.hpp"
 #include "strata/artifact/iq_codebooks.hpp"
 #include "strata/sycl/launch.hpp"
@@ -309,6 +310,14 @@ inline float q4_q8_dot_impl(const int *__restrict__ v,
   const float2 dm4f = half_pair_float(dm4);
   return dm4f.x * sumf_d - dm4f.y * sumf_m;
 }
+template <bool PackedCenter>
+int q6_center_word(uint32_t word) {
+  if constexpr (PackedCenter)
+    return std::bit_cast<int>(component::q6_center_bytes(word));
+  else
+    return subtract_saturating_bytes(int(word), 0x20202020);
+}
+template <bool PackedCenter = false>
 inline float q6_q8_dot_impl(int vl, int vh, const int *__restrict__ u,
                             const unsigned char *__restrict__ scales, float d,
                             const float *__restrict__ d8) {
@@ -318,7 +327,9 @@ inline float q6_q8_dot_impl(int vl, int vh, const int *__restrict__ u,
     const int sc = std::bit_cast<int8_t>(scales[4 * i]);
     const int vil = int((uint32_t(vl) >> (4 * i)) & 0x0f0f0f0fu);
     const int vih = int(((uint32_t(vh) >> (4 * i)) << 4) & 0x30303030u);
-    const int vi = subtract_saturating_bytes(vil | vih, 0x20202020);
+    // Both masks prove that every reconstructed byte is in 0..63. The packed
+    // alternative is Q6-only; other formats keep their saturating subtraction.
+    const int vi = q6_center_word<PackedCenter>(uint32_t(vil | vih));
     sumf += d8[i] * (packed_dot(vi, u[i], 0) * sc);
   }
   return d * sumf;
@@ -599,6 +610,7 @@ struct Q6KTraits {
     r.d = load_q6_half(w + offsetof(Block, d));
     return r;
   }
+  template <bool PackedCenter = false>
   static float apply(const W &r, const unsigned char *__restrict__ x, int iqs) {
     int u[2];
     float d8[2];
@@ -608,7 +620,7 @@ struct Q6KTraits {
       u[i] = load_q6_word(block + offsetof(Q81Block, qs), iqs % 8);
       d8[i] = load_q6_half(block + offsetof(Q81Block, ds));
     }
-    return q6_q8_dot_impl(r.vl, r.vh, u, r.scales, r.d, d8);
+    return q6_q8_dot_impl<PackedCenter>(r.vl, r.vh, u, r.scales, r.d, d8);
   }
 };
 int signed_grid_word(uint32_t positive, unsigned signs) {
@@ -1012,7 +1024,7 @@ void dispatch(const void *w, const void *x, float *y, int n_in, int n_out,
 // Explicit Q6_K candidate; the production dispatch above stays unchanged.
 // Keep its exact thread/block and reduction order, specializing only the column
 // bound so private accumulators need not support eight runtime-indexed columns.
-template <int COLS, int ROWS>
+template <int COLS, int ROWS, bool PackedCenter = false>
 void launch_q6_columns(const void *weights, const void *activations, float *y,
                        int n_in, int n_out, void *stream) {
   using F = Q6KTraits;
@@ -1040,7 +1052,7 @@ void launch_q6_columns(const void *weights, const void *activations, float *y,
 #pragma unroll
                 for (int j = 0; j < COLS; ++j)
                   tmp[j][i] +=
-                      F::apply(weight,
+                      F::template apply<PackedCenter>(weight,
                           activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
               }
           }
@@ -1070,13 +1082,42 @@ void launch_q6_columns(const void *weights, const void *activations, float *y,
   });
 }
 
-template <int COLS>
+template <int COLS, bool PackedCenter = false>
 void dispatch_q6_columns(const void *w, const void *x, float *y, int n_in,
                          int n_out, void *stream) {
   if (n_in / Q6KTraits::DIV < Q6KTraits::BPI)
-    launch_q6_columns<COLS, 4>(w, x, y, n_in, n_out, stream);
+    launch_q6_columns<COLS, 4, PackedCenter>(w, x, y, n_in, n_out, stream);
   else
-    launch_q6_columns<COLS, 1>(w, x, y, n_in, n_out, stream);
+    launch_q6_columns<COLS, 1, PackedCenter>(w, x, y, n_in, n_out, stream);
+}
+
+// Both component arms traverse the same public checks and column dispatch.
+// Only the selected specialization changes centering; generic MMVQ, prompt
+// products and the fallback for columns 5..7 retain the scalar reference.
+template <bool PackedCenter>
+void q6_columns_entry(const void *w, const void *x, float *y, int n_in,
+                      int n_out, int ncols, void *stream) {
+  const auto wb = native_mmvq_weight_bytes(14, n_in, n_out);
+  const auto xb = native_q8_1_bytes(n_in, ncols);
+  validate_stream(stream);
+  validate_spans({{y, checked_count(checked_count(n_out, ncols), 4)}},
+                 {{w, wb}, {x, xb}});
+  if (!multi_exact.load(std::memory_order_relaxed))
+    throw std::invalid_argument("Q6 column specialization requires exact layout");
+  switch (ncols) {
+#define Q6_COLUMNS(N)                                                          \
+  case N:                                                                     \
+    dispatch_q6_columns<N, PackedCenter>(w, x, y, n_in, n_out, stream);          \
+    break
+    Q6_COLUMNS(1);
+    Q6_COLUMNS(2);
+    Q6_COLUMNS(3);
+    Q6_COLUMNS(4);
+    Q6_COLUMNS(8);
+#undef Q6_COLUMNS
+  default:
+    dispatch<Q6KTraits>(w, x, y, n_in, n_out, ncols, stream);
+  }
 }
 template <typename F, bool Down>
 void grouped_projection(const NativeExpertLayout &L,
@@ -1371,27 +1412,12 @@ bool native_mmvq_supported(int type) noexcept {
 
 void native_q6_k_columns_mmvq(const void *w, const void *x, float *y, int n_in,
                              int n_out, int ncols, void *stream) {
-  const auto wb = native_mmvq_weight_bytes(14, n_in, n_out);
-  const auto xb = native_q8_1_bytes(n_in, ncols);
-  validate_stream(stream);
-  validate_spans({{y, checked_count(checked_count(n_out, ncols), 4)}},
-                 {{w, wb}, {x, xb}});
-  if (!multi_exact.load(std::memory_order_relaxed))
-    throw std::invalid_argument("Q6 column specialization requires exact layout");
-  switch (ncols) {
-#define Q6_COLUMNS(N)                                                          \
-  case N:                                                                     \
-    dispatch_q6_columns<N>(w, x, y, n_in, n_out, stream);                        \
-    break
-    Q6_COLUMNS(1);
-    Q6_COLUMNS(2);
-    Q6_COLUMNS(3);
-    Q6_COLUMNS(4);
-    Q6_COLUMNS(8);
-#undef Q6_COLUMNS
-  default:
-    dispatch<Q6KTraits>(w, x, y, n_in, n_out, ncols, stream);
-  }
+  q6_columns_entry<false>(w, x, y, n_in, n_out, ncols, stream);
+}
+void native_q6_k_centered_columns_mmvq(const void *w, const void *x, float *y,
+                                      int n_in, int n_out, int ncols,
+                                      void *stream) {
+  q6_columns_entry<true>(w, x, y, n_in, n_out, ncols, stream);
 }
 size_t native_mmvq_weight_bytes(int type, int n_in, int n_out) {
   const auto f = format(type);
