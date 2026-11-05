@@ -24,8 +24,8 @@ import mapped_row_copy_component as shared
 from run_q6_columns import validation_log
 
 P, B, RESULT = shared.P, shared.B, shared.RESULT
-ROOT = B / 'q6-centering-component-v1'
-KEY, COHORT = 'q6_centering_component_v1', 'decode_iq3_audit_speed_v2'
+ROOT = B / 'q6-centering-component-v2'
+KEY, COHORT = 'q6_centering_component_v2', 'decode_iq3_audit_speed_v2'
 EXE = ROOT / 'sycl_q6_columns_bench'
 GIT = str(Path(shutil.which('git')).resolve())
 CORE, FIXTURE = 'src/kernels/sycl/native_mmvq.cpp', 'bench/sycl/q6_columns.cpp'
@@ -231,6 +231,7 @@ def prepare():
             file_cap=128 << 20, total_cap=768 << 20),
         plan=dict(reference='native_q6_k_columns_mmvq', candidate='native_q6_k_centered_columns_mmvq',
             difference='Q6 centering after 0x0f/0x30 masks only;same byte loads,dot/scales,geometry and reductions.',
+            device_identity='Exact LevelZero,vendor8086,devicee20c,PCI0000:05:00.0;descriptive name is emitted,not matched. V1 remains failed for its decorated-name rejection before any kernel enqueue.',
             order='One traced smoke,then three fresh processes;five paired batches per shape/column,arm=(batch+column+position)%2.',
             shapes=SHAPES, columns=[1, 2, 3, 4, 8], smoke_cases=32, speed_cases=35,
             timer='Steady-clock full public dispatch and queue completion;resident weights/Q81;conversion,allocation,oracles outside timers.',

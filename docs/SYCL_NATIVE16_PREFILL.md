@@ -303,8 +303,8 @@ and per-lane mixed-word assertions. These are compile-time algebra checks,
 not a device numerical gate. The retired expression fixture had no production caller and omitted
 full Q6 reconstruction,scales,column reductions and surrounding optimization.
 
-The complete Q6-kernel centering candidate is now source-prepared,without a
-build or device execution. The explicit
+The complete Q6-kernel centering candidate has a successful first fixture
+build,but no arithmetic or speed qualification yet. The explicit
 `native_q6_k_centered_columns_mmvq` entry and existing column entry instantiate
 the same checks,geometry,byte-safe loads,dot/scaling and reduction code with
 only the Q6 centering expression selected at compile time. Generic MMVQ,prompt
@@ -312,7 +312,16 @@ products and columns5..7 retain the scalar reference. No production caller
 selects the new entry. A later integration must use explicit decode ownership
 and preserve prefill. This implements the reviewed design seam,not a speed gain.
 
-After all six frozen model-audit processes close,prepare the comparison with
+All six frozen model-audit processes are closed. The first traced fixture
+attempt stopped before any kernel enqueue:its descriptive-name check expected
+`Intel Arc B570 Graphics`,whereas the qualified runtime returns
+`Intel(R) Arc(TM) B570 Graphics`. Backend,vendor8086,devicee20c and
+PCI0000:05:00.0 match. V1 remains failed with normal process closure and no
+fresh fault. V2 retains those exact physical identity checks and prints the
+descriptive name without matching it;numerical,queue and timing gates stay
+unchanged. The first build's822 actual include/link inputs passed the pinned
+prebuild image. No inference engine changed.
+Prepare the fresh V2 comparison with
 `tools/sycl/measure_q6_columns.py prepare`,commit its exact generated plan,then
 build and run its traced smoke before timing. The maintained fixture's
 `--centering` argument compares the two complete column entries. It is designed to check

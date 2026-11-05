@@ -262,12 +262,12 @@ int main(int argc, char **argv) {
       need(device.get_backend() == sycl::backend::ext_oneapi_level_zero &&
                device.get_info<sycl::info::device::vendor_id>() == 0x8086 &&
                device.get_info<sycl::ext::intel::info::device::device_id>() == 0xe20c &&
-               device.get_info<sycl::ext::intel::info::device::pci_address>() == "0000:05:00.0" &&
-               device.get_info<sycl::info::device::name>() == "Intel Arc B570 Graphics",
+               device.get_info<sycl::ext::intel::info::device::pci_address>() == "0000:05:00.0",
            "Q6 centering comparison requires the exact B570");
       need(rt->compute().has_property<sycl::property::queue::in_order>(),
            "Q6 centering comparison requires the qualified in-order queue");
       std::cout << "Q6_TARGET_B570=1\n";
+      std::cout << "Q6_TARGET_NAME=" << device.get_info<sycl::info::device::name>() << '\n';
     }
     // Check the representation on the actual device; SYCL2020 has no
     // info::device::endian_little query in the pinned headers.

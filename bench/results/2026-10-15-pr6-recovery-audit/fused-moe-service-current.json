@@ -149620,7 +149620,7 @@
     "retention": "Compact outcome only;standard unit output is not another retained transcript."
   },
   "q6_centering_component_v1": {
-    "stage": "compiled",
+    "stage": "failed-smoke",
     "source_commit": "bf3371d20b5464b76dbe5e086b9d4b6d2dcb5232",
     "cohort_signature": "d7223d5e9c2339a55f359ca4cb2645087e22b386ff5ab75db82d88f36a0afbef",
     "tools": {
@@ -149893,7 +149893,7 @@
     "ownership_closed": true,
     "passed": false,
     "complete": false,
-    "GPU_executed": false,
+    "GPU_executed": null,
     "model_executed": false,
     "final_owner_guard": {
       "passed": true,
@@ -149908,6 +149908,12 @@
         "sha256": "3785bd8bb4608d56078df381029260030d989c651aa3f86955ad5515ad983dd9",
         "closed": true,
         "commands": 14
+      },
+      "smoke": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1/smoke-owner.json",
+        "sha256": "0f555ce65ee72902ca2dd90d6ac5955c1596a6d6bcaf3c5b24244ef40e9593b3",
+        "closed": true,
+        "commands": 1
       }
     },
     "actual_inputs": {
@@ -149923,6 +149929,30 @@
       "sha256": "1d12ab68c2591571e1ec2fa26257881cc404ba3f7af374d373bdbf2d8e677f5c",
       "bytes": 11523624
     },
+    "GPU_execution_attempted": true,
+    "native_postchecks": [
+      {
+        "phase": "smoke",
+        "process": 0,
+        "passed": true,
+        "faults": {
+          "passed": true,
+          "evidence": []
+        },
+        "inputs_boot_driver": {
+          "passed": true,
+          "evidence": null
+        },
+        "model_owners": {
+          "passed": true,
+          "evidence": {
+            "same_uid_model_owners": [],
+            "scope": "bounded read-only cmdline scan; cannot prove hidden foreign GPU use absent"
+          }
+        }
+      }
+    ],
+    "error": "RuntimeError('component failed: Q6_COLUMNS_FAIL Q6 centering comparison requires the exact B570')",
     "source_inputs": {
       "files": 373,
       "aggregate_sha256": "c53a9a9fea84036c3af50e2407bb763df1339a11a126eca80cc8aa3b44999efc"
@@ -149934,6 +149964,28 @@
     "command_inputs": {
       "count": 14,
       "sha256": "22344fc85a1a85a2d5467e992bb55fc175b5de67ff7c9ffa6d36216dc5b96d99"
+    },
+    "failure_diagnosis": {
+      "mechanism": "Fixture rejected the qualified B570 because its descriptive name includes Intel(R)/Arc(TM),while the fixture expected the undecorated name. Exact backend,vendor,device and PCI identity already match.",
+      "observed_name": "Intel(R) Arc(TM) B570 Graphics",
+      "expected_name": "Intel Arc B570 Graphics",
+      "observed_identity": {
+        "backend": "level_zero",
+        "vendor_id": "0x8086",
+        "device_id": "0xe20c",
+        "pci_address": "0000:05:00.0"
+      },
+      "trace": {
+        "bytes": 13530,
+        "sha256": "66e4f393df60999b4f4ac2765d279cb08a304d2cd301b5da2037fb5249a6fab0",
+        "kernel_enqueue_calls": 0
+      },
+      "native_exit_code": 1,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "GPU_arithmetic_qualified": false,
+      "next": "Preserve V1 failed;new V2 plan gates on exact backend/vendor/device/PCI and emits the descriptive name. Numerical,queue,validation and timing gates stay unchanged.",
+      "original_error_sha256": "8a7c1f749f5847407ece171bace7c7b0f44fcca0d78bf5f047cd1c774a519178"
     }
   }
 }
