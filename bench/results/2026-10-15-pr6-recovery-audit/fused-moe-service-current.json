@@ -160663,7 +160663,7 @@
     }
   },
   "decode_clock_cost_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "42befa94752c7a56959745143f4242efd94707be",
     "sources": {
       "include/strata/sycl/decode_service_profile.hpp": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca",
@@ -160744,17 +160744,94 @@
     "profile_schema_version": 2,
     "plan": "One owned GCC13/O2 compile,then one pure-host child pinned to core0.Five50000-read production clock_tick bands,including loop/check overhead.Require exact output,monotonic valid reads,clock resolution<=1us,and each band2..500ms.Pin source/compiler/actual dependencies/ELF and require normal0,quiet stderr,closed owners.Stop first failure;no retry or changing duration criteria. No GPU/model or whole-observer overhead qualification.",
     "retention": "Keep five individual band totals,resolutions,source/recipe and limits for the imminent profile0/1 decision. Retire one-use ELF,dependency list and normal output after committed result and source recovery;no engine generation.",
-    "results": [],
+    "results": [
+      {
+        "name": "clock-cost-compile",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "clock-cost-test",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "53d3496d419e71d0c9bb87dd405c141ecfef666b48001c877c43712490120b0b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "model_executed": false,
     "native_header_binding": {
       "source_commit": "70169d3881ab588d45f7df7baa132b4293f00970",
       "engine_sha256": "5c5e25d04e8ea8a8abcd9d26ed8f70a32d78b8aa93a89a49e7232ec8f47f6d76",
       "header_sha256": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca"
+    },
+    "dependencies": {
+      "clock-cost": {
+        "files": 87,
+        "aggregate_sha256": "69ce9337399eee6b79c35291593c7ad36484a8218d3b6cb84e147a2c58cea283"
+      }
+    },
+    "binaries": {
+      "clock-cost": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-clock-cost-v1/clock-cost",
+        "sha256": "fd04f56f3795594f96b3b67b2ea8a0fdc1bafb809002a8ff6fda98659771654c"
+      }
+    },
+    "clock_cost": {
+      "passed": true,
+      "host_cpu": 0,
+      "monotonic_resolution_ns": 1,
+      "thread_cpu_resolution_ns": 1,
+      "samples": [
+        {
+          "reads": 50000,
+          "wall_ns": 39622429,
+          "cpu_ns": 39581600
+        },
+        {
+          "reads": 50000,
+          "wall_ns": 27898342,
+          "cpu_ns": 27892563
+        },
+        {
+          "reads": 50000,
+          "wall_ns": 27995947,
+          "cpu_ns": 27995756
+        },
+        {
+          "reads": 50000,
+          "wall_ns": 29040701,
+          "cpu_ns": 29009717
+        },
+        {
+          "reads": 50000,
+          "wall_ns": 28060217,
+          "cpu_ns": 28047302
+        }
+      ],
+      "wall_ns_per_read": [
+        792.44858,
+        557.96684,
+        559.91894,
+        580.81402,
+        561.20434
+      ],
+      "cpu_ns_per_read": [
+        791.632,
+        557.85126,
+        559.91512,
+        580.19434,
+        560.94604
+      ],
+      "loop_and_checks_included": true,
+      "whole_observer_overhead_qualified": false,
+      "limits": "Observed production clock_tick backend plus loop/check cost under GCC13/O2,on core0;not production inlining cost,a worst-case bound,model overhead or hardware saturation."
     }
   }
 }

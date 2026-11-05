@@ -812,10 +812,17 @@ Pool wall is0.691..0.695s. Unclassified wall is0.250..0.252s,of which
 regions. The warmup separately spends4.163s in capture/setup. These records
 show that high caller CPU includes substantial wait-API time,not that useful
 CPU arithmetic or GPU hardware is saturated. Worker CPU can overlap caller
-CPU and must not be added blindly. Clock-read metrology and a same-binary
-profile0/1 overhead comparison remain pending before representative long-generation
-attribution. This short diagnostic does not qualify clean speed,physical traffic,
-agent/task,physical262144/RESTORE or adoption.
+CPU and must not be added blindly. The separate core0
+[clock calibration](../bench/sycl/qualify_decode_clock_cost.py) now passes five
+50000-read bands with the same production header:GCC13/O2,reported monotonic
+and thread-CPU resolution1ns,observed clock-pair read means0.558..0.792us,
+including loop/check cost. All individual bands are retained in
+`decode_clock_cost_v1`;both owned children exit0 with quiet stderr and closed
+ownership. This is backend-read calibration,not production inlining cost,a
+worst-case bound or whole-observer overhead. A same-binary profile0/1 comparison
+remains pending before representative long-generation attribution. This short
+diagnostic does not qualify clean speed,physical traffic,agent/task,
+physical262144/RESTORE or adoption.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The six closed CPU-service processes also agree exactly on logical work volume
