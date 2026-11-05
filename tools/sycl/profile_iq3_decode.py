@@ -96,6 +96,7 @@ def collector_context():
             and row['boot'] == prior['boot'] and row['driver'] == prior['driver']
             and row['assets'] == assets and row['budgets'] == ctx.BUDGET
             and all(row['profile'][k] == v for k, v in assets.items())
+            and row['profile']['environment']['UNITRACE_TraceOutputDir'] == str(CONTROL_ROOT / 'trace')
             and row['whole_bytes'] == 128 << 20 and row['profile']['mode'] == 'aggregate',
             'current collector/native/provider/control envelope differs')
         return providers
@@ -198,6 +199,7 @@ def contract(row, prior, assets):
         and row['native_validation_probe'] == prior['native_validation_probe']
         and row['native_profile']['mode'] == 'aggregate'
         and all(row['native_profile'][k] == v for k, v in assets.items())
+        and row['native_profile']['environment']['UNITRACE_TraceOutputDir'] == str(ROOT / 'trace')
         and row['budgets'] == dict(wall=1200, cpu=7200, rss_cap=104 << 30,
             text_cap=64 << 20, file_cap=512 << 20, total_cap=768 << 20)
         and row['whole_bytes'] == 1024 << 20
@@ -268,14 +270,25 @@ def prepare(ctx):
 def host(ctx):
     ctx.host()
     row = json.loads((ROOT / 'record.json').read_text())
-    owner = base.supervision.Owner(ROOT / 'window-reader-tests')
-    command = [row['python_selected']['path'], '-B', str(P / 'tests/core/test_decode_window_trace.py')]
-    case, out, err = owner.run('reader', command, row['environment'], P,
-        wall=30, cpu=20, rss_cap=512 << 20, text_cap=64 << 10,
-        file_cap=2 << 20, total_cap=8 << 20)
-    good = base.supervision.closed(case) and case['exit_code'] == 0 and not out.stat().st_size
-    row['window_reader_tests'] = dict(passed=good, native_exit_code=case.get('exit_code'),
-        ownership_closed=base.supervision.closed(case), summary=err.read_text()[-512:])
+    good, owner, case = False, None, None
+    result = row['window_reader_tests'] = dict(passed=False, ownership_closed=True)
+    try:
+        owner = base.supervision.Owner(ROOT / 'window-reader-tests')
+        command = [row['python_selected']['path'], '-B', str(P / 'tests/core/test_decode_window_trace.py')]
+        case, out, err = owner.run('reader', command, row['environment'], P,
+            wall=30, cpu=20, rss_cap=512 << 20, text_cap=64 << 10,
+            file_cap=2 << 20, total_cap=8 << 20)
+        good = base.supervision.closed(case) and case['exit_code'] == 0 and not out.stat().st_size
+        result.update(passed=good, native_exit_code=case.get('exit_code'),
+            summary=err.read_text()[-512:])
+    except BaseException as error:
+        result['error'] = repr(error)
+    finally:
+        result['ownership_closed'] = owner is None or bool(case and base.supervision.closed(case))
+        if case:
+            result['command'] = {k: case[k] for k in ('argv', 'pid', 'start_ticks', 'exit_code',
+                'observation_complete', 'direct_child_reaped', 'session_empty',
+                'error', 'errors', 'cleanup', 'elapsed_seconds') if k in case}
     if not good:
         row.update(stage='failed', passed=False, host_passed=False)
     ctx.save(row)
@@ -306,7 +319,7 @@ def run(ctx):
     owner = controls = None
     offsets, clocks, identity = {}, [], None
     initial = time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns()
-    cursor = profile.cursor()
+    cursor = None
 
     def persist():
         write(ROOT / 'execution.json', dict(outcome,
@@ -361,6 +374,7 @@ def run(ctx):
         io.exit(1)
 
     try:
+        cursor = profile.cursor()
         owner = base.supervision.Owner(ROOT / 'owned', persist)
         controls = base.supervision.Owner(ROOT / 'controls', persist)
         clocks.append(profile.clock_pair())
@@ -430,9 +444,9 @@ def run(ctx):
                 require(base.supervision.closed(command) and command['exit_code'] == 0, 'collector close failed')
             except BaseException as error: outcome['control_close_error'] = repr(error)
         if owner: entry.template.shared.runtime.validation.finish(outcome, owner, cursor, row['boot'])
-        controls_closed = bool(controls and controls.active is None and
+        controls_closed = controls is None or (controls.active is None and
             all(base.supervision.closed(v) for v in controls.commands))
-        outcome['ownership_closed'] = bool(outcome.get('ownership_closed') and controls_closed)
+        outcome['ownership_closed'] = bool((owner is None or outcome.get('ownership_closed')) and controls_closed)
         outcome['passed'] = bool(outcome.get('passed') and outcome['complete'] and outcome['ownership_closed']
             and outcome.get('driver_after') == row['driver'] and not profile.session_path(prof['session']).exists()
             and 'control_close_error' not in outcome)

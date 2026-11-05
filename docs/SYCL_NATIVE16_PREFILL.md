@@ -645,6 +645,14 @@ paired candidate remains. The partial cohort does not qualify the
 declared three-pair gain,prefill/TTFT preservation or inference adoption.
 Both arms retain the common IQ3 audit,whose incremental cost is not separately
 measured;these are not a matched comparison against the older clean TG values.
+The older clean Q6 cohort and this IQ3 cohort do have identical CLI arguments,
+v5 request-body hashes,actual input/generated lengths and MTP acceptance.
+Their native/pool sources and common IQ3 audit differ. Unmeasured observer
+cost does not explain the lower absolute rates by itself. Keep the faster
+13.5052/8.8299 clean reference and obtain a matched clean-envelope comparison
+before replacing it. A bounded source/settings audit,including disabled
+service-observer paths,is prepared for Luna after this cohort closes;Main
+continues tuning rather than another broad historical regression investigation.
 The diagnostic preset's
 `STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
 timing in both short arms; the new speed controller omits that variable.
