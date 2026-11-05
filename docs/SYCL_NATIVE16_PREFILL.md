@@ -322,7 +322,10 @@ prepare and commit installed compiler/Python/library/header inputs before the
 single two-command compile operation. Each command has60s CPU/wall,2GiB sampled
 RSS,256KiB text and8MiB per-file caps;the whole root,including manifests,is32MiB.
 The supervisor's CPU/file limits are per-process and RSS/disk checks are sampled.
-V2 is not yet prepared or run.
+At source `2977bf6d6d00854d46052b4f22870fc686e6a059`,V2's host check passes
+11 source pins,the actual four-process boundary,all ten production settings,
+16 invalid-evidence rejections and changed-cohort detection. V2 is prepared
+with the same installed compiler image as V1;compilation is not yet run.
 Compare both instruction pairs independently. Equal SPIR-V lowering ends that
 expression proposal;a difference only motivates a separately committed whole-
 Q6 discriminator. Retire generated artifacts and the fixture when this finite
