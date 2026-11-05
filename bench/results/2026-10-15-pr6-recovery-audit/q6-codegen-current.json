@@ -35,7 +35,7 @@
     }
   },
   "q6_dot_codegen_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "2977bf6d6d00854d46052b4f22870fc686e6a059",
     "passed": false,
     "complete": false,
@@ -180,6 +180,26 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v2/dot.spvasm"
     ],
     "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "outcome": {
+      "complete": false,
+      "passed": false,
+      "native_started": true,
+      "error": "RuntimeError('owned SPIR-V translation failed')",
+      "ownership_closed": true,
+      "compiler_stage": {
+        "exit_code": 0,
+        "ownership_closed": true,
+        "bitcode_bytes": 6552,
+        "bitcode_sha256": "57191179d5072a180a6e3921585d5147dacdf44ef1805c6b185f80f1d66d0308",
+        "centering_static_asserts_compiled": true,
+        "limits": "Compiler-stage success only;V2 as a whole failed its subsequent textual conversion."
+      },
+      "translation_diagnostic": {
+        "message": "llvm-spirv was built without --spirv-tools-dis support",
+        "exit_code": 255,
+        "stderr_sha256": "05aa94250034a6551a7ad34b9440d7831e5cf0baf647a36c04145036e0068b09"
+      }
+    },
     "sources_signature": {
       "files": 11,
       "aggregate_sha256": "00103ee156fae4216ae0ff929bf907b227cc3ceb1d1600ab80068061f2b9028a"

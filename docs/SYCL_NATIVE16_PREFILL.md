@@ -282,7 +282,7 @@ scales,column reductions or a production caller.
 The independently authored [centering candidate](../include/strata/kernels/q6_packed_center.hpp)
 uses `(word + 0x60606060u) ^ 0x80808080u`. Production Q6 masks bound each byte
 to0..63;adding96 cannot carry between bytes,and XOR128 yields the byte
-representation of value minus32. The fixture's pending compile-time checks
+representation of value minus32. The fixture's compile-time checks
 cover all64 repeated-byte values and each lane of a mixed-boundary word.
 No device numerical or speed gate has passed.
 
@@ -325,7 +325,12 @@ The supervisor's CPU/file limits are per-process and RSS/disk checks are sampled
 At source `2977bf6d6d00854d46052b4f22870fc686e6a059`,V2's host check passes
 11 source pins,the actual four-process boundary,all ten production settings,
 16 invalid-evidence rejections and changed-cohort detection. V2 is prepared
-with the same installed compiler image as V1;compilation is not yet run.
+with the same installed compiler image as V1. Its compiler stage closes normally
+with exit0 and6552bytes of LLVM bitcode,including the centering static assertions.
+The next operation exits255 because this SDK was built without
+`--spirv-tools-dis` support. V2 remains failed;no instruction comparison or
+device execution is qualified. A prospective plan must use the translator's
+supported internal text format while preserving this failure.
 Compare both instruction pairs independently. Equal SPIR-V lowering ends that
 expression proposal;a difference only motivates a separately committed whole-
 Q6 discriminator. Retire generated artifacts and the fixture when this finite
