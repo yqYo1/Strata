@@ -745,23 +745,25 @@ Luna-max review are closed. Main checked the additionally identified compiled
 flag accepts exactly"1". The treatment includes GU-dispatch call accounting
 across native formats and IQ3-specific row accounting; it does not isolate the
 cost of IQ3 counter instructions. The source caveat is cleared without a
-controller or native rebuild. Five processes (audit1,0,0,1,1) now close with both
-long requests eligible in each, native exit0, quiet validation, closed owners
-and no fresh fault. Exact code/prose TG in the three audit-on processes is
-13.616838/8.878867,13.486251/8.802234 and13.426696/8.757597 tok/s;
-the two off samples are13.472547..13.476401 and8.852377..8.866021 respectively.
-Input/generated lengths and acceptance are unchanged. Both completed code pairs
-favor audit on;the prose pair directions differ. Keep the higher individual on
-observations in the CSV; the three-pair
-contrast still lacks the final audit-off process and does not explain the earlier lower absolute speed
-or replace the repeated clean reference.
+controller or native rebuild. All six processes (audit1,0,0,1,1,0) now close
+with all12long requests eligible,native exit0,quiet validation,closed ownership,
+no fresh fault and all15final model-asset hashes matching. Audit-on/off code TG
+medians are13.486251/13.472547 tok/s;prose medians are8.802234/8.852377 tok/s.
+The three audit-off/on paired TG ratios are0.989403/0.999270/0.988585 for code
+and0.998553/1.005697/1.003632 for prose;their geometric means are0.992407459
+and1.002622575. Neither workload meets the predeclared all-three-off-faster
+screen. Thus this contrast does not support audit disabling as a reproducible
+speed improvement or explain the earlier lower absolute speed. It does not
+establish that counters are free or that enabling them causally accelerates
+code. Preserve the earlier repeated clean reference and individual CSV peaks.
 Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
 qualify it. This measures the enabled-audit effect on timed speed,not total
 observer wall cost or the cause of the cross-build gap. Request snapshots and
 footer lie outside decode_ms. Disabled compiled profile object/layout,guards
-and request scaffolding remain a separate unmeasured confound. Complete the
-final process under the existing frozen plan before selecting an
-observer-free model envelope. Main continues implementation and serialized measurement.
+and request scaffolding remain a separate unmeasured confound. The enabled-audit
+contrast is closed;do not extend cross-build diagnosis without a concrete new
+optimization decision. Main continues the complete Q6 centering implementation
+and serialized component validation;all-six closure now permits preparation.
 The diagnostic preset's
 `STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
 timing in both short arms; the new speed controller omits that variable.
