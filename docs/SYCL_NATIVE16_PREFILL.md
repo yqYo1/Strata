@@ -632,17 +632,18 @@ quiet validation, all15 final asset hashes, closed owners and no fresh fault.
 IQ3-on now passes the same probes and both short requests, with identical
 calls/eligible rows and selected paired rows1400960/1378560. Both selectors
 close normally with all15 final asset hashes, quiet validation and no new fault.
-The six-process long-generation comparison has closed five processes,including
-two matched pairs.
-Candidate/reference exact TG ratios are1.016142/1.014124 for code and
-1.029070/1.052548 for prose. Each arm generates3170/7275 tokens with MTP
-acceptance0.82439/0.38924. All ten requests satisfy their extent,answer and
-actual-route gates;all five native exits0,quiet validation,closed ownership
-and no fresh fault. Candidate selected NT1 rows221271040/566117760 equal the
-eligible rows,while reference selected rows are0.
-The final reference has exact TG10.136828/6.772043 for code/prose;only its
-paired candidate remains. The partial cohort does not qualify the
-declared three-pair gain,prefill/TTFT preservation or inference adoption.
+The six-process/twelve-request long-generation comparison is closed.
+Candidate/reference exact TG ratios are1.016142/1.014124/1.000177 for code and
+1.029070/1.052548/1.049583 for prose;their geometric means are1.010122/1.043681.
+Reference/candidate arm medians are10.235157/10.391146 code and
+6.690531/6.885026 prose tok/s. Each request generates3170/7275 tokens with MTP
+acceptance0.82439/0.38924. All twelve requests satisfy their extent,answer and
+actual-route gates;all six native exits0,quiet validation,closed ownership
+and no fresh fault. All15 final model-asset hashes match. Candidate selected
+NT1 rows221271040/566117760 equal eligible rows;reference selected rows are0.
+This qualifies the predeclared repeated IQ3 TG gain in both observed MTP
+classes. Prompt-time and TTFT directions are mixed. Dedicated prefill/TTFT,
+agent/task,physical262144/RESTORE and inference adoption remain unqualified.
 Both arms retain the common IQ3 audit,whose incremental cost is not separately
 measured;these are not a matched comparison against the older clean TG values.
 The older clean Q6 cohort and this IQ3 cohort do have identical CLI arguments,
@@ -651,7 +652,7 @@ Their native/pool sources and common IQ3 audit differ. Unmeasured observer
 cost does not explain the lower absolute rates by itself. Keep the faster
 13.5052/8.8299 clean reference and obtain a matched clean-envelope comparison
 before replacing it. A bounded source/settings audit,including disabled
-service-observer paths,is prepared for Luna after this cohort closes;Main
+service-observer paths,is now eligible for Luna after cohort closure;Main
 continues tuning rather than another broad historical regression investigation.
 The diagnostic preset's
 `STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
