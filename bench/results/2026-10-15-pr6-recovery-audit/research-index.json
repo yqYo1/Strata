@@ -24336,8 +24336,8 @@
   },
   "usm_host_cache_calibration_collection_20261105": {
     "classification": "knowledge collection",
-    "stage": "queued",
-    "schedulable_now": true,
+    "stage": "native_reviewed_reference_with_corrections",
+    "schedulable_now": false,
     "source_commit": "8d47ffa83be0280b252e3ba26beed3021fdfef79",
     "policy_revision": "8d47ffa83be0280b252e3ba26beed3021fdfef79",
     "question": "For Intel discrete-GPU SYCL host-USM/mapped read sources,what are the guaranteed versus implementation-specific cacheability/coherence properties,and how should repeated gather/copy calibration distinguish GPU cache reuse,CPU RAM access and PCIe transfers? Compare device/host USM,read-mostly/advice/cache hints and finite working-set/selected-row rotation methods,including correctness and counterexamples.",
@@ -24356,11 +24356,49 @@
       "sha256": "cfbdfba7467b5e5fbf1330ddd964d49fad79becca1c55332d2d148bf6db0fd4e",
       "bytes": 2784
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/usm-host-cache-calibration/report.md",
     "report_budget_bytes": 12288,
     "whole_folder_budget_bytes": 131072,
     "main_reads_body_on_arrival": false,
     "consumer": "Retrieve before interpreting host-mapped row-copy or other host-USM replay timing as a memory-resource calibration. Main does not read collection bodies on arrival.",
-    "next_review": "Native Luna-max reviews scope/depth/corrections;keep only substantive nonduplicated knowledge for the named future calibration decision."
+    "next_review": "Before interpreting mapped-row Host/Device replay as resource calibration;apply corrections then retire if that consumer closes without another concrete use.",
+    "report": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/usm-host-cache-calibration/report.md",
+      "sha256": "f79450bfacafe3586c3dc11176b89cbac2dbbd31e6b9d925a358f6d27632bdbb",
+      "bytes": 11615
+    },
+    "native_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/usm-host-cache-calibration/review.json",
+      "sha256": "99b84bbfa0a6343ba8f3b027097ec9cda2fcd4af02fa06da99887ef634248e09",
+      "bytes": 5747,
+      "agent": "/root/review_usm_host_cache_calibration_20261105",
+      "verdict": "retain as retrieval-only after the listed factual corrections; no local performance claim, component qualification, or implementation adoption"
+    },
+    "source_pins": {
+      "AGENTS.md": "afaae976137380f258f147dd06d50571b3a4f1b8414330fc10273ef7511b9623",
+      "docs/ARTIFACT_RETENTION.md": "cdf9c635257bd2d1cb6dd8d05d1d85ac8b5eda395d0ea7fd622d19d12d4fd08d",
+      "tests/sycl/mapped_row_copy.cpp": "cfe43c17c2d96d9612196f7b79e2568518446dd09a5468069012dbbadb9ed627",
+      "src/kernels/sycl/mapped_row_copy.hpp": "3cdafea4270b03e4656db3efbd79c99c6a5a26b0c63be3fd81510de58a190b5f"
+    },
+    "use_constraint": "Read only with the attached review corrections;no local performance,component qualification or implementation adoption.",
+    "next_scope_eligibility": "No new broad cacheability survey now. Any follow-up must be triggered by a specific unresolved result from a committed, source/build/executable-verified B570 calibration; predeclare matched arms, selected and logical bytes, allocation footprint, rotation/reuse, supported advice and counter coverage. Keep physical traffic, saturation, and model-path claims unknown until independently measured.",
+    "worker_closure": {
+      "task": "task_4f6359e71405",
+      "dispatch": "ctx_f3e4d2b487ae",
+      "terminal": "term_b5ba7c37-4fd9-4c0e-86c4-10d69709bc27",
+      "startup_status_and_directory_attested": true,
+      "completion_authenticated": true,
+      "settled": true,
+      "release_process_action": "none",
+      "exact_terminal_closed": true,
+      "post_close": "exited/exactWorker=true",
+      "completion_acknowledged": true
+    },
+    "transport_retirement": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-audit-process0-and-usm-transport-retirement-20261105.json",
+      "manifest_sha256": "b33abfba19ef67eb1ab81f825bd5b16b88e436d4912e7cfbb5a610efddba54c3",
+      "files": 15,
+      "bytes": 23850,
+      "verified_deleted": true
+    }
   }
 }

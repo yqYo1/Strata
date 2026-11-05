@@ -204,7 +204,12 @@ any later clean comparison needs a separate committed plan and fresh processes.
 Neither the modified prototype nor fixture has been compiled or run. The
 `tools/sycl/mapped_row_copy_component.py` controller prepares a private Git
 source snapshot and pins the compiler,headers,system packages and runtime files.
-It refuses preparation while the IQ3 cohort is open. It records preparation
+Before its preparation after the current audit cohort closes, fix its native
+recipe environment lookup and explicitly gate on that audit cohort: the current
+build's recipe records a helper identity, not an `environment` field, and the
+existing gate names the earlier IQ3 selector cohort. These are unexecuted
+controller holds, not a component failure or permission to refresh native pins.
+It records preparation
 intent before extracting sources,and preserves a failed
 attempt if materialization fails. An unwritable receipt remains an explicit
 failure requiring preservation of the partial root;it cannot authorize retry.
@@ -682,8 +687,12 @@ Luna-max review are closed. Main checked the additionally identified compiled
 flag accepts exactly"1". The treatment includes GU-dispatch call accounting
 across native formats and IQ3-specific row accounting; it does not isolate the
 cost of IQ3 counter instructions. The source caveat is cleared without a
-controller or native rebuild. Commit this decision before the first long
-process. Model checks remain unexecuted.
+controller or native rebuild. The first audit-on process now closes with both
+long requests eligible, native exit0, quiet validation, closed owners and no
+fresh fault. Its exact TG is13.616838/8.878867 tok/s for code/prose, with unchanged
+input/generated lengths and acceptance. Keep this individual observation in the
+CSV; the three-pair audit contrast is still incomplete, and this sample does not
+explain the earlier lower absolute speed or replace the repeated clean reference.
 Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
 qualify it. This measures the enabled-audit effect on timed speed,not total
 observer wall cost or the cause of the cross-build gap. Request snapshots and
@@ -775,8 +784,13 @@ and numerical checks, not sampler equivalence, native arithmetic throughput,
 absence of software emulation or model qualification. The diagnostic deliberately
 skips provider teardown after completed copies and freed allocations.
 The Main-authored [owned controller](../tools/sycl/device_fp64_probe.py)
-is also source-prepared, without host-control tests, compilation or device
-execution. It refuses preparation until all six IQ3 audit comparison processes
+is source-prepared, without compilation or device execution. At source
+`4851ec726c605b13a6aef69b54a55709eca75937`, fourteen host-only controls pass:
+syntax, an actual premature-preparation refusal without creating its output
+root, a closed-cohort positive fixture, and refusals for incomplete/active/open
+cohorts, wrong process count, failed or incomplete processes, nonzero exits,
+fresh faults and open ownership. No device is queried by these controls.
+It refuses preparation until all six IQ3 audit comparison processes
 close successfully. At that boundary, use `prepare`, commit its exact
 source/compiler/header/provider identities and plan, then use `build`, `query`,
 `arithmetic` and `exp`, committing each transition before the next. Use query,
