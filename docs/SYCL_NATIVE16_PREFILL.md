@@ -314,7 +314,7 @@ decode-column selector and exact layout. Only the18eligible shapes below can
 select the centered entry. Prompt reads retain their independent reference;
 phase/token cache metadata tracks centered calls separately,and a separate
 centering receipt preserves the existing phase-log format. This integration is
-not yet built into an inference engine or qualified for model speed.
+now built into the candidate engine below,but is not qualified for model speed.
 At source `dc2299e1f`,the real C++ policy/cache test passes under GCC13 UBSan:
 30original column selections,18centering selections,the other17centering
 cells,prompt/type/layout/disabled/unmeasured exclusions,phase/T roundtrip,
@@ -348,7 +348,7 @@ No GPU/model execution or model-speed qualification follows from this build.
 Fresh same-build host qualification now passes all four exact0,pool0,exact1,
 pool1 children:384single/80pair bitwise/canary controls and28real-pool cases
 per arm,with the original `e5d7a50a8e7d5ac5` checksum. All children exit0,
-stderr is empty,and ownership closes. The small GPU and model gates remain next.
+stderr is empty,and ownership closes. Model gates remain pending.
 The fresh traced GPU gate also passes submission10 and phase-cache16windows/
 12captures on this generation. Both native exits are0,strict pre-main validation
 proofs pass,ownership closes,boot/providers remain unchanged,and no fresh fault
@@ -356,6 +356,9 @@ appears. This synthetic gate does not execute model Q6 arithmetic or full
 record_window. The next32K model-entry controller joins each new centering
 receipt to its original phase/T/column receipt and actual IQ3 request footer;
 its two valid and11corrupt receipt controls pass. No model-speed result yet.
+The centering0 entry is now prepared with313 source inputs and all15 model
+assets pinned. Commit its plan before the fresh frontend probes and model run;
+centering1 remains a separate prospective process in the same binary.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
