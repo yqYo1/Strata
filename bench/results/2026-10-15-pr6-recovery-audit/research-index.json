@@ -24159,23 +24159,17 @@
     },
     "artifact_retirement": {
       "completed": true,
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-process4-audit-transport-retirement-20261105.json",
-      "manifest_sha256": "31247f706db5502507c47e11b18a7f42e68bc703a7c9712197cca1343c049607",
-      "files": 15,
-      "bytes": 52023
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-cohort-profiler-audit-retirement-20261105.json",
+      "manifest_sha256": "34712be66dff8632e2e213e3037f05a4fbf1504084aae67f631592f830391906",
+      "files": 1,
+      "bytes": 6985
     },
-    "review": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/iq3-current-profiler-contract/review.json",
-      "bytes": 6985,
-      "sha256": "5ba405bdcaf71c982a97456a0e30c8d387078a57fccf95d781684a03597b56d4",
-      "verdict": "accept_with_narrow_corrections",
-      "consumer": "Pinned input to iq3_profiler_implementation_20261105;retire after its corrected findings are curated."
-    },
-    "curated_evidence": "docs/SYCL_NATIVE16_PREFILL.md and current controller5fe4d1887;fresh active fixture/one-request binding,matched short-entry observers and finite clock/budget limits;unexecuted."
+    "curated_evidence": "docs/SYCL_NATIVE16_PREFILL.md and current controller5fe4d1887;fresh active fixture/one-request binding,matched short-entry observers and finite clock/budget limits;unexecuted.",
+    "review_consumer_completed": "Corrected implementation findings curated in iq3_profiler_implementation_20261105 and ce0a8a5a9."
   },
   "iq3_profiler_implementation_20261105": {
     "classification": "decision support",
-    "stage": "curated_pending_transport_retirement",
+    "stage": "source_contract_curated",
     "schedulable_now": false,
     "source_commit": "5fe4d1887b5787d023b3f2a006ec6797d6a2adc5",
     "reviewed_report_sha256": "ef13784dfa229dc332a38d450401a11757eaeb5db00661c49d8f1315626e0470",
@@ -24194,12 +24188,18 @@
       "exact_worker_exited": true,
       "completion_delivery_acknowledged": true
     },
-    "retention": "Report/review/transport have no remaining consumer after this committed source curation;retire at this closed-cohort boundary before collector work."
+    "artifact_retirement": {
+      "completed": true,
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-cohort-profiler-audit-retirement-20261105.json",
+      "manifest_sha256": "34712be66dff8632e2e213e3037f05a4fbf1504084aae67f631592f830391906",
+      "files": 21,
+      "bytes": 48102
+    }
   },
   "decode_clean_reference_envelope_20261105": {
     "classification": "decision support",
-    "stage": "ready",
-    "schedulable_now": true,
+    "stage": "running",
+    "schedulable_now": false,
     "source_commit": "ce0a8a5a9226c1d112aad4fc2cf511f841821fab",
     "policy_revision": "ce0a8a5a9226c1d112aad4fc2cf511f841821fab",
     "prerequisite_evidence": "Both six-process cohorts are closed. The current six native exits0,quiet validation,no fresh fault,closed ownership and all15 final model hashes pass. Both cohorts have identical CLI args,v5 request-body hashes,input/generated lengths and observed MTP acceptance;native/pool sources and common IQ3 audit differ. Current paired gains are qualified,not a causal explanation of the absolute gap.",
@@ -24219,6 +24219,18 @@
     "whole_folder_budget_bytes": 393216,
     "main_reads_body_on_arrival": false,
     "consumer": "Select the smallest matched clean-envelope/inactive-observer-cost discriminator to return development to the fastest credible owned decode path while preserving candidate gains. Main keeps tuning;Luna handles this bounded discrepancy audit.",
-    "next_review": "Authenticated completion,actual worker closure,native Codex gpt-6-luna/max review;Main chooses/implements/tests the bounded discriminator."
+    "next_review": "Authenticated completion,actual worker closure,native Codex gpt-6-luna/max review;Main chooses/implements/tests the bounded discriminator.",
+    "worker": {
+      "run": "run_d43ee98385d1",
+      "task": "task_0279485f3153",
+      "dispatch": "ctx_865b72eb4c75",
+      "terminal": "term_a850a244-da08-4780-a080-fab0e518c5c0",
+      "incarnation": "431ddee4-4585-49f3-abb7-649645f31d2a",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "high",
+      "model_evidence": "Pinned custom launch argv plus actual rendered GPT-6-Luna high fast header. Reused-terminal launch effective fields are null.",
+      "turn_start_observed": true,
+      "worker_side_status_and_report_access": "Authenticated msg_92e6a15aa29e;matching heartbeat/task/dispatch;startup delivery acknowledged."
+    }
   }
 }
