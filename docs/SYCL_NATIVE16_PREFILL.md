@@ -687,19 +687,21 @@ Luna-max review are closed. Main checked the additionally identified compiled
 flag accepts exactly"1". The treatment includes GU-dispatch call accounting
 across native formats and IQ3-specific row accounting; it does not isolate the
 cost of IQ3 counter instructions. The source caveat is cleared without a
-controller or native rebuild. The first audit-on process now closes with both
-long requests eligible, native exit0, quiet validation, closed owners and no
-fresh fault. Its exact TG is13.616838/8.878867 tok/s for code/prose, with unchanged
-input/generated lengths and acceptance. Keep this individual observation in the
-CSV; the three-pair audit contrast is still incomplete, and this sample does not
-explain the earlier lower absolute speed or replace the repeated clean reference.
+controller or native rebuild. The first audit-on/off pair now closes with both
+long requests eligible in each process, native exit0, quiet validation, closed
+owners and no fresh fault. Exact code/prose TG is13.616838/8.878867 tok/s with
+audit on and13.472547/8.866021 with audit off; input/generated lengths and
+acceptance are unchanged. The first pair does not show an audit-off speed gain.
+Keep the higher individual on observations in the CSV; the three-pair contrast
+is still incomplete, and this pair does not explain the earlier lower absolute
+speed or replace the repeated clean reference.
 Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
 qualify it. This measures the enabled-audit effect on timed speed,not total
 observer wall cost or the cause of the cross-build gap. Request snapshots and
 footer lie outside decode_ms. Disabled compiled profile object/layout,guards
-and request scaffolding remain a separate unmeasured confound. After the device
-diagnostic closes,commit the exact new audit plan before its frontend checks
-and six processes. Main continues implementation and serialized measurement.
+and request scaffolding remain a separate unmeasured confound. Complete the
+remaining four processes under the existing frozen plan before selecting an
+observer-free model envelope. Main continues implementation and serialized measurement.
 The diagnostic preset's
 `STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
 timing in both short arms; the new speed controller omits that variable.
@@ -805,7 +807,11 @@ The image has a180-second traversal/hash deadline,16 GiB unique-payload limit
 and8 MiB manifest limit; it is not collected during the live model comparison.
 An exclusive operation receipt now precedes cursor,Owner and directory setup,
 so an early setup failure is terminal and preserves the no-retry decision.
-Five host regression tests are source-prepared but have not run yet.
+At source `fdd2de5a1`, all five host regression tests pass via
+`python3 -B -m unittest discover -s tests/core -p test_device_fp64_probe.py -v`.
+They cover added/changed toolchain members, symlink retargeting, unpinned actual
+compiler inputs and terminal receipts for cursor/Owner setup failures. They do
+not build the diagnostic or query the device.
 API trace substrings establish activation and expected symbols; query's lack
 of a kernel launch follows from its pinned C++ branch, not parsed API-call counts.
 Keep the existing compiler/runtime without emulation flags. Prospective caps:
