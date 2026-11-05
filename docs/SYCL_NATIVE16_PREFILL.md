@@ -322,6 +322,15 @@ four invalid keys,and interrupted/complete metadata retirement. All174 actual
 header inputs match the prebuild dependency image. This host test does not
 compile or execute the full verifier or a GPU/model route.
 
+The next model constructor,`tools/sycl/q6_centering_sources.py`,recovers all563
+b310 inputs from their original Git compositions and matches the recorded map.
+A plain9922 checkout differs in30files. Only seven Q6/phase files change in
+the new564-file candidate;prefill,CPU kernels,generator,placement and runtime
+remain byte-identical. `tools/sycl/build_q6_centering_model.py` prepares a
+replacement generation with the original optimization recipe and explicit
+GCC13 header selection. Retire closed b310 products after exact source/recipe
+recovery and keep552b before compiling. Fresh device/model gates remain required.
+
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
 decorations before any kernel enqueue. Its source,recipe and diagnosis are
