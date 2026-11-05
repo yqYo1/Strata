@@ -155785,7 +155785,7 @@
       "STRATA_CPU_WORK_CENSUS": "0",
       "STRATA_DECODE_TIMING": "0"
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "b698b91cd7587cceb848a6e4d849574e593f3d87",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00",
@@ -157125,11 +157125,238 @@
           "completed_requests": 6,
           "prompt_graph_observed": false
         }
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1328240,
+          "start_ticks": 223639583,
+          "sid": 1328195
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33212,
+            "reused_tokens": 0,
+            "generated_tokens": 3170,
+            "output_chars": 5578,
+            "reasoning_chars": 3706,
+            "prompt_ms": 50677.3,
+            "prompt_tps": 655.4,
+            "decode_ms": 234831.8,
+            "decode_tps": 13.5,
+            "ttft_s": 50.831,
+            "total_s": 285.532,
+            "drafts_offered": 2739,
+            "drafts_accepted": 2258,
+            "acceptance_rate": 0.8243884629426798,
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "af34a2d690c431c65220f918c7afc407b6b27236f97c5a63e98f653cf2a841b0",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 7275,
+            "output_chars": 4632,
+            "reasoning_chars": 14409,
+            "prompt_ms": 42651.4,
+            "prompt_tps": 780.3,
+            "decode_ms": 825285.8,
+            "decode_tps": 8.8,
+            "ttft_s": 42.868,
+            "total_s": 867.96,
+            "drafts_offered": 10071,
+            "drafts_accepted": 3920,
+            "acceptance_rate": 0.3892364214080032,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "0bbd043abf9212ab45b4bf8794a261534529dd4c28ecff1cdcfc8c836434ad7c",
+            "reasoning_sha256": "d3ec503b2e7266e34b70c5123c07f543b06ff48306decd6e7659660b16581f21",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1328240,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33212,
+            "rows": 33211,
+            "GPU_residual_rows": 33211,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20285,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33211,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "Q6_graph_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "enabled": 1,
+                "centered": 68,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "enabled": 1,
+                "centered": 46,
+                "columns": 82
+              }
+            ],
+            "IQ3_dispatch": {
+              "request": 5,
+              "arm": 1,
+              "calls": 1859090,
+              "nt1_rows": 221271040,
+              "pair_rows": 221271040
+            },
+            "graph_capture_counts_are_replay_counts": false
+          },
+          {
+            "read_tokens": 33282,
+            "rows": 33281,
+            "GPU_residual_rows": 33281,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19987,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33281,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "Q6_graph_captures": [
+              {
+                "phase": "decode",
+                "tokens": 1,
+                "enabled": 1,
+                "centered": 68,
+                "columns": 82
+              },
+              {
+                "phase": "decode",
+                "tokens": 4,
+                "enabled": 1,
+                "centered": 46,
+                "columns": 82
+              }
+            ],
+            "IQ3_dispatch": {
+              "request": 6,
+              "arm": 1,
+              "calls": 6071962,
+              "nt1_rows": 566117760,
+              "pair_rows": 566117760
+            },
+            "graph_capture_counts_are_replay_counts": false
+          }
+        ],
+        "cache": [
+          {
+            "hits": 190250,
+            "lookups": 1753440,
+            "hit_percent": 10.9
+          },
+          {
+            "hits": 433265,
+            "lookups": 6445920,
+            "hit_percent": 6.7
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "b8ad600838e690aeefe980ee97aac49111259004b36b65bebd0796fe463f7b1e",
+            "449cd1fc38718491031b395effbc35c6cad07cb79623623a7e4f5460f38e12db",
+            "820e49690239ef1cbb93b7789ecd6de5aa0a998843527deb595eacebd5b0f22c",
+            "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22"
+          ],
+          "valid": true,
+          "journal_sha256": "d9d5849d23b6d53156ca1039d0184bbf3f5d060934d63bdb017c067720d084f2"
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68800
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "centering_route": {
+          "passed": true,
+          "arm": 1,
+          "captured_windows": 10,
+          "boundary_checks": [
+            4,
+            5,
+            5,
+            6
+          ],
+          "graph_capture_counts_are_replay_counts": false,
+          "completed_requests": 6,
+          "prompt_graph_observed": false
+        }
       }
     ],
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "controls": {
@@ -157195,6 +157422,156 @@
         "passed": true
       }
     ],
+    "decision": {
+      "repeated_comparison_complete": true,
+      "workloads": {
+        "regular-code": {
+          "arms": {
+            "candidate": {
+              "samples": [
+                {
+                  "exact_tg": 13.493432699482524,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.417131857392395,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.499023556434862,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                }
+              ],
+              "median_tg": 13.493432699482524,
+              "min_tg": 13.417131857392395,
+              "max_tg": 13.499023556434862,
+              "observed_MTP_class": "strong"
+            },
+            "reference": {
+              "samples": [
+                {
+                  "exact_tg": 13.365635727820003,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.250082133789883,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.305440875993291,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                }
+              ],
+              "median_tg": 13.305440875993291,
+              "min_tg": 13.250082133789883,
+              "max_tg": 13.365635727820003,
+              "observed_MTP_class": "strong"
+            }
+          },
+          "paired_candidate_over_reference_TG": [
+            1.0095616081617815,
+            1.012607448158869,
+            1.0145491368715822
+          ],
+          "geometric_mean_TG_ratio": 1.012237315641474,
+          "reproducible_TG_gain": true,
+          "paired_prompt_time_ratios": [
+            1.056791562194677,
+            1.0050332275498022,
+            0.999794822017965
+          ],
+          "paired_TTFT_ratios": [
+            1.0556781564300362,
+            1.0059942408274403,
+            0.9986640209041435
+          ],
+          "expected_MTP_class_observed": true,
+          "model_TG_gain_qualified": true
+        },
+        "varied-prose": {
+          "arms": {
+            "candidate": {
+              "samples": [
+                {
+                  "exact_tg": 8.72312617657286,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 8.784019965986825,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 8.815128044127258,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                }
+              ],
+              "median_tg": 8.784019965986825,
+              "min_tg": 8.72312617657286,
+              "max_tg": 8.815128044127258,
+              "observed_MTP_class": "weak"
+            },
+            "reference": {
+              "samples": [
+                {
+                  "exact_tg": 8.797436928725887,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 8.677569431290587,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 8.77436318023929,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                }
+              ],
+              "median_tg": 8.77436318023929,
+              "min_tg": 8.677569431290587,
+              "max_tg": 8.797436928725887,
+              "observed_MTP_class": "weak"
+            }
+          },
+          "paired_candidate_over_reference_TG": [
+            0.9915531361287305,
+            1.012267321574217,
+            1.0046459056971535
+          ],
+          "geometric_mean_TG_ratio": 1.0027855704194246,
+          "reproducible_TG_gain": false,
+          "paired_prompt_time_ratios": [
+            0.9927627246213191,
+            1.032280991030689,
+            0.9741076302212397
+          ],
+          "paired_TTFT_ratios": [
+            0.992394458485444,
+            1.0345039321729683,
+            0.97611403329007
+          ],
+          "expected_MTP_class_observed": true,
+          "model_TG_gain_qualified": false
+        }
+      },
+      "inference_adopted": false,
+      "dedicated_prefill_nonregression_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "next": "Judge each actual MTP workload separately;keep all paired samples and unresolved variability. Dedicated64K/117K prefill and client TTFT,agent/task,physical262144/tails/RESTORE,ordinary-provider teardown and adoption remain separate. No physical-resource saturation claim.",
+      "centering_model_TG_gain_qualified": false,
+      "common_IQ3_dispatch_audit_retained": true,
+      "all18_model_shapes_qualified": false
+    },
     "source_inputs": {
       "files": 314,
       "aggregate_sha256": "c2120edf7209c2f83a948d6ad9af9a6ed4afeb35ba0b90faa9b4ffbfbff98bc4"
