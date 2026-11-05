@@ -703,8 +703,12 @@ prepares V2 for the current schema2 ledger and actual bridge:compile/run the
 seven ledger cases,then compile/run the five bridge cases in four sequential
 owned children. Each compilation has a60s/1GiB budget,each fixture15s/128MiB,
 with quiet stderr,exact footers,pinned source/compiler/package identities and
-actual repository dependencies checked before execution. Stop on first failure;
-V2 is unexecuted. The original V1 result stays unchanged. Both one-use binaries
+actual repository dependencies checked before execution. All seven ledger and
+five actual wait-bridge cases now pass,with normal0,quiet stderr and closed
+owners for all four children. The actual dependency maps contain168 and197
+files,respectively. See `decode_service_host_contract_v2`;the original V1 result
+stays unchanged. This is host accounting qualification,not model attribution.
+Both one-use binaries
 retire after the compact result is committed;the diagnostic host gate consumes
 their source/recipe and results. The post-centering review confirms that the
 92832/a1b0 projection lacks both this profile call and header;an environment

@@ -158515,7 +158515,7 @@
     "next_consumer": "Diagnostic build/source admission after exact old-generation recovery and consumer closure;separate host/device/model and profile-overhead gates remain."
   },
   "decode_service_host_contract_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "6abda7fa416f2b446c35e41ae27b89c870347ee8",
     "sources": {
       "include/strata/sycl/decode_service_profile.hpp": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca",
@@ -158622,12 +158622,61 @@
     "profile_schema_version": 2,
     "plan": "Compile and run the seven-case ledger,then compile and run the five-case actual wait bridge;four sequential owned children,stop first failure,no retry.Require normal0,quiet stderr,exact fixture footer,closed identities and unchanged inputs.No GPU,engine build,model timing or hardware-saturation claim. Compiler/system-package identities are pinned before build;verify actual repository compiler dependencies against the committed pins before each test,and hash all actual dependencies.",
     "retention": "Keep compact contract/dependency/source/compiler outcome for the diagnostic model host gate. Retire both one-use executables and successful output after the result commit; the diagnostic consumes source/recipe and results,not these executable bytes.",
-    "results": [],
+    "results": [
+      {
+        "name": "ledger-compile",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "ledger-test",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "35f42ae7aa92d0189370f6b0200c188252c8e5c34483da45c285002459f4d863",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "bridge-compile",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "bridge-test",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "09b5129cd2c6d0282aa220f96dc85a6e71de151adcd2eb523e2d4b5e2fbcfb34",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
-    "model_executed": false
+    "model_executed": false,
+    "dependencies": {
+      "ledger": {
+        "files": 168,
+        "aggregate_sha256": "afb9251459b8230b6ebbf4ace28b8bb90c62cfdb8bc890a1bd645798d4989e10"
+      },
+      "bridge": {
+        "files": 197,
+        "aggregate_sha256": "f038e3528c89e001cddd2234f26a82a90fa85b09ff97a2039b6f7b71766d9e00"
+      }
+    },
+    "binaries": {
+      "ledger": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/ledger",
+        "sha256": "ef92935ba174269abbe5b03ea563cf249e014c92145b8a527c3bd83e3f20e869"
+      },
+      "bridge": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/bridge",
+        "sha256": "72da935bb37bf8569401b56b8fa9805e3ba60a45f7129ddabc77d34f99837c8e"
+      }
+    }
   }
 }
