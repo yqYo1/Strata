@@ -673,8 +673,11 @@ snapshot. All original302 short-admission source hashes still matched.
 Preserve that failure. The prospective V2 revalidates the closed303-source
 cohort at its original revision, then pins the four declared later tools
 separately without allowing any original source change. It also records
-preparation failures before model execution. V2 frontend and model checks
-remain unexecuted.
+preparation failures before model execution. V2 preparation now verifies all307
+caller/tool pins, all15 model assets and six immutable process plans. Its source
+and environment controls pass without native execution. A report-only Luna
+audit of the actual wrapper contract is running. Commit this plan before V2
+frontend checks; model checks remain unexecuted.
 Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
 qualify it. This measures the enabled-audit effect on timed speed,not total
 observer wall cost or the cause of the cross-build gap. Request snapshots and
