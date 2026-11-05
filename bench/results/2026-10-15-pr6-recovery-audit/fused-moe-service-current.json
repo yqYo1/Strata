@@ -153596,5 +153596,19 @@
         }
       ]
     }
+  },
+  "q6_centering_model_check_preparation_v1": {
+    "stage": "failed-admission",
+    "source_commit": "0e3683228bfbd1d6a8d88369bf6b74cc475d498f",
+    "command": "python3 tools/sycl/q6_centering_checks.py host prepare",
+    "reason": "The chosen result key q6_centering_host_v1 belongs to the completed earlier helper test. The fresh-root/key check rejected reuse before preparing a new owner or running a native executable.",
+    "existing_result_unchanged": true,
+    "native_executed": false,
+    "GPU_executed": false,
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "next": "Use distinct model-host/model-phase namespaces,verified absent before the new preparation."
   }
 }

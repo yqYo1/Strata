@@ -19,8 +19,9 @@ import check_verify_window_phase as device_template
 
 P, B, RESULT, base = model.P, model.B, model.RESULT, model.base
 SELF = Path(__file__).resolve()
-HOST_ROOT, HOST_KEY = B / 'q6-centering-host-v1', 'q6_centering_host_v1'
-DEVICE_ROOT, DEVICE_KEY = B / 'q6-centering-phase-device-v1', 'q6_centering_phase_device_v1'
+HOST_ROOT, HOST_KEY = B / 'q6-centering-model-host-v1', 'q6_centering_model_host_v1'
+DEVICE_ROOT = B / 'q6-centering-model-phase-device-v1'
+DEVICE_KEY = 'q6_centering_model_phase_device_v1'
 require = model.require
 
 
