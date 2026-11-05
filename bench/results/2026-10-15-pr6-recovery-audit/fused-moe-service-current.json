@@ -159566,7 +159566,7 @@
     }
   },
   "decode_service_model_entry_v1": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "844e82e99719d6e7088b949f49589e443b7ac680",
     "native_source_commit": "70169d3881ab588d45f7df7baa132b4293f00970",
     "binary": {
@@ -159875,7 +159875,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -159901,6 +159901,20 @@
       "interpretation": "Short request accounting/lifecycle only. Native waits are nested inside caller regions;do not add them. Leaf thread CPU may overlap caller CPU and is not whole-process CPU. Short NT mix is not representative. Clock-read cost and same-binary profile0/1 observer overhead must be qualified before long attribution. No clean speed,physical RAM/PCIe/VRAM traffic,saturation,70TG,agent/task,physical262144/RESTORE or adoption claim.",
       "next": "After closure,qualify clock resolution/read cost and a same-binary repeated profile0/1 long-generation comparison with CPU_SERVICE1/CENSUS1 in both. Preserve thinking-on observed MTP-strong/weak workloads;collect clean speed separately."
     },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 190,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 322,
       "aggregate_sha256": "5d8dfeb6508df113c1893ea41111f9b96cbb9eeb267d876ccb2292b7dc10918a"
