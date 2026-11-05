@@ -48,6 +48,23 @@ def controls(revision):
 def source_basis():
     native, values = source.projection()
     cohort = source.cohort()
+    host = base.committed(RESULT)['decode_service_host_contract_v2']
+    require(host['stage'] == 'closed' and host['passed'] is True and host['complete'] is True
+        and host['ownership_closed'] is True and host['active'] is False
+        and host['profile_schema_version'] == 2
+        and [f['cases'] for f in host['fixtures']] == [7, 5]
+        and [r['name'] for r in host['results']] ==
+            ['ledger-compile', 'ledger-test', 'bridge-compile', 'bridge-test']
+        and all(r['passed'] is True and type(r['exit_code']) is int
+                and r['exit_code'] == 0 for r in host['results']),
+        'closed schema2 ledger and actual wait-bridge host contracts required')
+    for name in ('include/strata/sycl/decode_service_profile.hpp',
+                 'include/strata/sycl/cpu_wait_profile.hpp',
+                 'tests/core/decode_service_profile_test.cpp'):
+        require(hashlib.sha256(values[name]).hexdigest() == host['sources'][name],
+                'diagnostic source differs from qualified host input: ' + name)
+    require(digest(P / 'bench/sycl/decode_wait_bridge.cpp') ==
+        host['sources']['bench/sycl/decode_wait_bridge.cpp'], 'qualified actual wait bridge changed')
     proof = dict(original_native_source=source.NATIVE,
         original_record_sha256=digest(OLD / 'record.json'),
         original_engine_sha256=source.ENGINE,
@@ -56,6 +73,9 @@ def source_basis():
         native_input_aggregate=previous.signature(native['native_sources']),
         diagnostic_input_aggregate=previous.signature(previous.pins(values)),
         observer_delta=source.PATCH, wait_label_delta=source.WAIT_LABEL_PATCH,
+        host_contract=dict(key='decode_service_host_contract_v2',
+            source_commit=host['source_commit'], sha256=previous.signature(host),
+            diagnostic_headers_and_fixture_match=True),
         changed=list(source.CHANGED),
         scope='Source recovery and original decision only;fresh host/device/model and observer-overhead qualification required.')
     return native, values, proof

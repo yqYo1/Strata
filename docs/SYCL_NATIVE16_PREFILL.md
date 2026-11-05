@@ -740,6 +740,9 @@ defect. The prospective
 [`build_decode_service_model.py`](../bench/sycl/build_decode_service_model.py)
 reuses the owned native build supervisor and pins both bench/tools import roots,
 the exact projected source,recipe,toolchain,compiler and link inputs. Its build
+source gate now binds the closed schema2 host result and requires both actual
+profile/wait headers plus the ledger fixture to match the projected bytes.
+Its retirement
 gate binds the two short model entries,the original six-process decision and
 standalone widening V2 to their exact committed closure hashes. It requires
 all those a1b0 consumers closed and that generation recovered/retired,
