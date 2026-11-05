@@ -430,6 +430,15 @@ with the strict current-loader pre-main proof,closed ownership,unchanged boot
 and no fresh fault. This qualifies the standalone contracts,not Q6-entry timing,
 model math/speed,integration or ordinary runtime teardown. See
 `q6_f16_widen_device_v2`;V1 remains failed.
+The saved device bitcode also passes offline SPIR-V inspection:each of the
+three template arms exposes a wrapper/direct entry pair. Native has one
+`FConvert` per entry;CLZ has one `clz`;the reference retains its integer
+switch/branch/phi path. See `q6_f16_widen_device_IR_v1`. Clang textual IR output
+is unsupported in this installation;the initial translator parser's three-entry
+assumption was corrected to six. This completes the current code-choice
+inspection,not final GPU-ISA,timing or production-flag qualification. Native
+half remains a prospective Q6-only candidate after the current model service
+attribution. No converter or engine change is adopted from static IL alone.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.

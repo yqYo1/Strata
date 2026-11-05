@@ -159329,5 +159329,75 @@
       "files": 107,
       "aggregate_sha256": "5a353ac144328f78840c8cb2f3cc4525a978b26546297c55967eeda685bb9812"
     }
+  },
+  "q6_f16_widen_device_IR_v1": {
+    "source_fixture_commit": "6038b277b062777856a6e495a7ab390466d3385e",
+    "original_device_evidence_commit": "8d193ca39fffd4770206d4a46bfd71cb54041513",
+    "input_sha256": "423cf44980f2b6c2d734bd9d7e96e57699be1435e61e2d965880184cee1c000b",
+    "tool": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/compiler/llvm-spirv",
+      "sha256": "a6b69f65468cd42b315a46aad9a7ec8bfa1201aa9bc34d518fde7ef722fdcbb1"
+    },
+    "command": [
+      "/opt/intel/oneapi/compiler/2026.2/bin/compiler/llvm-spirv",
+      "--spirv-text",
+      "--spirv-ext=+all",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-f16-widen-device-v2/build/fixture-sycl-spir64-unknown-unknown.bc",
+      "-o",
+      "-"
+    ],
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "emitted_text_bytes": 12473,
+    "emitted_text_sha256": "640d8a8776a5075f73aaaeed5511c2b65e665bbfaf1d4f69c14070a49517dd9e",
+    "entrypoints": 6,
+    "arms": [
+      {
+        "arm": 0,
+        "entrypoints": 2,
+        "FConvert_per_entry": 0,
+        "clz_per_entry": 0,
+        "direct_entry_switches": 1,
+        "direct_entry_phi": 3,
+        "direct_entry_conditional_branches": 2
+      },
+      {
+        "arm": 1,
+        "entrypoints": 2,
+        "FConvert_per_entry": 0,
+        "clz_per_entry": 1,
+        "direct_entry_switches": 0,
+        "direct_entry_phi": 1,
+        "direct_entry_conditional_branches": 1
+      },
+      {
+        "arm": 2,
+        "entrypoints": 2,
+        "FConvert_per_entry": 1,
+        "clz_per_entry": 0,
+        "direct_entry_switches": 0,
+        "direct_entry_phi": 0,
+        "direct_entry_conditional_branches": 0
+      }
+    ],
+    "wrapper_extra_conditional_branch_per_arm": 1,
+    "original_offline_step_limits": [
+      {
+        "tool": "clang -cc1 -emit-llvm -x ir",
+        "exit_code": 1,
+        "error": "IR output is not supported."
+      },
+      {
+        "tool": "llvm-spirv --spirv-text",
+        "translator_exit_code": 0,
+        "parser_exit_code": 1,
+        "error": "The initial parser assumed3entrypoints;the module has6 because each template arm exposes a wrapper/direct pair."
+      }
+    ],
+    "decision": "Keep native half as a prospective Q6-only production-entry candidate,with CLZ as an exact-bit alternative. First finish current model service attribution;only then choose and time admitted Q6 shapes under actual production flags. No implementation adoption or speed claim.",
+    "limits": "Offline SPIR-V translation with all extensions permitted;static IL is not final GPU ISA,dynamic cost,production-flag qualification,physical traffic or model throughput.",
+    "code_choice_inspection_complete": true,
+    "GPU_executed": false,
+    "model_executed": false
   }
 }
