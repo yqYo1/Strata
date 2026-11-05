@@ -277,8 +277,9 @@ The Q6 expression compiler comparison is now closed and passes at source
 `70b1e7d90`. Both owned CPU operations exit0;655 actual include files match the
 prebuild compiler/Linux-header images,and source,Python,qualified libraries,
 completed-cohort signature and final ownership checks pass. No GPU operation
-or device query occurred. The exact recipe and compact outcome are in
-`bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json`.
+or device query occurred. The full original recipe/outcome is recoverable at
+`572973470`;the maintained compact decision is `q6_expression_codegen_v4` in
+the linked service result.
 The installed2026.2 compiler emits binary LLVM,then its translator produces
 internal SPIR-V text. The module declares Physical64/OpenCL and has both bodies
 in each independent kernel family. Earlier textual-LLVM,optional text-backend
@@ -312,10 +313,11 @@ resource remains unqualified;this tests arithmetic sensitivity at unchanged
 logical data volume. A component gain is still separate from model speed,
 prefill preservation,task quality and physical262144/RESTORE qualification.
 
-The compiler-only fixture/controller and generated outputs have finished their
-finite consumer. Preserve their exact source/recipe in Git,retire them after
-source recovery and keep only the compact lowering decision for that next
-whole-kernel comparison. The helper remains the unselected current candidate.
+The compiler-only fixture/controller,separate result and generated outputs are
+retired after exact source recovery and remote-evidence verification. Their
+deletion manifest also closes process3 raw output and the consumed source-review
+transaction. Keep the compact lowering decision for the next whole-kernel
+comparison. The helper remains the unselected current candidate.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary
@@ -863,6 +865,9 @@ dependencies and host-link trace paths against that prebuild image. Private
 compiler temporaries are derived inputs; their disposable names are not retained.
 The image has a180-second traversal/hash deadline,16 GiB unique-payload limit
 and8 MiB manifest limit; it is not collected during the live model comparison.
+Before FP64 preparation,extend that image with the full `linux-libc-dev` package:
+Q6's closed compiler check found20 actual headers missing from the inherited
+SDK/host-package image. Q6's local expansion does not fix this shared helper.
 An exclusive operation receipt now precedes cursor,Owner and directory setup,
 so an early setup failure is terminal and preserves the no-retry decision.
 At source `fdd2de5a1`, all five host regression tests pass via

@@ -148854,6 +148854,19 @@
             "all_hashes_matched": true
           },
           "retained": "Per-process config.json/plan.json and global record/runtime/generated admission inputs remain for process3..5."
+        },
+        "3": {
+          "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-audit-process3-and-q6-codegen-retirement-20261105.json",
+          "manifest_sha256": "98f83133289d1b6695f34cd723385632c741ef63b1e5eb4202e30b97357352f6",
+          "verified_deleted": true,
+          "files": 68,
+          "bytes": 12570256,
+          "source_recovery": {
+            "commit": "011fa1cb932c137b7ef2a84963ca1b4bb1182668",
+            "files": 307,
+            "all_hashes_matched": true
+          },
+          "retained": "Per-process config.json/plan.json and global record/runtime/generated admission inputs remain for process4..5."
         }
       }
     },
@@ -148861,5 +148874,159 @@
       "files": 307,
       "aggregate_sha256": "8a25a1d61bdd65558bea58badce3e20e92ff6a4eb4f56e7a2bb2342ac1e427d8"
     }
+  },
+  "q6_expression_codegen_v4": {
+    "stage": "closed",
+    "source_commit": "198b403f68a9683aac6158ebe30fb93ef56a9905",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "outcome": {
+      "complete": true,
+      "passed": true,
+      "native_started": true,
+      "IR": {
+        "sha256": "80b230f2575621e5a4f2e61f947ee669357a0b019528bb250562bcd0450b6713",
+        "bytes": 7220,
+        "bitcode_sha256": "1fa69fcb38618fbfa5d95d1c0997c7543634a766eb9d35e582c1291b24a3fc7c",
+        "format": "LLVM-SPIRV-Translator internal text",
+        "memory_model": [
+          "Physical64",
+          "OpenCL"
+        ],
+        "memory_model_operands": [
+          2,
+          2
+        ],
+        "kernel_definitions": {
+          "Q6DotExpression": [
+            "_ZTSN6strata5bench15Q6DotExpressionILb0EEE",
+            "_ZTSN6strata5bench15Q6DotExpressionILb1EEE"
+          ],
+          "Q6CenterExpression": [
+            "_ZTSN6strata5bench18Q6CenterExpressionILb0EEE",
+            "_ZTSN6strata5bench18Q6CenterExpressionILb1EEE"
+          ]
+        }
+      },
+      "headers": {
+        "files": 655,
+        "aggregate_sha256": "a2e8d07e95f7197cb2683283ec8461af9ab18a2e38a360582fdf0fa6ee6b572e"
+      },
+      "ownership_closed": true
+    },
+    "instruction_comparison": {
+      "scope": "Qualified portable SPIR-V from the same installed compiler and source expressions;not B570 native ISA or dynamic service.",
+      "dot": {
+        "distinct_lowering": true,
+        "reference": "A four-iteration signed-byte multiply/accumulate loop.",
+        "vector_api": "Private byte-array variables,an extraction loop,and four expanded scalar multiplies/adds remain in this portable module.",
+        "decision": "No demonstrated packed hardware dot or speed advantage. Do not change the shared packed_dot helper;prioritize the independently simpler centering candidate."
+      },
+      "centering": {
+        "distinct_lowering": true,
+        "reference_kernel_id": 134,
+        "candidate_kernel_id": 172,
+        "reference": "After the common input mask,a four-iteration extraction/subtraction/s_clamp/packing loop remains.",
+        "candidate": "After the identical input mask,the centering core is one IAdd with0x60606060 and one BitwiseXor with0x80808080;its body has no centering loop or s_clamp. Address/load/store instructions remain.",
+        "decision": "Eligible to propose a separately committed complete Q6-kernel comparison. No model/GPU execution or speed has been qualified."
+      },
+      "next_comparison": "At closure of all six frozen model-audit processes,change only Q6 centering in a decode-scoped full-kernel candidate;preserve scales,dot order,loads,reductions,phase ownership and prefill. Compare actual production entrypoints with representative existing Q6 geometries and columns1/2/4/8,bitwise reference results,small traced bounds/lifetime checks and independent repeated timing. Native IGC optimization may erase the portable-IR difference;measure rather than infer a speedup."
+    },
+    "original_evidence": {
+      "commit": "572973470f2341d66ebccc260b522b6b386bc3db",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json",
+      "key": "q6_dot_codegen_v4",
+      "recipe_commit": "70b1e7d90"
+    },
+    "earlier_failures": [
+      {
+        "key": "q6_dot_codegen_v1",
+        "stage": "failed",
+        "original_evidence": {
+          "commit": "85fd35c1d59e7c4c3c2c52d50f7d6bc74dc00fdf",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json",
+          "key": "q6_dot_codegen_v1",
+          "reason": "Full original failed recipe/outcome recoverable from Git;V2 needs only failure,source and installed-image identity."
+        }
+      },
+      {
+        "key": "q6_dot_codegen_v2",
+        "stage": "failed",
+        "original_evidence": {
+          "commit": "8530dc69bd6dcfe68a976d2f16feeede8ff3bfdd",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json",
+          "key": "q6_dot_codegen_v2",
+          "reason": "Full binary-IR recipe and failed SPIRV-Tools conversion remain recoverable from Git;V3 changes only the text-output backend and reader."
+        }
+      },
+      {
+        "key": "q6_dot_codegen_v3",
+        "stage": "failed",
+        "original_evidence": {
+          "commit": "1984056dd68a60f72ea42469ebb7923b293294a1",
+          "path": "bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json",
+          "key": "q6_dot_codegen_v3",
+          "reason": "Original failed header admission and complete output recipe stay in Git;V4 prospectively adds the missing package image."
+        }
+      }
+    ],
+    "retirement": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-audit-process3-and-q6-codegen-retirement-20261105.json",
+      "manifest_sha256": "98f83133289d1b6695f34cd723385632c741ef63b1e5eb4202e30b97357352f6",
+      "verified_deleted": true,
+      "compiler_outputs": {
+        "files": 35,
+        "bytes": 13256881
+      },
+      "consumed_source_review": {
+        "files": 20,
+        "bytes": 47682
+      },
+      "source_recovery": {
+        "model_caller": {
+          "commit": "011fa1cb932c137b7ef2a84963ca1b4bb1182668",
+          "project_files": 307,
+          "external_files": 0,
+          "all_hashes_matched": true
+        },
+        "q6_v1": {
+          "commit": "ab0c5f26513661d09148d8411d523dd1eb79cb0d",
+          "project_files": 11,
+          "external_files": 0,
+          "all_hashes_matched": true
+        },
+        "q6_v2": {
+          "commit": "2977bf6d6d00854d46052b4f22870fc686e6a059",
+          "project_files": 11,
+          "external_files": 0,
+          "all_hashes_matched": true
+        },
+        "q6_v3": {
+          "commit": "52e0b57bf3654a70f1c7670ebcc0456185eff4cf",
+          "project_files": 11,
+          "external_files": 0,
+          "all_hashes_matched": true
+        },
+        "q6_v4": {
+          "commit": "198b403f68a9683aac6158ebe30fb93ef56a9905",
+          "project_files": 11,
+          "external_files": 0,
+          "all_hashes_matched": true
+        },
+        "consumed_source_review": {
+          "commit": "8954ef5120303729130bf4e98027153d273fc1d7",
+          "project_files": 14,
+          "external_files": 0,
+          "all_hashes_matched": true
+        }
+      },
+      "tracked_source_retirement": "Retired compiler-only fixture/controller and separate result to original source198b403f6/result572973470. No maintained build/measurement reader depends on them;the unselected packed-centering helper remains for the complete-kernel comparison.",
+      "limits": "No inference engine generation retired or performance qualification added."
+    },
+    "retention": "Retain this compact decision for the next full Q6 centering component;review after that screen. Complete compiler recipe and prior failed attempts remain in original reachable Git evidence."
   }
 }
