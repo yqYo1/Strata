@@ -368,8 +368,9 @@ all18model-shape evidence. The clean long-generation controller is now prepared:
 six fresh processes in centering0/1/1/0/0/1 order,with four official warmups and
 thinking-on code/prose requests per process. Both actual MTP regimes need three
 paired TG gains;keep every sample and judge PP/TTFT independently. All15model
-assets pass fresh hashes. Frontend probes and sustained model execution remain
-pending;this preparation does not update the clean speed reference.
+assets pass fresh hashes,and fresh benchmark/server frontend probes pass.
+Sustained model execution remains pending;this preparation does not update the
+clean speed reference.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
