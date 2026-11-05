@@ -198,6 +198,12 @@ banks and two hit ratios. It does not measure physical traffic or kernel service
 Neither the modified prototype nor fixture has been compiled or run. The
 component still needs a committed pinned build recipe,bounded traced admission
 and repeated actual-placement timing before any decode-only route proposal.
+The excluded `sycl_mapped_row_copy_component` CMake target links only the
+runtime,production elementwise translation unit and fixture. It does not build
+an inference engine or require native-expert/GGML and test-suite targets.
+Prepare a separate pinned Release configuration with`STRATA_ENABLE_SYCL=ON`,
+`STRATA_NATIVE_EXPERTS=OFF`,`STRATA_BUILD_TESTS=OFF` and`STRATA_SYCL_TESTS=OFF`;
+then build only this target with one compiler job. No configure/build has run.
 The existing production copy and measured engine remain unchanged.
 Every lane reaches the two-dimensional group broadcast with the same valid
 source ID before the hit-dependent branch,following the
