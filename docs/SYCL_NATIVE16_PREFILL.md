@@ -339,6 +339,12 @@ The closed b310 products and failed V1 preparation are retired after563native,
 1449actual compiler and9311external dependency source inputs are recovered and
 matched. The9validated552b outputs remain. Only the b310 metadata bridge remains
 for replacement qualification;the next build does not consume its retired ELF.
+The V2 build now closes successfully at source92832da86,including the full
+verifier and Q6 helper. All1450actual compiler inputs and29external linker
+inputs match their frozen images. Five outputs are hashed;the new engine is
+`a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616`.
+Configure,compile and dependency children exit0 with closed ownership.
+No GPU/model execution or model-speed qualification follows from this build.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
