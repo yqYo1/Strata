@@ -92,12 +92,32 @@ def inputs(row):
 
 
 def retention_gate():
-    review = base.committed(RESULT)['retained_builds_review_20261103']
+    data = base.committed(RESULT)
+    review = data['retained_builds_review_20261103']
     retired = review.get('decode_service_model_replacement', {})
     require(retired.get('completed') is True and retired.get('original_inputs_recovered') is True
         and retired.get('next_root') == str(ROOT) and retired.get('old_root') == str(OLD)
         and retired.get('inference_generations_after_retirement') == 1,
         'close all a1b0 consumers and recover/retire it before building its replacement')
+    # A retirement declaration alone does not close another controller's job.
+    # Bind all named live-byte consumers to their actual committed outcomes.
+    names = ('q6_centering_model_entry_arm0_v1', 'q6_centering_model_entry_arm1_v1',
+             'q6_centering_generation_speed_v1', 'q6_f16_widen_device_v2')
+    closures = {}
+    for name in names:
+        item = data.get(name, {})
+        require(item.get('stage') == 'closed' and item.get('complete') is True
+            and item.get('passed') is True and item.get('ownership_closed') is True
+            and item.get('active') is False and item.get('native_source_commit') == source.NATIVE,
+            'original native consumer still open/unqualified: ' + name)
+        closures[name] = previous.signature(item)
+    require(retired.get('consumer_closures') == closures,
+            'retirement must bind the exact named consumer outcomes')
+    require(data[names[-1]]['GPU_executed'] is True
+        and data[names[-1]]['semantic_result']['passed'] is True
+        and data[names[-1]]['fresh_faults'] == []
+        and data[names[-1]]['boot_unchanged'] is True,
+        'standalone widening screen still needs its complete safe device outcome')
     require(digest(retired['manifest_path']) == retired['manifest_sha256'],
             'diagnostic replacement retirement manifest changed')
     manifest = json.loads(Path(retired['manifest_path']).read_text())

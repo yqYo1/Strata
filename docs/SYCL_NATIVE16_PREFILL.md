@@ -417,8 +417,10 @@ preload qualifier selects an old Xe-SDK/driver inventory,including four changed
 or absent system/GPU libraries. All84provider files of the current qualified
 model match;this is a controller admission mismatch,not a new GPU fault or a
 change during the closed comparison. No compiler or GPU process ran. Preserve
-`q6_f16_widen_device_v1` as failed. A prospective V2 must reuse the exact current
-same-build host/device/preload proof and set EXPECTED_LOADER before native exec.
+`q6_f16_widen_device_v1` as failed. V2 now reuses the exact current
+same-build host/device/preload proof and sets EXPECTED_LOADER before native exec;
+that controller correction has not yet been executed. The matched library,
+official loader and provider bytes remain subject to admission checks.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
@@ -710,7 +712,9 @@ defect. The prospective
 [`build_decode_service_model.py`](../bench/sycl/build_decode_service_model.py)
 reuses the owned native build supervisor and pins both bench/tools import roots,
 the exact projected source,recipe,toolchain,compiler and link inputs. Its build
-gate requires all a1b0 consumers closed and that generation recovered/retired,
+gate binds the two short model entries,the original six-process decision and
+standalone widening V2 to their exact committed closure hashes. It requires
+all those a1b0 consumers closed and that generation recovered/retired,
 while preserving552b. It is unexecuted;no diagnostic root or build exists yet.
 Separate host fixtures and fresh device/model qualification remain required. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf

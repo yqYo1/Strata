@@ -21,12 +21,13 @@ import build_official_model as base
 import build_q6_centering_model as model
 import measurement_guards as guards
 import measurement_owner as owner
+import q6_centering_model_entry as admission
 import run_q6_columns as gate
 import ur_validation as validation
 
 B = model.B
-ROOT = B / 'q6-f16-widen-device-v1'
-KEY = 'q6_f16_widen_device_v1'
+ROOT = B / 'q6-f16-widen-device-v2'
+KEY = 'q6_f16_widen_device_v2'
 COHORT = 'q6_centering_generation_speed_v1'
 RESULT = model.RESULT
 SELF = Path(__file__).resolve()
@@ -54,7 +55,7 @@ def signature(value):
 
 def controls(revision):
     pins = {}
-    for module in (base, model, guards, owner, gate, validation):
+    for module in (base, model, guards, owner, gate, validation, admission):
         pins.update(base.controls(revision, controller=Path(module.__file__).resolve()))
     for path in (SELF, CPP, HEADER, P / 'AGENTS.md', P / 'docs/ARTIFACT_RETENTION.md',
                  P / 'tools/sycl/measurement_environment.json'):
@@ -115,6 +116,28 @@ def environment(prior):
     return env
 
 
+def qualified_preload():
+    # V1 called a historical Xe-SDK/old-driver qualifier. Reuse the exact
+    # current native generation's closed host/device proof, not refreshed pins.
+    native, _, providers = admission.proof()
+    path = admission.checks.DEVICE_ROOT / 'record.json'
+    checked = json.loads(path.read_text())
+    probe = checked['native_validation_probe']
+    require(native['source_commit'] == '92832da86d9a63f996e6fcebbf4e919e2c8f746a'
+            and native['binaries']['strata']['sha256'] ==
+                'a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616'
+            and set(probe) == {'library', 'loader'}
+            and all(digest(item['path']) == item['sha256'] for item in probe.values())
+            and providers[probe['loader']['path']] == probe['loader']['sha256'],
+            'exact current same-build preload/provider qualification required')
+    reuse = dict(result_key=admission.checks.DEVICE_KEY,
+        record=dict(path=str(path), sha256=digest(path)),
+        source_commit=checked['source_commit'], native_source_commit=native['source_commit'],
+        runtime_manifest=checked['runtime_manifest'],
+        scope='Exact current-generation host checks and traced submission10/phase16 gate,including pre-main validation with the same library/official loader and unchanged providers. No inherited widening semantics,model speed or ordinary teardown qualification.')
+    return probe, reuse
+
+
 def recipe():
     runtime = NATIVE / 'source/src/sycl/runtime.cpp'
     flags = ['-std=c++20', '-O3', '-fsycl', '-fsycl-id-queries-range=size_t',
@@ -150,7 +173,7 @@ def prepare():
     require(digest(providers['path']) == providers['sha256'], 'qualified provider inventory changed')
     provider_files = json.loads(Path(providers['path']).read_text())
     require(all(digest(p) == h for p, h in provider_files.items()), 'qualified provider bytes changed')
-    probe = validation.preload_qualification()
+    probe, reuse = qualified_preload()
     require(all(probe[k] == prior['native_validation_probe'][k] for k in ('loader', 'library')),
             'qualified validation probe changed')
     row = dict(stage='prepared', source_commit=revision, sources=pins,
@@ -158,6 +181,7 @@ def prepare():
         sha256=digest(NATIVE / 'record.json')), toolchain_image=native['toolchain_image'],
         prior_record=dict(path=str(prior_path), sha256=digest(prior_path)),
         allowed_inputs=allowed, providers=providers, native_validation_probe=probe,
+        preload_qualification_reuse=reuse,
         configuration=dict(arms=list(ARMS), patterns=65536, offsets=[0, 1], timing=False),
         environment=environment(prior), commands=recipe(),
         compiler=dict(path=CXX, sha256=digest(CXX)),
@@ -167,7 +191,7 @@ def prepare():
         compile_budget=COMPILE_BUDGET, device_budget=DEVICE_BUDGET,
         parser_controls=parser_controls(),
         original_cohort_decision=cohort['decision']['centering_model_TG_gain_qualified'],
-        criteria='Reference/CLZ raw-bit exact over all65536patterns at both byte offsets;native finite/zero/subnormal/Inf exact and NaN class/sign. Native payload/quiet changes descriptive. Read-only input and guards unchanged. Require normal exit,pre-main validation,unchanged inputs/providers/boot and no fresh fault. Preserve any failed arm;no retry,hash refresh or timing.',
+        criteria='V1 failed before plan publication on a historical preload qualifier;preserve it. V2 reuses exact current same-build host/device/preload evidence and sets expected loader before exec. Reference/CLZ raw-bit exact over all65536patterns at both byte offsets;native finite/zero/subnormal/Inf exact and NaN class/sign. Native payload/quiet changes descriptive. Read-only input and guards unchanged. Require normal exit,pre-main validation,unchanged inputs/providers/boot and no fresh fault. Preserve any failed arm;no retry,hash refresh or timing.',
         retention='One-use standalone fixture,not an inference generation. Keep exact source/recipe and compact semantic/ownership/fault result. Retire normal output and fixture after exact lowering/code-choice consumer closes;both inference generations remain unchanged.',
         build_passed=False, passed=False, complete=False, active=False, ownership_closed=True,
         GPU_executed=False, model_executed=False)
@@ -227,14 +251,18 @@ def launch_inputs(row, action):
     cursor = None
     if action == 'check':
         require(digest(EXE) == row['binary']['sha256'], 'compiled screen executable changed')
-        probe = validation.preload_qualification()
-        require(probe == row['native_validation_probe'], 'pre-main validation basis changed')
+        probe, reuse = qualified_preload()
+        require(probe == row['native_validation_probe']
+                and reuse == row['preload_qualification_reuse'], 'pre-main validation basis changed')
         env.update(LD_PRELOAD=probe['library']['path'],
+            STRATA_UR_PROBE_EXPECTED_LOADER=str(Path(probe['loader']['path']).resolve()),
             UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
             UR_LOG_TRACING='level:info;flush:info;output:stderr',
             UR_LOG_VALIDATION='level:warning;flush:warning;output:stderr',
             UR_LOG_LOADER='level:warning;flush:warning;output:stderr',
             UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr')
+        require(env['STRATA_UR_PROBE_EXPECTED_LOADER'] == probe['loader']['path'],
+                'the qualified canonical loader must be selected before native exec')
         lines = subprocess.check_output(['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'],
                                         text=True, timeout=15).splitlines()
         cursor, = [v.split(': ', 1)[1] for v in lines if v.startswith('-- cursor: ')]
