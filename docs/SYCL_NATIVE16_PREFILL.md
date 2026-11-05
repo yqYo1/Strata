@@ -228,34 +228,43 @@ Every lane reaches the two-dimensional group broadcast with the same valid
 source ID before the hit-dependent branch,following the
 [Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
 
-The next device-service diagnostic must target the current `9922 / b310`
-generation. `tools/sycl/profile_iq3_decode.py` now defines that prospective
-control and capture using the maintained owner,frontend and trace readers.
+The current device-service diagnostic targets `9922 / b310` through
+`tools/sycl/profile_iq3_decode.py`, using the maintained owner, frontend and
+trace readers.
 Its fresh active-from-exec current-native control is closed and passes all62
 named kernels and unique native host-flow joins,normal exit,quiet validation,
 closed ownership and no fresh fault. The274401-byte trace contains249 GPU and
 770 host events. It retains the original small control budgets;the old
 `479a / 552b` control is not inherited. Both current-source frontend probes
-and all16 guarded-window reader tests pass;model capture remains unexecuted.
-Next use one warmup and one 32769-input,
-thinking-on diagnostic request,with exact IQ3 footer IDs1/2 and the chosen
-immutable selector. Use the matching arm's closed model-entry request body and
-prompt time for the observer-cost comparison. Its qualified environment has
+and all16 guarded-window reader tests pass. The model capture is now closed:
+one warmup and one 32769-input, 24-output, thinking-on diagnostic request pass,
+with exact IQ3 footer IDs1/2 and the immutable selector. Native exit is0,
+validation is quiet, ownership is closed, no fresh fault appears and all15
+final model-asset hashes match. The matching arm's closed model-entry body and
+prompt time provide the observer comparison. Its qualified environment has
 `STRATA_CPU_WORK_CENSUS=0` and `STRATA_DECODE_TIMING=0`;the latter still enables
 decode timing because the native code checks variable presence. It differs
 from the current long comparison,which removes that variable. Remove the old
 profiler's mandatory CPU-census extraction rather than enabling an unrelated
 observer. The disjoint-clock header is not compiled into b310. Interior client
-clock guards,active collection through normal exit and the 1.5 observer-time
-ratio remain required. This short diagnostic can select a new resource
-question;it cannot establish physical traffic,saturation or sustained TG.
+clock guards and active collection through normal exit pass. The prompt-time
+ratio is0.86594, below the frozen1.5 limit; this does not demonstrate a profiler
+speedup or bound its decode overhead. The guarded client interior is2.066245s.
+Observed GPU-event union is939.793ms, including7084us of copy service;
+Q6 column kernels contribute247.197ms and mapped-row copy kernels91.437ms of
+summed service. Host API union is856.244ms, including event and command-list
+synchronization; API wall time is not CPU work. These intervals can overlap.
+The1.126452s without observed GPU events is not proof of device idle, because
+complete device coverage is unqualified. Physical PCIe/VRAM traffic, hardware
+saturation and the limiting resource remain unknown.
 This first capture also retains the matched short-entry default pool-spin
 policy,rather than the long cohort's20ms setting. Treat it as collection/route
-admission;any representative long-generation attribution needs its own frozen
-workload and matched runtime/observer envelope. The IQ3 cohort and current
-active fixture are now closed. Prepare and commit the model plan,
-run/commit frontend and guarded-window checks,and
-only then collect the diagnostic. No new inference engine is required.
+admission; any representative long-generation attribution needs its own frozen
+workload and matched runtime/observer envelope. Keep the compact request, clock,
+route and service evidence in `decode_iq3_device_service_v1`; retire the raw
+timeline after verification. Next isolate the audit's timed effect with the
+same-binary comparison below before interpreting the gap from the faster clean
+reference. No new inference engine was built for this capture.
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved

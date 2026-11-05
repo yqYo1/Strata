@@ -146706,7 +146706,7 @@
     "environment_template_sha256": "ceb3fc5f4b114638c508fc508e68a6d28757647f1f09fcf6a5a72473a70f765a"
   },
   "decode_iq3_device_service_v1": {
-    "stage": "frontend-qualified",
+    "stage": "closed",
     "source_commit": "300cdb89a92ee0c3160a77365fc4cf5ae3026d50",
     "native_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
     "binary": {
@@ -147016,11 +147016,11 @@
       }
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "Committed source/build/provider/owner/body/count/journal/clock/validation/fault gates. Both frontend probes,guarded-window reader and one-request footer controls must pass. Require one warmup ID1 and long IQ3 ID2,positive long calls/NT1 rows and pair_rows=NT1_rows. Require actual native16/GDN/MTP/Q6 routes,one flushed trace,named kernels,unique native host-flow joins and correct PCI lane. Prompt time / matching closed arm1 same-body first-use prompt time<=1.5;this is a local observer-cost screen,not clean speed.",
     "retention": "Keep compact device families,service unions,requested bytes,clock/request/selector evidence and original outcomes. Retire raw timeline and successful launch logs after required joins. No new inference build.",
@@ -147097,6 +147097,409 @@
         "errors": [],
         "cleanup": [],
         "elapsed_seconds": 0.7998522501438856
+      }
+    },
+    "outcome": {
+      "complete": true,
+      "passed": true,
+      "host_probe_accepted": true,
+      "model_executed": true,
+      "native_identity": {
+        "pid": 3776715,
+        "start_ticks": 219734504,
+        "sid": 3776665
+      },
+      "sample": {
+        "actual_read_tokens": 32769,
+        "generated_tokens": 24,
+        "prompt_ms": 54033.5,
+        "ttft_s": 54.321,
+        "total_s": 56.589,
+        "client_interval": {
+          "request_begin_monotonic_ns": 2197439839824171,
+          "first_output_monotonic_ns": 2197494161106526,
+          "request_end_monotonic_ns": 2197496428722840
+        },
+        "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287"
+      },
+      "route": {
+        "rows": 32768,
+        "mode": 10,
+        "GPU_residual_rows": 32768,
+        "split_active": false,
+        "windows": 48,
+        "jobs": 18228,
+        "checkpoint_pairs": 2257,
+        "interval_jobs": 8,
+        "maximum_jobs_per_window": 427,
+        "maximum_tail_jobs": 7,
+        "requested_expert_H2D_bytes": 62914560,
+        "resource_saturation_qualified": false,
+        "target_snapshot_bytes": 521472000,
+        "draft_rebuilt_bytes": 223227900,
+        "restored_dense_layers": 48,
+        "head_payload_bytes_verified": false,
+        "strategy": "throughput",
+        "actual_route": "layer-major",
+        "GDN3_calls": 144,
+        "GDN_FP16_storage_calls": 144,
+        "GDN_FP16_storage_tokens": 1179648,
+        "MTP_prefill": {
+          "path": "batched",
+          "placement_mode": 2,
+          "callbacks": 4,
+          "nominal_cells": 32768,
+          "internal_needed_rows_and_shapes_observed": false
+        },
+        "Q6_request_captures": [
+          {
+            "phase": "decode",
+            "tokens": 1,
+            "reference": 21,
+            "columns": 82
+          },
+          {
+            "phase": "decode",
+            "tokens": 4,
+            "reference": 21,
+            "columns": 82
+          }
+        ],
+        "Q6_prompt_window_observed": false,
+        "IQ3_dispatch": {
+          "request": 2,
+          "arm": 1,
+          "calls": 13034,
+          "nt1_rows": 1400960,
+          "pair_rows": 1400960
+        }
+      },
+      "validation": {
+        "pid": 3776715,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "native_exit_code": 0,
+      "clocks": [
+        {
+          "raw_before_ns": 2197326201701983,
+          "monotonic_ns": 2197343685362182,
+          "raw_after_ns": 2197326201702774
+        },
+        {
+          "raw_before_ns": 2197422171956837,
+          "monotonic_ns": 2197439656452445,
+          "raw_after_ns": 2197422171957999
+        },
+        {
+          "raw_before_ns": 2197478943962284,
+          "monotonic_ns": 2197496428949737,
+          "raw_after_ns": 2197478943962865
+        },
+        {
+          "raw_before_ns": 2197483993222935,
+          "monotonic_ns": 2197501478254141,
+          "raw_after_ns": 2197483993223536
+        }
+      ],
+      "selected_window": {
+        "begin_ns": 2197476777447118,
+        "end_ns": 2197478843691634,
+        "guard_ns": 100000000,
+        "observed_offset_min_ns": -17485031206,
+        "observed_offset_max_ns": -17483659408,
+        "clock_pair_count": 4,
+        "limits": "Interior client decode only;observed clock-offset envelope is not a proof of unsampled clock error or an exact prefill/device boundary."
+      },
+      "observed_decode": {
+        "window_wall_us": 2066244.5161132812,
+        "observed_gpu_interval_union_us": 939792.9350585938,
+        "observed_kernel_interval_union_us": 930666.5844726562,
+        "observed_copy_interval_union_us": 7084.328125,
+        "observed_host_api_interval_union_us": 856243.9128417969,
+        "unobserved_gpu_event_gap_us": 1126451.5810546875,
+        "operation_counts": {
+          "kernel": 23539,
+          "fill": 649,
+          "copy": 8044
+        },
+        "outside_window_events": {
+          "cpu_op": 487122,
+          "gpu_op": 265510
+        },
+        "boundary_crossing_counts": {},
+        "wholly_contained_requested_payload_bytes": {
+          "fill": 194764800,
+          "copy": 9355264
+        },
+        "crossing_command_requested_bytes_not_assigned_to_window": {},
+        "largest_observed_device_services": [
+          {
+            "name": "strata::kernels::(anonymous namespace)::launch_q6_columns<4, 1>(void const*, void const*, float*, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "8be718269c17df261619d8ab191913085cd973ad3892c494280767846ff6829d",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 538,
+            "clipped_sum_us": 247197.068359375
+          },
+          {
+            "name": "strata::sycl_backend::for_each<strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_rows_from_mapped(float*, float const*, long, long, int const*, int const*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+            "name_sha256": "100cbb602ceb4c324242e71b4001e2a71d751561f78f96e2e466d587de806d72",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 315,
+            "clipped_sum_us": 91437.1572265625
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "8615747a86e9c9bd0c7a8d2561223e33b9709f2ec09e209f39ca02225de4ad92",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 325,
+            "clipped_sum_us": 75104.14111328125
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::down_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "7f2c2a7853d4059c3195cea97def45eac3b0fa1a08a89cbac1d73bfdb9099f8f",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 2588,
+            "clipped_sum_us": 47039.9833984375
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::IQ4NLBlock, 4>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "5757762b295b1d72044742db244a7bd79e82311d573df7511ada181da5e6ffdf",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 310,
+            "clipped_sum_us": 31938.2119140625
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::projection<false, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "53936aa981b4e0e1d48ef9df88627264f46ee823e8196fe29cf543187d18b46f",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 18,
+            "clipped_sum_us": 31670.72216796875
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::up_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "e3d15bf7ddb28cc0f94848463000adae201c65165f70ad1fd623b2bae4495406",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 2588,
+            "clipped_sum_us": 30588.84228515625
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::grouped<20>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
+            "name_sha256": "1e225da21a072148930b80734c605c2db3a42b8c4b85d68243483601e4fc93c9",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 509,
+            "clipped_sum_us": 30189.65966796875
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ2STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+            "name_sha256": "913408b474b87b8c389dd30c42659019517aa231a7e89dc0f65f57a0696ac091",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 272,
+            "clipped_sum_us": 29356.76953125
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::projection<true, 8>(strata::kernels::(anonymous namespace)::Meta, unsigned char const*, float const*, float*, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "7ccd8e5b0b93e542bbbfeeb6b617fd8a93c434ae4a14919d7632636673ddab8f",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 18,
+            "clipped_sum_us": 28470.828125
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::IQ4XSTraits, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+            "name_sha256": "16367831f583ab2a33b38953872b5da743edfc32f7dc92fc1231b1cf0d7b9eb8",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 282,
+            "clipped_sum_us": 26968.12060546875
+          },
+          {
+            "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ3XXSTraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
+            "name_sha256": "b1a21a0c7517380bc4b1eea569fcc3f8fdc3cc6b5f6b913c7bd371e71b998788",
+            "name_truncated": false,
+            "kind": "kernel",
+            "count": 220,
+            "clipped_sum_us": 21787.73681640625
+          }
+        ],
+        "largest_observed_host_apis": [
+          {
+            "name": "zeEventHostSynchronize",
+            "name_sha256": "a76d5d85dc42a30a7364857ebd24db06e4128ffc97feb8c17db7718ae36d8e4a",
+            "name_truncated": false,
+            "count": 1192,
+            "clipped_sum_us": 550434.4560546875
+          },
+          {
+            "name": "zeCommandListHostSynchronize",
+            "name_sha256": "cf339d818537f7c0b1ae8c13fd83b0e4cd1b17745468455ea6457d000cc8c344",
+            "name_truncated": false,
+            "count": 953,
+            "clipped_sum_us": 260964.90600585938
+          },
+          {
+            "name": "zeCommandListImmediateAppendCommandListsExp",
+            "name_sha256": "ca60597c81b453f1a3c7dc9cb0c4a52c10c96a9aaac3ea1ac5537825b0ebd42d",
+            "name_truncated": false,
+            "count": 662,
+            "clipped_sum_us": 18349.27734375
+          },
+          {
+            "name": "zeCommandListReset",
+            "name_sha256": "83eeb4c92e62314f368b15b4ab68142a4efd8870ad0bdb58224d1b52958d42bc",
+            "name_truncated": false,
+            "count": 75,
+            "clipped_sum_us": 15908.2001953125
+          },
+          {
+            "name": "zeEventQueryStatus",
+            "name_sha256": "0446a10b55f2ba20d6e5693b057b98a6c844e055e7fde5f53e2a7a9a3ff2ab21",
+            "name_truncated": false,
+            "count": 631,
+            "clipped_sum_us": 4337.467529296875
+          },
+          {
+            "name": "zeCommandListAppendLaunchKernelWithArguments",
+            "name_sha256": "6486f828a0e0a3934eb9a5d49ff910eac4bdee0e9dbd8eb0d2460b3090fa44bb",
+            "name_truncated": false,
+            "count": 2561,
+            "clipped_sum_us": 4284.166259765625
+          },
+          {
+            "name": "zeCommandListAppendMemoryCopy",
+            "name_sha256": "33e4ed26f42a7758673423296d18c049caf43a5b938b89f34a3b97d686663555",
+            "name_truncated": false,
+            "count": 906,
+            "clipped_sum_us": 1286.925048828125
+          },
+          {
+            "name": "zeCommandListAppendMemoryFill",
+            "name_sha256": "deb7dcb31151adeb610ed559d3eb4f7e92fa629c9d828d6dcec6333c0195a383",
+            "name_truncated": false,
+            "count": 75,
+            "clipped_sum_us": 363.3017578125
+          },
+          {
+            "name": "zeKernelSetGroupSize",
+            "name_sha256": "fe45e80c3c5e53b94ddba14b9c26afb4d870c258a8a0f928059dfda47a209f87",
+            "name_truncated": false,
+            "count": 2561,
+            "clipped_sum_us": 144.089111328125
+          },
+          {
+            "name": "zexCounterBasedEventCreate2",
+            "name_sha256": "eaebf6e210d22babfd1a63e63e8d3572736519bfd9777b4fef7eb74d9da3966a",
+            "name_truncated": false,
+            "count": 640,
+            "clipped_sum_us": 114.40283203125
+          },
+          {
+            "name": "zeCommandListClose",
+            "name_sha256": "8dd8b077877813aca8f7f016de5ca1968e7b45e973a0f1d0020fa44a6f3e5642",
+            "name_truncated": false,
+            "count": 76,
+            "clipped_sum_us": 56.720703125
+          }
+        ],
+        "included_gpu_ids_unique": true,
+        "included_native_flow_joins_unique": true,
+        "complete_device_coverage_qualified": false,
+        "physical_saturation_qualified": false,
+        "limits": "Observed clipped service only;omitted or lost commands remain unknown. Graph flows join by instance ID,not source timestamp or row order. Service/API sums may overlap;API wall is not CPU time. Gaps between observed events are not proof of device idle. Requested payload is not PCIe/VRAM traffic;crossing commands are not prorated. Caller must separately qualify source/runtime,request identity,clocks,boundaries,loss and observer cost."
+      },
+      "full_capture_counts": {
+        "gpu_events": 297742,
+        "host_events": 497454,
+        "operation_counts": {
+          "copy": 47193,
+          "fill": 1848,
+          "kernel": 241163,
+          "barrier": 7538
+        }
+      },
+      "trace": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-device-service-v1/trace/strata.3776715.json",
+        "sha256": "63b02b828feadda9c3d85ff72f2171b48487339232941e5c462d100b85d46a4b",
+        "bytes": 348285412
+      },
+      "observer_time_ratio": 0.8659367392694423,
+      "observer_cost_qualified": true,
+      "IQ3_requests_verified": 2,
+      "decode_timing": {
+        "windows": 8,
+        "ms_per_window": {
+          "average_T": 3.62,
+          "tokens_per_window": 3.0,
+          "total": 316.57,
+          "verify": 279.38,
+          "GPU_reach_wait": 114.49,
+          "per_layer_host": 90.92,
+          "plan": 7.57,
+          "activation_quant": 0.35,
+          "jobs": 0.15,
+          "CPU_pool_run": 75.52,
+          "stage": 2.57,
+          "commit_emit": 0.4,
+          "draft": 36.77,
+          "CPU_experts": 19.49,
+          "CPU_entries": 27.43,
+          "VRAM_hits": 8.82,
+          "PCIe": 0.0
+        },
+        "outer_residual_ms_per_window": 0.01999999999998181,
+        "host_nested_residual_ms_per_window": 7.3300000000000125,
+        "work": {
+          "target_windows": 8,
+          "target_rows": 29,
+          "emitted_tokens": 24,
+          "target_rows_per_emitted": 1.2083333333333333,
+          "cpu_unique_jobs": 7484,
+          "cpu_entries": 10534,
+          "cpu_unique_jobs_per_emitted": 311.8333333333333,
+          "minimum_NT1_jobs": 4434,
+          "minimum_NT1_job_fraction": 0.5924639230358097,
+          "expert_copy_requested_bytes": 0,
+          "mathematical_dot_equivalent_ops": 103553433600,
+          "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+        },
+        "clock_binding": {
+          "absolute_total_difference_ms": 0.03999999999996362,
+          "rounding_bound_ms": 0.09,
+          "average_quantum_ms": 0.01,
+          "DONE_total_quantum_ms": 0.1
+        },
+        "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
+      },
+      "native_decode_timing_enabled_by_presence": true,
+      "clean_speed_qualified": false,
+      "complete_device_coverage_qualified": false,
+      "inference_adopted": false,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
       }
     },
     "source_inputs": {
