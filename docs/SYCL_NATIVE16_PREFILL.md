@@ -349,6 +349,13 @@ Fresh same-build host qualification now passes all four exact0,pool0,exact1,
 pool1 children:384single/80pair bitwise/canary controls and28real-pool cases
 per arm,with the original `e5d7a50a8e7d5ac5` checksum. All children exit0,
 stderr is empty,and ownership closes. The small GPU and model gates remain next.
+The fresh traced GPU gate also passes submission10 and phase-cache16windows/
+12captures on this generation. Both native exits are0,strict pre-main validation
+proofs pass,ownership closes,boot/providers remain unchanged,and no fresh fault
+appears. This synthetic gate does not execute model Q6 arithmetic or full
+record_window. The next32K model-entry controller joins each new centering
+receipt to its original phase/T/column receipt and actual IQ3 request footer;
+its two valid and11corrupt receipt controls pass. No model-speed result yet.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
