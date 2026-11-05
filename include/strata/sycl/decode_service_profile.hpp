@@ -13,7 +13,7 @@
 
 namespace strata::sycl_backend::decode_service_profile {
 enum Region { capture_setup, staging, layer_completion, cpu_pool, expert_retirement,
-    graph_submission, final_compute, final_copies, head_sampling, region_count };
+    graph_submission, final_compute_wait, final_copy_wait, sampling_wait, region_count };
 struct Tick { uint64_t wall = 0, cpu = 0; bool valid = false; };
 inline Tick clock_tick() noexcept {
     const int saved = errno;
@@ -155,7 +155,7 @@ public:
         const bool valid = !state_.invalid && !state_.part_depth && !state_.wait_depth;
         // Integer nanoseconds make conservation exact. One bounded line/request;
         // unclassified includes draft/commit and other uninstrumented work.
-        std::fprintf(output_, "strata decode service: version=1 request=%llu available=%d complete=%d "
+        std::fprintf(output_, "strata decode service: version=2 request=%llu available=%d complete=%d "
             "open_parts=%u open_waits=%u wall_ns=%llu cpu_ns=%llu "
             "unclassified_wall_ns=%llu unclassified_cpu_ns=%llu",
             (unsigned long long)request_, int(valid), int(complete), state_.part_depth, state_.wait_depth,
@@ -163,7 +163,7 @@ public:
             (unsigned long long)(parts.wall <= total.wall ? total.wall - parts.wall : 0),
             (unsigned long long)(parts.cpu <= total.cpu ? total.cpu - parts.cpu : 0));
         const char* names[region_count + 1] = {"capture", "stage", "layer_wait", "pool", "copy_retire",
-            "submit", "final_compute", "final_copy", "sample", "unclassified"};
+            "submit", "final_compute_wait", "final_copy_wait", "sampling_wait", "unclassified"};
         for (int k = 0; k <= region_count; ++k) {
             if (k < region_count) {
                 const auto& p = state_.parts[k];

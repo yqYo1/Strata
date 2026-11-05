@@ -1807,14 +1807,14 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     // itself stays a blocking sync: a cudaStreamQuery poll here cost IQ3_S ~3% decode (a core calling the driver
     // beside the expert workers).
 #ifdef STRATA_ENABLE_SYCL
-    const cudaError_t se = service::measure(service::final_compute, [&] { return cudaStreamSynchronize(cs_); });
+    const cudaError_t se = service::measure(service::final_compute_wait, [&] { return cudaStreamSynchronize(cs_); });
 #else
     const cudaError_t se = cudaStreamSynchronize(cs_);
 #endif
     if (se != cudaSuccess) { err = std::string("verify: ") + cudaGetErrorString(se); return false; }
     progress_at("verify window: waiting for the expert copies", (int64_t) T);
 #ifdef STRATA_ENABLE_SYCL
-    const cudaError_t copy_status = service::measure(service::final_copies, [&] { return cudaStreamSynchronize(copy_); });
+    const cudaError_t copy_status = service::measure(service::final_copy_wait, [&] { return cudaStreamSynchronize(copy_); });
 #else
     const cudaError_t copy_status = cudaStreamSynchronize(copy_); // Host callbacks cannot reach the next window.
 #endif
@@ -1868,7 +1868,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         sp.counter = (uint64_t) pos0;
         sample_tokens(head_logits_, T, (int) n_vocab_, hist_d_, hist_len_, sp, m_out_, cs_);
 #ifdef STRATA_ENABLE_SYCL
-        const cudaError_t sample_status = service::measure(service::head_sampling, [&] { return cudaStreamSynchronize(cs_); });
+        const cudaError_t sample_status = service::measure(service::sampling_wait, [&] { return cudaStreamSynchronize(cs_); });
 #else
         const cudaError_t sample_status = cudaStreamSynchronize(cs_);
 #endif
