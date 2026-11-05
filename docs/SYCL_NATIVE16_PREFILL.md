@@ -764,9 +764,11 @@ owned host children:exact/pool with IQ3 pairing0/1,then real-pool service-observ
 with pairing0/1. All arithmetic/canary/dispatch gates pass,and all four pool
 checksums equal `e5d7a50a8e7d5ac5`;all children exit0 with quiet stderr and
 closed ownership. See `decode_service_model_host_v1`. Both Python import roots
-are pinned without mutating a shared module. The next unchanged bounded traced
-submission10/phase16 GPU gates remain unexecuted;no model or observer-overhead
-qualification follows. Compare
+are pinned without mutating a shared module. The bounded traced submission10
+and phase16 GPU gates now both pass,with exact payload/guards,normal0,strict
+current-loader pre-main proof,closed owners,unchanged boot/provider/driver and
+no fresh fault. See `decode_service_model_phase_device_v1`. These synthetic
+checks do not execute the model or qualify observer overhead. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf
 service/census enabled in both,checking clock resolution/read overhead,depths,
 wall/CPU conservation,nested waits and observer effects. Keep clean speed

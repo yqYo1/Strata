@@ -159150,7 +159150,7 @@
     }
   },
   "decode_service_model_phase_device_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "ce96a86b7945bee6de6bd4ed302113fbcd82dd05",
     "native_source_commit": "70169d3881ab588d45f7df7baa132b4293f00970",
     "build_record": {
@@ -159266,14 +159266,65 @@
       "consumer": "Immediate phase-separated decode model prerequisite",
       "review_point": "After recording/committing compact outcomes,retire successful full traces and duplicate runtime cache;keep one diagnostic only for a distinct unresolved failure."
     },
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "name": "submission",
+        "native_exit": 0,
+        "checks": 10,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 2309374,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+        "stderr_sha256": "8e8f04af10e88fe31965f0a943e2f385c74966cc685d240510b3d8eef60771c8"
+      },
+      {
+        "name": "phase-cache",
+        "native_exit": 0,
+        "checks": 16,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 2309399,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "302bfc5aa45f4f40c86fffbd478324505570caf95276408800d6099ac5963b14",
+        "stderr_sha256": "5300d657402b65f210bb5499e4cecf9b4b1a5a98db4c55ee00ed5340c5e42d6f"
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "inference_adopted": false,
+    "fresh_faults": [],
+    "driver_after": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "boot_unchanged": true,
     "controller_inputs": {
       "files": 107,
       "aggregate_sha256": "5a353ac144328f78840c8cb2f3cc4525a978b26546297c55967eeda685bb9812"
