@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Owned host-only clock-accounting contract; repository LICENSE.
 
-Compile the ledger and actual legacy-wait bridge fixtures. This creates no
-inference engine, loads no GPU runtime and establishes no model attribution or
-performance qualification. The original V1 result remains unchanged in Git.
+Compile declared host fixtures;the default checks the ledger/wait bridge.
+Private callers may supply another output contract. No inference engine,GPU
+runtime,model attribution or performance qualification is created here.
 """
 import fcntl
 import hashlib
@@ -116,6 +116,10 @@ def unchanged(row):
     require(packages == row['compiler']['packages'], 'compiler/header/runtime package drift')
 
 
+def check_output(fixture, output, row):
+    require(output.read_text() == fixture['footer'], 'complete host contract footer: ' + fixture['name'])
+
+
 def run():
     row = json.loads((ROOT / 'record.json').read_text())
     require(row['stage'] == 'prepared' and not (ROOT / 'commands').exists(), 'fresh ordered host attempt only')
@@ -147,7 +151,7 @@ def run():
                     row['dependencies'][name] = pins
                     row['binaries'][name] = dict(path=str(ROOT / name), sha256=sha(ROOT / name))
                 else:
-                    require(out.read_text() == fixture['footer'], 'complete host contract footer: ' + name)
+                    check_output(fixture, out, row)
                     require(sha(ROOT / name) == row['binaries'][name]['sha256']
                         and all(sha(path) == value for path, value in row['dependencies'][name].items()),
                         'fixture or actual compiler dependencies changed during test: ' + name)
@@ -161,7 +165,7 @@ def run():
         row.update(commands=scope.commands if scope else [], active=bool(scope and scope.active),
             ownership_closed=scope is None or (scope.active is None and all(owner.closed(e) for e in scope.commands)))
         save(row)
-    print('Seven ledger and five actual wait-bridge cases passed;no model qualification.', flush=True)
+    print('Declared host fixtures passed;no model qualification.', flush=True)
 
 
 if __name__ == '__main__':
