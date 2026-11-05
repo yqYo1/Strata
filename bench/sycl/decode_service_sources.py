@@ -109,7 +109,7 @@ def projection():
     for name in WAIT_LABEL_FILES:
         restored[name] = previous.merge(restored[name], name, WAIT_LABEL_PATCH, WAIT_LABEL_PATCH + '^')
     for name in EXISTING:
-        restored[name] = previous.merge(values[name], name, PATCH, PATCH + '^')
+        restored[name] = previous.merge(restored[name], name, PATCH, PATCH + '^')
     for name in ADDED:
         del restored[name]
     require(restored == before, 'removing the observer must recover all 564 inputs')
