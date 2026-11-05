@@ -369,14 +369,15 @@ six fresh processes in centering0/1/1/0/0/1 order,with four official warmups and
 thinking-on code/prose requests per process. Both actual MTP regimes need three
 paired TG gains;keep every sample and judge PP/TTFT independently. All15model
 assets pass fresh hashes,and fresh benchmark/server frontend probes pass.
-Three of six processes now close with six eligible long requests,native exit0,
+Four of six processes now close with eight eligible long requests,native exit0,
 quiet validation,closed ownership and no fresh fault. The first pair's exact TG is
 13.3656/13.4934 code and8.7974/8.7231 prose (reference/candidate),giving ratios
 1.009562/0.991553. The first pair favors different arms by workload;it does not
-qualify a model gain. Code prompt/TTFT ratios are1.056792/1.055678 and prose
-ratios0.992763/0.992394. The next candidate process records13.4171/8.7840 tok/s
-and awaits its paired reference. Keep the three remaining processes and every
-sample under the original plan;the clean speed reference is unchanged.
+qualify a model gain. The second pair's reference/candidate TG is13.2501/13.4171
+code and8.6776/8.7840 prose,with candidate/reference ratios1.012607/1.012267.
+Keep both pairs and the final two processes under the original plan;the first
+prose ratio remains below one. Individual PP/TTFT samples stay independent in
+the linked result,and the clean speed reference is unchanged.
 
 The next bounded conversion candidate is the independently authored
 [`q6_f16_widen_clz.hpp`](../include/strata/kernels/q6_f16_widen_clz.hpp).
@@ -673,8 +674,15 @@ nested waits, invalid nesting/clocks, exceptions and disabled observation.
 The host-only fixture now compiles with GCC13.3/O2 and passes all seven cases,
 with normal exits, quiet stderr and closed owners;168 actual dependency files
 are fingerprinted. See `decode_service_host_contract_v1`. This does not compile
-or qualify the diagnostic engine. Its next consumer is a separately qualified
-diagnostic build after the current IQ3 cohort. The measured engine/source remain
+or qualify the diagnostic engine. The post-centering review confirms that the
+92832/a1b0 projection lacks both this profile call and header;an environment
+flag cannot enable it. After the frozen Q6 cohort closes,explicitly add the
+profile to that source projection and qualify a diagnostic build. Compare
+profile on/off in separate same-binary processes with the existing CPU leaf
+service/census enabled in both,checking clock resolution/read overhead,depths,
+wall/CPU conservation,nested waits and observer effects. Keep clean speed
+separate. This can distinguish CPU service from wait/submission/copy envelopes;
+physical RAM/PCIe traffic remains unknown. The measured engine/source remain
 unchanged;no model attribution,physical-resource ceiling or speedup follows yet.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.

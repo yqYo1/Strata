@@ -25021,55 +25021,64 @@
   },
   "q6_widening_device_controller_audit_20261105": {
     "classification": "decision support",
-    "stage": "reported_pending_native_review",
+    "stage": "reviewed_fix_committed_pending_device_screen",
     "source_revision": "62ef02c6bf28801d9347380e1f7cc0a263118581",
-    "consumer": "Review actual new429-line standalone controller admission,recipe,MD/link,validation,per-arm parser and ownership handling before post-cohort build;not another generic conversion/CPP review.",
-    "scope_eligibility": {
-      "schedulable_now": true,
-      "reason": "New429-line standalone controller is committed and unexecuted;no prior report audits its actual admission,recipe,MD/link binding,validation and owner/state handling. Source-only review is independent of the still-open model cohort;execution remains ineligible until all6close."
-    },
-    "previous_scopes": [
-      "q6_widening_device_design_20261105",
-      "q6_widening_device_source_audit_20261105"
-    ],
+    "consumer": "Post-cohort standalone half-widening prepare/build/check admission;retire this reference after that controller/device decision.",
     "worker_model": "gpt-6-luna/high/Orca",
     "review_model": "gpt-6-luna/max/native",
-    "source_pins": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/q6-widening-device-controller-audit/inputs.json",
-      "files": 15,
-      "sha256": "3ad3ffcd17c604da3d14c5939efc0d2a0e55e3b84a81062ee9fdb7894fa84e6c"
-    },
-    "report_budget_bytes": 10240,
-    "folder_budget_bytes": 131072,
     "ownership_closed": true,
     "main_reads_body_on_arrival": false,
-    "lifecycle": {
-      "run_id": "run_d43ee98385d1",
-      "task_id": "task_1615d3db4c3f",
-      "dispatch_id": "ctx_3149724b1a6e",
-      "terminal": "term_3f61c348-898a-4d21-a80f-d8a24a146a07",
-      "incarnation": "8013c9db-793e-4e1a-9711-bad0588c9fcb",
-      "turn_started_observed": true
-    },
-    "retention": "Native Luna/max review pending;retain technical report/pins for the concrete post-cohort stage1 admission/fix decision. Successful transports await next serialized safe boundary for retirement.",
-    "startup": {
-      "IPC_ready_reachable_connected": true,
-      "report_directory_writable": true,
-      "all15_source_hashes_verified_by_worker": true,
-      "message_id": "msg_a86202abc082",
-      "delivery_id": "delivery_7e62ed0572b5"
-    },
-    "outcome": "succeeded",
     "report": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/q6-widening-device-controller-audit/report.md",
+      "path": ".cache/research/2026-11-05/q6-widening-device-controller-audit/report.md",
       "bytes": 8281,
       "sha256": "48c52598045f9b17b00a5813d488163472b9da29628cd76da9726694c49f6216"
     },
-    "completion": {
-      "exact_original_process_exited": true,
-      "delivery_acknowledged": true
+    "source_pins": {
+      "path": ".cache/research/2026-11-05/q6-widening-device-controller-audit/inputs.json",
+      "bytes": 3522,
+      "sha256": "3ad3ffcd17c604da3d14c5939efc0d2a0e55e3b84a81062ee9fdb7894fa84e6c"
     },
-    "reviewer": "/root/review_q6_widening_device_controller_audit_20261105",
-    "worker_deviation": "Worker reports one read-only git rev-parse despite its no-Git task scope;not accepted as source or runtime verification. Independent native review pending."
+    "review": {
+      "path": ".cache/research/2026-11-05/q6-widening-device-controller-audit/review.json",
+      "bytes": 4700,
+      "sha256": "0b742c33d37fba07f4a029b03af2de9a51d766585ff8632835c34be358b6c24b"
+    },
+    "finding": "Original parser accepted contradictory signaling-NaN quiet counts. Native review confirms signaling_quieted<=nan_quiet_changes; source fix also reconciles bit mismatches and zero-mismatch checksums.",
+    "fix": {
+      "commit": "a3b518489229a25392e7b5fc99afbf8c7efa2fe9",
+      "parser_controls": "3 valid and 11 invalid cases intended;not yet executed",
+      "GPU_executed": false
+    },
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "Actual source review completed;no duplicate audit. Prepare/build/check waits for all six centering processes and original decision."
+    },
+    "worker_deviation": "Worker used one forbidden read-only git rev-parse;not accepted as verification. Review and source fix do not establish runtime/device qualification.",
+    "retention": "Keep report/inputs/review only until the named post-cohort controller/device decision. Closed transport receipts are retired at the current serialized boundary;original closure remains reachable in ce0aea6445cfbf949754edbed660fd4139c763c6."
+  },
+  "decode_resource_next_measurement_review_20261105": {
+    "classification": "decision support report synthesis",
+    "stage": "reviewed_next_measurement_selected",
+    "review_model": "gpt-6-luna/max/native",
+    "ownership_closed": true,
+    "review": {
+      "path": ".cache/research/2026-11-05/decode-resource-next-measurement-review/review.json",
+      "bytes": 10699,
+      "sha256": "439bb330b8180054c61fec4eacd8750894e0a50598af2433fce13e8533f7db15"
+    },
+    "source_revision": "a3b518489229a25392e7b5fc99afbf8c7efa2fe9",
+    "inputs_verified": {
+      "files": 19,
+      "source_files_matched_before_metadata_edits": true,
+      "live_result_pin": "Original three-process result recovered exactly from a3b518489;process3 closure is separately preserved in 06802ac17."
+    },
+    "consumer": "Prepare the post-cohort 92832 diagnostic source projection and disjoint-service measurement plan;retire this synthesis after those inputs are committed.",
+    "selected": "Explicitly add decode_service_profile call/header to 92832;not present in a1b0. Qualify the diagnostic build,then separate same-binary profile on/off long code/prose processes with existing CPU service/census in both. Keep clean speed separate.",
+    "required": "Clock resolution/read cost,closed nesting and wall/callerCPU/workerCPU conservation;wait/submission/copy envelopes are not physical RAM/PCIe traffic.",
+    "eligibility": {
+      "schedulable_now": false,
+      "reason": "Existing implementation suffices after cohort closure and diagnostic build qualification;no new research scope eligible."
+    },
+    "limitations": "No runtime execution,new hardware attribution,speedup,adoption or physical262144 qualification from this review."
   }
 }
