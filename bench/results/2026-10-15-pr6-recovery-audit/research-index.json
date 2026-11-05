@@ -24072,38 +24072,45 @@
   },
   "cpu_gu_access_footprint_20261105": {
     "classification": "decision support",
-    "stage": "running",
+    "stage": "reviewed_with_material_corrections",
     "schedulable_now": false,
-    "eligible_at_dispatch": true,
     "question": "Reconcile full-blob job bytes with actual GU/Down CPU ranges and NT reuse on the closed long-request census.",
-    "prerequisite_evidence": "Six closed passed CPU-service/census processes agree on logical job volumes;exact native source/metadata and Main3f71 full-blob arithmetic are available. New footprint-accounting question;no generic lookup/roofline repeat.",
     "policy_revision": "9985da7ffef8636af501f0051c4537de86c8be68",
-    "inputs": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/cpu-gu-access-footprint/inputs.json",
-      "sha256": "607cb00351b8363ce7261e53968387f39e209c99d01262e70efd4491451452e6"
+    "evidence": {
+      "commit": "c74d1539cceec80c13e9356ff73d54dfa4545587",
+      "key": "verify_window_cpu_service_overhead_v1.processes[*].cpu_census.long_requests"
     },
-    "spec": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/cpu-gu-access-footprint/spec.txt",
-      "sha256": "37358267ffd4405ef43d4254ec791820f6b9b3fbd000faa532e5db5b6551c95c"
+    "report": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/cpu-gu-access-footprint/report.md",
+      "bytes": 10196,
+      "sha256": "859b4a2e09c63e5ef4f09b9f00ac0a4ec806711a45abf3ac44622768d4b96d12"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/cpu-gu-access-footprint/report.md",
-    "report_budget_bytes": 16384,
-    "whole_folder_budget_bytes": 196608,
-    "main_reads_body_on_arrival": false,
-    "consumer": "Interpret measured CPU work against compatible RAM reference and choose one bounded discriminator;no physical-traffic/adoption claim.",
-    "next_review": "Native gpt-6-luna max after authentic worker settlement;retire transaction packet after useful curation.",
+    "review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/cpu-gu-access-footprint/review.json",
+      "bytes": 15161,
+      "sha256": "259fb07edec8d0b7b6442691545e1b5471f9e9e3727e1d4f8e2d52a426b62464",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "main_reads": "Operational digest and selected reconstructed coverage/provenance/retention fields;original report body not loaded."
+    },
+    "operational_digest": "Packed-row formulas reconstruct GU/Down logical coverage for all seven CPU job bins;type23 is IQ4_XS. Corrected values and source mapping are curated in docs/SYCL_NATIVE16_PREFILL.md. Unique-per-job coverage is distinct from repeated NT loads and physical DRAM traffic. Historical census/observer provenance differs;9922/b310 later passed separate host,GPU and model gates despite its builder record having build-only scope. No saturation or adoption claim.",
+    "report_requires_corrections": [
+      "GGML type23 name",
+      "CPU-service versus cache-map census evidence identity",
+      "Reconstructible GU/Down logical coverage",
+      "Memory-controller counter scope and attribution"
+    ],
     "worker": {
       "model": "gpt-6-luna",
       "reasoning_effort": "high",
-      "run": "run_c09a9cbdb4c9",
-      "task": "task_eb7a40c08741",
-      "dispatch": "ctx_6adaacdf735e",
-      "terminal": "term_09a18e69-6141-46f7-bef5-ef5df4d79557",
-      "incarnation": "dd3288fc-4d20-4bce-b007-e028a8fa5fd6",
-      "startup": "Main-created custom Codex argv disables update prompt,sets report cwd and enables sandbox lifecycle IPC;worker-start reuses this exact terminal. No active steering.",
-      "turn_start_observed": true,
-      "worker_side_status_and_report_access": "pending",
-      "dispatch_receipt_sha256": "b8aeda768eb81b58a011740072e55e01abd87f95141939d4c34827c595c0b113"
-    }
+      "ownership_closed": true,
+      "authenticated_completion": true,
+      "exact_worker_exited": true,
+      "external_terminal_release_then_main_close": true,
+      "startup_status_stdout_verified": false
+    },
+    "consumer": "Post-IQ3-cohort decision on a matched CPU-memory-traffic discriminator;use corrected review and maintained decisions,not uncorrected report claims.",
+    "next_scope_eligibility": "No fresh dispatch now;after frozen cohort closure consider one traffic measurement only if it changes the next decision and event scope/availability/permissions are verified.",
+    "next_review": "After current six-process comparison closes:retain useful derivation/source facts,retire superseded report/review bodies and settled transaction files after checking current consumers."
   }
 }

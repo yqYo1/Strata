@@ -408,6 +408,16 @@ Resident-entry share measures expert placement,not GPU compute share;dense,
 attention and recurrent work are outside that count. Source is
 `verify_window_cpu_service_overhead_v1.processes[*].cpu_census.long_requests`
 at commit `c74d1539cceec80c13e9356ff73d54dfa4545587`.
+The reviewed packed-row reconstruction uses `H=2560,FF=640`,
+`GU=2*FF*ggml_row_size(gu_type,H)` and
+`Down=H*ggml_row_size(down_type,FF)`. Summing every format/NT job bin separates
+code GU/Down coverage into0.465002/0.321018 GB per output and prose into
+0.620522/0.428505 GB per output. Type23 is IQ4_XS;its per-job GU/Down sizes are
+1740800/921600 bytes. These are unique-per-job tensor coverage,not per-token
+load-instruction counts;generic NT>1 paths may load weights repeatedly.
+The census is from the8e249/6e073 observer,distinct from the479a/552b cache-map
+census and the later9922/b310 IQ3 generation. The latter's builder record has
+build-only scope;its separate host,GPU and actual-model gates passed later.
 These logical bytes are not measured DRAM/PCIe traffic or a physical lower
 bound:cache reuse,partial reads and actual memory access still matter. The
 55/73 GB/s demand exceeds the prior achieved30.642 GB/s read reference,which
@@ -415,6 +425,10 @@ is itself not a hardware ceiling. Before treating a wider CPU weight view as
 the next model route,compare its extra bytes with compatible read capacity
 and evaluate fewer CPU jobs through expert placement/reuse. Neither cache
 placement nor arithmetic is established as the limiting physical resource yet.
+Read-only PMU inventory on2026-11-05 finds no `amd_df`,`amd_l3` or `amd_umc`
+under `/sys/bus/event_source/devices`;the CPU and software PMUs are present.
+This establishes current registration only,not hardware support or permission
+to collect events. No perf counter collection or permission change was made.
 Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
 single-token GU selector to `NativeGuPhase::Decode`, preserving the prefill
 dispatch. This source-only containment is outside the frozen observer build;
