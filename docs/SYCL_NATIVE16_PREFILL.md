@@ -422,7 +422,14 @@ same-build host/device/preload proof and sets EXPECTED_LOADER before native exec
 V2 preparation now passes with112source/control pins and the exact current
 library,official loader and84provider files. The standalone executable builds
 with705actual compiler dependencies and24covered external link inputs;all3
-compile/link children exit0 with closed ownership. Device semantics remain pending.
+compile/link children exit0 with closed ownership. All6device arm/offset cases
+now pass. Reference/CLZ have zero bit mismatches;native has zero finite,zero,
+subnormal,Inf,NaN-class/sign/payload mismatches and quiets exactly1022signaling
+NaNs at each offset. Guards and read-only input pass. The native child exits0
+with the strict current-loader pre-main proof,closed ownership,unchanged boot
+and no fresh fault. This qualifies the standalone contracts,not Q6-entry timing,
+model math/speed,integration or ordinary runtime teardown. See
+`q6_f16_widen_device_v2`;V1 remains failed.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
