@@ -160865,5 +160865,31 @@
     "scope": "Admission failed in pinned_sources before creation of an output root,cohort model-asset hashing,frontend probes or any native execution. The owning controller exited1;no measurement sample exists.",
     "correction": "V2 pins native/header/clock bytes directly to committed Git blobs;only Python controllers use the import resolver. Preserve this failed preparation. New source and plan required before V2 execution.",
     "next_result_key": "decode_service_overhead_v2"
+  },
+  "decode_service_overhead_v2": {
+    "stage": "preparation_failed",
+    "source_commit": "a9d1e6ea869ec93d51b3b43fade67e8f61da5764",
+    "command": [
+      "python3",
+      "-B",
+      "bench/sycl/decode_service_overhead.py",
+      "prepare"
+    ],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "model_executed": false,
+    "GPU_executed": false,
+    "full_model_asset_hashes_passed": 15,
+    "error": "The reused clean-environment guard rejected the inherited enabled SERVICE_PROFILE/IQ3_PAIR_AUDIT diagnostics before the first generated plan environment was frozen.",
+    "scope": "All15model assets hashed successfully before environment construction failed. No frontend,native or timed model process was launched. The controller exited1. The partial root has only runtime-inputs.json and process0 config/plan.",
+    "correction": "V3 uses a private environment value to pass only these two flags through disabled clean-supervisor setup,then explicitly restores the qualified common audit and planned caller selector. All other profile/audit safety checks remain. Preview all six normalized environments before asset hashing.",
+    "partial_output_retirement": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-overhead-v2",
+      "files": 3,
+      "review_point": "Retire with path/hash/reason manifest after this failure commit and before V3 frontend probes."
+    },
+    "next_result_key": "decode_service_overhead_v3"
   }
 }

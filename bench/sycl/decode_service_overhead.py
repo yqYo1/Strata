@@ -17,7 +17,7 @@ import decode_service_model_entry as short
 import cpu_service_overhead as leaf
 
 B, RESULT, base = short.B, short.RESULT, short.base
-ROOT, KEY = B / 'decode-service-overhead-v2', 'decode_service_overhead_v2'
+ROOT, KEY = B / 'decode-service-overhead-v3', 'decode_service_overhead_v3'
 SELF = Path(__file__).resolve()
 ARMS, WORKLOADS = leaf.ARMS, leaf.WORKLOADS
 require, digest = short.require, short.digest
@@ -123,7 +123,13 @@ def context(index=None):
     ctx.census_boundary_prefixes, ctx.boundary_calls = [], 0
 
     def environment(row, plan):
-        env = original_environment(row, plan)
+        # Reuse the clean supervisor's path/safety setup on a private value.
+        # These two admitted diagnostics are restored explicitly below; all
+        # other profile/audit flags still pass its original disabled check.
+        template = dict(row['environment_template'])
+        for name in ('STRATA_SYCL_DECODE_SERVICE_PROFILE', 'STRATA_IQ3_PAIR_AUDIT'):
+            template[name] = '0'
+        env = original_environment(dict(row, environment_template=template), plan)
         env.update(STRATA_SYCL_DECODE_SERVICE_PROFILE=str(int(plan['kernel'] == 'candidate')),
             STRATA_CPU_SERVICE='1', STRATA_CPU_WORK_CENSUS='1',
             STRATA_DECODE_TIMING='1', STRATA_TRACE='1',
@@ -184,6 +190,17 @@ def context(index=None):
 
 
 def prepare(ctx):
+    # Check this diagnostic-to-clean-supervisor seam before expensive hashing.
+    prior = json.loads((short.ROOT / 'record.json').read_text())
+    previews = []
+    for index, (arm, swaps) in enumerate(ARMS):
+        plan = dict(index=index, kernel=arm, adapt_swaps=swaps, heads=1,
+            root=str(ROOT / str(index)))
+        env = ctx.environment(dict(environment_template=prior['environment']), plan)
+        require(env.pop('STRATA_SYCL_DECODE_SERVICE_PROFILE') == str(int(arm == 'candidate')),
+            'caller profile arm differs before preparation')
+        previews.append(json.dumps(env, sort_keys=True).replace(plan['root'], '<process>'))
+    require(len(set(previews)) == 1, 'only caller observation may differ between prepared arms')
     ctx.prepare()
     row = json.loads((ROOT / 'record.json').read_text())
     row['qualification_reuse'] = dict(build_key=short.checks.model.KEY,
