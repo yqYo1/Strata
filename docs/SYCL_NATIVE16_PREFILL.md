@@ -420,7 +420,9 @@ change during the closed comparison. No compiler or GPU process ran. Preserve
 `q6_f16_widen_device_v1` as failed. V2 now reuses the exact current
 same-build host/device/preload proof and sets EXPECTED_LOADER before native exec;
 V2 preparation now passes with112source/control pins and the exact current
-library,official loader and84provider files. Build/device checks remain pending.
+library,official loader and84provider files. The standalone executable builds
+with705actual compiler dependencies and24covered external link inputs;all3
+compile/link children exit0 with closed ownership. Device semantics remain pending.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
