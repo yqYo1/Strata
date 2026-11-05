@@ -390,10 +390,11 @@ The GCC13 UBSan host screen now passes all65536patterns with zero reference or
 candidate mismatches. All139actual source/header inputs match their prebuild
 images,both preprocessor and final MD lists agree,and all3owned children exit0
 with quiet stderr and closed ownership. Checksum is `8c8d4b0224882325`;see
-`q6_f16_widen_clz_host_v1` in the linked result. SYCL device lowering/semantics
-and a native-half cast comparison remain pending before any Q6-only timed
-integration. Keep the original shared converter and current model/benchmark
-inputs frozen. This host pass is not GPU,model or speed evidence.
+`q6_f16_widen_clz_host_v1` in the linked result. The standalone SYCL comparison
+and offline SPIR-V inspection below are now closed. Production-flag numerical
+checks,actual Q6-entry timing,final GPU ISA and model impact remain pending
+before any Q6-only integration. Keep the original shared converter and active
+measurement inputs frozen. This host pass itself is not GPU,model or speed evidence.
 The one-use host executable and raw outputs are now retired after source/recipe
 recovery;the compact result retains its139actual compiler inputs and checksum.
 
@@ -798,8 +799,23 @@ the emitted records. The contract now passes with two actual C++ records,
 disabled-observer absence,all nine regions,exact clock conservation and28
 rejected corrupt variants. Both owned children exit0 with quiet stderr and
 closed ownership;83 actual compiler dependencies are pinned. See
-`decode_service_reader_contract_v1`. The first model/overhead comparison is
-still pending;this host fixture does not qualify model attribution or speed.
+`decode_service_reader_contract_v1`. The first
+[model entry](../bench/sycl/decode_service_model_entry.py) now passes:one
+thinking-on short warmup and two fresh32769-input/24-output requests,with all
+three caller/leaf/census/native/API joins,normal0,closed owners,quiet validation,
+unchanged boot and all15 final model hashes,no fresh fault. See
+`decode_service_model_entry_v1`,controller source844e82e99 and native source70169d388.
+The two long-input short-output caller intervals are1.814..1.826s,including
+0.970..0.972s in nested native waits;caller CPU inside those waits is0.960..0.971s.
+Pool wall is0.691..0.695s. Unclassified wall is0.250..0.252s,of which
+0.233..0.234s is itself native wait;do not add nested waits to the containing
+regions. The warmup separately spends4.163s in capture/setup. These records
+show that high caller CPU includes substantial wait-API time,not that useful
+CPU arithmetic or GPU hardware is saturated. Worker CPU can overlap caller
+CPU and must not be added blindly. Clock-read metrology and a same-binary
+profile0/1 overhead comparison remain pending before representative long-generation
+attribution. This short diagnostic does not qualify clean speed,physical traffic,
+agent/task,physical262144/RESTORE or adoption.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The six closed CPU-service processes also agree exactly on logical work volume
