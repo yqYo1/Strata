@@ -272,74 +272,61 @@ original Git source blobs were recovered and matched. Next isolate the audit's t
 same-binary comparison below before interpreting the gap from the faster clean
 reference. No new inference engine was built for this capture.
 
-The source-only [Q6 dot discriminator](../bench/sycl/q6_dot_codegen.cpp) prepares
-the next bounded compiler question: does the public signed-byte
-`dot_acc(vec<int8_t,4>,vec<int8_t,4>,0)` produce different code from the current
-four-product scalar expression? Both instantiations use128-item groups and
-subgroup32,unknown packed operands and identical low-byte-first extraction.
-The installed2026.2 extension header itself contains ordinary multiply/add
-expressions; its API name does not prove a DP4A instruction. The fixture has no
-main or production caller and has not yielded qualified IR or run on a device. After a frozen
-audit process pair closes, pin its exact source/compiler image and compile device-only
-LLVM IR with the current native optimization settings (`-O3 -DNDEBUG -std=c++20
--ffp-contract=off`, SYCL and size_t ID queries). Use an owned60-second,2GiB RSS,
-256KiB text/8MiB output operation; no device query or kernel execution is needed.
-Compare generated instructions before any full-Q6 patch. Equal lowering ends
-this expression proposal; different lowering only motivates a source-pinned
-whole-kernel discriminator, not a speed or saturation claim. This fixture omits
-Q6 unpacking,scales and column reductions. Retire it when that finite compiler
-question closes unless a named immediate comparison still consumes it.
-The same source now adds a separate Q6 centering pair. The production Q6 masks
-bound every reconstructed byte to0..63,so subtracting32 cannot saturate.
-The independently authored [packed candidate](../include/strata/kernels/q6_packed_center.hpp)
-uses `(word + 0x60606060u) ^ 0x80808080u`: every byte sum is96..159,so no carry
-crosses a byte boundary. It changes no production call. The fixture's pending
-compile-time checks exercise all64 values in repeated-byte words and in each
-lane of a mixed-boundary word. This is not an executed numerical/device gate.
-Compare centering and dot independently; do not combine their treatments or
-infer either gain from source operation counts.
-The [owned offline controller](../tools/sycl/q6_dot_codegen.py) preserves its
-first failed compiler operation. Its Q6-only admission permits a closed adjacent audit
-pair boundary (2,4,6 completed processes),with every completed process passing,
-normal exit0,closed ownership and no fresh fault. It holds the shared exclusive
-lock and checks the same committed cohort signature before and after compilation;
-no model process may overlap. The model A/B and FP64 all-six gates are unchanged.
-Q6 receipts use the separate finite-consumer
-`bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json`,so preparing
-this offline comparison does not edit the whole-file-checked model result.
-The controller
-checks the actual native compile command/reference bytes and pins project
-helpers,the installed compiler/package image and Python runtime. Commit
-`prepare` output before its one `compile` operation. Actual Make header inputs
-must match the prebuild image; the emitted LLVM module must declare
-`spir64-unknown-unknown` and contain both `spir_kernel` bodies in each of the
-two independent families. Git checks invoke the recorded absolute executable,
-rather than relying on PATH. The candidate header is a pinned input.
-The8MiB per-file output cap sits inside a32MiB whole-root cap,including input
-manifests. CPU/file limits are per-process and RSS/disk bounds are sampled as
-in the existing owned supervisor. It produces LLVM IR only: later SPIR-V/native
-instruction inspection needs its own evidence rather than an inferred DP4A.
-At source `d6361f580`, two host controls pass: actual premature `prepare`
-refuses the unfinished six-process cohort without creating its root,and the
-production compile-command/reference check admits all ten reproduced settings.
-At that revision,no installed-image capture,compilation,device query or kernel execution followed.
-Those historical controls predate the centering extension and retain their
-original all-six refusal outcome. Before preparation,run the committed
-`python3 -B tools/sycl/q6_dot_codegen.py host` at a safe model-process boundary.
-It checks current source/production inputs,the actual committed pair boundary,
-negative ownership/fault/partial-pair controls,changed-cohort detection and LLVM
-target/kernel-body rejection controls without creating a compiler root.
-At source `ab0c5f26513661d09148d8411d523dd1eb79cb0d`,the host check passes:
-11 committed source/control inputs,the actual four-process boundary,all ten
-production settings,16 invalid-evidence rejections and changed-cohort detection.
-The installed compiler/Python/library inputs were pinned before execution.
-V1's owned compiler exits1 with `IR output is not supported.` from its textual
-LLVM output mode. Both owned identities close,normal observation completes and
-the result remains failed;no LLVM comparison,device query or kernel execution
-is qualified. The same installed compiler's older optional-IR failure is also
-recorded in `gdn16_pipeline_build_v2`;that failure did not prevent its ordinary
-object compilation. Preserve the exact V1 source/recipe and diagnostic in
-`q6-codegen-current.json` before selecting a different prospective output recipe.
+The [Q6 expression discriminator](../bench/sycl/q6_dot_codegen.cpp) asks two
+independent compiler questions:does public signed-byte `dot_acc` differ from
+four scalar products,and does packed Q6 centering differ from per-byte
+subtract/clamp/pack? Both pairs use unknown inputs,128-item groups and subgroup32.
+The installed extension header contains ordinary multiply/add expressions;
+its name does not prove DP4A. Neither pair includes full Q6 reconstruction,
+scales,column reductions or a production caller.
+The independently authored [centering candidate](../include/strata/kernels/q6_packed_center.hpp)
+uses `(word + 0x60606060u) ^ 0x80808080u`. Production Q6 masks bound each byte
+to0..63;adding96 cannot carry between bytes,and XOR128 yields the byte
+representation of value minus32. The fixture's pending compile-time checks
+cover all64 repeated-byte values and each lane of a mixed-boundary word.
+No device numerical or speed gate has passed.
+
+V1 at source `ab0c5f26513661d09148d8411d523dd1eb79cb0d` failed its first
+owned compilation:textual LLVM emission returns1 with `IR output is not supported.`
+Both owned identities close,with no device query or kernel execution.
+Its exact prepared recipe is at `9a2e28bed` and failed result at `85fd35c1d`;
+retain the failed status in the separate current Q6 result. The older
+`gdn16_pipeline_build_v2` also records this compiler output restriction.
+The V1 host check passes11 source pins,all ten production settings,16 invalid
+boundary/IR rejection controls and changed-cohort detection. Earlier controls
+at `d6361f580` retain their original all-six refusal outcome in Git.
+
+The prospective V2 [offline controller](../tools/sycl/q6_dot_codegen.py) retains
+the exact two expression treatments and installed compiler image. It emits
+binary LLVM with `-fsycl-device-only -c -emit-llvm`,without the rejected `-S`,
+then invokes that SDK's `llvm-spirv --spirv-text --spirv-tools-dis`.
+Intel's [compiler guidance](https://community.intel.com/t5/Intel-oneAPI-DPC-C-Compiler/cant-generate-LLVM-IR-using-dpcpp/m-p/1372376/highlight/true?profile.language=fr)
+distinguishes binary IR from textual emission;this is a prospective installed-
+version check,not a claim that the older guidance qualifies2026.2.
+Check bitcode magic and actual header inputs,then require the emitted SPIR-V
+Physical64/OpenCL memory model and four kernel entrypoints bound to bodies.
+The [translator representation](https://github.com/KhronosGroup/SPIRV-LLVM-Translator/blob/main/docs/SPIRVRepresentationInLLVM.rst)
+relates `spir64` to Physical64 and kernel calling conventions to entrypoints.
+This checks the emitted portable module;it does not establish native B570
+instructions,device capability,execution or model speed.
+
+Preparation requires a closed adjacent audit pair (2,4,6 completed processes),
+all prior processes passing normally with closed owners and no fresh fault.
+Hold the shared exclusive lock,exclude live model owners and check the committed
+cohort signature before and after compilation. Existing model A/B and FP64
+all-six gates stay unchanged. Q6 preparation/execution writes only
+`bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json`;the whole-file-
+checked model result stays unchanged. Invoke Git by its pinned absolute path.
+Commit exact source and run `python3 -B tools/sycl/q6_dot_codegen.py host`,then
+prepare and commit installed compiler/Python/library/header inputs before the
+single two-command compile operation. Each command has60s CPU/wall,2GiB sampled
+RSS,256KiB text and8MiB per-file caps;the whole root,including manifests,is32MiB.
+The supervisor's CPU/file limits are per-process and RSS/disk checks are sampled.
+V2 is not yet prepared or run.
+Compare both instruction pairs independently. Equal SPIR-V lowering ends that
+expression proposal;a difference only motivates a separately committed whole-
+Q6 discriminator. Retire generated artifacts and the fixture when this finite
+compiler question ends unless an immediate named comparison consumes them.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary
