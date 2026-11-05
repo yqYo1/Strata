@@ -339,8 +339,10 @@ produce7220bytes of internal SPIR-V text. Header admission then fails on20
 previously unrecorded headers,all owned by `linux-libc-dev` version6.8.0-147.147.
 V3 remains failed. V4 preserves its output recipe and prospectively pins the
 whole `linux-libc-dev` package in addition to the unchanged SDK/compiler image.
-Its source and comparison treatment stay unchanged;V4 host/preparation/compile
-checks are pending. Do not qualify V3 retroactively or advance a model proposal
+Its source and comparison treatment stay unchanged. At source
+`198b403f68a9683aac6158ebe30fb93ef56a9905`,V4 host checks pass the17 rejection
+controls and unchanged source/production checks;its expanded input image is
+prepared,with compilation pending. Do not qualify V3 retroactively or advance a model proposal
 from its output.
 Compare both instruction pairs independently. Equal SPIR-V lowering ends that
 expression proposal;a difference only motivates a separately committed whole-
