@@ -20,8 +20,8 @@ import device_fp64_probe as dependency_image
 import q6_centering_sources as source
 
 P, B, RESULT, base = template.P, template.B, template.RESULT, template.base
-ROOT = B / 'q6-centering-model-v1'
-KEY = 'q6_centering_model_build_v1'
+ROOT = B / 'q6-centering-model-v2'
+KEY = 'q6_centering_model_build_v2'
 SELF = Path(__file__).resolve()
 OLD = source.original.ROOT
 TARGETS = source.original.TARGETS
@@ -120,6 +120,14 @@ def context():
         PROGRAM=source.observer.PROGRAM, POOL=source.observer.POOL,
         HEADER=source.observer.HEADER, FIXTURES=source.observer.FIXTURES)
     ctx.inputs, ctx.retention_gate = inputs, retention_gate
+    original_compact = ctx.compact
+
+    def compact(row):
+        value = original_compact(row)
+        value['recipe']['helper'] = 'tools/sycl/build_q6_centering_model.py:recipe'
+        return value
+
+    ctx.compact = compact
     return ctx
 
 
@@ -167,13 +175,17 @@ def prepare(ctx):
         path = ROOT / 'source' / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(raw)
-    ctx.save(row)
+    # Inputs call existing strict committed-evidence readers. Publish the new
+    # result only after those checks; saving first makes preparation reject its
+    # own uncommitted row. V1's failed preparation remains separate evidence.
+    write(ROOT / 'record.json', row)
     try:
         inputs(row)
     except BaseException as error:
         row.update(stage='failed-prepare', error=repr(error))
         ctx.save(row)
         raise
+    ctx.save(row)
     print('Prepared scoped Q6-centering source/recipe. Commit before build;no GPU/model execution.', flush=True)
 
 

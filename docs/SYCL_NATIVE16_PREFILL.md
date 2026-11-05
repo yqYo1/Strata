@@ -330,6 +330,10 @@ remain byte-identical. `tools/sycl/build_q6_centering_model.py` prepares a
 replacement generation with the original optimization recipe and explicit
 GCC13 header selection. Retire closed b310 products after exact source/recipe
 recovery and keep552b before compiling. Fresh device/model gates remain required.
+V1 preparation stops before compiler/GPU execution because it published its new
+result before the inherited committed-input check. Preserve that failure;
+V2 performs all admission checks before publishing its prospective result and
+corrects the inherited compact recipe-helper label.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
