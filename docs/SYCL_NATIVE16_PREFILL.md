@@ -759,13 +759,14 @@ all configure,compile and dependency children exit0 with closed ownership.
 Both profile/wait headers and the actual production flags pass their native
 recipe checks. Engine hash is `5c5e25d04e8ea8a8abcd9d26ed8f70a32d78b8aa93a89a49e7232ec8f47f6d76`;
 the build source is70169d388,distinct from the later admission controller.
-The prospective [same-build checks](../bench/sycl/decode_service_checks.py)
-prepare six owned host children:exact/pool with IQ3 pairing0/1,then real-pool
-service-observer1 with pairing0/1. Require all arithmetic/canary/dispatch and
-pool checksums before the unchanged bounded traced submission10/phase16 GPU
-runners. Both Python import roots are pinned without mutating a shared module.
-These checks are unexecuted;no device/model or observer-overhead qualification
-follows from compilation. Compare
+The [same-build checks](../bench/sycl/decode_service_checks.py) now pass all six
+owned host children:exact/pool with IQ3 pairing0/1,then real-pool service-observer1
+with pairing0/1. All arithmetic/canary/dispatch gates pass,and all four pool
+checksums equal `e5d7a50a8e7d5ac5`;all children exit0 with quiet stderr and
+closed ownership. See `decode_service_model_host_v1`. Both Python import roots
+are pinned without mutating a shared module. The next unchanged bounded traced
+submission10/phase16 GPU gates remain unexecuted;no model or observer-overhead
+qualification follows. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf
 service/census enabled in both,checking clock resolution/read overhead,depths,
 wall/CPU conservation,nested waits and observer effects. Keep clean speed

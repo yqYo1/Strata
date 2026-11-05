@@ -158950,7 +158950,7 @@
     }
   },
   "decode_service_model_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "c1e5c279bd1464a23fb227cd8601cd4d7e76cf6e",
     "build_record": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-model-v1/record.json",
@@ -159076,9 +159076,64 @@
       "file_cap": 65536,
       "total_cap": 1048576
     },
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "kind": "exact",
+        "arm": 0,
+        "observer": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "562c438d692c57a065ab95666400c49012545967dfe7133d8098e17e2ebec43b",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 0,
+        "observer": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "2ed549a94563ab46dd0dbb4a49c842c51f533ce277b6c8ee5b1721d23b64e0f6",
+        "ownership_closed": true
+      },
+      {
+        "kind": "exact",
+        "arm": 1,
+        "observer": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "66f72dbe6ed391b1ad7a75acd2006c7726508a6eedb2411c6e2342d75e7269a1",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 1,
+        "observer": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "2ed549a94563ab46dd0dbb4a49c842c51f533ce277b6c8ee5b1721d23b64e0f6",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 0,
+        "observer": 1,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e37bb4a8d99a5666e3df954735e0a8607f2c55860a16f5fbf75099b4cca23d25",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 1,
+        "observer": 1,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e37bb4a8d99a5666e3df954735e0a8607f2c55860a16f5fbf75099b4cca23d25",
+        "ownership_closed": true
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -159088,6 +159143,7 @@
       "host_contract": "decode_service_host_contract_v2",
       "scope": "Exact current five-output build;unchanged CPU arithmetic/pool and decode-only centering0;no inherited native qualification."
     },
+    "pool_checksum": "e5d7a50a8e7d5ac5",
     "sources": {
       "files": 107,
       "aggregate_sha256": "5a353ac144328f78840c8cb2f3cc4525a978b26546297c55967eeda685bb9812"
