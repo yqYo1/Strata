@@ -20,8 +20,8 @@ import device_fp64_probe as probe
 
 P, B = probe.P, probe.B
 RESULT = probe.RESULT.with_name('q6-codegen-current.json')
-ROOT = B / 'q6-dot-codegen-v3'
-KEY = 'q6_dot_codegen_v3'
+ROOT = B / 'q6-dot-codegen-v4'
+KEY = 'q6_dot_codegen_v4'
 SOURCE = 'bench/sycl/q6_dot_codegen.cpp'
 HEADER = 'include/strata/kernels/q6_packed_center.hpp'
 NATIVE = B / 'decode-iq3-pair-model-v1'
@@ -73,8 +73,8 @@ def closed_boundary():
 
 def compact(row):
     out = {k: v for k, v in row.items()
-        if k not in ('sources', 'toolchain', 'python', 'runtime_pins', 'commands')}
-    for name in ('sources', 'toolchain', 'python', 'runtime_pins'):
+        if k not in ('sources', 'toolchain', 'python', 'runtime_pins', 'extra_headers', 'commands')}
+    for name in ('sources', 'toolchain', 'python', 'runtime_pins', 'extra_headers'):
         if name in row:
             out[name + '_signature'] = probe.component.signature(row[name])
     return out
@@ -104,6 +104,15 @@ def python_inputs():
     runtime = probe.component.python_runtime
     explicit = [sys.executable, *runtime.code_maps(os.getpid())]
     return runtime.inventory([sysconfig.get_path('stdlib')], explicit)
+
+
+def linux_headers():
+    package = 'linux-libc-dev'
+    paths = subprocess.check_output(['/usr/bin/dpkg-query', '-L', package], text=True, timeout=15).splitlines()
+    require(paths and all(p.startswith('/') for p in paths), 'complete Linux header package required')
+    version = subprocess.check_output(['/usr/bin/dpkg-query', '-W', '-f=${Version}', package],
+        text=True, timeout=15)
+    return dict(probe.file_image([], paths), package=package, version=version)
 
 
 def production_command():
@@ -150,11 +159,17 @@ def prepare():
         and second['outcome']['translation_diagnostic']['message'] ==
             'llvm-spirv was built without --spirv-tools-dis support',
         'preserve V2 unavailable text backend before selecting internal SPIR-V text')
+    third = committed(RESULT)['q6_dot_codegen_v3']
+    require(third['stage'] == 'failed' and not third['passed']
+        and not third['GPU_executed'] and third['ownership_closed']
+        and third['outcome']['provenance_diagnostic']['package'] == 'linux-libc-dev'
+        and third['outcome']['provenance_diagnostic']['unrecorded_actual_headers'] == 20,
+        'preserve V3 header admission failure before extending the pinned input image')
     require(not ROOT.exists() and KEY not in committed(RESULT),
         'fresh compiler attempt only')
     revision, pins = committed_sources()
     require(all(pins[n] == hashlib.sha256(git('show', previous['source_commit'] + ':' + n)).hexdigest()
-        for n in (SOURCE, HEADER)), 'V3 changes output recipe,not either expression treatment')
+        for n in (SOURCE, HEADER)), 'V4 changes provenance coverage,not either expression treatment')
     native = production_command()
     row = dict(stage='preparing', source_commit=revision, sources=pins,
         passed=False, complete=False, active=False, ownership_closed=True,
@@ -165,7 +180,7 @@ def prepare():
             acceptance='Two owned CPU operations:device-only LLVM bitcode compilation,then installed llvm-spirv internal-text conversion;both normal exit0,closed commands,unchanged source/toolchain/Python/cohort inputs,actual header dependency admission,bitcode and SPIR-V magic,emitted Physical64/OpenCL (2,2) memory model and two kernel entrypoints/bodies in each dot/centering family. Compile-time centering byte relation and mixed-lane example must pass. No automatic retry.',
             decision='Main compares each optimized SPIR-V instruction pair independently. Equal lowering ends that expression proposal. A difference only motivates a separately committed whole-Q6 experiment;no instruction throughput,device support,model speed or adoption follows.',
             limits='Isolated dot with unknown signed packed bytes and zero accumulator;independent centering contrast masks unknown words to six bits per byte. Both use128-item groups and subgroup32. Full production reconstruction,scales,reductions and surrounding optimizations are absent. Portable SPIR-V is not native B570 ISA or proof of hardware DP4A.',
-            output_mode='V1 textual LLVM emission failed;V2 binary compilation passed but SPIRV-Tools text output was not built into the translator. V3 retains the same installed compiler/optimization settings and both expression treatments,then requests the translator internal text only. Target proof comes from emitted module memory-model operands,not verbose driver text.'),
+            output_mode='Preserve V1 textual-LLVM rejection,V2 unavailable SPIRV-Tools text backend and V3 header-admission failure. V4 retains the V3 binary-LLVM/internal-text recipe and both expression treatments;it prospectively pins the full linux-libc-dev package in addition to the unchanged installed compiler image. Target proof comes from emitted module memory-model operands.'),
         retention='Keep source,recipe and compact outcome. Keep generated IR only for Main instruction comparison;retire it and the fixture when that finite consumer ends. No inference engine generation.',
         budgets=dict(wall=60, cpu=60, rss_cap=2 << 30, text_cap=256 << 10,
             file_cap=8 << 20, total_cap=32 << 20))
@@ -179,7 +194,8 @@ def prepare():
             sha(n) == h for n, h in row['runtime_pins'].items()), 'qualified libraries changed')
         row['toolchain'] = probe.toolchain()
         require(probe.component.signature(row['toolchain']) == previous['toolchain_signature'],
-            'V3 must use the same installed compiler image as V1/V2')
+            'V4 must use the same installed compiler image as V1/V2/V3')
+        row['extra_headers'] = linux_headers()
         row['python'] = python_inputs()
         tools = [GIT, '/usr/bin/dpkg-query']
         require(all(tools), 'compiler selector/provenance tools missing')
@@ -229,6 +245,7 @@ def current():
     require(sha(ROOT / 'source.cpp') == row['sources'][SOURCE], 'private source changed')
     require(production_command() == row['native'], 'production recipe/source changed')
     require(probe.toolchain() == row['toolchain'], 'compiler image changed')
+    require(linux_headers() == row['extra_headers'], 'Linux header package changed')
     require(python_inputs() == row['python'], 'Python/runtime inputs changed')
     require(sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256']
         and all(sha(n) == h for n, h in row['runtime_pins'].items()), 'qualified libraries changed')
@@ -242,6 +259,8 @@ def header_evidence(row):
     require(tokens and tokens[0] == str(ROOT / 'dot.bc') + ':', 'dependency target differs')
     allowed = {v['realpath']: v['sha256'] for v in row['toolchain']['files'].values()
         if v['kind'] == 'file'}
+    allowed.update({v['realpath']: v['sha256'] for v in row['extra_headers']['files'].values()
+        if v['kind'] == 'file'})
     allowed.update({str((P / name).resolve()): h for name, h in row['sources'].items()})
     allowed[str((ROOT / 'source.cpp').resolve())] = row['sources'][SOURCE]
     verified = {}

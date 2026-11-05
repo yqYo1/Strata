@@ -82,143 +82,11 @@
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
-    "native": {
-      "database": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/compile_commands.json",
-        "sha256": "e373b1d60dbd26a112bc9c69ec28cf9e0d42068a515b88cd760a1cff46d2be4f"
-      },
-      "native_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
-      "native_q6_sha256": "e11821dc10a71670236d45f9bdb1387b185118389e000d42385abbe9ce7197e4",
-      "entry": {
-        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build",
-        "command": "/opt/intel/oneapi/compiler/2026.2/bin/icpx -DSTRATA_CPU_SERVICE_PROFILE=1 -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/source/include -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/source/include/strata/sycl/compat -fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations -O3 -DNDEBUG -std=c++20 -ffp-contract=off -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -o CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_mmvq.cpp.o -c /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/source/src/kernels/sycl/native_mmvq.cpp",
-        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/source/src/kernels/sycl/native_mmvq.cpp",
-        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_mmvq.cpp.o"
-      },
-      "reproduced_flags": [
-        "-O3",
-        "-DNDEBUG",
-        "-std=c++20",
-        "-ffp-contract=off",
-        "-fsycl",
-        "-fsycl-id-queries-range=size_t",
-        "-Wall",
-        "-Wextra",
-        "-Werror",
-        "-Wno-error=deprecated-declarations"
-      ]
-    },
-    "boundary": {
-      "completed_processes": 4,
-      "signature": {
-        "files": 31,
-        "aggregate_sha256": "13a7d30958ffe8c99bbed790d2e059ae52efd1ce4b5a67c8d24bc99be2be369e"
-      }
-    },
-    "git_executable": "/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin/git",
-    "whole_bytes": 33554432,
-    "plan": {
-      "question": "Independently compare scalar/vector signed-byte dot and scalar/packed Q6 byte centering lowerings.",
-      "prerequisite": "At a closed adjacent IQ3 pair boundary (2,4,6 completed processes),all prior processes pass normally without fresh faults. Hold the shared exclusive lock throughout,exclude live model owners and preserve the completed-cohort signature before/after compilation. Existing A/B and FP64 plans stay unchanged.",
-      "acceptance": "Two owned CPU operations:device-only LLVM bitcode compilation,then installed llvm-spirv internal-text conversion;both normal exit0,closed commands,unchanged source/toolchain/Python/cohort inputs,actual header dependency admission,bitcode and SPIR-V magic,emitted Physical64/OpenCL (2,2) memory model and two kernel entrypoints/bodies in each dot/centering family. Compile-time centering byte relation and mixed-lane example must pass. No automatic retry.",
-      "decision": "Main compares each optimized SPIR-V instruction pair independently. Equal lowering ends that expression proposal. A difference only motivates a separately committed whole-Q6 experiment;no instruction throughput,device support,model speed or adoption follows.",
-      "limits": "Isolated dot with unknown signed packed bytes and zero accumulator;independent centering contrast masks unknown words to six bits per byte. Both use128-item groups and subgroup32. Full production reconstruction,scales,reductions and surrounding optimizations are absent. Portable SPIR-V is not native B570 ISA or proof of hardware DP4A.",
-      "output_mode": "V1 textual LLVM emission failed;V2 binary compilation passed but SPIRV-Tools text output was not built into the translator. V3 retains the same installed compiler/optimization settings and both expression treatments,then requests the translator internal text only. Target proof comes from emitted module memory-model operands,not verbose driver text."
-    },
-    "retention": "Keep source,recipe and compact outcome. Keep generated IR only for Main instruction comparison;retire it and the fixture when that finite consumer ends. No inference engine generation.",
-    "budgets": {
-      "wall": 60,
-      "cpu": 60,
-      "rss_cap": 2147483648,
-      "text_cap": 262144,
-      "file_cap": 8388608,
-      "total_cap": 33554432
-    },
-    "runtime_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
-      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
-      "files": 84
-    },
-    "selector_tools": {
-      "/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin/git": {
-        "realpath": "/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin/git",
-        "dev": 29,
-        "ino": 7011000,
-        "bytes": 4999680,
-        "mtime_ns": 1000000000,
-        "ctime_ns": 1790865068595833734,
-        "sha256": "d88c25f33602bd5898b398b04418916512be06821f47034832b3f5736e911706"
-      },
-      "/usr/bin/dpkg-query": {
-        "realpath": "/usr/bin/dpkg-query",
-        "dev": 29,
-        "ino": 2560862,
-        "bytes": 137792,
-        "mtime_ns": 1778089098000000000,
-        "ctime_ns": 1778795631143687362,
-        "sha256": "cc2a19017c37132e4ad46c1fbddea6472262d0a62a0b8585c383706c20005ea1"
-      }
-    },
-    "environment": {
-      "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
-      "HOME": "/home/yayoi",
-      "LANG": "C.UTF-8",
-      "LC_ALL": "C.UTF-8",
-      "PYTHONDONTWRITEBYTECODE": "1",
-      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
-      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
-      "OMP_NUM_THREADS": "1",
-      "PYTHONUNBUFFERED": "1",
-      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
-      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
-      "SYCL_CACHE_PERSISTENT": "0",
-      "NEOReadDebugKeys": "1",
-      "EnableDirectSubmission": "0",
-      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/cache",
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/tmp",
-      "ZES_ENABLE_SYSMAN": "0",
-      "CUDA_MODULE_LOADING": "EAGER",
-      "PYTHONNOUSERSITE": "1",
-      "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/cache/python",
-      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
-    },
-    "command": [
-      "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-      "-O3",
-      "-DNDEBUG",
-      "-std=c++20",
-      "-ffp-contract=off",
-      "-fsycl",
-      "-fsycl-id-queries-range=size_t",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-Wno-error=deprecated-declarations",
-      "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
-      "-fsycl-device-only",
-      "-c",
-      "-emit-llvm",
-      "-v",
-      "-I",
-      "/home/yayoi/orca/workspaces/Strata/sycl/include",
-      "-MD",
-      "-MT",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/dot.bc",
-      "-MF",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/headers.d",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/source.cpp",
-      "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/dot.bc"
-    ],
-    "translate_command": [
-      "/opt/intel/oneapi/compiler/2026.2/bin/compiler/llvm-spirv",
-      "--spirv-text",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/dot.bc",
-      "-o",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/dot.spt"
-    ],
     "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "toolchain_signature": {
+      "files": 4,
+      "aggregate_sha256": "dbdbda652ed1a7e2196a2c6f2980344ec636284d43ba8829f0ffc265ced8d57f"
+    },
     "outcome": {
       "complete": false,
       "passed": false,
@@ -237,21 +105,11 @@
         "limits": "Both CPU operations close normally,but V3 header admission fails. Capture the whole additional header package prospectively and recompile;do not qualify V3 retroactively."
       }
     },
-    "sources_signature": {
-      "files": 11,
-      "aggregate_sha256": "0c80fbaa45b9a2038e882084d33d72cf6bb708083b9f149c9d3a5cff9b77d3fa"
-    },
-    "toolchain_signature": {
-      "files": 4,
-      "aggregate_sha256": "dbdbda652ed1a7e2196a2c6f2980344ec636284d43ba8829f0ffc265ced8d57f"
-    },
-    "python_signature": {
-      "files": 4,
-      "aggregate_sha256": "3dd0c131ac15e57110dd9ddc2028572353d6f500b0cd8bd55c5a92ca0b0ae185"
-    },
-    "runtime_pins_signature": {
-      "files": 84,
-      "aggregate_sha256": "12f00cc0c1e71fad681f18c9a2550e288f36a0a0af12709e604840df884a2ab2"
+    "original_evidence": {
+      "commit": "1984056dd68a60f72ea42469ebb7923b293294a1",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json",
+      "key": "q6_dot_codegen_v3",
+      "reason": "Original failed header admission and complete output recipe stay in Git;V4 prospectively adds the missing package image."
     }
   }
 }

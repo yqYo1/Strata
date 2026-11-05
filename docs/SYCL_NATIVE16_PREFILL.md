@@ -296,7 +296,7 @@ The V1 host check passes11 source pins,all ten production settings,16 invalid
 boundary/IR rejection controls and changed-cohort detection. Earlier controls
 at `d6361f580` retain their original all-six refusal outcome in Git.
 
-The prospective V3 [offline controller](../tools/sycl/q6_dot_codegen.py) retains
+The prospective V4 [offline controller](../tools/sycl/q6_dot_codegen.py) retains
 the exact two expression treatments and installed compiler image. It emits
 binary LLVM with `-fsycl-device-only -c -emit-llvm`,without the rejected `-S`,
 then invokes that SDK's supported `llvm-spirv --spirv-text` internal text mode.
@@ -330,15 +330,18 @@ with the same installed compiler image as V1. Its compiler stage closes normally
 with exit0 and6552bytes of LLVM bitcode,including the centering static assertions.
 The next operation exits255 because this SDK was built without
 `--spirv-tools-dis` support. V2 remains failed;no instruction comparison or
-device execution is qualified. V3 selects the supported internal text format
+device execution is qualified. V3 selected the supported internal text format
 while preserving both failed attempts. At source
 `52e0b57bf3654a70f1c7670ebcc0456185eff4cf`,V3's host check passes17 invalid-
 evidence rejections and the same11 source/ten production-setting checks.
 V3 uses the unchanged installed compiler image. Both CPU operations exit0 and
 produce7220bytes of internal SPIR-V text. Header admission then fails on20
 previously unrecorded headers,all owned by `linux-libc-dev` version6.8.0-147.147.
-V3 remains failed. Pin that complete package before a fresh prospective compile;
-do not qualify V3 retroactively or advance a model proposal from its output.
+V3 remains failed. V4 preserves its output recipe and prospectively pins the
+whole `linux-libc-dev` package in addition to the unchanged SDK/compiler image.
+Its source and comparison treatment stay unchanged;V4 host/preparation/compile
+checks are pending. Do not qualify V3 retroactively or advance a model proposal
+from its output.
 Compare both instruction pairs independently. Equal SPIR-V lowering ends that
 expression proposal;a difference only motivates a separately committed whole-
 Q6 discriminator. Retire generated artifacts and the fixture when this finite
