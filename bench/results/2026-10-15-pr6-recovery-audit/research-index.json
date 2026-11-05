@@ -24799,18 +24799,9 @@
   },
   "graphics_feedback_weight_residency_20261105": {
     "classification": "knowledge collection",
-    "stage": "running",
-    "schedulable_now": false,
     "source_revision": "356da5c8b5a5628d6d7f42a11513862d4cb70e34",
     "native_source_commit": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
     "engine_sha256": "a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616",
-    "prerequisite_evidence": {
-      "source_files": 7,
-      "source_hashes_pinned": true,
-      "actual_compiled_cache_source_available": true,
-      "source_only_methods_no_local_hardware_prerequisite": true,
-      "no_prior_virtual_texturing_scope_found": true
-    },
     "previous_scopes": [
       "speculative_moe_offload_reuse_collection_scope",
       "xe2_usm_cache_policy_collection_scope",
@@ -24819,33 +24810,40 @@
       "gpu_lossless_compressed_weight_streaming_20261105"
     ],
     "question": "Collect transferable out-of-core graphics virtual-texturing and sampler-feedback residency/streaming methods for irregular read-only quantized expert weights. Compare software virtual-texture/page-table caches,feedback-driven demand streaming versus known-demand scheduling,upload batching/priority/admission and fence-safe page reuse. Contrast their demand/latency model with sequential MoE routing and already-known layer-major long-prefill demand. Separate D3D12/Vulkan/graphics hardware features from algorithmic ideas portable to Intel Xe2/SYCL. Include finite-capacity and prediction/granularity/pollution/copy-feedback counterexamples and end-to-end break-even;no assumed local bottleneck or implementation.",
-    "report_path": ".cache/research/2026-11-05/graphics-feedback-weight-residency/report.md",
-    "worker_model": "gpt-6-luna",
-    "worker_effort": "high",
-    "review_model": "gpt-6-luna/max/native",
-    "main_reads_collection_body_on_arrival": false,
+    "consumer": "Conditional source-bound residency/streaming decision after a measured irregular expert-transfer/cache path warrants it;no present performance claim.",
     "report_budget_bytes": 12288,
     "whole_folder_budget_bytes": 131072,
-    "consumer": "Conditional source-bound residency/streaming decision after a measured irregular expert-transfer/cache path warrants it;no present performance claim.",
-    "next_review": "Native Luna-max novelty/corrections/retrieval review after completion;retire lifecycle output and redundant body if no realistic consumer.",
-    "ownership_closed": false,
-    "run": "run_d43ee98385d1",
-    "task": "task_ae61b6c87606",
-    "dispatch": "ctx_4ed4977e0161",
-    "terminal": "term_e64835ea-62b3-4637-8ef1-d95fa116d1fb",
-    "process_incarnation": "8c380c38-e7b5-402c-aa60-07293c4637ef",
-    "startup": {
-      "message": "msg_7192e661ec28",
-      "worker_own_Orca_ready_reachable": true,
-      "source_pins_matched": 7,
-      "report_directory_writable": true
+    "stage": "reviewed_pending_transaction_retirement",
+    "schedulable_now": false,
+    "ownership_closed": true,
+    "outcome": "succeeded",
+    "worker_done_accepted": true,
+    "source_pins_verified": 7,
+    "review_model": "gpt-6-luna/max/native",
+    "main_read_collection_body": false,
+    "report": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/graphics-feedback-weight-residency/report.md",
+      "sha256": "835e99532cbb42eb6087e4de676d76508d246b8ce87332e8a5683331d3e0a034",
+      "bytes": 12185
     },
-    "launch": {
-      "rendered_model": "GPT-6-Luna high fast",
-      "report_only_workspace": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/graphics-feedback-weight-residency",
-      "network_IPC_enabled": true,
-      "prompt_receipt_stage": "input_accepted",
-      "worker_own_startup_message_proves_execution": true
-    }
+    "review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/graphics-feedback-weight-residency/review.json",
+      "sha256": "373babef48dd8eef358241a631238aff185d49a4e1bc1616d407e35de292cdab",
+      "bytes": 11946
+    },
+    "source_pins": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/graphics-feedback-weight-residency/inputs.json",
+      "sha256": "60f8d0f8dfdee78911487cc1480c06347ddc08f2279aab4dbe1650656a5ba71c",
+      "bytes": 1584
+    },
+    "curated_corrections": "Apply native review corrections for scratch-lease caller duties,optional CPU readback,D3D12 Tier5 boundaries,Vulkan nonresident reads and explicit critical-path break-even. A graphics mechanism is not evidence of B570/SYCL feature support or model speed.",
+    "completion": {
+      "exact_original_process_exited": true,
+      "completion_delivery_acknowledged": true,
+      "inbox_count_after_ack": 0
+    },
+    "retention": "Keep the distinct conditional report,source pins and correction review outside Git until a concrete source-verified residency decision;retire completed lifecycle/spec/startup/release/ack output at the next serialized boundary.",
+    "next_scope": "No follow-up is schedulable before a concrete source-bound residency/streaming decision and its measurement prerequisites exist.",
+    "next_review": "At that residency decision;curate useful findings and retire the body when its named consumer ends."
   }
 }
