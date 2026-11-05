@@ -418,7 +418,13 @@ It preserves per-arm semantic failures,checks both byte offsets and mismatch
 conservation,and uses the already qualified traced negative-validation probe.
 Separate runtime/fixture compilations and linking record actual MD/host-link
 inputs. Live ownership uses a bounded separate receipt,without rewriting the
-whole cumulative result on every poll. Its parser controls also remain unrun.
+whole cumulative result on every poll. The source audit and native Luna-max
+review found that population checks alone accepted contradictory signaling-NaN
+quiet counts. The controller now requires quieted signaling NaNs to change the
+quiet bit,and reconciles mismatch/hash counters;its negative controls include
+both integer arms and contradictory native records. The positive control still
+requires native NaN quieting to be accepted. These parser controls remain unrun until cohort
+closure;the source fix is not device or runtime qualification.
 Commit the generated-input/recipe pins before building this fixture. Reuse the
 qualified92832source `src/sycl/runtime.cpp` and its headers,then the new helper
 and fixture;this needs no third inference engine. The intended compiler is the

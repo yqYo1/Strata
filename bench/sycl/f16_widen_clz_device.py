@@ -355,6 +355,14 @@ def parse(text):
                 and all(row[n] <= row['bit_mismatches'] for n in
                     ('nan_class_mismatches', 'nan_sign_mismatches', 'nan_payload_changes', 'nan_quiet_changes')),
                 'semantic counters do not conserve mismatches')
+        # A quieted signaling NaN changes its quiet bit. Every differing NaN
+        # is covered by class,sign,payload or quiet changes; overlaps are fine.
+        require(row['signaling_quieted'] <= row['nan_quiet_changes']
+                and row['bit_mismatches'] <= sum(row[n] for n in ('finite_mismatches',
+                    'infinity_mismatches', 'nan_class_mismatches', 'nan_sign_mismatches',
+                    'nan_payload_changes', 'nan_quiet_changes'))
+                and (row['bit_mismatches'] != 0 or row['checksum'] == CHECKSUM),
+                'NaN transition,bit mismatch or checksum counters contradict each other')
         exact = row['bit_mismatches'] == 0 and row['checksum'] == CHECKSUM
         native = all(row[n] == 0 for n in ('finite_mismatches', 'infinity_mismatches',
             'nan_class_mismatches', 'nan_sign_mismatches'))
@@ -409,6 +417,14 @@ def parser_controls():
         original.replace('zero_mismatches=0', 'zero_mismatches=1', 1),
         original.replace('signaling_preserved=1022', 'signaling_preserved=1023', 1),
         original.replace('readonly_and_guards=PASS', 'readonly_and_guards=FAIL')]
+    for arm in ('reference', 'clz'):
+        bad.append(original.replace(f'arm={arm} offset=0 ' + exact,
+            f'arm={arm} offset=0 ' + exact.replace('signaling_quieted=0', 'signaling_quieted=1022')
+                .replace('signaling_preserved=1022', 'signaling_preserved=0')))
+    bad += [original.replace('arm=native offset=0 ' + exact,
+                'arm=native offset=0 ' + exact.replace('bit_mismatches=0', 'bit_mismatches=1')),
+            original.replace('arm=native offset=0 ' + exact,
+                'arm=native offset=0 ' + exact.replace(CHECKSUM, '0000000000000001'))]
     for text in bad:
         try:
             parse(text)
