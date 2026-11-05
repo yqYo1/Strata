@@ -364,7 +364,12 @@ calls;centering1 selects68/46 respectively. Their matched request bodies and
 positive IQ3 request2/3 footers preserve eligible/selected row equality.
 Both native exits are0,ownership closes,validation is quiet and no fresh fault
 appears. These diagnostic samples are not clean speed,sustained decode or
-all18model-shape evidence. A new committed clean long-generation plan is next.
+all18model-shape evidence. The clean long-generation controller is now prepared:
+six fresh processes in centering0/1/1/0/0/1 order,with four official warmups and
+thinking-on code/prose requests per process. Both actual MTP regimes need three
+paired TG gains;keep every sample and judge PP/TTFT independently. All15model
+assets pass fresh hashes. Frontend probes and sustained model execution remain
+pending;this preparation does not update the clean speed reference.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
