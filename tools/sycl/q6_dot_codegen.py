@@ -20,8 +20,8 @@ import device_fp64_probe as probe
 
 P, B = probe.P, probe.B
 RESULT = probe.RESULT.with_name('q6-codegen-current.json')
-ROOT = B / 'q6-dot-codegen-v2'
-KEY = 'q6_dot_codegen_v2'
+ROOT = B / 'q6-dot-codegen-v3'
+KEY = 'q6_dot_codegen_v3'
 SOURCE = 'bench/sycl/q6_dot_codegen.cpp'
 HEADER = 'include/strata/kernels/q6_packed_center.hpp'
 NATIVE = B / 'decode-iq3-pair-model-v1'
@@ -143,11 +143,18 @@ def prepare():
         and not previous['GPU_executed'] and previous['ownership_closed']
         and previous['outcome']['compiler_diagnostic']['message'] == 'IR output is not supported.',
         'preserve V1 textual-IR rejection before a different output recipe')
+    second = committed(RESULT)['q6_dot_codegen_v2']
+    require(second['stage'] == 'failed' and not second['passed']
+        and not second['GPU_executed'] and second['ownership_closed']
+        and second['outcome']['compiler_stage']['exit_code'] == 0
+        and second['outcome']['translation_diagnostic']['message'] ==
+            'llvm-spirv was built without --spirv-tools-dis support',
+        'preserve V2 unavailable text backend before selecting internal SPIR-V text')
     require(not ROOT.exists() and KEY not in committed(RESULT),
         'fresh compiler attempt only')
     revision, pins = committed_sources()
     require(all(pins[n] == hashlib.sha256(git('show', previous['source_commit'] + ':' + n)).hexdigest()
-        for n in (SOURCE, HEADER)), 'V2 changes output recipe,not either expression treatment')
+        for n in (SOURCE, HEADER)), 'V3 changes output recipe,not either expression treatment')
     native = production_command()
     row = dict(stage='preparing', source_commit=revision, sources=pins,
         passed=False, complete=False, active=False, ownership_closed=True,
@@ -155,10 +162,10 @@ def prepare():
         git_executable=GIT, whole_bytes=32 << 20,
         plan=dict(question='Independently compare scalar/vector signed-byte dot and scalar/packed Q6 byte centering lowerings.',
             prerequisite='At a closed adjacent IQ3 pair boundary (2,4,6 completed processes),all prior processes pass normally without fresh faults. Hold the shared exclusive lock throughout,exclude live model owners and preserve the completed-cohort signature before/after compilation. Existing A/B and FP64 plans stay unchanged.',
-            acceptance='Two owned CPU operations:device-only LLVM bitcode compilation,then installed llvm-spirv textual SPIR-V conversion;both normal exit0,closed commands,unchanged source/toolchain/Python/cohort inputs,actual header dependency admission,bitcode magic,emitted Physical64/OpenCL memory model and two kernel entrypoints/bodies in each dot/centering family. Compile-time centering byte relation and mixed-lane example must pass. No automatic retry.',
+            acceptance='Two owned CPU operations:device-only LLVM bitcode compilation,then installed llvm-spirv internal-text conversion;both normal exit0,closed commands,unchanged source/toolchain/Python/cohort inputs,actual header dependency admission,bitcode and SPIR-V magic,emitted Physical64/OpenCL (2,2) memory model and two kernel entrypoints/bodies in each dot/centering family. Compile-time centering byte relation and mixed-lane example must pass. No automatic retry.',
             decision='Main compares each optimized SPIR-V instruction pair independently. Equal lowering ends that expression proposal. A difference only motivates a separately committed whole-Q6 experiment;no instruction throughput,device support,model speed or adoption follows.',
             limits='Isolated dot with unknown signed packed bytes and zero accumulator;independent centering contrast masks unknown words to six bits per byte. Both use128-item groups and subgroup32. Full production reconstruction,scales,reductions and surrounding optimizations are absent. Portable SPIR-V is not native B570 ISA or proof of hardware DP4A.',
-            output_mode='V1 textual LLVM emission failed. V2 retains the same installed compiler/optimization settings and emits binary LLVM without -S,then uses the same installed SDK translator. Target proof comes from the emitted SPIR-V module,not verbose driver text.'),
+            output_mode='V1 textual LLVM emission failed;V2 binary compilation passed but SPIRV-Tools text output was not built into the translator. V3 retains the same installed compiler/optimization settings and both expression treatments,then requests the translator internal text only. Target proof comes from emitted module memory-model operands,not verbose driver text.'),
         retention='Keep source,recipe and compact outcome. Keep generated IR only for Main instruction comparison;retire it and the fixture when that finite consumer ends. No inference engine generation.',
         budgets=dict(wall=60, cpu=60, rss_cap=2 << 30, text_cap=256 << 10,
             file_cap=8 << 20, total_cap=32 << 20))
@@ -172,7 +179,7 @@ def prepare():
             sha(n) == h for n, h in row['runtime_pins'].items()), 'qualified libraries changed')
         row['toolchain'] = probe.toolchain()
         require(probe.component.signature(row['toolchain']) == previous['toolchain_signature'],
-            'V2 must use the same installed compiler image as V1')
+            'V3 must use the same installed compiler image as V1/V2')
         row['python'] = python_inputs()
         tools = [GIT, '/usr/bin/dpkg-query']
         require(all(tools), 'compiler selector/provenance tools missing')
@@ -194,8 +201,7 @@ def prepare():
             '-MD', '-MT', str(ROOT / 'dot.bc'), '-MF', str(ROOT / 'headers.d'),
             str(ROOT / 'source.cpp'), '-o', str(ROOT / 'dot.bc')]
         row['translate_command'] = [str(probe.COMPILER_ROOT / 'bin/compiler/llvm-spirv'),
-            '--spirv-text', '--spirv-tools-dis', str(ROOT / 'dot.bc'),
-            '-o', str(ROOT / 'dot.spvasm')]
+            '--spirv-text', str(ROOT / 'dot.bc'), '-o', str(ROOT / 'dot.spt')]
         for name in ('tmp', 'cache'): (ROOT / name).mkdir()
         (ROOT / 'source.cpp').write_bytes((P / SOURCE).read_bytes())
         row.update(stage='prepared', compiler_version=subprocess.check_output(
@@ -250,10 +256,12 @@ def header_evidence(row):
 
 
 def ir_evidence(text):
-    models = re.findall(r'^\s*OpMemoryModel\s+(\S+)\s+(\S+)\s*$', text, re.MULTILINE)
-    require(models == [('Physical64', 'OpenCL')], 'emitted SPIR-V memory model differs')
-    entries = re.findall(r'^\s*OpEntryPoint\s+Kernel\s+(%\S+)\s+"([^"]+)"', text, re.MULTILINE)
-    bodies = re.findall(r'^\s*(%\S+)\s*=\s*OpFunction\s', text, re.MULTILINE)
+    headers = re.findall(r'^\s*119734787\s+(\d+)\s+(\d+)\s+(\d+)\s+0\s*$', text, re.MULTILINE)
+    require(len(headers) == 1, 'SPIR-V internal text header missing')
+    models = re.findall(r'^\s*3\s+MemoryModel\s+(\d+)\s+(\d+)\s*$', text, re.MULTILINE)
+    require(models == [('2', '2')], 'emitted Physical64/OpenCL memory model differs')
+    entries = re.findall(r'^\s*\d+\s+EntryPoint\s+6\s+(\d+)\s+"([^"]+)"', text, re.MULTILINE)
+    bodies = re.findall(r'^\s*5\s+Function\s+\d+\s+(\d+)\s', text, re.MULTILINE)
     require(len(entries) == 4 and len({symbol for symbol, _ in entries}) == 4
         and all(bodies.count(symbol) == 1 for symbol, _ in entries),
         'kernel entrypoints must bind distinct SPIR-V function bodies')
@@ -262,7 +270,8 @@ def ir_evidence(text):
     require(all(len(v) == 2 and any('ILb0E' in n for n in v)
         and any('ILb1E' in n for n in v) for v in families.values()),
         'two distinct SPIR-V kernel definitions per family required')
-    return dict(memory_model=list(models[0]), kernel_definitions=families)
+    return dict(format='LLVM-SPIRV-Translator internal text', memory_model=['Physical64', 'OpenCL'],
+        memory_model_operands=[2, 2], kernel_definitions=families)
 
 
 def host():
@@ -293,14 +302,15 @@ def host():
     changed = json.loads(json.dumps(cohort)); changed['processes'][0]['synthetic_extra'] = True
     require(check_boundary(changed) != boundary, 'cohort signature missed changed evidence')
     names = [f'{kind}ILb{arm}E' for kind in ('Q6DotExpression', 'Q6CenterExpression') for arm in (0, 1)]
-    text = 'OpMemoryModel Physical64 OpenCL\n' + '\n'.join(
-        f'OpEntryPoint Kernel %{name} "{name}"\n%{name} = OpFunction %void None %type\nOpFunctionEnd'
-        for name in names)
+    text = '119734787 65536 393230 100 0\n3 MemoryModel 2 2\n' + '\n'.join(
+        f'9 EntryPoint 6 {index} "{name}"\n5 Function 9 {index} 0 10\n1 FunctionEnd'
+        for index, name in enumerate(names, 1))
     ir_evidence(text)
-    for bad in (text.replace('Physical64', 'Physical32'),
-                text.split('\n', 1)[1], 'OpMemoryModel Physical64 OpenCL\n' + text,
-                text.replace('OpEntryPoint Kernel', 'OpEntryPoint GLCompute'),
-                text.replace(f'%{names[0]} = OpFunction', '%missing = OpFunction'),
+    for bad in (text.replace('MemoryModel 2 2', 'MemoryModel 1 2'),
+                text.replace('3 MemoryModel 2 2\n', ''), '3 MemoryModel 2 2\n' + text,
+                text.replace('EntryPoint 6', 'EntryPoint 5'),
+                text.replace('5 Function 9 1 0', '5 Function 9 99 0'),
+                text.replace('119734787', '0'),
                 text.replace('ILb1E', 'ILb0E')):
         reject(ir_evidence, bad)
     require(not ROOT.exists() and KEY not in committed(RESULT), 'host checks created compiler artifacts')
@@ -314,7 +324,7 @@ def compile_once():
     row = current()
     receipt = ROOT / 'execution.json'
     require(not receipt.exists() and not (ROOT / 'dot.bc').exists()
-        and not (ROOT / 'dot.spvasm').exists(), 'existing compiler operation')
+        and not (ROOT / 'dot.spt').exists(), 'existing compiler operation')
     outcome, job = dict(complete=False, passed=False, native_started=False), None
     def persist():
         receipt.write_text(json.dumps(dict(outcome, active=bool(job and job.active),
@@ -330,8 +340,8 @@ def compile_once():
         entry, stdout, stderr = job.run('translate', row['translate_command'], row['environment'], P,
             **row['budgets'])
         require(owner.closed(entry) and entry['exit_code'] == 0, 'owned SPIR-V translation failed')
-        text = (ROOT / 'dot.spvasm').read_text()
-        outcome.update(IR=dict(sha256=sha(ROOT / 'dot.spvasm'), bytes=(ROOT / 'dot.spvasm').stat().st_size,
+        text = (ROOT / 'dot.spt').read_text()
+        outcome.update(IR=dict(sha256=sha(ROOT / 'dot.spt'), bytes=(ROOT / 'dot.spt').stat().st_size,
             bitcode_sha256=sha(ROOT / 'dot.bc'),
             **ir_evidence(text)), headers=header_evidence(row))
         current()

@@ -296,15 +296,16 @@ The V1 host check passes11 source pins,all ten production settings,16 invalid
 boundary/IR rejection controls and changed-cohort detection. Earlier controls
 at `d6361f580` retain their original all-six refusal outcome in Git.
 
-The prospective V2 [offline controller](../tools/sycl/q6_dot_codegen.py) retains
+The prospective V3 [offline controller](../tools/sycl/q6_dot_codegen.py) retains
 the exact two expression treatments and installed compiler image. It emits
 binary LLVM with `-fsycl-device-only -c -emit-llvm`,without the rejected `-S`,
-then invokes that SDK's `llvm-spirv --spirv-text --spirv-tools-dis`.
+then invokes that SDK's supported `llvm-spirv --spirv-text` internal text mode.
 Intel's [compiler guidance](https://community.intel.com/t5/Intel-oneAPI-DPC-C-Compiler/cant-generate-LLVM-IR-using-dpcpp/m-p/1372376/highlight/true?profile.language=fr)
 distinguishes binary IR from textual emission;this is a prospective installed-
 version check,not a claim that the older guidance qualifies2026.2.
 Check bitcode magic and actual header inputs,then require the emitted SPIR-V
-Physical64/OpenCL memory model and four kernel entrypoints bound to bodies.
+Physical64/OpenCL memory-model operands2/2 and four kernel entrypoints bound to
+bodies,plus the internal SPIR-V header magic.
 The [translator representation](https://github.com/KhronosGroup/SPIRV-LLVM-Translator/blob/main/docs/SPIRVRepresentationInLLVM.rst)
 relates `spir64` to Physical64 and kernel calling conventions to entrypoints.
 This checks the emitted portable module;it does not establish native B570
@@ -324,13 +325,14 @@ RSS,256KiB text and8MiB per-file caps;the whole root,including manifests,is32MiB
 The supervisor's CPU/file limits are per-process and RSS/disk checks are sampled.
 At source `2977bf6d6d00854d46052b4f22870fc686e6a059`,V2's host check passes
 11 source pins,the actual four-process boundary,all ten production settings,
-16 invalid-evidence rejections and changed-cohort detection. V2 is prepared
+16 invalid-evidence rejections and changed-cohort detection. V2 was prepared
 with the same installed compiler image as V1. Its compiler stage closes normally
 with exit0 and6552bytes of LLVM bitcode,including the centering static assertions.
 The next operation exits255 because this SDK was built without
 `--spirv-tools-dis` support. V2 remains failed;no instruction comparison or
-device execution is qualified. A prospective plan must use the translator's
-supported internal text format while preserving this failure.
+device execution is qualified. V3 selects the supported internal text format
+while preserving both failed attempts. V3 host checks,preparation and compilation
+have not yet run.
 Compare both instruction pairs independently. Equal SPIR-V lowering ends that
 expression proposal;a difference only motivates a separately committed whole-
 Q6 discriminator. Retire generated artifacts and the fixture when this finite
