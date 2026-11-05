@@ -3,7 +3,9 @@
 
 Build only the component target from a committed private source snapshot. Keep
 the production entry, all four proposals and both actual source placements.
-This is component evidence, never model speed or physical-memory traffic.
+Timing retains UR parameter validation and its preload in every variant. This
+is an instrumented component screen, never clean speed, model speed or
+physical-memory traffic.
 """
 import fcntl
 import hashlib
@@ -146,7 +148,7 @@ def prepare():
         '-DSTRATA_NATIVE_EXPERTS=OFF', '-DSTRATA_BUILD_TESTS=OFF', '-DSTRATA_SYCL_TESTS=OFF',
         '-DSTRATA_BUILD_PREFILL_HOST_TESTS=OFF', '-DSTRATA_SYCL_VLLM_XE2_NATIVE16=OFF',
         '-DSTRATA_WERROR=ON', '-DCMAKE_CXX_FLAGS=-Wno-error=deprecated-declarations']
-    row = dict(stage='prepared', source_commit=revision, sources=sources, helpers=helpers,
+    row = dict(stage='preparing', source_commit=revision, sources=sources, helpers=helpers,
         dependency_roots=dependencies, dependency_pins=dependency_inputs,
         tools=tools, tool_versions=versions, system_packages=packages(), runtime_pins=runtime,
         runtime_basis=dict(evidence_commit=revision, key='decode_iq3_generation_speed_v1',
@@ -163,19 +165,36 @@ def prepare():
             warmup_batches=2, minimum_batch_ns=10000000, minimum_timer_multiple=300,
             sample_fields_ns=FIELDS,
             acceptance='Normal0,all bit/guard checks,actual Intel B570,live native ownership/environment/provider check,pre-main parameter validation,unchanged source/runtime/boot,no fresh fault. All600timed samples must meet timing,order and conservation gates. Compare each cell independently:eligible only when all3candidate/reference median wall ratios<1;no percentage floor.',
-            limits='Whole dependent-batch host wall/thread-CPU only;submission overlaps device work and wait CPU may poll.No kernel-service,physical traffic,model gain or adoption claim.'),
+            limits='UR parameter-validation/preload-instrumented component screen,not clean speed.Whole dependent-batch host wall/thread-CPU only;submission overlaps device work and wait CPU may poll.No kernel-service,physical traffic,model gain or adoption claim.'),
         retention='Keep source/recipe,compact individual samples and decisions.Retire successful logs/traces and component build after its named comparison/implementation consumer ends;no new inference engine.',
         results=[], timing=[], active=False, ownership_closed=True, passed=False, complete=False,
-        GPU_executed=False, model_executed=False)
+        GPU_executed=False, model_executed=False,
+        materialization=dict(complete=False, completed_source_files=0))
     ROOT.mkdir(mode=0o700)
-    for name in ('source', 'tmp', 'cache'): (ROOT / name).mkdir()
-    with tarfile.open(fileobj=io.BytesIO(archive)) as source:
-        for item in source.getmembers():
-            if item.isdir(): continue
-            path = ROOT / 'source' / item.name
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(source.extractfile(item).read()); path.chmod(item.mode & 0o777)
-    save(row)
+    try:
+        # Persist intent before extraction. A partial tree is a failed attempt,
+        # never a fresh root to repair or retry by refreshing its input hashes.
+        save(row)
+        for name in ('source', 'tmp', 'cache'): (ROOT / name).mkdir()
+        with tarfile.open(fileobj=io.BytesIO(archive)) as source:
+            for item in source.getmembers():
+                if item.isdir(): continue
+                path = ROOT / 'source' / item.name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(source.extractfile(item).read()); path.chmod(item.mode & 0o777)
+                row['materialization']['completed_source_files'] += 1
+        row['materialization']['complete'] = True
+        row['stage'] = 'prepared'
+        save(row)
+    except BaseException as error:
+        row.update(stage='failed', passed=False, complete=False, preparation_error=repr(error))
+        try:
+            save(row)
+        except BaseException as persist_error:
+            raise RuntimeError('Preparation failed and its receipt could not be saved; '
+                               'preserve the partial component root. Original error: ' +
+                               repr(error)) from persist_error
+        raise
     print('Prepared committed-source copy component;commit its exact plan before build.', flush=True)
 
 

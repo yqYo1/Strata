@@ -198,11 +198,17 @@ banks and two hit ratios. Submission and checked-wait regions each retain wall
 and thread CPU time;their sums conserve each batch's total. A wait's thread CPU
 time is not host tensor arithmetic,and submission can overlap device execution.
 The fixture does not measure physical traffic or kernel service.
+Its planned timing retains UR parameter validation and the validation preload
+in all variants. Treat it as an instrumented component screen,not clean speed;
+any later clean comparison needs a separate committed plan and fresh processes.
 Neither the modified prototype nor fixture has been compiled or run. The
 `tools/sycl/mapped_row_copy_component.py` controller prepares a private Git
 source snapshot and pins the compiler,headers,system packages and runtime files.
-It refuses preparation while the IQ3 cohort is open. After that cohort closes,
-prepare and commit its exact plan,then build,run the small traced check and full
+It refuses preparation while the IQ3 cohort is open. It records preparation
+intent before extracting sources,and preserves a failed
+attempt if materialization fails. An unwritable receipt remains an explicit
+failure requiring preservation of the partial root;it cannot authorize retry.
+After the cohort closes,prepare and commit its exact plan,then build,run the small traced check and full
 check,and collect timing processes0/1/2,committing each closed stage before the
 next. The fixture retains its runtime through a final live-owner/environment/
 provider check outside timing. A component win remains separate from a
@@ -221,6 +227,23 @@ The existing production copy and measured engine remain unchanged.
 Every lane reaches the two-dimensional group broadcast with the same valid
 source ID before the hit-dependent branch,following the
 [Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
+
+The next device-service diagnostic must target the current `9922 / b310`
+generation. The old `479a / 552b` active collector control does not qualify it,
+even though the same-build submission fixture bytes match. First close a fresh
+active-from-exec control with the current native/fixture/provider identities
+and the original small control budgets. Then use one warmup and one 32769-input,
+thinking-on diagnostic request,with exact IQ3 footer IDs1/2 and the chosen
+immutable selector. Use the matching arm's closed model-entry request body and
+prompt time for the observer-cost comparison. Its qualified environment has
+`STRATA_CPU_WORK_CENSUS=0` and `STRATA_DECODE_TIMING=0`;the latter still enables
+decode timing because the native code checks variable presence. It differs
+from the current long comparison,which removes that variable. Remove the old
+profiler's mandatory CPU-census extraction rather than enabling an unrelated
+observer. The disjoint-clock header is not compiled into b310. Interior client
+clock guards,active collection through normal exit and the 1.5 observer-time
+ratio remain required. This short diagnostic can select a new resource
+question;it cannot establish physical traffic,saturation or sustained TG.
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved
