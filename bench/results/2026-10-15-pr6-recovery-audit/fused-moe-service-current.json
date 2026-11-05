@@ -160844,5 +160844,26 @@
       "source_inputs_recovered": 8,
       "actual_dependencies_checked": 87
     }
+  },
+  "decode_service_overhead_v1": {
+    "stage": "preparation_failed",
+    "source_commit": "854dfceb91c86fb6b6d5c6ad87cd8cf3a804e0c9",
+    "command": [
+      "python3",
+      "-B",
+      "bench/sycl/decode_service_overhead.py",
+      "prepare"
+    ],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "model_executed": false,
+    "GPU_executed": false,
+    "output_root_created": false,
+    "error": "The Python control-import resolver received decode_service_profile.hpp and raised SyntaxError: invalid decimal literal while parsing a C++ ULL literal.",
+    "scope": "Admission failed in pinned_sources before creation of an output root,cohort model-asset hashing,frontend probes or any native execution. The owning controller exited1;no measurement sample exists.",
+    "correction": "V2 pins native/header/clock bytes directly to committed Git blobs;only Python controllers use the import resolver. Preserve this failed preparation. New source and plan required before V2 execution.",
+    "next_result_key": "decode_service_overhead_v2"
   }
 }

@@ -17,7 +17,7 @@ import decode_service_model_entry as short
 import cpu_service_overhead as leaf
 
 B, RESULT, base = short.B, short.RESULT, short.base
-ROOT, KEY = B / 'decode-service-overhead-v1', 'decode_service_overhead_v1'
+ROOT, KEY = B / 'decode-service-overhead-v2', 'decode_service_overhead_v2'
 SELF = Path(__file__).resolve()
 ARMS, WORKLOADS = leaf.ARMS, leaf.WORKLOADS
 require, digest = short.require, short.digest
@@ -29,8 +29,13 @@ CLOCK_SOURCES = ('include/strata/sycl/decode_service_profile.hpp',
 
 def pinned_sources(revision):
     pins = short.pinned_sources(revision)
-    for path in (SELF, *(P / n for n in CLOCK_SOURCES)):
-        pins.update(base.controls(revision, controller=path))
+    pins.update(base.controls(revision, controller=SELF))
+    # The control resolver parses Python imports; native/header bytes instead
+    # bind directly to their committed Git blobs and unchanged working files.
+    for name, raw in leaf.protocol.shared.gen.blobs(P, revision, CLOCK_SOURCES):
+        sha = hashlib.sha256(raw).hexdigest()
+        require(digest(P / name) == sha, 'clock input differs from its committed blob: ' + name)
+        pins[name] = sha
     return pins
 
 
