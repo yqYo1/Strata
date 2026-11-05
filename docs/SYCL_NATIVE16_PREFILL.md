@@ -408,8 +408,17 @@ The native half representation and supported-device requirement follow the
 and [scalar-type reference](https://github.khronos.org/SYCL_Reference/iface/scalar-types.html);
 fp16 availability alone does not establish preservation of subnormals.
 
-After the six-process centering comparison closes,commit the standalone
-controller/generated-input/recipe pins before building this fixture. Reuse the
+The standalone [controller](../bench/sycl/f16_widen_clz_device.py) is now authored,
+but has not been executed. Its `prepare`, `build` and `check` actions require the
+six-process centering comparison to close first,and each next action requires
+the previous plan/result to be committed. This fixture/controller lives outside
+the active model benchmark's314inputs and does not change its caller or helpers.
+It preserves per-arm semantic failures,checks both byte offsets and mismatch
+conservation,and uses the already qualified traced negative-validation probe.
+Separate runtime/fixture compilations and linking record actual MD/host-link
+inputs. Live ownership uses a bounded separate receipt,without rewriting the
+whole cumulative result on every poll. Its parser controls also remain unrun.
+Commit the generated-input/recipe pins before building this fixture. Reuse the
 qualified92832source `src/sycl/runtime.cpp` and its headers,then the new helper
 and fixture;this needs no third inference engine. The intended compiler is the
 qualified icpx2026.2/GCC13 image,with `-std=c++20 -O3 -fsycl
@@ -417,7 +426,7 @@ qualified icpx2026.2/GCC13 image,with `-std=c++20 -O3 -fsycl
 -fno-fast-math -ffp-contract=off -Wall -Wextra -Werror`. These conservative
 semantic flags do not qualify the later fused production build's lowering.
 Use the exact B570/LevelZero/in-order runtime and immutable qualified safety
-environment,with tracing/validation and finite180s build/60s device budgets,
+environment,with tracing/validation and180s per compiler child/60s device budgets,
 64MiB raw output per job. Freeze actual toolchain/provider/dependency identities
 and source-to-executable admission in that controller before execution.
 Inspect the same artifact's device lowering after the semantic result;commit
