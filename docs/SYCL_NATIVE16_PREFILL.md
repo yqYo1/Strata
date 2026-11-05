@@ -689,7 +689,7 @@ to the containing region. Draft/commit and other uncovered work stay explicitly
 unclassified. One integer-nanosecond record per request replaces per-call logs.
 The host-only `decode_service_profile_test.cpp` checks exact conservation,
 nested waits, invalid nesting/clocks, exceptions and disabled observation.
-The host-only fixture now compiles with GCC13.3/O2 and passes all seven cases,
+The original schema1 host-only fixture compiles with GCC13.3/O2 and passes all seven cases,
 with normal exits, quiet stderr and closed owners;168 actual dependency files
 are fingerprinted. See `decode_service_host_contract_v1`. This does not compile
 or qualify the diagnostic engine. The separate Main-authored
@@ -697,9 +697,16 @@ or qualify the diagnostic engine. The separate Main-authored
 prospective host cases through the actual `cpu_wait_profile::blocking` function:
 nested suppression with both ledgers,exception propagation,disabled decode
 observation with the legacy ledger still active,both disabled,and an
-unclassified native wait. It is unbuilt and unexecuted;its consumer is the
-post-cohort diagnostic host gate,which must also check actual dependencies.
-Retire its executable after that decision. The post-centering review confirms that the
+unclassified native wait. The maintained
+[`decode_service_contract.py`](../tools/sycl/decode_service_contract.py) now
+prepares V2 for the current schema2 ledger and actual bridge:compile/run the
+seven ledger cases,then compile/run the five bridge cases in four sequential
+owned children. Each compilation has a60s/1GiB budget,each fixture15s/128MiB,
+with quiet stderr,exact footers,pinned source/compiler/package identities and
+actual repository dependencies checked before execution. Stop on first failure;
+V2 is unexecuted. The original V1 result stays unchanged. Both one-use binaries
+retire after the compact result is committed;the diagnostic host gate consumes
+their source/recipe and results. The post-centering review confirms that the
 92832/a1b0 projection lacks both this profile call and header;an environment
 flag cannot enable it. After the frozen Q6 cohort closes,explicitly add the
 profile to that source projection and qualify a diagnostic build. The prospective
