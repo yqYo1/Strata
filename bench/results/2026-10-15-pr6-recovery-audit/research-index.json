@@ -24497,70 +24497,9 @@
   },
   "q6_centering_whole_kernel_contract_20261105": {
     "classification": "decision support",
-    "stage": "reviewed",
+    "stage": "consumed",
     "schedulable_now": false,
     "source_revision": "eb97d6b0884fb5fc5739e7d66553fe0fcecc6495",
-    "question": "Inspect the exact complete Q6 centering integration boundary and validation design:where can packed unsigned add/XOR replace only subtract32 after proven six-bit reconstruction,without changing other formats,dot/scales/reduction order,byte-safe loads,or prefill/decode phase ownership? Compare a Q6-only template/helper/entrypoint seam,identify concrete UB/lifetime and fallback risks,and propose a bounded bitwise and representative full-kernel timing discriminator. This is source-only design support;do not implement.",
-    "prerequisite_evidence": {
-      "CPU_codegen_closed_and_qualified": true,
-      "evidence_key": "q6_expression_codegen_v4",
-      "model_processes_closed": 4,
-      "source_only_scope_requires_no_new_GPU_admission": true,
-      "installed_ocloc_present": true
-    },
-    "previous_scopes": [
-      "q6_byte_span_source_audit_20261104",
-      "q6_packed_integer_dot_lowering_20261104",
-      "q6_typed_payload_contract_20261104"
-    ],
-    "report_path": ".cache/research/2026-11-05/q6-centering-whole-kernel-contract/report.md",
-    "report_budget_bytes": 8192,
-    "whole_folder_budget_bytes": 98304,
-    "worker_model": "gpt-6-luna",
-    "worker_effort": "high",
-    "review_model": "gpt-6-luna/max/native",
-    "consumer": "Main complete-Q6 centering implementation;design seam implemented in the isolated perf/q6-centering child,not built or qualified.",
-    "main_reads_body_on_arrival": false,
-    "review_point": "After same-geometry full-kernel implementation review;all-six-process closure still precedes component execution.",
-    "run": "run_d43ee98385d1",
-    "task": "task_1ae9832dd802",
-    "dispatch": "ctx_59bf1d2f3b7c",
-    "terminal": "term_3647026a-2616-4145-878b-6db0a5262c6f",
-    "process_incarnation": "a4ce0d8a-aa13-423c-b165-d453ff4cf077",
-    "launch": {
-      "rendered_model": "GPT-6-Luna high fast",
-      "prompt_stages": [
-        "input_accepted",
-        "turn_started"
-      ],
-      "exact_report_workspace": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/q6-centering-whole-kernel-contract",
-      "network_IPC_enabled": true
-    },
-    "startup": {
-      "message": "msg_36b7066d6747",
-      "worker_own_Orca_ready_reachable": true,
-      "report_directory_writable": true
-    },
-    "ownership_closed": true,
-    "outcome": "succeeded",
-    "report": {
-      "path": ".cache/research/2026-11-05/q6-centering-whole-kernel-contract/report.md",
-      "sha256": "d75007cc48ecb8536fe54579a96b73b5f621412f6b797699e1fd9b81e65f4497",
-      "bytes": 7723
-    },
-    "review": {
-      "path": ".cache/research/2026-11-05/q6-centering-whole-kernel-contract/review.json",
-      "sha256": "eee065415e70045224ab31755eef16d363ba88170cdc070edcc9a8ee17b96ff8",
-      "bytes": 7312,
-      "model": "gpt-6-luna/max/native",
-      "source_pins_verified": 8
-    },
-    "closure": {
-      "status": "exited",
-      "exact_worker": true,
-      "completion_delivery_acknowledged": true
-    },
-    "retention": "Keep report,inputs and review only while the named retrieval/implementation consumer remains;retire completed lifecycle transports at the next serialized cleanup boundary.",
     "operational_digest": "Unsigned add/XOR is valid only after Q6 six-bit reconstruction. Use same-geometry compile-time arms;preserve byte-safe loads,dot/scales,reductions,fallback and decode ownership. No build,device or speed qualification.",
     "implementation_followup": {
       "source_commit": "f7a96d864b53aefd3d8db66b5bfe29959261be68",
@@ -24608,9 +24547,24 @@
         "passed_tests": 18,
         "GPU_executed": false
       },
-      "retention": "Retire consumed report/lifecycle files after host verification,keeping compact source/finding/provenance and manifest references here;no permanent audit-report archive.",
+      "retention": "Consumed report/lifecycle files are deleted;source/findings/hashes and deletion manifest retained here.",
       "implementation_merged_into_feature_sycl": true
-    }
+    },
+    "retirement": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-audit-closed-and-q6-research-retirement-20261105.json",
+      "manifest_sha256": "0da32d590c0f8b6c7671e8a9b08bb1810bcf701c407e085a54d9a7a6d76dac99",
+      "verified_deleted": true,
+      "files": 224,
+      "bytes": 25360532,
+      "source_recovery": {
+        "commit": "011fa1cb932c137b7ef2a84963ca1b4bb1182668",
+        "files": 307,
+        "all_hashes_matched": true
+      },
+      "retained": "Global record.json and84-provider runtime-inputs.json remain for committed closed-cohort provenance and the imminent Q6/FP64 controllers;per-process admission files and host logs are retired."
+    },
+    "ownership_closed": true,
+    "consumer": "Implemented and merged into feature/sycl;host controls pass18. Use maintained source and current component evidence rather than retired audit reports."
   },
   "b570_offline_scalar_isa_methods_20261105": {
     "classification": "knowledge collection",
@@ -24639,25 +24593,6 @@
     "consumer": "Later Main interpretation of the complete-Q6 centering screen if native optimization erases the portable difference;retrieval only,not immediate implementation.",
     "main_reads_body_on_arrival": false,
     "review_point": "Retrieve only for a concrete native-ISA question after the complete-Q6 screen;command aliases and installed ocloc behavior require a new pinned check.",
-    "run": "run_d43ee98385d1",
-    "task": "task_e9870c5aa320",
-    "dispatch": "ctx_c0f2f7169128",
-    "terminal": "term_fa7ddf61-8e9d-4c55-9550-cf5e1cf434fb",
-    "process_incarnation": "d0c08389-f81c-4515-9ab8-8be3e56372c3",
-    "launch": {
-      "rendered_model": "GPT-6-Luna high fast",
-      "prompt_stages": [
-        "input_accepted",
-        "turn_started"
-      ],
-      "exact_report_workspace": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/b570-offline-isa-methods",
-      "network_IPC_enabled": true
-    },
-    "startup": {
-      "message": "msg_2f56ff148ca9",
-      "worker_own_Orca_ready_reachable": true,
-      "report_directory_writable": true
-    },
     "ownership_closed": true,
     "outcome": "succeeded",
     "report": {
@@ -24672,12 +24607,7 @@
       "model": "gpt-6-luna/max/native",
       "source_pins_verified": 8
     },
-    "closure": {
-      "status": "exited",
-      "exact_worker": true,
-      "completion_delivery_acknowledged": true
-    },
-    "retention": "Keep report,inputs and review only while the named retrieval/implementation consumer remains;retire completed lifecycle transports at the next serialized cleanup boundary.",
+    "retention": "Report,inputs and native review retained for the named later ISA retrieval;completed lifecycle files are deleted by /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-audit-closed-and-q6-research-retirement-20261105.json",
     "operational_digest": "Retain as a conditional retrieval reference. Target aliases and installed ocloc/SPIR-V commands remain version-specific and unverified locally. No native result or execution eligibility;Main did not read the collection body."
   }
 }
