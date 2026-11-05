@@ -369,8 +369,9 @@ six fresh processes in centering0/1/1/0/0/1 order,with four official warmups and
 thinking-on code/prose requests per process. Both actual MTP regimes need three
 paired TG gains;keep every sample and judge PP/TTFT independently. All15model
 assets pass fresh hashes,and fresh benchmark/server frontend probes pass.
-Sustained model execution remains pending;this preparation does not update the
-clean speed reference.
+The first reference process now closes with two eligible long requests,native
+exit0,quiet validation,closed ownership and no fresh fault. Five processes and
+all paired decisions remain pending;the clean speed reference is unchanged.
 
 The next bounded conversion candidate is the independently authored
 [`q6_f16_widen_clz.hpp`](../include/strata/kernels/q6_f16_widen_clz.hpp).
