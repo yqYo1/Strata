@@ -832,7 +832,11 @@ clock/source/provider evidence. Each paired per-output latency ratio must be
 at most1.05 with matching logical work and observed strong/weak MTP classes;
 changed work remains inconclusive without discarding samples. Keep compact
 caller regions/nested waits and worker operation totals,not full leaf histograms.
-The controller alone is not preparation,execution or an overhead result.
+V3 preparation now passes at controller0b950da2e:all15 model assets and326
+source inputs are pinned,and all six generated arms have one invariant
+configuration/runtime signature. V1/V2 failed during preparation before any
+native execution;their original failures remain recorded. Frontend probes and
+all long-generation processes remain pending;preparation is not an overhead result.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The six closed CPU-service processes also agree exactly on logical work volume
