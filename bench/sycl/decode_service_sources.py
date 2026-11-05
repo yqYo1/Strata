@@ -29,23 +29,53 @@ ADDED = ('include/strata/sycl/decode_service_profile.hpp',
 CHANGED = (*EXISTING, *ADDED)
 
 
-def cohort():
-    data = previous.base.committed(previous.original.RESULT)
-    row = data['q6_centering_generation_speed_v1']
-    require(row['stage'] == 'closed' and row['complete'] and row['passed']
-            and row['ownership_closed'] and not row['active']
+def validate_cohort(row):
+    require(row['stage'] == 'closed' and row['complete'] is True and row['passed'] is True
+            and row['ownership_closed'] is True and row['active'] is False
+            and type(row['processes']) is list
             and len(row['processes']) == 6
             and [p['index'] for p in row['processes']] == list(range(6))
             and row['binary']['sha256'] == ENGINE
             and row['native_source_commit'] == NATIVE
-            and all(p['complete'] and p['passed'] and p['ownership_closed']
-                and p['native_exit_code'] == 0 and not p['fresh_faults']
-                and p['boot_unchanged'] and p['centering_route']['passed']
+            and all(type(p['index']) is int and p['complete'] is True
+                and p['passed'] is True and p['ownership_closed'] is True
+                and type(p['native_exit_code']) is int and p['native_exit_code'] == 0
+                and p['fresh_faults'] == [] and p['boot_unchanged'] is True
+                and p['centering_route']['passed'] is True
                 for p in row['processes'])
             and type(row.get('decision', {}).get('centering_model_TG_gain_qualified')) is bool,
             'close and adjudicate the original six processes before this projection')
     # Execution success and the original performance decision remain distinct.
     return row
+
+
+def cohort():
+    data = previous.base.committed(previous.original.RESULT)
+    return validate_cohort(data['q6_centering_generation_speed_v1'])
+
+
+def cohort_controls(row):
+    validate_cohort(row)
+    # Real closed receipt, deliberately corrupted in ways truthiness accepted.
+    bad = [(('passed',), 'false'), (('complete',), 1),
+           (('ownership_closed',), 'false'), (('active',), 0)]
+    bad += [(('processes', 0, key), value) for key, value in
+            (('index', False), ('native_exit_code', False), ('fresh_faults', {}),
+             ('boot_unchanged', 1), ('passed', 1), ('complete', 'false'),
+             ('ownership_closed', 1))]
+    bad.append((('processes', 0, 'centering_route', 'passed'), 'false'))
+    for path, value in bad:
+        candidate = copy.deepcopy(row)
+        parent = candidate
+        for key in path[:-1]:
+            parent = parent[key]
+        parent[path[-1]] = value
+        try:
+            validate_cohort(candidate)
+        except RuntimeError:
+            continue
+        raise RuntimeError('non-boolean/mistyped cohort receipt accepted')
+    return dict(passed=True, valid=1, invalid_rejected=len(bad), GPU_executed=False)
 
 
 def projection():
@@ -110,10 +140,12 @@ def recipe(native, root=ROOT):
 
 
 if __name__ == '__main__':
+    controls = cohort_controls(cohort())
     native, values = projection()
     print(json.dumps(dict(native_source=NATIVE, native_engine_sha256=ENGINE,
         next_root=str(ROOT),
         observer_delta=PATCH, files=len(values), changed=list(CHANGED),
+        cohort_controls=controls,
         aggregate_sha256=previous.signature(previous.pins(values)),
         reversible_to_native=True, build_executed=False, GPU_executed=False,
         model_executed=False, hardware_bottleneck_qualified=False)))

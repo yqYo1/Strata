@@ -369,13 +369,14 @@ six fresh processes in centering0/1/1/0/0/1 order,with four official warmups and
 thinking-on code/prose requests per process. Both actual MTP regimes need three
 paired TG gains;keep every sample and judge PP/TTFT independently. All15model
 assets pass fresh hashes,and fresh benchmark/server frontend probes pass.
-Four of six processes now close with eight eligible long requests,native exit0,
+Five of six processes now close with ten eligible long requests,native exit0,
 quiet validation,closed ownership and no fresh fault. The first pair's exact TG is
 13.3656/13.4934 code and8.7974/8.7231 prose (reference/candidate),giving ratios
 1.009562/0.991553. The first pair favors different arms by workload;it does not
 qualify a model gain. The second pair's reference/candidate TG is13.2501/13.4171
 code and8.6776/8.7840 prose,with candidate/reference ratios1.012607/1.012267.
-Keep both pairs and the final two processes under the original plan;the first
+The final reference records13.3054/8.7744 tok/s code/prose and awaits its
+candidate. Keep both pairs and the last process under the original plan;the first
 prose ratio remains below one. Individual PP/TTFT samples stay independent in
 the linked result,and the clean speed reference is unchanged.
 
@@ -683,7 +684,16 @@ recovers the564native inputs and applies only the pinned96b9 observer delta:
 generator,Verifier and native-wait bridge,plus the header and host fixture.
 It requires all other bytes and the complete reverse projection to remain
 unchanged,and selects the original cohort's qualified arm. It has not been
-executed;no new source image,build or attribution is qualified yet. Compare
+executed;no new source image,build or attribution is qualified yet. The source
+audit's native review requires strict boolean/status types;the constructor now
+adds12corrupt-receipt controls,also unrun until cohort closure. Keep the Orca
+attempt failed:its own inbox/completion calls used a mistyped terminal handle;
+Main verified its final turn,abandoned the attempt and closed that exact external
+terminal. The technical review remains a source inspection. Its `head_sampling`
+region covers only the wait after `sample_tokens`,so its name/explanation needs
+correction after cohort closure;do not interpret `sample` as full sampling work.
+Enabling CPU observers is a pending model-controller contract,not a build-recipe
+defect. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf
 service/census enabled in both,checking clock resolution/read overhead,depths,
 wall/CPU conservation,nested waits and observer effects. Keep clean speed
