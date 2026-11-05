@@ -364,21 +364,21 @@ calls;centering1 selects68/46 respectively. Their matched request bodies and
 positive IQ3 request2/3 footers preserve eligible/selected row equality.
 Both native exits are0,ownership closes,validation is quiet and no fresh fault
 appears. These diagnostic samples are not clean speed,sustained decode or
-all18model-shape evidence. The clean long-generation controller is now prepared:
+all18model-shape evidence. The clean long-generation comparison is now closed:
 six fresh processes in centering0/1/1/0/0/1 order,with four official warmups and
 thinking-on code/prose requests per process. Both actual MTP regimes need three
 paired TG gains;keep every sample and judge PP/TTFT independently. All15model
 assets pass fresh hashes,and fresh benchmark/server frontend probes pass.
-Five of six processes now close with ten eligible long requests,native exit0,
-quiet validation,closed ownership and no fresh fault. The first pair's exact TG is
-13.3656/13.4934 code and8.7974/8.7231 prose (reference/candidate),giving ratios
-1.009562/0.991553. The first pair favors different arms by workload;it does not
-qualify a model gain. The second pair's reference/candidate TG is13.2501/13.4171
-code and8.6776/8.7840 prose,with candidate/reference ratios1.012607/1.012267.
-The final reference records13.3054/8.7744 tok/s code/prose and awaits its
-candidate. Keep both pairs and the last process under the original plan;the first
-prose ratio remains below one. Individual PP/TTFT samples stay independent in
-the linked result,and the clean speed reference is unchanged.
+All six processes close with twelve eligible long requests,native exit0,
+quiet validation,closed ownership,no fresh fault and all15final model hashes.
+Reference/candidate median TG is13.3054/13.4934 for code and8.7744/8.7840
+for prose. Code's three paired TG ratios exceed one,with geometric mean1.012237;
+prose's ratios are0.991553/1.012267/1.004646. The original first prose failure
+keeps the whole centering performance gate false;no centering adoption follows.
+The next diagnostic therefore selects centering0. Preserve all independent
+PP/TTFT samples and MTP classes. Evidence commit
+`327c34aab1af2d116df5e8455aa74541acf7dd34` and the two CSV rows hold the
+closed comparison;the clean speed reference is unchanged.
 
 The next bounded conversion candidate is the independently authored
 [`q6_f16_widen_clz.hpp`](../include/strata/kernels/q6_f16_widen_clz.hpp).
@@ -411,11 +411,17 @@ The native half representation and supported-device requirement follow the
 and [scalar-type reference](https://github.khronos.org/SYCL_Reference/iface/scalar-types.html);
 fp16 availability alone does not establish preservation of subnormals.
 
-The standalone [controller](../bench/sycl/f16_widen_clz_device.py) is now authored,
-but has not been executed. Its `prepare`, `build` and `check` actions require the
-six-process centering comparison to close first,and each next action requires
-the previous plan/result to be committed. This fixture/controller lives outside
-the active model benchmark's314inputs and does not change its caller or helpers.
+The standalone [controller](../bench/sycl/f16_widen_clz_device.py) V1 preparation
+failed before publishing a plan or creating its root. Its call to the legacy
+preload qualifier selects an old Xe-SDK/driver inventory,including four changed
+or absent system/GPU libraries. All84provider files of the current qualified
+model match;this is a controller admission mismatch,not a new GPU fault or a
+change during the closed comparison. No compiler or GPU process ran. Preserve
+`q6_f16_widen_device_v1` as failed. A prospective V2 must reuse the exact current
+same-build host/device/preload proof and set EXPECTED_LOADER before native exec.
+Its `prepare`, `build` and `check` actions still require the original cohort's
+closed decision,and each next action requires the prior plan/result committed.
+The fixture/controller remains outside the original benchmark's314inputs.
 It preserves per-arm semantic failures,checks both byte offsets and mismatch
 conservation,and uses the already qualified traced negative-validation probe.
 Separate runtime/fixture compilations and linking record actual MD/host-link

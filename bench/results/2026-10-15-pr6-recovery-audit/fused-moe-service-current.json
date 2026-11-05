@@ -157964,5 +157964,53 @@
     "all_selected_deleted": true,
     "protected_hashes_unchanged": true,
     "original_outcomes_unchanged": true
+  },
+  "q6_f16_widen_device_v1": {
+    "stage": "failed-preparation",
+    "source_commit": "ef66540ddaeccc1ee5a763e2cd42ef9029c63ec7",
+    "controller": "bench/sycl/f16_widen_clz_device.py",
+    "controller_sha256": "5c147cd9ed3d0547ed408a96a0212ca9ca455767ab3d2b95850052b351bcb631",
+    "command": [
+      "python3",
+      "-B",
+      "bench/sycl/f16_widen_clz_device.py",
+      "prepare"
+    ],
+    "tool_session": 30957,
+    "exit_code": 1,
+    "error": "RuntimeError: preload runtime changed: /usr/lib/x86_64-linux-gnu/libz.so.1.3",
+    "guard": "tools/sycl/ur_validation.py:preload_qualification legacy component/runtime pins",
+    "legacy_delta": [
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3",
+        "qualified_sha256": "86200da370f20476a2507e9097a789b5ef97269b4ca8d5e164ad82dab9d99892",
+        "current_sha256": "f61677c7bdb7c2aa2a243ea781bfd16afcb361cede7b4ef76127a9d8eb9a5242"
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libigdml.so.1.0.231",
+        "current": "absent"
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libigdgmm.so.12.10.0",
+        "qualified_sha256": "a7904f18d8d59c7128dec4d6f22ae2b2e8a51f91f6946ac4e68b1ec6e0a7a6f3",
+        "current_sha256": "427847d14c2c36889efa8b0be6a8af6afac32cc3c744dcfc8e010d4ca210c957"
+      },
+      {
+        "path": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395",
+        "current": "absent"
+      }
+    ],
+    "cause": "Controller incorrectly requested a historical Xe-SDK/old-driver preload qualification. All84provider files of the qualified current centering model match;this is not evidence of a runtime change during the just-closed cohort. Installed zlib1g1:1.3.dfsg-3.1ubuntu2.3 passes dpkg verification.",
+    "remaining": "Commit a prospective V2 using exact current same-build device/preload qualification and immutable EXPECTED_LOADER before exec;preserve this failed preparation and do not retry V1.",
+    "root_created": false,
+    "compile_executed": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "parser_controls_executed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "fresh_faults": null
   }
 }
