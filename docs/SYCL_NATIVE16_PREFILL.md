@@ -231,11 +231,12 @@ source ID before the hit-dependent branch,following the
 The next device-service diagnostic must target the current `9922 / b310`
 generation. `tools/sycl/profile_iq3_decode.py` now defines that prospective
 control and capture using the maintained owner,frontend and trace readers.
-It has only passed static syntax inspection;no control,reader test or model
-capture has run. The old `479a / 552b` active collector control does not qualify it,
-even though the same-build submission fixture bytes match. First close a fresh
-active-from-exec control with the current native/fixture/provider identities
-and the original small control budgets. Then use one warmup and one 32769-input,
+Its fresh active-from-exec current-native control is closed and passes all62
+named kernels and unique native host-flow joins,normal exit,quiet validation,
+closed ownership and no fresh fault. The274401-byte trace contains249 GPU and
+770 host events. It retains the original small control budgets;the old
+`479a / 552b` control is not inherited. Reader tests and model capture remain
+unexecuted. Next use one warmup and one 32769-input,
 thinking-on diagnostic request,with exact IQ3 footer IDs1/2 and the chosen
 immutable selector. Use the matching arm's closed model-entry request body and
 prompt time for the observer-cost comparison. Its qualified environment has
@@ -250,9 +251,9 @@ question;it cannot establish physical traffic,saturation or sustained TG.
 This first capture also retains the matched short-entry default pool-spin
 policy,rather than the long cohort's20ms setting. Treat it as collection/route
 admission;any representative long-generation attribution needs its own frozen
-workload and matched runtime/observer envelope. After the IQ3 cohort closes,
-prepare and commit the fresh control,run and commit that control,then prepare
-and commit the model plan,run/commit frontend and guarded-window checks,and
+workload and matched runtime/observer envelope. The IQ3 cohort and current
+active fixture are now closed. Prepare and commit the model plan,
+run/commit frontend and guarded-window checks,and
 only then collect the diagnostic. No new inference engine is required.
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)

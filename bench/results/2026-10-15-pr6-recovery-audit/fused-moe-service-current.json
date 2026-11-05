@@ -146560,7 +146560,7 @@
     "binary_retired": true
   },
   "decode_iq3_collector_active_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "951eacebc586b1849189b072782f4d908f4d5689",
     "native_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
     "engine": {
@@ -146624,7 +146624,53 @@
         "LD_DEBUG": "libs"
       }
     },
-    "cases": [],
+    "cases": [
+      {
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3683130,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": {
+          "expected_kernels": 62,
+          "observed_kernels": 62,
+          "native_PID": 3683130,
+          "GPU_events": 249,
+          "host_events": 770,
+          "collection_active_from_exec": true,
+          "native_host_flow_joins_unique": true,
+          "all_kernel_names_present": true,
+          "timeline_sha256": "da61f5bb6d9e2d48396be3891f457365ce021936fd4ae57016585c74f7f852f9",
+          "timeline_bytes": 274401
+        },
+        "clocks": {
+          "begin": 2195958497373990,
+          "end": 2195958717554545
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "plan": {
       "question": "Does the existing active-from-exec launcher mode preserve all compatibility graph/kernel flow joins with only kernel-activity Chrome logging?",
       "native": "Exact current9922/b310 engine and same-build submission fixture;no rebuild and no fallback-control inheritance.",
@@ -146644,8 +146690,8 @@
       "total_cap": 67108864
     },
     "whole_bytes": 134217728,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "sources_sha256": "6314279f6d437ec357a230ae78af6949d035cbe89c5dc474a10c692fccf57301",
