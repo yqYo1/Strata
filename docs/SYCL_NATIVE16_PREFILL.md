@@ -582,8 +582,11 @@ with MTP acceptance0.82439/0.38924. All four requests satisfy their extent,
 answer and actual-route gates;both native exits0,quiet validation,closed
 ownership and no fresh fault. Candidate selected NT1 rows221271040/566117760
 equal the eligible rows,while reference selected rows are0.
-Four independent processes remain;one pair does not qualify repeated gain,
-prefill/TTFT preservation or inference adoption.
+A second candidate process also closes normally,with code/prose
+TG10.3911/6.7895,the same3170/7275 output tokens and acceptance,quiet validation
+and no fresh fault. Three independent processes remain,including its matched
+reference;the partial cohort does not qualify repeated gain,prefill/TTFT
+preservation or inference adoption.
 Both arms retain the common IQ3 audit,whose incremental cost is not separately
 measured;these are not a matched comparison against the older clean TG values.
 The diagnostic preset's
