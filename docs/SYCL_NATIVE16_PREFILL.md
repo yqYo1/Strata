@@ -279,7 +279,7 @@ four-product scalar expression? Both instantiations use128-item groups and
 subgroup32,unknown packed operands and identical low-byte-first extraction.
 The installed2026.2 extension header itself contains ordinary multiply/add
 expressions; its API name does not prove a DP4A instruction. The fixture has no
-main or production caller and is uncompiled/unrun. After the current frozen
+main or production caller and has not yielded qualified IR or run on a device. After a frozen
 audit process pair closes, pin its exact source/compiler image and compile device-only
 LLVM IR with the current native optimization settings (`-O3 -DNDEBUG -std=c++20
 -ffp-contract=off`, SYCL and size_t ID queries). Use an owned60-second,2GiB RSS,
@@ -298,8 +298,8 @@ compile-time checks exercise all64 values in repeated-byte words and in each
 lane of a mixed-boundary word. This is not an executed numerical/device gate.
 Compare centering and dot independently; do not combine their treatments or
 infer either gain from source operation counts.
-The [owned offline controller](../tools/sycl/q6_dot_codegen.py) has a prepared,
-unexecuted compiler plan. Its Q6-only admission permits a closed adjacent audit
+The [owned offline controller](../tools/sycl/q6_dot_codegen.py) preserves its
+first failed compiler operation. Its Q6-only admission permits a closed adjacent audit
 pair boundary (2,4,6 completed processes),with every completed process passing,
 normal exit0,closed ownership and no fresh fault. It holds the shared exclusive
 lock and checks the same committed cohort signature before and after compilation;
@@ -332,8 +332,14 @@ target/kernel-body rejection controls without creating a compiler root.
 At source `ab0c5f26513661d09148d8411d523dd1eb79cb0d`,the host check passes:
 11 committed source/control inputs,the actual four-process boundary,all ten
 production settings,16 invalid-evidence rejections and changed-cohort detection.
-Installed compiler/Python/library inputs are now pinned and the plan is prepared;
-no compiler child,device query or kernel execution has run.
+The installed compiler/Python/library inputs were pinned before execution.
+V1's owned compiler exits1 with `IR output is not supported.` from its textual
+LLVM output mode. Both owned identities close,normal observation completes and
+the result remains failed;no LLVM comparison,device query or kernel execution
+is qualified. The same installed compiler's older optional-IR failure is also
+recorded in `gdn16_pipeline_build_v2`;that failure did not prevent its ordinary
+object compilation. Preserve the exact V1 source/recipe and diagnostic in
+`q6-codegen-current.json` before selecting a different prospective output recipe.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary

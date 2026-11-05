@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "q6_dot_codegen_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "ab0c5f26513661d09148d8411d523dd1eb79cb0d",
     "passed": false,
     "complete": false,
@@ -137,6 +137,20 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v1/dot.ll"
     ],
     "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "outcome": {
+      "complete": false,
+      "passed": false,
+      "native_started": true,
+      "error": "RuntimeError('owned compiler failed')",
+      "ownership_closed": true,
+      "compiler_diagnostic": {
+        "message": "IR output is not supported.",
+        "stderr_sha256": "c521b7a0e42121ef811312de6138d3405def22dbf0d06d97086469f81976d710",
+        "exit_code": 1,
+        "valid_LLVM_evidence": false,
+        "scope": "Compiler rejected textual IR emission;no device/provider query or kernel execution. Preserve this attempt as failed;any different output recipe needs a new committed plan."
+      }
+    },
     "sources_signature": {
       "files": 11,
       "aggregate_sha256": "0081540a0444cfeff4aa7bc187ea170f5e67a81aead495221031963988f2c2bc"
