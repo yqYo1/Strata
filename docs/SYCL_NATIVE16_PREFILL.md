@@ -261,8 +261,9 @@ This first capture also retains the matched short-entry default pool-spin
 policy,rather than the long cohort's20ms setting. Treat it as collection/route
 admission; any representative long-generation attribution needs its own frozen
 workload and matched runtime/observer envelope. Keep the compact request, clock,
-route and service evidence in `decode_iq3_device_service_v1`; retire the raw
-timeline after verification. Next isolate the audit's timed effect with the
+route and service evidence in `decode_iq3_device_service_v1`. The verified raw
+timeline, successful logs and private compiler cache are retired after307
+original Git source blobs were recovered and matched. Next isolate the audit's timed effect with the
 same-binary comparison below before interpreting the gap from the faster clean
 reference. No new inference engine was built for this capture.
 

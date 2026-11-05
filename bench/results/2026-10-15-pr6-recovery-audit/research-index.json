@@ -24225,39 +24225,72 @@
   },
   "hybrid_tree_speculation_collection_20261105": {
     "classification": "knowledge collection",
-    "stage": "running",
-    "schedulable_now": false,
+    "stage": "native_reviewed_retrieval_reference",
     "source_commit": "3f504cbc475e9b474f373169b224a5d7dbeac648",
     "policy_revision": "3f504cbc475e9b474f373169b224a5d7dbeac648",
     "question": "Can training-free tree verification improve accepted target tokens per expert-weight pass in a hybrid CPU/GPU recurrent MoE decoder,especially when linear MTP acceptance is weak? Compare exact target-distribution/greedy contracts,branch masks and recurrent state rollback against added draft/verification work;identify when weight reuse is defeated by branch/state/transfer overhead.",
-    "prerequisite_evidence": "Closed strong/weak MTP cohort and independent hybrid-recurrent decoder context exist. This is algorithm knowledge collection,not gated model execution or a saturation claim;no matching dedicated prior scope was found in index metadata.",
+    "schedulable_now": false,
+    "main_reads_body_on_arrival": false,
     "inputs": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/hybrid-tree-speculation/inputs.json",
       "sha256": "3810c757f6f4deedb583099759226c3e4ac39f6d7c59ab4951472f60a81c6143",
       "bytes": 2928
     },
-    "spec": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/hybrid-tree-speculation/spec.txt",
-      "sha256": "74890264051bfd1ed8bd2239e4f0fecf46b02662fd2ba33925b9837b62614747",
-      "bytes": 2872
+    "report": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/hybrid-tree-speculation/report.md",
+      "bytes": 11689,
+      "sha256": "c18a1661d43830ac1c1620766b35a259bfd7bd76f6fba4ea521fe51772e1b037",
+      "read_with": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/hybrid-tree-speculation/review.json"
     },
-    "report_path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/hybrid-tree-speculation/report.md",
-    "report_budget_bytes": 12288,
-    "whole_folder_budget_bytes": 131072,
-    "main_reads_body_on_arrival": false,
+    "native_review": {
+      "task": "/root/review_hybrid_tree_collection_20261105",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/hybrid-tree-speculation/review.json",
+      "bytes": 9063,
+      "sha256": "9059acccbc669038b12ecb43734b08c3a66ac1441665f065485cf476d8aea769",
+      "verdict": "accept_with_corrections",
+      "digest": "Substantive retrieval reference only; retain corrections alongside the report. No local speed, algorithm adoption or hardware bottleneck claim.",
+      "scope_violation": "Reviewer reported read-only Git status/commit inspection despite the no-Git task instruction; no product/build/test/GPU edits were made."
+    },
     "consumer": "Knowledge retrieval if Main later selects weak-MTP verification or expert-weight bytes per accepted output as the optimization target. Main does not read collection bodies on arrival.",
-    "next_review": "Native Codex gpt-6-luna/max reviews scope,novelty and factual limits after authenticated completion. Revisit applicability after current device-service capture;retain only substantive nonduplicated findings.",
-    "worker": {
-      "run": "run_d43ee98385d1",
+    "next_review": "Revisit only for a concrete weak-MTP or expert-weight-per-output decision. The short device capture does not establish critical-path or physical-traffic prerequisites; no follow-up tree task is currently eligible.",
+    "transaction_retirement": {
+      "complete": true,
+      "files": 15,
+      "bytes": 24352,
+      "manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/iq3-device-and-tree-transport-retirement-20261105.json",
+        "sha256": "7d132e269c5a444dae4f062560b96467edf796beffc3efcf83d63e4d86e3285e"
+      },
+      "retained": [
+        "report.md",
+        "review.json",
+        "inputs.json"
+      ]
+    },
+    "retrieval_sections": [
+      "Retrieval conclusion",
+      "Three method families",
+      "Hybrid state and physical boundary",
+      "One decision and conditional experiment"
+    ],
+    "followup_eligibility": {
+      "schedulable_now": false,
+      "prerequisites": [
+        "A representative device/host diagnostic makes verifier or expert-weight cost decision-relevant;the short capture alone does not establish this.",
+        "Pin the production MTP graph and verifier grouping/reads before selecting branch candidates.",
+        "Commit bounded greedy/stochastic,state rollback,cache/RESTORE and physical-context checks before a matched long-generation trial."
+      ],
+      "local_performance_or_adoption_claim": false
+    },
+    "closure": {
       "task": "task_6434fd440f4c",
       "dispatch": "ctx_a0bc114813dd",
-      "terminal": "term_f1deb7f0-e8ce-4f67-8278-f8b39f8a920f",
-      "incarnation": "6e5813e6-51cb-453c-9cba-7be1fb6283f6",
-      "model": "gpt-6-luna",
-      "reasoning_effort": "high",
-      "model_evidence": "Pinned no-daemon custom argv and actual rendered GPT-6-Luna high fast header;reused-terminal launch preference fields are null.",
-      "turn_start_observed": true,
-      "worker_side_status_and_report_access": "Authenticated msg_65d237b21abd with matching heartbeat/task/dispatch;startup delivery acknowledged."
+      "worker_state": "succeeded",
+      "exact_worker_exited": true,
+      "completion_acknowledged": true,
+      "operator_terminal_closed": true
     }
   }
 }
