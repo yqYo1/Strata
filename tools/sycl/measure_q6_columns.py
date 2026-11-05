@@ -210,8 +210,13 @@ def actual_inputs(row):
     allowed.update(row['runtime_pins'])
     allowed.update({str((ROOT / 'source' / n).resolve()): h for n, h in row['sources'].items()})
     names = []
-    for dep in sorted((ROOT / 'objects').glob('*.d')):
-        names += shlex.split(dep.read_text().replace('\\\n', ' ').split(':', 1)[1])
+    expected = {ROOT / 'objects' / (str(i) + '.d') for i in range(len(SOURCES))}
+    require(set((ROOT / 'objects').glob('*.d')) == expected,
+            'one actual dependency file per compiled translation unit')
+    for dep in sorted(expected):
+        target, inputs = dep.read_text().replace('\\\n', ' ').split(':', 1)
+        require(shlex.split(target) == [str(dep.with_suffix('.o'))], 'dependency target differs')
+        names += shlex.split(inputs)
     links = [line.strip() for line in (ROOT / 'build-commands/link.stdout').read_text().splitlines()
              if line.startswith('/')]
     require(len(names) >= 300 and len(links) >= 10, 'actual include/link accounting missing')
