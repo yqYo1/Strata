@@ -1,7 +1,12 @@
-"""Reject invalid evidence before advancing a column-specialization candidate."""
+"""Reject invalid evidence before advancing the complete Q6 centering candidate."""
+import copy
+import json
 import sys
 from pathlib import Path
 import unittest
+from unittest import mock
+from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/sycl'))
 import measure_q6_columns as comparison
@@ -19,6 +24,87 @@ def samples():
                         f'batch={batch} position={position} calls={calls} '
                         f'seconds={.125 if arm else .25}')
     return lines
+
+
+class ClosedAudit(unittest.TestCase):
+    def valid(self):
+        return dict(stage='closed', passed=True, complete=True, active=False,
+            ownership_closed=True, processes=[dict(index=i, passed=True, complete=True,
+                ownership_closed=True, native_exit_code=0, fresh_faults=[]) for i in range(6)])
+
+    def test_complete_six_process_audit(self):
+        row = self.valid()
+        with mock.patch.object(comparison, 'committed', return_value=row):
+            self.assertIs(comparison.cohort(), row)
+
+    def test_incomplete_failed_or_unclosed_audit(self):
+        changes = [('stage', 'running'), ('passed', False), ('complete', False),
+                   ('active', True), ('ownership_closed', False)]
+        for key, value in changes:
+            row = self.valid(); row[key] = value
+            with self.subTest(key=key), mock.patch.object(comparison, 'committed', return_value=row):
+                with self.assertRaises(RuntimeError): comparison.cohort()
+        for key, value in [('passed', False), ('complete', False), ('ownership_closed', False),
+                           ('native_exit_code', 1), ('fresh_faults', ['new fault'])]:
+            row = self.valid(); row['processes'][2][key] = value
+            with self.subTest(process_key=key), mock.patch.object(comparison, 'committed', return_value=row):
+                with self.assertRaises(RuntimeError): comparison.cohort()
+
+    def test_wrong_count_or_duplicate_process(self):
+        short = self.valid(); short['processes'].pop()
+        duplicate = self.valid(); duplicate['processes'][-1] = copy.deepcopy(duplicate['processes'][0])
+        for row in (short, duplicate):
+            with mock.patch.object(comparison, 'committed', return_value=row):
+                with self.assertRaises(RuntimeError): comparison.cohort()
+
+
+class DurableAdmission(unittest.TestCase):
+    def test_changed_generated_command_refused_before_inputs_or_build(self):
+        row = dict(sources={}, runtime_pins={}, commands=[['compile', ['icpx', '-O3']]])
+        frozen = comparison.compact(row)
+        row['commands'][0][1].append('-ffast-math')
+        with TemporaryDirectory() as directory:
+            root = Path(directory); (root/'record.json').write_text(json.dumps(row))
+            with mock.patch.object(comparison, 'ROOT', root), \
+                 mock.patch.object(comparison, 'committed', return_value=frozen), \
+                 mock.patch.object(comparison, 'inputs_current') as check:
+                with self.assertRaises(RuntimeError): comparison.current()
+                check.assert_not_called()
+
+    def test_active_owner_identity_is_durable(self):
+        identity = dict(pid=17, start_ticks=29, sid=17, pgid=17)
+        supervisor = SimpleNamespace(active=SimpleNamespace(pid=17),
+            commands=[dict(label='native', direct_identity=identity, owners=[identity],
+                           session_empty=False, direct_child_reaped=False)])
+        with TemporaryDirectory() as directory:
+            path = Path(directory)/'owner.json'; comparison.persist_owner(supervisor, path)
+            row = json.loads(path.read_text())
+            self.assertEqual(row['active_pid'], 17)
+            self.assertEqual(row['commands'][0]['direct_identity'], identity)
+            supervisor.active = None
+            supervisor.commands[0].update(session_empty=True, direct_child_reaped=True, exit_code=0)
+            comparison.persist_owner(supervisor, path)
+            self.assertIsNone(json.loads(path.read_text())['active_pid'])
+
+    def test_fault_input_and_owner_errors_are_all_retained(self):
+        with mock.patch.object(comparison, 'fresh_faults', return_value=['xe fresh fault']), \
+             mock.patch.object(comparison, 'inputs_current', side_effect=RuntimeError('driver drift')), \
+             mock.patch.object(comparison.guards, 'no_model_owners', side_effect=RuntimeError('owner present')):
+            result = comparison.native_postchecks({}, 'cursor')
+        self.assertFalse(result['passed'])
+        self.assertEqual(result['faults']['evidence'], ['xe fresh fault'])
+        self.assertIn('driver drift', result['inputs_boot_driver']['error'])
+        self.assertIn('owner present', result['model_owners']['error'])
+
+    def test_final_owner_failure_cannot_leave_success(self):
+        row = dict(stage='closed', passed=True, complete=True)
+        with mock.patch.object(comparison.guards, 'no_model_owners', side_effect=RuntimeError('owner present')), \
+             mock.patch.object(comparison, 'save') as save:
+            self.assertFalse(comparison.final_owner_guard(row))
+        self.assertEqual(row['stage'], 'failed-final-owner')
+        self.assertFalse(row['passed'])
+        self.assertFalse(row['complete'])
+        save.assert_called_once_with(row)
 
 
 class Evidence(unittest.TestCase):
