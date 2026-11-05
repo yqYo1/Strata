@@ -632,14 +632,16 @@ quiet validation, all15 final asset hashes, closed owners and no fresh fault.
 IQ3-on now passes the same probes and both short requests, with identical
 calls/eligible rows and selected paired rows1400960/1378560. Both selectors
 close normally with all15 final asset hashes, quiet validation and no new fault.
-The six-process long-generation comparison has closed two matched pairs.
+The six-process long-generation comparison has closed five processes,including
+two matched pairs.
 Candidate/reference exact TG ratios are1.016142/1.014124 for code and
 1.029070/1.052548 for prose. Each arm generates3170/7275 tokens with MTP
-acceptance0.82439/0.38924. All eight requests satisfy their extent,answer and
-actual-route gates;all four native exits0,quiet validation,closed ownership
+acceptance0.82439/0.38924. All ten requests satisfy their extent,answer and
+actual-route gates;all five native exits0,quiet validation,closed ownership
 and no fresh fault. Candidate selected NT1 rows221271040/566117760 equal the
 eligible rows,while reference selected rows are0.
-Two independent processes remain;the partial cohort does not qualify the
+The final reference has exact TG10.136828/6.772043 for code/prose;only its
+paired candidate remains. The partial cohort does not qualify the
 declared three-pair gain,prefill/TTFT preservation or inference adoption.
 Both arms retain the common IQ3 audit,whose incremental cost is not separately
 measured;these are not a matched comparison against the older clean TG values.
