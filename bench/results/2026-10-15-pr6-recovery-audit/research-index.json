@@ -24400,5 +24400,85 @@
       "bytes": 23850,
       "verified_deleted": true
     }
+  },
+  "exact_head_selection_collection_20261105": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed_conditional_reference_with_corrections",
+    "schedulable_now": false,
+    "source_commit": "8b49ff9c4b584217328a15ee315e75fcb108fc8b",
+    "policy_revision": "8b49ff9c4b584217328a15ee315e75fcb108fc8b",
+    "question": "What algorithms can remove or avoid full-vocabulary lm_head or selection work during greedy/speculative verification without assuming the answer token? Compare exact or certified methods, approximate shortlists and their correction/fallback, candidate-only verification limits, and fusion with argmax/top-k. Prioritize actual SGLang/vLLM or other original implementations/papers;identify model/shape restrictions,quantized-weight implications and proof/counterexamples. Distinguish elimination of softmax from elimination of projection.",
+    "prior_scope_ids": [
+      "mtp_q6_head_resource_design_20261022",
+      "compressed_q6_small_columns_xmx_20261104",
+      "hybrid_tree_speculation_collection_20261105"
+    ],
+    "inputs": {
+      "path": ".cache/research/2026-11-05/exact-head-selection/inputs.json",
+      "bytes": 3258,
+      "sha256": "6148a97bd8a270e1591c62d424607a68154d51e49df3be07016e6727d77576fe"
+    },
+    "report": {
+      "path": ".cache/research/2026-11-05/exact-head-selection/report.md",
+      "bytes": 11614,
+      "sha256": "5c7d5cd5af3dca729778e7040e7c6cfa17007f73567b9a78db60b5fb599d2baf"
+    },
+    "native_review": {
+      "path": ".cache/research/2026-11-05/exact-head-selection/wave-review.json",
+      "bytes": 11158,
+      "sha256": "94810bd8dbf7790dbb29a3353eef476f55efbd0f97d30c6fb68a33e4efc15f55",
+      "agent": "/root/review_head_selection_prefetch_20261105",
+      "verdict": "retain_with_corrections_to_provenance_links"
+    },
+    "main_reads_body_on_arrival": false,
+    "use_constraint": "Read only with the attached native review and its source/factual corrections;not local speed,hardware saturation,implementation or adoption evidence.",
+    "consumer": "Retrieve only if a later representative model-path result makes vocabulary-head work a concrete optimization decision; use it to choose between full-projection fusion and a separately justified certified-pruning prototype.",
+    "next_review": "At the safe boundary after the frozen process 6/6 audit closes. If no qualified long-window result makes head selection decision-relevant, curate essential corrections into the index and retire the report body.",
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "The current short Q6 service observation does not establish critical-path dominance or physical resource pressure. Any implementation/comparison needs that evidence and a committed correctness, fallback, and production-path plan first."
+    },
+    "ownership_closed": true,
+    "startup_and_completion_authenticated": true
+  },
+  "zen3_expert_prefetch_collection_20261105": {
+    "classification": "knowledge collection",
+    "stage": "native_reviewed_conditional_reference_with_corrections",
+    "schedulable_now": false,
+    "source_commit": "8b49ff9c4b584217328a15ee315e75fcb108fc8b",
+    "policy_revision": "8b49ff9c4b584217328a15ee315e75fcb108fc8b",
+    "question": "For the actual Ryzen5600X AVX2 small-NT quantized MoE GU inner loops,when can software prefetch and memory-level parallelism improve performance over hardware prefetch? Compare prefetch distance/locality,within-row versus next-row/expert preparation,cacheline/page boundaries and decode/LUT dependencies;include original AMD/Intel docs,original kernel implementations and technical author blogs backed by code. Give a bounded discriminator with negative controls and pollution/over-prefetch counterexamples. Do not repeat representation,LUT or general SIMD surveys.",
+    "prior_scope_ids": [
+      "zen3_avx2_expert_instruction_collection_scope",
+      "cpu_decode_representation_methods_20261102",
+      "cpu_lowbit_lut_methods_collection_scope"
+    ],
+    "inputs": {
+      "path": ".cache/research/2026-11-05/zen3-expert-prefetch/inputs.json",
+      "bytes": 3344,
+      "sha256": "18a099f14903f1ab007f4ab27b56dc3f1b9194dfb39f00c8e9f730a32b15a266"
+    },
+    "report": {
+      "path": ".cache/research/2026-11-05/zen3-expert-prefetch/report.md",
+      "bytes": 12143,
+      "sha256": "0187b94c4df858428c79f1cbe4f5f486b278ef4d62d846b1053ae2a5d87a7b27"
+    },
+    "native_review": {
+      "path": ".cache/research/2026-11-05/exact-head-selection/wave-review.json",
+      "bytes": 11158,
+      "sha256": "94810bd8dbf7790dbb29a3353eef476f55efbd0f97d30c6fb68a33e4efc15f55",
+      "agent": "/root/review_head_selection_prefetch_20261105",
+      "verdict": "retain_with_material_factual_and_source_pin_corrections"
+    },
+    "main_reads_body_on_arrival": false,
+    "use_constraint": "Read only with the attached native review and its source/factual corrections;not local speed,hardware saturation,implementation or adoption evidence.",
+    "consumer": "Retrieve only if qualified CPU attribution makes the 5600X GU path a concrete memory-latency/MLP decision; use the corrected pin and test order to design a bounded comparison.",
+    "next_review": "At the safe boundary after the frozen process 6/6 audit closes. If no representative CPU critical-path evidence makes prefetch relevant, curate the corrected source/negative-control findings and retire the report body.",
+    "next_scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "Logical-read rates and source observations do not establish exposed memory stalls, DRAM saturation, or a relevant production CPU critical path. A local discriminator must wait for those prerequisites and a committed plan."
+    },
+    "ownership_closed": true,
+    "startup_and_completion_authenticated": true
   }
 }

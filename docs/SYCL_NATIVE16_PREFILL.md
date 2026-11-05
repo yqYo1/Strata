@@ -299,7 +299,10 @@ The8MiB per-file output cap sits inside a32MiB whole-root cap,including input
 manifests. CPU/file limits are per-process and RSS/disk bounds are sampled as
 in the existing owned supervisor. It produces LLVM IR only: later SPIR-V/native
 instruction inspection needs its own evidence rather than an inferred DP4A.
-No controller checks or compilation have run yet.
+At source `d6361f580`, two host controls pass: actual premature `prepare`
+refuses the unfinished six-process cohort without creating its root,and the
+production compile-command/reference check admits all ten reproduced settings.
+No installed-image capture,compilation,device query or kernel execution follows.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary
