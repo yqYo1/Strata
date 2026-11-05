@@ -823,6 +823,16 @@ worst-case bound or whole-observer overhead. A same-binary profile0/1 comparison
 remains pending before representative long-generation attribution. This short
 diagnostic does not qualify clean speed,physical traffic,agent/task,
 physical262144/RESTORE or adoption.
+The [long caller-profile controller](../bench/sycl/decode_service_overhead.py)
+defines six independent same-5c5e processes,off/on,on/off,off/on,with CPU leaf
+service/census enabled in both arms. Each has four official warmups and both
+fixed v5 thinking-on long-generation tasks. It requires completed prefixes4/5,
+all six caller/leaf/census joins or disabled caller absence,and unchanged
+clock/source/provider evidence. Each paired per-output latency ratio must be
+at most1.05 with matching logical work and observed strong/weak MTP classes;
+changed work remains inconclusive without discarding samples. Keep compact
+caller regions/nested waits and worker operation totals,not full leaf histograms.
+The controller alone is not preparation,execution or an overhead result.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The six closed CPU-service processes also agree exactly on logical work volume
