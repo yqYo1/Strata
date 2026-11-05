@@ -676,9 +676,14 @@ separately without allowing any original source change. It also records
 preparation failures before model execution. V2 preparation now verifies all307
 caller/tool pins, all15 model assets and six immutable process plans. Its source
 and environment controls pass without native execution. Both fresh frontend
-probes pass and the V2 controller is ready. The report-only Luna audit is closed
-and native Luna-max review is pending; finish that review and commit the host
-result before the first long process. Model checks remain unexecuted.
+probes pass and the V2 controller is ready. The report-only Luna audit and native
+Luna-max review are closed. Main checked the additionally identified compiled
+`native_expert.cpp` against the build record and actual b310 ELF. Its immutable
+flag accepts exactly"1". The treatment includes GU-dispatch call accounting
+across native formats and IQ3-specific row accounting; it does not isolate the
+cost of IQ3 counter instructions. The source caveat is cleared without a
+controller or native rebuild. Commit this decision before the first long
+process. Model checks remain unexecuted.
 Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
 qualify it. This measures the enabled-audit effect on timed speed,not total
 observer wall cost or the cause of the cross-build gap. Request snapshots and

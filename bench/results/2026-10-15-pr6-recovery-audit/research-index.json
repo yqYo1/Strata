@@ -24295,7 +24295,7 @@
   },
   "iq3_audit_speed_contract_20261105": {
     "classification": "decision support",
-    "stage": "native_review_pending",
+    "stage": "source_contract_curated",
     "schedulable_now": false,
     "source_commit": "011fa1cb932c137b7ef2a84963ca1b4bb1182668",
     "policy_revision": "011fa1cb932c137b7ef2a84963ca1b4bb1182668",
@@ -24340,8 +24340,20 @@
       "task": "/root/review_iq3_audit_speed_contract_20261105",
       "model": "gpt-6-luna",
       "reasoning": "max",
-      "stage": "running",
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/iq3-audit-speed-contract/review.json"
+      "stage": "complete",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/iq3-audit-speed-contract/review.json",
+      "bytes": 4397,
+      "sha256": "931bbdd5ff0f5df4f939e0730cc8d94ce1ab35807afc84f74365a864fb12d60f",
+      "verdict": "supported_with_source_coverage_caveat"
+    },
+    "curation": {
+      "source_caveat_cleared": true,
+      "native_expert_sha256": "65d41c1fb4fa4147139a02cc7eff76c4cd591733074d657cc3de6e96c746710a",
+      "build_and_actual_b310_checked": true,
+      "controller_defect_found": false,
+      "treatment_scope": "Full enabled IQ3_PAIR_AUDIT flag effect,including GU-dispatch call accounting across native formats and IQ3-specific row accounting. Not isolated IQ3 counter instruction cost.",
+      "model_executed": false,
+      "consumer": "Concrete source/interpretation corrections are in the prospective V2 plan;retire redundant audit text and transport after source recovery at this prelaunch boundary."
     }
   }
 }
