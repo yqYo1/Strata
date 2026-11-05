@@ -272,82 +272,50 @@ original Git source blobs were recovered and matched. Next isolate the audit's t
 same-binary comparison below before interpreting the gap from the faster clean
 reference. No new inference engine was built for this capture.
 
-The [Q6 expression discriminator](../bench/sycl/q6_dot_codegen.cpp) asks two
-independent compiler questions:does public signed-byte `dot_acc` differ from
-four scalar products,and does packed Q6 centering differ from per-byte
-subtract/clamp/pack? Both pairs use unknown inputs,128-item groups and subgroup32.
-The installed extension header contains ordinary multiply/add expressions;
-its name does not prove DP4A. Neither pair includes full Q6 reconstruction,
-scales,column reductions or a production caller.
-The independently authored [centering candidate](../include/strata/kernels/q6_packed_center.hpp)
-uses `(word + 0x60606060u) ^ 0x80808080u`. Production Q6 masks bound each byte
-to0..63;adding96 cannot carry between bytes,and XOR128 yields the byte
-representation of value minus32. The fixture's compile-time checks
-cover all64 repeated-byte values and each lane of a mixed-boundary word.
-No device numerical or speed gate has passed.
+The Q6 expression compiler comparison is now closed and passes at source
+`198b403f68a9683aac6158ebe30fb93ef56a9905`,with its prebuild recipe at
+`70b1e7d90`. Both owned CPU operations exit0;655 actual include files match the
+prebuild compiler/Linux-header images,and source,Python,qualified libraries,
+completed-cohort signature and final ownership checks pass. No GPU operation
+or device query occurred. The exact recipe and compact outcome are in
+`bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json`.
+The installed2026.2 compiler emits binary LLVM,then its translator produces
+internal SPIR-V text. The module declares Physical64/OpenCL and has both bodies
+in each independent kernel family. Earlier textual-LLVM,optional text-backend
+and missing-header attempts remain failed,with original source/results in Git.
 
-V1 at source `ab0c5f26513661d09148d8411d523dd1eb79cb0d` failed its first
-owned compilation:textual LLVM emission returns1 with `IR output is not supported.`
-Both owned identities close,with no device query or kernel execution.
-Its exact prepared recipe is at `9a2e28bed` and failed result at `85fd35c1d`;
-retain the failed status in the separate current Q6 result. The older
-`gdn16_pipeline_build_v2` also records this compiler output restriction.
-The V1 host check passes11 source pins,all ten production settings,16 invalid
-boundary/IR rejection controls and changed-cohort detection. Earlier controls
-at `d6361f580` retain their original all-six refusal outcome in Git.
+The two expression pairs differ in portable SPIR-V. Public signed-byte
+`dot_acc` retains private byte-array storage,an extraction loop and expanded
+scalar products;this does not demonstrate native DP4A or a speed advantage.
+Keep the shared multi-format `packed_dot` helper unchanged and prioritize the
+separate centering candidate. After the common six-bit-per-byte mask,the
+reference retains a four-iteration subtract/clamp/pack loop;the candidate's
+centering core is one add and one XOR. Its address/load/store instructions
+remain. The generated module is not native B570 ISA:later IGC optimization
+may erase either difference,so static instruction shape is not a speed claim.
 
-The prospective V4 [offline controller](../tools/sycl/q6_dot_codegen.py) retains
-the exact two expression treatments and installed compiler image. It emits
-binary LLVM with `-fsycl-device-only -c -emit-llvm`,without the rejected `-S`,
-then invokes that SDK's supported `llvm-spirv --spirv-text` internal text mode.
-Intel's [compiler guidance](https://community.intel.com/t5/Intel-oneAPI-DPC-C-Compiler/cant-generate-LLVM-IR-using-dpcpp/m-p/1372376/highlight/true?profile.language=fr)
-distinguishes binary IR from textual emission;this is a prospective installed-
-version check,not a claim that the older guidance qualifies2026.2.
-Check bitcode magic and actual header inputs,then require the emitted SPIR-V
-Physical64/OpenCL memory-model operands2/2 and four kernel entrypoints bound to
-bodies,plus the internal SPIR-V header magic.
-The [translator representation](https://github.com/KhronosGroup/SPIRV-LLVM-Translator/blob/main/docs/SPIRVRepresentationInLLVM.rst)
-relates `spir64` to Physical64 and kernel calling conventions to entrypoints.
-This checks the emitted portable module;it does not establish native B570
-instructions,device capability,execution or model speed.
+The independently authored [centering helper](../include/strata/kernels/q6_packed_center.hpp)
+uses `(word + 0x60606060u) ^ 0x80808080u`. Each reconstructed Q6 byte is0..63;
+adding96 cannot carry between bytes,and XOR128 yields value minus32's byte
+representation. Compilation passes the fixture's all64 repeated-byte values
+and per-lane mixed-word assertions. These are compile-time algebra checks,
+not a device numerical gate. The fixture has no production caller and omits
+full Q6 reconstruction,scales,column reductions and surrounding optimization.
 
-Preparation requires a closed adjacent audit pair (2,4,6 completed processes),
-all prior processes passing normally with closed owners and no fresh fault.
-Hold the shared exclusive lock,exclude live model owners and check the committed
-cohort signature before and after compilation. Existing model A/B and FP64
-all-six gates stay unchanged. Q6 preparation/execution writes only
-`bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json`;the whole-file-
-checked model result stays unchanged. Invoke Git by its pinned absolute path.
-Commit exact source and run `python3 -B tools/sycl/q6_dot_codegen.py host`,then
-prepare and commit installed compiler/Python/library/header inputs before the
-single two-command compile operation. Each command has60s CPU/wall,2GiB sampled
-RSS,256KiB text and8MiB per-file caps;the whole root,including manifests,is32MiB.
-The supervisor's CPU/file limits are per-process and RSS/disk checks are sampled.
-At source `2977bf6d6d00854d46052b4f22870fc686e6a059`,V2's host check passes
-11 source pins,the actual four-process boundary,all ten production settings,
-16 invalid-evidence rejections and changed-cohort detection. V2 was prepared
-with the same installed compiler image as V1. Its compiler stage closes normally
-with exit0 and6552bytes of LLVM bitcode,including the centering static assertions.
-The next operation exits255 because this SDK was built without
-`--spirv-tools-dis` support. V2 remains failed;no instruction comparison or
-device execution is qualified. V3 selected the supported internal text format
-while preserving both failed attempts. At source
-`52e0b57bf3654a70f1c7670ebcc0456185eff4cf`,V3's host check passes17 invalid-
-evidence rejections and the same11 source/ten production-setting checks.
-V3 uses the unchanged installed compiler image. Both CPU operations exit0 and
-produce7220bytes of internal SPIR-V text. Header admission then fails on20
-previously unrecorded headers,all owned by `linux-libc-dev` version6.8.0-147.147.
-V3 remains failed. V4 preserves its output recipe and prospectively pins the
-whole `linux-libc-dev` package in addition to the unchanged SDK/compiler image.
-Its source and comparison treatment stay unchanged. At source
-`198b403f68a9683aac6158ebe30fb93ef56a9905`,V4 host checks pass the17 rejection
-controls and unchanged source/production checks;its expanded input image is
-prepared,with compilation pending. Do not qualify V3 retroactively or advance a model proposal
-from its output.
-Compare both instruction pairs independently. Equal SPIR-V lowering ends that
-expression proposal;a difference only motivates a separately committed whole-
-Q6 discriminator. Retire generated artifacts and the fixture when this finite
-compiler question ends unless an immediate named comparison consumes them.
+Next,after all six frozen model-audit processes close,prepare a complete
+Q6-kernel centering comparison. Preserve dot/scaling/reduction order,byte-safe
+loads,launch geometry and phase ownership;scope a later production change to
+decode and retain prefill. Use the existing representative Q6 shapes and
+columns1/2/4/8 with bitwise reference results,a small traced bounds/lifetime
+check and independent repeated production-entry timing. The limiting physical
+resource remains unqualified;this tests arithmetic sensitivity at unchanged
+logical data volume. A component gain is still separate from model speed,
+prefill preservation,task quality and physical262144/RESTORE qualification.
+
+The compiler-only fixture/controller and generated outputs have finished their
+finite consumer. Preserve their exact source/recipe in Git,retire them after
+source recovery and keep only the compact lowering decision for that next
+whole-kernel comparison. The helper remains the unselected current candidate.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary

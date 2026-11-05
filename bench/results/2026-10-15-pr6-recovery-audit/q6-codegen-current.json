@@ -113,10 +113,10 @@
     }
   },
   "q6_dot_codegen_v4": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "198b403f68a9683aac6158ebe30fb93ef56a9905",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -257,6 +257,40 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v4/dot.spt"
     ],
     "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "outcome": {
+      "complete": true,
+      "passed": true,
+      "native_started": true,
+      "IR": {
+        "sha256": "80b230f2575621e5a4f2e61f947ee669357a0b019528bb250562bcd0450b6713",
+        "bytes": 7220,
+        "bitcode_sha256": "1fa69fcb38618fbfa5d95d1c0997c7543634a766eb9d35e582c1291b24a3fc7c",
+        "format": "LLVM-SPIRV-Translator internal text",
+        "memory_model": [
+          "Physical64",
+          "OpenCL"
+        ],
+        "memory_model_operands": [
+          2,
+          2
+        ],
+        "kernel_definitions": {
+          "Q6DotExpression": [
+            "_ZTSN6strata5bench15Q6DotExpressionILb0EEE",
+            "_ZTSN6strata5bench15Q6DotExpressionILb1EEE"
+          ],
+          "Q6CenterExpression": [
+            "_ZTSN6strata5bench18Q6CenterExpressionILb0EEE",
+            "_ZTSN6strata5bench18Q6CenterExpressionILb1EEE"
+          ]
+        }
+      },
+      "headers": {
+        "files": 655,
+        "aggregate_sha256": "a2e8d07e95f7197cb2683283ec8461af9ab18a2e38a360582fdf0fa6ee6b572e"
+      },
+      "ownership_closed": true
+    },
     "sources_signature": {
       "files": 11,
       "aggregate_sha256": "4448ea06de116a37f7bf7ac8cdb1e3f76bbd960f2082938e332cecc2d4608aef"
@@ -276,6 +310,24 @@
     "extra_headers_signature": {
       "files": 4,
       "aggregate_sha256": "1fe45d87eac3496d86713497465537340594e5dcdcb8c4f9db7e38747f1f83a9"
+    },
+    "instruction_comparison": {
+      "scope": "Qualified portable SPIR-V from the same installed compiler and source expressions;not B570 native ISA or dynamic service.",
+      "dot": {
+        "distinct_lowering": true,
+        "reference": "A four-iteration signed-byte multiply/accumulate loop.",
+        "vector_api": "Private byte-array variables,an extraction loop,and four expanded scalar multiplies/adds remain in this portable module.",
+        "decision": "No demonstrated packed hardware dot or speed advantage. Do not change the shared packed_dot helper;prioritize the independently simpler centering candidate."
+      },
+      "centering": {
+        "distinct_lowering": true,
+        "reference_kernel_id": 134,
+        "candidate_kernel_id": 172,
+        "reference": "After the common input mask,a four-iteration extraction/subtraction/s_clamp/packing loop remains.",
+        "candidate": "After the identical input mask,the centering core is one IAdd with0x60606060 and one BitwiseXor with0x80808080;its body has no centering loop or s_clamp. Address/load/store instructions remain.",
+        "decision": "Eligible to propose a separately committed complete Q6-kernel comparison. No model/GPU execution or speed has been qualified."
+      },
+      "next_comparison": "At closure of all six frozen model-audit processes,change only Q6 centering in a decode-scoped full-kernel candidate;preserve scales,dot order,loads,reductions,phase ownership and prefill. Compare actual production entrypoints with representative existing Q6 geometries and columns1/2/4/8,bitwise reference results,small traced bounds/lifetime checks and independent repeated timing. Native IGC optimization may erase the portable-IR difference;measure rather than infer a speedup."
     }
   }
 }
