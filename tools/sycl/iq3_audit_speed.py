@@ -17,9 +17,14 @@ import iq3_generation_speed as gain
 import pool_spin as protocol
 
 P, B, RESULT, base = gain.P, gain.B, gain.RESULT, gain.base
-ROOT = B / 'decode-iq3-audit-speed-v1'
-KEY = 'decode_iq3_audit_speed_v1'
+ROOT = B / 'decode-iq3-audit-speed-v2'
+KEY = 'decode_iq3_audit_speed_v2'
 SELF = Path(__file__).resolve()
+# These later tools were absent from the closed comparison's source snapshot.
+# Revalidate that snapshot first; pin the exact additions in the new caller.
+ADDITIONS = {'tools/sycl/decode_service_contract.py',
+    'tools/sycl/iq3_audit_speed.py', 'tools/sycl/mapped_row_copy_component.py',
+    'tools/sycl/profile_iq3_decode.py'}
 # Reference is audit-on; candidate is audit-off. Both use IQ3_PAIR=1.
 ARMS = gain.ARMS
 require, digest = gain.require, gain.digest
@@ -32,19 +37,29 @@ def pinned_sources(revision):
 
 
 def basis(revision):
-    _, providers, manifest, pool = gain.basis(revision)
     cohort = json.loads((gain.ROOT / 'record.json').read_text())
-    require(base.committed(RESULT)[gain.KEY] == gain.context().compact(cohort)
+    data = base.committed(RESULT)
+    failed = data['decode_iq3_audit_speed_v1']
+    require(failed['stage'] == 'failed' and not failed['passed']
+        and not failed['model_executed'] and not failed['GPU_executed']
+        and not failed['active'] and failed['ownership_closed']
+        and not failed['root_created'], 'preserve original V1 prelaunch failure')
+    require(data[gain.KEY] == gain.context().compact(cohort)
         and cohort['stage'] == 'closed' and cohort['passed'] and cohort['complete']
         and cohort['ownership_closed'] and not cohort['active']
         and len(cohort['processes']) == 6
         and all(p['passed'] and p['complete'] and p['ownership_closed']
             and p['native_exit_code'] == 0 and not p['fresh_faults']
             for p in cohort['processes']), 'closed route-verified IQ3 cohort required')
-    current, previous = pinned_sources(revision), gain.pinned_sources(revision)
-    require(set(current) - set(previous) == {str(SELF.relative_to(P))}
+    # Never label the old qualification with the new caller revision. Its
+    # original inputs still have to match Git and the current files exactly.
+    _, providers, manifest, pool = gain.basis(cohort['source_commit'])
+    current = pinned_sources(revision)
+    previous = gain.pinned_sources(cohort['source_commit'])
+    require(previous == cohort['sources'] and set(current) - set(previous) == ADDITIONS
+        and set(previous) <= set(current)
         and all(current[n] == h for n, h in previous.items()),
-        'only this new observer-cost controller may extend the qualified inputs')
+        'only the four declared later tools may extend unchanged qualified inputs')
     selected = gain.short.context(1)
     prior = json.loads((selected.ROOT / 'record.json').read_text())
     gain.short.contract(prior, 1)
@@ -140,14 +155,16 @@ def context(index=None):
     return ctx
 
 
-def prepare(ctx):
+def prepare_plan(ctx):
     ctx.prepare()
     row = json.loads((ROOT / 'record.json').read_text())
     row['qualification_reuse'] = dict(build_result_key='decode_iq3_pair_model_build_v1',
         model_result_keys=['decode_iq3_model_entry_arm0_v1', 'decode_iq3_model_entry_arm1_v1'],
         closed_route_comparison_key=gain.KEY, native_source_commit=row['native_source_commit'],
         engine_sha256=row['binary']['sha256'],
-        scope='Exact current native/fixtures and closed audit-on short/long admissions. This controller adds one source file. Audit-off timed IQ3 route is unobserved;replay is not a substitute.')
+        original_caller_source_commit=json.loads((gain.ROOT / 'record.json').read_text())['source_commit'],
+        declared_caller_additions=sorted(ADDITIONS),
+        scope='Exact current native/fixtures and closed audit-on short/long admissions at their original caller revision. The new caller pins four later tools;all original sources remain unchanged. Preserve failed V1 preparation. Audit-off timed IQ3 route is unobserved;replay is not a substitute.')
     row['plan'] = dict(mode='cohort', workload_version=5,
         question='How much does enabling IQ3 dispatch audit change timed generation on the same b310 binary?',
         order='Six fresh processes AUDIT1,0,0,1,1,0;three counterbalanced adjacent pairs. Each four official warmups then fixed v5 regular-code and varied-prose. Commit each closed process before next;no retries.',
@@ -162,6 +179,29 @@ def prepare(ctx):
         text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20)
     ctx.save(row)
     print('Prepared six same-binary audit-cost processes;commit before frontend checks.', flush=True)
+
+
+def prepare(ctx):
+    require(not ROOT.exists() and KEY not in base.committed(RESULT), 'fresh V2 preparation only')
+    try:
+        prepare_plan(ctx)
+    except BaseException as error:
+        record = ROOT / 'record.json'
+        row = json.loads(record.read_text()) if record.exists() else dict(
+            source_commit=protocol.shared.gen.git('rev-parse', 'HEAD').decode().strip(),
+            preparation_only=True)
+        row.update(stage='failed', passed=False, complete=False, active=False,
+            ownership_closed=True, model_executed=False, GPU_executed=False,
+            preparation_error=repr(error))
+        ROOT.mkdir(mode=0o700, exist_ok=True)
+        if 'sources' in row:
+            ctx.save(row)
+        else:
+            ctx.write(record, row)
+            data = json.loads(RESULT.read_text())
+            data[KEY] = row
+            ctx.write(RESULT, data)
+        raise
 
 
 def run(ctx, index):

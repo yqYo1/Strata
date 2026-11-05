@@ -147521,5 +147521,38 @@
       "evidence_commit": "b2234f6038584f39b294a4091634ef174a0bf6a3",
       "retained": "Original record for the next representative capture plan; compact trace joins, service and request evidence in Git. No raw-history consumer remains. Current engine and required fixtures preserved."
     }
+  },
+  "decode_iq3_audit_speed_v1": {
+    "stage": "failed",
+    "source_commit": "4a008bedc64c478f424019a2438e9669c1f00e00",
+    "controller": "tools/sycl/iq3_audit_speed.py",
+    "command": [
+      "python3",
+      "-B",
+      "tools/sycl/iq3_audit_speed.py",
+      "prepare"
+    ],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "model_executed": false,
+    "GPU_executed": false,
+    "root_created": false,
+    "exit_code": 1,
+    "error": "RuntimeError: only the new comparison controller may extend qualified model inputs",
+    "diagnosis": {
+      "where": "gain.basis(current_revision) compares302 qualified short-admission sources against307 current benchmark files. All302 hashes match;expected only iq3_generation_speed.py addition,but five additions exist.",
+      "added_sources": [
+        "tools/sycl/decode_service_contract.py",
+        "tools/sycl/iq3_audit_speed.py",
+        "tools/sycl/iq3_generation_speed.py",
+        "tools/sycl/mapped_row_copy_component.py",
+        "tools/sycl/profile_iq3_decode.py"
+      ],
+      "changed_original_sources": [],
+      "next": "Preserve this failed preparation. A new V2 plan must revalidate the closed cohort at its original source revision,then explicitly pin the four later caller/tool additions without relaxing any original/native/fixture check."
+    },
+    "retention": "Compact prelaunch outcome only;no raw trace or engine output was created."
   }
 }

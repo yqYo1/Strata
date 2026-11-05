@@ -666,7 +666,15 @@ cost does not explain the lower absolute rates by itself. Keep the faster
 before replacing it. The bounded source/settings audit is closed and reviewed.
 `tools/sycl/iq3_audit_speed.py` defines the next same-b310 comparison:fixed
 IQ3 selector1 and audit1/0 in three counterbalanced fresh-process pairs,using
-the same two v5 workloads. It has passed static syntax inspection only.
+the same two v5 workloads. V1 preparation stopped before creating a run root
+or executing a GPU process: its legacy admission expected only one added
+controller, while four other later tools were also in the current benchmark
+snapshot. All original302 short-admission source hashes still matched.
+Preserve that failure. The prospective V2 revalidates the closed303-source
+cohort at its original revision, then pins the four declared later tools
+separately without allowing any original source change. It also records
+preparation failures before model execution. V2 frontend and model checks
+remain unexecuted.
 Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
 qualify it. This measures the enabled-audit effect on timed speed,not total
 observer wall cost or the cause of the cross-build gap. Request snapshots and
