@@ -206,7 +206,11 @@ runtime,production elementwise translation unit and fixture. It does not build
 an inference engine or require native-expert/GGML and test-suite targets.
 Prepare a separate pinned Release configuration with`STRATA_ENABLE_SYCL=ON`,
 `STRATA_NATIVE_EXPERTS=OFF`,`STRATA_BUILD_TESTS=OFF` and`STRATA_SYCL_TESTS=OFF`;
-then build only this target with one compiler job. No configure/build has run.
+use`/opt/intel/oneapi/compiler/2026.2/bin/icpx` and
+`-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl`. The SYCL configuration
+still resolves oneMKL before this target can build,although this target does
+not link the prefill library. Build only this target with one compiler job.
+No configure/build has run.
 The existing production copy and measured engine remain unchanged.
 Every lane reaches the two-dimensional group broadcast with the same valid
 source ID before the hit-dependent branch,following the
