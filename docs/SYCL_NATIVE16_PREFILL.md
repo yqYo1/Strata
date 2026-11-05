@@ -746,7 +746,15 @@ Its retirement
 gate binds the two short model entries,the original six-process decision and
 standalone widening V2 to their exact committed closure hashes. It requires
 all those a1b0 consumers closed and that generation recovered/retired,
-while preserving552b. It is unexecuted;no diagnostic root or build exists yet.
+while preserving552b. The closed a1b0 build/source products are now retired:
+all564 original inputs,the exact recipe and230 compiled vendor sources were
+recovered from Git;all1450 actual compiler inputs matched their recorded hashes.
+The final process's raw output,the two one-use host fixtures and closed audit
+transports are also retired,884files/186722689bytes in total. All nine552b
+outputs and the three configured deployment outputs remain unchanged. See
+`retained_builds_review_20261103.decode_service_model_replacement` for the
+manifest and exact closed-consumer bindings. The builder itself is unexecuted;
+no diagnostic root or build exists yet.
 Separate host fixtures and fresh device/model qualification remain required. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf
 service/census enabled in both,checking clock resolution/read overhead,depths,
@@ -1163,14 +1171,17 @@ not infer global cleanup from the current-build inventory. Keep unresolved
 legacy source/recipe recovery holds separate from these two comparison
 executables, with the missing inputs, consumer, next bounded recovery action
 and review point recorded in the retained-build result. The fallback currently
-retains nine ELF artifacts. The comparison is closed and its three candidate
-ELFs are retired after committed observer-source preparation and original-input
-recovery. Seventeen named project ELFs remain before the observer build,
-including the existing configured serving and validation/profiling consumers.
-The new observer adds four named outputs for its immediate qualification and
-comparison, bringing the current retained count to 21. This is not a claim of
-global cleanup. The legacy
-source/recipe holds remain independent.
+retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
+probe binaries and the two schema2 host fixtures are retired after original-input
+recovery. Eighteen project runtime/tool ELF outputs remain across the scanned
+state directory and both project worktrees;three installed Python dependency
+extensions are separate assets. This includes the configured deployment
+outputs,qualified validation/profiling tools and the standalone widening ELF.
+The latter retains one7500-byte device IR image for the imminent converter
+lowering/code-choice inspection;its other compiler intermediates and successful
+tracing output are retired. No diagnostic engine exists yet. This is not global
+cleanup:the configured deployments' original source/recipe recovery and
+validated migration remain explicit independent holds.
 
 Niko1221/Strata remains the only upstream. The maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
