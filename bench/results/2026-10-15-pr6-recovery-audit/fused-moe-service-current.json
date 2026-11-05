@@ -160661,5 +160661,100 @@
       "review_sha256": "7fde65f1d1ab06552970c2bbb1291963c7211c48ff94e2670284a6ecc4277d2f",
       "remaining": "Keep model record/config/plan/runtime only for imminent observer-overhead admission,and widening design report/input pins only for material-Q6-cost conditional production entry. Native5c5e and552b fallback unchanged."
     }
+  },
+  "decode_clock_cost_v1": {
+    "stage": "prepared",
+    "source_commit": "42befa94752c7a56959745143f4242efd94707be",
+    "sources": {
+      "include/strata/sycl/decode_service_profile.hpp": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca",
+      "bench/sycl/decode_clock_cost.cpp": "b2465b9894d8e6a0df3370883332fbf6def3c296b65d7fff8e369f3cd06829fd",
+      "bench/sycl/qualify_decode_clock_cost.py": "15ca1690f4f6e3d4912d95d4c89a31de8ad31d31131cacc40cea721ae5532ac1",
+      "tools/sycl/decode_service_contract.py": "f63dd861794496b8b41a25ad5019bcf8800c6cd8cb68b5611a30de880dfbe210",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "AGENTS.md": "afaae976137380f258f147dd06d50571b3a4f1b8414330fc10273ef7511b9623",
+      "docs/ARTIFACT_RETENTION.md": "cdf9c635257bd2d1cb6dd8d05d1d85ac8b5eda395d0ea7fd622d19d12d4fd08d"
+    },
+    "compiler": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+      "version": "13.3.0",
+      "cc1plus": {
+        "path": "/usr/libexec/gcc/x86_64-linux-gnu/13/cc1plus",
+        "sha256": "840b332fb62ec6f694ac77d91fe69ef7f80b0d69512ed89374af0ee7a506255d"
+      },
+      "packages": [
+        "g++-13 13.3.0-6ubuntu2~24.04.1",
+        "libc6-dev 2.39-0ubuntu8.9",
+        "libstdc++-13-dev 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6 14.2.0-4ubuntu2~24.04.1"
+      ]
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-clock-cost-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-clock-cost-v1/cache"
+    },
+    "fixtures": [
+      {
+        "name": "clock-cost",
+        "source": "bench/sycl/decode_clock_cost.cpp",
+        "cases": 5,
+        "footer": "",
+        "compile": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++17",
+          "-O2",
+          "-g",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-clock-cost-v1/clock-cost.d",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/decode_clock_cost.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-clock-cost-v1/clock-cost"
+        ],
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-clock-cost-v1/clock-cost"
+        ]
+      }
+    ],
+    "compile_budget": {
+      "wall": 60,
+      "cpu": 60,
+      "rss_cap": 1073741824,
+      "text_cap": 65536,
+      "file_cap": 8388608,
+      "total_cap": 16777216
+    },
+    "test_budget": {
+      "wall": 15,
+      "cpu": 15,
+      "rss_cap": 134217728,
+      "text_cap": 16384,
+      "file_cap": 1048576,
+      "total_cap": 16777216
+    },
+    "profile_schema_version": 2,
+    "plan": "One owned GCC13/O2 compile,then one pure-host child pinned to core0.Five50000-read production clock_tick bands,including loop/check overhead.Require exact output,monotonic valid reads,clock resolution<=1us,and each band2..500ms.Pin source/compiler/actual dependencies/ELF and require normal0,quiet stderr,closed owners.Stop first failure;no retry or changing duration criteria. No GPU/model or whole-observer overhead qualification.",
+    "retention": "Keep five individual band totals,resolutions,source/recipe and limits for the imminent profile0/1 decision. Retire one-use ELF,dependency list and normal output after committed result and source recovery;no engine generation.",
+    "results": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "native_header_binding": {
+      "source_commit": "70169d3881ab588d45f7df7baa132b4293f00970",
+      "engine_sha256": "5c5e25d04e8ea8a8abcd9d26ed8f70a32d78b8aa93a89a49e7232ec8f47f6d76",
+      "header_sha256": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca"
+    }
   }
 }
