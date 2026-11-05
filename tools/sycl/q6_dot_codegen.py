@@ -28,8 +28,8 @@ owner, guards, require, sha, git = probe.owner, probe.guards, probe.require, pro
 
 def compact(row):
     out = {k: v for k, v in row.items()
-        if k not in ('sources', 'toolchain', 'python', 'commands')}
-    for name in ('sources', 'toolchain', 'python'):
+        if k not in ('sources', 'toolchain', 'python', 'runtime_pins', 'commands')}
+    for name in ('sources', 'toolchain', 'python', 'runtime_pins'):
         if name in row:
             out[name + '_signature'] = probe.component.signature(row[name])
     return out
@@ -104,6 +104,12 @@ def prepare():
             file_cap=8 << 20, total_cap=32 << 20))
     ROOT.mkdir(mode=0o700)
     try:
+        runtime = cohort['runtime_manifest']
+        require(sha(runtime['path']) == runtime['sha256'], 'qualified library inventory changed')
+        row['runtime_manifest'] = runtime
+        row['runtime_pins'] = json.loads(Path(runtime['path']).read_text())
+        require(len(row['runtime_pins']) == runtime['files'] and all(
+            sha(n) == h for n, h in row['runtime_pins'].items()), 'qualified libraries changed')
         row['toolchain'] = probe.toolchain()
         row['python'] = python_inputs()
         tools = [shutil.which('git'), '/usr/bin/dpkg-query']
@@ -151,6 +157,8 @@ def current():
         for n, p in row['selector_tools'].items()), 'selector/provenance tool changed')
     require(probe.toolchain() == row['toolchain'], 'compiler image changed')
     require(python_inputs() == row['python'], 'Python/runtime inputs changed')
+    require(sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256']
+        and all(sha(n) == h for n, h in row['runtime_pins'].items()), 'qualified libraries changed')
     require(owner.artifact_bytes(ROOT) <= row['whole_bytes'], 'whole receipt/output budget')
     return row
 
