@@ -652,9 +652,17 @@ v5 request-body hashes,actual input/generated lengths and MTP acceptance.
 Their native/pool sources and common IQ3 audit differ. Unmeasured observer
 cost does not explain the lower absolute rates by itself. Keep the faster
 13.5052/8.8299 clean reference and obtain a matched clean-envelope comparison
-before replacing it. A bounded source/settings audit,including disabled
-service-observer paths,is now eligible for Luna after cohort closure;Main
-continues tuning rather than another broad historical regression investigation.
+before replacing it. The bounded source/settings audit is closed and reviewed.
+`tools/sycl/iq3_audit_speed.py` defines the next same-b310 comparison:fixed
+IQ3 selector1 and audit1/0 in three counterbalanced fresh-process pairs,using
+the same two v5 workloads. It has passed static syntax inspection only.
+Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
+qualify it. This measures the enabled-audit effect on timed speed,not total
+observer wall cost or the cause of the cross-build gap. Request snapshots and
+footer lie outside decode_ms. Disabled compiled profile object/layout,guards
+and request scaffolding remain a separate unmeasured confound. After the device
+diagnostic closes,commit the exact new audit plan before its frontend checks
+and six processes. Main continues implementation and serialized measurement.
 The diagnostic preset's
 `STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
 timing in both short arms; the new speed controller omits that variable.
