@@ -331,8 +331,10 @@ with exit0 and6552bytes of LLVM bitcode,including the centering static assertion
 The next operation exits255 because this SDK was built without
 `--spirv-tools-dis` support. V2 remains failed;no instruction comparison or
 device execution is qualified. V3 selects the supported internal text format
-while preserving both failed attempts. V3 host checks,preparation and compilation
-have not yet run.
+while preserving both failed attempts. At source
+`52e0b57bf3654a70f1c7670ebcc0456185eff4cf`,V3's host check passes17 invalid-
+evidence rejections and the same11 source/ten production-setting checks.
+V3 is prepared with the unchanged installed compiler image;compilation is pending.
 Compare both instruction pairs independently. Equal SPIR-V lowering ends that
 expression proposal;a difference only motivates a separately committed whole-
 Q6 discriminator. Retire generated artifacts and the fixture when this finite
