@@ -149618,5 +149618,301 @@
     "controls": "Frozen generated argv rejection;durable active PID/start-tick identity;all fault/input/owner post-errors retained;final owner failure invalidates success;complete and corrupt audit/cohort/timing/validation cases;shared toolchain membership/symlink/actual-input and early-setup failures.",
     "limits": "Pure host controls and mocks only;no real toolchain inventory,compilation,device query,GPU numerical/timing,model gain or adoption.",
     "retention": "Compact outcome only;standard unit output is not another retained transcript."
+  },
+  "q6_centering_component_v1": {
+    "stage": "prepared",
+    "source_commit": "bf3371d20b5464b76dbe5e086b9d4b6d2dcb5232",
+    "cohort_signature": "d7223d5e9c2339a55f359ca4cb2645087e22b386ff5ab75db82d88f36a0afbef",
+    "tools": {
+      "compiler": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "realpath": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+      },
+      "git": {
+        "path": "/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin/git",
+        "realpath": "/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin/git",
+        "sha256": "d88c25f33602bd5898b398b04418916512be06821f47034832b3f5736e911706"
+      },
+      "python": {
+        "path": "/usr/bin/python3",
+        "realpath": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      },
+      "assembler": {
+        "path": "/usr/bin/as",
+        "realpath": "/usr/bin/x86_64-linux-gnu-as",
+        "sha256": "21aff249b692b5c31a44007491f922dcb49f41323e362c57d2ada3f52eddb7f0"
+      },
+      "linker": {
+        "path": "/usr/bin/ld",
+        "realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+        "sha256": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b"
+      }
+    },
+    "toolchain": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1/toolchain.json",
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838",
+      "files": 6239,
+      "bytes": 3202685889,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ]
+    },
+    "native_recipe_origin": {
+      "source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
+      "compile_database": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1/build/compile_commands.json",
+        "sha256": "e373b1d60dbd26a112bc9c69ec28cf9e0d42068a515b88cd760a1cff46d2be4f"
+      },
+      "flags": [
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1/source/include/strata/sycl/compat",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13"
+      ],
+      "change": "Private source paths plus explicit GCC13 host-header selection;no math/optimization flag change."
+    },
+    "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "environment": {
+      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONUNBUFFERED": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_MMQ_XMX": "1",
+      "STRATA_SYCL_MMQ_XMX_TILE": "8",
+      "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+      "STRATA_SYCL_MMQ_XMX_PACK": "0",
+      "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_PREFILL_MMQ": "0",
+      "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+      "STRATA_WATCHDOG_S": "480",
+      "STRATA_SYCL_PROMPT_DIRECT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+      "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+      "STRATA_SYCL_KV_COPY_GROUPS": "0",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+      "STRATA_IQ_TIMING_PROGRESS": "0",
+      "STRATA_PREFILL_RELEASE_HEADS": "1",
+      "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+      "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+      "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+      "STRATA_GR_UNFUSED": "0",
+      "STRATA_PREFILL_BF16X2": "0",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+      "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1/cache",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_ROPE_TABLE": "1",
+      "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+      "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+      "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+      "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1/tmp",
+      "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1",
+      "ZES_ENABLE_SYSMAN": "0",
+      "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+      "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+      "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+      "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+      "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+      "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+      "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "STRATA_MTP_BATCH_F16": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+      "STRATA_IQ2_PAIR": "1",
+      "STRATA_SYCL_MTP_OBSERVER": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+      "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-component-v1/cache/python",
+      "STRATA_TRACE": "1",
+      "STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+      "STRATA_SYCL_PREFILL_TOPK_EARLY": "0",
+      "STRATA_SYCL_PREFILL_GDN_BARRIERS3": "1",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_GDN_FP16": "1",
+      "STRATA_SNAPSHOT_VERIFY": "1",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_CPU_WORK_CENSUS": "0",
+      "STRATA_DECODE_TIMING": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_ADAPT_SYNC": "1"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "budgets": {
+      "wall": 1200,
+      "cpu": 2400,
+      "rss_cap": 8589934592,
+      "text_cap": 16777216,
+      "file_cap": 134217728,
+      "total_cap": 805306368
+    },
+    "plan": {
+      "reference": "native_q6_k_columns_mmvq",
+      "candidate": "native_q6_k_centered_columns_mmvq",
+      "difference": "Q6 centering after 0x0f/0x30 masks only;same byte loads,dot/scales,geometry and reductions.",
+      "order": "One traced smoke,then three fresh processes;five paired batches per shape/column,arm=(batch+column+position)%2.",
+      "shapes": [
+        [
+          2560,
+          10240,
+          256
+        ],
+        [
+          6144,
+          2560,
+          256
+        ],
+        [
+          2560,
+          6144,
+          256
+        ],
+        [
+          2560,
+          640,
+          1024
+        ],
+        [
+          2560,
+          512,
+          1024
+        ],
+        [
+          2560,
+          12288,
+          256
+        ],
+        [
+          2560,
+          248320,
+          8
+        ]
+      ],
+      "columns": [
+        1,
+        2,
+        3,
+        4,
+        8
+      ],
+      "smoke_cases": 32,
+      "speed_cases": 35,
+      "timer": "Steady-clock full public dispatch and queue completion;resident weights/Q81;conversion,allocation,oracles outside timers.",
+      "minimum_batch_seconds": 0.01,
+      "process_repetitions": 3,
+      "batches_per_arm": 5,
+      "acceptance": "All output bits,read-only inputs,guards and finite values pass;Q6 scalar and every Q81 byte oracle pass. Exact B570,in-order queue,normal0,quiet validation,closed owners,unchanged inputs/providers/boot and no fresh fault. A shape is eligible only when all three independent median candidate/reference time ratios are below1;no percentage floor.",
+      "stopping": "Stop on first source/provider/owner/numerical/validation/fault/budget/short-timer failure;no retries or hash refresh.",
+      "limits": "Synthetic model geometries and parameter-validation/preload envelope. Logical bytes unchanged;no physical-traffic,saturation,native-ISA,clean model-speed,ordinary runtime-teardown,prefill or262144/RESTORE qualification. No production selector is enabled."
+    },
+    "retention": "Temporary third project build generation for this imminent component comparison only. Both552b validated prefill fallback and b310 current model reference still have named consumers. Count this fixture with project builds and retire its ELF/objects/source snapshot/traces after recording the decision and verifying source recovery;do not retain it as another reference generation.",
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "final_owner_guard": {
+      "passed": true,
+      "evidence": {
+        "same_uid_model_owners": [],
+        "scope": "bounded read-only cmdline scan; cannot prove hidden foreign GPU use absent"
+      }
+    },
+    "source_inputs": {
+      "files": 373,
+      "aggregate_sha256": "c53a9a9fea84036c3af50e2407bb763df1339a11a126eca80cc8aa3b44999efc"
+    },
+    "runtime_inputs": {
+      "files": 84,
+      "aggregate_sha256": "12f00cc0c1e71fad681f18c9a2550e288f36a0a0af12709e604840df884a2ab2"
+    },
+    "command_inputs": {
+      "count": 14,
+      "sha256": "22344fc85a1a85a2d5467e992bb55fc175b5de67ff7c9ffa6d36216dc5b96d99"
+    }
   }
 }
