@@ -152976,7 +152976,7 @@
     }
   },
   "q6_centering_policy_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "dc2299e1fd97bd9e3b04faf9b94067e570161ce6",
     "tools": {
       "compiler": {
@@ -153145,8 +153145,50 @@
     "model_executed": false,
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
+    "preprocessor_environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/tmp"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-policy-host-v1/policy",
+      "sha256": "a616fa0fcfca44b8e3ac0560aa9896e0623fc8ecdc5d7ad8b966d32e3f42ee7c",
+      "bytes": 51400
+    },
+    "actual_dependencies": 174,
+    "results": [
+      {
+        "name": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "run",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "c7dcf8b740525a8226f05326346c37a55b9b4f94c4b0c7ab8dec05bb2df7e06e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "controls": {
+      "original_columns": 30,
+      "centering_shapes": 18,
+      "reference_centering_cells": 17,
+      "phase_roundtrip": true,
+      "invalid_keys": 4,
+      "interrupted_and_complete_retirement": true,
+      "UBSan_errors": 0
+    },
+    "owner_receipt": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-policy-host-v1/execution.json",
+      "sha256": "a231737dac2e179338811ac83bd2fac9752e21d7a404b45289f55fb38c9bc829",
+      "closed": true
+    },
     "source_inputs": {
       "files": 6,
       "sha256": "2267ed47326dc6281b1b10241e55070fd579eef70740bf9e7fbfb990666b2256"
@@ -153154,12 +153196,6 @@
     "dependency_inputs": {
       "files": 174,
       "sha256": "4d36986b6ea0bb29df24d35fe0ec31ee23da67c8665cf0b0d9f0f17dde6a3960"
-    },
-    "preprocessor_environment": {
-      "PATH": "/usr/bin:/bin",
-      "LANG": "C",
-      "LC_ALL": "C",
-      "TMPDIR": "/tmp"
     }
   }
 }

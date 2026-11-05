@@ -315,6 +315,12 @@ select the centered entry. Prompt reads retain their independent reference;
 phase/token cache metadata tracks centered calls separately,and a separate
 centering receipt preserves the existing phase-log format. This integration is
 not yet built into an inference engine or qualified for model speed.
+At source `dc2299e1f`,the real C++ policy/cache test passes under GCC13 UBSan:
+30original column selections,18centering selections,the other17centering
+cells,prompt/type/layout/disabled/unmeasured exclusions,phase/T roundtrip,
+four invalid keys,and interrupted/complete metadata retirement. All174 actual
+header inputs match the prebuild dependency image. This host test does not
+compile or execute the full verifier or a GPU/model route.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
