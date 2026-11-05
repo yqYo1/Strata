@@ -219,7 +219,8 @@ void timing(int process) {
                         b.wait();
                         const auto end = stamp();
                         const auto wall = end.wall - a.wall;
-                        need(wall >= Floor && wall >= 300 * timer && end.cpu >= a.cpu &&
+                        need(wall >= Floor && wall >= 300 * timer && submitted.cpu >= a.cpu &&
+                             end.cpu >= submitted.cpu &&
                              submitted.wall >= a.wall && end.wall >= submitted.wall,
                              "ineligible batch:timer floor/overhead/clock");
                         b.verify((Batch - 1) % banks, sample == Samples - 1);
@@ -230,7 +231,9 @@ void timing(int process) {
                                       << " sample=" << sample << " launches=" << Batch
                                       << " wall_ns=" << wall << " cpu_ns=" << end.cpu-a.cpu
                                       << " submit_wall_ns=" << submitted.wall-a.wall
-                                      << " wait_wall_ns=" << end.wall-submitted.wall << '\n';
+                                      << " wait_wall_ns=" << end.wall-submitted.wall
+                                      << " submit_cpu_ns=" << submitted.cpu-a.cpu
+                                      << " wait_cpu_ns=" << end.cpu-submitted.cpu << '\n';
                     }
                 }
             }

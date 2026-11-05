@@ -194,7 +194,10 @@ host-USM/device sources. Its prepared checks include changed/duplicate/unsorted
 hit lists,positive-zero hit output,NaN/signed-zero bit copies,odd tails,offset
 alignment and source/output/metadata guards. The timing path separates untimed
 checks and warmups from dependent-batch wall/host CPU clocks,with one/64 source
-banks and two hit ratios. It does not measure physical traffic or kernel service.
+banks and two hit ratios. Submission and checked-wait regions each retain wall
+and thread CPU time;their sums conserve each batch's total. A wait's thread CPU
+time is not host tensor arithmetic,and submission can overlap device execution.
+The fixture does not measure physical traffic or kernel service.
 Neither the modified prototype nor fixture has been compiled or run. The
 component still needs a committed pinned build recipe,bounded traced admission
 and repeated actual-placement timing before any decode-only route proposal.
