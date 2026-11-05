@@ -158513,5 +158513,121 @@
       "independently_found_source_defect": "The second reverse delta used forward values instead of the already-restored bytes;fixed in b5941dd8."
     },
     "next_consumer": "Diagnostic build/source admission after exact old-generation recovery and consumer closure;separate host/device/model and profile-overhead gates remain."
+  },
+  "decode_service_host_contract_v2": {
+    "stage": "prepared",
+    "source_commit": "6abda7fa416f2b446c35e41ae27b89c870347ee8",
+    "sources": {
+      "include/strata/sycl/decode_service_profile.hpp": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca",
+      "include/strata/sycl/cpu_wait_profile.hpp": "acfb510e4549cf4c23f3ce4ce1a51357e04cd32ade943e56faf6f122326ada86",
+      "bench/sycl/decode_wait_bridge.cpp": "2a5c11557368de4fda1b574aa3becf7e0751036ceb1b2a85a33eea00299e4779",
+      "tests/core/decode_service_profile_test.cpp": "5f37786df0f33dcee8f788b1209bf98f1f53bc1f251d890241f83bed84aa6162",
+      "tools/sycl/decode_service_contract.py": "7e1a549b8ecca16a39c57655d6edf5d98fb556e1435ed4dd0853eee622dca7f4",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "AGENTS.md": "afaae976137380f258f147dd06d50571b3a4f1b8414330fc10273ef7511b9623",
+      "docs/ARTIFACT_RETENTION.md": "cdf9c635257bd2d1cb6dd8d05d1d85ac8b5eda395d0ea7fd622d19d12d4fd08d"
+    },
+    "compiler": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+      "version": "13.3.0",
+      "cc1plus": {
+        "path": "/usr/libexec/gcc/x86_64-linux-gnu/13/cc1plus",
+        "sha256": "840b332fb62ec6f694ac77d91fe69ef7f80b0d69512ed89374af0ee7a506255d"
+      },
+      "packages": [
+        "g++-13 13.3.0-6ubuntu2~24.04.1",
+        "libc6-dev 2.39-0ubuntu8.9",
+        "libstdc++-13-dev 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6 14.2.0-4ubuntu2~24.04.1"
+      ]
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/cache"
+    },
+    "fixtures": [
+      {
+        "name": "ledger",
+        "source": "tests/core/decode_service_profile_test.cpp",
+        "cases": 7,
+        "footer": "decode service profile: 7 host-only accounting cases passed\n",
+        "compile": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++17",
+          "-O2",
+          "-g",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/ledger.d",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/decode_service_profile_test.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/ledger"
+        ],
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/ledger"
+        ]
+      },
+      {
+        "name": "bridge",
+        "source": "bench/sycl/decode_wait_bridge.cpp",
+        "cases": 5,
+        "footer": "decode wait bridge: 5 host-only cases passed\n",
+        "compile": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++17",
+          "-O2",
+          "-g",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/bridge.d",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/decode_wait_bridge.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/bridge"
+        ],
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-contract-v2/bridge"
+        ]
+      }
+    ],
+    "compile_budget": {
+      "wall": 60,
+      "cpu": 60,
+      "rss_cap": 1073741824,
+      "text_cap": 65536,
+      "file_cap": 8388608,
+      "total_cap": 16777216
+    },
+    "test_budget": {
+      "wall": 15,
+      "cpu": 15,
+      "rss_cap": 134217728,
+      "text_cap": 16384,
+      "file_cap": 1048576,
+      "total_cap": 16777216
+    },
+    "profile_schema_version": 2,
+    "plan": "Compile and run the seven-case ledger,then compile and run the five-case actual wait bridge;four sequential owned children,stop first failure,no retry.Require normal0,quiet stderr,exact fixture footer,closed identities and unchanged inputs.No GPU,engine build,model timing or hardware-saturation claim. Compiler/system-package identities are pinned before build;verify actual repository compiler dependencies against the committed pins before each test,and hash all actual dependencies.",
+    "retention": "Keep compact contract/dependency/source/compiler outcome for the diagnostic model host gate. Retire both one-use executables and successful output after the result commit; the diagnostic consumes source/recipe and results,not these executable bytes.",
+    "results": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false
   }
 }
