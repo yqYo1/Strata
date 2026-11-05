@@ -55,6 +55,7 @@ def source_basis():
         centering_selected=cohort['decision']['centering_model_TG_gain_qualified'],
         native_input_aggregate=previous.signature(native['native_sources']),
         diagnostic_input_aggregate=previous.signature(previous.pins(values)),
+        observer_delta=source.PATCH, wait_label_delta=source.WAIT_LABEL_PATCH,
         changed=list(source.CHANGED),
         scope='Source recovery and original decision only;fresh host/device/model and observer-overhead qualification required.')
     return native, values, proof

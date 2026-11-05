@@ -22,6 +22,8 @@ ROOT = B / 'decode-service-model-v1'
 NATIVE = '92832da86d9a63f996e6fcebbf4e919e2c8f746a'
 ENGINE = 'a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616'
 PATCH = '96b9cc511b81e5fe4c18e53030019a2ad34c6b4d'
+WAIT_LABEL_PATCH = '1c42b4700f046b6fbcd0cc20338b42c62d0340d2'
+WAIT_LABEL_FILES = ('include/strata/sycl/decode_service_profile.hpp', 'src/core/verify.cpp')
 EXISTING = ('include/strata/sycl/cpu_wait_profile.hpp',
             'src/core/verify.cpp', 'src/program/generate.cpp')
 ADDED = ('include/strata/sycl/decode_service_profile.hpp',
@@ -93,6 +95,9 @@ def projection():
     for name in ADDED:
         require(name not in before, 'observer input already exists: ' + name)
         values[name] = previous.blob(PATCH, name)
+    for name in WAIT_LABEL_FILES:
+        values[name] = previous.merge(values[name], name, WAIT_LABEL_PATCH + '^', WAIT_LABEL_PATCH)
+    for name in ADDED:
         require((P / name).read_bytes() == values[name],
                 'reviewed observer header/fixture changed: ' + name)
     require(len(values) == 566 and set(values) - set(before) == set(ADDED)
@@ -101,6 +106,8 @@ def projection():
     # A full reverse check protects Q6, IQ3, prefill, cache and runtime changes
     # sharing these files. No newer worktree file substitutes for the delta.
     restored = dict(values)
+    for name in WAIT_LABEL_FILES:
+        restored[name] = previous.merge(restored[name], name, WAIT_LABEL_PATCH, WAIT_LABEL_PATCH + '^')
     for name in EXISTING:
         restored[name] = previous.merge(values[name], name, PATCH, PATCH + '^')
     for name in ADDED:
@@ -145,6 +152,7 @@ if __name__ == '__main__':
     print(json.dumps(dict(native_source=NATIVE, native_engine_sha256=ENGINE,
         next_root=str(ROOT),
         observer_delta=PATCH, files=len(values), changed=list(CHANGED),
+        wait_label_delta=WAIT_LABEL_PATCH, profile_schema_version=2,
         cohort_controls=controls,
         aggregate_sha256=previous.signature(previous.pins(values)),
         reversible_to_native=True, build_executed=False, GPU_executed=False,
