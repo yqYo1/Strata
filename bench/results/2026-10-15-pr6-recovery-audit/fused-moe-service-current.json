@@ -153429,5 +153429,216 @@
       "recipe_label": "The inherited compact helper label points to cpu_service_sources.py;the actual recipe is build_q6_centering_model.py:recipe at source353037 and remains pinned by its original hash.",
       "next": "Preserve V1 failure;V2 validates before result publication and uses the correct recipe-helper label."
     }
+  },
+  "q6_centering_model_build_v2": {
+    "stage": "prepared",
+    "source_commit": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
+    "selected_basis": {
+      "original_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
+      "original_recipe_commit": "1f396eeccdb69e0fe01fe7cb26c4b0683ba4d84e",
+      "original_result_commit": "08537c8e3277dff7cd9d0c47223dbf3eb9c45cee",
+      "original_record_sha256": "87cae677454210e77df2d4ea4b82432dc1e5a64bad5a6b4be922218603edb2e0",
+      "original_engine_sha256": "b310353872d29bd7fdd8ad7ba67ad75a0700edaa284a6f3460d4df9549cbfbb6",
+      "original_source_aggregate": "4fe176ab0bda4c30c25450404c5dea35895a69f78fbc30db9fff5017ec5a3f73",
+      "candidate_source_aggregate": "a433cbd3c8d8c9ced66b9ac524597fd441265e33defea3adc963ff2b72ac09de",
+      "changed": [
+        "src/kernels/sycl/native_mmvq.cpp",
+        "include/strata/kernels/native_mmvq.hpp",
+        "include/strata/kernels/q6_packed_center.hpp",
+        "include/strata/core/verify.hpp",
+        "src/core/verify.cpp",
+        "include/strata/core/verify_window_policy.hpp",
+        "tests/core/verify_window_policy_test.cpp"
+      ],
+      "component_and_policy": {
+        "component_commit": "2197e506384137dbb958eada61a042faf5fab858",
+        "policy_commit": "92d06632a",
+        "component_sha256": "0fcb4b444c5f995e7729b0115fa7a5ac69dd34fb59c0b6344371de69eb593468",
+        "policy_sha256": "2358530f8d1e121df55a1461329ea6b2ecce1c788ed67e73b762868d7dcb80bc",
+        "eligible_shapes": [
+          [
+            2560,
+            10240,
+            1
+          ],
+          [
+            2560,
+            10240,
+            2
+          ],
+          [
+            2560,
+            10240,
+            3
+          ],
+          [
+            2560,
+            10240,
+            8
+          ],
+          [
+            6144,
+            2560,
+            1
+          ],
+          [
+            6144,
+            2560,
+            3
+          ],
+          [
+            6144,
+            2560,
+            4
+          ],
+          [
+            2560,
+            6144,
+            3
+          ],
+          [
+            2560,
+            12288,
+            1
+          ],
+          [
+            2560,
+            12288,
+            2
+          ],
+          [
+            2560,
+            12288,
+            3
+          ],
+          [
+            2560,
+            12288,
+            4
+          ],
+          [
+            2560,
+            12288,
+            8
+          ],
+          [
+            2560,
+            248320,
+            1
+          ],
+          [
+            2560,
+            248320,
+            2
+          ],
+          [
+            2560,
+            248320,
+            3
+          ],
+          [
+            2560,
+            248320,
+            4
+          ],
+          [
+            2560,
+            248320,
+            8
+          ]
+        ],
+        "model_qualified": false
+      },
+      "scope": "Recoverable source/recipe and component evidence only;fresh full-verifier,device and model qualification required."
+    },
+    "monitor_qualification": {
+      "original_source_commit": "6f79f4b1a3b9d3400f404f88c8d562b4acdc35c2",
+      "evidence_key": "verify_window_build_monitor_host_v1",
+      "monitor_AST_sha256": "2141f05cc05e364bae5480b2420a349ae4b30c306b13c7caa21d2b8a97206924",
+      "unchanged_helpers": {
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+      },
+      "scope": "Reuse only the identical monitor function,owner,guard and interpreter;not the new preparation or metadata-query code."
+    },
+    "toolchain_image": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-model-v2/toolchain.json",
+      "files": 6239,
+      "bytes": 3202685889,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ],
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838"
+    },
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-model-v2/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 7200,
+      "rss_cap": 12884901888,
+      "text_cap": 8388608,
+      "file_cap": 536870912,
+      "total_cap": 2147483648
+    },
+    "whole_wall_seconds": 3600,
+    "qualification_plan": {
+      "host": "Same-build exact IQ3 and actual pool0/1 checks;Q6 policy/cache separately passes at dc2299.",
+      "device": "Fresh strict traced submission/phase checks on this generation before model requests.",
+      "model": "Fresh thinking-on32K short-output route checks with centering0 and1;require actual per-phase centered-call receipts and normal closure before long comparison.",
+      "speed": "Prospectively commit three counterbalanced independent pairs on both >=1K-output MTP classes using bench.sh. Judge each workload separately;prefill/TTFT remain independent.",
+      "stopping": "Stop on any source,executable,provider,numerical,validation,owner,fault or budget failure;no automatic retries or hash refresh.",
+      "remaining": "Agent/task quality,physical262144/tails/RESTORE and inference adoption stay pending."
+    },
+    "retention": "Replacement for closed b310 comparison products;preserve552b and its fixtures. This generation is not qualified by compilation. Fresh host/device/model gates precede same-binary decode-centering0/1 timing and independent prefill/TTFT checks.",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "observer_overhead_qualified": false,
+    "inference_adopted": false,
+    "controller_inputs": {
+      "files": 101,
+      "aggregate_sha256": "c3051619d53e204256ab83822b90a8acd357063de5181ed21046e262199705b1"
+    },
+    "native_sources": {
+      "files": 564,
+      "aggregate_sha256": "a433cbd3c8d8c9ced66b9ac524597fd441265e33defea3adc963ff2b72ac09de"
+    },
+    "recipe": {
+      "helper": "tools/sycl/build_q6_centering_model.py:recipe",
+      "sha256": "5f13595189a0347f49412dd292a3f18b98773bc312cf274d69f58d2e4ec1a753",
+      "selected_native": "dc2299e1fd97bd9e3b04faf9b94067e570161ce6",
+      "observer_build_option": "STRATA_CPU_SERVICE_PROFILE=ON",
+      "targets": [
+        "strata",
+        "cpu_service_pool_test",
+        "iq_single_exact_test",
+        "sycl_submission_test",
+        "sycl_verifier_retirement_test"
+      ],
+      "host_modes": [
+        {
+          "STRATA_IQ3_PAIR": "0",
+          "STRATA_CPU_SERVICE": "0"
+        },
+        {
+          "STRATA_IQ3_PAIR": "1",
+          "STRATA_CPU_SERVICE": "0"
+        }
+      ]
+    }
   }
 }
