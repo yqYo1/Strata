@@ -155097,7 +155097,7 @@
     }
   },
   "q6_centering_native_isa_v1": {
-    "stage": "prepared",
+    "stage": "failed-publication",
     "source_commit": "739d45eaf2f90101208856cdf89c1832d8c0edd9",
     "native_source_commit": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
     "native_model_result_commit": "9fd613b50c746949d2f468e36436f1c1d8f55f37",
@@ -155215,6 +155215,35 @@
     "complete": false,
     "GPU_executed": false,
     "model_executed": false,
-    "inference_adopted": false
+    "inference_adopted": false,
+    "tool_native_exit": 0,
+    "decoded_files": 290,
+    "decoded_bytes": 16137507,
+    "Q6_assemblies": 20,
+    "opcode_resource_interpretation_complete": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "native_disassembly_passed": true,
+    "native_disassembly_complete": true,
+    "publication_failure": {
+      "original_wrapper_exit": 1,
+      "error": "AttributeError: module 'q6_centering_model_entry' has no attribute 'write'",
+      "phase": "After normal disassembler exit,20Q6assemblies and closed ownership;external result saved before shared result publication.",
+      "recovery": "Record the original failed publication through the actual result path without rerunning disassembly. Continue only a separately planned static-output analysis;this is not a successful wrapper run."
+    },
+    "result_record_reconciled": true,
+    "analysis_plan": {
+      "stage": "prepared",
+      "source_commit": "f9185f707a61e4d116ff990da0fefba749d769f5",
+      "inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-native-isa-v1/analysis-inputs.json",
+        "sha256": "2e2126e29f1414b7721295e858463dc5fc194e6875aa9296b979648c19d70bb7",
+        "files": 21
+      },
+      "scope": "Static analysis of the existing native disassembler outputs only;the original wrapper publication failure remains failed.",
+      "method": "Identify all20COLS/ROWS/centering specializations from Itanium names;join .ze_info kernel resources by exact symbol;read exact native ELF .text sizes. Lexically count every decoded instruction mnemonic,record unparsed/illegal lines and compare all10matched specialization pairs. Keep DP4A/DPAS presence and static branch/instruction/resource counts distinct from dynamic issue,spills,critical path,saturation or speed.",
+      "acceptance": "Require every input hash unchanged,all20unique keys COLS1/2/3/4/8,ROWS1/4,centering0/1,and matching native ELF text names. Record unavailable metadata as unknown and do not turn private_size alone into spills. No GPU,build or model execution,performance or numerical/adoption gate.",
+      "retention": "Keep only the named native blob,20Q6assemblies and source-bound resource metadata for the immediate Luna/static Q6 code-choice question;retire unrelated dump sections now and the remaining raw bytes after curation."
+    }
   }
 }
