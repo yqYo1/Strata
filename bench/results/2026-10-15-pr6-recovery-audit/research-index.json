@@ -24497,7 +24497,7 @@
   },
   "q6_centering_whole_kernel_contract_20261105": {
     "classification": "decision support",
-    "stage": "investigating",
+    "stage": "reviewed",
     "schedulable_now": false,
     "source_revision": "eb97d6b0884fb5fc5739e7d66553fe0fcecc6495",
     "question": "Inspect the exact complete Q6 centering integration boundary and validation design:where can packed unsigned add/XOR replace only subtract32 after proven six-bit reconstruction,without changing other formats,dot/scales/reduction order,byte-safe loads,or prefill/decode phase ownership? Compare a Q6-only template/helper/entrypoint seam,identify concrete UB/lifetime and fallback risks,and propose a bounded bitwise and representative full-kernel timing discriminator. This is source-only design support;do not implement.",
@@ -24519,9 +24519,9 @@
     "worker_model": "gpt-6-luna",
     "worker_effort": "high",
     "review_model": "gpt-6-luna/max/native",
-    "consumer": "Main complete-Q6 centering implementation after the six-process model-audit cohort closes.",
-    "main_reads_body_on_arrival": true,
-    "review_point": "After report completion and native scope review;do not admit a GPU run before the frozen cohort closes.",
+    "consumer": "Main complete-Q6 centering implementation;design seam implemented in the isolated perf/q6-centering child,not built or qualified.",
+    "main_reads_body_on_arrival": false,
+    "review_point": "After same-geometry full-kernel implementation review;all-six-process closure still precedes component execution.",
     "run": "run_d43ee98385d1",
     "task": "task_1ae9832dd802",
     "dispatch": "ctx_59bf1d2f3b7c",
@@ -24541,11 +24541,31 @@
       "worker_own_Orca_ready_reachable": true,
       "report_directory_writable": true
     },
-    "ownership_closed": false
+    "ownership_closed": true,
+    "outcome": "succeeded",
+    "report": {
+      "path": ".cache/research/2026-11-05/q6-centering-whole-kernel-contract/report.md",
+      "sha256": "d75007cc48ecb8536fe54579a96b73b5f621412f6b797699e1fd9b81e65f4497",
+      "bytes": 7723
+    },
+    "review": {
+      "path": ".cache/research/2026-11-05/q6-centering-whole-kernel-contract/review.json",
+      "sha256": "eee065415e70045224ab31755eef16d363ba88170cdc070edcc9a8ee17b96ff8",
+      "bytes": 7312,
+      "model": "gpt-6-luna/max/native",
+      "source_pins_verified": 8
+    },
+    "closure": {
+      "status": "exited",
+      "exact_worker": true,
+      "completion_delivery_acknowledged": true
+    },
+    "retention": "Keep report,inputs and review only while the named retrieval/implementation consumer remains;retire completed lifecycle transports at the next serialized cleanup boundary.",
+    "operational_digest": "Unsigned add/XOR is valid only after Q6 six-bit reconstruction. Use same-geometry compile-time arms;preserve byte-safe loads,dot/scales,reductions,fallback and decode ownership. No build,device or speed qualification."
   },
   "b570_offline_scalar_isa_methods_20261105": {
     "classification": "knowledge collection",
-    "stage": "investigating",
+    "stage": "reviewed",
     "schedulable_now": false,
     "source_revision": "eb97d6b0884fb5fc5739e7d66553fe0fcecc6495",
     "question": "Compare practical ways to obtain and interpret B570 native ISA/resource evidence for a small scalar packed-integer SYCL kernel,after portable SPIR-V differs. Contrast installed ocloc/offline AOT and runtime IGC dump routes,device/stepping specificity,optimization-stage mismatches,register/private-memory interpretation,and whether each route needs a real device launch. Seek version-grounded primary docs and substantive original technical posts;identify counterexamples and the smallest later Main-only check. Distinguish this from previous XMX/DPAS compatibility and generic graph surveys. Do not execute any compiler,device query,workload or profiler.",
@@ -24569,7 +24589,7 @@
     "review_model": "gpt-6-luna/max/native",
     "consumer": "Later Main interpretation of the complete-Q6 centering screen if native optimization erases the portable difference;retrieval only,not immediate implementation.",
     "main_reads_body_on_arrival": false,
-    "review_point": "After report completion and native scope review;do not admit a GPU run before the frozen cohort closes.",
+    "review_point": "Retrieve only for a concrete native-ISA question after the complete-Q6 screen;command aliases and installed ocloc behavior require a new pinned check.",
     "run": "run_d43ee98385d1",
     "task": "task_e9870c5aa320",
     "dispatch": "ctx_c0f2f7169128",
@@ -24589,6 +24609,26 @@
       "worker_own_Orca_ready_reachable": true,
       "report_directory_writable": true
     },
-    "ownership_closed": false
+    "ownership_closed": true,
+    "outcome": "succeeded",
+    "report": {
+      "path": ".cache/research/2026-11-05/b570-offline-isa-methods/report.md",
+      "sha256": "aff358953815f850c34d083269f0ac8039f86762c469a1965d632548c9fbe7a7",
+      "bytes": 8491
+    },
+    "review": {
+      "path": ".cache/research/2026-11-05/b570-offline-isa-methods/review.json",
+      "sha256": "a9140d667143dced39fb3d30bcd6240e75636fdfee15b1c3eed1bbf1bdf2a897",
+      "bytes": 5534,
+      "model": "gpt-6-luna/max/native",
+      "source_pins_verified": 8
+    },
+    "closure": {
+      "status": "exited",
+      "exact_worker": true,
+      "completion_delivery_acknowledged": true
+    },
+    "retention": "Keep report,inputs and review only while the named retrieval/implementation consumer remains;retire completed lifecycle transports at the next serialized cleanup boundary.",
+    "operational_digest": "Retain as a conditional retrieval reference. Target aliases and installed ocloc/SPIR-V commands remain version-specific and unverified locally. No native result or execution eligibility;Main did not read the collection body."
   }
 }
