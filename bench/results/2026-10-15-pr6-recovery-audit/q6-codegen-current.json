@@ -75,7 +75,7 @@
     }
   },
   "q6_dot_codegen_v3": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "52e0b57bf3654a70f1c7670ebcc0456185eff4cf",
     "passed": false,
     "complete": false,
@@ -219,6 +219,24 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dot-codegen-v3/dot.spt"
     ],
     "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "outcome": {
+      "complete": false,
+      "passed": false,
+      "native_started": true,
+      "error": "RuntimeError('unqualified compiler include: /usr/include/linux/errno.h')",
+      "ownership_closed": true,
+      "provenance_diagnostic": {
+        "compile_exit_code": 0,
+        "translation_exit_code": 0,
+        "unrecorded_actual_headers": 20,
+        "sample_header": "/usr/include/asm-generic/bitsperlong.h",
+        "package": "linux-libc-dev",
+        "package_version": "6.8.0-147.147",
+        "text_bytes": 7220,
+        "text_sha256": "80b230f2575621e5a4f2e61f947ee669357a0b019528bb250562bcd0450b6713",
+        "limits": "Both CPU operations close normally,but V3 header admission fails. Capture the whole additional header package prospectively and recompile;do not qualify V3 retroactively."
+      }
+    },
     "sources_signature": {
       "files": 11,
       "aggregate_sha256": "0c80fbaa45b9a2038e882084d33d72cf6bb708083b9f149c9d3a5cff9b77d3fa"

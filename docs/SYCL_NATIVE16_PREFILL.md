@@ -334,7 +334,11 @@ device execution is qualified. V3 selects the supported internal text format
 while preserving both failed attempts. At source
 `52e0b57bf3654a70f1c7670ebcc0456185eff4cf`,V3's host check passes17 invalid-
 evidence rejections and the same11 source/ten production-setting checks.
-V3 is prepared with the unchanged installed compiler image;compilation is pending.
+V3 uses the unchanged installed compiler image. Both CPU operations exit0 and
+produce7220bytes of internal SPIR-V text. Header admission then fails on20
+previously unrecorded headers,all owned by `linux-libc-dev` version6.8.0-147.147.
+V3 remains failed. Pin that complete package before a fresh prospective compile;
+do not qualify V3 retroactively or advance a model proposal from its output.
 Compare both instruction pairs independently. Equal SPIR-V lowering ends that
 expression proposal;a difference only motivates a separately committed whole-
 Q6 discriminator. Retire generated artifacts and the fixture when this finite
