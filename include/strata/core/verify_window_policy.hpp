@@ -31,6 +31,19 @@ constexpr bool verify_q6_columns(bool enabled, VerifyInput input, bool exact,
     return n_out == 512 && columns == 8;
 }
 
+// 2197e5063:q6_centering_component_v2:18 shapes passed every independent
+// process median. Both arms use the same column geometry. Model gain remains
+// unqualified; retain the scalar column entry outside this opt-in decode set.
+constexpr bool verify_q6_centering(bool enabled, VerifyInput input, bool exact,
+                                  int type, int n_in, int n_out, int columns) {
+    if (!verify_q6_columns(enabled, input, exact, type, n_in, n_out, columns)) return false;
+    if (n_in == 6144 && n_out == 2560) return columns == 1 || columns == 3 || columns == 4;
+    if (n_in != 2560) return false;
+    if (n_out == 10240) return columns != 4;
+    if (n_out == 6144) return columns == 3;
+    return n_out == 12288 || n_out == 248320;
+}
+
 // Handles borrow session/weight operands. The caller must complete both owner
 // queues before clearing. A failing destroy must throw or fail-stop; already
 // destroyed handles are nulled so an interrupted host-only cleanup cannot
@@ -43,7 +56,7 @@ public:
     VerifyWindowGraphCache& operator=(const VerifyWindowGraphCache&) = delete;
     struct Window {
         std::vector<Handle> layer, resident, pcie;
-        uint64_t q6_reference_calls = 0, q6_columns_calls = 0;
+        uint64_t q6_reference_calls = 0, q6_columns_calls = 0, q6_centered_calls = 0;
         bool ready = false; // A nonempty partial capture must never be replayed.
 
         template<class Destroy>
@@ -55,7 +68,7 @@ public:
                 }
                 family->clear();
             }
-            q6_reference_calls = q6_columns_calls = 0;
+            q6_reference_calls = q6_columns_calls = q6_centered_calls = 0;
             ready = false;
         }
     };

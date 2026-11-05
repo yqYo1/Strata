@@ -470,6 +470,14 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     if (decode_q6_columns_ && !strata::kernels::native_mmvq_multi_exact()) {
         err = "verify: decode Q6 columns requires the exact MMVQ layout"; return false;
     }
+    const char* q6_centering = std::getenv("STRATA_SYCL_DECODE_Q6_CENTERING");
+    if (q6_centering && std::strcmp(q6_centering, "0") != 0 && std::strcmp(q6_centering, "1") != 0) {
+        err = "verify: STRATA_SYCL_DECODE_Q6_CENTERING must be 0 or 1"; return false;
+    }
+    decode_q6_centering_ = q6_centering && std::strcmp(q6_centering, "1") == 0;
+    if (decode_q6_centering_ && !decode_q6_columns_) {
+        err = "verify: decode Q6 centering requires decode Q6 columns"; return false;
+    }
     const char* query_profile = std::getenv("STRATA_SYCL_QUERY_PROFILE");
     query_profile_enabled_ = query_profile && std::strcmp(query_profile, "1") == 0;
     reset_query_profile();
@@ -726,14 +734,21 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     using namespace strata::kernels;
 #ifdef STRATA_ENABLE_SYCL
     auto& graph_window = window_graphs_.at(input, T);
-    graph_window.q6_reference_calls = graph_window.q6_columns_calls = 0;
+    graph_window.q6_reference_calls = graph_window.q6_columns_calls = graph_window.q6_centered_calls = 0;
 #endif
     auto window_mmvq = [&](int type, const void* weights, const void* x, float* y,
                            int n_in, int n_out, int columns, void* stream) {
 #ifdef STRATA_ENABLE_SYCL
         if (verify_q6_columns(decode_q6_columns_, input, native_mmvq_multi_exact(),
                               type, n_in, n_out, columns)) {
-            native_q6_k_columns_mmvq(weights, x, y, n_in, n_out, columns, stream);
+            // The outer policy already established the exact Q81 layout.
+            if (verify_q6_centering(decode_q6_centering_, input, true,
+                                    type, n_in, n_out, columns)) {
+                native_q6_k_centered_columns_mmvq(weights, x, y, n_in, n_out, columns, stream);
+                ++graph_window.q6_centered_calls;
+            } else {
+                native_q6_k_columns_mmvq(weights, x, y, n_in, n_out, columns, stream);
+            }
             ++graph_window.q6_columns_calls;
             return;
         }
@@ -1390,6 +1405,10 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     std::fprintf(stderr, "strata verify: phase=%s tokens=%d q6_reference_calls=%llu q6_columns_calls=%llu\n",
                  input == VerifyInput::prompt ? "prompt" : "decode", T,
                  static_cast<unsigned long long>(window.q6_reference_calls),
+                 static_cast<unsigned long long>(window.q6_columns_calls));
+    std::fprintf(stderr, "strata verify centering: phase=%s tokens=%d enabled=%d centered_calls=%llu columns_calls=%llu\n",
+                 input == VerifyInput::prompt ? "prompt" : "decode", T, decode_q6_centering_ ? 1 : 0,
+                 static_cast<unsigned long long>(window.q6_centered_calls),
                  static_cast<unsigned long long>(window.q6_columns_calls));
     size_t free_bytes = 0, total_bytes = 0;
     if (cudaMemGetInfo(&free_bytes, &total_bytes) == cudaSuccess)

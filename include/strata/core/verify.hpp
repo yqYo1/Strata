@@ -290,6 +290,7 @@ private:
     VerifyWindowGraphCache<cudaGraphExec_t> window_graphs_;
     VerifyInput last_input_ = VerifyInput::decode;
     bool decode_q6_columns_ = false; // immutable after init; opt-in model candidate
+    bool decode_q6_centering_ = false; // independent opt-in;18 measured column shapes only
     cudaEvent_t pcie_copy_ready_ = nullptr, pcie_done_ = nullptr;
     bool early_pcie_ = false, early_pcie_audit_ = false, pcie_launched_ = false, pcie_copy_recorded_ = false;
     cudaError_t pcie_status_ = cudaSuccess;

@@ -308,9 +308,13 @@ comparison. The explicit
 `native_q6_k_centered_columns_mmvq` entry and existing column entry instantiate
 the same checks,geometry,byte-safe loads,dot/scaling and reduction code with
 only the Q6 centering expression selected at compile time. Generic MMVQ,prompt
-products and columns5..7 retain the scalar reference. No production caller
-selects the new entry. A later integration must use explicit decode ownership
-and preserve prefill. This implements the reviewed design seam,not a speed gain.
+products and columns5..7 retain the scalar reference. The source-only
+`STRATA_SYCL_DECODE_Q6_CENTERING` selector defaults to0 and requires the existing
+decode-column selector and exact layout. Only the18eligible shapes below can
+select the centered entry. Prompt reads retain their independent reference;
+phase/token cache metadata tracks centered calls separately,and a separate
+centering receipt preserves the existing phase-log format. This integration is
+not yet built into an inference engine or qualified for model speed.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
