@@ -24796,5 +24796,38 @@
       "evidence_key": "q6_centering_closed_raw_retirement_v1",
       "scope": "Shared closed-output cleanup;the report,source pins and review in this row remain."
     }
+  },
+  "graphics_feedback_weight_residency_20261105": {
+    "classification": "knowledge collection",
+    "stage": "planned",
+    "schedulable_now": true,
+    "source_revision": "356da5c8b5a5628d6d7f42a11513862d4cb70e34",
+    "native_source_commit": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
+    "engine_sha256": "a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616",
+    "prerequisite_evidence": {
+      "source_files": 7,
+      "source_hashes_pinned": true,
+      "actual_compiled_cache_source_available": true,
+      "source_only_methods_no_local_hardware_prerequisite": true,
+      "no_prior_virtual_texturing_scope_found": true
+    },
+    "previous_scopes": [
+      "speculative_moe_offload_reuse_collection_scope",
+      "xe2_usm_cache_policy_collection_scope",
+      "decode_vram_rebuild_scope",
+      "gpu_virtual_memory_translation_methods_20261105",
+      "gpu_lossless_compressed_weight_streaming_20261105"
+    ],
+    "question": "Collect transferable out-of-core graphics virtual-texturing and sampler-feedback residency/streaming methods for irregular read-only quantized expert weights. Compare software virtual-texture/page-table caches,feedback-driven demand streaming versus known-demand scheduling,upload batching/priority/admission and fence-safe page reuse. Contrast their demand/latency model with sequential MoE routing and already-known layer-major long-prefill demand. Separate D3D12/Vulkan/graphics hardware features from algorithmic ideas portable to Intel Xe2/SYCL. Include finite-capacity and prediction/granularity/pollution/copy-feedback counterexamples and end-to-end break-even;no assumed local bottleneck or implementation.",
+    "report_path": ".cache/research/2026-11-05/graphics-feedback-weight-residency/report.md",
+    "worker_model": "gpt-6-luna",
+    "worker_effort": "high",
+    "review_model": "gpt-6-luna/max/native",
+    "main_reads_collection_body_on_arrival": false,
+    "report_budget_bytes": 12288,
+    "whole_folder_budget_bytes": 131072,
+    "consumer": "Conditional source-bound residency/streaming decision after a measured irregular expert-transfer/cache path warrants it;no present performance claim.",
+    "next_review": "Native Luna-max novelty/corrections/retrieval review after completion;retire lifecycle output and redundant body if no realistic consumer.",
+    "ownership_closed": false
   }
 }
