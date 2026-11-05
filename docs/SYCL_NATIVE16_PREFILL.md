@@ -774,8 +774,12 @@ outputs, unchanged source and allocation guards. These are bounded capability
 and numerical checks, not sampler equivalence, native arithmetic throughput,
 absence of software emulation or model qualification. The diagnostic deliberately
 skips provider teardown after completed copies and freed allocations.
-After the frozen cohort closes, pin its source/compiler/provider identities
-and a new owned-controller plan before building or running. Use query,
+The Main-authored [owned controller](../tools/sycl/device_fp64_probe.py)
+is also source-prepared, without host-control tests, compilation or device
+execution. It refuses preparation until all six IQ3 audit comparison processes
+close successfully. At that boundary, use `prepare`, commit its exact
+source/compiler/header/provider identities and plan, then use `build`, `query`,
+`arithmetic` and `exp`, committing each transition before the next. Use query,
 arithmetic, then exp in separate processes, once each; stop on the first
 unsupported capability, error, timeout, validation message or fresh fault.
 Keep the existing compiler/runtime without emulation flags. Prospective caps:
@@ -819,10 +823,13 @@ comparison, bringing the current retained count to 21. This is not a claim of
 global cleanup. The legacy
 source/recipe holds remain independent.
 
-Niko1221/Strata remains the only upstream. Last actual check:
-**2026-11-02 21:17:40 UTC**, `c62d5e3a15b40ea51c96aae9e8d36928965f53ab`
-(`v0.2.9`); check again on the approximately 48-hour cadence using the
-project-only sync skill. Required tracking/recovery/alias/API/CLI imports and
+Niko1221/Strata remains the only upstream. The maintained
+[`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
+records the last actual check at **2026-11-04 21:34:43 UTC**,
+`ffa80d73133ea5c548aefe57889a16e8085a938f` (`v0.2.10`), with the next check due
+approximately 48 hours later. The configuration parsing helpers are ported and
+pass five focused tests; server wiring remains pending until the frozen audit
+comparison closes. Required tracking/recovery/alias/API/CLI imports and
 hardware-tuned unmodified-upstream measurements remain incomplete. PR 180 is
 blocked by a squash-only ruleset; preserve measured source commit identities
 and do not claim default-branch integration.
