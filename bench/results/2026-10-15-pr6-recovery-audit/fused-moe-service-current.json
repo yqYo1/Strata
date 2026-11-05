@@ -158724,5 +158724,123 @@
         "sha256": "72da935bb37bf8569401b56b8fa9805e3ba60a45f7129ddabc77d34f99837c8e"
       }
     }
+  },
+  "decode_service_model_build_v1": {
+    "stage": "prepared",
+    "source_commit": "70169d3881ab588d45f7df7baa132b4293f00970",
+    "selected_basis": {
+      "original_native_source": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
+      "original_record_sha256": "770f1cee5c5b8d791299093124285f2769ae664a5a273235f292645d569fa579",
+      "original_engine_sha256": "a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616",
+      "cohort_sha256": "5c37c154077d98053c385bac8ed6005453099994b78199f4349417159ef47d58",
+      "centering_selected": false,
+      "native_input_aggregate": "a433cbd3c8d8c9ced66b9ac524597fd441265e33defea3adc963ff2b72ac09de",
+      "diagnostic_input_aggregate": "be20a5f060f5003a8046ae96d03d59aa0500853589740139aa745674346a3ec9",
+      "observer_delta": "96b9cc511b81e5fe4c18e53030019a2ad34c6b4d",
+      "wait_label_delta": "1c42b4700f046b6fbcd0cc20338b42c62d0340d2",
+      "host_contract": {
+        "key": "decode_service_host_contract_v2",
+        "source_commit": "6abda7fa416f2b446c35e41ae27b89c870347ee8",
+        "sha256": "0948dcd145e86f6a1923364e4bd59dcf94527e815890bab26da40db66bcf4a2b",
+        "diagnostic_headers_and_fixture_match": true
+      },
+      "changed": [
+        "include/strata/sycl/cpu_wait_profile.hpp",
+        "src/core/verify.cpp",
+        "src/program/generate.cpp",
+        "include/strata/sycl/decode_service_profile.hpp",
+        "tests/core/decode_service_profile_test.cpp"
+      ],
+      "scope": "Source recovery and original decision only;fresh host/device/model and observer-overhead qualification required."
+    },
+    "monitor_qualification": {
+      "original_source_commit": "6f79f4b1a3b9d3400f404f88c8d562b4acdc35c2",
+      "evidence_key": "verify_window_build_monitor_host_v1",
+      "monitor_AST_sha256": "2141f05cc05e364bae5480b2420a349ae4b30c306b13c7caa21d2b8a97206924",
+      "unchanged_helpers": {
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+      },
+      "scope": "Reuse only the identical monitor function,owner,guard and interpreter;not the new preparation or metadata-query code."
+    },
+    "toolchain_image": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-model-v1/toolchain.json",
+      "files": 6239,
+      "bytes": 3202685889,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ],
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838"
+    },
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-model-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 7200,
+      "rss_cap": 12884901888,
+      "text_cap": 8388608,
+      "file_cap": 536870912,
+      "total_cap": 2147483648
+    },
+    "whole_wall_seconds": 3600,
+    "qualification_plan": {
+      "host": "Fresh same-build IQ3/pool checks plus separately compiled seven-case accounting and five-case actual wait-bridge fixtures;pin their dependencies and executable identities.",
+      "device": "Fresh bounded traced submission/phase checks with normal closure and no fresh fault before model execution.",
+      "model": "Fresh thinking-on32K model entry with complete source/ELF/provider/body/cache/Q6/IQ3 joins and disjoint-ledger parser gates.",
+      "observers": "Separate same-binary profile0/1 processes;CPU_SERVICE1 and CPU_WORK_CENSUS1 in both,immutable before exec. Check clock resolution/read cost,closed nesting,wall/callerCPU/workerCPU conservation and overhead. Clean speed stays separate.",
+      "limits": "Wait/submission/copy envelopes do not measure physical bus traffic or hardware saturation. No performance adoption,70TG,agent/task,physical262144/tails/RESTORE or ordinary teardown qualification from compilation.",
+      "stopping": "Stop first input,budget,owner,compiler,dependency,link or output failure;no retry or hash refresh."
+    },
+    "retention": "Preserve the validated552b fallback. After cohort and standalone half-screen consumers close,recover and retire a1b0 products before compiling this replacement. No third inference generation. Keep the exact original recipe/toolchain and qualify the new build. Separate same-binary profile on/off processes keep CPU service/census enabled in both;clean speed and physical traffic remain separate.",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "observer_overhead_qualified": false,
+    "inference_adopted": false,
+    "controller_inputs": {
+      "files": 105,
+      "aggregate_sha256": "b0f031ba6ae4b360b31b6d2f8a7fa12e7a259ef5c5a7bcf38e82f2bb63489f5f"
+    },
+    "native_sources": {
+      "files": 566,
+      "aggregate_sha256": "be20a5f060f5003a8046ae96d03d59aa0500853589740139aa745674346a3ec9"
+    },
+    "recipe": {
+      "helper": "bench/sycl/decode_service_sources.py:recipe",
+      "sha256": "3c1c9f975649592234e8c89583d2614fdb21e763297da472b01e61967f83b445",
+      "selected_native": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
+      "observer_build_option": "STRATA_CPU_SERVICE_PROFILE=ON",
+      "targets": [
+        "strata",
+        "cpu_service_pool_test",
+        "iq_single_exact_test",
+        "sycl_submission_test",
+        "sycl_verifier_retirement_test"
+      ],
+      "host_modes": [
+        {
+          "STRATA_IQ3_PAIR": "0",
+          "STRATA_CPU_SERVICE": "0"
+        },
+        {
+          "STRATA_IQ3_PAIR": "1",
+          "STRATA_CPU_SERVICE": "0"
+        }
+      ]
+    }
   }
 }
