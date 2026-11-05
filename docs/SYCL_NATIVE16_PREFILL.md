@@ -303,8 +303,8 @@ and per-lane mixed-word assertions. These are compile-time algebra checks,
 not a device numerical gate. The retired expression fixture had no production caller and omitted
 full Q6 reconstruction,scales,column reductions and surrounding optimization.
 
-The complete Q6-kernel centering candidate has a successful first fixture
-build,but no arithmetic or speed qualification yet. The explicit
+The complete Q6-kernel centering candidate now passes its bounded B570
+comparison. The explicit
 `native_q6_k_centered_columns_mmvq` entry and existing column entry instantiate
 the same checks,geometry,byte-safe loads,dot/scaling and reduction code with
 only the Q6 centering expression selected at compile time. Generic MMVQ,prompt
@@ -312,34 +312,34 @@ products and columns5..7 retain the scalar reference. No production caller
 selects the new entry. A later integration must use explicit decode ownership
 and preserve prefill. This implements the reviewed design seam,not a speed gain.
 
-All six frozen model-audit processes are closed. The first traced fixture
-attempt stopped before any kernel enqueue:its descriptive-name check expected
-`Intel Arc B570 Graphics`,whereas the qualified runtime returns
-`Intel(R) Arc(TM) B570 Graphics`. Backend,vendor8086,devicee20c and
-PCI0000:05:00.0 match. V1 remains failed with normal process closure and no
-fresh fault. V2 retains those exact physical identity checks and prints the
-descriptive name without matching it;numerical,queue and timing gates stay
-unchanged. The first build's822 actual include/link inputs passed the pinned
-prebuild image. No inference engine changed.
-Prepare the fresh V2 comparison with
-`tools/sycl/measure_q6_columns.py prepare`,commit its exact generated plan,then
-build and run its traced smoke before timing. The maintained fixture's
-`--centering` argument compares the two complete column entries. It is designed to check
-256per-lane compile-time helper cases,32device smoke cases including tail rows
-and columns1..8,and35actual-model shape/column combinations for timing. Each
-case retains full output-bit,read-only input,guard,Q81-byte and scalar-dot
-checks outside timing. Three independent timing processes use five paired
-batches per arm and a10ms batch floor;each shape advances separately only if
-all three median candidate/reference time ratios are below1. Commit every
-phase transition. Stop on the first failed input,validation,fault,owner,budget
-or numerical gate;do not retry by refreshing hashes. The controller reuses the
-actual b310 native optimization recipe with explicit GCC13 host headers and
-records a full prebuild compiler/package image,including `linux-libc-dev`.
-Count its temporary standalone fixture with retained project builds and retire
-it after the named comparison closes. The limiting physical resource remains
+All six frozen model-audit processes are closed. The first fixture attempt
+remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
+decorations before any kernel enqueue. Its source,recipe and diagnosis are
+recoverable from `9be2ef797`;the superseded executable and output are retired.
+V2 uses exact LevelZero,vendor8086,devicee20c and PCI0000:05:00.0 identity;
+the descriptive name is printed. No inference engine changed.
+
+At source `f18b8e548`,V2 builds with the actual b310 optimization recipe and
+explicit GCC13 headers;all822 actual include/link inputs match the prebuild
+image,including `linux-libc-dev`. The `--centering` fixture passes its256
+compile-time helper cases,32traced device smoke cases and all35actual-model
+shape/column combinations in each of three fresh timing processes. Full
+output-bit,read-only input,guard,Q81-byte and scalar-dot checks pass outside
+timing. Native exits are0,validation is quiet,owners close,and no fresh fault
+appears. Five paired batches per arm meet the10ms floor.
+Exactly18of35shapes meet the prospective all-three median-time-ratios-below1
+performance gate;the other17keep the reference. See
+`q6_centering_component_v2.decision` and individual samples in the linked result.
+For the2560x248320 vocabulary head,the three-process geometric-mean time ratios
+are0.995707 for one column and0.991889 for two columns. These are resident,
+validation-instrumented,full-dispatch dependent-batch results,not isolated-call
+latency or model TG. Only individually eligible shapes may enter a new
+decode-only model comparison. Prefill remains independently selected.
+Retire the temporary fixture after source/recipe recovery and remote result
+verification. Physical PCIe/VRAM traffic and the limiting resource remain
 unqualified;this tests arithmetic sensitivity at unchanged logical data volume.
-A component gain is separate from model speed,prefill preservation,task quality
-and physical262144/RESTORE qualification.
+Model speed,prefill/TTFT preservation,task quality,and physical262144/RESTORE
+qualification remain separate gates.
 The source-only implementation/controller audits at `f7a96d864` and their
 native Luna-max reviews are closed. They confirm the valid-domain centering
 seam and same-geometry arms;the 32smoke cases and retained paired samples are
