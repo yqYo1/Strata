@@ -387,11 +387,38 @@ with quiet stderr and closed ownership. Checksum is `8c8d4b0224882325`;see
 and a native-half cast comparison remain pending before any Q6-only timed
 integration. Keep the original shared converter and current model/benchmark
 inputs frozen. This host pass is not GPU,model or speed evidence.
-The prospective host command is `g++-13 -std=c++17 -O3 -march=znver3
--fno-fast-math -ffp-contract=off -fsanitize=undefined -fno-sanitize-recover=undefined
--Iinclude bench/sycl/f16_widen_clz.cpp -o <private-output>`,with180s compile and
-30s execution limits. Retire that one-use CPU fixture after recording its exact
-source/dependencies and semantic result;it is not another inference generation.
+The one-use host executable and raw outputs are now retired after source/recipe
+recovery;the compact result retains its139actual compiler inputs and checksum.
+
+The prospective [device screen](../bench/sycl/f16_widen_clz_device.cpp) compares
+the existing converter,CLZ and `sycl::bit_cast<sycl::half>` followed by a numeric
+float conversion. All65536encodings run at both even and odd byte addresses.
+Each arm uses the production-style two-byte copy,with read-only input and output
+guards,and the host-only dyadic oracle. Reference/CLZ require exact bits for
+every encoding. Native requires exact finite values,signed zeros,subnormals
+and infinities;NaNs require classification and sign,with quiet/signaling and
+payload changes recorded separately. A failing arm remains failed;the aggregate
+passes only if all3contracts pass. No timing or production integration exists.
+The native half representation and supported-device requirement follow the
+[SYCL specification](https://registry.khronos.org/SYCL/specs/sycl-2020/html/sycl-2020.html)
+and [scalar-type reference](https://github.khronos.org/SYCL_Reference/iface/scalar-types.html);
+fp16 availability alone does not establish preservation of subnormals.
+
+After the six-process centering comparison closes,commit the standalone
+controller/generated-input/recipe pins before building this fixture. Reuse the
+qualified92832source `src/sycl/runtime.cpp` and its headers,then the new helper
+and fixture;this needs no third inference engine. The intended compiler is the
+qualified icpx2026.2/GCC13 image,with `-std=c++20 -O3 -fsycl
+-fsycl-id-queries-range=size_t --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13
+-fno-fast-math -ffp-contract=off -Wall -Wextra -Werror`. These conservative
+semantic flags do not qualify the later fused production build's lowering.
+Use the exact B570/LevelZero/in-order runtime and immutable qualified safety
+environment,with tracing/validation and finite180s build/60s device budgets,
+64MiB raw output per job. Freeze actual toolchain/provider/dependency identities
+and source-to-executable admission in that controller before execution.
+Inspect the same artifact's device lowering after the semantic result;commit
+repetitions,timer floor/overhead and speed criteria before a separate clean
+timing experiment. The device fixture has not been compiled or run.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
