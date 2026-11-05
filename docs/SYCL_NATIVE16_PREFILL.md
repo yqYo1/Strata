@@ -235,8 +235,9 @@ Its fresh active-from-exec current-native control is closed and passes all62
 named kernels and unique native host-flow joins,normal exit,quiet validation,
 closed ownership and no fresh fault. The274401-byte trace contains249 GPU and
 770 host events. It retains the original small control budgets;the old
-`479a / 552b` control is not inherited. Reader tests and model capture remain
-unexecuted. Next use one warmup and one 32769-input,
+`479a / 552b` control is not inherited. Both current-source frontend probes
+and all16 guarded-window reader tests pass;model capture remains unexecuted.
+Next use one warmup and one 32769-input,
 thinking-on diagnostic request,with exact IQ3 footer IDs1/2 and the chosen
 immutable selector. Use the matching arm's closed model-entry request body and
 prompt time for the observer-cost comparison. Its qualified environment has

@@ -146706,7 +146706,7 @@
     "environment_template_sha256": "ceb3fc5f4b114638c508fc508e68a6d28757647f1f09fcf6a5a72473a70f765a"
   },
   "decode_iq3_device_service_v1": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "300cdb89a92ee0c3160a77365fc4cf5ae3026d50",
     "native_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
     "binary": {
@@ -147015,7 +147015,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -147063,6 +147063,41 @@
       "raw_budget": "Bounded kernel-activity trace:512MiB/file,768MiB/model job,1GiBwhole;separate fixture control keeps its original180s/4GiB/64MiB job and128MiBwhole caps. Model stop-control accounting includes the completed trace,not only stop stdout. Retire complete raw traces/logs/JIT after required joins and compact reduction.",
       "stopping": "Stop first source/provider/owner/body/route/token/clock/validation/fault/budget/overhead failure;no retry,hash refresh or criterion change.",
       "limits": "Instrumented1..24-output diagnostic with the matching short-entry default pool-spin policy,not the long cohort20ms policy. Not representative long generation,observed strong/weak MTP class,clean PP/TG,full device coverage,physical traffic,saturation,critical path,task/agent,physical262144/RESTORE,ordinary-provider teardown or adoption."
+    },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 190,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
+    "window_reader_tests": {
+      "passed": true,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "summary": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.001s\n\nOK\n",
+      "command": {
+        "argv": [
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "-B",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/test_decode_window_trace.py"
+        ],
+        "pid": 3748442,
+        "exit_code": 0,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "errors": [],
+        "cleanup": [],
+        "elapsed_seconds": 0.7998522501438856
+      }
     },
     "source_inputs": {
       "files": 307,
