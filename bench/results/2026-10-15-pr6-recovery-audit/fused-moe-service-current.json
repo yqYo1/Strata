@@ -153612,7 +153612,7 @@
     "next": "Use distinct model-host/model-phase namespaces,verified absent before the new preparation."
   },
   "q6_centering_model_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "781bc6daace229bb736a635f4f0c3c6e37a357fa",
     "build_record": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-centering-model-v2/record.json",
@@ -153719,9 +153719,42 @@
       "file_cap": 65536,
       "total_cap": 1048576
     },
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "kind": "exact",
+        "arm": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "562c438d692c57a065ab95666400c49012545967dfe7133d8098e17e2ebec43b",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 0,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "2ed549a94563ab46dd0dbb4a49c842c51f533ce277b6c8ee5b1721d23b64e0f6",
+        "ownership_closed": true
+      },
+      {
+        "kind": "exact",
+        "arm": 1,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "66f72dbe6ed391b1ad7a75acd2006c7726508a6eedb2411c6e2342d75e7269a1",
+        "ownership_closed": true
+      },
+      {
+        "kind": "pool",
+        "arm": 1,
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "2ed549a94563ab46dd0dbb4a49c842c51f533ce277b6c8ee5b1721d23b64e0f6",
+        "ownership_closed": true
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -153732,6 +153765,7 @@
       "CPU_sources": "Unchanged563-file baseline CPU inputs;only7Q6/phase source files differ.",
       "policy_gate": "q6_centering_policy_host_v1 at dc2299;not full-verifier GPU math."
     },
+    "pool_checksum": "e5d7a50a8e7d5ac5",
     "sources": {
       "files": 103,
       "aggregate_sha256": "a4e30a3b1796c32f9099c2c92db4cdd5c037a88ad807b48c29a82013da1f3047"

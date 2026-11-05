@@ -345,6 +345,10 @@ inputs match their frozen images. Five outputs are hashed;the new engine is
 `a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616`.
 Configure,compile and dependency children exit0 with closed ownership.
 No GPU/model execution or model-speed qualification follows from this build.
+Fresh same-build host qualification now passes all four exact0,pool0,exact1,
+pool1 children:384single/80pair bitwise/canary controls and28real-pool cases
+per arm,with the original `e5d7a50a8e7d5ac5` checksum. All children exit0,
+stderr is empty,and ownership closes. The small GPU and model gates remain next.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
