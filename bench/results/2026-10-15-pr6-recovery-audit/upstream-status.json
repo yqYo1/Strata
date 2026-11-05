@@ -993,6 +993,24 @@
           "The desktop report covers Python serve/web;apps/host Chat/ApprovalDock retains per-action approve/deny and remains an open functional review."
         ]
       }
+    },
+    "config_args_json_help": {
+      "state": "helper_ported_integration_pending",
+      "upstream": "Niko1221/Strata",
+      "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+      "origin": "serve/server.py:split_joined_args/read_config/parse_config_text;serve/test_server.py:JoinedEngineArgs",
+      "license": "Upstream and fork LICENSE bytes match,MIT,Niko1221 and Strata contributors. No XeStrata input.",
+      "destinations": [
+        "serve/config_file.py",
+        "tests/core/test_config_file.py"
+      ],
+      "helper_source_sha256": "95faac796ff8d64a6fcb79790c29a5b8892a781e14c733f4f2422e94d4a6d7b3",
+      "behavior": "Repair joined --flag value or --flag=value entries conservatively,preserve literal value/path entries,and report JSON file/line/column with BOM support.",
+      "tested": false,
+      "server_entry_wired": false,
+      "measurement_isolation": "New unimported helper/test are outside frozen audit caller011fa1cb snapshot. All307 existing pins still match;server.py remains unchanged during this cohort.",
+      "next": "Run committed helper tests at a serialized boundary. After the audit-cost cohort closes,wire server main to read_config and split_joined_args,then run server/CLI integration checks before claiming the feature port complete.",
+      "coverage_limit": "Only this configuration slice;whole required functional import ledger and unmodified hardware-tuned upstream performance remain incomplete."
     }
   }
 }
