@@ -727,20 +727,21 @@ Luna-max review are closed. Main checked the additionally identified compiled
 flag accepts exactly"1". The treatment includes GU-dispatch call accounting
 across native formats and IQ3-specific row accounting; it does not isolate the
 cost of IQ3 counter instructions. The source caveat is cleared without a
-controller or native rebuild. The first audit-on/off pair now closes with both
-long requests eligible in each process, native exit0, quiet validation, closed
-owners and no fresh fault. Exact code/prose TG is13.616838/8.878867 tok/s with
-audit on and13.472547/8.866021 with audit off; input/generated lengths and
-acceptance are unchanged. The first pair does not show an audit-off speed gain.
-Keep the higher individual on observations in the CSV; the three-pair contrast
-is still incomplete, and this pair does not explain the earlier lower absolute
-speed or replace the repeated clean reference.
+controller or native rebuild. Three processes (audit1,0,0) now close with both
+long requests eligible in each, native exit0, quiet validation, closed owners
+and no fresh fault. Exact code/prose TG is13.616838/8.878867 tok/s with audit on;
+the two off samples are13.472547..13.476401 and8.852377..8.866021 respectively.
+Input/generated lengths and acceptance are unchanged. The first pair does not
+show an audit-off speed gain;the second off process still needs its paired on
+process. Keep the higher individual on observations in the CSV; the three-pair
+contrast is incomplete and does not explain the earlier lower absolute speed
+or replace the repeated clean reference.
 Audit-off timed IQ3 route telemetry is unavailable;an audit-on replay cannot
 qualify it. This measures the enabled-audit effect on timed speed,not total
 observer wall cost or the cause of the cross-build gap. Request snapshots and
 footer lie outside decode_ms. Disabled compiled profile object/layout,guards
 and request scaffolding remain a separate unmeasured confound. Complete the
-remaining four processes under the existing frozen plan before selecting an
+remaining three processes under the existing frozen plan before selecting an
 observer-free model envelope. Main continues implementation and serialized measurement.
 The diagnostic preset's
 `STRATA_DECODE_TIMING=0` is presence-enabled by the measured generator and emits
