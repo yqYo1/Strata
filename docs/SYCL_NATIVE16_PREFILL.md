@@ -419,8 +419,8 @@ model match;this is a controller admission mismatch,not a new GPU fault or a
 change during the closed comparison. No compiler or GPU process ran. Preserve
 `q6_f16_widen_device_v1` as failed. V2 now reuses the exact current
 same-build host/device/preload proof and sets EXPECTED_LOADER before native exec;
-that controller correction has not yet been executed. The matched library,
-official loader and provider bytes remain subject to admission checks.
+V2 preparation now passes with112source/control pins and the exact current
+library,official loader and84provider files. Build/device checks remain pending.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
@@ -433,8 +433,8 @@ review found that population checks alone accepted contradictory signaling-NaN
 quiet counts. The controller now requires quieted signaling NaNs to change the
 quiet bit,and reconciles mismatch/hash counters;its negative controls include
 both integer arms and contradictory native records. The positive control still
-requires native NaN quieting to be accepted. These parser controls remain unrun until cohort
-closure;the source fix is not device or runtime qualification.
+requires native NaN quieting to be accepted. All3valid and11corrupt-report
+parser controls pass during V2 preparation;this is not device qualification.
 Commit the generated-input/recipe pins before building this fixture. Reuse the
 qualified92832source `src/sycl/runtime.cpp` and its headers,then the new helper
 and fixture;this needs no third inference engine. The intended compiler is the
