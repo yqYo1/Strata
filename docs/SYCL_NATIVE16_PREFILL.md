@@ -298,8 +298,8 @@ compile-time checks exercise all64 values in repeated-byte words and in each
 lane of a mixed-boundary word. This is not an executed numerical/device gate.
 Compare centering and dot independently; do not combine their treatments or
 infer either gain from source operation counts.
-The [owned offline controller](../tools/sycl/q6_dot_codegen.py) is also
-source-prepared only. Its Q6-only admission now permits a closed adjacent audit
+The [owned offline controller](../tools/sycl/q6_dot_codegen.py) has a prepared,
+unexecuted compiler plan. Its Q6-only admission permits a closed adjacent audit
 pair boundary (2,4,6 completed processes),with every completed process passing,
 normal exit0,closed ownership and no fresh fault. It holds the shared exclusive
 lock and checks the same committed cohort signature before and after compilation;
@@ -322,13 +322,18 @@ instruction inspection needs its own evidence rather than an inferred DP4A.
 At source `d6361f580`, two host controls pass: actual premature `prepare`
 refuses the unfinished six-process cohort without creating its root,and the
 production compile-command/reference check admits all ten reproduced settings.
-No installed-image capture,compilation,device query or kernel execution follows.
+At that revision,no installed-image capture,compilation,device query or kernel execution followed.
 Those historical controls predate the centering extension and retain their
 original all-six refusal outcome. Before preparation,run the committed
 `python3 -B tools/sycl/q6_dot_codegen.py host` at a safe model-process boundary.
 It checks current source/production inputs,the actual committed pair boundary,
 negative ownership/fault/partial-pair controls,changed-cohort detection and LLVM
 target/kernel-body rejection controls without creating a compiler root.
+At source `ab0c5f26513661d09148d8411d523dd1eb79cb0d`,the host check passes:
+11 committed source/control inputs,the actual four-process boundary,all ten
+production settings,16 invalid-evidence rejections and changed-cohort detection.
+Installed compiler/Python/library inputs are now pinned and the plan is prepared;
+no compiler child,device query or kernel execution has run.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary
