@@ -22,6 +22,7 @@ P, B, RESULT = probe.P, probe.B, probe.RESULT
 ROOT = B / 'q6-dot-codegen-v1'
 KEY = 'q6_dot_codegen_v1'
 SOURCE = 'bench/sycl/q6_dot_codegen.cpp'
+HEADER = 'include/strata/kernels/q6_packed_center.hpp'
 NATIVE = B / 'decode-iq3-pair-model-v1'
 owner, guards, require, sha, git = probe.owner, probe.guards, probe.require, probe.sha, probe.git
 
@@ -44,7 +45,7 @@ def save(row):
 
 
 def sources():
-    names = {SOURCE, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md'}
+    names = {SOURCE, HEADER, 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md'}
     for module in tuple(sys.modules.values()):
         name = getattr(module, '__file__', None)
         if name and Path(name).resolve().is_relative_to(P):
@@ -70,7 +71,7 @@ def production_command():
     expected = native['native_sources']['src/kernels/sycl/native_mmvq.cpp']
     require(sha(source) == expected and sha(P / 'src/kernels/sycl/native_mmvq.cpp') == expected,
         'scalar reference differs from the compiled Q6 input')
-    # The private discriminator has no production include or define dependency.
+    # The discriminator adds only its standalone candidate header,no production defines.
     # Pin the actual command; reproduce its optimization/precision settings.
     flags = ['-O3', '-DNDEBUG', '-std=c++20', '-ffp-contract=off', '-fsycl',
         '-fsycl-id-queries-range=size_t', '-Wall', '-Wextra', '-Werror',
@@ -94,11 +95,11 @@ def prepare():
     row = dict(stage='preparing', source_commit=revision, sources=pins,
         passed=False, complete=False, active=False, ownership_closed=True,
         GPU_executed=False, native=native, whole_bytes=32 << 20,
-        plan=dict(question='Does the public signed-byte vector dot expression differ from the current scalar lowering?',
+        plan=dict(question='Independently compare scalar/vector signed-byte dot and scalar/packed Q6 byte centering lowerings.',
             prerequisite='All six IQ3 audit processes close normally,without fresh faults or changed inputs.',
-            acceptance='One owned device-only LLVM compilation,normal exit0,closed commands,unchanged source/toolchain/Python inputs,actual header dependency admission and both named kernel definitions. No automatic retry.',
-            decision='Main inspects both optimized instruction bodies. Equal lowering ends this expression proposal. A difference only motivates a separately committed whole-Q6 experiment;no instruction throughput,device support,model speed or adoption follows.',
-            limits='Isolated expressions with unknown signed packed bytes,zero accumulator,128-item groups and subgroup32. Production reconstruction,scales,reductions and surrounding optimizations are absent. LLVM IR is not native B570 ISA or proof of hardware DP4A.'),
+            acceptance='One owned device-only LLVM compilation,normal exit0,closed commands,unchanged source/toolchain/Python inputs,actual header dependency admission and both definitions in each of the dot/centering kernel families. Compile-time centering byte relation and mixed-lane example must pass. No automatic retry.',
+            decision='Main compares each optimized instruction pair independently. Equal lowering ends that expression proposal. A difference only motivates a separately committed whole-Q6 experiment;no instruction throughput,device support,model speed or adoption follows.',
+            limits='Isolated dot with unknown signed packed bytes and zero accumulator;independent centering contrast masks unknown words to six bits per byte. Both use128-item groups and subgroup32. Full production reconstruction,scales,reductions and surrounding optimizations are absent. LLVM IR is not native B570 ISA or proof of hardware DP4A.'),
         retention='Keep source,recipe and compact outcome. Keep generated IR only for Main instruction comparison;retire it and the fixture when that finite consumer ends. No inference engine generation.',
         budgets=dict(wall=60, cpu=60, rss_cap=2 << 30, text_cap=256 << 10,
             file_cap=8 << 20, total_cap=32 << 20))
@@ -128,6 +129,7 @@ def prepare():
         row['command'] = [compiler, *native['reproduced_flags'],
             '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
             '-fsycl-device-only', '-S', '-emit-llvm', '-v',
+            '-I', str(P / 'include'),
             '-MD', '-MT', str(ROOT / 'dot.ll'), '-MF', str(ROOT / 'headers.d'),
             str(ROOT / 'source.cpp'), '-o', str(ROOT / 'dot.ll')]
         for name in ('tmp', 'cache'): (ROOT / name).mkdir()
@@ -169,6 +171,7 @@ def header_evidence(row):
     require(tokens and tokens[0] == str(ROOT / 'dot.ll') + ':', 'dependency target differs')
     allowed = {v['realpath']: v['sha256'] for v in row['toolchain']['files'].values()
         if v['kind'] == 'file'}
+    allowed.update({str((P / name).resolve()): h for name, h in row['sources'].items()})
     allowed[str((ROOT / 'source.cpp').resolve())] = row['sources'][SOURCE]
     verified = {}
     for name in tokens[1:]:
@@ -196,13 +199,15 @@ def compile_once():
             **row['budgets'])
         require(owner.closed(entry) and entry['exit_code'] == 0, 'owned compiler failed')
         text = (ROOT / 'dot.ll').read_text()
-        names = [n for n in re.findall(r'^define\b.*?@([^\s(]+)', text, re.MULTILINE)
-            if 'Q6DotExpression' in n]
-        require(len(names) == 2 and any('ILb0E' in n for n in names)
-            and any('ILb1E' in n for n in names), 'two distinct kernel definitions required')
+        names = re.findall(r'^define\b.*?@([^\s(]+)', text, re.MULTILINE)
+        families = {kind: [n for n in names if kind in n]
+            for kind in ('Q6DotExpression', 'Q6CenterExpression')}
+        require(all(len(v) == 2 and any('ILb0E' in n for n in v)
+            and any('ILb1E' in n for n in v) for v in families.values()),
+            'two distinct definitions per kernel family required')
         require('spir64' in stderr.read_text(), 'actual compiler device triple absent')
         outcome.update(IR=dict(sha256=sha(ROOT / 'dot.ll'), bytes=(ROOT / 'dot.ll').stat().st_size,
-            kernel_definitions=names), headers=header_evidence(row))
+            kernel_definitions=families), headers=header_evidence(row))
         current()
         outcome.update(complete=True, passed=True)
     except BaseException as error:

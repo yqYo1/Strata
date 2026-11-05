@@ -289,12 +289,22 @@ this expression proposal; different lowering only motivates a source-pinned
 whole-kernel discriminator, not a speed or saturation claim. This fixture omits
 Q6 unpacking,scales and column reductions. Retire it when that finite compiler
 question closes unless a named immediate comparison still consumes it.
+The same source now adds a separate Q6 centering pair. The production Q6 masks
+bound every reconstructed byte to0..63,so subtracting32 cannot saturate.
+The independently authored [packed candidate](../include/strata/kernels/q6_packed_center.hpp)
+uses `(word + 0x60606060u) ^ 0x80808080u`: every byte sum is96..159,so no carry
+crosses a byte boundary. It changes no production call. The fixture's pending
+compile-time checks exercise all64 values in repeated-byte words and in each
+lane of a mixed-boundary word. This is not an executed numerical/device gate.
+Compare centering and dot independently; do not combine their treatments or
+infer either gain from source operation counts.
 The [owned offline controller](../tools/sycl/q6_dot_codegen.py) is also
 source-prepared only. It gates preparation on all six closed audit processes,
 checks the actual native compile command/reference bytes and pins project
 helpers,the installed compiler/package image and Python runtime. Commit
 `prepare` output before its one `compile` operation. Actual Make header inputs
-must match the prebuild image; compiler output must contain both kernel bodies.
+must match the prebuild image; compiler output must contain both bodies in each
+of the two independent kernel families. The candidate header is a pinned input.
 The8MiB per-file output cap sits inside a32MiB whole-root cap,including input
 manifests. CPU/file limits are per-process and RSS/disk bounds are sampled as
 in the existing owned supervisor. It produces LLVM IR only: later SPIR-V/native
@@ -303,6 +313,8 @@ At source `d6361f580`, two host controls pass: actual premature `prepare`
 refuses the unfinished six-process cohort without creating its root,and the
 production compile-command/reference check admits all ten reproduced settings.
 No installed-image capture,compilation,device query or kernel execution follows.
+Those controls predate the centering extension;repeat the current-source host
+checks at the next safe model-process boundary before preparing the extension.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary

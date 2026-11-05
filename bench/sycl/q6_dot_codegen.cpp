@@ -26,16 +26,39 @@
 
 #include <sycl/sycl.hpp>
 #include <sycl/ext/oneapi/dot_product.hpp>
+#include "strata/kernels/q6_packed_center.hpp"
 #include <cstdint>
 #include <stdexcept>
 
 namespace strata::bench {
 // This translation unit has no main, device discovery, allocation or execution
 // driver. First use is offline LLVM/SPIR-V inspection, not a device benchmark.
-// Its two kernel instantiations have identical geometry and unknown operands.
-// They isolate the signed four-byte expression with accumulator zero, as used
-// by Q6. They do not reproduce Q6 reconstruction, scales or column reductions.
+// Each independent kernel pair has identical geometry and unknown operands.
+// Dot uses accumulator zero; centering masks each input byte to six bits.
+// Neither pair reproduces full Q6 reconstruction,scales or column reductions.
 template <bool Vector> class Q6DotExpression;
+template <bool Packed> class Q6CenterExpression;
+
+// Source-level algebra check, evaluated only when this fixture is compiled.
+// All64 byte values satisfy the scalar relation. The maximum byte sum is
+// below256,which proves addition is independent across all four byte lanes.
+constexpr bool centering_byte_relation() {
+    for (unsigned value = 0; value < 64; ++value) {
+        const uint32_t byte = uint8_t(int(value) - 32);
+        if (kernels::component::q6_center_bytes(value * 0x01010101u) != byte * 0x01010101u)
+            return false;
+        for (unsigned lane = 0; lane < 4; ++lane) {
+            const unsigned shift = 8 * lane;
+            const uint32_t mask = 255u << shift;
+            const uint32_t word = (0x003f201fu & ~mask) | (value << shift);
+            const uint32_t expected = (0xe01f00ffu & ~mask) | (byte << shift);
+            if (kernels::component::q6_center_bytes(word) != expected) return false;
+        }
+    }
+    return 63 + 0x60 < 256;
+}
+static_assert(centering_byte_relation());
+static_assert(kernels::component::q6_center_bytes(0x003f201fu) == 0xe01f00ffu);
 
 template <bool Vector>
 int32_t q6_dot_expression(int32_t a, int32_t b) {
@@ -76,4 +99,34 @@ template void enqueue_q6_dot_expression<false>(sycl::queue&, const int32_t*,
                                                const int32_t*, int32_t*, size_t);
 template void enqueue_q6_dot_expression<true>(sycl::queue&, const int32_t*,
                                               const int32_t*, int32_t*, size_t);
+
+// This is a separate expression contrast; it does not combine a dot change
+// with centering. Preserve Q6's six-bit range at the actual kernel input.
+template <bool Packed>
+void enqueue_q6_center_expression(sycl::queue& queue, const uint32_t* words,
+                                  uint32_t* out, size_t count) {
+    if (!count || count % 128)
+        throw std::invalid_argument("Q6 center discriminator needs whole groups");
+    queue.parallel_for<Q6CenterExpression<Packed>>(
+        sycl::nd_range<1>(count, 128),
+        [=](sycl::nd_item<1> item) [[sycl::reqd_sub_group_size(32)]] {
+            const size_t i = item.get_global_linear_id();
+            const uint32_t word = words[i] & 0x3f3f3f3fu;
+            if constexpr (Packed) {
+                out[i] = kernels::component::q6_center_bytes(word);
+            } else {
+                uint32_t result = 0;
+                for (int lane = 0; lane < 4; ++lane) {
+                    const int value = int(int8_t(word >> (8 * lane))) - 32;
+                    result |= uint32_t(uint8_t(sycl::clamp(value, -128, 127))) << (8 * lane);
+                }
+                out[i] = result;
+            }
+        });
+}
+
+template void enqueue_q6_center_expression<false>(sycl::queue&, const uint32_t*,
+                                                  uint32_t*, size_t);
+template void enqueue_q6_center_expression<true>(sycl::queue&, const uint32_t*,
+                                                 uint32_t*, size_t);
 } // namespace strata::bench
