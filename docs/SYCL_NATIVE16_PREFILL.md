@@ -790,12 +790,16 @@ physical RAM/PCIe traffic remains unknown. The measured engine/source remain
 unchanged;no model attribution,physical-resource ceiling or speedup follows yet.
 The new [schema2 reader](../tools/sycl/decode_service_evidence.py) requires exact
 request joins,complete field sets,unsigned counters,closed clean scopes,integer
-caller conservation and nested-wait containment. Its prospective
+caller conservation and nested-wait containment. Its
 [host contract](../bench/sycl/qualify_decode_service_reader.py) compiles a real
 C++ producer using the same header as5c5e25d0,covering all nine regions,nested
 wait suppression,disabled observation and an empty caller interval,then corrupts
-the emitted records. Reader implementation is committed before qualification;
-this new contract and the first model/overhead comparison are still pending.
+the emitted records. The contract now passes with two actual C++ records,
+disabled-observer absence,all nine regions,exact clock conservation and28
+rejected corrupt variants. Both owned children exit0 with quiet stderr and
+closed ownership;83 actual compiler dependencies are pinned. See
+`decode_service_reader_contract_v1`. The first model/overhead comparison is
+still pending;this host fixture does not qualify model attribution or speed.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The six closed CPU-service processes also agree exactly on logical work volume

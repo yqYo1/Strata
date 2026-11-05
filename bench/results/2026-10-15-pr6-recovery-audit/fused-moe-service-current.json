@@ -159412,7 +159412,7 @@
     "fixture_and_IR_retired": true
   },
   "decode_service_reader_contract_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "e65fec3a8b1b8beaba416e32bb2992ea6ec4c15a",
     "sources": {
       "include/strata/sycl/decode_service_profile.hpp": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca",
@@ -159494,17 +159494,54 @@
     "profile_schema_version": 2,
     "plan": "One owned GCC13/O2 compile and one owned real C++ schema2 producer.Emit active request1 covering all9regions/nested waits,disabled request2,then active empty request3. Validate Python reader against the actual wirerecords and independent fake-clock arithmetic,then all committed corruptrecord variants;require complete source/compiler/dependency/ELF/owner gates.Stop first failure,no retry. No GPU/model,metrology/overhead or speed claim.",
     "retention": "Keep source/recipe and compact reader controls for the first disjoint-ledger model admission. Retire the one-use producer ELF,record and normal output after committed results and source recovery.",
-    "results": [],
+    "results": [
+      {
+        "name": "producer-compile",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "producer-test",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "6bfcdd30e85920e0817fedda7edd9375a45c8acd252760850a322c03687ad8a2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "model_executed": false,
     "native_header_binding": {
       "native_source_commit": "70169d3881ab588d45f7df7baa132b4293f00970",
       "native_engine_sha256": "5c5e25d04e8ea8a8abcd9d26ed8f70a32d78b8aa93a89a49e7232ec8f47f6d76",
       "header_sha256": "f3aa351d990a06d543ff0997eb2f3f8a66877d21ee79b93f706bdd5897252aca"
+    },
+    "dependencies": {
+      "producer": {
+        "files": 83,
+        "aggregate_sha256": "5d354570689470a693f7afa25eaece28e0657dcdc8a6533d0d621d0fe9e3589e"
+      }
+    },
+    "binaries": {
+      "producer": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-reader-contract-v1/producer",
+        "sha256": "b0dab874ab370d32da25dd7048d3ae2fad3bc0fae77324108ad0ae738193c7a8"
+      }
+    },
+    "reader_controls": {
+      "passed": true,
+      "actual_CXX_records": 2,
+      "disabled_absence_passed": true,
+      "corrupt_cases_rejected": 28,
+      "all_nine_regions": true,
+      "compact_nested_wait_suppression": true,
+      "exact_integer_clock_conservation": true,
+      "GPU_executed": false
     }
   }
 }
