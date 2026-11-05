@@ -229,7 +229,10 @@ source ID before the hit-dependent branch,following the
 [Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
 
 The next device-service diagnostic must target the current `9922 / b310`
-generation. The old `479a / 552b` active collector control does not qualify it,
+generation. `tools/sycl/profile_iq3_decode.py` now defines that prospective
+control and capture using the maintained owner,frontend and trace readers.
+It has only passed static syntax inspection;no control,reader test or model
+capture has run. The old `479a / 552b` active collector control does not qualify it,
 even though the same-build submission fixture bytes match. First close a fresh
 active-from-exec control with the current native/fixture/provider identities
 and the original small control budgets. Then use one warmup and one 32769-input,
@@ -244,6 +247,13 @@ observer. The disjoint-clock header is not compiled into b310. Interior client
 clock guards,active collection through normal exit and the 1.5 observer-time
 ratio remain required. This short diagnostic can select a new resource
 question;it cannot establish physical traffic,saturation or sustained TG.
+This first capture also retains the matched short-entry default pool-spin
+policy,rather than the long cohort's20ms setting. Treat it as collection/route
+admission;any representative long-generation attribution needs its own frozen
+workload and matched runtime/observer envelope. After the IQ3 cohort closes,
+prepare and commit the fresh control,run and commit that control,then prepare
+and commit the model plan,run/commit frontend and guarded-window checks,and
+only then collect the diagnostic. No new inference engine is required.
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved
