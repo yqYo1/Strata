@@ -289,6 +289,17 @@ this expression proposal; different lowering only motivates a source-pinned
 whole-kernel discriminator, not a speed or saturation claim. This fixture omits
 Q6 unpacking,scales and column reductions. Retire it when that finite compiler
 question closes unless a named immediate comparison still consumes it.
+The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
+QSA key/value/query/output,and the final vocabulary head. Its generic kernel
+name and247.197ms aggregate do not attribute that service to the vocabulary
+head alone. A later shape/resource discriminator must keep those callers
+distinct. Any favorable dot expression must be scoped inside Q6's dot path;
+changing the shared `packed_dot` helper would also change other formats.
+This source check uses the actual build-record verifier bytes
+`ce53f5c2b56e6ace16000d807c84e3f6307e58ff14e1baa8e7168c143114e22c`:
+its dispatcher and all eight call-site contexts match the current tree.
+The complete verifier file differs because later observer source is not part
+of b310; whole-file source equality is not claimed or needed for this map.
 
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved
