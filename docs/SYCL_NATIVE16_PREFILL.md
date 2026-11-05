@@ -272,6 +272,24 @@ original Git source blobs were recovered and matched. Next isolate the audit's t
 same-binary comparison below before interpreting the gap from the faster clean
 reference. No new inference engine was built for this capture.
 
+The source-only [Q6 dot discriminator](../bench/sycl/q6_dot_codegen.cpp) prepares
+the next bounded compiler question: does the public signed-byte
+`dot_acc(vec<int8_t,4>,vec<int8_t,4>,0)` produce different code from the current
+four-product scalar expression? Both instantiations use128-item groups and
+subgroup32,unknown packed operands and identical low-byte-first extraction.
+The installed2026.2 extension header itself contains ordinary multiply/add
+expressions; its API name does not prove a DP4A instruction. The fixture has no
+main or production caller and is uncompiled/unrun. After the current frozen
+audit cohort closes, pin its exact source/compiler image and compile device-only
+LLVM IR with the current native optimization settings (`-O3 -DNDEBUG -std=c++20
+-ffp-contract=off`, SYCL and size_t ID queries). Use an owned60-second,2GiB RSS,
+256KiB text/8MiB output operation; no device query or kernel execution is needed.
+Compare generated instructions before any full-Q6 patch. Equal lowering ends
+this expression proposal; different lowering only motivates a source-pinned
+whole-kernel discriminator, not a speed or saturation claim. This fixture omits
+Q6 unpacking,scales and column reductions. Retire it when that finite compiler
+question closes unless a named immediate comparison still consumes it.
+
 The earlier CPU-only [mixed-format calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
 at source `6e40afc1b` already records five samples per cell and achieved
 256 MiB read references of 30.642 GB/s with one thread and 29.403 GB/s with
