@@ -372,6 +372,23 @@ assets pass fresh hashes,and fresh benchmark/server frontend probes pass.
 Sustained model execution remains pending;this preparation does not update the
 clean speed reference.
 
+The next bounded conversion candidate is the independently authored
+[`q6_f16_widen_clz.hpp`](../include/strata/kernels/q6_f16_widen_clz.hpp).
+It replaces the binary16 subnormal normalization loop with a nonzero32-bit
+`clz` argument and integer selects. There is no production caller. The
+[`host screen`](../bench/sycl/f16_widen_clz.cpp) covers all65536patterns against
+an independent exact dyadic oracle,including zero signs and raw NaN payloads.
+Source is prepared but uncompiled and unexecuted. At the next serialized process
+boundary,pin GCC13,headers and an owned finite recipe before this host screen;
+then qualify SYCL device lowering/semantics and compare against a native-half
+cast before any Q6-only timed integration. Keep the original shared converter
+and current model/benchmark inputs frozen. This is not GPU or model evidence.
+The prospective host command is `g++-13 -std=c++17 -O3 -march=znver3
+-fno-fast-math -ffp-contract=off -fsanitize=undefined -fno-sanitize-recover=undefined
+-Iinclude bench/sycl/f16_widen_clz.cpp -o <private-output>`,with180s compile and
+30s execution limits. Retire that one-use CPU fixture after recording its exact
+source/dependencies and semantic result;it is not another inference generation.
+
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
 decorations before any kernel enqueue. Its source,recipe and diagnosis are
