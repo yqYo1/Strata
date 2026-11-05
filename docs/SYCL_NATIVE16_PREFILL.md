@@ -280,7 +280,7 @@ subgroup32,unknown packed operands and identical low-byte-first extraction.
 The installed2026.2 extension header itself contains ordinary multiply/add
 expressions; its API name does not prove a DP4A instruction. The fixture has no
 main or production caller and is uncompiled/unrun. After the current frozen
-audit cohort closes, pin its exact source/compiler image and compile device-only
+audit process pair closes, pin its exact source/compiler image and compile device-only
 LLVM IR with the current native optimization settings (`-O3 -DNDEBUG -std=c++20
 -ffp-contract=off`, SYCL and size_t ID queries). Use an owned60-second,2GiB RSS,
 256KiB text/8MiB output operation; no device query or kernel execution is needed.
@@ -299,12 +299,22 @@ lane of a mixed-boundary word. This is not an executed numerical/device gate.
 Compare centering and dot independently; do not combine their treatments or
 infer either gain from source operation counts.
 The [owned offline controller](../tools/sycl/q6_dot_codegen.py) is also
-source-prepared only. It gates preparation on all six closed audit processes,
+source-prepared only. Its Q6-only admission now permits a closed adjacent audit
+pair boundary (2,4,6 completed processes),with every completed process passing,
+normal exit0,closed ownership and no fresh fault. It holds the shared exclusive
+lock and checks the same committed cohort signature before and after compilation;
+no model process may overlap. The model A/B and FP64 all-six gates are unchanged.
+Q6 receipts use the separate finite-consumer
+`bench/results/2026-10-15-pr6-recovery-audit/q6-codegen-current.json`,so preparing
+this offline comparison does not edit the whole-file-checked model result.
+The controller
 checks the actual native compile command/reference bytes and pins project
 helpers,the installed compiler/package image and Python runtime. Commit
 `prepare` output before its one `compile` operation. Actual Make header inputs
-must match the prebuild image; compiler output must contain both bodies in each
-of the two independent kernel families. The candidate header is a pinned input.
+must match the prebuild image; the emitted LLVM module must declare
+`spir64-unknown-unknown` and contain both `spir_kernel` bodies in each of the
+two independent families. Git checks invoke the recorded absolute executable,
+rather than relying on PATH. The candidate header is a pinned input.
 The8MiB per-file output cap sits inside a32MiB whole-root cap,including input
 manifests. CPU/file limits are per-process and RSS/disk bounds are sampled as
 in the existing owned supervisor. It produces LLVM IR only: later SPIR-V/native
@@ -313,8 +323,12 @@ At source `d6361f580`, two host controls pass: actual premature `prepare`
 refuses the unfinished six-process cohort without creating its root,and the
 production compile-command/reference check admits all ten reproduced settings.
 No installed-image capture,compilation,device query or kernel execution follows.
-Those controls predate the centering extension;repeat the current-source host
-checks at the next safe model-process boundary before preparing the extension.
+Those historical controls predate the centering extension and retain their
+original all-six refusal outcome. Before preparation,run the committed
+`python3 -B tools/sycl/q6_dot_codegen.py host` at a safe model-process boundary.
+It checks current source/production inputs,the actual committed pair boundary,
+negative ownership/fault/partial-pair controls,changed-cohort detection and LLVM
+target/kernel-body rejection controls without creating a compiler root.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary

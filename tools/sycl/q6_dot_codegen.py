@@ -18,13 +18,57 @@ import sysconfig
 sys.dont_write_bytecode = True
 import device_fp64_probe as probe
 
-P, B, RESULT = probe.P, probe.B, probe.RESULT
+P, B = probe.P, probe.B
+RESULT = probe.RESULT.with_name('q6-codegen-current.json')
 ROOT = B / 'q6-dot-codegen-v1'
 KEY = 'q6_dot_codegen_v1'
 SOURCE = 'bench/sycl/q6_dot_codegen.cpp'
 HEADER = 'include/strata/kernels/q6_packed_center.hpp'
 NATIVE = B / 'decode-iq3-pair-model-v1'
-owner, guards, require, sha, git = probe.owner, probe.guards, probe.require, probe.sha, probe.git
+owner, guards, require, sha = probe.owner, probe.guards, probe.require, probe.sha
+GIT = shutil.which('git')
+require(GIT is not None, 'Git executable missing')
+GIT = str(Path(GIT).resolve(strict=True))
+
+
+def git(*args):
+    return subprocess.check_output([GIT, *args], cwd=P, timeout=30)
+
+
+def committed(path):
+    raw = path.read_bytes()
+    require(raw == git('show', 'HEAD:' + str(path.relative_to(P))),
+        'commit exact compiler/cohort evidence first: ' + str(path))
+    return json.loads(raw)
+
+
+def check_boundary(cohort):
+    processes = cohort['processes']
+    count = len(processes)
+    require(count in (2, 4, 6) and not cohort['active'] and cohort['ownership_closed']
+        and cohort['stage'] == ('closed' if count == 6 else 'running')
+        and (count != 6 or cohort['passed'] and cohort['complete'])
+        and all(p['index'] == i and p['passed'] and p['complete']
+            and p['ownership_closed'] and p['native_exit_code'] == 0
+            and p['fresh_faults'] == [] for i, p in enumerate(processes)),
+        'Q6 offline compile requires an acceptable closed IQ3 pair boundary')
+    return dict(completed_processes=count, signature=probe.component.signature(cohort))
+
+
+def closed_boundary():
+    guards.no_model_owners([])
+    cohort = committed(probe.RESULT)[probe.COHORT]
+    boundary = check_boundary(cohort)
+    local = json.loads((B / 'decode-iq3-audit-speed-v2/record.json').read_text())
+    expected = {k: v for k, v in local.items() if k not in ('sources', 'model_assets')}
+    expected['source_inputs'] = probe.component.signature(local['sources'])
+    require(expected == cohort
+        and all(sha(P / n) == h and hashlib.sha256(
+            git('show', local['source_commit'] + ':' + n)).hexdigest() == h
+            for n, h in local['sources'].items()), 'IQ3 record or frozen source changed')
+    require(sha(cohort['binary']['path']) == cohort['binary']['sha256'],
+        'qualified native executable changed')
+    return cohort, boundary
 
 
 def compact(row):
@@ -40,8 +84,8 @@ def save(row):
     raw = json.dumps(row, indent=2) + '\n'
     require(len(raw.encode()) <= 12 << 20, 'finite compiler receipt')
     (ROOT / 'record.json').write_text(raw)
-    data = json.loads(RESULT.read_text()); data[KEY] = compact(row)
-    RESULT.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+    RESULT.write_text(json.dumps(dict(schema=1, **{KEY: compact(row)}),
+        indent=2, ensure_ascii=False) + '\n')
 
 
 def sources():
@@ -83,21 +127,27 @@ def production_command():
         entry=commands[0], reproduced_flags=flags)
 
 
-def prepare():
-    cohort = probe.closed_cohort()  # Refuse before creating an attempt directory.
-    require(not ROOT.exists() and KEY not in probe.validation.committed(RESULT),
-        'fresh compiler attempt only')
+def committed_sources():
     revision = git('rev-parse', 'HEAD').decode().strip()
     pins = sources()
     require(all(hashlib.sha256(git('show', revision + ':' + n)).hexdigest() == h
         for n, h in pins.items()), 'commit exact compiler controls first')
+    return revision, pins
+
+
+def prepare():
+    cohort, boundary = closed_boundary()  # Refuse before creating an attempt directory.
+    require(not ROOT.exists() and not RESULT.exists(),
+        'fresh compiler attempt only')
+    revision, pins = committed_sources()
     native = production_command()
     row = dict(stage='preparing', source_commit=revision, sources=pins,
         passed=False, complete=False, active=False, ownership_closed=True,
-        GPU_executed=False, native=native, whole_bytes=32 << 20,
+        GPU_executed=False, native=native, boundary=boundary,
+        git_executable=GIT, whole_bytes=32 << 20,
         plan=dict(question='Independently compare scalar/vector signed-byte dot and scalar/packed Q6 byte centering lowerings.',
-            prerequisite='All six IQ3 audit processes close normally,without fresh faults or changed inputs.',
-            acceptance='One owned device-only LLVM compilation,normal exit0,closed commands,unchanged source/toolchain/Python inputs,actual header dependency admission and both definitions in each of the dot/centering kernel families. Compile-time centering byte relation and mixed-lane example must pass. No automatic retry.',
+            prerequisite='At a closed adjacent IQ3 pair boundary (2,4,6 completed processes),all prior processes pass normally without fresh faults. Hold the shared exclusive lock throughout,exclude live model owners and preserve the completed-cohort signature before/after compilation. Existing A/B and FP64 plans stay unchanged.',
+            acceptance='One owned device-only LLVM compilation,normal exit0,closed commands,unchanged source/toolchain/Python/cohort inputs,actual header dependency admission,emitted spir64-unknown-unknown LLVM target and both spir_kernel definitions in each dot/centering family. Compile-time centering byte relation and mixed-lane example must pass. No automatic retry.',
             decision='Main compares each optimized instruction pair independently. Equal lowering ends that expression proposal. A difference only motivates a separately committed whole-Q6 experiment;no instruction throughput,device support,model speed or adoption follows.',
             limits='Isolated dot with unknown signed packed bytes and zero accumulator;independent centering contrast masks unknown words to six bits per byte. Both use128-item groups and subgroup32. Full production reconstruction,scales,reductions and surrounding optimizations are absent. LLVM IR is not native B570 ISA or proof of hardware DP4A.'),
         retention='Keep source,recipe and compact outcome. Keep generated IR only for Main instruction comparison;retire it and the fixture when that finite consumer ends. No inference engine generation.',
@@ -113,7 +163,7 @@ def prepare():
             sha(n) == h for n, h in row['runtime_pins'].items()), 'qualified libraries changed')
         row['toolchain'] = probe.toolchain()
         row['python'] = python_inputs()
-        tools = [shutil.which('git'), '/usr/bin/dpkg-query']
+        tools = [GIT, '/usr/bin/dpkg-query']
         require(all(tools), 'compiler selector/provenance tools missing')
         row['selector_tools'] = {n: probe.component.python_runtime.file_pin(n) for n in tools}
         env = dict(cohort['environment_template'])
@@ -144,9 +194,12 @@ def prepare():
 
 
 def current():
-    probe.closed_cohort()
     row = json.loads((ROOT / 'record.json').read_text())
-    require(probe.validation.committed(RESULT, (KEY,)) == compact(row),
+    require(row['git_executable'] == GIT and all(probe.component.python_runtime.file_pin(n) == p
+        for n, p in row['selector_tools'].items()), 'selector/provenance tool changed')
+    _, boundary = closed_boundary()
+    require(boundary == row['boundary'], 'completed IQ3 cohort changed since compiler preparation')
+    require(committed(RESULT)[KEY] == compact(row),
         'commit compiler preparation before execution')
     require(row['stage'] == 'prepared' and not row['active'] and row['ownership_closed'],
         'terminal or owned compiler attempt')
@@ -155,8 +208,6 @@ def current():
         for n, h in row['sources'].items()), 'compiler source/control changed')
     require(sha(ROOT / 'source.cpp') == row['sources'][SOURCE], 'private source changed')
     require(production_command() == row['native'], 'production recipe/source changed')
-    require(all(probe.component.python_runtime.file_pin(n) == p
-        for n, p in row['selector_tools'].items()), 'selector/provenance tool changed')
     require(probe.toolchain() == row['toolchain'], 'compiler image changed')
     require(python_inputs() == row['python'], 'Python/runtime inputs changed')
     require(sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256']
@@ -184,6 +235,61 @@ def header_evidence(row):
     return probe.component.signature(verified)
 
 
+def ir_evidence(text):
+    triples = re.findall(r'^target triple = "([^"]+)"$', text, re.MULTILINE)
+    require(triples == ['spir64-unknown-unknown'], 'emitted LLVM target triple differs')
+    names = re.findall(r'^define\b[^\n]*\bspir_kernel\b[^\n]*?@([^\s(]+)', text, re.MULTILINE)
+    families = {kind: [n for n in names if kind in n]
+        for kind in ('Q6DotExpression', 'Q6CenterExpression')}
+    require(all(len(v) == 2 and any('ILb0E' in n for n in v)
+        and any('ILb1E' in n for n in v) for v in families.values()),
+        'two distinct spir_kernel definitions per family required')
+    return dict(target_triple=triples[0], kernel_definitions=families)
+
+
+def host():
+    revision, pins = committed_sources()
+    cohort, boundary = closed_boundary()
+    native = production_command()
+    rejected = 0
+
+    def reject(function, value):
+        nonlocal rejected
+        try:
+            function(value)
+        except RuntimeError:
+            rejected += 1
+        else:
+            raise RuntimeError('host control admitted invalid evidence')
+
+    # Corrupt the real closed-boundary receipt without changing any disk input.
+    for key, value in (('active', True), ('ownership_closed', False), ('stage', 'failed')):
+        bad = json.loads(json.dumps(cohort)); bad[key] = value
+        reject(check_boundary, bad)
+    for key, value in (('passed', False), ('complete', False), ('ownership_closed', False),
+                       ('native_exit_code', 9), ('fresh_faults', ['synthetic fault']), ('index', 9)):
+        bad = json.loads(json.dumps(cohort)); bad['processes'][0][key] = value
+        reject(check_boundary, bad)
+    bad = json.loads(json.dumps(cohort)); bad['processes'].pop()
+    reject(check_boundary, bad)
+    changed = json.loads(json.dumps(cohort)); changed['processes'][0]['synthetic_extra'] = True
+    require(check_boundary(changed) != boundary, 'cohort signature missed changed evidence')
+    text = 'target triple = "spir64-unknown-unknown"\n' + '\n'.join(
+        f'define spir_kernel void @{kind}ILb{arm}E() {{ ret void }}'
+        for kind in ('Q6DotExpression', 'Q6CenterExpression') for arm in (0, 1))
+    ir_evidence(text)
+    for bad in (text.replace('spir64-unknown-unknown', 'x86_64-unknown-linux-gnu'),
+                text.split('\n', 1)[1], 'target triple = "spir64-unknown-unknown"\n' + text,
+                text.replace('spir_kernel', 'spir_func'), text.rsplit('\n', 1)[0],
+                text.replace('ILb1E', 'ILb0E')):
+        reject(ir_evidence, bad)
+    require(not ROOT.exists() and not RESULT.exists(), 'host checks created compiler artifacts')
+    print(json.dumps(dict(source_commit=revision, passed=True, sources=len(pins),
+        boundary=boundary, rejected_controls=rejected, changed_cohort_detected=True,
+        production_flags=len(native['reproduced_flags']), compiler_started=False,
+        GPU_executed=False, root_created=False)))
+
+
 def compile_once():
     row = current()
     receipt = ROOT / 'execution.json'
@@ -199,15 +305,8 @@ def compile_once():
             **row['budgets'])
         require(owner.closed(entry) and entry['exit_code'] == 0, 'owned compiler failed')
         text = (ROOT / 'dot.ll').read_text()
-        names = re.findall(r'^define\b.*?@([^\s(]+)', text, re.MULTILINE)
-        families = {kind: [n for n in names if kind in n]
-            for kind in ('Q6DotExpression', 'Q6CenterExpression')}
-        require(all(len(v) == 2 and any('ILb0E' in n for n in v)
-            and any('ILb1E' in n for n in v) for v in families.values()),
-            'two distinct definitions per kernel family required')
-        require('spir64' in stderr.read_text(), 'actual compiler device triple absent')
         outcome.update(IR=dict(sha256=sha(ROOT / 'dot.ll'), bytes=(ROOT / 'dot.ll').stat().st_size,
-            kernel_definitions=families), headers=header_evidence(row))
+            **ir_evidence(text)), headers=header_evidence(row))
         current()
         outcome.update(complete=True, passed=True)
     except BaseException as error:
@@ -226,8 +325,8 @@ def compile_once():
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'compile'), 'use prepare|compile')
+    require(len(sys.argv) == 2 and sys.argv[1] in ('host', 'prepare', 'compile'), 'use host|prepare|compile')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
-        prepare() if sys.argv[1] == 'prepare' else compile_once()
+        {'host': host, 'prepare': prepare, 'compile': compile_once}[sys.argv[1]]()
