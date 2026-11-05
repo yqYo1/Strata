@@ -675,7 +675,14 @@ nested waits, invalid nesting/clocks, exceptions and disabled observation.
 The host-only fixture now compiles with GCC13.3/O2 and passes all seven cases,
 with normal exits, quiet stderr and closed owners;168 actual dependency files
 are fingerprinted. See `decode_service_host_contract_v1`. This does not compile
-or qualify the diagnostic engine. The post-centering review confirms that the
+or qualify the diagnostic engine. The separate Main-authored
+[`decode_wait_bridge.cpp`](../bench/sycl/decode_wait_bridge.cpp) adds five
+prospective host cases through the actual `cpu_wait_profile::blocking` function:
+nested suppression with both ledgers,exception propagation,disabled decode
+observation with the legacy ledger still active,both disabled,and an
+unclassified native wait. It is unbuilt and unexecuted;its consumer is the
+post-cohort diagnostic host gate,which must also check actual dependencies.
+Retire its executable after that decision. The post-centering review confirms that the
 92832/a1b0 projection lacks both this profile call and header;an environment
 flag cannot enable it. After the frozen Q6 cohort closes,explicitly add the
 profile to that source projection and qualify a diagnostic build. The prospective
