@@ -24612,8 +24612,8 @@
   },
   "sycl_usm_noalias_compiler_contract_20261105": {
     "classification": "knowledge collection",
-    "stage": "eligible",
-    "schedulable_now": true,
+    "stage": "reviewed_conditional_reference",
+    "schedulable_now": false,
     "source_revision": "f18b8e548391a9c4981f216d30c410aeceae2aad",
     "question": "Compare alias-disambiguation and invariant/uniform-pointer mechanisms for SYCL USM kernels on Intel GPUs:standard C++ restrict alternatives,compiler extensions,kernel-argument annotations,and accessor no_alias/no_offset. Explain the real correctness prerequisites for read-only packed weights and separate mutable buffers,what information reaches device IR/backend,how copies or aliases invalidate assumptions,and documented cases where added annotations do not improve code or can increase resources. Use current primary compiler/SYCL/LLVM/Intel docs and substantive original technical posts or papers. Separate portable contracts from version-specific hints and suggest a later bounded falsifiable discriminator without executing it.",
     "prerequisite_evidence": {
@@ -24624,7 +24624,9 @@
     "previous_scopes": [
       "q6_typed_payload_contract_20261104",
       "q6_byte_span_source_audit_20261104",
-      "usm_host_cache_calibration_collection_20261105"
+      "usm_host_cache_calibration_collection_20261105",
+      "sycl_local_accessor_alias_contract_20261028",
+      "qsa_direct_K_row_invariant_contract_20261028"
     ],
     "report_path": ".cache/research/2026-11-05/sycl-usm-noalias-compiler-contract/report.md",
     "report_budget_bytes": 12288,
@@ -24634,33 +24636,71 @@
     "review_model": "gpt-6-luna/max/native",
     "main_reads_body_on_arrival": false,
     "consumer": "Conditional retrieval when a measured packed-Q6 or mapped-row kernel shows repeated loads/alias serialization;no present bottleneck or implementation claim.",
-    "review_point": "Native Codex gpt-6-luna/max review only;Main reads short indexing digest and retrieves body only for a concrete future question."
+    "review_point": "Native Codex gpt-6-luna/max review only;Main reads short indexing digest and retrieves body only for a concrete future question.",
+    "run": "run_d43ee98385d1",
+    "task": "task_4282078b7b72",
+    "dispatch": "ctx_f39726e4658e",
+    "terminal": "term_ca02089f-3a8b-448f-8f68-096c45922579",
+    "process_incarnation": "4b58e000-7f75-4d64-980c-30e3007d2e4a",
+    "ownership_closed": true,
+    "launch": {
+      "rendered_model": "GPT-6-Luna high fast",
+      "prompt_stages": [
+        "input_accepted",
+        "turn_started"
+      ],
+      "exact_report_workspace": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/sycl-usm-noalias-compiler-contract",
+      "network_IPC_enabled": true
+    },
+    "startup": {
+      "message": "msg_960b8d519d0f",
+      "worker_own_Orca_ready_reachable": true,
+      "report_directory_writable": true
+    },
+    "outcome": "succeeded",
+    "report": {
+      "path": ".cache/research/2026-11-05/sycl-usm-noalias-compiler-contract/report.md",
+      "bytes": 11589,
+      "sha256": "272443a07c939996ca88994f83302094ca880aabec1ee39728cacf3dc1c7dad6"
+    },
+    "review": {
+      "path": ".cache/research/2026-11-05/sycl-usm-noalias-compiler-contract/review.json",
+      "bytes": 9163,
+      "sha256": "63686d76f02a1d0e300455abade641bd0847485289b3c99f1901bcff0caa2c1d",
+      "model": "gpt-6-luna/max/native",
+      "source_pins_verified": 8
+    },
+    "closure": {
+      "status": "exited",
+      "exact_worker": true,
+      "completion_delivery_acknowledged": true
+    },
+    "operational_digest": "Conditional reference only:global-USM aliasing differs from immutability and subgroup uniformity;experimental pointer properties and compile-to-device discriminator. Overlap with prior local-accessor and QSA invariant scopes. No measured local optimization.",
+    "corrections": "Use SYCL Rev12 and direct Intel restrict sources;clarify SPIR-V Uniform,update Intel guide links,and correct NVIDIA blog hardware. Read native review alongside report before reuse.",
+    "retention": "Keep report,inputs and native review for a concrete measured-kernel alias question;retire completed lifecycle transports at this boundary. No new research is schedulable without prerequisites."
   },
   "gpu_virtual_memory_translation_methods_20261105": {
     "classification": "knowledge collection",
-    "stage": "eligible",
-    "schedulable_now": true,
+    "stage": "reviewed_delta_curated",
+    "schedulable_now": false,
     "source_revision": "f18b8e548391a9c4981f216d30c410aeceae2aad",
-    "question": "Investigate GPU virtual-memory translation and page-size/TLB-reach effects for irregular read-only working sets,especially Intel Xe/Xe2 discrete GPU USM device and host allocations. Compare documented mapping/page-size guarantees with implementation choices,IOMMU and GPU page tables,first-touch/residency/migration versus steady translation,huge-page benefits and counterexamples,and how transfer/requested-byte measurements can miss translation overhead. Use primary specs,driver/compiler/runtime sources,research papers and substantive original technical posts;cross-vendor evidence needs explicit applicability limits. Provide a retrieval map and later controlled measurement designs that separate translation,cache locality,bus bandwidth and CPU waits;do not claim local page backing or propose system changes without evidence.",
-    "prerequisite_evidence": {
-      "source_files": 8,
-      "source_hashes_committed_and_matched": true,
-      "source_only_collection_requires_no_local_profiler_or_device_run": true
-    },
+    "ownership_closed": true,
+    "outcome": "succeeded",
     "previous_scopes": [
-      "xe2_usm_cache_policy_collection_scope",
-      "usm_host_cache_calibration_collection_20261105",
-      "zen3_counter_free_roofline_methods_collection_scope",
-      "static_cache_cpu_gpu_cost_methods_20261022"
+      "xe2_device_translation_tlb_methods_scope",
+      "host_expert_arena_page_backing_20261105"
     ],
-    "report_path": ".cache/research/2026-11-05/gpu-virtual-memory-translation-methods/report.md",
-    "report_budget_bytes": 12288,
-    "whole_folder_budget_bytes": 131072,
-    "worker_model": "gpt-6-luna",
-    "worker_effort": "high",
-    "review_model": "gpt-6-luna/max/native",
-    "main_reads_body_on_arrival": false,
-    "consumer": "Conditional retrieval when measured irregular host/device source service cannot be explained by traffic/locality;general GPU/ASIC methods collection,no current hardware attribution.",
-    "review_point": "Native Codex gpt-6-luna/max review only;Main reads short indexing digest and retrieves body only for a concrete future question."
+    "report_sha256": "4d1eb4f828edfe81a8044b7033b51a697ef5164d28b35fb9186bddd43a8f829d",
+    "review_sha256": "86f49969804ff2f7dcf969d0f6e560720496e6262bedbdc467e3641d7127150f",
+    "source_pins_verified": 8,
+    "main_read_collection_body": false,
+    "curated_delta": "Xe KMD documentation distinguishes4/64KiB minimum bind alignment and2MiB/1GiB VRAM-BO paths from not-yet-implemented userptr/sysmem large pages. These are version-specific documented constraints;they do not establish this allocation page backing or a local TLB/performance effect.",
+    "primary_references": [
+      "https://codebrowser.dev/linux/linux/drivers/gpu/drm/xe/xe_vm_doc.h.html"
+    ],
+    "retrieve_when": "A source/build/executable-verified host/device irregular-read calibration shows repeatable service-time dependence on active page footprint that remains unexplained after cache locality and measured link traffic are controlled.",
+    "use_constraint": "Methods reference only. Verify actual allocation type, queried allocation pageSize, kernel/KMD mapping path and residency before attribution. Keep first-touch, steady-state device time, bus bytes, CPU preparation/submission/wait and client wall time separate.",
+    "retention": "The broad translation mechanisms duplicate two prior references. No imminent unexplained page-footprint consumer exists;retire this report/review/lifecycle body after compact delta/source hashes are committed.",
+    "next_scope": "No generic translation survey. A Main-owned discriminator needs repeatable page-footprint-sensitive residuals,verified allocation/KMD evidence and a separately committed controlled comparison."
   }
 }
