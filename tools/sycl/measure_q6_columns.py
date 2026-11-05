@@ -78,6 +78,7 @@ def compact(row):
     result = {k: v for k, v in row.items() if k not in ('sources', 'runtime_pins', 'commands')}
     result['source_inputs'] = shared.signature(row['sources'])
     result['runtime_inputs'] = shared.signature(row['runtime_pins'])
+    result['command_inputs'] = dict(count=len(row['commands']), sha256=signature(row['commands']))
     return result
 
 
@@ -85,6 +86,77 @@ def save(row):
     write(ROOT / 'record.json', row)
     data = json.loads(RESULT.read_text()); data[KEY] = compact(row)
     RESULT.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+
+
+def persist_owner(supervisor, path):
+    fields = ('label', 'pid', 'direct_identity', 'owners', 'session_anchored',
+        'session_empty', 'direct_child_reaped', 'exit_code', 'ownership_status',
+        'errors', 'error', 'cleanup', 'survivors', 'started_utc', 'finished_utc', 'logs')
+    value = dict(active_pid=supervisor.active.pid if supervisor.active is not None else None,
+        commands=[dict(command_index=i, **{k: e[k] for k in fields if k in e})
+                  for i, e in enumerate(supervisor.commands)])
+    raw = json.dumps(value, indent=2) + '\n'
+    require(len(raw.encode()) <= 4 << 20, 'bounded durable owner receipt')
+    pending = path.with_suffix('.tmp')
+    pending.write_text(raw)
+    pending.replace(path)
+
+
+def make_owner(row, phase):
+    path = ROOT / (phase + '-owner.json')
+    row.setdefault('owner_receipts', {})[phase] = dict(path=str(path))
+    save(row)
+    supervisor = owner.Owner(ROOT / (phase + '-commands'),
+                             persist=lambda: persist_owner(supervisor, path))
+    persist_owner(supervisor, path)
+    return supervisor
+
+
+def finish_owner(row, supervisor, phase):
+    row['active'] = False
+    row['ownership_closed'] = supervisor is None or (supervisor.active is None and
+        all(owner.closed(e) for e in supervisor.commands))
+    if supervisor is not None:
+        path = ROOT / (phase + '-owner.json'); persist_owner(supervisor, path)
+        row['owner_receipts'][phase].update(sha256=sha(path), closed=row['ownership_closed'],
+                                          commands=len(supervisor.commands))
+    save(row)
+
+
+def native_postchecks(row, start):
+    def fault_probe():
+        require(start is not None, 'kernel cursor unavailable')
+        return fresh_faults(start)
+
+    result = dict(passed=True)
+    for key, probe in (
+        ('faults', fault_probe),
+        ('inputs_boot_driver', lambda: inputs_current(row)),
+        ('model_owners', lambda: guards.no_model_owners([]))):
+        try:
+            value = probe()
+            result[key] = dict(passed=(not value if key == 'faults' else True), evidence=value)
+            if key == 'faults':
+                raw = '\n'.join(value).encode()
+                if len(raw) > 256 << 10:
+                    result[key].update(evidence=raw[:256 << 10].decode(errors='replace').splitlines(),
+                        truncated=True, total_bytes=len(raw), full_sha256=hashlib.sha256(raw).hexdigest())
+        except BaseException as error:
+            result[key] = dict(passed=False, error=repr(error))
+        result['passed'] = result['passed'] and result[key]['passed']
+    return result
+
+
+def final_owner_guard(row):
+    try:
+        row['final_owner_guard'] = dict(passed=True, evidence=guards.no_model_owners([]))
+    except BaseException as error:
+        row['final_owner_guard'] = dict(passed=False, error=repr(error))
+        if row['stage'] in ('prepared', 'compiled', 'smoke-passed', 'closed'):
+            row['stage'] = 'failed-final-owner'
+        row.update(passed=False, complete=False)
+    save(row)
+    return row['final_owner_guard']['passed']
 
 
 def prepare():
@@ -201,6 +273,8 @@ def current():
     row = json.loads((ROOT / 'record.json').read_text())
     require(canonical(committed(KEY)) == canonical(compact(row)), 'commit exact component state')
     inputs_current(row)
+    require(all(r.get('closed') and sha(r['path']) == r['sha256']
+        for r in row.get('owner_receipts', {}).values()), 'closed owner receipt changed')
     return row
 
 
@@ -236,7 +310,7 @@ def build_component():
     row.update(stage='building', active=True, ownership_closed=False); save(row)
     supervisor = None
     try:
-        supervisor = owner.Owner(ROOT / 'build-commands'); deadline = time.monotonic() + 1800
+        supervisor = make_owner(row, 'build'); deadline = time.monotonic() + 1800
         for label, argv in row['commands']:
             require(time.monotonic() < deadline, 'whole build deadline')
             print(label, flush=True)
@@ -250,9 +324,7 @@ def build_component():
     except BaseException as error:
         row.update(stage='failed-build', error=repr(error)); raise
     finally:
-        row['active'] = False
-        row['ownership_closed'] = supervisor is None or (supervisor.active is None and
-            all(owner.closed(e) for e in supervisor.commands)); save(row)
+        finish_owner(row, supervisor, 'build')
 
 
 def parse_speed(text):
@@ -307,32 +379,42 @@ def run(smoke):
     env.update(LD_PRELOAD=probe['library']['path'], STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
         UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION' if smoke else 'UR_LAYER_PARAMETER_VALIDATION',
         UR_LOG_TRACING='level:info;flush:info;output:stderr' if smoke else 'level:error;flush:error;output:stderr')
+    if row['GPU_executed'] is not True:
+        row['GPU_executed'] = None
     row.update(stage='running-smoke' if smoke else 'running-speed', active=True,
                ownership_closed=False, GPU_execution_attempted=True); save(row)
     supervisor = None
     try:
-        supervisor = owner.Owner(ROOT / ('smoke-commands' if smoke else 'speed-commands'))
+        phase = 'smoke' if smoke else 'speed'
+        supervisor = make_owner(row, phase)
         deadline = time.monotonic() + (1200 if smoke else 3600)
         for process in range(1 if smoke else 3):
-            require(time.monotonic() < deadline, 'whole component deadline')
-            start = cursor(); print('Q6 centering', 'smoke' if smoke else 'speed', process, flush=True)
-            entry, out, err = supervisor.run('process-' + str(process),
-                [str(EXE), '--smoke' if smoke else '--speed', '--centering'], env, ROOT,
-                **dict(row['budgets'], wall=min(row['budgets']['wall'], deadline-time.monotonic())))
-            text = out.read_text(); count = 32 if smoke else 35
-            row['GPU_executed'] = row['GPU_executed'] or 'Q6_TARGET_ENDIAN_LITTLE=1' in text
-            require(owner.closed(entry) and entry['exit_code'] == 0,
-                    'component failed: ' + (err.read_text()+text)[-4000:])
-            require(text.count('Q6_COMPARISON=centering') == 1 and text.count('Q6_TARGET_B570=1') == 1 and
-                text.count('Q6_TARGET_ENDIAN_LITTLE=1') == 1 and text.count('Q6_CASE_PASS ') == count and
-                text.count(' scalar_oracle=PASS') == count and text.count(' q8_oracle=PASS') == count and
-                text.count('Q6_COLUMNS_PASS mode=' + ('smoke' if smoke else 'speed')) == 1,
-                'missing comparison/device/numerical/normal-completion evidence')
-            proof = validation_log(err.read_text(), entry['pid'], probe['loader']['path'], smoke)
-            faults = fresh_faults(start); require(not faults, 'new GPU fault')
-            inputs_current(row)
+            start = None
+            try:
+                require(time.monotonic() < deadline, 'whole component deadline')
+                start = cursor(); print('Q6 centering', phase, process, flush=True)
+                entry, out, err = supervisor.run('process-' + str(process),
+                    [str(EXE), '--smoke' if smoke else '--speed', '--centering'], env, ROOT,
+                    **dict(row['budgets'], wall=min(row['budgets']['wall'], deadline-time.monotonic())))
+                text = out.read_text(); count = 32 if smoke else 35
+                if 'Q6_TARGET_ENDIAN_LITTLE=1' in text:
+                    row['GPU_executed'] = True
+                require(owner.closed(entry) and entry['exit_code'] == 0,
+                        'component failed: ' + (err.read_text()+text)[-4000:])
+                require(text.count('Q6_COMPARISON=centering') == 1 and text.count('Q6_TARGET_B570=1') == 1 and
+                    text.count('Q6_TARGET_ENDIAN_LITTLE=1') == 1 and text.count('Q6_CASE_PASS ') == count and
+                    text.count(' scalar_oracle=PASS') == count and text.count(' q8_oracle=PASS') == count and
+                    text.count('Q6_COLUMNS_PASS mode=' + ('smoke' if smoke else 'speed')) == 1,
+                    'missing comparison/device/numerical/normal-completion evidence')
+                proof = validation_log(err.read_text(), entry['pid'], probe['loader']['path'], smoke)
+            finally:
+                postchecks = native_postchecks(row, start)
+                row.setdefault('native_postchecks', []).append(dict(phase=phase, process=process,
+                                                                   **postchecks))
+                save(row)
+            require(postchecks['passed'], 'native post-check failed;bounded evidence retained')
             result = dict(passed_cases=count, native_exit_code=0, ownership_closed=True,
-                          validation=proof, fresh_faults=faults)
+                          validation=proof, fresh_faults=[])
             if smoke: row['smoke'] = result
             else: result['samples'] = parse_speed(text); row['processes'].append(result)
             save(row)
@@ -349,9 +431,7 @@ def run(smoke):
     except BaseException as error:
         row.update(stage='failed-smoke' if smoke else 'failed-speed', error=repr(error)); raise
     finally:
-        row['active'] = False
-        row['ownership_closed'] = supervisor is None or (supervisor.active is None and
-            all(owner.closed(e) for e in supervisor.commands)); save(row)
+        finish_owner(row, supervisor, 'smoke' if smoke else 'speed')
 
 
 def main():
@@ -359,11 +439,21 @@ def main():
             'expected prepare/build/smoke/speed')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); guards.no_model_owners([])
-        action = sys.argv[1]
-        if action == 'prepare': prepare()
-        elif action == 'build': build_component()
-        else: run(action == 'smoke')
-        guards.no_model_owners([])
+        error = None
+        try:
+            action = sys.argv[1]
+            if action == 'prepare': prepare()
+            elif action == 'build': build_component()
+            else: run(action == 'smoke')
+        except BaseException as failure:
+            error = failure
+            raise
+        finally:
+            if (ROOT / 'record.json').exists():
+                row = json.loads((ROOT / 'record.json').read_text())
+                passed = final_owner_guard(row)
+                if error is None:
+                    require(passed, 'final owner guard failed;terminal failure retained')
 
 
 if __name__ == '__main__':

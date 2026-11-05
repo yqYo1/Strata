@@ -312,6 +312,7 @@ inline float q4_q8_dot_impl(const int *__restrict__ v,
 }
 template <bool PackedCenter>
 int q6_center_word(uint32_t word) {
+  static_assert(sizeof(int) == sizeof(uint32_t), "Q6 packed words require 32-bit int");
   if constexpr (PackedCenter)
     return std::bit_cast<int>(component::q6_center_bytes(word));
   else

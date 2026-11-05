@@ -331,6 +331,16 @@ it after the named comparison closes. The limiting physical resource remains
 unqualified;this tests arithmetic sensitivity at unchanged logical data volume.
 A component gain is separate from model speed,prefill preservation,task quality
 and physical262144/RESTORE qualification.
+The source-only implementation/controller audits at `f7a96d864` and their
+native Luna-max reviews are closed. They confirm the valid-domain centering
+seam and same-geometry arms;the 32smoke cases and retained paired samples are
+correct. The controller follow-up binds every ordered build argv to committed
+state,persists PID/start-tick/session ownership during execution,and retains
+fault/input/owner post-checks on error,including a terminal failure if the final
+owner guard fails. The integer-width assumption is explicit. These source
+corrections and their host controls have not yet been executed;the all-six
+model-audit gate remains unchanged. The source's masked word is at most
+`0x3f3f3f3f`,so the reported unsigned-to-int concern is inapplicable here.
 
 The compiler-only fixture/controller,separate result and generated outputs are
 retired after exact source recovery and remote-evidence verification. Their
