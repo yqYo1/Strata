@@ -700,7 +700,13 @@ terminal. The technical review remains a source inspection. Its `head_sampling`
 region covers only the wait after `sample_tokens`,so its name/explanation needs
 correction after cohort closure;do not interpret `sample` as full sampling work.
 Enabling CPU observers is a pending model-controller contract,not a build-recipe
-defect. Compare
+defect. The prospective
+[`build_decode_service_model.py`](../bench/sycl/build_decode_service_model.py)
+reuses the owned native build supervisor and pins both bench/tools import roots,
+the exact projected source,recipe,toolchain,compiler and link inputs. Its build
+gate requires all a1b0 consumers closed and that generation recovered/retired,
+while preserving552b. It is unexecuted;no diagnostic root or build exists yet.
+Separate host fixtures and fresh device/model qualification remain required. Compare
 profile on/off in separate same-binary processes with the existing CPU leaf
 service/census enabled in both,checking clock resolution/read overhead,depths,
 wall/CPU conservation,nested waits and observer effects. Keep clean speed
