@@ -47,5 +47,3 @@ def parse_config_text(text: str, path) -> dict:
         raise SystemExit(f"[strata] {path} is not valid JSON: {e.msg} at line {e.lineno}, column {e.colno}. Check the commas "
                          'between the entries of "args" (each option and each value is its own quoted entry, e.g. '
                          '"--ple-io", "mmap",) and that no entry is followed by a comma at the end of a list.') from None
-
-
