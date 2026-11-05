@@ -709,15 +709,14 @@ generator,Verifier and native-wait bridge,plus the header and host fixture.
 The pinned1c42b4700 delta then names the three final synchronization regions
 `final_compute_wait`, `final_copy_wait` and `sampling_wait`,with profile schema2.
 It requires all other bytes and the complete reverse projection to remain
-unchanged,and selects the original cohort's qualified arm. The first CLI
-observation at8d193 did not retain its terminal result;there is no passing
-source-contract result from that invocation. Source inspection found that the
-reverse composition discarded the just-reversed label delta. It now reverses
-each delta from the current restored bytes. The next source-only check uses
-one180s-bounded CLI invocation,requiring12corrupt-receipt rejections and exact
-recovery of all564original inputs from the566-file projection. Stop on failure;
-no build,GPU or model action is part of this check. No new source image,build
-or attribution is qualified yet. Keep the Orca
+unchanged,and selects the original cohort's qualified arm. The source-only
+contract at b5941dd8 now passes:566 projected inputs,only the five declared
+changes,exact reverse recovery of all564 native inputs,and12 corrupt-receipt
+rejections. The actual cohort is accepted with its original failed centering
+performance gate,so the diagnostic selects arm0. See
+`decode_service_source_contract_v2`,which also preserves the earlier unavailable
+CLI observation and reverse-composition correction. No diagnostic root,build,
+GPU/model execution or hardware attribution follows. Keep the Orca
 attempt failed:its own inbox/completion calls used a mistyped terminal handle;
 Main verified its final turn,abandoned the attempt and closed that exact external
 terminal. The technical review remains a source inspection. The former

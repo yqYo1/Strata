@@ -158455,5 +158455,63 @@
       "files": 705,
       "aggregate_sha256": "68908dba7a38c5bb10178e330866d6a2a7420315a937b0bb6c0c11be97efbe6d"
     }
+  },
+  "decode_service_source_contract_v2": {
+    "stage": "closed",
+    "source_commit": "b5941dd8b8441b97a91c0816e0ea1740101f1286",
+    "controller": "bench/sycl/decode_service_sources.py",
+    "command": [
+      "flock",
+      "-n",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+      "/usr/bin/timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "180s",
+      "python3",
+      "-B",
+      "bench/sycl/decode_service_sources.py"
+    ],
+    "exit_code": 0,
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "native_source": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
+    "native_engine_sha256": "a1b0b7e336495bde2482fcbe13b070cba303d49fac09a134f610699c9eaf1616",
+    "next_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-model-v1",
+    "observer_delta": "96b9cc511b81e5fe4c18e53030019a2ad34c6b4d",
+    "files": 566,
+    "changed": [
+      "include/strata/sycl/cpu_wait_profile.hpp",
+      "src/core/verify.cpp",
+      "src/program/generate.cpp",
+      "include/strata/sycl/decode_service_profile.hpp",
+      "tests/core/decode_service_profile_test.cpp"
+    ],
+    "wait_label_delta": "1c42b4700f046b6fbcd0cc20338b42c62d0340d2",
+    "profile_schema_version": 2,
+    "cohort_controls": {
+      "passed": true,
+      "valid": 1,
+      "invalid_rejected": 12,
+      "GPU_executed": false
+    },
+    "aggregate_sha256": "be20a5f060f5003a8046ae96d03d59aa0500853589740139aa745674346a3ec9",
+    "reversible_to_native": true,
+    "build_executed": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "hardware_bottleneck_qualified": false,
+    "original_cohort_evidence_commit": "327c34aab1af2d116df5e8455aa74541acf7dd34",
+    "original_centering_performance_gate": false,
+    "selected_centering_arm": 0,
+    "diagnostic_root_created": false,
+    "previous_observation": {
+      "source_commit": "8d193ca39fffd4770206d4a46bfd71cb54041513",
+      "result": null,
+      "limitation": "The terminal output was unavailable after context truncation;no passing or failing execution verdict is retained.",
+      "independently_found_source_defect": "The second reverse delta used forward values instead of the already-restored bytes;fixed in b5941dd8."
+    },
+    "next_consumer": "Diagnostic build/source admission after exact old-generation recovery and consumer closure;separate host/device/model and profile-overhead gates remain."
   }
 }
