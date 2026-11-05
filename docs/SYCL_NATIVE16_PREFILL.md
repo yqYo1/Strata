@@ -356,13 +356,15 @@ appears. This synthetic gate does not execute model Q6 arithmetic or full
 record_window. The next32K model-entry controller joins each new centering
 receipt to its original phase/T/column receipt and actual IQ3 request footer;
 its two valid and11corrupt receipt controls pass. No model-speed result yet.
-The centering0 entry now passes fresh benchmark/server probes and both32769-input,
-24-output thinking-on requests,with313source inputs and all15model assets pinned.
-Both requests capture decode T1/T4 with82column calls and zero centered calls;
-their positive IQ3 request2/3 footers preserve eligible/selected row equality.
-Native exit is0,ownership closes,validation is quiet and no fresh fault appears.
-These diagnostic samples are not clean speed or sustained-decode evidence.
-Centering1 remains the next separate process in the same binary.
+Both centering0/1 entries now pass fresh benchmark/server probes and two32769-input,
+24-output thinking-on requests per process,with313identical source inputs and
+all15model assets pinned. Only the immutable centering selector differs.
+Both arms capture decode T1/T4 with82column calls:centering0 selects zero centered
+calls;centering1 selects68/46 respectively. Their matched request bodies and
+positive IQ3 request2/3 footers preserve eligible/selected row equality.
+Both native exits are0,ownership closes,validation is quiet and no fresh fault
+appears. These diagnostic samples are not clean speed,sustained decode or
+all18model-shape evidence. A new committed clean long-generation plan is next.
 
 All six frozen model-audit processes are closed. The first fixture attempt
 remains failed:its descriptive-name check rejected the runtime's `(R)`/`(TM)`
