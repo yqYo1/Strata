@@ -199,8 +199,14 @@ and thread CPU time;their sums conserve each batch's total. A wait's thread CPU
 time is not host tensor arithmetic,and submission can overlap device execution.
 The fixture does not measure physical traffic or kernel service.
 Neither the modified prototype nor fixture has been compiled or run. The
-component still needs a committed pinned build recipe,bounded traced admission
-and repeated actual-placement timing before any decode-only route proposal.
+`tools/sycl/mapped_row_copy_component.py` controller prepares a private Git
+source snapshot and pins the compiler,headers,system packages and runtime files.
+It refuses preparation while the IQ3 cohort is open. After that cohort closes,
+prepare and commit its exact plan,then build,run the small traced check and full
+check,and collect timing processes0/1/2,committing each closed stage before the
+next. The fixture retains its runtime through a final live-owner/environment/
+provider check outside timing. A component win remains separate from a
+decode-only model proposal and its complete dependency-path comparison.
 The excluded `sycl_mapped_row_copy_component` CMake target links only the
 runtime,production elementwise translation unit and fixture. It does not build
 an inference engine or require native-expert/GGML and test-suite targets.

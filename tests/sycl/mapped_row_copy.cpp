@@ -9,9 +9,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <time.h>
+#include <unistd.h>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -164,12 +167,23 @@ void host_checks() {
         }
     }
 }
-void checks(bool small) {
-    host_checks();
+std::shared_ptr<Runtime> checked_runtime() {
     auto rt = runtime_for();
-    need(Runtime::devices().size() == 1 && rt->device().is_gpu() &&
-         rt->device().has(sycl::aspect::usm_host_allocations),
-         "GPU host-USM support required");
+    const auto& device = rt->device();
+    const auto name = device.get_info<sycl::info::device::name>();
+    need(Runtime::devices().size() == 1 && device.is_gpu() &&
+         device.get_info<sycl::info::device::vendor_id>() == 0x8086 &&
+         name.find("B570") != std::string::npos &&
+         device.get_info<sycl::info::device::max_work_group_size>() >= 256 &&
+         device.has(sycl::aspect::usm_host_allocations),
+         "one Intel B570 with host-USM and 256-lane groups required");
+    std::cout << "DEVICE name=" << name << " host_usm=1 metadata=device\n";
+    return rt;
+}
+void checks(bool small, std::shared_ptr<Runtime>& keepalive) {
+    host_checks();
+    auto rt = checked_runtime();
+    keepalive = rt;
     const std::vector<size_t> widths = small ? std::vector<size_t>{17, 2560} :
         std::vector<size_t>{1, 3, 63, 64, 65, 255, 256, 257, 1023, 1024, 1025, 2559, 2560, 2561};
     size_t launches = 0;
@@ -188,13 +202,14 @@ void checks(bool small) {
     std::cout << "CHECK passed=1 small=" << small << " variants=5 launches=" << launches
               << " metadata=device source=host_usm,device bitwise=1 guards=1\n";
 }
-void timing(int process) {
+void timing(int process, std::shared_ptr<Runtime>& keepalive) {
     constexpr size_t Batch = 4096;
     constexpr int Samples = 5;
     constexpr int64_t Floor = 10000000; // whole dependent batch,not one launch
     const std::array<std::array<size_t, 5>, 3> orders{{{{0,1,2,3,4}}, {{4,3,2,1,0}}, {{2,0,4,1,3}}}};
     need(process >= 0 && process < 3, "independent process index required");
-    auto rt = runtime_for();
+    auto rt = checked_runtime();
+    keepalive = rt;
     std::vector<int64_t> overhead;
     for (int i = 0; i < 1000; ++i) {
         const auto a = stamp(), b = stamp();
@@ -243,14 +258,27 @@ void timing(int process) {
 } // namespace
 int main(int argc, char** argv) {
     try {
+        // Immutable startup choice. The owner inspects the live native child
+        // after all work completes; the handshake is outside every timed batch.
+        const char* value = std::getenv("STRATA_COPY_COMPONENT_GATE");
+        const bool gate = value && std::strcmp(value, "1") == 0;
+        need(!value || gate, "unsupported component gate setting");
         need(argc == 2 || argc == 3, "use --check-small|--check|--time 0|1|2");
         const std::string mode(argv[1]);
+        std::shared_ptr<Runtime> keepalive;
         if (mode == "--check-small" || mode == "--check") {
-            need(argc == 2, "check takes no other arguments"); checks(mode == "--check-small");
+            need(argc == 2, "check takes no other arguments");
+            checks(mode == "--check-small", keepalive);
         } else {
             need(mode == "--time" && argc == 3 && std::strlen(argv[2]) == 1 &&
                  argv[2][0] >= '0' && argv[2][0] <= '2', "use --time 0|1|2");
-            timing(argv[2][0] - '0');
+            timing(argv[2][0] - '0', keepalive);
+        }
+        if (gate) {
+            std::cout << "STRATA_COPY_GATE pid=" << getpid() << std::endl;
+            std::string answer;
+            need(bool(std::getline(std::cin, answer)) && answer == "continue",
+                 "component owner did not release the completed native child");
         }
         return 0;
     } catch (const std::exception& error) {
