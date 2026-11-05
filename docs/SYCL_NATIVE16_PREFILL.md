@@ -796,9 +796,24 @@ source/compiler/header/provider identities and plan, then use `build`, `query`,
 `arithmetic` and `exp`, committing each transition before the next. Use query,
 arithmetic, then exp in separate processes, once each; stop on the first
 unsupported capability, error, timeout, validation message or fresh fault.
+The source follow-up adds a complete versioned compiler-tree and named host
+toolchain-package image, including membership and symlink changes. It fixes
+GCC selection to the recorded13installation and checks actual compiler header
+dependencies and host-link trace paths against that prebuild image. Private
+compiler temporaries are derived inputs; their disposable names are not retained.
+The image has a180-second traversal/hash deadline,16 GiB unique-payload limit
+and8 MiB manifest limit; it is not collected during the live model comparison.
+An exclusive operation receipt now precedes cursor,Owner and directory setup,
+so an early setup failure is terminal and preserves the no-retry decision.
+Five host regression tests are source-prepared but have not run yet.
+API trace substrings establish activation and expected symbols; query's lack
+of a kernel launch follows from its pinned C++ branch, not parsed API-call counts.
 Keep the existing compiler/runtime without emulation flags. Prospective caps:
 180 seconds/4 GiB RSS for compilation, 60 seconds/1 GiB per device child,
 1 MiB text per command and 16 MiB total in a fresh private output root.
+CPU/file limits are per-process RLIMIT values. Summed RSS and present artifact
+bytes are sampled session bounds with exit checks; these are not strict cgroup
+quotas or cumulative-write limits.
 Retain the small diagnostic executable only until its recorded capability
 consumer ends; preserve source and compact outcomes, then retire normal traces.
 Benchmark source `1f39425ddea4dd98e172d0033f78fb00a8586675` adds the explicit
