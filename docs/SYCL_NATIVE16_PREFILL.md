@@ -338,8 +338,12 @@ correct. The controller follow-up binds every ordered build argv to committed
 state,persists PID/start-tick/session ownership during execution,and retains
 fault/input/owner post-checks on error,including a terminal failure if the final
 owner guard fails. The integer-width assumption is explicit. These source
-corrections and their host controls have not yet been executed;the all-six
-model-audit gate remains unchanged. The source's masked word is at most
+corrections pass13Q6 host controls and5shared diagnostic-controller regressions
+at source `4b0d9fb4ccfeb976c8c663c814ff91d79512830d`,using
+`python3 -B -m unittest discover -s tests/core -p test_q6_columns.py -v` and
+`test_device_fp64_probe.py` respectively. These controls use mocks and bounded
+local files;no real toolchain inventory,compilation or device execution occurred.
+The all-six model-audit gate remains unchanged. The source's masked word is at most
 `0x3f3f3f3f`,so the reported unsigned-to-int concern is inapplicable here.
 
 The compiler-only fixture/controller,separate result and generated outputs are
