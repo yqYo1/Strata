@@ -289,6 +289,17 @@ this expression proposal; different lowering only motivates a source-pinned
 whole-kernel discriminator, not a speed or saturation claim. This fixture omits
 Q6 unpacking,scales and column reductions. Retire it when that finite compiler
 question closes unless a named immediate comparison still consumes it.
+The [owned offline controller](../tools/sycl/q6_dot_codegen.py) is also
+source-prepared only. It gates preparation on all six closed audit processes,
+checks the actual native compile command/reference bytes and pins project
+helpers,the installed compiler/package image and Python runtime. Commit
+`prepare` output before its one `compile` operation. Actual Make header inputs
+must match the prebuild image; compiler output must contain both kernel bodies.
+The8MiB per-file output cap sits inside a32MiB whole-root cap,including input
+manifests. CPU/file limits are per-process and RSS/disk bounds are sampled as
+in the existing owned supervisor. It produces LLVM IR only: later SPIR-V/native
+instruction inspection needs its own evidence rather than an inferred DP4A.
+No controller checks or compilation have run yet.
 The compiled verifier's `window_mmvq` can select columns for GDN QKV/gate/output,
 QSA key/value/query/output,and the final vocabulary head. Its generic kernel
 name and247.197ms aggregate do not attribute that service to the vocabulary
