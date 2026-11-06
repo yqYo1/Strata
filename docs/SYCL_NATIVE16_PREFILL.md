@@ -22,8 +22,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cumulative row in [`performance-records.csv`](../bench/performance-records.csv).
 - The immediate decode comparison uses **a330 / engine429b** as the positive-swap
   candidate alongside the552b prefill fallback. Its bounded184-swap/32K-loan
-  correctness entry and second-event-record refusal both pass;clean repeated
-  speed comparisons remain pending. No new PP/TG record or adoption follows.
+  correctness entry and second-event-record refusal both pass. Four of six
+  clean code-comparison processes now pass;both completed pairs favor adaptive
+  TG,but reference variability remains large. The third pair and weak-MTP
+  prose comparison remain pending. No new PP/TG record or adoption follows.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -730,10 +732,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   pairs,task/agent quality,dedicated PP/TTFT,physical262144/RESTORE and broader
   resource attribution remain pending. The previous13.8code result remains
   above this candidate;the historical decrease is still unexplained.
-  Candidate process2also closes normally with33211input,3293output,
-  309769.1ms decode(10.630499exactTG),acceptance.820028and24.3%cache hits.
-  Prompt time/TTFT are62397.1ms/62.584s. The paired reverse-order reference3
-  remains unmeasured;two candidate samples alone do not qualify a second gain.
+  The reverse-order second pair also passes:reference3/candidate2 exact TG
+  is10.141007/10.630499tok/s,ratio1.048269,with3157/3293generated tokens
+  and the same33211fresh-input request body. Cache hits remain10.5%/24.3%.
+  Candidate/reference prompt-time and TTFT ratios are1.000189/1.000336,so
+  this decode gain does not establish prompt/TTFT nonregression. All four
+  processes close normally with quiet validation,no fresh GPU fault and
+  unchanged boot/driver. Reference TG varies7.294485to10.141007;the first
+  pair's46.9%gain is not a general speedup estimate. Keep the third pair,
+  final full-asset hashes and weak-MTP prose comparison pending;no adoption.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
