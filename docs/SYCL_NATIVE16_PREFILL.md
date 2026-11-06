@@ -399,8 +399,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   strict before-main validation,unchanged final assets/boot/driver,no fresh
   fault and closed owners. No full API trace or profiler is used in this
   first model entry. This synthetic diagnostic has no thinking/task/PP/TG or
-  full-context claim. Source is not yet prepared or executed;commit it,prepare
-  the exact inputs/environment,commit the plan,then run once.
+  full-context claim. Preparation now succeeds at
+  `3e5f2a3fcfb618e4b7810bae26f6a59fbce8c2eb`,with all15model assets fully
+  hashed and the exact native519e/request/environment/finite owner plan pinned.
+  No model process has launched yet. Commit the prepared plan,then run once.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
