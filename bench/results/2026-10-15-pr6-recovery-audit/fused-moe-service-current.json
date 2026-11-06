@@ -161114,7 +161114,7 @@
       "STRATA_CPU_WORK_CENSUS": "1",
       "STRATA_DECODE_TIMING": "1"
     },
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "0b950da2e34621b040b03a0c23d2aab774b20c46",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00",
@@ -164092,6 +164092,119 @@
           "kept": "Global record/runtime,all six config/plan pairs,short-entry four files,14 native/fallback ELFs and both current IQ3_S report/review pairs remain unchanged.",
           "scope": "Only closed process3 raw output and seven completed protocol-audit transaction files;original results and criteria unchanged. No global artifact retirement claim."
         }
+      },
+      {
+        "index": 4,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 2918789,
+          "start_ticks": 227867773,
+          "sid": 2918666
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33212,
+            "reused_tokens": 0,
+            "generated_tokens": 3170,
+            "output_chars": 5578,
+            "reasoning_chars": 3706,
+            "prompt_ms": 50439.0,
+            "prompt_tps": 658.5,
+            "decode_ms": 236897.6,
+            "decode_tps": 13.4,
+            "ttft_s": 50.572,
+            "total_s": 287.364,
+            "drafts_offered": 2739,
+            "drafts_accepted": 2258,
+            "acceptance_rate": 0.8243884629426798,
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "af34a2d690c431c65220f918c7afc407b6b27236f97c5a63e98f653cf2a841b0",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 7275,
+            "output_chars": 4632,
+            "reasoning_chars": 14409,
+            "prompt_ms": 41903.7,
+            "prompt_tps": 794.2,
+            "decode_ms": 831609.4,
+            "decode_tps": 8.7,
+            "ttft_s": 42.115,
+            "total_s": 873.537,
+            "drafts_offered": 10071,
+            "drafts_accepted": 3920,
+            "acceptance_rate": 0.3892364214080032,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "0bbd043abf9212ab45b4bf8794a261534529dd4c28ecff1cdcfc8c836434ad7c",
+            "reasoning_sha256": "d3ec503b2e7266e34b70c5123c07f543b06ff48306decd6e7659660b16581f21",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "error": "RuntimeError('qualified Q6 implementation differs from active source: src/kernels/sycl/native_mmvq.cpp')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "failure_diagnostics": {
+          "controller_exit_code": 1,
+          "benchmark_exit_code": 0,
+          "native_exit_code": 0,
+          "joined_requests": 6,
+          "completed_boundary_prefixes": [
+            4,
+            5
+          ],
+          "caller_records": 0,
+          "leaf_and_census_joins": true,
+          "fresh_faults": [],
+          "boot_unchanged": true,
+          "original_process_passed": false,
+          "original_process_complete": false,
+          "qualification": false
+        },
+        "rounded_host_scopes": [
+          {
+            "workload": "regular-code",
+            "windows": 914,
+            "ms_per_window": {
+              "total": 259.19,
+              "GPU_reach_wait": 85.23,
+              "CPU_pool_run": 114.23,
+              "draft": 33.65
+            }
+          },
+          {
+            "workload": "varied-prose",
+            "windows": 3358,
+            "ms_per_window": {
+              "total": 247.65,
+              "GPU_reach_wait": 85.54,
+              "CPU_pool_run": 100.63,
+              "draft": 33.59
+            }
+          }
+        ]
       }
     ],
     "host_passed": true,
@@ -164177,6 +164290,42 @@
       "review_point": "At every subsequent closed process and after the caller-attribution decision;no full timing histograms or timelines."
     },
     "overhead_interval_limit": "The declared ratios use reported decode_ms per output. Native decode_ms ends before the final wait_commit,caller-scope finish and profile/footer writes;these ratios do not bound complete end-to-end or final output-formatting cost. No execution,order,criterion or stopping rule changes.",
+    "census_boundary_prefixes": {
+      "4": [
+        4,
+        5
+      ]
+    },
+    "failure_closure": {
+      "kind": "transitive_active_tree_Q6_source_guard",
+      "failed_process": 4,
+      "unlaunched_processes": [
+        5
+      ],
+      "cohort_stopped": true,
+      "original_failure_preserved": true,
+      "retry_or_replacement": false,
+      "candidate_source_commit": "ef5614bfafa86687f1da98aba673b8e58e83bfa3",
+      "qualified_Q6_source_commit": "f18b8e548391a9c4981f216d30c410aeceae2aad",
+      "missed_transitive_inputs": {
+        "src/kernels/sycl/native_mmvq.cpp": {
+          "expected_sha256": "24f79d4b5cd154123337344ef27eab89e88c0b56e644b8ffa6d470f3d3823bde",
+          "actual_sha256": "2db527d87fce1a24ffb7998d87701c5cd0f5d0c2aa1a20a46904d1262b0dca58",
+          "outside_control_pin_map": true
+        },
+        "include/strata/kernels/native_mmvq.hpp": {
+          "expected_sha256": "e4c91852f10a669c5ec3d4a13348538bfd32ad1e2ad86a3d992dead75027b9d1",
+          "actual_sha256": "16bf1137a722437a9986968937dbd134a935dfcdfbd23bdb2b9e0039e1125335",
+          "outside_control_pin_map": true
+        }
+      },
+      "frozen_control_files": 326,
+      "frozen_controls_unchanged": true,
+      "immutable_native_source_files": 566,
+      "immutable_native_sources_unchanged": true,
+      "all_five_native_outputs_unchanged": true,
+      "interpretation": "All generation completed using the unchanged diagnostic build,but the declared active-tree qualification failed after a concurrent uncompiled Q6 component edit. Keep process4/cohort failed;the third overhead pair and three-pair decision are unqualified. No hash refresh or retrospective pass. CPU-only direct-component qualification has independent numerical/timing gates;commit its revised prospective admission before preparation. Future model admissions must freeze every transitive active-tree comparison,not just the control resolver map."
+    },
     "source_inputs": {
       "files": 326,
       "aggregate_sha256": "cc88b8cd81fffbcabc679d1450040a338cb686de4ec04fbca7bd608ba6857c1c"

@@ -453,8 +453,10 @@ candidate's eventual entry timing. The maintained Q6 fixture's `--native-half`
 mode compares this entry with the existing columns entry;smoke inputs add signed
 zero,subnormal,normal and max-finite weight scales and a subnormal Q8_1 scale.
 This is source preparation only:it has not been compiled or run. The current
-model cohort uses its immutable old source image,whose326control inputs remain
-unchanged. After that cohort and the queued CPU IQ3_S comparison,commit the
+model cohort used its immutable old source image,whose326control inputs remain
+unchanged. Its fifth process nevertheless fails the separate transitive
+active-tree Q6 guard after this edit;the failed cohort is preserved below.
+After the queued CPU IQ3_S comparison,commit the
 production-flag build/numerical and paired-entry timing plan before executing
 this candidate. The standalone conversion result does not qualify this kernel,
 and final GPU ISA,model impact and decode-only selection remain pending. The
@@ -863,8 +865,16 @@ ratios are1.005990/1.003774,with matching logical work in both workloads. The
 second on/off pair also passes both long requests,all six caller/leaf/census
 joins or disabled-caller absence,strict completed prefixes4/5,normal exits,
 quiet validation and fault/owner checks. Its on/off per-output latency ratios
-are0.987694/0.991769,again with matching logical work. Two processes remain;
-the three-pair overhead decision is still pending. The first on
+are0.987694/0.991769,again with matching logical work. The fifth process now
+fails its end-of-run source qualification:the new,uncompiled native-half entry
+changed both active-tree Q6 files,which the historical reconstruction compares
+outside the326control-pin map. Both long requests completed,native/benchmark
+exit0,six leaf/census joins and disabled caller absence pass,and all566immutable
+native source inputs/five outputs remain unchanged. There is no fresh fault.
+Keep that process and V3 failed;do not refresh hashes,retry it or launch the
+sixth process under this plan. The third pair and three-pair overhead decision
+remain unqualified. Future model plans must freeze these transitive active-tree
+comparisons as well. The first on
 caller's code/prose wall intervals are237.918/834.038s,including pool regions
 109.089/355.207s,layer waits77.883/287.238s and unclassified31.729/116.189s.
 Nested native waits total119.421/439.711s;their caller CPU is118.554/435.462s.
@@ -947,7 +957,7 @@ source hashes match and no necessary source correction was identified.
 This does not establish compiler/ISA or numerical correctness. Keep its local
 report/review only through the Main-owned CPU-only qualification below;the
 research index records the source pins,limits and no-duplicate-scope decision.
-After the frozen caller comparison closes,commit a CPU-only build/comparison
+After the caller comparison's failed closure,commit a CPU-only build/comparison
 plan and qualify this fixture before timing. Use actual IQ3_S/IQ4_NL model
 weights,128/640-row ranges,six-expert reuse/252-expert streaming and separate
 prequantized/activation-inclusive cells in three opposite-order independent
@@ -960,6 +970,14 @@ six correctness children,actual-symbol ISA check and three opposite-order
 pairs. Neither timed arm selects a production dispatcher;the reference is the
 linked GGML two-dot GU. Source,plan preparation,compilation and execution remain
 separate stages;no new benchmark has run alongside the caller cohort.
+The prospective component admission now uses the already closed six-process
+CPU-service/census cohort and requires the later caller attempt to be inactive,
+ownership-closed and honestly terminal,including its recorded source failure.
+A passing caller-observer overhead result is not a prerequisite for this direct,
+observer-disabled CPU arithmetic comparison. Its numerical,actual-input/ISA,
+timer,three-pair and production-selection gates remain unchanged. This does not
+qualify the failed caller cohort or its overhead;representative caller
+attribution remains provisional. Commit this revised source before preparation.
 Its separate protocol audit and native gpt-6-luna max review identify an ISA
 evidence gap before any build:arithmetic checks must bind to the noinline
 `iq3s_pair_dot`,with the public wrapper's call checked separately. The source

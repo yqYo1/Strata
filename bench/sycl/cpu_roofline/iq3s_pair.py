@@ -3,7 +3,8 @@
 
 Commit source, prepare/commit, build/commit, check/commit, then 0..5/commit.
 Reuse the existing CPU owner/input/link checks privately, without selecting the
-candidate in production. Preparation waits for the caller cohort to close.
+candidate in production. Preparation requires closed model ownership and the
+qualified CPU-service cohort;caller-observer overhead is a separate question.
 """
 import copy
 import fcntl
@@ -45,14 +46,39 @@ def fixture_hash(fixture):
     return result.hexdigest()
 
 
+def prior_admission(data):
+    service = data['verify_window_cpu_service_overhead_v1']
+    need(service['stage'] == 'closed' and service['complete'] and service['passed'] and
+        not service['active'] and service['ownership_closed'] and len(service['processes']) == 6 and
+        all(p['passed'] and p['complete'] and p['ownership_closed'] for p in service['processes']),
+        'closed six-process CPU-service/census evidence required')
+    caller = data['decode_service_overhead_v3']
+    need(not caller['active'] and caller['ownership_closed'] and
+        all(p['ownership_closed'] for p in caller['processes']), 'close every model owner first')
+    closure = caller.get('failure_closure', {})
+    source_failure = (caller['stage'] == 'failed' and not caller['passed'] and not caller['complete'] and
+        len(caller['processes']) == 5 and caller['processes'][4]['passed'] is False and
+        closure.get('kind') == 'transitive_active_tree_Q6_source_guard' and
+        closure.get('cohort_stopped') is True and closure.get('original_failure_preserved') is True and
+        closure.get('retry_or_replacement') is False and closure.get('unlaunched_processes') == [5])
+    completed = (caller['stage'] == 'closed' and caller['complete'] and caller['passed'] and
+        len(caller['processes']) == 6 and all(p['passed'] for p in caller['processes']))
+    need(source_failure or completed, 'honest terminal caller outcome required;no running/unknown attempt')
+    return dict(CPU_service_key='verify_window_cpu_service_overhead_v1',
+        CPU_service_sha256=base.fingerprint(service), CPU_service_processes=6,
+        caller_key='decode_service_overhead_v3', caller_sha256=base.fingerprint(caller),
+        caller_stage=caller['stage'], caller_passed=caller['passed'],
+        source_failure_preserved=source_failure,
+        caller_overhead_qualified=completed and caller.get('decision', {}).get(
+            'incremental_observer_overhead_qualified') is True,
+        scope='Prior CPU work/layout evidence and serialized ownership only. Direct-component arithmetic/timing has independent gates;failed caller attribution is not qualified or retried.')
+
+
 def prepare():
     need(not ROOT.exists() and KEY not in json.loads(base.RESULT.read_text()), 'fresh component plan required')
     revision = base.git(P, 'rev-parse', 'HEAD').decode().strip()
     data = json.loads(base.git(P, 'show', 'HEAD:' + str(base.RESULT.relative_to(P))))
-    caller = data['decode_service_overhead_v3']
-    need(caller['stage'] == 'closed' and caller['complete'] and caller['passed'] and
-        not caller['active'] and caller['ownership_closed'] and len(caller['processes']) == 6,
-        'close the frozen six-process caller cohort first')
+    admission = prior_admission(data)
     audit_path = P / 'bench/results/2026-10-15-pr6-recovery-audit/research-index.json'
     need(audit_path.read_bytes() == base.git(P, 'show', 'HEAD:' + str(audit_path.relative_to(P))),
         'committed source audit required')
@@ -104,6 +130,7 @@ def prepare():
             f'\nIQ3 production dispatch PASS arm={arm} calls=80 nt1_rows=20480 pair_rows={10240 * arm} prefill_pair_rows=0'),
             dict(label='pool-' + str(arm), target='cpu_service_pool_test', args=['0'], arm=arm, audit=1)])
     row = dict(stage='prepared', source_commit=revision, project_inputs=project, ggml_inputs=dependency,
+        prior_admission=dict(evidence_commit=revision, **admission),
         dependency=dict(origin='https://github.com/ggml-org/llama.cpp', revision=base.GGML_REV),
         source_audit=dict(path=str(audit_path.relative_to(P)), source_revision=audit['source_revision'],
             source_hashes=audit['source_hashes'], verdict=audit['verdict']),
