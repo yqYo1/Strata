@@ -141,7 +141,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   all 203 actual include/link inputs match the pinned compiler/source image,
   with no UBSan output. Follow `q6_native_half_policy_host_v1` for the exact
   commands and binary hash. This checks the policy and cache container only;
-  the full Verifier/program and GPU route writer have not been compiled or run.
+  it does not execute the full Verifier/program or GPU route writer.
   Its closed auxiliary build and normal output are retired after source/recipe
   recovery: 12 files,3053275 bytes; the 14 retained inference executables are unchanged.
   The Main-authored constructor
@@ -155,8 +155,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Retirement is complete:737 files,143301402 bytes. All566 source files,
   1451 actual compiler inputs and105 original controls were recovered/checked;
   the original shared record remains. Follow `q6_native_half_model_build_v1`.
-  Compilation must precede fresh traced small same-build checks and a frozen
-  repeated long-generation A/B;neither has run on this new composition.
+  The full composed Verifier/program and same-build Q6 fixture now compile:
+  1452 actual compiler inputs are covered,six ELFs produced,and all three
+  configure/compile/dependency processes close normally. Engine SHA256 starts
+  `cb7dd5aad4cb`;the two CPU fixtures and submission ELF are byte-identical to
+  their original 5c outputs. This is build evidence only. The new Main-owned
+  `tools/sycl/check_q6_native_half_model.py` prepares bounded traced
+  submission10,Q6-half32 and phase-cache16 checks after same-build host parity.
+  Neither these new device checks nor the model route/speed comparison has run.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
   speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
   gates; retain the validated 552b fallback and 5c comparison outputs.
