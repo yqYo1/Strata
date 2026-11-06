@@ -168,9 +168,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bench.sh supervisor. Its reader joins request/phase/T/capture/shape and
   completed-window records to the independent30/26 measured shape sets,
   including positive completed Q6 head use. It retains the live-epoch scope;
-  neither retired history nor per-request deltas are inferred. Synthetic parser
-  controls,these new device checks,and the model route/speed comparison remain
-  pending execution. The short model entry does not qualify sustained TG.
+  neither retired history nor per-request deltas are inferred. At source
+  `d30834e71`,the synthetic reader passes2 positive cases and rejects17 corrupt
+  cases via `python3 -B tools/sycl/check_q6_native_half_model.py parser`.
+  The new device checks and model route/speed comparison remain pending.
+  The prospective model entry uses spec8 and does not qualify sustained TG.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
   speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
   gates; retain the validated 552b fallback and 5c comparison outputs.
