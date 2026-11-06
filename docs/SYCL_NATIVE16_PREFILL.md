@@ -631,9 +631,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are fixed before exec;other placement/kernels/safety stay unchanged. It uses
   the maintained wire reader without replacing Interactive.poll,and preserves
   native closure before post-processing. Its ordered reducer has one complete
-  prospective fixture and16corrupt generation/tuple/order/coverage cases;these
-  are not executed yet. Commit source,run CPU controls,prepare/commit exact
-  assets/environment/requests,then run once. Require actual incoming GPU hits
+  prospective fixture and16corrupt generation/tuple/order/coverage cases;all
+  controls now pass at source`b9c952b147b3e6be996ce30366534b0541ca32c3`without
+  GPU execution. Preparation also passes with all15model assets fully hashed
+  and the exact engine429b/environment/two requests pinned. Commit this plan,
+  then run once. Require actual incoming GPU hits
   again after the32Kloan;record outgoing CPU observations separately. Checked
   record-failure injection remains a separate native gate before clean timing.
   The source-level request reader is extracted to
