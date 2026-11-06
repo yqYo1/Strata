@@ -28,13 +28,22 @@ def closed(row):
     return row['passed'] and row['complete'] and row['ownership_closed'] and not row.get('active',False)
 
 
+def compact(row):
+    value = build.compact(row)
+    links = dict(value['actual_link_inputs'])
+    links['owned_product_count'] = len(links.pop('owned_build_or_compiler_products'))
+    value['actual_link_inputs'] = links
+    return value
+
+
 def compiled():
     """Execution uses closed compile evidence,actual ELFs and runtime providers.
 
     Rebuilding separately requires the complete compiler/package/source image.
     """
     row = json.loads((build.ROOT / 'record.json').read_text())
-    require(base.committed(RESULT)[build.KEY] == build.compact(row) and
+    expected = compact(row) if 'component_reuse' in row else build.compact(row)
+    require(base.committed(RESULT)[build.KEY] == expected and
             row['stage'] == 'built-not-executed' and closed(row) and row['native_recipe_checks']['passed'] and
             all(base.supervision.closed(c) and c['exit_code'] == 0 for c in row['commands_executed']),
             'commit closed exact native build first')
@@ -168,7 +177,9 @@ def reuse():
         require(time.monotonic()-started < 180, 'finite component recovery deadline')
         proof.update(source_commit=revision,
             controller_inputs=dict(files=len(pins),aggregate_sha256=build.signature(pins)))
-        row['component_reuse'] = proof; build.save(row)
+        row['component_reuse'] = proof
+        write(build.ROOT / 'record.json',row)
+        data = json.loads(RESULT.read_text()); data[build.KEY] = compact(row); write(RESULT,data)
     except BaseException as error:
         write(marker,dict(source_commit=revision,passed=False,complete=False,error=repr(error)))
         raise
