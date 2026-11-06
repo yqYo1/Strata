@@ -164640,5 +164640,20 @@
       },
       "kept": "14 inference ELFs;retained5c5e build record/database and source image;short-entry4;shared provider manifest;Q6 report/inputs. No global retirement claim."
     }
+  },
+  "q6_native_half_component_v1": {
+    "stage": "failed-prepare",
+    "source_commit": "0cbe72bd58a07b21630c9fe7355a5eeaa4fe1bf7",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "build_executed": false,
+    "root_created": false,
+    "error": "RuntimeError: unexpected production GPU translation-unit delta",
+    "cause": "Main compared the build-controller source_commit tree with current GPU units. The actual5c5e model source image is materialized from separately pinned inputs:command_profile.cpp differs from that recipe commit but matches its native_sources record. This is a preparation admission error,not a compiler/runtime/device failure.",
+    "correction": "V2 compares the original native_sources hashes and actual retained source image,then records the two real changed GPU units. New source and plan must be committed before execution;V1 remains failed."
   }
 }

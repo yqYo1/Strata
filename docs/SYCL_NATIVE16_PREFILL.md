@@ -481,8 +481,11 @@ A host-only2048-pair steady-clock screen is outside both arms;its positive
 median must be at most0.1% of the fastest batch. The new fixture supplement
 does not change kernels or numerical workloads. Require every process's
 candidate/reference median time ratio below1 for each eligible shape,without
-a percentage-gain floor. This plan is source-prepared only. No new build,GPU
-execution,phase selection or model-speed result follows yet. Retire this
+a percentage-gain floor. V1 preparation failed before creating its root or
+building:Main compared the build-controller commit tree instead of the actual
+materialized model sources. V2 uses the original `native_sources` hashes and
+checks the retained image;V1 remains failed. V2 is source-prepared only. No new
+build,GPU execution,phase selection or model-speed result follows yet. Retire this
 auxiliary component build after recording its decision and exact-input recovery;
 keep the named552b fallback and5c5e diagnostic-model consumers separately.
 The standalone converter's `prepare`, `build` and `check` actions require the original cohort's

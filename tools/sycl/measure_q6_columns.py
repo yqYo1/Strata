@@ -24,8 +24,8 @@ import mapped_row_copy_component as shared
 from run_q6_columns import validation_log
 
 P, B, RESULT = shared.P, shared.B, shared.RESULT
-ROOT = B / 'q6-native-half-component-v1'
-KEY, COHORT = 'q6_native_half_component_v1', 'decode_iq3_audit_speed_v2'
+ROOT = B / 'q6-native-half-component-v2'
+KEY, COHORT = 'q6_native_half_component_v2', 'decode_iq3_audit_speed_v2'
 CPU_KEY = 'cpu_iq3s_pair_component_v1_analysis'
 AUDIT_KEY = 'q6_native_half_entry_contract_20261106'
 INDEX = P / 'bench/results/2026-10-15-pr6-recovery-audit/research-index.json'
@@ -210,8 +210,12 @@ def prepare():
     native = committed('decode_service_model_build_v1')
     require(native['passed'] and native['complete'] and native['ownership_closed'] and
         not native['active'], 'closed retained production build')
-    original_hashes = {name: hashlib.sha256(git('show', native['source_commit'] + ':' + name)).hexdigest()
+    # source_commit identifies the build controller/recipe. The selected model
+    # image is materialized from pinned source revisions; use its actual inputs.
+    original_hashes = {name: native['native_sources'][name]
         for name in SOURCES if name != FIXTURE}
+    require(all(sha(B / 'decode-service-model-v1/source' / name) == expected
+        for name, expected in original_hashes.items()), 'retained production source image changed')
     changed = sorted(name for name, expected in original_hashes.items() if sha(P / name) != expected)
     require(changed == [CORE, 'src/sycl/command_profile.cpp'],
         'unexpected production GPU translation-unit delta')
