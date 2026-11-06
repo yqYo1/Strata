@@ -120,7 +120,7 @@ def prepare():
             correctness='Before timing:one same-library default exact fixture,one --iq3s-pair fixture,old --dispatch off/on and real-pool off/on in six immutable pre-exec children. Exact384single+80XXS+80IQ3_S cases with finite bit parity,edge/grid/sign/high/scale coverage,canaries and layout/alias/overflow refusals. Both existing pool checksums must match. Skip77 is failure. Every timing process checks2016 real-model GU cases before/after and all timed outputs.',
             comparison='Direct component only:linked GGML IQ3_S two-dot GU versus iq3s_pair_gu_rows. No production selection/audit in either timed arm. Eight cells:640/128rows,prequant/one production quantization per six experts,reuse6/stream252. Same benchmark ELF,core,model slices,activations and flags;explicit arm argv0/1 in six independent0/1,1/0,0/1 processes. Direct-call/row counters and helper success bind the actual candidate. This does not measure production dispatch or pool scheduling.',
             timing='Four warm passes;five samples/cell,target0.35s,floor0.25s,cap1e6passes,timer<0.1percent fastest warm pass. Setup/load/hash/reference outside timing;pack cells include activation quantization. Keep all40samples/process.',
-            ISA='CPU-only icpx2026.2 O3,NDEBUG,znver3,AVX2/FMA/F16C;no fast-math,SYCL or GPU runtime. Inspect actual IQ3_S pair symbol disassembly and require AVX2 integer multiply-add,FMA and vzeroupper,with no ZMM/mask registers in those symbols. Successful fixtures exercise the actual Zen3 path.',
+            ISA='CPU-only icpx2026.2 O3,NDEBUG,znver3,AVX2/FMA/F16C;no fast-math,SYCL or GPU runtime. Bind the public wrapper to its actual noinline iq3s_pair_dot call. Require FMA/vzeroupper in each reachable dot variant and integer multiply-add in that dot or its explicitly linked outlined iq3s_pair_chunk variants. Reject ZMM/mask registers throughout that candidate chain. Unreachable named symbols cannot satisfy an instruction gate. Successful fixtures exercise the actual Zen3 path.',
             decision='Per cell:all three candidate/reference process-median ns/expert ratios<1 supports direct-component gain;no arbitrary minimum. Any input/core mismatch fails. No production-entry/pool/model trial follows from a cell failing its component performance gate.',
             stopping='Stop first source,provider,ELF,ownership,ISA,numerical,nonfinite,canary,timer,duration,budget or input failure. No retries,replacements,hash refresh,exclusions or revised criteria.',
             limits='Logical weight coverage is not DRAM/PCIe traffic or saturation. Direct-component gain is not model speed,PP preservation,70TG,quality,262144/RESTORE or adoption.'),
@@ -136,20 +136,45 @@ def isa_check(row, run):
     _, out, _ = run('symbols', ['/usr/bin/nm', '--defined-only', binary], 10)
     symbols = [line.split()[-1] for line in out.read_text().splitlines()
         if 'iq3s_pair_' in line and '.cold' not in line]
-    need(symbols and len(symbols) <= 8 and any('iq3s_pair_gu_rows' in s for s in symbols),
-        'actual IQ3_S pair symbols required')
-    text = ''
+    wrappers = [s for s in symbols if 'iq3s_pair_gu_rows' in s and '.' not in s]
+    need(symbols and len(symbols) <= 8 and len(wrappers) == 1,
+        'one actual public IQ3_S wrapper required;clones are not alternate roots')
+    bodies = {}
     for index, symbol in enumerate(symbols):
         _, out, _ = run('isa-' + str(index), ['/usr/bin/objdump', '-d',
             '--no-show-raw-insn', '--disassemble=' + symbol, binary], 10)
-        text += out.read_text()
-    need(not re.search(r'%zmm\d|%k[0-7]\b', text) and
-        all(re.search(pattern, text) for pattern in
-            (r'\bvpmaddubsw\b', r'\bvpmaddwd\b', r'\bvfmadd\w*\b', r'\bvzeroupper\b')),
-        'admitted IQ3_S AVX2/FMA/upper-lane cleanup ISA required')
-    return dict(passed=True, symbols=symbols, disassembly_sha256=hashlib.sha256(text.encode()).hexdigest(),
-        AVX2_integer_madd=True, FMA=True, vzeroupper=True, pair_symbols_have_ZMM_or_mask=False,
-        scope='Actual IQ3_S pair symbols only;other unused AVX512 library functions are outside this claim.')
+        text = out.read_text()
+        need('<' + symbol + '>:' in text, 'exact disassembled symbol label required')
+        bodies[symbol] = text
+    calls = {s:sorted(set(re.findall(r'\b(?:callq?|jmpq?)\s+[0-9a-f]+\s+<([^>]+)>', text))
+        & set(symbols)) for s, text in bodies.items()}
+    root = wrappers[0]; reachable = {root}; pending = [root]
+    while pending:
+        for target in calls[pending.pop()]:
+            if target not in reachable: reachable.add(target); pending.append(target)
+    dots = [s for s in calls[root] if 'iq3s_pair_dot' in s]
+    need(dots and all(any(name in s for name in ('iq3s_pair_gu_rows', 'iq3s_pair_dot',
+        'iq3s_pair_chunk')) for s in reachable), 'wrapper must directly call its actual dot helper')
+    def has(symbol, pattern): return re.search(pattern, bodies[symbol]) is not None
+    def integer_madd(symbol):
+        return has(symbol, r'\bvpmaddubsw\b') and has(symbol, r'\bvpmaddwd\b')
+    checks = {}
+    for symbol in sorted(reachable):
+        need(not has(symbol, r'%zmm\d|%k[0-7]\b'), 'forbidden candidate-chain registers: ' + symbol)
+        checks[symbol] = dict(disassembly_sha256=hashlib.sha256(bodies[symbol].encode()).hexdigest(),
+            called_pair_symbols=calls[symbol], forbidden_registers=False)
+        if 'iq3s_pair_chunk' in symbol:
+            need(integer_madd(symbol), 'outlined chunk must own its integer arithmetic')
+            checks[symbol]['integer_madd'] = True
+        if 'iq3s_pair_dot' in symbol:
+            chunks = [s for s in calls[symbol] if 'iq3s_pair_chunk' in s]
+            need(has(symbol, r'\bvfmadd\w*\b') and has(symbol, r'\bvzeroupper\b') and
+                (integer_madd(symbol) or chunks), 'dot must own FMA/cleanup and bound integer work')
+            checks[symbol].update(FMA=True, vzeroupper=True,
+                integer_madd_inline=integer_madd(symbol), outlined_chunks=chunks)
+    return dict(passed=True, public_wrapper=root, directly_called_dot_variants=dots,
+        reachable_symbols=checks, unreachable_named_symbols=sorted(set(symbols) - reachable),
+        scope='Actual public wrapper/dot/outlined-chunk call chain,with compiler variants identified separately. Unreachable symbols and unrelated AVX512 library functions supply no arithmetic evidence;this is not exhaustive dynamic-path verification.')
 
 
 def execute(stage):

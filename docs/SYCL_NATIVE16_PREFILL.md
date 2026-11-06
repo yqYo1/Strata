@@ -934,6 +934,12 @@ six correctness children,actual-symbol ISA check and three opposite-order
 pairs. Neither timed arm selects a production dispatcher;the reference is the
 linked GGML two-dot GU. Source,plan preparation,compilation and execution remain
 separate stages;no new benchmark has run alongside the caller cohort.
+Its separate protocol audit and native gpt-6-luna max review identify an ISA
+evidence gap before any build:arithmetic checks must bind to the noinline
+`iq3s_pair_dot`,with the public wrapper's call checked separately. The source
+gate now records that candidate call chain and per-symbol checks,including
+compiler variants or outlined chunks;unreachable symbols cannot satisfy it.
+This corrects prospective admission,not an observed binary or numerical failure.
 A direct-component gain must precede production-entry/pool dispatch and model
 qualification. Retire the component if it does not justify that next comparison.
 The earlier `iq3xxs_pair_gu_rows` IQ3_XXS NT1 GU candidate shares activation
