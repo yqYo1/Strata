@@ -332,6 +332,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source-pinned native attachment at
   post-prefill and whole-round completion boundaries,with a separately bounded
   entrypoint/device check before any long-generation collection.
+  After result commit `1681e74bd5649fc51c26f9cc1e372a0f99f9bdd3`,all110original
+  source inputs and the prepared recipe were recovered from pushed Git. The
+  closed host executable,dependencies and successful raw output are retired:
+  9files/149434bytes,external manifest
+  `decode-profile-gate-host-output-retirement-20261106.json`,SHA256
+  `027c18e0a61dc3cf39720aab5dbd010681bd42e50e7f1306cd7236bfd64dd3ad`.
+  Only its required record remains;both selected engine generations are intact.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
