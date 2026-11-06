@@ -29,7 +29,7 @@ def prerequisites(full=False):
     ctx = refusal.context()
     refusal.budget.prerequisite_rows(ctx)
     data = clean.base.committed(clean.RESULT)
-    port = data['upstream_streamed_tool_tags_host_v1']
+    port = data['upstream_streamed_tool_tags_host_v2']
     require(port['stage']=='closed' and port['passed'] and port['complete'] and
             port['ownership_closed'] and not port['active'] and not port['GPU_executed'] and
             port['origin_commit']=='3bbf0f399e2a1b3d38642eca4342721fc7994201' and
@@ -57,7 +57,7 @@ def prerequisites(full=False):
             'same unchanged native engine required')
     refs.update({key:dict(path=str(root/'record.json'),sha256=clean.digest(root/'record.json'))
         for key,root in (('positive32',ctx.positive.ROOT),('record_failure32',ctx.ROOT))})
-    refs['frontend']=dict(key='upstream_streamed_tool_tags_host_v1',sha256=clean.signature(port))
+    refs['frontend']=dict(key='upstream_streamed_tool_tags_host_v2',sha256=clean.signature(port))
     return normal,prior,contract,manifest,providers,refs
 
 

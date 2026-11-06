@@ -40,10 +40,13 @@ def current(key,frozen):
     manifest = runtime.read_manifest(frozen['python_contract'])
     runtime.validate_manifest(manifest)
     require(runtime.selection(env)==frozen['python_selected'],'host interpreter changed')
+    address_cap = frozen.get('virtual_address_bytes',2<<30)
+    require(type(address_cap) is int and 1<<30 <= address_cap <= 16<<30,
+            'finite host virtual-address budget required')
     for case in frozen['commands']:
         argv = case['command']
         require(re.fullmatch(r'[a-z0-9-]+',case['role']) and argv==[
-            '/usr/bin/timeout','-k','5s','300s','/usr/bin/prlimit','--as=2147483648',
+            '/usr/bin/timeout','-k','5s','300s','/usr/bin/prlimit',f'--as={address_cap}',
             '--cpu=120','--fsize=8388608',frozen['python_selected']['path'],
             '-X','faulthandler','-B','-m','unittest','-v',*case['modules']] and
             case['modules'] and all(re.fullmatch(r'(serve|tools)\.[A-Za-z0-9_.]+',n)
