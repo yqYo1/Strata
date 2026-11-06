@@ -266,6 +266,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cases,5invalid cache footers,5invalid pre-generation histories,9invalid workload
   contracts and4disabled-observer cases. These are CPU-only controls,not new
   native/device/model or speed qualification.
+  The fixed4 entry is now prepared at `826df22f565805cbb30c4be0966f9e764256f680`,
+  key `mtp_width_model_entry_cap4_v1`:320frozen inputs,all15model assets,
+  the unchanged cb7/ec4 generation and common half1. Only the declared startup
+  frontend delta and controller/test additions extend the original317inputs.
+  Fresh frontend probes and model execution remain pending;cap2 cannot prepare
+  until this reference closes. No GPU work was executed by preparation.
 
 ## Prefill envelope and scaling
 
