@@ -319,9 +319,105 @@ def execute(stage):
     print('IQ3_S component stage ' + stage + ' closed;commit before next stage.', flush=True)
 
 
+def analyze():
+    """Recover identity metadata in a copy;never rewrite the failed cohort."""
+    key = KEY + '_analysis'
+    data = json.loads(base.RESULT.read_text())
+    committed = json.loads(base.git(P, 'show', 'HEAD:' + str(base.RESULT.relative_to(P))))
+    need(key not in data and data == committed, 'one fresh committed offline analysis')
+    row = json.loads((ROOT / 'record.json').read_text())
+    need(data[KEY] == base.compact(row) and row['stage'] == 'failed' and
+        row['error'] == "KeyError('direct_identity')" and not row['active'] and
+        row['ownership_closed'] and len(row['processes']) == 6,
+        'preserved closed six-process metadata failure required')
+    revision = base.git(P, 'rev-parse', 'HEAD').decode().strip()
+    result = dict(stage='verifying', source_commit=revision,
+        original_key=KEY, original_source_commit=row['source_commit'],
+        original_record_sha256=digest(ROOT / 'record.json'),
+        original_compact_sha256=base.fingerprint(data[KEY]),
+        original_failure_preserved=True, native_executed=False,
+        active=False, ownership_closed=True, passed=False, complete=False)
+    deadline = time.monotonic() + 180
+    try:
+        own = str(Path(__file__).resolve())
+        need(digest(own) == hashlib.sha256(base.git(P, 'show', revision + ':' +
+            str(Path(own).relative_to(P)))).hexdigest(), 'commit exact analysis source')
+        expected = {p:h for p,h in row['project_inputs'].items() if p != own}
+        names = tuple(str(Path(p).relative_to(P)) for p in expected)
+        need(base.pins(P, row['source_commit'], names) == expected and
+            hashlib.sha256(base.git(P, 'show', row['source_commit'] + ':' +
+                str(Path(own).relative_to(P)))).hexdigest() == row['project_inputs'][own] and
+            base.pins(base.GGML, base.GGML_REV, ('ggml',)) == row['ggml_inputs'],
+            'original source images required;only this analysis controller may differ')
+        need(base.machine() == row['machine'] and
+            digest(base.METADATA) == row['metadata_sha256'] and
+            base.identity(row['fixture']['shard']) == row['fixture']['file_identity'] and
+            fixture_hash(row['fixture']) == row['fixture']['sha256'], 'machine/model drift')
+        allowed = base.input_map(row)
+        actual = row['build_evidence']['compiler_inputs']
+        need(digest(actual['path']) == actual['sha256'] and
+            all(digest(p) == h for p,h in json.loads(Path(actual['path']).read_text()).items()) and
+            digest(ROOT / 'build/compile_commands.json') == row['build_evidence']['compile_database_sha256'] and
+            all(digest(b['path']) == b['sha256'] for b in row['binaries'].values()) and
+            digest(row['same_build_library']['path']) == row['same_build_library']['sha256'] and
+            row['ISA']['passed'] and row['correctness']['passed'], 'same compiled/qualified CPU inputs required')
+        recovered = copy.deepcopy(row['processes'])
+        identities = []
+        for index, proc in enumerate(recovered):
+            entries = [c for c in row['commands'] if c['pid'] == proc['receipt']['pid']]
+            need(len(entries) == 1, 'unique actual owner record required')
+            entry, = entries
+            expected_argv = [row['binaries']['cpu_iq3s_pair']['path'], row['fixture']['shard'],
+                *[str(row['fixture'][k]) for k in ('gate', 'up', 'down', 'blob_bytes', 'total_experts')],
+                str(base.ORDER[index]), str(index)]
+            need(base.owned.closed(entry) and entry['exit_code'] == 0 and
+                entry['argv'] == expected_argv and entry['environment'] == row['environment'] and
+                proc['index'] == index and proc['arm'] == base.ORDER[index] and proc['passed'],
+                'actual original binary/argv/environment/exit required')
+            out, err = [ROOT / ('owned-' + str(index)) / ('measure.' + suffix)
+                for suffix in ('stdout', 'stderr')]
+            need(all(digest(p) == entry['logs'][p.name]['sha256'] for p in (out, err)) and
+                err.stat().st_size == 0, 'original output/hash/quiet stderr required')
+            records = [json.loads(v) for v in out.read_text().splitlines()]
+            samples = [v for v in records if v['kind'] == 'sample']
+            checks = [v for v in records if v['kind'] == 'validation']
+            need([v for v in records if v['kind'] == 'input'] == [proc['input']] and
+                samples == proc['samples'] and len(samples) == 40 and len(checks) == 2 and
+                all(v['cases'] == 2016 and v['bitwise'] and v['finite'] and v['inputs_unchanged'] for v in checks) and
+                records[-1] == dict(kind='closed', passed=True) and
+                all(s['wall_s'] >= .25 and s['passes'] < 1000000 and
+                    s['timer_s'] < .001 * s['fastest_warm_pass_s'] and
+                    s['outputs_match_untimed_reference'] and
+                    s['timed_direct_calls'] == s['expert_calls'] and s['timed_nt1_rows'] == s['row_ops'] and
+                    s['timed_pair_rows'] == base.ORDER[index] * s['row_ops'] for s in samples),
+                'unchanged complete original numerical/timing/call evidence required')
+            proc['receipt'] = base.receipt(entry)
+            identity = entry['direct_identity']
+            identities.append(dict(index=index, pid=entry['pid'], start_ticks=identity['start_ticks'],
+                sid=identity['sid'], exit_code=entry['exit_code'],
+                original_stdout_sha256=entry['logs']['measure.stdout']['sha256']))
+        decision = base.decision(recovered)
+        decision['next'] = 'Only individually winning direct-component cells may motivate production-entry/pool qualification;no model gain or adoption follows.'
+        need(time.monotonic() < deadline and digest(ROOT / 'record.json') == result['original_record_sha256'],
+            'bounded offline analysis;original failed record must remain unchanged')
+        result.update(stage='closed', passed=True, complete=True, processes=identities,
+            actual_compiler_inputs=actual['files'], declared_build_inputs=len(allowed),
+            original_samples_verified=240, real_model_cases_per_process_before_and_after=2016,
+            decision=decision,
+            scope='Offline reanalysis of all six existing processes with exact original owner identities and raw outputs. Same original decision/order/criteria,no new samples,exclusion,retry or restored parent pass. Only the analysis controller differs from the196 original project inputs;all native code and compiled inputs remain unchanged.')
+    except BaseException as error:
+        result.update(stage='failed', error=repr(error))
+        raise
+    finally:
+        base.write(ROOT / 'analysis.json', result)
+        data[key] = result; base.write(base.RESULT, data)
+    print('Offline IQ3_S analysis closed;original cohort remains failed.', flush=True)
+
+
 if __name__ == '__main__':
-    need(len(sys.argv) == 2, 'use prepare|build|check|0..5')
+    need(len(sys.argv) == 2, 'use prepare|build|check|0..5|analyze')
     with (base.B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); base.guards.no_model_owners([])
         if sys.argv[1] == 'prepare': prepare()
+        elif sys.argv[1] == 'analyze': analyze()
         else: execute(sys.argv[1])

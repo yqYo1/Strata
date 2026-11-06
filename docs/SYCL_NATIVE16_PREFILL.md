@@ -958,6 +958,15 @@ All six same-build correctness children exit0 with quiet stderr and closed
 ownership:384single/80XXS cases,the new80IQ3_S cases,old dispatch off/on and both
 28-case pool selectors. Both pool checksums remain `e5d7a50a8e7d5ac5`.
 No production selection or component/model speed result follows yet.
+All six timing children have now exited0 with240samples and2016real-model GU
+cases checked before/after each. V1's final aggregation nevertheless fails:
+Main's result curation removed `receipt.direct_identity`,which the unchanged
+decision function needs for independent-process proof. Keep V1 failed. Its
+original full owner records and hashed raw outputs remain available. The
+separate,read-only `analyze` action checks those records,all source/build/model
+identities and the original outputs before restoring identity metadata in a
+copy and applying the same decision function. Commit this prospective recovery
+before execution;it neither reruns a native child nor rewrites V1 into a pass.
 The Orca gpt-6-luna source audit and native gpt-6-luna max report review now
 accept this as conditional source-level decision support:all three assigned
 source hashes match and no necessary source correction was identified.
