@@ -758,11 +758,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The companion`tools/sycl/check_adaptive_budget_failure.py`is now source-only:
   it reuses the existing owned second-record supervisor,requires a closed
   positive32entry,and checks two full32-copy generations with only the first
-  published. Its prospective CPU adversarial controls and native expected-exit1
-  refusal have not run. A20-second locked CPU-only control plan is committed
-  before invocation at`adaptive_budget32_failure_reader_host_v1`;it requires
-  two full groups and86corrupt variants,without launching the native engine.
-  The frozen speed-cohort inputs are unchanged.
+  published. The20-second locked CPU-only controls now pass at source
+  `5943022da76d6ee75b6b9af6cf5dd71dd73c40ff`:two full32groups and86corrupt
+  variants,actual0 in0.576s,without a native engine or GPU runtime. Follow
+  `adaptive_budget32_failure_reader_host_v1`. Native expected-exit1 refusal
+  remains unexecuted. The frozen speed-cohort inputs are unchanged.
   The retrieved review's stale-map condition is resolved for the current
   bounded8-swap route:actual compiled inputs match its generator/cache/header
   identities,`adaptive_res_upload`updates`xcache.replace_residency(host_res)`

@@ -185807,7 +185807,7 @@
     "elapsed_wall_s": 0.726092228
   },
   "adaptive_budget32_failure_reader_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "5943022da76d6ee75b6b9af6cf5dd71dd73c40ff",
     "source_path": "tools/sycl/check_adaptive_budget_failure.py",
     "source_sha256": "95bb38d45125adf2b996f69f25b0a06d87001516495a5aeed3807ae8160cc259",
@@ -185846,10 +185846,20 @@
       "address_space_bytes": 1073741824,
       "text_bytes": 65536
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "plan": "One CPU-only ordered-reader invocation after prose process1 normal closure and before process2. Commit this exact source/recipe first. The CLI acquires the shared nonblocking lock itself;do not nest an external flock. Require actual0,valid two full32 groups and all86 corrupt variants rejected. No native model or GPU runtime,no retry or source-hash refresh.",
-    "limits": "CPU reader controls only;native32 positive/expected-refusal and clean performance remain unqualified."
+    "limits": "CPU reader controls only;native32 positive/expected-refusal and clean performance remain unqualified.",
+    "outcome": {
+      "GPU_executed": false,
+      "full_groups": 2,
+      "maximum_group": 32,
+      "negative": 86,
+      "passed": true,
+      "scope": "CPU ordered-reader controls only;native32 refusal remains unqualified."
+    },
+    "exit_code": 0,
+    "elapsed_wall_s": 0.576423374
   }
 }
