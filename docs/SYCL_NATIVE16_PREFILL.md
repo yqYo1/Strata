@@ -241,11 +241,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   host-flow joins,raw-clock containment and excluded gap/suffix work still need
   qualification. Every replay checks unsigned32 numerical results and both
   allocation guards. No environment changes or device spin loops are used.
-  Source is outside the frozen320/native567inputs. It has not been compiled or
-  executed;after the active62-kernel check,commit its exact current-runtime
-  source composition,compiler/dependency image and bounded build/run recipe
-  before execution. This is a disposable collector fixture,not another engine
-  generation or current long-generation attribution.
+  Both it and `tools/sycl/compat_window_build.py` are outside the frozen320/
+  native567inputs. The new builder prepares four serial SYCL compilations of
+  this fixture and the three exact selected runtime sources,then one link.
+  It requires all six width processes and the current active62-kernel control
+  to close first,recoverable native composition,the complete original compiler/
+  package image and actual header/link closure. Only static Python syntax/source
+  inspection has run;no import,prepare,build or device execution has occurred.
+  Commit the prepared exact recipe before building,and a separate bounded
+  smoke/prefix-only/prefix-window plan before execution. This is a disposable
+  collector fixture,not another engine generation or current model attribution.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
