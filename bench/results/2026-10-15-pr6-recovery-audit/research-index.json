@@ -25051,5 +25051,71 @@
         "Actual compiler/target and fixture result from Main-owned execution, or a specific observed mismatch with a pinned source/input."
       ]
     }
+  },
+  "iq3s_component_protocol_20261106": {
+    "classification": "decision_support",
+    "source_revision": "dd19494c12f0393ee29f390fe9ea62b067422f06",
+    "source_hashes_before_fix": {
+      "bench/sycl/cpu_roofline/iq3s_pair.py": "c9eb22e4e5a3729d8ae53d2e7b2ac490cfa404afa9b1a4287a5a5a26ee364d12",
+      "bench/sycl/cpu_roofline/iq3_pair.py": "ec13b9336d1b0571ec36ee5dc03c127a7ea6650f77555c583cf08ea3abb01994",
+      "bench/sycl/cpu_roofline/iq3_pair.cpp": "a3f29bf077a3c609742bf3387bc0fcdb529a7be37887d956efacb13f49c1e0aa",
+      "bench/sycl/cpu_roofline/CMakeLists.txt": "077b487980cd87f5b7c447e555ebcd20423ea11ae66914d39dcf9af0c5e82190",
+      "src/kernels/cpu/iq_single_avx2.cpp": "cfc898155e4dfb33b9c41511e1fd8b5af10867c1fe824e587f2c7ae6cd434ebe",
+      "include/strata/kernels/cpu/iq_avx2.hpp": "fb9c642c5ada447f5b5e87a07660b7fa0a8389ea6086bf893d691fd82b14affa",
+      "tests/core/iq_single_exact_test.cpp": "6e7ae6a1d2853fff5b2d837a887eefc8a6faee1fc30d439c9b976838063025e8"
+    },
+    "worker_model": "gpt-6-luna/high/Orca",
+    "review_model": "gpt-6-luna/max/native",
+    "verdict": "accepted_as_conditional_decision_support_with_isa_target_refinement",
+    "finding": "252-expert fixture and direct comparison are coherent at source level. Original ISA gate aggregated unrelated named-symbol instruction evidence;required arithmetic belongs to the noinline dot helper,with the public wrapper call checked separately. No actual binary false pass was observed;all execution remains prospective.",
+    "correction": {
+      "commits": [
+        "d7a4a6a41d30679d1dc26e8df25364e94acd3499",
+        "dff535acc1a223b58472d4ddc61cd008b546497b"
+      ],
+      "path": "bench/sycl/cpu_roofline/iq3s_pair.py",
+      "sha256": "e2cbeb079031f7e59ef1edb9ae118ad18188d614c714c8b73a526c0a9a29eabb",
+      "scope": "Main-authored per-function/call-chain gate;handles reached dot/chunk variants and ignores data/unreachable symbols. Source correction only;not yet executed."
+    },
+    "ownership": {
+      "run": "run_356bb8081c33",
+      "task": "task_ab04624fc1f3",
+      "dispatch": "ctx_0fb212c54c55",
+      "worker_state": "succeeded",
+      "dispatch_state": "completed",
+      "external_terminal": "term_40b47a8d-6790-41e7-98da-b1d9e5137586",
+      "pty_closed": true,
+      "delivery_acknowledged": "delivery_5c2ab8f60346",
+      "lifecycle_limit": "Orca external resource retains historical accounting;the owned PTY was explicitly closed after accepted completion and a final idle prompt."
+    },
+    "main_reads_body_on_arrival": false,
+    "report": {
+      "path": ".cache/research/2026-11-06/iq3s-component-protocol-v1/report.md",
+      "bytes": 7169,
+      "sha256": "41f04dd17bd46c754644d85a0cd7cb98d6d2e5b00d7a5ce32768e8bea5d5ae71"
+    },
+    "review": {
+      "path": ".cache/research/2026-11-06/iq3s-component-protocol-v1/review.json",
+      "bytes": 7814,
+      "sha256": "871211abd66b0ce2d4c49e7c601828e593180399d0a6882731a0922c6e8fd9b4"
+    },
+    "retention": {
+      "consumer": "Main's immediate, committed CPU-only qualification of this IQ3_S component protocol, especially the corrected ISA admission and exact/default/dispatch/pool fixture gates.",
+      "review_point": "After the corrected ISA and fixture gates plus the six-process component comparison close, or earlier if the plan is rejected.",
+      "body_budget_bytes": 12288,
+      "scope": "Local report/review only through named CPU-only qualification;retire closed launch/spec/dispatch paperwork after committed curation. No full report body committed."
+    },
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "name": "Main-owned ISA-gate refinement followed by the pinned CPU-only IQ3_S component qualification",
+      "prerequisites": [
+        "The serialized caller cohort must close before this benchmark's preparation/build stages.",
+        "Commit the corrected controller and frozen source/build/comparison inputs before building; retain the existing fallback and verify all assigned inputs and the actual executable hash.",
+        "The CPU-only build and corrected per-symbol ISA/call-path gate must pass before running exact, IQ3_S, dispatch and pool fixtures.",
+        "All fixtures and output gates must pass before the six independent processes in the frozen 0/1, 1/0, 0/1 order; preserve all cell samples and apply the predeclared per-cell decision."
+      ],
+      "scope_limit": "No further delegated research is supported now. A winning direct-component cell may only motivate a separately committed production-entry/pool comparison; it does not qualify a model trial or adoption."
+    },
+    "limitations": "Startup own-status/inbox success and source-only constraints are reported by the worker and assessed by report review;Main independently checked assigned source bytes and actual completion/PTY closure. No compiler,fixture,numerical,timing,model or adoption qualification."
   }
 }

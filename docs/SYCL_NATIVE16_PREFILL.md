@@ -843,9 +843,11 @@ The off process emits no caller record;the on process has six complete conserved
 caller records. Native/benchmark exit0,owners close,validation is quiet and no
 fresh fault is recorded in either process. The first on/off per-output latency
 ratios are1.005990/1.003774,with matching logical work in both workloads. The
-second on process also passes both long requests,all six caller/leaf/census
-joins,strict completed prefixes4/5,normal exits,quiet validation and fault/owner
-checks. Three processes remain;the three-pair overhead decision is still pending. The first on
+second on/off pair also passes both long requests,all six caller/leaf/census
+joins or disabled-caller absence,strict completed prefixes4/5,normal exits,
+quiet validation and fault/owner checks. Its on/off per-output latency ratios
+are0.987694/0.991769,again with matching logical work. Two processes remain;
+the three-pair overhead decision is still pending. The first on
 caller's code/prose wall intervals are237.918/834.038s,including pool regions
 109.089/355.207s,layer waits77.883/287.238s and unclassified31.729/116.189s.
 Nested native waits total119.421/439.711s;their caller CPU is118.554/435.462s.
@@ -859,6 +861,13 @@ and window counts to compare draft time with future caller-unclassified waits;
 it changes no execution or decision criterion.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
+For planning only,the first two current on samples give a conditional
+`outputs / (caller_wall - pool_wall)` of24.606..24.614 tok/s for code and
+15.193..15.206 for prose. This sets only the observed disjoint pool region to
+zero while fixing all other times;it is neither measured speed nor a physical
+ceiling or prediction of changed overlap. In that approximation,CPU-pool
+optimization alone does not reach70 tok/s. Keep GPU-reach/final waits and draft
+work as separate next targets,and recompute after the final pair qualifies.
 The six closed CPU-service processes also agree exactly on logical work volume
 for each workload. Dividing `logical_job_blob_bytes` by generated tokens gives
 the following target-verifier demand, including rejected verification rows but
