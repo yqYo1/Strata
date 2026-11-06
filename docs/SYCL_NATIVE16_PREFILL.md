@@ -233,6 +233,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its next consumer is the post-cohort current-ELF collector check,followed by a
   separately committed representative model-service plan. This is no new
   capability,speed,saturation or model-coverage result.
+  The completed Orca Luna/native Luna-max writer review finds no supported
+  bounded live-reduction route:the pinned PTI writer writes one JSON document
+  through a buffered stream,and the owned reducer loads the whole file before flow joins.
+  `UniLogger` also calls `tellp()` in its emptiness/finalization contract;
+  non-seekable FIFO behavior and reader-failure handling remain unqualified.
+  The closed24-output trace's348285412bytes are the only measured size datum.
+  Temporary report/review files under `.cache/research/2026-11-06/unitrace-stream-window`
+  (SHA256 e879f20b/241894d5)serve only the post-cohort current-collector design
+  decision;curate the needed source findings and retire those bodies there.
+  Current-ELF qualification and finite output budgets still apply.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
@@ -338,6 +348,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   all four paused gates[4,5,5,6] and six cache/IQ3 footers pass. These are single
   reference samples;five processes and the three-pair width decision remain
   pending. No cap2 speed gain or new TG milestone follows yet.
+  Process0's successful raw output/JIT is now retired after pushing its result
+  at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76`,recovering all320original inputs
+  from Git,and checking closed owners and cohort admission before/after deletion:
+  69files,13154182bytes. Keep its two generated config/plan files and all global
+  cohort/provider inputs for the remaining five admissions. External deletion
+  manifest `mtp-width-generation-process0-output-retirement-20261106.json`
+  has SHA256 `7e8d87edafaa5208fc46ad26f7747a1e2de975195782f8d9514cb3244dd6c0e4`.
 - The exact ec4 HC/interlayer source audit now supplies static262144-index
   evidence,not physical-context qualification. At full `n=262144`,the HC tensor
   has2684354560elements;its BF16 store ends at5368709120bytes. `checked_count`
