@@ -186227,7 +186227,7 @@
     "elapsed_wall_s": 0.577081755
   },
   "cpu_read_capacity_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "b3f2d7f31fbd836008930c2354c0a6479a6caea5",
     "sources": {
       "bench/sycl/cpu_read_capacity.cpp": "014bec6e87cb70a7e3d5653c2ed99d8e708d19f2403953f36c2183e3bb27daee",
@@ -186309,11 +186309,26 @@
     },
     "plan": "Compile one disposable CPU-only fixture,then run its small checksum control and five ordered1/2/4/6/12-thread payload conditions. One1GiB4KiB-page mapping and first-touch CPU0;each condition has one untimed full pass and five timed7-pass samples. Check every worker checksum and actual affinity,zero timed minor/major faults,100ms minimum batch,normal0/quiet stderr/closed owners and exact committed source/compiler/dependencies. Barriers/scheduling stay charged. Do not retry,refresh hashes,discard samples or change floors. Static assembly review precedes interpreting rates. No GPU,engine build,model execution,physical bus counter or saturation claim.",
     "retention": "One short-lived auxiliary CPU-capacity fixture,not a third inference engine. Keep source,recipe,individual times/rates/checksums/affinity/faults and interpretation. Preserve both retained engine generations. Retire this auxiliary ELF,dependency output and successful raw streams after useful evidence is pushed and exact source/recipe is recovered;consumer ends at this capacity result.",
-    "results": [],
+    "results": [
+      {
+        "name": "read-compile",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "read-test",
+        "passed": true,
+        "exit_code": 0,
+        "stdout_sha256": "7321f7f9d98069c3efc09733e87334f3367638c82e0d7e2ca84cd7818e7097c0",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "model_executed": false,
     "capacity_schema_version": 1,
@@ -186386,6 +186401,243 @@
       ],
       "THP_policy": "always [madvise] never",
       "L3": "32768K"
+    },
+    "dependencies": {
+      "read": {
+        "files": 331,
+        "aggregate_sha256": "f52af2ecdd42cda6a659302038bd4b4909edb5da695aef72b62ba473ff6ebd2b"
+      }
+    },
+    "binaries": {
+      "read": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-read-capacity-v1/read",
+        "sha256": "749a352219bbda86dfa79482fbcab767238b200767ac3ff1b12241215caba61f"
+      }
+    },
+    "read_capacity": {
+      "working_set_bytes": 1073741824,
+      "passes": 7,
+      "samples": 5,
+      "first_touch_cpu": 0,
+      "conditions": [
+        {
+          "threads": 1,
+          "cpus": [
+            0
+          ],
+          "checksum": "aa4d2b3234000000",
+          "elapsed_ns": [
+            302936433,
+            306067501,
+            298755963,
+            327563127,
+            343596053
+          ],
+          "minor_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "major_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "payload_GB_per_s": [
+            24.811121902924103,
+            24.557304331373622,
+            25.158302088852366,
+            22.945784028981993,
+            21.875084717576776
+          ],
+          "median_payload_GB_per_s": 24.557304331373622,
+          "minimum_payload_GB_per_s": 21.875084717576776,
+          "maximum_payload_GB_per_s": 25.158302088852366
+        },
+        {
+          "threads": 2,
+          "cpus": [
+            0,
+            1
+          ],
+          "checksum": "aa4d2b3234000000",
+          "elapsed_ns": [
+            253991217,
+            222894879,
+            216843482,
+            224412253,
+            221364883
+          ],
+          "minor_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "major_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "payload_GB_per_s": [
+            29.592333375842678,
+            33.72079610676026,
+            34.661833958191096,
+            33.49279135841125,
+            33.953862356749696
+          ],
+          "median_payload_GB_per_s": 33.72079610676026,
+          "minimum_payload_GB_per_s": 29.592333375842678,
+          "maximum_payload_GB_per_s": 34.661833958191096
+        },
+        {
+          "threads": 4,
+          "cpus": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "checksum": "aa4d2b3234000000",
+          "elapsed_ns": [
+            224346880,
+            219616817,
+            220872397,
+            229596592,
+            250924372
+          ],
+          "minor_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "major_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "payload_GB_per_s": [
+            33.502550906881346,
+            34.224122135419165,
+            34.02957033150684,
+            32.736517134365826,
+            29.954016455603604
+          ],
+          "median_payload_GB_per_s": 33.502550906881346,
+          "minimum_payload_GB_per_s": 29.954016455603604,
+          "maximum_payload_GB_per_s": 34.224122135419165
+        },
+        {
+          "threads": 6,
+          "cpus": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "checksum": "aa4d2b3234000000",
+          "elapsed_ns": [
+            258552445,
+            230810685,
+            222090179,
+            223612380,
+            219506281
+          ],
+          "minor_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "major_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "payload_GB_per_s": [
+            29.07028308318647,
+            32.564318969895176,
+            33.842976766658374,
+            33.612596798084255,
+            34.24135625531371
+          ],
+          "median_payload_GB_per_s": 33.612596798084255,
+          "minimum_payload_GB_per_s": 29.07028308318647,
+          "maximum_payload_GB_per_s": 34.24135625531371
+        },
+        {
+          "threads": 12,
+          "cpus": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11
+          ],
+          "checksum": "aa4d2b3234000000",
+          "elapsed_ns": [
+            225953132,
+            218263084,
+            242262227,
+            235920924,
+            233499752
+          ],
+          "minor_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "major_faults": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "payload_GB_per_s": [
+            33.264388510445606,
+            34.43639038839935,
+            31.025029618009743,
+            31.85894934863853,
+            32.189296577925276
+          ],
+          "median_payload_GB_per_s": 32.189296577925276,
+          "minimum_payload_GB_per_s": 31.025029618009743,
+          "maximum_payload_GB_per_s": 34.43639038839935
+        }
+      ],
+      "checksums_and_affinity_passed": true,
+      "GPU_executed": false,
+      "physical_bus_traffic_qualified": false,
+      "absolute_hardware_ceiling_qualified": false,
+      "model_bottleneck_qualified": false,
+      "assembly_review_pending": true,
+      "scope": "1GiB ordinary anonymous4KiB-page mapping,first-touch CPU0,one untimed pass then five7-pass batches per CPU group. Parent start/finish barriers and thread scheduling remain in wall time. Payload rates are decimalGB/s,not measured DRAM transactions or inference speed."
     }
   }
 }
