@@ -226,8 +226,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   A candidate crossing the reference's acceptance-class threshold must not
   retrospectively exclude its speed sample. Commit final criteria and controls
   before this new experiment;do not change the active Q6 comparison's rules.
-  Main's bounded-entry controller is now committed at
-  `e40714dedc501df8fcc62419176f405d87df48b9` in the existing isolated
+  Main's bounded-entry and generation controller is now committed at
+  `1c36d7de4cd07a4e39dc746b251e9a56641f0c4a` in the existing isolated
   `maintenance/upstream-config-wiring` child. It preserves spec4 allocation,
   compares explicit cap4/cap2 with min-p/suffix disabled,and checks actual
   traced widths against completed live Q6 captures. It requires a positive
@@ -235,7 +235,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retirement/restoration,and renewed loan/capture identities across requests.
   It explicitly admits only the tested startup-config frontend delta plus its
   new controller/test inputs;fresh frontend probes and both model entries are
-  required. Its host-only controls now pass at that source:lease1positive/12negative,
+  required. The entry-only host controls pass at the earlier source
+  `e40714dedc501df8fcc62419176f405d87df48b9`:lease1positive/12negative,
   source1positive/3negative,and width4positive/24negative,exit0,without native/GPU
   execution. Exact command in the child was `env PYTHONDONTWRITEBYTECODE=1
   PYTHONNOUSERSITE=1 prlimit --as=1073741824 --cpu=60 --fsize=65536 -- timeout
@@ -243,6 +244,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   -B tools/sycl/check_mtp_width_model.py controls`. Merge the child only after
   all six frozen Q6 processes close. Fresh frontend/model entries remain pending;
   no new native build or speed result follows from the parser controls.
+  The later source adds a separate `speed` mode for six fresh4/2/2/4/4/2
+  processes with the fixed v5 thinking-on long workloads. It requires both
+  bounded entries first,disables entry-only trace/payload audits,and records
+  individual TG,PP,TTFT and depth-specific acceptance. Only fixed4 establishes
+  the MTP class;all three speed ratios must exceed one for a per-workload gain.
+  The added generation/decision controls are not yet executed;run the full
+  controller's CPU controls at cohort closure before any new preparation.
 
 ## Prefill envelope and scaling
 
