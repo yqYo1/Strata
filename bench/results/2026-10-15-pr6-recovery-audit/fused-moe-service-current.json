@@ -185992,7 +185992,7 @@
     "elapsed_wall_s": 0.576423374
   },
   "decode_resource_reader_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "7e4537e42ff32bb2eb3f5b6fe313f8b4d107d4aa",
     "source_path": "tools/sycl/profile_decode_resources.py",
     "source_sha256": "ae99db788f6aece1b1a16b4b80d310b75ccb4e68c043bc503f2bd0a63794407a",
@@ -186055,10 +186055,27 @@
       "address_space_bytes": 1073741824,
       "text_bytes": 65536
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "plan": "One CPU-only invocation after prose process2 normal closure and before process3. Commit source/recipe first;hold the shared nonblocking lock. Test real T1/T2 and T1/T4 rounded-clock/work fixtures plus24 corrupt cases,paired-overhead decisions,duplicate/incomplete process refusal and four immutable environment configurations. Require actual0 and static-census rejection of adapt8. The consumed external comparison fields are pinned separately;unused result arrays are not inputs. No native model,GPU initialization,build or profiler. No retry/hash refresh.",
-    "limits": "CPU reducer/controller controls only;new resource model execution and observer overhead remain unqualified."
+    "limits": "CPU reducer/controller controls only;new resource model execution and observer overhead remain unqualified.",
+    "outcome": {
+      "GPU_executed": false,
+      "adaptive_census_refused": true,
+      "changed_work_inconclusive": true,
+      "corrupt_timing_cases": 24,
+      "immutable_environment_controls": 4,
+      "invalid_cohorts_rejected": 2,
+      "over_budget_retained": true,
+      "passed": true,
+      "positive": 1,
+      "timing_widths": [
+        2,
+        4
+      ]
+    },
+    "exit_code": 0,
+    "elapsed_wall_s": 0.577081755
   }
 }

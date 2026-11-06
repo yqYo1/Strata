@@ -890,10 +890,12 @@ source-only static plan on the same429b engine,with cap4/code and cap2/prose
 in separate off/on,on/off,off/on cohorts. CPU leaf/census/decode/trace remain
 common;only caller profiling changes. Its new T1/Tcap reader binds traces,
 work and rounded clocks directly,without changing the frozen T1/T4 reader.
-CPU adversarial/environment controls are now preregistered at
-`decode_resource_reader_host_v1`;they and all new model/profiling execution
-remain unrun. Preparation is gated on both frozen speed cohorts closing;
-this is neither new attribution nor observer-overhead qualification.
+The preregistered CPU controls now pass at source
+`7e4537e42ff32bb2eb3f5b6fe313f8b4d107d4aa`:both widths,24corrupt timing
+cases,paired-overhead controls and four immutable environment configurations;
+actual0 in0.577s. Follow`decode_resource_reader_host_v1`. New model and
+profiling execution remain unrun. Preparation is gated on both frozen speed
+cohorts closing;this is neither new attribution nor observer-overhead qualification.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
