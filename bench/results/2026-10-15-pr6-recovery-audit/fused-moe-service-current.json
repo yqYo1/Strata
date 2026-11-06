@@ -185682,6 +185682,127 @@
           "original_sources_recovered": 332,
           "protected_ELF_outputs": 15
         }
+      },
+      {
+        "index": 2,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1723691,
+          "start_ticks": 234678244,
+          "sid": 1723639
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33279,
+            "reused_tokens": 0,
+            "generated_tokens": 10147,
+            "output_chars": 6956,
+            "reasoning_chars": 20127,
+            "prompt_ms": 57393.4,
+            "prompt_tps": 579.8,
+            "decode_ms": 956404.1,
+            "decode_tps": 10.6,
+            "ttft_s": 57.553,
+            "total_s": 1013.824,
+            "drafts_offered": 6268,
+            "drafts_accepted": 3879,
+            "acceptance_rate": 0.6188576898532228,
+            "request_sha256": "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee",
+            "output_sha256": "237ff0b5a8f1e3ed596ef3ac506f7775e1e37e8ed66862484cc6511108a623ae",
+            "reasoning_sha256": "d570609258b32dd6f21261142cc67c05467f8ea6a02a22e2cadf640840d46fe7",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1723691,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33279,
+            "rows": 33278,
+            "GPU_residual_rows": 33278,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19977,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33278,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 2,
+            "request": 5,
+            "IQ3_calls": 7231146,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 2790923,
+            "lookups": 6017760,
+            "hit_percent": 46.4
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "965fb4fa6a64f49bb997654f7bc15c19812571c92573524ba98357aba06613da",
+            "c68cf64b10891ea1a96f677b485cdefec67a97b9dad7f6ec1a53bf4ffd1ccea2",
+            "a3fb423efc701eb3e11df431625f05c0dcdc2d2fcc31822315380822c1e6045c",
+            "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee"
+          ],
+          "valid": true,
+          "journal_sha256": "086075c3bd1914bbf07b7dd0b8b16f55988722dd83cb3e1c15077921d30c64bd"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35592
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_controls": {
@@ -185869,5 +185990,75 @@
     },
     "exit_code": 0,
     "elapsed_wall_s": 0.576423374
+  },
+  "decode_resource_reader_host_v1": {
+    "stage": "prepared",
+    "source_commit": "7e4537e42ff32bb2eb3f5b6fe313f8b4d107d4aa",
+    "source_path": "tools/sycl/profile_decode_resources.py",
+    "source_sha256": "ae99db788f6aece1b1a16b4b80d310b75ccb4e68c043bc503f2bd0a63794407a",
+    "source_count": 123,
+    "source_signature": "b9543276a00b1c8918d91e2d830a7c44125ef3bdf7ded1eb3cbdcae28c174ae3",
+    "controller_inputs": {
+      "regular-code": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-generation-regular-code-v2/record.json",
+        "fields": [
+          "configuration",
+          "environment_template",
+          "workload"
+        ],
+        "sha256": "0ee71f31e8a48f63db30a8dc75a027e071431b9a06373b515e4705c8ad337392"
+      },
+      "varied-prose": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-generation-varied-prose-v2/record.json",
+        "fields": [
+          "configuration",
+          "environment_template",
+          "workload"
+        ],
+        "sha256": "1a33e50c2b4f018f21c14ce2da358b0f73ee735ae2e7f22e805dc50ab6e2a841"
+      }
+    },
+    "command": [
+      "/usr/bin/flock",
+      "-n",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+      "/usr/bin/prlimit",
+      "--as=1073741824",
+      "--cpu=10",
+      "--fsize=65536",
+      "--",
+      "/usr/bin/timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "20s",
+      "/usr/bin/python3.12",
+      "-X",
+      "faulthandler",
+      "-B",
+      "-c",
+      "import sys,json;sys.path.insert(0,\"tools/sycl\");import profile_decode_resources as m;print(json.dumps(m.controls(),sort_keys=True))"
+    ],
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+    },
+    "helpers": {
+      "/usr/bin/flock": "e619344dc3eec4023498465679262f9ca27d1e8cef9cfc4c1ae72b428577b806",
+      "/usr/bin/prlimit": "17064f67e650d6152a6902b013aab496b54c87587c8eea6f5023aafee6154069",
+      "/usr/bin/timeout": "12690a043dfd555a6c14ccc1564f5649c18f1762c0d6ff66729948130898ec52"
+    },
+    "budget": {
+      "wall_seconds": 20,
+      "cpu_seconds": 10,
+      "address_space_bytes": 1073741824,
+      "text_bytes": 65536
+    },
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "plan": "One CPU-only invocation after prose process2 normal closure and before process3. Commit source/recipe first;hold the shared nonblocking lock. Test real T1/T2 and T1/T4 rounded-clock/work fixtures plus24 corrupt cases,paired-overhead decisions,duplicate/incomplete process refusal and four immutable environment configurations. Require actual0 and static-census rejection of adapt8. The consumed external comparison fields are pinned separately;unused result arrays are not inputs. No native model,GPU initialization,build or profiler. No retry/hash refresh.",
+    "limits": "CPU reducer/controller controls only;new resource model execution and observer overhead remain unqualified."
   }
 }

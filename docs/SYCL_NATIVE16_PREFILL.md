@@ -740,8 +740,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   8.073058/10.554848tok/s,with8286/10147generated and6.8%/46.4%cache hits.
   Both requests read33279fresh tokens from the same body and produce answers;
   candidate prompt/TTFT are57.0051/57.172s,versus59.9447/60.153s. All
-  native,validation,fault and ownership checks pass. Four processes remain;
-  one pair is not repeatability or adoption. Keep552b as the fast prefill
+  native,validation,fault and ownership checks pass. Candidate2also closes
+  with10147generated,10.609532exactTG and46.4%cache hits;prompt/TTFT are
+  57.3934/57.553s. Three processes remain,including this pair's reference;
+  one complete pair is not repeatability or adoption. Keep552b as the fast prefill
   fallback;this code TG gain is not whole-model adoption or70TG.
   The next bounded32-swap entry is source-prepared in
   `tools/sycl/check_adaptive_budget_entry.py`. Its CPU reducer now passes a
@@ -888,7 +890,8 @@ source-only static plan on the same429b engine,with cap4/code and cap2/prose
 in separate off/on,on/off,off/on cohorts. CPU leaf/census/decode/trace remain
 common;only caller profiling changes. Its new T1/Tcap reader binds traces,
 work and rounded clocks directly,without changing the frozen T1/T4 reader.
-CPU adversarial/environment controls and all new model/profiling execution
+CPU adversarial/environment controls are now preregistered at
+`decode_resource_reader_host_v1`;they and all new model/profiling execution
 remain unrun. Preparation is gated on both frozen speed cohorts closing;
 this is neither new attribution nor observer-overhead qualification.
 The earlier caller V3 failed its third pair,so it does not qualify current
