@@ -956,9 +956,11 @@ actual0 in0.577s. Follow`decode_resource_reader_host_v1`. Both clean speed
 cohorts are now closed. The regular-code resource plan is prepared at source
 `afdf7c96670ecbfaf5b761dd6017afc1e9cf040b`,with all15model-asset hashes and
 341committed source inputs checked. Follow`decode_resource_regular_code_v1`.
-Next run `python3 -X faulthandler -B tools/sycl/profile_decode_resources.py regular-code host`
-for fresh frontend admission,commit its result,then run indices0..5 in order,
-committing each closed process. No profiling model process has run yet;the
+Fresh benchmark/server frontend probes now pass at source`54802134745c35f35c8df144edad3e562f5d2227`,
+with normal closed owners. Next run
+`python3 -X faulthandler -B tools/sycl/profile_decode_resources.py regular-code INDEX`
+for indices0..5 in order,committing each closed process. No profiling model
+process has run yet;the
 prepared plan establishes neither attribution nor observer-overhead qualification.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
