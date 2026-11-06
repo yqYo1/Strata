@@ -112,110 +112,64 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `verify_window_policy_host_v3`. These
   component results do not qualify model TG or adoption; follow also
   `verify_window_generation_speed_v1`.
-- The Q6 native-half scale-load component is now closed at source
-  `4947b7746dafb0efde7da9bb2ead49dc89790d89`, evidence
-  `3e6b836a438b419dcd43e2eab68ba3cc3f7ea798:q6_native_half_component_v3`.
-  All 32 small numerical/guard/refusal cases pass. Three independent speed
-  processes retain 1050 individual timing samples; 27/35 geometry/column cells
-  are faster in every process. Their paired geometric-mean time reductions
-  range from 0.435% to 25.313%, median 12.937%. This is the full public Q6 entry
-  with resident operands and queue completion under parameter validation,
-  not model TG or physical-resource saturation. The 35 result points are in
-  the cumulative CSV (172 rows total). The closed auxiliary build and consumed
-  conversion review are retired after exact-source recovery: 457 files,
-  51361158 bytes; all original outcomes and useful samples remain recoverable.
-  Main's next source-prepared policy uses the retained 5c model's 30-cell
-  incumbent: only 26 native-half winners intersect it. The 512x4 component win
-  remains outside that incumbent; all 640-row and other ineligible cells keep
-  their existing path. `STRATA_SYCL_DECODE_Q6_NATIVE_HALF=1` is opt-in,
-  decode-only, immutable after init, and requires columns=1/centering=0.
-  Prompt/prefill selection is unchanged. Optional
-  `STRATA_SYCL_Q6_ROUTE_AUDIT=1` distinguishes captured phase/T/shape dispatch
-  from cache hits and started/completed windows; its request-boundary output
-  covers currently live capture epochs cumulatively, not retired captures or
-  per-request deltas. It is owner-only after drain, with checked output and a
-  bounded 64-shape table. The CPU-only UBSan policy fixture passes at source
-  `517a285094bffa8cd49168282f4ef813d9cbfbdd` through
-  `tools/sycl/verify_window_model.py native-half-check`, with the preceding
-  committed preparation plan. Both compile/run processes exit0 and close;
-  all 203 actual include/link inputs match the pinned compiler/source image,
-  with no UBSan output. Follow `q6_native_half_policy_host_v1` for the exact
-  commands and binary hash. This checks the policy and cache container only;
-  it does not execute the full Verifier/program or GPU route writer.
-  Its closed auxiliary build and normal output are retired after source/recipe
-  recovery: 12 files,3053275 bytes; the 14 retained inference executables are unchanged.
-  The Main-authored constructor
-  `tools/sycl/build_q6_native_half_model.py` has prepared the next
-  exact selective 5c composition at source `ec4ab9a0e`. It recovers the original 566 inputs from
-  Git, adds the qualified kernel and reversible policy/generator changes,
-  and adds one same-build Q6 fixture target. All prefill,CPU and runtime
-  sources stay byte-identical to 5c. Both immutable half0/1 arms use the new
-  binary,columns1 and centering0;the closed 5c executable generation is
-  replaced after original-input recovery,while preserving the552b fallback.
-  Retirement is complete:737 files,143301402 bytes. All566 source files,
-  1451 actual compiler inputs and105 original controls were recovered/checked;
-  the original shared record remains. Follow `q6_native_half_model_build_v1`.
-  The full composed Verifier/program and same-build Q6 fixture now compile:
-  1452 actual compiler inputs are covered,six ELFs produced,and all three
-  configure/compile/dependency processes close normally. Engine SHA256 starts
-  `cb7dd5aad4cb`;the two CPU fixtures and submission ELF are byte-identical to
-  their original 5c outputs. This is build evidence only. The new Main-owned
-  `tools/sycl/check_q6_native_half_model.py` prepares bounded traced
-  submission10,Q6-half32 and phase-cache16 checks after same-build host parity.
-  Both same-build CPU observer modes now pass28 real-pool cases with the
-  same checksum and closed normal processes. The new controller also prepares
-  thinking-on32K model-entry arms after the device gates,using the maintained
-  bench.sh supervisor. Its reader joins request/phase/T/capture/shape and
-  completed-window records to the independent30/26 measured shape sets,
-  including positive completed Q6 head use. It retains the live-epoch scope;
-  neither retired history nor per-request deltas are inferred. At source
-  `d30834e71`,the synthetic reader passes2 positive cases and rejects17 corrupt
-  cases via `python3 -B tools/sycl/check_q6_native_half_model.py parser`.
-  The new same-build device checks now pass:submission10,Q6-half32 and
-  phase-cache16,with normal exits,strict before-main validation,closed owners,
-  unchanged inputs/boot/driver,and no fresh fault. Follow
-  `q6_native_half_model_device_v1`;the preload still leaves ordinary provider
-  teardown unqualified. A header-only scan of the actual model confirms its
-  Q6_K output head is2560x248320 (521472000 encoded bytes),and all seven
-  Q6 matrix geometries match the component's geometry set. This is metadata,
-  not actual model dispatch or physical-traffic measurement.
-  Normal build/host/device output and private temporary/cache files are
-  retired after source recovery:24 files,12991534 bytes. The live build/device
-  records and15 selected comparison/fallback executables remain for model entry.
-  The first half0 model entry failed before inference: Main selected spec8,
-  while the unchanged scratch lease requires spec4. The engine refused the
-  configuration with exit2;the benchmark exited1 and reported incomplete
-  protocol observation. All four recorded process identities are now absent;
-  the separate closure reconciliation preserves the original failed result
-  and incomplete observation. No fresh GPU fault was recorded. Follow
-  `q6_native_half_model_entry_arm0_v1` for the original settings and diagnosis.
-  Next commit a fresh spec4/scratch-lease1 plan for both thinking-on32K arms,
-  preserving the same native bytes and placement. Reuse the closed device
-  qualification only after proving the model-controller-only change and all
-  native/fixture/recipe/runtime identities;do not rewrite its original pins.
-  The V2 controller is committed at `ece575451`:it preserves spec4 rather than rewriting
-  the generated configuration,and keeps scratch-lease1. Its explicit reuse
-  gate compares the device/parser/global AST and all105 original transitive
-  control pins,allowing only this Python file's model admission bodies and
-  inert reuse helpers to differ. All six ELFs,preloader/loader,84providers,
-  native567-source/1452-compiler-input recipe,boot and driver still need their
-  existing checks. CPU controls accept the real model-only projection and
-  reject six changed device/parser/import/definition controls. Both half0 V2
-  frontend probes and its two actual32769-input thinking-on model requests
-  now pass:normal native0,quiet validation,closed owners,all15final asset
-  hashes,and no fresh fault. The observed live decode windows use the existing
-  Q6 columns/head route and all started replays complete. Follow
-  `q6_native_half_model_entry_arm0_v2`. This is short model-route qualification,
-  not clean/sustained TG or a new device-fixture validation. Next prepare and
-  admit half1 with the identical native binary,source,placement and safety.
-  The half1 V2 plan is now prepared:all317source pins and the native ELF match
-  half0;normalized configuration/environment differ only by the immutable half
-  selector and private paths. All15assets are hashed. Follow
-  `q6_native_half_model_entry_arm1_v2`;commit before frontend/model execution.
-  Then freeze the repeated long-generation comparison. The short model entry
-  does not qualify sustained TG or model speed. Keep separate prefill/handoff,
-  task, agent and physical 262144/RESTORE gates;retain the validated552b fallback
-  and the new same-binary half0/1 comparison generation.
+- Q6 native-half scale widening remains a **decode-only candidate**. The closed
+  component at source `4947b7746dafb0efde7da9bb2ead49dc89790d89`, evidence
+  `3e6b836a438b419dcd43e2eab68ba3cc3f7ea798:q6_native_half_component_v3`,
+  passes32 numerical/guard/refusal cases and retains1050 timing samples from
+  three independent processes.27/35 geometry/column cells are faster in every
+  process;paired geometric-mean time reductions range0.435%..25.313%,median
+  12.937%. These are resident-operand public-entry timings including queue
+  completion under parameter validation,not model TG or saturation. The CSV
+  retains all35 result points,172rows total.
+  The actual5c30-cell incumbent intersects26 winners;512x4 and all other
+  ineligible cells retain their previous path. Native half requires columns1,
+  centering0,explicit decode phase and an immutable default-off selector.
+  Prompt/prefill selection stays unchanged. FP32 accumulation/reduction remains.
+  The203-input UBSan policy fixture at `517a285094bffa8cd49168282f4ef813d9cbfbdd`
+  passes;the source and closed result remain recoverable after its build retirement.
+  The full model constructor at `ec4ab9a0edfaf33e7bf84c43778c0cc157dc0139`
+  recovers the original566-file5c source and selectively composes567inputs,
+  preserving all prefill,CPU and runtime bytes. Its1452 actual compiler inputs,
+  recipe and six ELFs are checked;engine SHA256 is
+  `cb7dd5aad4cb613dd98a1347e91eb75a157397f88040f18d5e26cf99056b0e15`.
+  Follow `q6_native_half_model_build_v1`. The old5c generation and normal
+  build/host/device output are retired after original-source recovery;the
+  immutable shared5c record remains a required provenance input.
+  Both same-build CPU28-case observer modes and traced submission10,Q6-half32,
+  phase-cache16 device gates pass with normal exits,strict before-main
+  validation,closed owners,unchanged boot/driver,and no fresh fault. Original
+  device evidence is `q6_native_half_model_device_v1` at source
+  `2b1c8f6fe17893e47b8e1722f88d06866f5e650d`. The `ece575451` model-controller
+  correction preserves the device/parser/global AST,all104 other controller
+  pins,and all native/fixture/recipe/provider checks;it does not create a new
+  GPU-fixture validation. Its CPU controls accept the real model-only change
+  and reject six changed device/parser/import/definition controls. The unchanged
+  Q6 snapshot reader passes2 positive and17 corrupt cases.
+  The first spec8 half0 model entry remains failed:the unchanged scratch lease
+  requires spec4,so native exit2/benchmark exit1 occurred before inference.
+  Original protocol observation remains incomplete;independent reconciliation
+  confirms all four owned identities stopped. No fresh GPU fault was recorded.
+  Both corrected **spec4/scratch-lease1** entries now pass:two actual32769-input,
+  thinking-on requests per arm,identical bodies and317source pins,the same
+  native ELF/configuration/placement and only the immutable half selector
+  differing after private-path normalization. Both frontends pass;native exits0,
+  parameter validation is quiet,owners close,all15final model-asset hashes match,
+  and no fresh fault occurs. Follow `q6_native_half_model_entry_arm0_v2` and
+  `q6_native_half_model_entry_arm1_v2`. Both observed1/4-token decode windows
+  complete their replays;the2560x248320 Q6 head selects columns in half0 and
+  native half in half1. These are live-capture cumulative observations,not
+  per-request deltas or retired history. Short-read0 does not exercise prompt
+  verification. The actual model contains129Q6 tensors across seven matrix
+  geometries;the521472000-byte head metadata is not physical bus traffic.
+  **No sustained model-speed improvement is established.** The new Main-authored
+  `tools/sycl/q6_native_half_generation_speed.py` at `24b271b60` prepares the
+  next six-process0/1/1/0/0/1 comparison with thinking-on v5 code/prose. Its
+  source is outside the original317model inputs;all317 remain unchanged.
+  Validate this controller,retire the closed entry output,then commit the frozen
+  generation plan before probes/runs. Keep separate64K/117K PP/TTFT,handoff,
+  agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
+  Preserve the validated552b fallback and current same-binary candidate;these
+  are15 selected executables across two generations,not global cleanup.
 
 ## Prefill envelope and scaling
 
