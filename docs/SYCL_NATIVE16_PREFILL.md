@@ -227,9 +227,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the ec4 engine,fixture,providers,source and immutable runtime envelope afresh.
   The inspected no-argument compatibility fixture has62kernel executions
   (1direct+12first+24host-handoff+24cross-queue+1late);the submission-only mode
-  is a different case. Only static syntax inspection has run for this new
-  controller;no prepare/import,test,collector or GPU execution has occurred.
-  Its next consumer is the post-cohort current-ELF collector check,followed by a
+  is a different case. Preparation now pins114exact project/controller inputs
+  at `b3b5387a95db2ddfadb8be612a07bdfb56923c2c`,the unchanged current engine/
+  fixture,existing launcher/collector and runtime safety. Follow prepared key
+  `q6_native_half_collector_active_v1`;the case has not executed. Its next
+  consumer is the committed current-ELF collector check,followed by a
   separately committed representative model-service plan. This is no new
   capability,speed,saturation or model-coverage result.
   Main's new `tests/sycl/compat_window.cpp` source-prepares the next pause/resume

@@ -181060,5 +181060,98 @@
       "host_fixture_consumer_closed": true,
       "engine_integration_unqualified": true
     }
+  },
+  "q6_native_half_collector_active_v1": {
+    "stage": "prepared",
+    "source_commit": "b3b5387a95db2ddfadb8be612a07bdfb56923c2c",
+    "native_source_commit": "ec4ab9a0edfaf33e7bf84c43778c0cc157dc0139",
+    "engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/strata",
+      "sha256": "cb7dd5aad4cb613dd98a1347e91eb75a157397f88040f18d5e26cf99056b0e15",
+      "bytes": 24499560
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/sycl_submission_test",
+      "sha256": "df574bb80ecb20bc5a9e461d01e71fa0dce73d7d4dd3f4f3816ffe5c769abc80",
+      "bytes": 347624
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "profile": {
+      "mode": "aggregate",
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      },
+      "session": "StrataPrefill3d3fd630c26b78fe4b1fcda7",
+      "environment": {
+        "UNITRACE_SystemTime": "1",
+        "UNITRACE_FollowChildProcess": "1",
+        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/collector-active-v1/trace",
+        "LD_DEBUG": "libs"
+      }
+    },
+    "cases": [],
+    "plan": {
+      "question": "Does the existing active-from-exec launcher mode preserve all compatibility graph/kernel flow joins with only kernel-activity Chrome logging?",
+      "native": "Exact ec4/cb7 engine and its six checked ELFs,including the current compatibility submission fixture. No build and no inheritance of552b/b310 collector qualification.",
+      "order": "After all six frozen MTP-width processes close,one fresh active-from-exec compatibility-graph fixture. Keep native capture0,Sysman0 and all qualified runtime safety. Existing aggregate launcher,ChromeKernelLogging1,event buffer128;no collection toggle or process-environment mutation.",
+      "acceptance": "Existing source/ELF/provider/pre-main-validation/owner/journal/fault gates,numerical/event/copy/graph/lifetime pass,normal exit and all62 named kernels with unique native host-flow joins. Both native gates must observe active collection;keep it active through normal exit and require flushed trace and removed named session.",
+      "limits": "Small collector/route qualification only;no model coverage,observer-cost,physical RAM/PCIe/VRAM traffic,resource saturation,critical path,clean speed,full context or inference adoption claim.",
+      "next": "Only this current-build collector admission can support a separately committed representative model-service plan. Reuse the existing guarded reader and clock/loss/overhead contracts;do not treat the old short/default-spin model capture as current long-generation attribution.",
+      "stopping": "Stop first source,ownership,provider,validation,fault,budget,numerical,count or join failure. No retry,hash refresh or changed criteria.",
+      "retention": "Keep compact counts,clock/identity/qualification limits and diagnostic outcome. Retire successful full API trace,timeline,JIT and execution bookkeeping after joins and next-consumer needs are recorded. No new native generation.",
+      "fixture": "No-argument tests/sycl/compat.cpp,not --native or --submission. Source inventory:1direct kernel+12first replays+24host handoff replays+24cross-queue replays+1late replay=62. No in-process environment changes."
+    },
+    "budgets": {
+      "wall": 180,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 134217728,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "sources_sha256": "2132af2ed96ace8d1239f28d3e8cff850e5b89096f691928479c6717c8257645",
+    "environment_template_sha256": "91e90021537b9ebd75f2e2fde7434b65dfdca6aac43c7f4b43ee94f2c8f60b8c"
   }
 }
