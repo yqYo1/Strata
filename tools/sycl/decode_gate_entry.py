@@ -1,0 +1,232 @@
+#!/usr/bin/env python3
+"""Exercise all four new native gates with one bounded direct-engine request.
+
+Main-authored; repository LICENSE. Diagnostic only,not a benchmark:1024 fixed
+valid tokens,128 outputs and an explicit rare EOS ID. No text-quality claim.
+"""
+import copy
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import select
+import stat
+import sys
+import time
+
+sys.dont_write_bytecode = True
+import check_mtp_width_model as width
+import cpu_capacity as assets
+import engine_once
+import profile_decode_gates as admission
+import run_q6_columns as validation
+import runtime_probe
+import ur_validation
+
+P, B, RESULT, base = admission.P, admission.B, admission.RESULT, admission.base
+ROOT = B / 'decode-gate-entry-v1'
+KEY = 'decode_gate_model_entry_v1'
+SELF = Path(__file__).resolve()
+require, digest, write = base.require, base.digest, base.write
+IDS = [248045] + [13] * 1023
+ROUNDS = [0,8,16,24]
+
+
+def compact(row):
+    value = {n:v for n,v in row.items() if n not in ('sources','commands')}
+    value['source_inputs'] = dict(files=len(row['sources']),sha256=width.signature(row['sources']))
+    return value
+
+
+def save(row):
+    write(ROOT / 'record.json',row)
+    data = json.loads(RESULT.read_text()); data[KEY] = compact(row); write(RESULT,data)
+
+
+def configuration():
+    cohort = json.loads((width.SPEED_ROOT / 'record.json').read_text())
+    old_plan = cohort['plans'][0]
+    environment = width.generation_context(0).environment(cohort,old_plan)
+    require(width.signature(environment) == old_plan['environment_sha256'], 'recover exact closed speed environment')
+    environment = {n:v.replace(old_plan['root'],str(ROOT)) for n,v in environment.items()}
+    environment.update(STRATA_SYCL_DECODE_PROFILE_DIR=str(ROOT / 'gates'),
+        STRATA_SYCL_DECODE_PROFILE_REQUEST='1',STRATA_TRACE='1')
+    config = copy.deepcopy(cohort['configuration'])
+    config['args'] += ['--eos-ids','248319']
+    config['log'] = str(ROOT / 'owned/native.stderr')
+    return config,environment,cohort['model_assets']
+
+
+def prepare():
+    require(not ROOT.exists() and KEY not in base.committed(RESULT), 'fresh single native entry only')
+    native,device,providers,collector = admission.native()
+    config,environment,expected = configuration()
+    model_assets = assets.model_pins(config,expected,full=True)
+    revision = base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
+    sources = base.controls(revision,controller=SELF)
+    ROOT.mkdir(mode=0o700)
+    for n in ('tmp','cache','gates'): (ROOT / n).mkdir(mode=0o700)
+    row = dict(stage='prepared',source_commit=revision,sources=sources,
+        native_source_commit=native['source_commit'],binary=native['binaries']['strata'],
+        build_record=dict(path=str(admission.build.ROOT / 'record.json'),sha256=digest(admission.build.ROOT / 'record.json')),
+        native_validation_probe=device['native_validation_probe'],runtime_manifest=device['runtime_manifest'],
+        boot=device['boot'],driver=device['driver'],configuration=config,environment=environment,
+        controller_python=dict(path=str(Path(sys.executable).resolve()),sha256=digest(sys.executable),version=sys.version),
+        model_assets=model_assets,request=dict(input_tokens=1024,output_tokens=128,
+            input_sha256=width.signature(IDS),eos_ids=[248319],request_id=1,completed_rounds=ROUNDS),
+        budgets=dict(wall=900,cpu=5400,rss_cap=104<<30,text_cap=8<<20,file_cap=16<<20,total_cap=128<<20),
+        whole_wall_s=1500,passed=False,complete=False,active=False,ownership_closed=True,
+        GPU_executed=False,GPU_execution_attempted=False,model_executed=False,
+        plan='Commit source,exact effective environment,model inputs and this request before launch. One fresh direct serving engine;READY131072,GEN128 with1024 valid fixed IDs. Preserve original spec4/cap4/half1,131072INT8 context,1256static slots,5workers,8192chunk and qualified safety. Rare EOS248319 is diagnostic extent control,not a production sampling choice. Require exact four native gates0/8/16/24,raw-clock/request/sequence identities,checked complete GPU work before publication,private atomic acknowledgements,same actual PID/ELF/environment/providers,128bounded output IDs,normalDONE length/QUIT0,quiet strict before-main validation,completed T1/T4 Q6 heads,unchanged final assets/boot/driver,no freshfaults and closed owners. No retry or source/hash refresh. No full API trace or profiler in this small model entry.',
+        limits='Short synthetic diagnostic only;not thinking/task quality,clean PP/TG,sustained generation,collector/model-window coverage,observer overhead,physical resource saturation,ordinary provider teardown or physical262144/RESTORE qualification.',
+        retention='Keep compact native identity/gate clocks/token hash/counts/live replay conservation and validation/fault outcome. After next collector-window consumer and verified result commit,retire successful full output/JIT;no new engine generation.')
+    save(row)
+    print('Prepared1024-input/128-output native gate entry;commit before execution.',flush=True)
+
+
+def current(row,full_models=False):
+    require(base.committed(RESULT)[KEY] == compact(row) and
+            base.controls(row['source_commit'],controller=SELF) == row['sources'], 'entry plan or source changed')
+    native,device,providers,collector = admission.native()
+    require(native['binaries']['strata'] == row['binary'] and native['source_commit'] == row['native_source_commit'] and
+            digest(row['build_record']['path']) == row['build_record']['sha256'] and
+            device['native_validation_probe'] == row['native_validation_probe'] and
+            device['runtime_manifest'] == row['runtime_manifest'], 'native/runtime qualification changed')
+    config,environment,expected = configuration()
+    require(config == row['configuration'] and environment == row['environment'] and expected == row['model_assets'] and
+            row['request']['input_sha256'] == width.signature(IDS), 'fixed input/configuration changed')
+    require(row['controller_python'] == dict(path=str(Path(sys.executable).resolve()),
+            sha256=digest(sys.executable),version=sys.version), 'controller interpreter changed')
+    assets.model_pins(config,row['model_assets'],full=full_models)
+    return providers
+
+
+def run():
+    row = json.loads((ROOT / 'record.json').read_text()); frozen = copy.deepcopy(row)
+    require(row['stage'] == 'prepared' and not (ROOT / 'execution.json').exists(), 'one native entry attempt only')
+    outcome = dict(passed=False,complete=False,host_probe_accepted=False,gates=[])
+    owner = None
+    def persist():
+        write(ROOT / 'execution.json',dict(outcome,active=bool(owner and owner.active),
+            commands=owner.commands if owner else []))
+    with (ROOT / 'execution.json').open('x') as stream: stream.write('{}\n')
+    cursor = None
+    started = time.monotonic()
+    try:
+        cursor = admission.profile.cursor()
+        providers = current(frozen)
+        target = engine_once.native_environment(row,row['environment'])
+        expected = dict(target)
+        owner = base.supervision.Owner(ROOT / 'owned',persist)
+        def interact(io,entry):
+            old_poll = io.poll
+            last = None
+            def poll():
+                nonlocal last
+                old_poll()
+                path = ROOT / 'gates/event'
+                if not path.exists(): return
+                info = path.lstat()
+                require(stat.S_ISREG(info.st_mode) and info.st_uid == os.geteuid() and
+                        stat.S_IMODE(info.st_mode) == 0o600 and info.st_size <= 192, 'event type/owner/extent')
+                event = path.read_text()
+                if event == last: return
+                fields = event.split()
+                require(len(fields) == 5 and fields[0] == 'v1' and
+                        all(v.isdecimal() for v in fields[1:]), 'native gate event syntax')
+                request,sequence,rounds,raw_ns = map(int,fields[1:])
+                index = len(outcome['gates'])
+                require(index < 4 and request == 1 and sequence == index+1 and rounds == ROUNDS[index] and
+                        raw_ns > (outcome['gates'][-1]['raw_ns'] if index else outcome['begin_raw_ns']) and
+                        raw_ns <= time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW), 'native gate identity/order/clock')
+                proc = Path('/proc',str(entry['pid']))
+                require((proc / 'exe').resolve() == Path(row['binary']['path']).resolve(), 'native PID/ELF differs')
+                actual = dict(v.split('=',1) for v in (proc / 'environ').read_text().split('\0') if '=' in v)
+                admission.profile.same_environment(actual,expected)
+                seen = runtime_probe.executable_mappings((proc / 'maps').read_text())
+                require(seen <= set(providers) | {row['binary']['path'],row['native_validation_probe']['library']['path']},
+                        'unexpected native provider')
+                outcome['gates'].append(dict(request=request,sequence=sequence,rounds=rounds,raw_ns=raw_ns))
+                acknowledgement = ROOT / 'gates/ack'
+                require(not acknowledgement.exists(), 'stale gate acknowledgement')
+                temporary = ROOT / 'gates/ack.tmp'
+                fd = os.open(temporary,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+                with os.fdopen(fd,'w') as stream: stream.write(f'v1 {request} {sequence} {rounds}\n')
+                os.replace(temporary,acknowledgement)
+                last = event; persist()
+            io.poll = poll
+            ready = io.line(600)
+            if ready.startswith('INFO '):
+                info = dict(v.split('=',1) for v in ready.split()[1:] if '=' in v)
+                require(all(info.get(k) == v for k,v in dict(context='131072',kv='int8',
+                    kv_resident='131072',expert_slots='1256').items()), 'native INFO configuration differs')
+                ready = io.line(600)
+            require(ready == 'READY 131072 stop', 'native ready protocol differs')
+            outcome.update(native_pid=entry['pid'],native_ready=True)
+            io.send(('GEN 128 '+','.join(map(str,IDS))+'\n').encode())
+            tokens,done,reused = [],None,0
+            while done is None:
+                line = io.line(600)
+                if line == 'REUSED 0': reused += 1
+                elif line.startswith('T '):
+                    fields = line.split(); require(len(fields) == 2 and fields[1].isdecimal(), 'token protocol')
+                    token = int(fields[1]); require(0 <= token < 248320 and len(tokens) < 128, 'output token bounds')
+                    tokens.append(token)
+                elif line.startswith('DONE '): done = line.split()
+                else: raise RuntimeError('unexpected native protocol: '+line[:200])
+            require(reused == 1 and len(tokens) == 128 and len(done) == 15 and
+                    done[1:3] == ['128','1024'] and done[5] == 'length' and done[8] == '0' and
+                    done[14] == '1024' and len(outcome['gates']) == 4, 'incomplete native request or gate extent')
+            require(not (ROOT / 'gates/ack').exists(), 'final acknowledgement not consumed')
+            outcome.update(output_tokens=128,output_token_sha256=width.signature(tokens),native_pid=entry['pid'])
+            io.send(b'QUIT\n'); io.proc.stdin.close()
+            deadline = time.monotonic()+90
+            while not io.exit_watch.poll(0) or not io.eof:
+                io.poll(); require(time.monotonic() < deadline, 'native exit deadline')
+                if select.select([io.proc.stdout],[],[],.02)[0]: io.read(); io.pending.clear()
+            io.exit(1)
+        outcome['begin_raw_ns'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
+        row.update(active=True,ownership_closed=False,GPU_executed=None,GPU_execution_attempted=True,model_executed=None)
+        write(ROOT / 'record.json',row)
+        entry,out,err = owner.run('native',[row['binary']['path'],'--serve',*row['configuration']['args']],
+            target,P,interaction=interact,**row['budgets'])
+        require(base.supervision.closed(entry) and entry['exit_code'] == 0, 'native request did not close normally')
+        text = err.read_text()
+        proof = validation.validation_log(text,entry['pid'],row['native_validation_probe']['loader']['path'],False)
+        snapshot = width.short.snapshots(text,1,1)
+        windows = snapshot['windows']
+        require({v['tokens'] for v in windows if v['phase'] == 'decode'} == {1,4} and
+                sum(v['replay_completed'] for v in windows if v['phase'] == 'decode') >= 24,
+                'actual completed T1/T4 window extent differs')
+        require(not re.search(r'terminate called|retirement failed|Strata SYCL cleanup:',text), 'native runtime failure')
+        outcome.update(host_probe_accepted=True,complete=True,native_exit_code=0,validation=proof,
+            Q6=dict(request=1,completed_head_captures=len(snapshot['completed_head_capture_ids']),
+                windows=[{n:v[n] for n in ('phase','tokens','capture_id','shapes','replay_started','replay_completed')}
+                         for v in windows],independently_selected_routes_passed=True))
+        current(frozen,full_models=True)
+        require(time.monotonic()-started < row['whole_wall_s'], 'whole model entry deadline')
+    except BaseException as error:
+        outcome['error'] = repr(error)
+    finally:
+        if owner is not None and cursor is not None:
+            ur_validation.finish(outcome,owner,cursor,row['boot'])
+        outcome['passed'] = bool(outcome.get('passed') and outcome['complete'] and
+            len(outcome['gates']) == 4 and outcome.get('driver_after') == row['driver'] and 'error' not in outcome)
+        row.update(stage='closed' if outcome['passed'] else 'failed',passed=outcome['passed'],
+            complete=outcome['complete'],active=bool(owner and owner.active),
+            ownership_closed=outcome.get('ownership_closed',owner is None),outcome=outcome,
+            commands=owner.commands if owner else [],
+            GPU_executed=True if outcome['gates'] else None if row['GPU_execution_attempted'] else False,
+            model_executed=True if outcome['gates'] else None if row['GPU_execution_attempted'] else False)
+        persist(); save(row)
+    require(row['passed'],str(outcome))
+    print('All four actual native gates and128outputs close normally;no speed or full-context claim.',flush=True)
+
+
+if __name__ == '__main__':
+    require(sys.argv[1:] in (['prepare'],['run']), 'use prepare|run')
+    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB); base.guards.no_model_owners([])
+        (prepare if sys.argv[1] == 'prepare' else run)()

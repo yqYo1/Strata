@@ -382,7 +382,25 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Preserve all original outcomes and do not label this a new GPU test. This
   identity-based plan replaces repeating identical component fixtures;the
   actual generator still needs a bounded request exercising all four native
-  gates before long-generation profiling. The reuse checker has not yet run.
+  gates before long-generation profiling. The reuse check now passes at
+  `9ad9b8ca41fdce80379f131b4dc57971e82496b0`:438original control inputs are
+  recovered,all five actual fixtures and84providers match,and the boot/driver,
+  validation probe and collector identities are unchanged. Follow
+  `decode_profile_model_build_v1.component_reuse`. This is limited reuse of
+  original outcomes,without any new GPU/model execution. Disposable private
+  linker-output names are omitted from the compact result;their count remains.
+  The Main-authored `tools/sycl/decode_gate_entry.py` source prepares that next
+  check using the actual native serving protocol:1024fixed valid input IDs,
+  128outputs,an explicit rare EOS ID for bounded extent,and the original
+  cap4/half1/131072-context/static-cache placement. The parent services private
+  event/ack gates while checking the actual native PID,environment,providers,
+  request/sequence/round/raw-clock identities. Acceptance includes all four
+  gates,128valid output IDs,completed T1/T4 Q6 heads,normal length/DONE/QUIT0,
+  strict before-main validation,unchanged final assets/boot/driver,no fresh
+  fault and closed owners. No full API trace or profiler is used in this
+  first model entry. This synthetic diagnostic has no thinking/task/PP/TG or
+  full-context claim. Source is not yet prepared or executed;commit it,prepare
+  the exact inputs/environment,commit the plan,then run once.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
