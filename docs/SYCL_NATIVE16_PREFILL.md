@@ -183,12 +183,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   produce actual answers. All four paused request gates and six cache footers
   pass in each process,selected Q6 head replays complete,native exits are0,
   validation is quiet,ownership closes and no fresh fault occurs. These are
-  two processes of six;reproducible model-speed gain is not established.
-  Preserve every paired outcome and run candidate process2 before reference3.
+  two processes of six. Candidate process2 is also closed:code TG13.6191 and
+  prose TG8.9809tok/s,with the same actual lengths/MTP classes,all four paused
+  gates,six footers,normal exit,quiet validation,closed owners and no fresh fault.
+  Three processes are closed;reference3 is still needed for the second pair.
+  Reproducible model-speed gain is not established. Preserve every paired outcome.
   Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
   are15 selected executables across two generations,not global cleanup.
+- Two reviewed current-source decisions constrain the next decode work. The
+  Q6 geometry bridge finds10/12observed T1/T4 cells applicable to the component
+  winners;its synthetic public-entry timer does not measure graph-replay service
+  or a physical bottleneck. A bounded post-cohort T4 attribution still needs
+  lossless,unambiguous UnitTrace joins/counts and disjoint host/wait accounting.
+  On the current greedy linear MTP route,adding only a second token candidate
+  duplicates the existing fallback correction rather than adding useful accepted
+  continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
+  and state/rollback design. This does not reject tree-aware verification in
+  general. Exact source/report/review pins,limits and the temporary administrative
+  index-edit exposure are curated in the
+  [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json),
+  keys `q6_replay_component_bridge_20261106` and
+  `qwen38_weak_mtp_sibling_source_feasibility_20261106`. No new speed claim follows.
 
 ## Prefill envelope and scaling
 
