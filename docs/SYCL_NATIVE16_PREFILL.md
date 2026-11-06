@@ -2254,28 +2254,25 @@ Niko1221/Strata remains the only upstream. The maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
 records the last actual check at **2026-11-06 20:27:33 UTC**,
 `54828c7efbcdf9474697e70922d851f6707f4b32`(`v0.2.11-4-g54828c7e`). The
-actual fetch and remote HEAD/main agree;the209-commit/338-path interval from
-`ffa80d73`is pending review,integration and hardware-tuned vanilla evaluation.
-The v0.2.11tag is`c3b3f5035506f3e966f1b4b7b188aeaabae92f1d`,four commits
-before the observed head. No new checkout,branch,build or inference change
-was made;the next remote check is due approximately48hours later. Earlier
-v0.2.10and functional backlog remain pending. Before freezing the next long
-comparison,adapt the required streamed-tool closing-tag behavior from Niko
-`3bbf0f399e2a1b3d38642eca4342721fc7994201`and qualify its frontend delta. The
-fork has an older parser without`_close_verdict`;the small upstream hunk is
-not directly applicable. The queued source/behavior/validation slice is in
-`v0211_review.next_required_slice`;all other functional obligations stay open.
-The13,295-byte Main proposal is now applied at`f7784635b`after both frozen
-cohorts closed. Six new literal-tag tests and11existing boundary/terminator
-tests pass. The initial full CPU/mock suite fails:130tests,one failure and
-30errors after thread creation fails under its2GiB virtual-address limit;
-peak sampled session RSS is80.5MB and cgroup PID rejection events remain0.
-Keep`upstream_streamed_tool_tags_host_v1`failed. A separately preregistered
-8GiB-AS envelope,with the2GiB RSS and other criteria unchanged,will test the
-resource hypothesis;no full validation or inference qualification follows yet.
-Early tool/argument streaming remains;an ambiguous final close waits for EOF,
-a later call or the upstream1500-character bound. Retire the temporary patch
-after source/results are verified and pushed.
+209-commit/338-path interval from`ffa80d73`still needs full functional review,
+remaining imports and hardware-tuned vanilla evaluation. The v0.2.11tag is
+`c3b3f5035506f3e966f1b4b7b188aeaabae92f1d`;the next actual check is due
+approximately48hours after the timestamp above. Earlier obligations remain.
+After both frozen cohorts closed,the required streamed-tool closing-tag
+behavior from Niko`3bbf0f399e2a1b3d38642eca4342721fc7994201`was adapted to
+the older fork parser at`f7784635b`,preserving early tool/argument streaming
+and its scan optimization. An ambiguous final close is bounded by EOF,a later
+call or1500lookahead characters. At tested source`44ad93dfe`,six new literal
+tests,11existing boundary/terminator tests and the full147server CPU/mock
+tests pass with no skips and normal closed owners. Follow
+`upstream_streamed_tool_tags_host_v2`. The original V1 remains failed:its
+2GiB virtual-space cap prevented new threads;the separately committed V2
+uses8GiB AS with the same2GiB RSS and other criteria. An owned32-thread
+snapshot shows2,512,637,952virtual bytes but65,536,000resident bytes. This
+corrects the test envelope;it does not fix the telemetry daemon lifetime or
+qualify GPU inference. Fresh frontend admission is still required before
+new model comparisons. The five reviewed server concerns,other functional
+ports,whole function ledger and vanilla performance remain incomplete.
 The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration

@@ -1057,7 +1057,7 @@
     "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
     "release_tag": "v0.2.11",
     "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
-    "state": "parser_focused_passed_full_validation_failed",
+    "state": "parser_host_qualified_other_imports_pending",
     "source_only": false,
     "code_imported": true,
     "whole_function_ledger_complete": false,
@@ -1073,7 +1073,7 @@
       "origin_path": "serve/frontend.py",
       "fork_path": "serve/frontend.py",
       "fork_sha256": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
-      "state": "focused_passed_full_validation_failed",
+      "state": "ported_host_tested",
       "provenance": "Niko-authored upstream commit;upstream/fork MIT LICENSE bytes match. No XeStrata material used in this inspection.",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
       "difference": "The current fork parser has no upstream _close_verdict helper;adapt the behavior instead of applying the eight-line hunk blindly or replacing unrelated parser behavior.",
@@ -1203,10 +1203,10 @@
       ],
       "applied_source_commit": "f7784635bc8c6ab832f39bd8d13b29b1c1623c10",
       "applied_frontend_sha256": "9b4700ca3baa484f9a05cbe15f22f992caa258cb7bed1f6256fb703a63e62907",
-      "validation_result_key": "upstream_streamed_tool_tags_host_v1",
+      "validation_result_key": "upstream_streamed_tool_tags_host_v2",
       "followup": {
         "result_key": "upstream_streamed_tool_tags_host_v2",
-        "state": "prepared_unexecuted",
+        "state": "passed",
         "virtual_address_bytes": 8589934592,
         "RSS_cap_bytes": 2147483648,
         "reason": "Initial full suite failed thread creation under2GiB AS with only80.5MB peak RSS and no cgroup PID rejection;test the virtual-space hypothesis without changing parser/tests/runtime or correctness criteria. Keep V1 failed.",
@@ -1215,8 +1215,21 @@
           "tools/sycl/compare_adaptive_budget_generation.py",
           "tools/sycl/run_host_checks.py"
         ],
-        "unchanged_original_source_files": 349
-      }
+        "unchanged_original_source_files": 349,
+        "suite_tests": [
+          6,
+          11,
+          147
+        ],
+        "skipped": [
+          0,
+          0,
+          0
+        ],
+        "all_owned_processes_closed": true
+      },
+      "initial_failed_result_key": "upstream_streamed_tool_tags_host_v1",
+      "validated_source_commit": "44ad93dfe8f6f59ef784f23ec7cecac0b259051f"
     },
     "selected_server_slices": {
       "reviewed_utc": "2026-11-06T22:37:11.107343+00:00",
