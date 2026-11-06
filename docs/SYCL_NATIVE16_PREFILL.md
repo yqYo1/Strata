@@ -444,7 +444,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   snapshot establishes no decode paging or saturation. Preserve V2;before V3,
   check the full selected-source RESUME/PP/REUSED/T/DONE protocol and existing
   frontend reader,then commit offline controls and a new plan with the same
-  native math,request and placement.
+  native math,request and placement. The V3 source now handles ordered
+  RESUME/monotonic PP/REUSED before token output and retains the exact128-output
+  DONE and four-gate extent. It uses the owned interactive exit reader to reject
+  trailing output rather than clearing it. Offline source controls include the
+  complete progress/128-token/DONE stream and25malformed/order/extent variants,
+  beside the10INFO refusals. This source is not yet executed;commit it,then run
+  CPU controls and prepare/commit the fresh V3 plan before model execution.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.

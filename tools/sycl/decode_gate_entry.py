@@ -8,10 +8,10 @@ import copy
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
-import select
 import stat
 import sys
 import time
@@ -26,8 +26,8 @@ import runtime_probe
 import ur_validation
 
 P, B, RESULT, base = admission.P, admission.B, admission.RESULT, admission.base
-ROOT = B / 'decode-gate-entry-v2'
-KEY = 'decode_gate_model_entry_v2'
+ROOT = B / 'decode-gate-entry-v3'
+KEY = 'decode_gate_model_entry_v3'
 SELF = Path(__file__).resolve()
 require, digest, write = base.require, base.digest, base.write
 IDS = [248045] + [13] * 1023
@@ -61,6 +61,48 @@ def startup_info(line):
     return {k:info[k] for k in (*expected,'vram_free_mib')}
 
 
+class RequestProtocol:
+    """Selected serving protocol,including ordered prompt progress notifications."""
+    def __init__(self):
+        self.resumed = self.reused = False
+        self.position = self.progress_count = 0
+        self.tokens,self.done = [],None
+
+    def feed(self,line):
+        require(self.done is None, 'protocol after DONE')
+        fields = line.split()
+        require(bool(fields), 'empty native protocol')
+        marker = fields[0]
+        if marker == 'RESUME':
+            require(line == 'RESUME 0' and not self.resumed, 'unexpected or duplicate RESUME')
+            self.resumed = True
+        elif marker == 'PP':
+            require(self.resumed and not self.reused and len(fields) == 5 and
+                    fields[1].isdecimal() and fields[2] == '1024' and
+                    self.position < int(fields[1]) <= 1023, 'invalid prompt progress/order')
+            require(all(math.isfinite(float(v)) and float(v) >= 0 for v in fields[3:]),
+                    'invalid prompt progress clock/rate')
+            self.position = int(fields[1]); self.progress_count += 1
+        elif marker == 'REUSED':
+            require(line == 'REUSED 0' and self.resumed and not self.reused and self.position == 1023,
+                    'incomplete prompt or unexpected REUSED')
+            self.reused = True
+        elif marker == 'T':
+            require(self.reused and len(fields) == 2 and fields[1].isdecimal() and
+                    0 <= int(fields[1]) < 248320 and len(self.tokens) < 128, 'output order/token bounds')
+            self.tokens.append(int(fields[1]))
+        elif marker == 'DONE':
+            require(self.reused and len(self.tokens) == 128 and len(fields) == 15 and
+                    fields[1:3] == ['128','1024'] and fields[5] == 'length' and
+                    fields[8] == '0' and fields[14] == '1024', 'incomplete native DONE extent')
+            require(all(v.isdecimal() for v in fields[6:13]) and int(fields[6]) <= int(fields[7]) and
+                    all(math.isfinite(float(fields[i])) and float(fields[i]) >= 0 for i in (3,4,13)),
+                    'invalid native DONE counters/clocks')
+            self.done = fields
+        else:
+            raise RuntimeError('unexpected native protocol: '+line[:200])
+
+
 def controls():
     old = base.committed(RESULT)['decode_gate_model_entry_v1']
     require(old['stage'] == 'failed' and old['diagnosis']['physical_closure']['confirmed'] and
@@ -83,8 +125,37 @@ def controls():
         try: startup_info(value)
         except RuntimeError: continue
         raise RuntimeError('corrupt INFO control accepted')
+    failed = base.committed(RESULT)['decode_gate_model_entry_v2']
+    require(failed['stage'] == 'failed' and failed['diagnosis']['physical_closure']['confirmed'] and
+            failed['outcome']['gates'] == [] and not failed['outcome']['fresh_faults'],
+            'preserve and physically settle failed V2 first')
+    closed = failed['diagnosis']['physical_closure']
+    now = base.supervision.identity(closed['original_pid'])
+    require(now is None or now['start_ticks'] != closed['original_start_ticks'], 'V2 native still live')
+    done = 'DONE 128 1024 1.0 2.0 length 12 24 0 1 2 3 0 0.0 1024'
+    good = ['RESUME 0','PP 512 1024 0 0.0','PP 1023 1024 1 1023000.0','REUSED 0']+['T 13']*128+[done]
+    reader = RequestProtocol()
+    for value in good: reader.feed(value)
+    require(reader.done is not None and reader.progress_count == 2 and len(reader.tokens) == 128,
+            'complete native protocol fixture differs')
+    corrupt = [good[1:],['RESUME 1'],good[:1]+good,good[:1]+['PP 1024 1024 1 1'],
+        good[:1]+['PP 1023 1023 1 1'],good[:1]+['PP 1 1024 nan 1'],
+        good[:1]+['PP 1 1024 1 -1'],good[:2]+[good[1]],
+        good[:2]+['REUSED 0'],good[:4]+['PP 1023 1024 2 1'],
+        ['T 13'],good[:4]+['REUSED 0'],good[:4]+['T 248320'],good[:4]+['T -1'],
+        good[:-1]+['T 13'],good[:4]+[done],good[:-1]+[done.replace('128','127',1)],
+        good[:-1]+[done.replace('length','cancel')],good[:-1]+[done.replace('1024','1023')],
+        good[:-1]+[done.replace('12 24','25 24')],good[:-1]+[done.replace('1.0','nan')],
+        good+['T 13'],good+['RESUME 0'],['ERR test'],['unknown']]
+    for lines in corrupt:
+        try:
+            reader = RequestProtocol()
+            for value in lines: reader.feed(value)
+        except (RuntimeError,ValueError): continue
+        raise RuntimeError('corrupt serving protocol control accepted')
     return dict(passed=True,actual_failed_INFO_now_accepted=True,negative=len(variants),
-        GPU_executed=False,scope='Source-derived INFO parser only;not native execution or resource counters.')
+        protocol=dict(passed=True,ordered_progress_and128_outputs=True,negative=len(corrupt)),
+        GPU_executed=False,scope='Source-derived INFO and request protocol only;not native execution or resource counters.')
 
 
 def compact(row):
@@ -133,7 +204,7 @@ def prepare():
         budgets=dict(wall=900,cpu=5400,rss_cap=104<<30,text_cap=8<<20,file_cap=16<<20,total_cap=128<<20),
         whole_wall_s=1500,passed=False,complete=False,active=False,ownership_closed=True,
         GPU_executed=False,GPU_execution_attempted=False,model_executed=False,
-        plan='Preserve failed V1 and its physical closure;V2 corrects INFO full-resident mode0 and adds existing bounded read-only proc/DRM observations. Commit source,exact effective environment,model inputs and request before launch. One fresh direct serving engine;INFO kv_resident0,READY131072,GEN128 with1024 valid fixed IDs. Same spec4/cap4/half1,131072INT8 context,1256static slots,5workers,8192chunk and qualified safety. Rare EOS248319 is diagnostic extent control,not production sampling. Require exact four gates0/8/16/24,raw-clock/request/sequence identities,checked completion before publication,private atomic acknowledgements,same PID/ELF/environment/providers,128bounded outputs,normalDONE length/QUIT0,quiet strict before-main validation,completed T1/T4 Q6 heads,unchanged final assets/boot/driver,no freshfaults and closed owners. Existing client_resources.snapshot validates PID/start/SID before/after bounded fdinfo/thread reads,deduplicates client IDs per PCI device and keeps counter regressions ineligible. Observe READY,each drained gate and DONE. Optional unavailable proc/DRM data remains explicitly unknown and cannot qualify resource attribution;it does not replace generator correctness. No retry,hash refresh,full API trace or profiler.',
+        plan='Preserve failed V1/V2 and their physical closure. V3 handles the selected-source ordered RESUME0,monotonic PP progress to1023of1024,REUSED0,T and DONE protocol;reject malformed/duplicate/out-of-order or trailing output. Commit source,exact effective environment,model inputs and request before launch. One fresh direct serving engine;INFO kv_resident0,READY131072,GEN128 with1024 valid fixed IDs. Same spec4/cap4/half1,131072INT8 context,1256static slots,5workers,8192chunk and qualified safety. Rare EOS248319 is diagnostic extent control,not production sampling. Require exact four gates0/8/16/24,raw-clock/request/sequence identities,checked completion before publication,private atomic acknowledgements,same PID/ELF/environment/providers,128bounded outputs,normalDONE length/QUIT0,quiet strict before-main validation,completed T1/T4 Q6 heads,unchanged final assets/boot/driver,no freshfaults and closed owners. Existing client_resources.snapshot validates PID/start/SID before/after bounded fdinfo/thread reads,deduplicates client IDs per PCI device and keeps counter regressions ineligible. Observe READY,each drained gate and DONE. Optional unavailable proc/DRM data remains explicitly unknown and cannot qualify resource attribution;it does not replace generator correctness. No retry,hash refresh,full API trace or profiler.',
         limits='Short synthetic diagnostic only;not thinking/task quality,clean PP/TG,sustained generation,collector/model-window coverage,observer overhead,physical resource saturation,ordinary provider teardown or physical262144/RESTORE qualification.',
         retention='Keep compact native identity/gate clocks/token hash/counts/live replay conservation and validation/fault outcome. After next collector-window consumer and verified result commit,retire successful full output/JIT;no new engine generation.')
     save(row)
@@ -236,28 +307,16 @@ def run():
             target_identity = dict(pid=entry['pid'],start_ticks=actual_identity['start_ticks'],sid=actual_identity['sid'])
             observe('ready')
             io.send(('GEN 128 '+','.join(map(str,IDS))+'\n').encode())
-            tokens,done,reused = [],None,0
-            while done is None:
-                line = io.line(600)
-                if line == 'REUSED 0': reused += 1
-                elif line.startswith('T '):
-                    fields = line.split(); require(len(fields) == 2 and fields[1].isdecimal(), 'token protocol')
-                    token = int(fields[1]); require(0 <= token < 248320 and len(tokens) < 128, 'output token bounds')
-                    tokens.append(token)
-                elif line.startswith('DONE '): done = line.split()
-                else: raise RuntimeError('unexpected native protocol: '+line[:200])
-            require(reused == 1 and len(tokens) == 128 and len(done) == 15 and
-                    done[1:3] == ['128','1024'] and done[5] == 'length' and done[8] == '0' and
-                    done[14] == '1024' and len(outcome['gates']) == 4, 'incomplete native request or gate extent')
+            protocol = RequestProtocol()
+            while protocol.done is None: protocol.feed(io.line(600))
+            require(len(outcome['gates']) == 4, 'incomplete native gate extent')
             require(not (ROOT / 'gates/ack').exists(), 'final acknowledgement not consumed')
-            outcome.update(output_tokens=128,output_token_sha256=width.signature(tokens),native_pid=entry['pid'])
+            outcome.update(output_tokens=128,output_token_sha256=width.signature(protocol.tokens),
+                prompt_progress=dict(notifications=protocol.progress_count,reached=protocol.position,total=1024),
+                native_pid=entry['pid'])
             observe('done')
             io.send(b'QUIT\n'); io.proc.stdin.close()
-            deadline = time.monotonic()+90
-            while not io.exit_watch.poll(0) or not io.eof:
-                io.poll(); require(time.monotonic() < deadline, 'native exit deadline')
-                if select.select([io.proc.stdout],[],[],.02)[0]: io.read(); io.pending.clear()
-            io.exit(1)
+            io.exit(90)
         outcome['begin_raw_ns'] = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW)
         row.update(active=True,ownership_closed=False,GPU_executed=None,GPU_execution_attempted=True,model_executed=None)
         write(ROOT / 'record.json',row)
