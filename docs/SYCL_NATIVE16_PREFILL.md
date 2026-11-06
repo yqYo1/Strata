@@ -508,9 +508,14 @@ on the reference,including mixed directions and the640-row/4-column outlier.
 All numerical,source/provider,ownership and fresh-fault gates pass. This is
 full public-entry wall time with resident data in the parameter-validation
 envelope,not clean model TG/GPU saturation. Native-half remains unselected;
-caller/phase policy,actual GPU ISA and model impact remain pending. Retire this
-auxiliary component build after recording its decision and exact-input recovery;
-keep the named552b fallback and5c5e diagnostic-model consumers separately.
+caller/phase policy,actual GPU ISA and model impact remain pending. After exact
+recovery of382project inputs,822actual compiler/link inputs and14build commands,
+the closed auxiliary build and consumed converter-review bodies are retired:
+457files,51361158bytes. All1050samples and35decisions remain unchanged;the
+source/fixture/parser have the imminent phase/caller comparison as consumer.
+The named552b fallback and5c5e diagnostic-model14ELFs remain intact. A fresh
+Orca Luna phase/caller audit now runs from this measured evidence;Main has not
+read its report body or selected a model path.
 The standalone converter's `prepare`, `build` and `check` actions require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
