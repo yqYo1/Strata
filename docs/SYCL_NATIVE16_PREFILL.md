@@ -871,6 +871,16 @@ arithmetic nor physical RAM/PCIe transactions, VRAM traffic/bandwidth, hardware
 ceilings or saturation are established. Keep requested transfer bytes distinct
 from measured physical traffic.
 
+The Main-authored `cpu_read_capacity.cpp` and `measure_cpu_read_capacity.py`
+now source-prepare a bounded CPU-only calibration: one 1GiB anonymous 4KiB-page
+mapping, first-touch CPU0, 1/2/4/6/12 pinned threads, one warm pass and five
+seven-pass samples per group. Eight AVX2 integer accumulators consume every
+256-byte block, with complete per-worker modular checksums and compiler barriers
+between passes. Compile/run and assembly review remain unexecuted. Rates will
+be observed sequential read-payload throughput, not DRAM transactions, an
+absolute hardware ceiling or a model bottleneck. The one-use auxiliary fixture
+is retired after pushed results/source recovery; both inference engines remain.
+
 The next source-matched decode-resource consumer can reuse the current429b
 engine:its recorded CMake recipe has `STRATA_CPU_SERVICE_PROFILE=ON`,and its
 actual generator/verifier include the existing leaf,census and disjoint caller
