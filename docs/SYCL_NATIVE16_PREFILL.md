@@ -456,7 +456,7 @@ This is source preparation only:it has not been compiled or run. The current
 model cohort used its immutable old source image,whose326control inputs remain
 unchanged. Its fifth process nevertheless fails the separate transitive
 active-tree Q6 guard after this edit;the failed cohort is preserved below.
-After the queued CPU IQ3_S comparison,commit the
+After the closed CPU IQ3_S comparison,commit the
 production-flag build/numerical and paired-entry timing plan before executing
 this candidate. The standalone conversion result does not qualify this kernel,
 and final GPU ISA,model impact and decode-only selection remain pending. The
@@ -981,14 +981,20 @@ planned640-row production entry,after the queued GPU component. The earlier
 qualified service cohort attributes only13.44..13.48%of code worker CPU and
 9.60..9.63%of prose worker CPU to IQ3_S NT1 GU. These are worker-time shares,
 not additive wall intervals or a model-speed prediction;this component does not
-cover the whole GU bottleneck. Retire the auxiliary build/raw output after
-committing the analysis and recovering its exact source/recipe.
+cover the whole GU bottleneck. The auxiliary build/raw output,ended caller
+controls and consumed IQ3 source/protocol report bodies are now retired after
+exact source/recipe recovery. All240samples and the failed parent remain at
+`4cb47ff93933d509788afca106291b1caec12e54`;the active result keeps its terminal
+marker and separate analysis. The14inference ELFs,short-entry admission and
+current Q6 report/inputs remain unchanged. This is scoped cleanup,not global
+retirement of old project artifacts.
 The Orca gpt-6-luna source audit and native gpt-6-luna max report review now
 accept this as conditional source-level decision support:all three assigned
 source hashes match and no necessary source correction was identified.
-This does not establish compiler/ISA or numerical correctness. Keep its local
-report/review only through the Main-owned CPU-only qualification below;the
-research index records the source pins,limits and no-duplicate-scope decision.
+That source review itself did not establish compiler/ISA or numerical
+correctness;the actual CPU qualification is recorded above. Its report/review
+bodies are retired;the research index keeps the useful source pins,limits and
+no-duplicate-scope decision.
 After the caller comparison's failed closure,commit a CPU-only build/comparison
 plan and qualify this fixture before timing. Use actual IQ3_S/IQ4_NL model
 weights,128/640-row ranges,six-expert reuse/252-expert streaming and separate
