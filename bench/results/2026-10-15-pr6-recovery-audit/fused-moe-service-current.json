@@ -181884,5 +181884,143 @@
         "tests/core/decode_profile_gate_test.cpp": "811d40d0f1b88144a2a47d7dcdf988e0996a1f0b9df43eeaa24f8919228c74c6"
       }
     }
+  },
+  "decode_profile_model_build_v1": {
+    "stage": "prepared",
+    "source_commit": "a388c63f70b1f33363b6e8e51293f6989791ba09",
+    "selected_basis": {
+      "record_sha256": "07c38cc31954f83c8296a81746d0f223e7b609d60fdc8ce5a961c15e5333addb",
+      "source_commit": "ec4ab9a0edfaf33e7bf84c43778c0cc157dc0139",
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/strata",
+          "sha256": "cb7dd5aad4cb613dd98a1347e91eb75a157397f88040f18d5e26cf99056b0e15",
+          "bytes": 24499560
+        },
+        "cpu_service_pool_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/cpu_service_pool_test",
+          "sha256": "8babfb2389cac46252321308c934c12e47d6f98e3c5d5e0becf239f41305495f",
+          "bytes": 3469136
+        },
+        "iq_single_exact_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/iq_single_exact_test",
+          "sha256": "6221535ca1a716c43486d2e8590cf12ecf74ac46b4377e300bc44fe41dbca9ac",
+          "bytes": 3434440
+        },
+        "sycl_submission_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/sycl_submission_test",
+          "sha256": "df574bb80ecb20bc5a9e461d01e71fa0dce73d7d4dd3f4f3816ffe5c769abc80",
+          "bytes": 347624
+        },
+        "sycl_verifier_retirement_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/sycl_verifier_retirement_test",
+          "sha256": "fc1d2ff622864bf255fa05b95ff80796ce27f1589642e7595554f684f699c00b",
+          "bytes": 18025704
+        },
+        "sycl_q6_columns_bench": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/build/sycl_q6_columns_bench",
+          "sha256": "0951d0f8b60120f43529d97ced879b8571ec26838f623faa9a3944c78c515aad",
+          "bytes": 11499688
+        }
+      },
+      "recovered_files": 567,
+      "recovered_sha256": "8a65e7bfe7a0b1ec7f2d86b302a5ac29c467760d5435f4906c7630c67ada93b6",
+      "changed": [
+        "src/program/generate.cpp",
+        "include/strata/sycl/decode_profile_gate.hpp"
+      ],
+      "prefill_CPU_GPU_kernels_and_runtime_unchanged": true
+    },
+    "toolchain_image": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/toolchain.json",
+      "files": 6239,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ],
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-model-v1/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "fallback_binaries": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_qsa_topk_prefill_entry_test": "4ba024ef4386be7192ffd78624c4f6aeee9d7ccd43f16f37b5ff893d0a60fbe0",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_submission_test": "7c3de057ecfb5038f896aa3dac6dd086f41a50a024912d380790da1bd0d54b09",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_vllm_native16_test": "d1b28549a77c8ed457130477a8d6ec2a99957d8e6ebc1a55e797c4718d4ef4db",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_gu_swiglu_bench": "dd1e9a93301c418b935063f600bc7bf126db908d9c3891453179e2ba342cd0d2",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_down_scatter_bench": "506e0bc8f4af9a7579318941f93493ad435b3e914d622a60b7b9200ebf8e22ab",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_moe_accum_test": "e93b9b0d50e357acc928c01b8dd7e6bcd0d38655b5d4f5994b04bf26ff762839",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_gdn_columns_bench": "debfc1279965b3d6628095a9066dc74c58152ab25cb0baf55c265f799d53d37e",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/sycl_gdn_storage_pipeline_bench": "7d0fb7492fefd0c5c3874d099c51282b91a787698059b1250d8b3ee45a0196cc"
+    },
+    "monitor_qualification": {
+      "original_source_commit": "6f79f4b1a3b9d3400f404f88c8d562b4acdc35c2",
+      "evidence_key": "verify_window_build_monitor_host_v1",
+      "monitor_AST_sha256": "2141f05cc05e364bae5480b2420a349ae4b30c306b13c7caa21d2b8a97206924",
+      "unchanged_helpers": {
+        "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+        "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8"
+      },
+      "scope": "Reuse only the identical monitor function,owner,guard and interpreter;not the new preparation or metadata-query code."
+    },
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-model-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "budgets": {
+      "wall": 1800,
+      "cpu": 7200,
+      "rss_cap": 12884901888,
+      "text_cap": 8388608,
+      "file_cap": 536870912,
+      "total_cap": 2147483648
+    },
+    "whole_wall_seconds": 3600,
+    "host_plan": {
+      "modes": [
+        0,
+        1
+      ]
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "plan": "Commit source/recipe;recover and retire closed cb7 outputs while preserving552b;commit retirement;build six same-build targets. Only generate.cpp and the host-qualified header change. After normal0/closed compiler and full actual header/link checks,commit before CPU parity and small traced device/entry checks. No model or clean-speed qualification from compilation. New model collector plan must retain active construction,fully drained0/8/16/24 gates,strict before-main validation,finite trace budget and actual round/host-flow evidence. Full generation remains thinking-on with an actual answer;diagnostic timing is not clean TG.",
+    "retention": "Keep552b fallback plus this single opt-in diagnostic generation. Retire after the current model-attribution/next optimization comparison;no third engine generation. Gates are disabled for clean speed.",
+    "controller_inputs": {
+      "files": 110,
+      "aggregate_sha256": "296a9cdd76559f2abe5879df22ba91848ff3fdc4b7ecb6a97c34a397bf8e717b"
+    },
+    "native_sources": {
+      "files": 568,
+      "aggregate_sha256": "ed1245d2ae2bb46430ce6fdf4ca54429b1f954a0bfa4768410003b517a9bce42"
+    },
+    "recipe": {
+      "helper": "tools/sycl/build_decode_profile_model.py:recipe",
+      "sha256": "9423ab7a45d58a085b5698e380127c593006d1410d520f922956ac523b4364f3",
+      "targets": [
+        "strata",
+        "cpu_service_pool_test",
+        "iq_single_exact_test",
+        "sycl_submission_test",
+        "sycl_verifier_retirement_test",
+        "sycl_q6_columns_bench"
+      ],
+      "scope": "Exact selected native recipe at a new private root;only optional host decode gates added."
+    }
   }
 }

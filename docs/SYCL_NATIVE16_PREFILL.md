@@ -353,10 +353,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   building;552b and all nine fallback outputs remain protected. It reuses the
   existing finite build monitor and two-mode same-build CPU-pool check. The
   existing device controller adds `decode-profile prepare|run` for fresh strict
-  traced submission/Q6/phase checks. These new source paths have not been
-  composed,compiled or executed yet. Source review,committed preparation and
-  actual owner closure remain prerequisites;neither build nor component checks
-  qualify the new model gates or a performance gain.
+  traced submission/Q6/phase checks. Preparation now succeeds from
+  `a388c63f70b1f33363b6e8e51293f6989791ba09`:568native inputs,110transitive
+  controls,the full original compiler image and recovered external inputs are
+  pinned before compilation. The actual generated diff is reviewed and changes
+  only the two declared files. No native compilation or device/model execution
+  has occurred. Commit this preparation,retire the ended cb7 products,commit
+  that result,then build. Neither build nor component checks qualify the new
+  model gates or a performance gain.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
