@@ -968,9 +968,16 @@ cohorts are now closed. The regular-code resource plan is prepared at source
 Fresh benchmark/server frontend probes now pass at source`54802134745c35f35c8df144edad3e562f5d2227`,
 with normal closed owners. Next run
 `python3 -X faulthandler -B tools/sycl/profile_decode_resources.py regular-code INDEX`
-for indices0..5 in order,committing each closed process. Process0is running;
-its four warmups pass the prefix gate and its32K long request has started.
-The unfinished cohort establishes neither attribution nor observer-overhead qualification.
+for indices0..5 in order,committing each closed process. Process0now closes
+normally0,with all five resource records,quiet validation,closed owners and no
+fresh GPU fault. It reads33211fresh tokens and generates3157in298.9372s.
+Its pool clock is130.0066s and rounded GPU-reach wait is101.988s;the latter
+includes the measured wrapper and does not establish GPU arithmetic saturation.
+Six leaf threads accumulate604.549CPU seconds:GU402.373,DOWN201.030and
+hidden quantization1.146. Of1207577CPU jobs,78.13%haveNT1. Logical blob
+visits total2.463TB,not measured physical RAM traffic. Next process1enables
+the disjoint caller ledger. Keep these observer results separate from clean
+speed;incremental caller cost and the complete six-process decision are pending.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
