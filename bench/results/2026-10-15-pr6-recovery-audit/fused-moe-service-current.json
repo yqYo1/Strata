@@ -182170,7 +182170,7 @@
     }
   },
   "decode_gate_model_entry_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "3e5f2a3fcfb618e4b7810bae26f6a59fbce8c2eb",
     "native_source_commit": "a388c63f70b1f33363b6e8e51293f6989791ba09",
     "binary": {
@@ -182583,13 +182583,60 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
-    "GPU_executed": false,
-    "GPU_execution_attempted": false,
-    "model_executed": false,
+    "ownership_closed": false,
+    "GPU_executed": null,
+    "GPU_execution_attempted": true,
+    "model_executed": null,
     "plan": "Commit source,exact effective environment,model inputs and this request before launch. One fresh direct serving engine;READY131072,GEN128 with1024 valid fixed IDs. Preserve original spec4/cap4/half1,131072INT8 context,1256static slots,5workers,8192chunk and qualified safety. Rare EOS248319 is diagnostic extent control,not a production sampling choice. Require exact four native gates0/8/16/24,raw-clock/request/sequence identities,checked complete GPU work before publication,private atomic acknowledgements,same actual PID/ELF/environment/providers,128bounded output IDs,normalDONE length/QUIT0,quiet strict before-main validation,completed T1/T4 Q6 heads,unchanged final assets/boot/driver,no freshfaults and closed owners. No retry or source/hash refresh. No full API trace or profiler in this small model entry.",
     "limits": "Short synthetic diagnostic only;not thinking/task quality,clean PP/TG,sustained generation,collector/model-window coverage,observer overhead,physical resource saturation,ordinary provider teardown or physical262144/RESTORE qualification.",
     "retention": "Keep compact native identity/gate clocks/token hash/counts/live replay conservation and validation/fault outcome. After next collector-window consumer and verified result commit,retire successful full output/JIT;no new engine generation.",
+    "outcome": {
+      "passed": false,
+      "complete": false,
+      "host_probe_accepted": false,
+      "gates": [],
+      "begin_raw_ns": 2329374508110919,
+      "error": "RuntimeError('native request did not close normally')",
+      "ownership_closed": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    "diagnosis": {
+      "cause": "Controller expected INFO kv_resident=131072;actual full-resident mode0 reports0. The GEN request was never submitted. Preserve the failed admission and SIGTERM outcome.",
+      "source": "Selected src/core/layer.cpp:492-518 initializes pages=slots and mode0 when the requested resident limit covers max_context. Selected generate.cpp INFO prints n_slots*4 only for streamed mode1,otherwise0.",
+      "initial_info": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "expert_cache_mib": "2455",
+        "vram_free_mib": "0",
+        "arena_mib": "47962",
+        "pool_workers": "5",
+        "spec": "4",
+        "mtp_max": "4"
+      },
+      "memory_question": "INFO free VRAM0 is not a saturation proof:the caller ignores cudaMemGetInfo status. Collect kernel DRM per-client requested/resident memory at the next ready/gate boundaries before attributing paging or changing placement.",
+      "physical_closure": {
+        "confirmed": true,
+        "original_pid": 979377,
+        "original_start_ticks": 232939301,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "all_original_identities_absent": true,
+        "normal_exit_qualified": false,
+        "original_ownership_gate_passed": false
+      },
+      "next": "Commit this failure,correct the INFO expectation from the actual source and add bounded read-only DRM memory/cycle snapshots in a new prospective v2 request. Keep native/kernel/runtime safety and exact128-output gate criteria;do not rerun v1."
+    },
     "source_inputs": {
       "files": 112,
       "sha256": "559bef5defb3a832bd2248f407fc55a1e5ac5771f122be040d34658cc8fb87b2"

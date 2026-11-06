@@ -402,7 +402,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   full-context claim. Preparation now succeeds at
   `3e5f2a3fcfb618e4b7810bae26f6a59fbce8c2eb`,with all15model assets fully
   hashed and the exact native519e/request/environment/finite owner plan pinned.
-  No model process has launched yet. Commit the prepared plan,then run once.
+  The first native entry now fails its controller's startup INFO gate before
+  any GEN request or decode gate. INFO reports context131072,INT8,1256expert
+  slots and `kv_resident=0`;the controller incorrectly demanded131072. Actual
+  `layer.cpp:492-518` keeps `mode=0,pages=slots` when the requested resident
+  limit covers the full context. INFO prints a positive resident limit only
+  for streamed mode1,so0is valid for this full-resident route. Preserve V1's
+  failed result:the owned supervisor sends SIGTERM,native exits-15,and the
+  original normal-ownership gate is false. Its direct child is reaped,session
+  empty and all original identities are independently confirmed absent;no
+  fresh GPU fault occurs. No generator/gate correctness follows.
+  Startup also reports0MiB free VRAM after verifier/draft binding. This is an
+  unresolved capacity/paging question,not saturation proof:the caller ignores
+  `cudaMemGetInfo` status. A new V2 must fix only the source-derived INFO
+  interpretation and add bounded,read-only kernel DRM client memory/cycle
+  snapshots at READY and drained gates. Keep the same native519e,placement,
+  safety and128-output extent;do not rerun V1 or assume that lowering capacity
+  solves the performance question. Requested versus resident memory and engine
+  busy cycles are separately defined by the
+  [DRM specification](https://docs.kernel.org/gpu/drm-usage-stats.html) and
+  [Xe driver documentation](https://docs.kernel.org/gpu/xe/xe-drm-usage-stats.html).
+  Deduplicate client IDs per PCI device;optional missing counters remain unknown.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
