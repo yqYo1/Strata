@@ -359,16 +359,30 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `a388c63f70b1f33363b6e8e51293f6989791ba09`:568native inputs,110transitive
   controls,the full original compiler image and recovered external inputs are
   pinned before compilation. The actual generated diff is reviewed and changes
-  only the two declared files. No native compilation or device/model execution
-  has occurred. The ended cb7 build/source/temp/cache/normal-output trees are
+  only the two declared files. Compilation now closes successfully:configure,
+  compile and dependency commands all exit0 with closed owners;1453actual
+  compiler inputs and host-link closure are qualified. The new24508888-byte
+  engine SHA256 is
+  `519e2e74240cfc38b136a05b69c02267023fecfd39ba0780fb7799a1f73fe355`.
+  All five same-build fixture ELFs have exactly their previous cb7-era hashes;
+  only the generator executable changes. No new device/model execution has
+  occurred. The ended cb7 build/source/temp/cache/normal-output trees are
   now retired after567original sources,101controls,the recipe and1452actual
   compiler inputs were recovered and compared. This deletes738files/152691467
   bytes;`decode-profile-model-v1/old-retirement-manifest.json` has SHA256
   `d993e5ee454000a47ee02c3e53c0ef6a8aa06351b3322c41099a126e46945ded`.
   The original record/shared compiler image remain consumed;552b and all nine
-  fallback outputs are intact. Commit retirement before building the single
-  replacement. Neither build nor component checks qualify the new model gates
-  or a performance gain.
+  fallback outputs are intact. The two retained generations are now552b and
+  the new519e diagnostic. Compilation does not qualify the changed generator
+  or model gates. The new `profile_decode_gates.py reuse` source prepares an
+  explicit component-only reuse decision before further execution:check all
+  five actual fixture bytes,566unchanged native files,original CPU/device/
+  collector/window outcomes and recover their original controls from Git;
+  require the same84providers,pre-main probe,boot,driver and collector tools.
+  Preserve all original outcomes and do not label this a new GPU test. This
+  identity-based plan replaces repeating identical component fixtures;the
+  actual generator still needs a bounded request exercising all four native
+  gates before long-generation profiling. The reuse checker has not yet run.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
