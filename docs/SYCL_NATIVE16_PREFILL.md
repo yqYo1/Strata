@@ -215,10 +215,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and460compiler inputs are recorded;the local Level Zero/IGA headers already
   exist. Do not infer a missing build from PATH or acquire duplicate dependencies.
   Reuse the owned `unitrace_launch.py` admission with explicit Sysman0;the stock
-  launcher forces Sysman1. Existing SDK-graph evidence does not qualify the
-  selected compatibility-graph route. Inspect the maintained IQ3 profiler and
-  its prior receipts before bounded current-route replay/flush/count checks;
-  host build success does not establish current collector or model qualification.
+  launcher forces Sysman1. Closed compatibility-graph and model-service checks
+  exist for9922/b310,as detailed below;the research index's earlier static-only
+  implementation note is not their final outcome. They do not qualify ec4's
+  different fixture/engine ELFs. Reuse the maintained IQ3 collector/reader
+  recipe with an explicit current-build basis instead of rebuilding the tool
+  or repeating an already closed source investigation. Host build success alone
+  does not establish current collector or model qualification.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
@@ -298,8 +301,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   key `mtp_width_model_entry_cap2_v1`,with the same320source pins,15model assets,
   native binary and normalized configuration/environment except the cap.
   Both fresh cap2 frontend probes pass:benchmark144modules/18code maps and
-  server191modules/26code maps,normal exits and closed owners. The bounded
-  cap2 model check remains pending;no sustained width comparison has run yet.
+  server191modules/26code maps,normal exits and closed owners. Its bounded model
+  check also closes successfully:two32769-input/24-output thinking-on requests,
+  the same request-body hashes as cap4,normal native0,quiet validation,closed
+  owners,unchanged boot/driver,all15final model hashes and no fresh fault.
+  Both requests return the same1124-slot loan and checked1256-slot payload as
+  cap4. Each completes oneT1 and twelveT2 replays;loan generations2/3 and
+  disjoint capture IDs3/4 then5/6 renew across requests. Width/lifetime checks
+  pass;this is neither sustained TG nor recurrent-state/task/full-context
+  qualification. The six-process4/2/2/4/4/2 sustained comparison can now prepare;
+  no width speed result exists yet.
 
 ## Prefill envelope and scaling
 
