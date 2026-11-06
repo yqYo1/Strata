@@ -838,7 +838,23 @@ includes scheduling and waits. GPU Down service and GPU-reach waits are service
 attribution, not useful CPU work or critical-path wall time. Neither useful CPU
 arithmetic nor physical RAM/PCIe transactions, VRAM traffic/bandwidth, hardware
 ceilings or saturation are established. Keep requested transfer bytes distinct
-from measured physical traffic. Current source result pointers are
+from measured physical traffic.
+
+The next source-matched decode-resource consumer can reuse the current429b
+engine:its recorded CMake recipe has `STRATA_CPU_SERVICE_PROFILE=ON`,and its
+actual generator/verifier include the existing leaf,census and disjoint caller
+observers. No third engine build is needed to collect those existing clocks.
+After the frozen static/adaptive code and prose comparisons close,prepare a
+separate same-ELF observer plan with immutable pre-exec selectors and matched
+work/observer-cost checks. Reuse the measured cap4/code and cap2/prose choices;
+keep CPU leaf sums,caller regions,nested wait CPU and draft work separate.
+The earlier caller V3 failed its third pair,so it does not qualify current
+long-generation overhead. Current `perf_event_paranoid=4` remains a collection
+constraint;no permission change or PMU collection was made. Preserve unknown
+physical RAM/PCIe traffic and GPU saturation rather than inferring them from
+these host clocks. This source/recipe inspection is not a new profile or gain.
+
+Current historical result pointers are
 `cache_map_decode_census_v1.decision`, `cache_map_worker_scaling_v1.decision`,
 and `cache_map_decode_gpu_service_v2`; diagnostic observations are not
 clean speed comparisons.
