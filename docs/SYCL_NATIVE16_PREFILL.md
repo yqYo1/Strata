@@ -426,6 +426,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   scratch loan/refill before clean speed comparisons. Preserve the checked
   refill-failure control and runtime safety;do not require identical generated
   text or turn the old answerless prose failure into a pass.
+  Main's `AdaptiveResidencyAudit` and41-case host fixture are source-prepared,
+  not compiled or wired into the engine. They check independent host/device/private
+  identities,real replacement tuples,old/new payload callbacks and checked
+  completion before publication;failures and callback exceptions prevent reuse.
+  `tools/sycl/adaptive_residency_host.py` pins the full original compiler image
+  and exact project inputs for one finite host-only compile/test at this closed
+  process boundary. It must preserve the frozen320-input cohort and both engine
+  generations. A host pass cannot qualify real copies,positive model swaps,
+  native lifetime or speed;native integration remains the next consumer.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
   remains on HOLD as written:its unsupported swap0/MTP2 claims and incorrect
   `generate.cpp:1559` anchor are not adopted. Its pins and bounded-control design
