@@ -731,15 +731,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `a6a8e863ebf41c04f173eb3d916b36d1be752320`,with the same332pinned inputs,
   six-process ordering and15asset hashes. Its supplementary exact-TG plan
   is declared before even the first reference. Both fresh benchmark/server
-  frontend probes pass. Four prose processes now close normally:reference0/3
-  exactTG is8.073058/8.749193,candidate1/2is10.554848/10.609532tok/s.
+  frontend probes pass. Five prose processes now close normally:reference0/3/4
+  exactTG is8.073058/8.749193/8.360982,candidate1/2is10.554848/10.609532tok/s.
   The two paired TG ratios are1.307416/1.212630;both favor
   adaptive8. Candidate/reference prompt ratios are.950961/1.013803
   and TTFT ratios.950443/1.013293,so the independent prefill
   directions are mixed. Every request reads33279fresh tokens;reference/candidate
   generate8286/10147with6.8%/46.4%cache hits. Actual cap2/heads/body/clock/journal,
   native0,quiet validation,closed ownership and no-fresh-fault checks pass.
-  Cap2acceptance uses its own denominator. Two processes remain;two TG pairs
+  Cap2acceptance uses its own denominator. One candidate process remains;two TG pairs
   do not qualify repeatability or adoption. Keep552b as the fast prefill fallback;
   this decode gain does not qualify whole-model adoption or70TG.
   The next bounded32-swap entry is source-prepared in

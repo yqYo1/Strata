@@ -185940,6 +185940,127 @@
           "original_sources_recovered": 332,
           "protected_ELF_outputs": 15
         }
+      },
+      {
+        "index": 4,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1901227,
+          "start_ticks": 235132110,
+          "sid": 1901178
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33279,
+            "reused_tokens": 0,
+            "generated_tokens": 8286,
+            "output_chars": 5332,
+            "reasoning_chars": 17337,
+            "prompt_ms": 60585.5,
+            "prompt_tps": 549.3,
+            "decode_ms": 991031.9,
+            "decode_tps": 8.4,
+            "ttft_s": 60.826,
+            "total_s": 1051.643,
+            "drafts_offered": 5082,
+            "drafts_accepted": 3204,
+            "acceptance_rate": 0.6304604486422668,
+            "request_sha256": "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee",
+            "output_sha256": "dd8a2a5177bdff01683be9375bd093381f386ba5233e99952fec144a8919eaf5",
+            "reasoning_sha256": "087dab02c2e1a249188e9ba44d35c5723ea783b8fa04a716beb2d761efe7cc5e",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1901227,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33279,
+            "rows": 33278,
+            "GPU_residual_rows": 33278,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19977,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33278,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 2,
+            "request": 5,
+            "IQ3_calls": 7118956,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 329543,
+            "lookups": 4879200,
+            "hit_percent": 6.8
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "965fb4fa6a64f49bb997654f7bc15c19812571c92573524ba98357aba06613da",
+            "c68cf64b10891ea1a96f677b485cdefec67a97b9dad7f6ec1a53bf4ffd1ccea2",
+            "a3fb423efc701eb3e11df431625f05c0dcdc2d2fcc31822315380822c1e6045c",
+            "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee"
+          ],
+          "valid": true,
+          "journal_sha256": "0c9db000e0e359f1cee99cefc449ea0e6c3aececce3d4f37a63739e16333612c"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35592
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_controls": {
@@ -186547,5 +186668,59 @@
       "archived_one_use_source_files": 2,
       "archived_source_bytes": 13503
     }
+  },
+  "adaptive_budget_generation_reader_host_v1": {
+    "stage": "prepared",
+    "source_commit": "a70edb59a3ca6909c90178339b6bd2986dad4774",
+    "source_inputs": {
+      "files": 120,
+      "sha256": "8acd397340b5c980ba04916abd09b1df842482345f824d782238347985dea877",
+      "entrypoint": "tools/sycl/compare_adaptive_budget_generation.py",
+      "entrypoint_sha256": "9b5a7b7c06f25145c241fc4721e4a7feeb8ab76355ac789e421ca78ea5a477aa"
+    },
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "version": "Python 3.12.3"
+    },
+    "command": [
+      "/usr/bin/timeout",
+      "-k",
+      "2s",
+      "20s",
+      "/usr/bin/prlimit",
+      "--as=1073741824",
+      "--cpu=10",
+      "--fsize=65536",
+      "/usr/bin/python3",
+      "-X",
+      "faulthandler",
+      "-B",
+      "tools/sycl/compare_adaptive_budget_generation.py",
+      "controls"
+    ],
+    "environment": {
+      "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0xudpVA:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
+      "PYTHONPATH": null,
+      "PYTHONHOME": null,
+      "PYTHONNOUSERSITE": null,
+      "PYTHONDONTWRITEBYTECODE": null,
+      "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
+      "LD_PRELOAD": null
+    },
+    "plan": "Run once at a closed-process boundary with the internal exclusive lock and no model owners. Verify the committed source closure/interpreter/command before and after. Actual normal0,quiet stderr,small exact gain preserved,one slower pair retained,independent TG/prompt/TTFT verdicts,four immutable budget/width configurations. CPU-only reader controls;no native engine or GPU runtime launch. Stop on first failure;retain outcome,not a relabeled retry.",
+    "retention": "Keep compact source/recipe,individual control totals and actual exit/stderr/elapsed result. No external raw output or binary is created.",
+    "budgets": {
+      "wall_s": 20,
+      "cpu_s": 10,
+      "address_bytes": 1073741824,
+      "file_bytes": 65536
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false
   }
 }
