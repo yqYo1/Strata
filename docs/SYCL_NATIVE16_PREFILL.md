@@ -432,9 +432,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   not become zero or qualify a bottleneck claim. At controller source
   `e124ed4e3fc8f44fc08acbf26949dfb84beff666`,the CPU INFO controls pass:
   the actual captured INFO is accepted and all10corrupt variants are rejected.
-  V2 preparation now passes with all15model assets fully hashed and the exact
-  native519e/request/environment pinned. Commit the prepared plan,then run once
-  with unchanged native math and placement. No V2 model execution has occurred.
+  V2 preparation passes with all15model assets fully hashed and the exact
+  native519e/request/environment pinned. Actual V2 execution passes INFO/READY
+  but fails on the existing `RESUME 0`progress notification,which the controller
+  omitted. The owner then sends SIGTERM;native exits-6 with an IGC
+  termination-request message. This is not evidence of an independent compiler
+  defect. All recorded process identities are absent,the session is empty and
+  no fresh GPU fault occurs;the original failed normal-ownership gate stays false.
+  The READY snapshot records10227867648bytes of both requested and resident
+  client VRAM,and945856512bytes of both requested and resident GTT. This one
+  snapshot establishes no decode paging or saturation. Preserve V2;before V3,
+  check the full selected-source RESUME/PP/REUSED/T/DONE protocol and existing
+  frontend reader,then commit offline controls and a new plan with the same
+  native math,request and placement.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.

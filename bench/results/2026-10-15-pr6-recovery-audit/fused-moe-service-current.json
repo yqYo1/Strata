@@ -182643,7 +182643,7 @@
     }
   },
   "decode_gate_model_entry_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "e124ed4e3fc8f44fc08acbf26949dfb84beff666",
     "INFO_controls": {
       "passed": true,
@@ -183063,13 +183063,199 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
-    "GPU_executed": false,
-    "GPU_execution_attempted": false,
-    "model_executed": false,
+    "ownership_closed": false,
+    "GPU_executed": null,
+    "GPU_execution_attempted": true,
+    "model_executed": null,
     "plan": "Preserve failed V1 and its physical closure;V2 corrects INFO full-resident mode0 and adds existing bounded read-only proc/DRM observations. Commit source,exact effective environment,model inputs and request before launch. One fresh direct serving engine;INFO kv_resident0,READY131072,GEN128 with1024 valid fixed IDs. Same spec4/cap4/half1,131072INT8 context,1256static slots,5workers,8192chunk and qualified safety. Rare EOS248319 is diagnostic extent control,not production sampling. Require exact four gates0/8/16/24,raw-clock/request/sequence identities,checked completion before publication,private atomic acknowledgements,same PID/ELF/environment/providers,128bounded outputs,normalDONE length/QUIT0,quiet strict before-main validation,completed T1/T4 Q6 heads,unchanged final assets/boot/driver,no freshfaults and closed owners. Existing client_resources.snapshot validates PID/start/SID before/after bounded fdinfo/thread reads,deduplicates client IDs per PCI device and keeps counter regressions ineligible. Observe READY,each drained gate and DONE. Optional unavailable proc/DRM data remains explicitly unknown and cannot qualify resource attribution;it does not replace generator correctness. No retry,hash refresh,full API trace or profiler.",
     "limits": "Short synthetic diagnostic only;not thinking/task quality,clean PP/TG,sustained generation,collector/model-window coverage,observer overhead,physical resource saturation,ordinary provider teardown or physical262144/RESTORE qualification.",
     "retention": "Keep compact native identity/gate clocks/token hash/counts/live replay conservation and validation/fault outcome. After next collector-window consumer and verified result commit,retire successful full output/JIT;no new engine generation.",
+    "outcome": {
+      "passed": false,
+      "complete": false,
+      "host_probe_accepted": false,
+      "gates": [],
+      "resource_observations": [
+        {
+          "label": "ready",
+          "available": true,
+          "begin_monotonic_ns": 2331010951576952,
+          "end_monotonic_ns": 2331010954212993,
+          "process": {
+            "cpu_ticks": 7662,
+            "minor_faults": 13571747,
+            "major_faults": 4,
+            "rss_pages": 13498265
+          },
+          "thread_cpu_ticks": {
+            "1037143": 3542,
+            "1037233": 0,
+            "1037598": 0,
+            "1037599": 0,
+            "1037600": 0,
+            "1037601": 0,
+            "1037602": 0,
+            "1037603": 0,
+            "1037604": 0,
+            "1037605": 0,
+            "1037606": 0,
+            "1037607": 0,
+            "1037608": 0,
+            "1037609": 0,
+            "1037610": 0,
+            "1037611": 0,
+            "1037612": 0,
+            "1037613": 0,
+            "1037615": 0,
+            "1038760": 1,
+            "1038761": 1,
+            "1038762": 1,
+            "1038763": 1,
+            "1038764": 1,
+            "1039470": 0,
+            "1039471": 0,
+            "1039472": 0,
+            "1039478": 0,
+            "1039479": 0
+          },
+          "disappeared_threads": 0,
+          "clients": [
+            {
+              "driver": "xe",
+              "pci": "0000:05:00.0",
+              "client_id": 57943,
+              "engines": {
+                "rcs": {
+                  "busy": 0,
+                  "total": 44753923282214,
+                  "capacity": 1
+                },
+                "vcs": {
+                  "busy": 0,
+                  "total": 44753923282214,
+                  "capacity": 2
+                },
+                "vecs": {
+                  "busy": 0,
+                  "total": 44753923282214,
+                  "capacity": 2
+                },
+                "bcs": {
+                  "busy": 0,
+                  "total": 44753923282214,
+                  "capacity": 1
+                },
+                "ccs": {
+                  "busy": 50239752,
+                  "total": 44753923282214,
+                  "capacity": 1
+                }
+              },
+              "memory_bytes": {
+                "drm-total-system": 2883584,
+                "drm-shared-system": 0,
+                "drm-resident-system": 2883584,
+                "drm-total-gtt": 945856512,
+                "drm-shared-gtt": 0,
+                "drm-resident-gtt": 945856512,
+                "drm-total-vram0": 10227867648,
+                "drm-shared-vram0": 0,
+                "drm-resident-vram0": 10227867648,
+                "drm-total-stolen": 0,
+                "drm-shared-stolen": 0,
+                "drm-resident-stolen": 0
+              },
+              "descriptors": [
+                7
+              ]
+            }
+          ],
+          "engine_intervals": [
+            {
+              "pci": "0000:05:00.0",
+              "client_id": 57943,
+              "engine": "rcs",
+              "eligible": false,
+              "reason": "baseline"
+            },
+            {
+              "pci": "0000:05:00.0",
+              "client_id": 57943,
+              "engine": "vcs",
+              "eligible": false,
+              "reason": "baseline"
+            },
+            {
+              "pci": "0000:05:00.0",
+              "client_id": 57943,
+              "engine": "vecs",
+              "eligible": false,
+              "reason": "baseline"
+            },
+            {
+              "pci": "0000:05:00.0",
+              "client_id": 57943,
+              "engine": "bcs",
+              "eligible": false,
+              "reason": "baseline"
+            },
+            {
+              "pci": "0000:05:00.0",
+              "client_id": 57943,
+              "engine": "ccs",
+              "eligible": false,
+              "reason": "baseline"
+            }
+          ]
+        }
+      ],
+      "begin_raw_ns": 2330935035879850,
+      "startup_info": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "4",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.00",
+        "vram_free_mib": "0"
+      },
+      "native_pid": 1037143,
+      "native_ready": true,
+      "error": "RuntimeError('native request did not close normally')",
+      "ownership_closed": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
+    "diagnosis": {
+      "cause": "Controller omitted the existing RESUME progress notification and raised before receiving prompt completion. Owner then sent SIGTERM;native exited SIGABRT with an IGC termination-request message. This does not establish a native compiler defect or GPU fault.",
+      "native_protocol_source": "Selected generate.cpp:6292 emits RESUME before prompt processing;5534 and6356 emit PP progress;6689 emits REUSED;6878 emits T;7139 emits DONE. Existing serve/server.py handles RESUME/PP.",
+      "physical_closure": {
+        "confirmed": true,
+        "original_pid": 1037143,
+        "original_start_ticks": 233095355,
+        "all_recorded_identities_absent": true,
+        "session_members": []
+      },
+      "ready_memory": {
+        "requested_vram_bytes": 10227867648,
+        "resident_vram_bytes": 10227867648,
+        "requested_gtt_bytes": 945856512,
+        "resident_gtt_bytes": 945856512,
+        "scope": "One READY snapshot only;all requested client VRAM is resident at this point. No paging during decode,global free capacity or hardware saturation claim."
+      },
+      "next": "Preserve failed V2 without rerun or criterion changes. Commit a new source-derived protocol reader/controls and V3 plan accepting ordered RESUME/PP/REUSED,T,DONE;keep native/request/placement/runtime unchanged."
+    },
     "source_inputs": {
       "files": 113,
       "sha256": "74788150a2c160591e1207999f181f75e693c2e3a160ec93ceb3288a5dd8ecef"
