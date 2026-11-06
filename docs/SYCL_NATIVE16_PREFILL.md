@@ -625,6 +625,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   ELFs and84providers match,and validation-probe/boot/driver identities are unchanged.
   Follow`adaptive_residency_native_build_v1.component_reuse`. Native positive
   replacement,actual dispatch and post-positive loan/refill remain the next gates.
+  The new Main-authored`check_adaptive_native_entry.py`source prepares one direct
+  native process with1024/256then32769/256synthetic requests. Positive8swaps
+  every8rounds,all map/payload/actual-dispatch checks and the occupied-loan audit
+  are fixed before exec;other placement/kernels/safety stay unchanged. It uses
+  the maintained wire reader without replacing Interactive.poll,and preserves
+  native closure before post-processing. Its ordered reducer has one complete
+  prospective fixture and16corrupt generation/tuple/order/coverage cases;these
+  are not executed yet. Commit source,run CPU controls,prepare/commit exact
+  assets/environment/requests,then run once. Require actual incoming GPU hits
+  again after the32Kloan;record outgoing CPU observations separately. Checked
+  record-failure injection remains a separate native gate before clean timing.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
