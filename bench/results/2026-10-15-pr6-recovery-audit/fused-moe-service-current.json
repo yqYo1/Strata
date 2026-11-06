@@ -179657,7 +179657,7 @@
     }
   },
   "adaptive_residency_audit_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "0a47fe046f2828c111009edecbf95f5595f0000b",
     "toolchain_image": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/toolchain.json",
@@ -179728,8 +179728,8 @@
       }
     },
     "expected": "adaptive_residency_audit cases=41 status=PASS",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -179737,6 +179737,19 @@
     "inference_adopted": false,
     "plan": "Commit before check. One host compile,ELF dependency check and fixture;normal0 and closed owners. Actual headers/link inputs must match the prebuild complete compiler/package image plus the three exact project files. No retry,source/image refresh or GPU/SYCL work. This tests host identity/payload/fence assertions,not native callbacks,positive swaps,queue lifetime,speed or full context.",
     "retention": "Commit compact source/recipe/case/closure evidence;then retire this one-use executable,compiler temporaries and successful full output after exact Git source/recipe recovery. Native and fallback generations remain untouched.",
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "compiler_inputs": {
+        "sha256": "556acc972540b9d74d556a9e30d5768006407897e11947b84fedcacc8c9cf127",
+        "files": 207,
+        "headers": 185,
+        "link_inputs": 36,
+        "derived_private_inputs": 1
+      },
+      "executable_sha256": "179cdc3d5b242dd1c966902f3772a9a399abd2389fe9042edc68f49af7a65fe3",
+      "receipt": "adaptive_residency_audit cases=41 status=PASS"
+    },
     "source_inputs": {
       "count": 111,
       "sha256": "17f97b77fde9b8e986cc41753b51a72b04678c135f59b3096ad343fc55fefcf9",
