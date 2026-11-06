@@ -363,19 +363,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   common. Classify MTP only from fixed4;keep fixed2 acceptance at its changed
   denominator and retain every speed sample. Each workload needs all three
   paired TG ratios above one for a repeated gain. Both fresh generation frontend
-  probes and processes0..4 now pass with both long requests eligible per process,
+  probes and all six processes now pass with both long requests eligible per process,
   normal native exits,quiet validation,closed owners,unchanged boot/driver and
   no fresh fault. Actual T1/T4 or T1/T2 and selected Q6 heads complete;all four
   paused gates[4,5,5,6] and six cache/IQ3 footers pass per process. The original
   individual samples,body hashes and route evidence stay in the cumulative
   result. Fixed4 establishes MTP classes at acceptance.824388/.389236;keep
   fixed2's changed denominator and different generated lengths.
-  The first two cap2/reference TG ratios are.886770/.874191 for code and
-  1.238236/1.178238 for prose:code is slower and prose faster in both pairs.
-  The third cap4 reference is now closed at TG13.640135/8.985282tok/s and
-  client TTFT53.538/41.718s. Five processes/two complete pairs are closed;
-  process5,the final cap2 candidate,and the final three-pair decision remain pending.
-  The per-workload gain must reproduce;this is not adoption.
+  All15model-asset hashes match again at final closure. Cap4/cap2 median TG is
+  13.811709/12.247815tok/s for code and8.985282/10.647958 for prose,each from
+  three independent processes. The three cap2/reference ratios are
+  .886770/.874191/.899623 for code and1.238236/1.178238/1.188583 for prose.
+  Geometric-mean change is-11.320%/+20.140%;all three prose pairs are faster
+  and all three code pairs slower. The per-workload prose gain qualifies;
+  the aggregate both-workloads gain flag is false and must not discard that
+  separately qualified option. The existing same binary exposes cap2/4 through
+  `--mtp-max-t`;keep cap4 for the strong-MTP reference and cap2 as the faster
+  weak-MTP comparison option. Automatic selection and inference adoption remain
+  unqualified. Prose prompt/TTFT directions are mixed,with cap2 slower in two
+  pairs;dedicated64K/117K PP/TTFT preservation,handoff,agent/task,
+  physical262144/tails/RESTORE and ordinary provider teardown remain open.
   The cap4 reference's completed target windows are1xT1+913xT4 for code and1xT1+3357xT4 for prose:
   3653/13429token positions,or1.152366/1.845911per generated token. Dividing
   those extents by whole decode time gives15.916143/15.840919positions/s.
@@ -403,8 +410,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   repeatability checks at an already observed width,not validation of linearity,
   unseen widths or different contexts. Process3's errors are+0.174541%/+5.308524%:
   prose shows a larger variation that the first-pair description does not explain.
-  Process4's errors are-1.242242%/+4.703693%. Use process5 as the final
-  held-out check without refitting or changing the original cohort decisions.
+  Process4's errors are-1.242242%/+4.703693%;process5's final held-out errors
+  are+0.189086%/+0.505151%,without refitting or changing cohort decisions.
+  This completes same-width repeatability checks;the larger cap4 prose residuals
+  remain unexplained and no unseen-width/context prediction is qualified.
   Successful raw output/JIT from processes0..4 is retired after pushing their
   individual samples through `02462f24154e343051d3fccb459140be3a61ae0b`,recovering
   all320original inputs from Git,and checking closed ownership:345files and
