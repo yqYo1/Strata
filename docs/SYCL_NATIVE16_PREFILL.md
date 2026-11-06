@@ -222,6 +222,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   recipe with an explicit current-build basis instead of rebuilding the tool
   or repeating an already closed source investigation. Host build success alone
   does not establish current collector or model qualification.
+  Main's new `tools/sycl/q6_half_collector.py` supplies that current-build
+  active-fixture binding,with the existing launcher/readers/owner controls.
+  It gates execution on all six frozen MTP-width processes closing,and checks
+  the ec4 engine,fixture,providers,source and immutable runtime envelope afresh.
+  The inspected no-argument compatibility fixture has62kernel executions
+  (1direct+12first+24host-handoff+24cross-queue+1late);the submission-only mode
+  is a different case. Only static syntax inspection has run for this new
+  controller;no prepare/import,test,collector or GPU execution has occurred.
+  Its next consumer is the post-cohort current-ELF collector check,followed by a
+  separately committed representative model-service plan. This is no new
+  capability,speed,saturation or model-coverage result.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
