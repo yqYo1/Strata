@@ -22,10 +22,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cumulative row in [`performance-records.csv`](../bench/performance-records.csv).
 - The immediate decode comparison uses **a330 / engine429b** as the positive-swap
   candidate alongside the552b prefill fallback. Its bounded184-swap/32K-loan
-  correctness entry and second-event-record refusal both pass. Five of six
-  clean code-comparison processes now pass;both completed pairs favor adaptive
-  TG,but reference variability remains large. The third pair and weak-MTP
-  prose comparison remain pending. No new PP/TG record or adoption follows.
+  correctness entry and second-event-record refusal both pass. The six-process
+  code cohort is closed:exact median TG is **10.1410 -> 10.7173tok/s**
+  (static0 -> adaptive8),with all three paired TG ratios above one. Prompt/TTFT
+  nonregression does not pass. The weak-MTP prose comparison and broader
+  qualification remain pending;no inference adoption or new best TG follows.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -391,15 +392,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   status diagnostic is superseded and retired. A fresh
   finite native Luna-max review identifies a macOS-only Unix-socket proxy
   limitation in the local Codex0.162.1binary,consistent with the Linux denial.
-  It does not prove an actual Orca worker's effective tool permissions. A new
-  bounded coordinator's source review identifies a supported remote WebSocket
-  transport carrying status and lifecycle RPC,but no existing loopback endpoint
-  or pairing is established. The raw-json-v1 agent hook is a different status
-  notification protocol and does not replace those RPCs. This review makes no
-  connection and reads no secret pairing values. Any next transport check is
-  limited to existing endpoint scheme/host/port metadata;it must not repeat the
-  already failed socket probe. Resume bounded Luna research only after worker-side connectivity and
-  lifecycle settlement can be verified;continue Main's tuning independently.
+  Read-only follow-up now finds no environment store in either the default
+  Orca data root or its mapped active-profile root. Installed Orca1.4.229has
+  a paired WebSocket RPC client,but its supported `serve` path binds all
+  interfaces and starts a separate runtime sharing the desktop profile lock.
+  `--pairing-address` changes only the advertised address;it cannot provision
+  an in-place loopback-only listener. The raw-json-v1 hook is notification,
+  not status/lifecycle RPC. No app,profile,listener or worker sandbox changed.
+  The current decision-support report is `.cache/research/2026-11-06/`
+  `orca-supported-loopback-worker-transport-review.md`,SHA256
+  `caf541c00d0ec8bff580ac81cbfb101d745708399385303d16b9edc159f10762`.
+  Its installed-source references are `cli/specs/serve.js`and
+  `cli/runtime/serve-orcad-launch.js`in the immutable Orca1.4.229Nix package.
+  Keep dispatch pending until a supported narrow worker transport exists;
+  review on an Orca transport/version change,not another identical socket or
+  missing-store probe. Worker-side connectivity and lifecycle settlement must
+  still pass before research resumes. Main's tuning continues independently.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
@@ -684,67 +692,42 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   comparison ELF outputs unchanged. Its external manifest is
   `adaptive-record-failure-success-output-retirement-20261106.json`,SHA256
   `6406c2d021bde38c029f35e80b46c4864070447ba5eba2698807e5acff013150`.
-  The Main-authored`compare_adaptive_generation.py`source-prepares the next
-  same429b static0/adaptive8,every8rounds comparison through maintained
-  `bench.sh`. Each focused workload has six fresh processes R/C,C/R,R/C,four
-  official warmups and one thinking-on32K+/1K+output request with actual answer.
-  Use fixed4for code and fixed2for prose in separate cohorts;do not import the
-  previous after-code prose speed or cap4acceptance label as a matched baseline.
-  Heavy correctness audits/traces are off;qualified runtime safety and existing
-  light route footers stay. Require all three paired TG ratios above1for a
-  repeated gain,without a minimum floor;judge prompt/TTFT separately. Commit
-  source/generated plans before new host probes and native execution. This is
-  prospective source only,no new speed or adoption evidence.
-  Pre-execution review cancelled the unlaunched code V1 plan:the existing model
-  inventory covers pack/MTP/GGUF assets,but not the separately configured initial
-  expert profile. No frontend probe,native process or speed sample ran. Its
-  original plan is recoverable at`3b7756d0241e02c509ab5cdcc45aa5a7752297b1`;
-  all13unused metadata files/76403bytes are retired. The fresh V2 source adds
-  exact Git/current-byte pinning of`data/expert-profile.bin`and requires the
-  native argument to select that file. Do not amend V1 source hashes or treat
-  its preparation as speed/qualification evidence.
-  The V2 code cohort is prepared at source
-  `7378e89dc0baa63f1acde7c8a2e95d4ad9eee442`,with332input files including
-  the placement profile,full15model hashes and independent TG/prompt/TTFT
-  decision controls. Both fresh current-source benchmark/server probes pass.
-  Reference process0now passes all four warmups and its long request:33211fresh
-  input,3157generated tokens,432792.7ms decode,7.3printedTG,and10.5%cache hits.
-  Prompt time is63437.4ms and client TTFT63.668s. Native/benchmark exit0,
-  source/route/body/journal/validation/closure checks and no fresh fault pass.
-  This one sample is below the prior13.8printed code reference;the earlier
-  cache hit rate was10.9%,so the similar hit fractions do not explain the
-  decrease. Current and ec4Git placement-profile bytes match;the earlier run
-  did not separately pin that file. Keep the decrease unexplained rather than
-  dismissing it as variation. Continue the matched same429b adaptive comparison
-  before selecting source-matched resource attribution;no gain/adoption follows.
-  Before any candidate executes,`adaptive_generation_precision_analysis_v1`
-  prospectively fixes supplementary TG=`generated_tokens*1000/decode_ms`,the
-  three paired ratios and their geometric mean. Preserve the original rounded
-  controller decision and all eligibility/phase gates;the additional view avoids
-  losing small differences to the printed one-decimal TG. One reference alone
-  does not establish repeatability or a current limiting hardware resource.
-  The first matched pair now closes with candidate1normal0,quiet validation,
-  unchanged request hashes/actual width and no fresh GPU fault. Exact whole TG
-  is7.294485/10.717266tok/s(reference/candidate),ratio1.469229;input33211,
-  output3157/3293and acceptance.837597/.820028. Cache hits are10.5%/24.3%.
-  Candidate/reference prompt-time and TTFT ratios are.972723/.971933,respectively.
-  Retain this single-pair gain without adopting it:two further counterbalanced
-  pairs,task/agent quality,dedicated PP/TTFT,physical262144/RESTORE and broader
-  resource attribution remain pending. The previous13.8code result remains
-  above this candidate;the historical decrease is still unexplained.
-  The reverse-order second pair also passes:reference3/candidate2 exact TG
-  is10.141007/10.630499tok/s,ratio1.048269,with3157/3293generated tokens
-  and the same33211fresh-input request body. Cache hits remain10.5%/24.3%.
-  Candidate/reference prompt-time and TTFT ratios are1.000189/1.000336,so
-  this decode gain does not establish prompt/TTFT nonregression. All four
-  processes close normally with quiet validation,no fresh GPU fault and
-  unchanged boot/driver. Reference TG varies7.294485to10.141007;the first
-  pair's46.9%gain is not a general speedup estimate. Keep the third pair,
-  final full-asset hashes and weak-MTP prose comparison pending;no adoption.
-  Third-pair reference4also passes:3157outputs in305781.2ms decode,
-  10.324376exactTG,prompt64282.3ms and TTFT64.485s. Its native exits0,
-  all five request/route/cache gates pass,and no fresh GPU fault appears.
-  Candidate5and the three-pair decision remain pending.
+  The Main-authored`compare_adaptive_generation.py`at source
+  `7378e89dc0baa63f1acde7c8a2e95d4ad9eee442`compares same429b static0/adaptive8
+  through maintained bench.sh. Each focused workload has six fresh processes
+  R/C,C/R,R/C,four official warmups and one thinking-on32K+/1K+output request
+  with an actual answer. Code uses cap4;prose uses cap2 in a separate cohort.
+  Heavy correctness observers are off;qualified runtime safety and light route
+  footers stay. The332pinned inputs include the initial expert profile,which
+  the unlaunched V1 omitted. V1 was cancelled before any model/frontend run;
+  its original preparation is recoverable at`3b7756d0241e02c509ab5cdcc45aa5a7752297b1`.
+
+  The V2 code cohort is now closed. All six processes pass their actual body,
+  native-width/head,clock,journal,validation and ownership gates,with normal0,
+  unchanged boot/driver and no fresh GPU fault. All15final asset hashes match.
+  Every long request reads33211fresh tokens;reference/candidate generate
+  3157/3293tokens with acceptance.837597/.820028. Cache hits are10.5%/24.3%.
+  Supplementary exact TG was declared before any candidate at
+  `65c192bdea6e6d5d8066af1a95df9e2fc06be214`as generated_tokens*1000/decode_ms;
+  preserve the original one-decimal controller decision separately.
+  Reference exact TG is7.294485/10.141007/10.324376tok/s and candidate is
+  10.717266/10.630499/11.553421. Their medians are10.141007/10.717266;
+  paired candidate/reference ratios are1.469229/1.048269/1.119043,geometric
+  mean1.198955. All three favor the candidate,without a minimum gain floor.
+  The original rounded ratios also pass;no sample is excluded. The wide
+  reference spread remains unexplained,so do not treat19.90%as a general gain.
+  Candidate/reference prompt-time ratios are.972723/1.000189/1.040591 and
+  TTFT ratios are.971933/1.000336/1.039978. Both independent nonregression
+  decisions fail;median PP/TTFT alone cannot conceal the two slower pairs.
+  Dedicated64K/117K preservation,agent/task quality,physical262144/RESTORE
+  and ordinary provider teardown remain unqualified. The previous13.811709
+  code result remains above this cohort's candidate median. Its input count
+  differs by one and its actual placement-profile file was not separately
+  pinned,although current and ec4Git profile bytes match. Keep this historical
+  decrease unresolved and Main's further work on tuning/current attribution.
+  Next prepare the independent cap2/prose cohort with the same six-process
+  ordering and exact-TG plan before any native run. Keep552b as the fast
+  prefill fallback;this code TG gain is not whole-model adoption or70TG.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
@@ -2182,8 +2165,9 @@ The Q6 policy source and closed CPU host result are published on
 The default remains `05069aeed`; the current branch-rule query still permits
 only squash PR merges. Default integration remains unfinished because the
 measured original commit identities must be preserved.
-Rechecked2026-11-06 09:21UTC:repository merge commits are enabled,but the actual
-main-branch pull-request rule still restricts allowed methods to `squash`.
+Rechecked2026-11-06 19:35UTC:the actual main-branch pull-request rule still
+restricts allowed methods to `squash`;PR180 remains open. Preserve measured
+source identities rather than bypassing this rule.
 
 ## Evidence pointers
 

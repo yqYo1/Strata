@@ -183751,7 +183751,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "7378e89dc0baa63f1acde7c8a2e95d4ad9eee442",
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -184711,6 +184711,127 @@
           "original_sources_recovered": 332,
           "protected_ELF_outputs": 15
         }
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1516460,
+          "start_ticks": 234190283,
+          "sid": 1516408
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 3293,
+            "output_chars": 5496,
+            "reasoning_chars": 3783,
+            "prompt_ms": 66891.6,
+            "prompt_tps": 496.5,
+            "decode_ms": 285023.8,
+            "decode_tps": 11.6,
+            "ttft_s": 67.063,
+            "total_s": 351.941,
+            "drafts_offered": 2856,
+            "drafts_accepted": 2342,
+            "acceptance_rate": 0.8200280112044818,
+            "request_sha256": "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033",
+            "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+            "reasoning_sha256": "fbeb59b38ebda9311ef111a30a042036dd356c1b82175a471ae845a89453a583",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1516460,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33211,
+            "rows": 33210,
+            "GPU_residual_rows": 33210,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20301,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33210,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 4,
+            "request": 5,
+            "IQ3_calls": 1789280,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 443749,
+            "lookups": 1828320,
+            "hit_percent": 24.3
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "0012ff6d6b878bc01c951a3b354233c9c3457ae2e5021ce2a6f4190016c5a0e2",
+            "45fb842df8a19c045e5449d4d87063f362b39394d19e5be6c6d2d0c5353c9f87",
+            "f98c66c95e288442c4e045bb6c8e961ad0a77c744de68f2fb4be4553365123bb",
+            "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033"
+          ],
+          "valid": true,
+          "journal_sha256": "e1e6063cc2e259cde7bd0aae5ff288baab8bf06939c12e355716c1c6834ecb4a"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35520
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_controls": {
@@ -184724,8 +184845,8 @@
       "GPU_executed": false
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "whole_bytes": 469762048,
@@ -184750,6 +184871,61 @@
         "passed": true
       }
     ],
+    "decision": {
+      "candidate_over_reference_TG": [
+        1.465753424657534,
+        1.0495049504950495,
+        1.1262135922330097
+      ],
+      "geometric_mean_TG_ratio": 1.2010342466699921,
+      "repeated_TG_gain": true,
+      "minimum_gain_floor": false,
+      "arms": {
+        "reference": {
+          "median_TG": 10.1,
+          "minimum_TG": 7.3,
+          "maximum_TG": 10.3,
+          "acceptance": [
+            0.8375973303670745,
+            0.8375973303670745,
+            0.8375973303670745
+          ],
+          "generated_tokens": [
+            3157,
+            3157,
+            3157
+          ]
+        },
+        "candidate": {
+          "median_TG": 10.7,
+          "minimum_TG": 10.6,
+          "maximum_TG": 11.6,
+          "acceptance": [
+            0.8200280112044818,
+            0.8200280112044818,
+            0.8200280112044818
+          ],
+          "generated_tokens": [
+            3293,
+            3293,
+            3293
+          ]
+        }
+      },
+      "candidate_over_reference_prompt_time": [
+        0.9727227156220147,
+        1.0001891471227997,
+        1.0405912669584008
+      ],
+      "candidate_over_reference_TTFT": [
+        0.971932524973299,
+        1.0003356616530537,
+        1.0399782895246956
+      ],
+      "prompt_nonregression": false,
+      "TTFT_nonregression": false,
+      "limits": "Matched focused workload at one context/width only. Cap2 acceptance uses its own denominator;no strong/weak relabeling,quality,agent,64K/117K preservation,physical262144/RESTORE,adoption or70TG claim."
+    },
     "input_signatures": {
       "sources": "b4b9eba8edcf15edd4e418d57302f2f82e1ca93e01f004762add68fbaf5cbc41",
       "environment_template": "3819ebcd7f1638791579f7d628f1c7a94a0e011734096475407b547987110082",
@@ -184757,7 +184933,7 @@
     }
   },
   "adaptive_generation_precision_analysis_v1": {
-    "stage": "collecting",
+    "stage": "closed",
     "cohort_key": "adaptive_generation_regular_code_v2",
     "declared_after_reference_processes": 1,
     "declared_before_candidate_execution": true,
@@ -184801,9 +184977,97 @@
         "candidate_over_reference_prompt_time": 1.0001891471227997,
         "candidate_over_reference_TTFT": 1.0003356616530537,
         "same_request_sha256": true
+      },
+      {
+        "pair": 2,
+        "reference_index": 4,
+        "candidate_index": 5,
+        "reference_exact_TG": 10.324375730097206,
+        "candidate_exact_TG": 11.553421152900214,
+        "candidate_over_reference_exact_TG": 1.1190430738800161,
+        "candidate_over_reference_prompt_time": 1.0405912669584008,
+        "candidate_over_reference_TTFT": 1.0399782895246956,
+        "same_request_sha256": true
       }
     ],
-    "complete": false,
-    "repeatability_qualified": false
+    "complete": true,
+    "repeatability_qualified": true,
+    "arms": {
+      "reference": {
+        "exact_TG": [
+          7.294485327502058,
+          10.141007220127314,
+          10.324375730097206
+        ],
+        "median_TG": 10.141007220127314,
+        "minimum_TG": 7.294485327502058,
+        "maximum_TG": 10.324375730097206,
+        "exact_PP": [
+          523.5239779688322,
+          532.3529741782119,
+          516.6429950390698
+        ],
+        "median_PP": 523.5239779688322,
+        "minimum_PP": 516.6429950390698,
+        "maximum_PP": 532.3529741782119,
+        "median_prefill_s": 63.437400000000004,
+        "median_TTFT_s": 63.668,
+        "read_tokens": [
+          33211,
+          33211,
+          33211
+        ],
+        "generated_tokens": [
+          3157,
+          3157,
+          3157
+        ],
+        "acceptance": [
+          0.8375973303670745,
+          0.8375973303670745,
+          0.8375973303670745
+        ]
+      },
+      "candidate": {
+        "exact_TG": [
+          10.71726596133843,
+          10.630498652060519,
+          11.553421152900214
+        ],
+        "median_TG": 10.71726596133843,
+        "minimum_TG": 10.630498652060519,
+        "maximum_TG": 11.553421152900214,
+        "exact_PP": [
+          538.2047417634952,
+          532.2523001870279,
+          496.489843268811
+        ],
+        "median_PP": 532.2523001870279,
+        "minimum_PP": 496.489843268811,
+        "maximum_PP": 538.2047417634952,
+        "median_prefill_s": 62.3971,
+        "median_TTFT_s": 62.584,
+        "read_tokens": [
+          33211,
+          33211,
+          33211
+        ],
+        "generated_tokens": [
+          3293,
+          3293,
+          3293
+        ],
+        "acceptance": [
+          0.8200280112044818,
+          0.8200280112044818,
+          0.8200280112044818
+        ]
+      }
+    },
+    "geometric_mean_TG_ratio": 1.198955048050522,
+    "all_original_process_gates_passed": true,
+    "prompt_nonregression": false,
+    "TTFT_nonregression": false,
+    "inference_adopted": false
   }
 }
