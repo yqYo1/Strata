@@ -259,9 +259,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   but V1 fails its final closure check before any device execution. The driver
   transforms all four SYCL objects into private host-link inputs,so requiring
   their original names in GNU ld's trace is incorrect. Preserve V1's failed
-  outcome. A prospective V2 must pin the objects before/after link and retain
-  the verbose driver's original-object inputs as well as ld's transformed
-  inputs. Commit that corrected recipe before another build,and a separate bounded
+  outcome. V2 source `087edccfd6f04398434d968cb2615595b2c952ca` now prepares
+  the same four units with117pinned inputs and the same compiler image,adding
+  verbose driver evidence and object hashes before/after link. It requires the
+  original-object inputs at that driver boundary as well as ld's transformed
+  inputs. V2 has not compiled yet. The closed V1 outputs and successful62-kernel
+  control's raw trace/JIT/logs are retired after original117/114controller and
+  567native-input/recipe recovery:31files,1391544bytes,manifest SHA256
+  `7282ab4cfb8b0c5cdb61031430a3f8b0653898495e9a52bad429a477a32eb89d`
+  in external `compat-v1-and-active-collector-output-retirement-20261106.json`.
+  Keep the active control's required record and both selected engine generations.
+  Commit V2's prepared recipe before building,and a separate bounded
   smoke/prefix-only/prefix-window plan before execution. This is a disposable
   collector fixture,not another engine generation or current model attribution.
   The completed Orca Luna/native Luna-max writer review finds no supported
