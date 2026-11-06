@@ -224,6 +224,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   A candidate crossing the reference's acceptance-class threshold must not
   retrospectively exclude its speed sample. Commit final criteria and controls
   before this new experiment;do not change the active Q6 comparison's rules.
+  Main's bounded-entry controller is now committed at
+  `e40714dedc501df8fcc62419176f405d87df48b9` in the existing isolated
+  `maintenance/upstream-config-wiring` child. It preserves spec4 allocation,
+  compares explicit cap4/cap2 with min-p/suffix disabled,and checks actual
+  traced widths against completed live Q6 captures. It requires a positive
+  occupied tail loan,checked resident-prefix/refill payload,ordered owner
+  retirement/restoration,and renewed loan/capture identities across requests.
+  It explicitly admits only the tested startup-config frontend delta plus its
+  new controller/test inputs;fresh frontend probes and both model entries are
+  required. The source is not yet CPU-tested or integrated. Run its finite
+  host-only controls at the next GPU-process closure;merge the child only after
+  all six frozen Q6 processes close. No new native build or speed result follows.
 
 ## Prefill envelope and scaling
 
@@ -1568,8 +1580,10 @@ Niko1221/Strata remains the only upstream. The maintained
 records the last actual check at **2026-11-04 21:34:43 UTC**,
 `ffa80d73133ea5c548aefe57889a16e8085a938f` (`v0.2.10`), with the next check due
 approximately 48 hours later. The configuration parsing helpers are ported and
-pass five focused tests; server wiring remains pending after the frozen audit
-comparison closed. Required tracking/recovery/alias/API/CLI imports and
+pass five focused tests. Actual server startup wiring at
+`92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
+tests in the isolated child;its primary-tree integration and fresh model/frontend
+qualification wait for the frozen Q6 cohort to close. Required tracking/recovery/alias/API/CLI imports and
 hardware-tuned unmodified-upstream measurements remain incomplete. PR 180 is
 blocked by a squash-only ruleset; preserve measured source commit identities
 and do not claim default-branch integration.
