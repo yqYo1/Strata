@@ -193,15 +193,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   preserving the same native bytes and placement. Reuse the closed device
   qualification only after proving the model-controller-only change and all
   native/fixture/recipe/runtime identities;do not rewrite its original pins.
-  The V2 controller is source-prepared:it preserves spec4 rather than rewriting
+  The V2 controller is committed at `ece575451`:it preserves spec4 rather than rewriting
   the generated configuration,and keeps scratch-lease1. Its explicit reuse
   gate compares the device/parser/global AST and all105 original transitive
   control pins,allowing only this Python file's model admission bodies and
   inert reuse helpers to differ. All six ELFs,preloader/loader,84providers,
   native567-source/1452-compiler-input recipe,boot and driver still need their
   existing checks. CPU controls accept the real model-only projection and
-  must reject six changed device/parser/import/definition controls before
-  preparation. These controls are not new GPU validation.
+  reject six changed device/parser/import/definition controls. The half0 V2
+  plan is prepared with all15model assets hashed and no model execution yet;
+  follow `q6_native_half_model_entry_arm0_v2`. These controls are not new GPU
+  validation. Next commit this plan,then run its two frontend probes and model
+  entry before preparing half1.
   Then freeze the repeated long-generation comparison. The short model entry
   does not qualify sustained TG or model speed. Keep separate prefill/handoff,
   task, agent and physical 262144/RESTORE gates;retain the validated552b fallback
