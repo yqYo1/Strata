@@ -770,8 +770,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Exact generated-count/decode-time TG is primary,with the printed decision
   retained;all three pairs must improve without a minimum percentage floor.
   Prompt/TTFT remain independent. No new native generation or model execution
-  follows from preparing this source;run its CPU controls at the serialized
-  post-cohort boundary before preparing the comparison.
+  follows from preparing this source;run its CPU controls at a serialized
+  closed-process boundary before preparing the comparison.
+  The CPU-only command is preregistered as
+  `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_budget_generation.py controls`.
+  Its internal measurement lock must be free;require actual0,quiet stderr,
+  four configuration controls and independent TG/prompt/TTFT decisions. This
+  reader control may run between closed processes;do not run it during a GPU job.
   The retrieved review's stale-map condition is resolved for the current
   bounded8-swap route:actual compiled inputs match its generator/cache/header
   identities,`adaptive_res_upload`updates`xcache.replace_residency(host_res)`

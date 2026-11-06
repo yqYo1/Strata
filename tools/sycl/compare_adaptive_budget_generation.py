@@ -97,6 +97,13 @@ def controls():
     changed = copy.deepcopy(rows)
     changed[1]['samples'][0]['decode_ms']=204801.0
     require(not ctx.decision(changed)['repeated_TG_gain'],'retain one slower exact pair')
+    changed = copy.deepcopy(rows)
+    for proc in changed:
+        if proc['kernel']=='candidate':
+            proc['samples'][0].update(prompt_ms=1010.0,ttft_s=1.2)
+    phases = ctx.decision(changed)
+    require(phases['repeated_TG_gain'] and not phases['prompt_nonregression'] and
+            not phases['TTFT_nonregression'],'TG gain must not conceal slower prefill/TTFT')
     for workload in clean.CAPS:
         ctx = context(workload)
         row = json.loads((clean.B/('adaptive-generation-'+workload+'-v2')/'record.json').read_text())
@@ -108,7 +115,7 @@ def controls():
             require(args[args.index('--adapt-swaps')+1]==str(plan['adapt_swaps']) and
                     args[args.index('--adapt-every')+1]=='8' and
                     args[args.index('--mtp-max-t')+1]==str(clean.CAPS[workload]),'actual budget/width selectors')
-    return dict(passed=True,small_exact_gain_retained=True,slower_pair_retained=True,
+    return dict(passed=True,small_exact_gain_retained=True,slower_pair_retained=True,phase_decisions_separate=True,
                 immutable_configuration_controls=4,GPU_executed=False)
 
 
