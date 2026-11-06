@@ -208,6 +208,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `q6_native_half_model_entry_arm0_v2`. This is short model-route qualification,
   not clean/sustained TG or a new device-fixture validation. Next prepare and
   admit half1 with the identical native binary,source,placement and safety.
+  The half1 V2 plan is now prepared:all317source pins and the native ELF match
+  half0;normalized configuration/environment differ only by the immutable half
+  selector and private paths. All15assets are hashed. Follow
+  `q6_native_half_model_entry_arm1_v2`;commit before frontend/model execution.
   Then freeze the repeated long-generation comparison. The short model entry
   does not qualify sustained TG or model speed. Keep separate prefill/handoff,
   task, agent and physical 262144/RESTORE gates;retain the validated552b fallback
