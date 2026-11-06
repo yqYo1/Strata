@@ -842,8 +842,10 @@ acceptance0.8244/0.3892,all six census/leaf joins and strict completed prefixes4
 The off process emits no caller record;the on process has six complete conserved
 caller records. Native/benchmark exit0,owners close,validation is quiet and no
 fresh fault is recorded in either process. The first on/off per-output latency
-ratios are1.005990/1.003774,with matching logical work in both workloads. Four
-processes remain;the three-pair overhead decision is still pending. The on
+ratios are1.005990/1.003774,with matching logical work in both workloads. The
+second on process also passes both long requests,all six caller/leaf/census
+joins,strict completed prefixes4/5,normal exits,quiet validation and fault/owner
+checks. Three processes remain;the three-pair overhead decision is still pending. The first on
 caller's code/prose wall intervals are237.918/834.038s,including pool regions
 109.089/355.207s,layer waits77.883/287.238s and unclassified31.729/116.189s.
 Nested native waits total119.421/439.711s;their caller CPU is118.554/435.462s.
