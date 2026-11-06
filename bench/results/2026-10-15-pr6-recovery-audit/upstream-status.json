@@ -1076,125 +1076,9 @@
       "state": "ported_host_tested",
       "provenance": "Niko-authored upstream commit;upstream/fork MIT LICENSE bytes match. No XeStrata material used in this inspection.",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
-      "difference": "The current fork parser has no upstream _close_verdict helper;adapt the behavior instead of applying the eight-line hunk blindly or replacing unrelated parser behavior.",
+      "difference": "The original fork parser lacked the upstream close verdict;the behavior was adapted and tested instead of replacing unrelated parser behavior.",
       "validation": "Whole input,pieces and every-byte split with stream_tools on/off,embedded closing tags,text after a final call,two calls and existing fork parser regressions. Source review is not functional validation.",
       "boundary": "After the current frozen code/prose speed cohorts close,before freezing the next long benchmark inputs. Pin and qualify any frontend delta prospectively;do not edit or relabel the closed comparisons.",
-      "proposal": {
-        "base_commit": "100038e0186725a873531b367ca4f0b6d83e0d05",
-        "base_files": {
-          "serve/frontend.py": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
-          "tools/test_frontend_stream_scan.py": "584045bbb6be72822cf76326beea1443bc6aa8543b5907d26fa37f60145f15ef"
-        },
-        "new_file": "serve/test_streamed_tool_tags.py",
-        "patch": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-tool-tags-port-20261107.patch",
-          "sha256": "dfebadae4d39104ea26827e59bcbbf9d4ca4024364cbe8e71bd33a598c17154e",
-          "bytes": 13295,
-          "budget_bytes": 32768
-        },
-        "owner": "Main",
-        "consumer": "Apply and validate the required parser behavior after both current frozen speed cohorts close,before the next long benchmark freeze.",
-        "next_review": "At cohort closure,recheck exact base bytes and inspect the full patch;commit applied source and recipes before tests. Retire the patch after integrated source/results are pushed.",
-        "tests_executed": true,
-        "applied": true,
-        "test_recipe": {
-          "state": "initial_full_suite_failed",
-          "python_selected": {
-            "workspace_venv": false,
-            "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
-            "file": {
-              "realpath": "/usr/bin/python3.12",
-              "dev": 29,
-              "ino": 774532,
-              "bytes": 8020928,
-              "mtime_ns": 1788171506000000000,
-              "ctime_ns": 1790581701420197973,
-              "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
-            }
-          },
-          "python_contract": {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
-            "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
-            "files": 3597,
-            "bytes": 270975442
-          },
-          "environment": {
-            "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
-            "PYTHONNOUSERSITE": "1",
-            "PYTHONDONTWRITEBYTECODE": "1",
-            "LANG": "C.UTF-8"
-          },
-          "commands": [
-            {
-              "role": "literal-tags",
-              "command": [
-                "/usr/bin/timeout",
-                "-k",
-                "5s",
-                "300s",
-                "/usr/bin/prlimit",
-                "--as=2147483648",
-                "--cpu=120",
-                "--fsize=8388608",
-                "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
-                "-X",
-                "faulthandler",
-                "-B",
-                "-m",
-                "unittest",
-                "-v",
-                "serve.test_streamed_tool_tags"
-              ]
-            },
-            {
-              "role": "scan-and-existing-terminators",
-              "command": [
-                "/usr/bin/timeout",
-                "-k",
-                "5s",
-                "300s",
-                "/usr/bin/prlimit",
-                "--as=2147483648",
-                "--cpu=120",
-                "--fsize=8388608",
-                "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
-                "-X",
-                "faulthandler",
-                "-B",
-                "-m",
-                "unittest",
-                "-v",
-                "tools.test_frontend_stream_scan",
-                "serve.test_server.ToolCallTerminators",
-                "serve.test_server.UnfinishedToolCall"
-              ]
-            },
-            {
-              "role": "server-mock-regression",
-              "command": [
-                "/usr/bin/timeout",
-                "-k",
-                "5s",
-                "300s",
-                "/usr/bin/prlimit",
-                "--as=2147483648",
-                "--cpu=120",
-                "--fsize=8388608",
-                "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
-                "-X",
-                "faulthandler",
-                "-B",
-                "-m",
-                "unittest",
-                "-v",
-                "serve.test_server"
-              ]
-            }
-          ],
-          "criteria": "Apply the pinned proposal only after both frozen cohorts close. Commit exact applied source and this recipe before tests;pin all actual test/import/template inputs then. Every suite needs actual normal0,zero failures/errors,explicit skip counts/reasons,closed mock processes and loopback servers. Retain compact individual suite counts/exit outcomes and only distinct failure excerpts. These are CPU/mock tests;no model weights,inference,GPU reset or runtime upgrade.",
-          "result_key": "upstream_streamed_tool_tags_host_v1"
-        }
-      },
       "behavior": "Match upstream bounded disambiguation:final tool_call may wait for end of input,a later call or1500lookahead characters;tool_start and argument pieces remain early. Preserve the suffix and no-close scan optimization.",
       "prospective_scan_cost_contract": "Keep zero structural walks while an ordinary growing body has no close,one at its first complete closing candidate,and two after end-of-input confirmation. The source proposal updates these expectations before any test is run.",
       "planned_validation": [
@@ -1229,7 +1113,19 @@
         "all_owned_processes_closed": true
       },
       "initial_failed_result_key": "upstream_streamed_tool_tags_host_v1",
-      "validated_source_commit": "44ad93dfe8f6f59ef784f23ec7cecac0b259051f"
+      "validated_source_commit": "44ad93dfe8f6f59ef784f23ec7cecac0b259051f",
+      "proposal_retirement": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-streamed-tool-tags-retirement-20261107.json",
+        "sha256": "934f7c18a72ad230706f500e4250f77a0d0ca4818dea3e676fea4e46d082605b",
+        "files": 36,
+        "bytes": 344439,
+        "original_sources_recovered_per_plan": 351,
+        "protected_ELF_outputs": 15,
+        "patch_sha256": "dfebadae4d39104ea26827e59bcbbf9d4ca4024364cbe8e71bd33a598c17154e",
+        "archive_commit": "ee79b73bb98c9415ed61baa0e26fd231097f4ea3",
+        "archive_key": "v0211_review.next_required_slice.proposal",
+        "applied_source_commit": "f7784635bc8c6ab832f39bd8d13b29b1c1623c10"
+      }
     },
     "selected_server_slices": {
       "reviewed_utc": "2026-11-06T22:37:11.107343+00:00",

@@ -187191,11 +187191,6 @@
       "sha256": "2bd52c0973a0e9cecde27d2f3c06a09d36bb2ae0efcfebedc2bd649d03f5b073"
     },
     "failure_diagnosis": {
-      "diagnostic": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-streamed-tool-tags-v1/representative-thread-failure.txt",
-        "sha256": "443372e5dfa288226c02b0235d62d01e1fa7d9045d3434fc4dead8f60b2265ac",
-        "bytes": 2538
-      },
       "whole_stderr_sha256": "64a83a7cb03dad1e3f8c9dbce5e0ac9a987b4d5fdb767b6eea3867d1f66ff65b",
       "peak_sampled_session_rss_bytes": 80531456,
       "virtual_address_limit_bytes": 2147483648,
@@ -187216,7 +187211,22 @@
         "threads": 32,
         "source": "One /proc/<owned unittest PID>/status read after matching Python executable,unittest argv and Owner start identity;VmSize/VmRSS kB multiplied by1024."
       },
-      "conclusion": "Same parser/tests/runtime pass all147full-suite tests with8GiB virtual AS and the same2GiB RSS/CPU/wall/output limits. An owned32-thread snapshot uses2512637952virtual bytes with65536000resident bytes,above the old2147483648virtual cap. Initial V1 remains failed;the too-small virtual-space envelope is the identified condition."
+      "conclusion": "Same parser/tests/runtime pass all147full-suite tests with8GiB virtual AS and the same2GiB RSS/CPU/wall/output limits. An owned32-thread snapshot uses2512637952virtual bytes with65536000resident bytes,above the old2147483648virtual cap. Initial V1 remains failed;the too-small virtual-space envelope is the identified condition.",
+      "retired_diagnostic": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-streamed-tool-tags-v1/representative-thread-failure.txt",
+        "sha256": "443372e5dfa288226c02b0235d62d01e1fa7d9045d3434fc4dead8f60b2265ac",
+        "bytes": 2538,
+        "retirement_manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-streamed-tool-tags-retirement-20261107.json",
+        "reason": "Resource condition resolved;failed status,stack condition,limits and observed V2 VM/RSS remain recorded."
+      }
+    },
+    "artifact_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-streamed-tool-tags-retirement-20261107.json",
+      "sha256": "934f7c18a72ad230706f500e4250f77a0d0ca4818dea3e676fea4e46d082605b",
+      "files": 36,
+      "bytes": 344439,
+      "original_sources_recovered_per_plan": 351,
+      "protected_ELF_outputs": 15
     }
   },
   "upstream_streamed_tool_tags_host_v2": {
@@ -187416,6 +187426,14 @@
       "threads": 32,
       "source": "One /proc/<owned unittest PID>/status read after matching Python executable,unittest argv and Owner start identity;VmSize/VmRSS kB multiplied by1024."
     },
-    "qualification_scope": "Required parser behavior on unchanged frontend/tests/runtime;all3CPU/mock suites normal0,no skips,owners closed. The8GiB virtual cap and2GiB RSS are a test envelope correction,not a telemetry lifecycle fix,GPU run,inference speed or complete-upstream qualification."
+    "qualification_scope": "Required parser behavior on unchanged frontend/tests/runtime;all3CPU/mock suites normal0,no skips,owners closed. The8GiB virtual cap and2GiB RSS are a test envelope correction,not a telemetry lifecycle fix,GPU run,inference speed or complete-upstream qualification.",
+    "artifact_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-streamed-tool-tags-retirement-20261107.json",
+      "sha256": "934f7c18a72ad230706f500e4250f77a0d0ca4818dea3e676fea4e46d082605b",
+      "files": 36,
+      "bytes": 344439,
+      "original_sources_recovered_per_plan": 351,
+      "protected_ELF_outputs": 15
+    }
   }
 }
