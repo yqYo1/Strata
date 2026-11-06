@@ -465,8 +465,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   another GPU run;it cannot relabel V3 or claim a Python-crash fix. Its CPU-only
   plan is now prepared from source`5e18110fcc3bcabaf1fc45c946fcb257cf4a29e1`,
   pinning the original failed record,execution receipt and both native streams.
-  Commit this plan,then run once with faulthandler and the declared420-second
-  wall/360-second CPU/8GiB address-space limits.
+  The CPU-only replay now exits0 within its declared420-second wall/360-second
+  CPU/8GiB address-space limits. It verifies the saved complete protocol,four
+  gates,128-token hash,strict pre-main UR validation and completed T1/T4 Q6
+  heads,recomputes all six counter snapshots,and fully hashes all15model assets
+  again. Source/native/runtime/boot/driver still match and no fresh GPU fault
+  appears. Follow `decode_gate_model_entry_v3_postcheck_v1`;V3's original host
+  failure stays failed and this does not identify or fix that Python crash.
+  Between rounds8..16 and16..24,the sampled process uses5.0907/5.2786CPU-core
+  equivalents while CCS busy-cycle fractions are0.543462/0.562392. All six
+  snapshots show requested client VRAM fully resident;decode reaches10577268736
+  bytes. These are short synthetic observations,including CPU polling and GPU
+  stalls,not clean speed,physical bandwidth/saturation or an exclusion of
+  transient paging. They support returning to the previously faster owned
+  positive-swap cache path to reduce CPU misses;first qualify its actual
+  replacement payload/map/dispatch and subsequent scratch-loan/refill behavior.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
