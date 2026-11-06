@@ -309,8 +309,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cap4. Each completes oneT1 and twelveT2 replays;loan generations2/3 and
   disjoint capture IDs3/4 then5/6 renew across requests. Width/lifetime checks
   pass;this is neither sustained TG nor recurrent-state/task/full-context
-  qualification. The six-process4/2/2/4/4/2 sustained comparison can now prepare;
-  no width speed result exists yet.
+  qualification. The sustained comparison is now prepared at
+  `83909a4eb2cb17a418e505edec46f7c5a14e3052`,key
+  `mtp_width_generation_speed_v1`:320frozen inputs,the same15model assets and
+  six native ELFs,common half1,and cap order4/2/2/4/4/2. Only the cap differs
+  after private-path normalization. Four official warmups precede each process's
+  fixed thinking-on v5 code/prose requests. Trace,payload audit,CPU attribution,
+  DECODE_TIMING and profiler are disabled;IQ3/Q6 audits and runtime safety stay
+  common. Classify MTP only from fixed4;keep fixed2 acceptance at its changed
+  denominator and retain every speed sample. Each workload needs all three
+  paired TG ratios above one for a repeated gain. Fresh frontend probes and
+  all six processes remain pending;no width speed result exists yet.
 
 ## Prefill envelope and scaling
 
