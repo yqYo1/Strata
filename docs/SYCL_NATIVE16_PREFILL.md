@@ -227,7 +227,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retrospectively exclude its speed sample. Commit final criteria and controls
   before this new experiment;do not change the active Q6 comparison's rules.
   Main's bounded-entry and generation controller is now committed at
-  `1c36d7de4cd07a4e39dc746b251e9a56641f0c4a` in the existing isolated
+  `19b43827ae503e58123fa43aaf4492a40213f285` in the existing isolated
   `maintenance/upstream-config-wiring` child. It preserves spec4 allocation,
   compares explicit cap4/cap2 with min-p/suffix disabled,and checks actual
   traced widths against completed live Q6 captures. It requires a positive
@@ -249,8 +249,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bounded entries first,disables entry-only trace/payload audits,and records
   individual TG,PP,TTFT and depth-specific acceptance. Only fixed4 establishes
   the MTP class;all three speed ratios must exceed one for a per-workload gain.
-  The added generation/decision controls are not yet executed;run the full
-  controller's CPU controls at cohort closure before any new preparation.
+  The added generation/decision controls are not yet executed. They also
+  exercise the actual generated cap-pair invariant,immutable entry template,
+  preparation-time common-half selection,disabled entry observers,and rejection
+  of changed runtime safety or prefill settings. Run the full controller's CPU
+  controls at cohort closure before any new preparation.
 
 ## Prefill envelope and scaling
 
