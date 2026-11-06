@@ -188,9 +188,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gates,six footers,normal exit,quiet validation,closed owners and no fresh fault.
   Reference3 is now closed with the same gates:code TG13.3796 and prose
   TG8.7744tok/s. The second candidate/reference ratios are1.017903/1.023539.
-  Four processes/two pairs are closed;both pairs favor the candidate in both
-  workloads. The third pair is still required before a reproducible-gain decision.
-  Preserve every paired outcome and collect reference4 before candidate5.
+  Reference4 also closes with all the same gates,normal exit,quiet validation,
+  closed ownership and no fresh fault:code TG13.4539 and prose TG8.81175tok/s.
+  Five processes/two complete pairs are closed;both complete pairs favor the
+  candidate in both workloads. The final candidate5 is still required before
+  the third-pair/reproducible-gain decision. Preserve every paired outcome.
   Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
@@ -233,9 +235,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retirement/restoration,and renewed loan/capture identities across requests.
   It explicitly admits only the tested startup-config frontend delta plus its
   new controller/test inputs;fresh frontend probes and both model entries are
-  required. The source is not yet CPU-tested or integrated. Run its finite
-  host-only controls at the next GPU-process closure;merge the child only after
-  all six frozen Q6 processes close. No new native build or speed result follows.
+  required. Its host-only controls now pass at that source:lease1positive/12negative,
+  source1positive/3negative,and width4positive/24negative,exit0,without native/GPU
+  execution. Exact command in the child was `env PYTHONDONTWRITEBYTECODE=1
+  PYTHONNOUSERSITE=1 prlimit --as=1073741824 --cpu=60 --fsize=65536 -- timeout
+  --signal=TERM --kill-after=5s 90s /home/yayoi/.local/share/strata-sycl/venv/bin/python3
+  -B tools/sycl/check_mtp_width_model.py controls`. Merge the child only after
+  all six frozen Q6 processes close. Fresh frontend/model entries remain pending;
+  no new native build or speed result follows from the parser controls.
 
 ## Prefill envelope and scaling
 
