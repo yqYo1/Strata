@@ -229,11 +229,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   (1direct+12first+24host-handoff+24cross-queue+1late);the submission-only mode
   is a different case. Preparation now pins114exact project/controller inputs
   at `b3b5387a95db2ddfadb8be612a07bdfb56923c2c`,the unchanged current engine/
-  fixture,existing launcher/collector and runtime safety. Follow prepared key
-  `q6_native_half_collector_active_v1`;the case has not executed. Its next
-  consumer is the committed current-ELF collector check,followed by a
-  separately committed representative model-service plan. This is no new
-  capability,speed,saturation or model-coverage result.
+  fixture,existing launcher/collector and runtime safety. The current-ELF check
+  now closes successfully under `q6_native_half_collector_active_v1`:all62
+  expected kernels have their names and unique native host-flow joins,with249
+  GPU and770host events in the271452-byte timeline. Both raw-clock gates pass;
+  before-main validation is accepted,native exit is0,owned processes close,
+  boot/driver stay unchanged and no fresh fault occurs. The controller also
+  exits0 after final source/provider checks and named-session removal. This
+  qualifies the small active-from-exec collector only;pause/resume windows,
+  model coverage,observer cost,physical traffic and resource saturation still
+  require their separate prospective checks.
   Main's new `tests/sycl/compat_window.cpp` source-prepares the next pause/resume
   control using the actual CUDA-named SYCL adapter and checked graph-completion
   path. It records a two-kernel graph while collection is active,then executes
@@ -266,7 +271,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `original_assets.preload.loader.path` metadata. No such path occurs in its460
   compiler inputs or system-only ELF dependency list. The current control
   constructs loader expectations from its selected native validation probe;
-  actual current provider mappings remain part of the unexecuted device gate.
+  actual current provider mappings pass the closed active-fixture gate.
+  New Orca research remains on hold. The bounded workspace-profile status
+  probe exits0 but reports `runtime.reachable=false`,disconnected and
+  `stale_bootstrap`;this is not a successful worker IPC check. Main's ordinary
+  status independently reaches the ready runtime. No new researcher,task,
+  dispatch or terminal was launched from that failed capability result.
+  Keep the one small diagnostic under external
+  `orca-narrow-ipc-probe-20261106` only for the next exact-socket connectivity
+  check,with a256KiB total budget and review immediately after that check.
+  Neither PID-namespace isolation nor socket denial is established by status
+  alone. Resume bounded Luna research only after worker-side connectivity and
+  lifecycle settlement can be verified;continue Main's tuning independently.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
