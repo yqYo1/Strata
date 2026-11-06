@@ -5,6 +5,8 @@ Reuse this fork's qualified runtime/owner/parser contracts. No model, speed,
 physical saturation, ordinary teardown or full-context qualification follows.
 """
 import fcntl
+from functools import lru_cache
+import importlib.util
 import json
 from pathlib import Path
 import re
@@ -15,6 +17,8 @@ sys.dont_write_bytecode = True
 import build_q6_native_half_model as build
 import check_verify_window_phase as phase
 import measurement_owner as ownership
+import verify_window_model_entry as model_template
+from iq3_model_entry import dispatches
 from run_q6_columns import validation_log
 
 P,B,RESULT,base=build.P,build.B,build.RESULT,build.base
@@ -163,8 +167,169 @@ def run():
     print('Same-build Q6/phase admission passed;full model routes and speed remain pending.',flush=True)
 
 
+@lru_cache(maxsize=1)
+def measured_shapes():
+    def winners(key):
+        rows=build.historical(build.COMPONENT_EVIDENCE,key)['decision']['shapes']
+        return {tuple(r['shape']) for r in rows if r['all_three_faster']}
+    columns=winners('q6_byte_load_component_v2')
+    half=columns & winners('q6_native_half_component_v3')
+    require(len(columns)==30 and len(half)==26,'independent measured shape sets changed')
+    return columns,half
+
+
+def snapshots(text,arm,request):
+    """Validate observed live epochs; no retired-history or request-delta claim."""
+    require(arm in (0,1) and type(request) is int and 0<request<2**64,'snapshot identity')
+    root=re.compile(r'strata Q6_ROUTE request=(\d+) device=(\d+) phase=(prompt|decode) tokens=([1-8]) '
+        r'capture_id=(\d+) scope=live_capture_cumulative native_half_enabled=([01]) complete=1 '
+        r'shapes=(\d+) cache_hits=(\d+) replay_started=(\d+) replay_completed=(\d+)')
+    shape=re.compile(r'strata Q6_SHAPE request=(\d+) device=(\d+) phase=(prompt|decode) tokens=([1-8]) '
+        r'capture_id=(\d+) ni=(\d+) no=(\d+) nc=([1-8]) reference_calls=(\d+) columns_calls=(\d+) '
+        r'centered_calls=(\d+) native_half_calls=(\d+)')
+    windows={};details={};capture_ids=set();columns,half=measured_shapes()
+    for line in text.splitlines():
+        if line.startswith('strata Q6_ROUTE '):
+            m=root.fullmatch(line);require(m is not None,'malformed/incomplete Q6 snapshot')
+            req,device,phase_name,t,capture,enabled,count,hits,started,completed=m.groups()
+            numbers=list(map(int,[req,device,t,capture,enabled,count,hits,started,completed]))
+            req,device,t,capture,enabled,count,hits,started,completed=numbers
+            require(all(0<=v<2**64 for v in numbers) and req==request and device==0 and
+                enabled==arm and capture>0 and count<=64 and started==completed,'snapshot scope/counters differ')
+            key=(phase_name,t,capture)
+            require(key not in windows and capture not in capture_ids,'duplicate live capture identity')
+            capture_ids.add(capture)
+            windows[key]=dict(phase=phase_name,tokens=t,capture_id=capture,shapes=count,
+                cache_hits=hits,replay_started=started,replay_completed=completed,shape_calls=[])
+        elif line.startswith('strata Q6_SHAPE '):
+            m=shape.fullmatch(line);require(m is not None,'malformed Q6 shape')
+            req,device,phase_name,t,capture,ni,no,nc,*calls=m.groups()
+            req,device,t,capture,ni,no,nc=map(int,[req,device,t,capture,ni,no,nc]);calls=list(map(int,calls))
+            require(req==request and device==0 and 0<ni<2**31 and 0<no<2**31 and
+                all(0<=n<2**64 for n in calls) and 0<sum(calls)<2**64,'invalid Q6 shape identity/count')
+            key=(phase_name,t,capture);entry=(ni,no,nc)
+            require(key in windows and entry not in details.setdefault(key,set()),'unjoined/duplicate Q6 shape')
+            details[key].add(entry)
+            selected=0
+            if phase_name=='decode' and entry in columns:selected=3 if arm and entry in half else 1
+            require(calls[selected]>0 and all(c==0 for i,c in enumerate(calls) if i!=selected),
+                'actual Q6 route disagrees with the independently measured phase/shape policy')
+            windows[key]['shape_calls'].append(dict(shape=list(entry),calls=calls))
+    require(windows and all(len(v['shape_calls'])==v['shapes'] for v in windows.values()),
+        'missing complete live Q6 snapshot/shape rows')
+    head=[]
+    for window in windows.values():
+        if window['phase']!='decode' or not window['replay_completed']:continue
+        for item in window['shape_calls']:
+            if item['shape'][:2]==[2560,248320] and tuple(item['shape']) in half:
+                require(item['calls'][3 if arm else 1]>0,'Q6 head did not select the declared arm')
+                head.append(window['capture_id'])
+    require(head,'no completed decode window with the selected Q6 head')
+    return dict(request=request,scope='observed_live_capture_cumulative',windows=list(windows.values()),
+        completed_head_capture_ids=head,prompt_window_observed=any(k[0]=='prompt' for k in windows))
+
+
+def parser_controls():
+    def text(arm):
+        return (f'strata Q6_ROUTE request=2 device=0 phase=decode tokens=4 capture_id=7 scope=live_capture_cumulative native_half_enabled={arm} complete=1 shapes=1 cache_hits=2 replay_started=3 replay_completed=3\n'
+            f'strata Q6_SHAPE request=2 device=0 phase=decode tokens=4 capture_id=7 ni=2560 no=248320 nc=4 reference_calls=0 columns_calls={1-arm} centered_calls=0 native_half_calls={arm}\n')
+    for arm in (0,1):snapshots(text(arm),arm,2)
+    good=text(1)
+    bad=[good.replace('complete=1','complete=0'),good.replace('request=2','request=3'),
+        good.replace('device=0','device=1'),good.replace('shapes=1','shapes=2'),
+        good.replace('replay_completed=3','replay_completed=2'),good.replace('replay_started=3 replay_completed=3','replay_started=0 replay_completed=0'),
+        good.replace('no=248320','no=640'),good.replace('phase=decode','phase=prompt'),
+        good.replace('native_half_enabled=1','native_half_enabled=0'),
+        good.replace('native_half_calls=1','native_half_calls=0'),
+        good.replace('columns_calls=0','columns_calls=1'),
+        good.replace('native_half_calls=1',f'native_half_calls={2**64}'),
+        good.replace('nc=4','nc=9'),good.replace('capture_id=7 ni=','capture_id=8 ni='),
+        good.splitlines()[0]+'\n',good.splitlines()[1]+'\n',good+good]
+    for value in bad:
+        try:snapshots(value,1,2)
+        except RuntimeError:continue
+        raise RuntimeError('corrupt Q6 snapshot accepted')
+    return dict(passed=True,positive=2,negative=len(bad),GPU_executed=False,
+        scope='Synthetic parser controls;not execution of the native route writer.')
+
+
+def model_proof():
+    row=json.loads((ROOT/'record.json').read_text());unchanged(row);native=built()
+    require(base.committed(RESULT)[KEY]==compact(row) and row['stage']=='closed' and
+        row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
+        row['GPU_executed'] and row['fresh_faults']==[] and row['boot_unchanged'] and
+        [(r['name'],r['native_exit'],r['checks']) for r in row['results']]==
+            [('submission',0,10),('q6-half',0,32),('phase-cache',0,16)],'closed same-build device gate required')
+    providers=json.loads(Path(row['runtime_manifest']['path']).read_text())
+    native=dict(native,environment=native['recipe']['environment'],boot=row['boot'],driver=row['driver'])
+    return native,dict(source_commit=row['source_commit'],environment=row['environment']),providers
+
+
+def model_context(arm):
+    # Start from the shared benchmark supervisor, not the legacy Q6 wrapper's
+    # fixed spec4 guard. This prospective entry uses the intended spec8 route.
+    spec=importlib.util.spec_from_file_location('strata_q6_half_model_entry',model_template.template.__file__)
+    ctx=importlib.util.module_from_spec(spec);spec.loader.exec_module(ctx)
+    ctx.configure('adaptive-throughput')
+    ctx.ROOT=build.ROOT/('model-entry-half'+str(arm)+'-v1')
+    ctx.KEY='q6_native_half_model_entry_arm'+str(arm)+'_v1'
+    ctx.proof=model_proof
+    original_pins=model_template.pinned_sources
+    ctx.pinned_sources=lambda revision:dict(original_pins(revision),**base.controls(revision,controller=SELF))
+    previous_current,previous_route=ctx.current,ctx.profile_route
+    def current(row):
+        env=row['environment'];args=row['configuration']['args']
+        require(env['STRATA_SYCL_DECODE_Q6_NATIVE_HALF']==str(arm) and
+            env['STRATA_SYCL_Q6_ROUTE_AUDIT']==env['STRATA_SYCL_DECODE_Q6_COLUMNS']==env['STRATA_IQ3_PAIR']==env['STRATA_IQ3_PAIR_AUDIT']=='1' and
+            env['STRATA_SYCL_DECODE_Q6_CENTERING']==env['STRATA_CPU_SERVICE']==env['STRATA_CPU_WORK_CENSUS']==env['STRATA_DECODE_TIMING']=='0' and
+            args[args.index('--spec')+1]=='8' and args[args.index('--short-read')+1]=='0' and
+            args[args.index('--adapt-swaps')+1]=='0' and args[args.index('--expert-cache')+1]=='1256' and
+            row['read_tokens']==32769 and row['runs']==2,
+            'freeze the independently selected half arm and route observer')
+        return previous_current(row)
+    def route(text):
+        value=previous_route(text);ids=dispatches(text,1,positive=True)
+        require(len(ids)==1 and ids[0]['request'] in (2,3),'join current native request')
+        value['Q6_live_snapshot']=snapshots(text,arm,ids[0]['request'])
+        return value
+    ctx.current,ctx.profile_route=current,route
+    return ctx
+
+
+def model_prepare(ctx,arm):
+    controls=parser_controls();ctx.prepare()
+    row=json.loads((ctx.ROOT/'record.json').read_text())
+    row['environment'].update(STRATA_SYCL_DECODE_Q6_NATIVE_HALF=str(arm),STRATA_SYCL_Q6_ROUTE_AUDIT='1',
+        STRATA_SYCL_DECODE_Q6_COLUMNS='1',STRATA_SYCL_DECODE_Q6_CENTERING='0',STRATA_SYCL_ADAPT_SYNC='1',
+        STRATA_IQ3_PAIR='1',STRATA_IQ3_PAIR_AUDIT='1',STRATA_IQ_SINGLE_EXACT='0',
+        STRATA_CPU_SERVICE='0',STRATA_CPU_WORK_CENSUS='0',STRATA_DECODE_TIMING='0')
+    args=row['configuration']['args'];require(args[args.index('--spec')+1]=='4','original template spec changed')
+    args[args.index('--spec')+1]='8'
+    write(ctx.ROOT/'config.json',row['configuration']);row['generated']['config.json']=digest(ctx.ROOT/'config.json')
+    row['half_arm'],row['Q6_snapshot_parser_controls']=arm,controls
+    row['qualification_basis']=dict(build_key=build.KEY,device_key=KEY,
+        source_commit=build.POLICY_SOURCE,kernel_source=build.KERNEL_SOURCE,incumbent_shapes=30,selected_intersection=26)
+    row['criteria']=('Two pinned frontend probes,one short thinking-on warmup,and two fresh32769-input/1..24-output bench.sh requests.'
+        ' Spec8,short-read0,1256decode slots,adapt-swaps0,chunk8192,throughput,GDN16/MTP16,and immutable runtime safety.'
+        ' Require complete existing body/token/route/cache/dense/head/MTP/clock/validation/asset/fault/owner gates.'
+        ' Require request-bound complete live phase/T/shape snapshots with exact independently measured routes,'
+        'no selection in observed prompt snapshots,closed replay counts,and positive completed Q6 output-head use in the declared arm.'
+        'Snapshot counters are cumulative for live capture epochs;do not call them request deltas or retired history.'
+        'This audit-on short-output model entry is not clean/sustained TG,prompt-verify,task or physical262144/RESTORE qualification.')
+    row['retention']=('Keep compact request identities,clocks,observed live shape/replay evidence for the imminent half0/1 model comparison;'
+        'review those detail arrays after that decision. Retire successful raw output/JIT after useful outcomes and exact-source recovery are committed.')
+    ctx.save(row);print('Prepared immutable half'+str(arm)+' thinking-on32K route entry;commit before probes.',flush=True)
+
+
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ['prepare','run'],'use prepare|run')
+    device_mode=len(sys.argv)==2 and sys.argv[1] in ['prepare','run']
+    parser_mode=len(sys.argv)==2 and sys.argv[1]=='parser'
+    model_mode=len(sys.argv)==3 and sys.argv[1] in ['0','1'] and sys.argv[2] in ['prepare','host','run']
+    require(device_mode or parser_mode or model_mode,'use prepare|run|parser,or 0|1 prepare|host|run')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);base.guards.no_model_owners([])
-        {'prepare':prepare,'run':run}[sys.argv[1]]()
+        if parser_mode:print(json.dumps(parser_controls()))
+        elif device_mode:{'prepare':prepare,'run':run}[sys.argv[1]]()
+        else:
+            arm=int(sys.argv[1]);ctx=model_context(arm)
+            {'prepare':lambda:model_prepare(ctx,arm),'host':ctx.host,'run':ctx.run}[sys.argv[2]]()

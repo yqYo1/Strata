@@ -162,7 +162,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   their original 5c outputs. This is build evidence only. The new Main-owned
   `tools/sycl/check_q6_native_half_model.py` prepares bounded traced
   submission10,Q6-half32 and phase-cache16 checks after same-build host parity.
-  Neither these new device checks nor the model route/speed comparison has run.
+  Both same-build CPU observer modes now pass28 real-pool cases with the
+  same checksum and closed normal processes. The new controller also prepares
+  thinking-on32K model-entry arms after the device gates,using the maintained
+  bench.sh supervisor. Its reader joins request/phase/T/capture/shape and
+  completed-window records to the independent30/26 measured shape sets,
+  including positive completed Q6 head use. It retains the live-epoch scope;
+  neither retired history nor per-request deltas are inferred. Synthetic parser
+  controls,these new device checks,and the model route/speed comparison remain
+  pending execution. The short model entry does not qualify sustained TG.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
   speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
   gates; retain the validated 552b fallback and 5c comparison outputs.
