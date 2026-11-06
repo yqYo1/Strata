@@ -606,8 +606,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   It preserves552b and all nine fallback outputs. Preparation now passes from
   builder source`a330eb7fbd300d6f2755be51f8419e33ab3fd89e`,pinning568native
   inputs and the original full compiler/package/SDK/dependency images. Commit
-  the prepared plan,then compile before native model qualification.
-  Source construction does not qualify the new dispatch/loan checks.
+  the prepared plan before compilation. The build now closes normally:
+  configure/compile/dependency commands exit0,1453actual compiler inputs and
+  the original optimization/contraction flags pass. Engine SHA256 is
+  `429b69f2984b06db36fde39eb4f1a0e39b8e4dbec406169b35a3c96db78106bd`.
+  All five component fixture ELFs are byte-identical to the original cb7 outputs.
+  The new `adaptive_native_admission.py`source prepares explicit reuse of the
+  original real-pool28+28and device10/32/16checks with unchanged providers,
+  validation probe,boot/driver and recoverable original controls. This is not
+  another GPU test and cannot qualify the new generator's adaptive attachments.
+  The source-level request reader is extracted to
+  `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
+  at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
+  `python3 -X faulthandler -B -m unittest discover -s tests/core -p test_native_request_protocol.py -v`.
+  They cover1/1024/32769-input extents,the actual RESUME/PP omission,malformed
+  order/counters/output and geometry bounds. Actual dispatch,positive copying
+  and post-positive occupied loan/refill still require the bounded native check.
   Actual dispatch coverage,record failure,post-swap loan/refill and native lifetime
   gates remain open. The cb7 and519e diagnostic generations are retired;keep552b.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
