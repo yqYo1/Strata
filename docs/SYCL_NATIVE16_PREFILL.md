@@ -120,8 +120,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   process;paired geometric-mean time reductions range0.435%..25.313%,median
   12.937%. These are resident-operand public-entry timings including queue
   completion under parameter validation,not model TG or saturation. The CSV
-  retains all35 component result points;with the closed model comparison it now
-  has176rows total.
+  retains all35 component result points and the closed model-comparison aggregates.
   The actual5c30-cell incumbent intersects26 winners;512x4 and all other
   ineligible cells retain their previous path. Native half requires columns1,
   centering0,explicit decode phase and an immutable default-off selector.
@@ -414,16 +413,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   are+0.189086%/+0.505151%,without refitting or changing cohort decisions.
   This completes same-width repeatability checks;the larger cap4 prose residuals
   remain unexplained and no unseen-width/context prediction is qualified.
-  Successful raw output/JIT from processes0..4 is retired after pushing their
-  individual samples through `02462f24154e343051d3fccb459140be3a61ae0b`,recovering
-  all320original inputs from Git,and checking closed ownership:345files and
-  65776639bytes (69files per process). Native-source recovery also matches
+  Successful raw output/JIT from all six processes is retired after pushing
+  their samples and final decision through `dcb8ba8cff3d6618c19a8874a218112832b0ded3`,
+  recovering all320original inputs from Git,and checking closed ownership:
+  414files and78934883bytes (69files per process). Native-source recovery also matches
   all567materialized inputs and the exact recipe through
   `build_q6_native_half_model.py:projection`:this build is an explicit historical
   composition,not the plain ec4 controller-commit tree. Required inputs match
-  before/after retirement;the next process still requires full unchanged native
+  before/after retirement;the next consumer still requires full unchanged native
   admission. Keep all12generated config/plan files and global cohort/provider
-  inputs for the final process. External deletion manifests
+  inputs for the current-ELF collector and subsequent fixture admission. External deletion manifests
   `mtp-width-generation-process0-output-retirement-20261106.json` and
   `mtp-width-generation-process1-output-retirement-20261106.json` have respective
   SHA256 `7e8d87edafaa5208fc46ad26f7747a1e2de975195782f8d9514cb3244dd6c0e4`
@@ -434,6 +433,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   has SHA256 `f1ef8414a6320a559843aedd2b952cdcde75e465fcc178fa5cfbd4921f8008b2`.
   Process4's `mtp-width-generation-process4-output-retirement-20261106.json`
   has SHA256 `9cc8d14ac348c0b795d2aef498fecb71155dc74fdb348ee43c28e68414a1d351`.
+  Process5's `mtp-width-generation-process5-output-retirement-20261106.json`
+  has SHA256 `c30da282359f9723a1640ea75758b54f502ff9e82cfbe1602611d9d9efdb2e50`.
 - Current ec4 adaptive publication updates the private `ExpertCache` residency
   snapshot as well as host/device tables. The older20f2 stale-private-map finding
   is not a current-source defect. Closed static-swap0 model entries and long
@@ -1884,8 +1885,9 @@ main-branch pull-request rule still restricts allowed methods to `squash`.
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv). Detailed
-current evidence and frozen plans are in
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently184
+milestone rows including the four closed three-process MTP-width aggregates.
+Detailed current evidence and frozen plans are in
 [`fused-moe-service-current.json`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json)
 under `cache_map_prefill_speed117489_v1`, `cache_map_prefill_curve_v7`,
 `cache_map_decode_census_v1`, `cache_map_worker_scaling_v1`,
