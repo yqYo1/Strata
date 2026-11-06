@@ -168462,5 +168462,99 @@
       "key": "q6_native_half_component_v3",
       "scope": "Original closed recipe,owner receipts and artifact paths;local auxiliary artifacts subsequently retired. Useful1050samples and35decisions remain current."
     }
+  },
+  "q6_native_half_policy_host_v1": {
+    "stage": "prepared",
+    "source_commit": "517a285094bffa8cd49168282f4ef813d9cbfbdd",
+    "component_evidence": {
+      "commit": "3e6b836a438b419dcd43e2eab68ba3cc3f7ea798",
+      "key": "q6_native_half_component_v3"
+    },
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)"
+    },
+    "toolchain": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/toolchain.json",
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838",
+      "files": 6239,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ]
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/cache",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "commands": [
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-std=c++20",
+          "-O2",
+          "-DNDEBUG",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-ffp-contract=off",
+          "-fsanitize=undefined",
+          "-fno-sanitize-recover=all",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/source/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/fixture.d",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/source/tests/core/verify_window_policy_test.cpp",
+          "-Wl,-t",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/fixture"
+        ]
+      ],
+      [
+        "run",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/fixture"
+        ]
+      ]
+    ],
+    "budgets": {
+      "wall": 120,
+      "cpu": 120,
+      "rss_cap": 3221225472,
+      "text_cap": 1048576,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "expected": "verify-window-policy: passed selections=30 centering=18 native-half=26 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n",
+    "plan": "Compile and run once with UBSan/no-recover. Check the exact independently measured26-cell incumbent intersection;prompt/disabled/nonexact/type/geometry refusals;actual phase/T cache and route metadata isolation;interrupted clear,recapture,bounded route table and invalid-route refusal. Stop on first error;no retries. This does not compile the full Verifier/program or run their GPU/capture/replay paths.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "retention": "Immediate host-policy check only. Retire the auxiliary ELF,source copies,compiler inventory and normal logs after recording outcomes and exact-source recovery;keep14inference ELFs untouched.",
+    "source_inputs": {
+      "files": 369,
+      "aggregate_sha256": "96946660e8e8403a93e64ef71f6a3135e54edef68d64db82fd958ad520538d50"
+    }
   }
 }
