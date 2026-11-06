@@ -449,8 +449,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   DONE and four-gate extent. It uses the owned interactive exit reader to reject
   trailing output rather than clearing it. Offline source controls include the
   complete progress/128-token/DONE stream and25malformed/order/extent variants,
-  beside the10INFO refusals. This source is not yet executed;commit it,then run
-  CPU controls and prepare/commit the fresh V3 plan before model execution.
+  beside the10INFO refusals. All these CPU controls now pass at source
+  `89a8c71dd63a52dd71cfb33ca4df57885a2c0c2b`. V3 preparation also passes with
+  all15model assets fully hashed and113source/controller inputs pinned. Commit
+  the fresh V3 plan before its one model execution;native519e is unchanged.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
