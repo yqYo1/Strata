@@ -144,8 +144,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the full Verifier/program and GPU route writer have not been compiled or run.
   Its closed auxiliary build and normal output are retired after source/recipe
   recovery: 12 files,3053275 bytes; the 14 retained inference executables are unchanged.
-  Next prepare an exact selective 5c model composition,
-  traced small same-build checks and a frozen repeated long-generation A/B.
+  The Main-authored constructor
+  `tools/sycl/build_q6_native_half_model.py` is source-prepared for the next
+  exact selective 5c composition. It recovers the original 566 inputs from
+  Git, adds the qualified kernel and reversible policy/generator changes,
+  and adds one same-build Q6 fixture target. All prefill,CPU and runtime
+  sources stay byte-identical to 5c. Both immutable half0/1 arms use the new
+  binary,columns1 and centering0;the closed 5c executable generation is
+  replaced after original-input recovery,while preserving the552b fallback.
+  Commit the preparation and retirement results before the replacement build.
+  Compilation must precede fresh traced small same-build checks and a frozen
+  repeated long-generation A/B;neither has run on this new composition.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
   speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
   gates; retain the validated 552b fallback and 5c comparison outputs.
