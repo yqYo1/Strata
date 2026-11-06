@@ -2215,7 +2215,13 @@ actual fetch and remote HEAD/main agree;the209-commit/338-path interval from
 The v0.2.11tag is`c3b3f5035506f3e966f1b4b7b188aeaabae92f1d`,four commits
 before the observed head. No new checkout,branch,build or inference change
 was made;the next remote check is due approximately48hours later. Earlier
-v0.2.10and functional backlog remain pending. The configuration parsing helpers are ported and
+v0.2.10and functional backlog remain pending. Before freezing the next long
+comparison,adapt the required streamed-tool closing-tag behavior from Niko
+`3bbf0f399e2a1b3d38642eca4342721fc7994201`and qualify its frontend delta. The
+fork has an older parser without`_close_verdict`;the small upstream hunk is
+not directly applicable. The queued source/behavior/validation slice is in
+`v0211_review.next_required_slice`;all other functional obligations stay open.
+The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
 tests and is now merged into feature/sycl at `4c24b6931`;its completed child
