@@ -179,6 +179,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Q6_K output head is2560x248320 (521472000 encoded bytes),and all seven
   Q6 matrix geometries match the component's geometry set. This is metadata,
   not actual model dispatch or physical-traffic measurement.
+  Normal build/host/device output and private temporary/cache files are
+  retired after source recovery:24 files,12991534 bytes. The live build/device
+  records and15 selected comparison/fallback executables remain for model entry.
   Next admit both spec8,thinking-on32K model-entry arms,then freeze the repeated
   long-generation comparison. The short model entry does not qualify sustained TG.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
