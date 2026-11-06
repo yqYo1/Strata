@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Bounded fixed4/fixed2 model entry; Main, repository LICENSE.
+"""Fixed4/fixed2 model entry and matched generation; Main, repository LICENSE.
 
 Reuse this fork's owned bench.sh supervisor and unchanged qualified native build.
 The startup config port is a declared frontend change requiring fresh probes.
 These traced short-output checks cannot establish sustained speed or adoption.
+The separate generation cohort requires both entries and disables their trace.
 """
 import copy
 import fcntl
@@ -337,13 +338,220 @@ def controls():
         GPU_executed=False, scope='Parser/admission controls only;no native model,lease or speed execution.')
 
 
+SPEED_ROOT = short.build.ROOT / 'generation-mtp-width-v1'
+SPEED_KEY = 'mtp_width_generation_speed_v1'
+
+
+def generation_basis(revision):
+    prior, providers, manifest = None, None, None
+    for cap in (4, 2):
+        ctx = context(cap)
+        row = json.loads((ctx.ROOT / 'record.json').read_text())
+        files, python = ctx.current(row)
+        outcome = row.get('outcome', {})
+        require(row['stage'] == 'closed' and row['passed'] and row['complete'] and
+                row['host_passed'] and row['ownership_closed'] and not row['active'] and
+                row['model_executed'] and outcome['native_exit_code'] == 0 and
+                outcome['width_lifetime_checks_passed'] and outcome['fresh_faults'] == [] and
+                outcome['boot_unchanged'] and row['sources'] == pinned_sources(revision),
+                'both closed same-source/frontend/ELF width entries are required')
+        if prior is None: prior, providers, manifest = row, files, python
+        else:
+            require(files == providers and python == manifest and
+                    all(row[n] == prior[n] for n in ('binary', 'native_source_commit', 'model_assets',
+                        'native_validation_probe', 'qualification_basis')) and
+                    normalized(row, ctx.ROOT) == normalized(prior, context(4).ROOT),
+                    'width entry constants differ')
+    native = json.loads((short.build.ROOT / 'record.json').read_text())
+    names = ('src/kernels/cpu/pool.cpp', 'include/strata/kernels/cpu/pool.hpp')
+    pool = {n: native['native_sources'][n] for n in names}
+    require(native['binaries']['strata'] == prior['binary'] and
+            all(digest(short.build.ROOT / 'source' / n) == h for n, h in pool.items()),
+            'qualified native pool changed')
+    return prior, providers, manifest, pool
+
+
+def generation_decision(processes):
+    result = q6.context().decision(processes)
+    result.pop('native_half_model_TG_gain_qualified')
+    for name, value in result['workloads'].items():
+        wanted = 'strong' if name == 'regular-code' else 'weak'
+        reference_class = value['arms']['reference']['observed_MTP_class']
+        # Draft depth changes the denominator. Do not impose the fixed4 band
+        # on fixed2 or retrospectively discard a faster fixed2 sample.
+        value['arms']['candidate']['acceptance_band_at_cap2'] = value['arms']['candidate'].pop('observed_MTP_class')
+        value.pop('expected_MTP_class_observed')
+        value['reference_MTP_class_observed'] = reference_class == wanted
+        value['model_TG_gain_qualified'] = value['reproducible_TG_gain'] and value['reference_MTP_class_observed']
+    result.update(mtp_width_model_TG_gain_qualified=all(v['model_TG_gain_qualified'] for v in result['workloads'].values()),
+        next='Judge fixed2 versus fixed4 separately per workload;retain slower pairs and unresolved variance. Dedicated64K/117K PP/TTFT,handoff,agent/task,physical262144/tails/RESTORE and ordinary provider teardown remain separate. No physical saturation claim.')
+    return result
+
+
+def generation_controls():
+    rows = [dict(kernel=arm, adapt_swaps=swaps, passed=True, complete=True, ownership_closed=True,
+        native_identity=dict(pid=i + 1, start_ticks=i + 10), samples=[dict(generated_tokens=1024,
+            decode_ms=999.9 if arm == 'candidate' else 1000., prompt_ms=1000., ttft_s=1.1,
+            acceptance_rate=(.8 if name == 'regular-code' else .7 if arm == 'candidate' else .3))
+            for name in ('regular-code', 'varied-prose')]) for i, (arm, swaps) in enumerate(q6.ARMS)]
+    require(generation_decision(rows)['mtp_width_model_TG_gain_qualified'],
+            'a different fixed2 acceptance band must not exclude its small speed gain')
+    slower = copy.deepcopy(rows); slower[1]['samples'][0]['decode_ms'] = 1000.1
+    require(not generation_decision(slower)['mtp_width_model_TG_gain_qualified'], 'retain a slower pair')
+    wrong = copy.deepcopy(rows); wrong[0]['samples'][1]['acceptance_rate'] = .5
+    decision = generation_decision(wrong)['workloads']['varied-prose']
+    require(decision['reproducible_TG_gain'] and not decision['model_TG_gain_qualified'],
+            'reference classification and speed must remain separate')
+    return dict(passed=True, depth_denominator_change_retained=True, small_gain_retained=True,
+        slower_pair_retained=True, reference_MTP_class_separate=True, GPU_executed=False,
+        unchanged_protocol_controls=q6.context().selfcheck())
+
+
+def generation_context(index=None):
+    spec = importlib.util.spec_from_file_location('strata_mtp_width_generation', q6.protocol.__file__)
+    ctx = importlib.util.module_from_spec(spec); spec.loader.exec_module(ctx); ctx.select_mode('cohort')
+    ctx.ROOT, ctx.KEY, ctx.ARMS = SPEED_ROOT, SPEED_KEY, q6.ARMS
+    ctx.model, ctx.basis = context(4), generation_basis
+    old_environment, old_current, old_route = ctx.environment, ctx.current, ctx.route
+    ctx.boundary_checks = []
+    ctx.preparing_half = None
+
+    def cap_of(plan):
+        require(type(plan['index']) is int and 0 <= plan['index'] < 6 and
+                (plan['kernel'], plan['adapt_swaps']) == q6.ARMS[plan['index']], 'unplanned width arm')
+        return 2 if plan['kernel'] == 'candidate' else 4
+
+    def environment(row, plan):
+        half = row.get('selected_half')
+        if half is None:
+            require(ctx.preparing_half in (0, 1), 'common half must be explicit outside preparation')
+            half = ctx.preparing_half
+        baseline = dict(row, environment_template=dict(row['environment_template'],
+            STRATA_IQ3_PAIR_AUDIT='0', STRATA_SYCL_Q6_ROUTE_AUDIT='0', STRATA_SYCL_CACHE_LOAN_AUDIT='0'))
+        env = old_environment(baseline, plan)
+        env.update(STRATA_SYCL_DECODE_Q6_NATIVE_HALF=str(half),
+            STRATA_SYCL_Q6_ROUTE_AUDIT='1', STRATA_SYCL_DECODE_Q6_COLUMNS='1',
+            STRATA_SYCL_DECODE_Q6_CENTERING='0', STRATA_SYCL_ADAPT_SYNC='1',
+            STRATA_IQ3_PAIR='1', STRATA_IQ3_PAIR_AUDIT='1', STRATA_IQ_SINGLE_EXACT='0',
+            STRATA_CPU_SERVICE='0', STRATA_CPU_WORK_CENSUS='0')
+        require(env['STRATA_SYCL_CACHE_LOAN_AUDIT'] == '0' and
+                env['STRATA_SYCL_CACHE_SCRATCH_LEASE'] == '1' and
+                env['EnableDirectSubmission'] == '0' and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and
+                env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == env['ZES_ENABLE_SYSMAN'] == '0' and
+                'STRATA_DECODE_TIMING' not in env and 'STRATA_TRACE' not in env,
+                'preserve runtime safety and disable expensive entry-only observers')
+        return env
+
+    def invariant(row, plan):
+        config = json.loads((Path(plan['root']) / 'config.json').read_text())
+        config['args'][config['args'].index('--mtp-max-t') + 1] = '<cap>'
+        return signature(dict(config=json.loads(json.dumps(config).replace(plan['root'], '<process>')),
+            environment=json.loads(json.dumps(environment(row, plan)).replace(plan['root'], '<process>'))))
+
+    def current(row):
+        require(row['selected_half'] == prospective_basis(row['source_commit'])['half_arm'], 'common half choice changed')
+        prior = json.loads((context(4).ROOT / 'record.json').read_text())
+        require(row['configuration'] == prior['configuration'] and row['environment_template'] == prior['environment'],
+                'base entry configuration/environment changed')
+        for plan in row['plans']:
+            expected = copy.deepcopy(row['configuration']); expected['log'] = str(Path(plan['root']) / 'engine.stderr')
+            expected['args'][expected['args'].index('--mtp-max-t') + 1] = str(cap_of(plan))
+            require(json.loads((Path(plan['root']) / 'config.json').read_text()) == expected,
+                    'only the fixed cap/private paths may differ between generation arms')
+        return old_current(row)
+
+    def route(text, read):
+        require(type(index) is int and 0 <= index < 6, 'actual generation index required')
+        row = json.loads((SPEED_ROOT / 'record.json').read_text()); cap = cap_of(row['plans'][index])
+        value = old_route(text, read); ids = short.dispatches(text, 1, positive=True)
+        require(len(ids) == 1 and ids[0]['request'] in (5, 6), 'join long IQ3/Q6 request')
+        snap = short.snapshots(text, row['selected_half'], ids[0]['request'])
+        require(len(snap['windows']) == 2 and {w['tokens'] for w in snap['windows']} == {1, cap} and
+                all(w['phase'] == 'decode' and all(s['shape'][2] == w['tokens'] for s in w['shape_calls'])
+                    for w in snap['windows']), 'actual long decode width differs')
+        value.update(IQ3_dispatch=ids[0], Q6_live_snapshot=snap, allocated_width=4, actual_width_cap=cap)
+        return value
+
+    def boundary(root, expected):
+        raw, history = q6.protocol.cache_boundary(root, expected)
+        ids = short.dispatches(raw.decode(), 1, positive=False)
+        require([v['request'] for v in ids] == list(range(1, expected + 1)) and
+                all(v['calls'] > 0 and v['nt1_rows'] > 0 for v in ids[4:]), 'ordered IQ3 request history differs')
+        ctx.boundary_checks.append(expected)
+        return raw, history
+
+    ctx.environment, ctx.invariant, ctx.current, ctx.route = environment, invariant, current, route
+    ctx.cache_boundary, ctx.decision, ctx.selfcheck = boundary, generation_decision, generation_controls
+    # The generic preparer writes cap4 first; the wrapper below finalizes cap2
+    # and its hashes before committing or permitting any host/model execution.
+    original_prepare = ctx.prepare
+    def prepare():
+        # environment() is called by the generic preparer before save().
+        prior = json.loads((context(4).ROOT / 'record.json').read_text())
+        selected = prior['qualification_basis']['half_arm']
+        ctx.preparing_half = selected
+        try: original_prepare()
+        finally: ctx.preparing_half = None
+        row = json.loads((SPEED_ROOT / 'record.json').read_text()); row['selected_half'] = selected
+        for plan in row['plans']:
+            path = Path(plan['root']) / 'config.json'; config = json.loads(path.read_text())
+            config['args'][config['args'].index('--mtp-max-t') + 1] = str(cap_of(plan))
+            write(path, config); plan['generated']['config.json'] = digest(path)
+            plan['environment_sha256'] = ctx.comparison.fingerprint(environment(row, plan))
+        row['invariant_signature'] = invariant(row, row['plans'][0])
+        require(all(invariant(row, plan) == row['invariant_signature'] for plan in row['plans']), 'unmatched width arm')
+        row['qualification_reuse'] = dict(model_result_keys=[context(cap).KEY for cap in (4, 2)],
+            native_source_commit=row['native_source_commit'], engine_sha256=row['binary']['sha256'],
+            basis=prior['qualification_basis'], scope='Both freshly qualified frontend/width/loan entries;same six ELFs and frozen source. No inherited sustained speed or physical-context qualification.')
+        row['plan'] = dict(mode='cohort', workload_version=5,
+            question='Does fixed cap2 improve sustained generation over fixed4 without changing allocated width or prefill placement?',
+            motivation='The prior long fixed4 workloads have about.824/.389 draft acceptance. Cap2 may reduce unused CPU/GPU target work but adds round/submission overhead;measure whole TG. Those counts do not establish CPU,RAM,PCIe or GPU saturation.',
+            order='Six fresh processes4,2,2,4,4,2;three adjacent counterbalanced pairs. Four official warmups then fixed thinking-on v5 code/prose once each. Commit each closed process before next;no retries.',
+            constants='Same qualified cb7 engine/ec4 native source,six ELFs,84providers/safety/private preload,common half choice,throughput BF16 HC/GDN16/MTP16,heads1,131072INT8resident,1256static slots,5workers,spec4 allocation,8192chunk,short-read0,min-p0,suffix0,caches0,20ms pool spin,Q6columns1/centering0,IQ3_PAIR1. Only --mtp-max-t4/2 differs.',
+            observers='Parameter validation,common IQ3 and Q6 live-capture audits;disable TRACE,loan payload audit,CPU attribution,DECODE_TIMING,API trace and profiler. Paused checks outside reported clocks. No observer-overhead or ordinary-teardown claim.',
+            acceptance='Existing source/build/fixture/asset/provider/body/journal/clock/fault/owner gates;each long request>=32768fresh input,>=1024generated including thinking,>=512answer characters,>=256drafts. Require actual T1/T4 or T1/T2 and completed selected Q6 head replays,all four paused gates,six cache/IQ3 footers,normal0 and quiet validation.',
+            decision='Retain all3exact candidate/reference TG ratios,geomean and individual PP/TTFT/length/MTP samples. Gain requires all3TG ratios>1;no minimum percentage. Classify code>=.60/prose<=.40 only from every fixed4 reference. Fixed2 acceptance/yield is reported at its changed denominator and never used to retrospectively exclude a speed sample. Speed/classification failures do not stop collection.',
+            stopping='Stop first source,owner,provider,budget,route,body/token,clock,journal,validation or fresh-fault failure. No retry,replacement,hash refresh,speed stop or changed criteria.',
+            retention='Compact individual samples,actual route/cache conservation,identities and decisions. Retire successful raw output/JIT after verified result commit. No extra build. Dedicated PP/TTFT,handoff,agent/task,full262144/tails/RESTORE and adoption remain separate.')
+        row['budgets'] = dict(wall=3600, cpu=43200, rss_cap=104 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20)
+        ctx.save(row)
+        print('Prepared fixed4/fixed2 sustained cohort;commit before fresh host probes.', flush=True)
+    ctx.prepare = prepare
+    return ctx
+
+
+def generation_run(ctx, index):
+    ctx.run(index)
+    row = json.loads((SPEED_ROOT / 'record.json').read_text())
+    try:
+        require(ctx.boundary_checks == [4, 5, 5, 6], 'all four paused request/cache gates required')
+        proc = row['processes'][index]
+        require([r['IQ3_dispatch']['request'] for r in proc['routes']] == [5, 6] and
+                all(r['Q6_live_snapshot']['completed_head_capture_ids'] for r in proc['routes']),
+                'final long width/head request evidence differs')
+        captures = [{w['capture_id'] for w in r['Q6_live_snapshot']['windows']} for r in proc['routes']]
+        require(max(captures[0]) < min(captures[1]), 'long request reused a retired capture identity')
+        proc['width_route'] = dict(passed=True, allocated_width=4,
+            cap=2 if proc['kernel'] == 'candidate' else 4, boundary_checks=ctx.boundary_checks)
+    except BaseException as error:
+        row.update(stage='failed', passed=False, complete=False, width_route_error=repr(error))
+    ctx.save(row); require(row['stage'] != 'failed', row.get('width_route_error', 'width cohort failed'))
+
+
 if __name__ == '__main__':
     args = sys.argv[1:]
-    require(args == ['controls'] or len(args) == 2 and args[0] in ('4', '2') and
-            args[1] in ('prepare', 'host', 'run'), 'use controls or 4|2 prepare|host|run')
+    speed = len(args) == 2 and args[0] == 'speed' and (args[1] in ('prepare', 'host') or
+        args[1].isdigit() and int(args[1]) < 6)
+    require(args == ['controls'] or speed or len(args) == 2 and args[0] in ('4', '2') and
+            args[1] in ('prepare', 'host', 'run'), 'use controls,4|2 prepare|host|run,or speed prepare|host|INDEX0..5')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); base.guards.no_model_owners([])
-        if args == ['controls']: print(json.dumps(controls(), sort_keys=True))
+        if args == ['controls']: print(json.dumps(dict(entry=controls(), generation=generation_controls()), sort_keys=True))
+        elif speed:
+            index = int(args[1]) if args[1].isdigit() else None; ctx = generation_context(index)
+            if args[1] == 'prepare': ctx.prepare()
+            elif args[1] == 'host': ctx.comparison.host(ctx)
+            else: generation_run(ctx, index)
         else:
             cap = int(args[0]); ctx = context(cap)
             {'prepare': lambda: prepare(ctx, cap), 'host': ctx.host, 'run': lambda: run(ctx, cap)}[args[1]]()
