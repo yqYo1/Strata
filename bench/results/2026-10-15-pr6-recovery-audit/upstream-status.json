@@ -995,29 +995,38 @@
       }
     },
     "config_args_json_help": {
-      "state": "helper_ported_integration_pending",
+      "state": "server_entry_tested_in_child_primary_integration_pending",
       "upstream": "Niko1221/Strata",
       "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
       "origin": "serve/server.py:split_joined_args/read_config/parse_config_text;serve/test_server.py:JoinedEngineArgs",
       "license": "Upstream and fork LICENSE bytes match,MIT,Niko1221 and Strata contributors. No XeStrata input.",
       "destinations": [
         "serve/config_file.py",
+        "serve/server.py",
         "tests/core/test_config_file.py"
       ],
       "helper_source_sha256": "1837a55dd3d455a71ea7a504bb51e2fb3aab9fef506967d7a9ebd0c34c4a9017",
       "behavior": "Repair joined --flag value or --flag=value entries conservatively,preserve literal value/path entries,and report JSON file/line/column with BOM support.",
       "tested": true,
-      "server_entry_wired": false,
-      "measurement_isolation": "New unimported helper/test are outside frozen audit caller011fa1cb snapshot. All307 existing pins still match;server.py remains unchanged during this cohort.",
-      "next": "After the audit-cost cohort closes,wire server main to read_config and split_joined_args,then run server/CLI integration checks before claiming the feature port complete.",
+      "server_entry_wired": true,
+      "measurement_isolation": "Main prepared wiring only in maintenance/upstream-config-wiring from feature/sycl4d0e93879. Primary318-source Q6 comparison inputs are unchanged;no test/build/GPU run during its active process.",
+      "next": "After the frozen six-process Q6 comparison closes,merge this tested configuration slice into feature/sycl,push,and delete the finished child. Whole required functional ledger and hardware-tuned unmodified-upstream measurements remain separate.",
       "coverage_limit": "Only this configuration slice;whole required functional import ledger and unmodified hardware-tuned upstream performance remain incomplete.",
       "validation": {
-        "source_commit": "e99d648fd34ab67a847f147c152f934c1ba0877c",
-        "command": "python3 -B -m unittest discover -s tests/core -p test_config_file.py -v",
-        "passed": true,
-        "tests": 5,
-        "integration_qualified": false,
-        "note": "Only trailing empty lines were subsequently removed;server entry remains unwired."
+        "source_commit": "92f7b07227bae2117087cdf270b9d03c41d5ebd8",
+        "command": "env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 flock --nonblock /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock prlimit --as=1073741824 --cpu=60 --fsize=65536 -- timeout --signal=TERM --kill-after=5s 90s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -B -m unittest discover -s tests/core -p test_config_file.py -v",
+        "exit_code": 0,
+        "tests": 8,
+        "test_reported_seconds": 0.413,
+        "integration_qualified": true,
+        "scope": "Helper5tests plus actual main constructor arguments/BOM/literal preservation,bad config before port/native launch,and module/script CLI diagnostics. Mocked engine/port;no GPU,model,network listener or inference behavior tested. Primary worktree is not wired until child integration.",
+        "serialized": "Main Q6 process2 exited0 and all4owned identities were absent before this locked CPU-only run."
+      },
+      "pending_child": {
+        "branch": "maintenance/upstream-config-wiring",
+        "base": "4d0e9387987ea3111e4307376741c4e483c45833",
+        "consumer": "Complete this required config function port without changing active Q6 benchmark source.",
+        "next_review": "Frozen six-process Q6 comparison closure for feature/sycl integration,push and child retirement;tests are complete."
       }
     }
   }
