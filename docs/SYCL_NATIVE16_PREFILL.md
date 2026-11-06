@@ -603,8 +603,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `tools/sycl/build_adaptive_audit_model.py`now source-prepares its separate
   native build using the original six targets,full compiler/package/SDK images,
   recovered third-party inputs and the physically verified519e retirement.
-  It preserves552b and all nine fallback outputs. Commit this builder,prepare
-  and commit its exact plan,then compile before native model qualification.
+  It preserves552b and all nine fallback outputs. Preparation now passes from
+  builder source`a330eb7fbd300d6f2755be51f8419e33ab3fd89e`,pinning568native
+  inputs and the original full compiler/package/SDK/dependency images. Commit
+  the prepared plan,then compile before native model qualification.
   Source construction does not qualify the new dispatch/loan checks.
   Actual dispatch coverage,record failure,post-swap loan/refill and native lifetime
   gates remain open. The cb7 and519e diagnostic generations are retired;keep552b.
