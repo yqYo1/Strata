@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded host contract for the future positive-swap diagnostic.
+"""Bounded host contracts for opt-in native diagnostic controls.
 
 Main-authored; repository LICENSE. No SYCL compilation, model or GPU execution.
 Preparation/checking is allowed only at a closed owned-process boundary; all
@@ -9,6 +9,7 @@ import fcntl
 import hashlib
 import json
 from pathlib import Path
+import re
 import shlex
 import sys
 import time
@@ -25,7 +26,28 @@ NATIVE_RECORD_SHA = '07c38cc31954f83c8296a81746d0f223e7b609d60fdc8ce5a961c15e533
 IMAGE_SHA = '2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838'
 CPP = ('include/strata/core/adaptive_residency_audit.hpp',
        'include/strata/core/expert_cache.hpp', 'tests/core/adaptive_residency_audit_test.cpp')
+EXPECTED = 'adaptive_residency_audit cases=41 status=PASS'
+CONTRACT = 'adaptive-residency'
 require, digest, write = width.require, width.digest, width.write
+
+
+def select_contract(name):
+    """Select once at CLI startup; imported compiler-image helpers stay unchanged."""
+    global ROOT, KEY, CPP, EXPECTED, CONTRACT
+    require(name in ('adaptive-residency', 'decode-profile'), 'unknown host contract')
+    if name == 'decode-profile':
+        ROOT = B / 'decode-profile-gate-host-v1'
+        KEY = 'decode_profile_gate_host_v1'
+        CPP = ('include/strata/sycl/decode_profile_gate.hpp',
+               'tests/core/decode_profile_gate_test.cpp')
+        EXPECTED = 'decode_profile_gate cases=45 status=PASS'
+    else:
+        ROOT = B / 'adaptive-residency-audit-host-v1'
+        KEY = 'adaptive_residency_audit_host_v1'
+        CPP = ('include/strata/core/adaptive_residency_audit.hpp',
+               'include/strata/core/expert_cache.hpp', 'tests/core/adaptive_residency_audit_test.cpp')
+        EXPECTED = 'adaptive_residency_audit cases=41 status=PASS'
+    CONTRACT = name
 
 
 def compact(row):
@@ -60,7 +82,7 @@ def boundary():
             all(v['passed'] and v['complete'] and v['ownership_closed'] and
                 v['native_exit_code'] == 0 and v['fresh_faults'] == []
                 for v in cohort['processes']),
-            'close and commit process3 before this serialized host check')
+            'close and commit the owned width cohort before this serialized host check')
     base.guards.no_model_owners([])
 
 
@@ -86,26 +108,27 @@ def prepare():
         (ROOT / name).mkdir()
     compiler = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
     exe = str(ROOT / 'audit_test')
-    row = dict(stage='prepared', source_commit=revision, sources=pins,
+    row = dict(stage='prepared', contract=CONTRACT, source_commit=revision, sources=pins,
         toolchain_image=toolchain, native_dependency_record_sha256=NATIVE_RECORD_SHA,
         compiler=dict(path=compiler, sha256=digest(compiler)), executable=exe,
         command=[compiler, '-std=c++17', '-O2', '-Wall', '-Wextra', '-Werror',
             '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
             '-I' + str(P / 'include'), '-MD', '-MT', exe, '-MF', str(ROOT / 'headers.d'),
-            '-Wl,-t', str(P / CPP[2]), '-o', exe],
+            '-Wl,-t', *(['-pthread'] if CONTRACT == 'decode-profile' else []),
+            str(P / CPP[-1]), '-o', exe],
         environment=dict(PATH='/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin',
             LANG='C', LC_ALL='C', TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache')),
         budgets=dict(compile=dict(wall=90, cpu=120, rss_cap=2 << 30,
             text_cap=256 << 10, file_cap=4 << 20, total_cap=8 << 20),
             test=dict(wall=15, cpu=15, rss_cap=512 << 20,
             text_cap=64 << 10, file_cap=4 << 20, total_cap=8 << 20)),
-        expected='adaptive_residency_audit cases=41 status=PASS',
+        expected=EXPECTED,
         passed=False, complete=False, active=False, ownership_closed=True,
         GPU_executed=False, model_executed=False, inference_adopted=False,
-        plan='Commit before check. One host compile,ELF dependency check and fixture;normal0 and closed owners. Actual headers/link inputs must match the prebuild complete compiler/package image plus the three exact project files. No retry,source/image refresh or GPU/SYCL work. This tests host identity/payload/fence assertions,not native callbacks,positive swaps,queue lifetime,speed or full context.',
+        plan='Commit before check. One host compile,ELF dependency check and fixture;normal0 and closed owners. Actual headers/link inputs must match the prebuild complete compiler/package image plus the exact project files. No retry,source/image refresh or GPU/SYCL work. Adaptive tests host identity/payload/fence assertions. Decode-profile tests45 cases:immutable-config parsing,inactive no-work behavior,four fully drained regular-file handshakes,round ordering,partial completion,failed/throwing drains,wrong peer identity/extent/type/mode/links,stale entries,private-directory checks and bounded missing-ack failure. Neither qualifies native callbacks,queue lifetime,model coverage,speed or full context.',
         retention='Commit compact source/recipe/case/closure evidence;then retire this one-use executable,compiler temporaries and successful full output after exact Git source/recipe recovery. Native and fallback generations remain untouched.')
     save(row)
-    print('Prepared host-only adaptive identity contract;commit before check.', flush=True)
+    print('Prepared host-only ' + CONTRACT + ' contract;commit before check.', flush=True)
 
 
 def current(row):
@@ -172,8 +195,12 @@ def check():
                     ('libsycl', 'libur_', 'libze_', 'libopencl')), 'host fixture linked a GPU provider')
         command, stdout, stderr = owner.run('test', [row['executable']], row['environment'], ROOT,
                                            **row['budgets']['test'])
+        messages = stderr.read_text().splitlines()
+        quiet = not messages if CONTRACT == 'adaptive-residency' else bool(messages) and all(
+            re.fullmatch(r'strata decode gate: request=7 sequence=[1-4] rounds=(0|8|16|24) raw_ns=[1-9][0-9]*', v)
+            for v in messages)
         require(base.supervision.closed(command) and command['exit_code'] == 0 and
-                stdout.read_text().strip() == row['expected'] and not stderr.read_text(),
+                stdout.read_text().strip() == row['expected'] and quiet,
                 'host contract failed or returned incomplete output')
         outcome['receipt'] = row['expected']
         current(row)
@@ -192,11 +219,13 @@ def check():
         persist()
         save(row)
     require(row['passed'], str(outcome))
-    print('Adaptive identity host contract passed;native integration remains unqualified.', flush=True)
+    print(CONTRACT + ' host contract passed;native integration remains unqualified.', flush=True)
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['check']), 'use prepare|check')
+    require(len(sys.argv) in (2, 3) and sys.argv[1] in ('prepare', 'check'),
+            'use prepare|check [adaptive-residency|decode-profile]')
+    select_contract(sys.argv[2] if len(sys.argv) == 3 else 'adaptive-residency')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         (prepare if sys.argv[1] == 'prepare' else check)()

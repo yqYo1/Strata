@@ -301,10 +301,33 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   567native-input/recipe recovery:31files,1391544bytes,manifest SHA256
   `7282ab4cfb8b0c5cdb61031430a3f8b0653898495e9a52bad429a477a32eb89d`
   in external `compat-v1-and-active-collector-output-retirement-20261106.json`.
-  Keep the active control's required record and both selected engine generations.
-  Commit V2's prepared recipe before building,and a separate bounded
-  smoke/prefix-only/prefix-window plan before execution. This is a disposable
-  collector fixture,not another engine generation or current model attribution.
+  The V2 build and all three checks are closed. After exact117/118controller
+  recovery,the selected567native composition/recipe and all six native ELF
+  checks,58files/1271414bytes of disposable V2 executables,objects,dependencies,
+  successful traces/logs/JIT output and the superseded status-only IPC diagnostic
+  are now retired. External manifest
+  `compat-window-and-superseded-ipc-output-retirement-20261106.json` has SHA256
+  `60bbe477260e4fde02006b1a4d7e04f5f30105be6ce262d985812aaca28e485e`.
+  Keep only the required V2 build/check records and both selected engine
+  generations. This fixture is not another engine generation or current model
+  attribution.
+  The new Main-authored `include/strata/sycl/decode_profile_gate.hpp` source
+  supplies four opt-in host gates at0/8/16/24completed decode rounds. A checked
+  completion callback must succeed before atomic event publication;the peer's
+  private regular-file acknowledgement must match request,sequence and round.
+  Startup configuration is immutable;the default-disabled checkpoint does no
+  filesystem,clock,completion or allocation work. Round/order/peer failures
+  remain failed and acknowledgement waiting has a finite deadline. The new
+  host fixture source covers45cases,including actual four-gate handshakes and
+  malformed/stale/missing acknowledgements. The existing host-contract controller
+  adds `prepare|check decode-profile`,using the original full compiler image,
+  actual header/link closure and finite owned CPU-only execution. These are
+  source-prepared only:commit source,then prepare and commit the exact recipe
+  before checking. Neither compilation nor this host protocol qualifies a
+  native GPU drain,model integration,collector coverage or speed. After the
+  host check,the immediate consumer is a source-pinned native attachment at
+  post-prefill and whole-round completion boundaries,with a separately bounded
+  entrypoint/device check before any long-generation collection.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
@@ -332,13 +355,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   connect permission or Orca RPC. Keep its small diagnostic under external
   `orca-narrow-ipc-connect-probe-20261106` for the current narrow sandbox-policy
   question,with a256KiB total budget and review after that question. The older
-  status diagnostic is superseded and awaits serialized retirement. A fresh
+  status diagnostic is superseded and retired. A fresh
   finite native Luna-max review identifies a macOS-only Unix-socket proxy
   limitation in the local Codex0.162.1binary,consistent with the Linux denial.
   It does not prove an actual Orca worker's effective tool permissions. A new
-  bounded coordinator checks existing supported Linux transports,without
-  widening the sandbox or adding a privileged bridge,while Main continues
-  tuning. Resume bounded Luna research only after worker-side connectivity and
+  bounded coordinator's source review identifies a supported remote WebSocket
+  transport carrying status and lifecycle RPC,but no existing loopback endpoint
+  or pairing is established. The raw-json-v1 agent hook is a different status
+  notification protocol and does not replace those RPCs. This review makes no
+  connection and reads no secret pairing values. Any next transport check is
+  limited to existing endpoint scheme/host/port metadata;it must not repeat the
+  already failed socket probe. Resume bounded Luna research only after worker-side connectivity and
   lifecycle settlement can be verified;continue Main's tuning independently.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
