@@ -737,12 +737,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   This single reference supplies no repeated gain. Keep552b as the fast
   prefill fallback;this code TG gain is not whole-model adoption or70TG.
   The next bounded32-swap entry is source-prepared in
-  `tools/sycl/check_adaptive_budget_entry.py`;nothing from that controller has
-  executed. It keeps the same429b native engine,runtime safety,prefill layout
+  `tools/sycl/check_adaptive_budget_entry.py`. Its CPU reducer now passes a
+  valid32-group fixture and22corrupt variants at source
+  `409ad93c554ef984f7522c4aecff75ef84fc9909`;the committed20-second locked
+  command exits0 in0.726s. No native32entry is prepared or executed. It keeps
+  the same429b native engine,runtime safety,prefill layout
   and every8round interval,and blocks preparation/execution until both frozen
   code/prose cohorts close. The reducer requires a full32-copy generation,
   both replacement dispatch roles,three-map/payload publication and a later
-  occupied loan/refill;its adversarial controls are still unrun. The initial
+  occupied loan/refill. These native conditions remain unqualified. The initial
   placement profile is separately Git-pinned. Larger-budget refusal,clean
   performance and broader model gates remain pending;no third engine build.
   The retrieved review's stale-map condition is resolved for the current

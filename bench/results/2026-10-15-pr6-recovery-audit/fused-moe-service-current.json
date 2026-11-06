@@ -185619,7 +185619,7 @@
     "initial_reference_exact_TG": 8.073057762699063
   },
   "adaptive_budget32_reader_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "409ad93c554ef984f7522c4aecff75ef84fc9909",
     "source_path": "tools/sycl/check_adaptive_budget_entry.py",
     "source_sha256": "ce1d7f05d4e323323acb6aaae1daf42a0b3c7d81ea2bd51b6ae646ab0900e2ff",
@@ -185649,10 +185649,20 @@
       "wall_seconds": 20,
       "text_bytes": 65536
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
     "plan": "One CPU-only pure reducer invocation under the shared nonblocking measurement lock,after prose process0 closure and before process1. Sources committed first. Require valid32group plus all adversarial variants to pass and actual command exit0;no native model or GPU runtime. Do not retry/refresh a failed attempt.",
-    "limits": "CPU log-contract test only;no native32-swap correctness,performance or model qualification."
+    "limits": "CPU log-contract test only;no native32-swap correctness,performance or model qualification.",
+    "outcome": {
+      "GPU_executed": false,
+      "complete_positive_fixture": true,
+      "maximum_group": 32,
+      "negative": 22,
+      "passed": true,
+      "scope": "Ordered reducer adversarial controls only;native32 groups unqualified."
+    },
+    "exit_code": 0,
+    "elapsed_wall_s": 0.726092228
   }
 }
