@@ -721,6 +721,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controller decision and all eligibility/phase gates;the additional view avoids
   losing small differences to the printed one-decimal TG. One reference alone
   does not establish repeatability or a current limiting hardware resource.
+  The first matched pair now closes with candidate1normal0,quiet validation,
+  unchanged request hashes/actual width and no fresh GPU fault. Exact whole TG
+  is7.294485/10.717266tok/s(reference/candidate),ratio1.469229;input33211,
+  output3157/3293and acceptance.837597/.820028. Cache hits are10.5%/24.3%.
+  Candidate/reference prompt-time and TTFT ratios are.972723/.971933,respectively.
+  Retain this single-pair gain without adopting it:two further counterbalanced
+  pairs,task/agent quality,dedicated PP/TTFT,physical262144/RESTORE and broader
+  resource attribution remain pending. The previous13.8code result remains
+  above this candidate;the historical decrease is still unexplained.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
