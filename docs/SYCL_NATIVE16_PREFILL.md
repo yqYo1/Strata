@@ -145,14 +145,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its closed auxiliary build and normal output are retired after source/recipe
   recovery: 12 files,3053275 bytes; the 14 retained inference executables are unchanged.
   The Main-authored constructor
-  `tools/sycl/build_q6_native_half_model.py` is source-prepared for the next
-  exact selective 5c composition. It recovers the original 566 inputs from
+  `tools/sycl/build_q6_native_half_model.py` has prepared the next
+  exact selective 5c composition at source `ec4ab9a0e`. It recovers the original 566 inputs from
   Git, adds the qualified kernel and reversible policy/generator changes,
   and adds one same-build Q6 fixture target. All prefill,CPU and runtime
   sources stay byte-identical to 5c. Both immutable half0/1 arms use the new
   binary,columns1 and centering0;the closed 5c executable generation is
   replaced after original-input recovery,while preserving the552b fallback.
-  Commit the preparation and retirement results before the replacement build.
+  Retirement is complete:737 files,143301402 bytes. All566 source files,
+  1451 actual compiler inputs and105 original controls were recovered/checked;
+  the original shared record remains. Follow `q6_native_half_model_build_v1`.
   Compilation must precede fresh traced small same-build checks and a frozen
   repeated long-generation A/B;neither has run on this new composition.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
