@@ -1,4 +1,4 @@
-// Main-authored IQ3_XXS NT1 production-entry comparison; repository LICENSE.
+// Main-authored IQ3 NT1 comparisons; repository LICENSE.
 // Inference arithmetic comes from the linked Strata/ggml implementations.
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "strata/kernels/cpu/native_expert.hpp"
@@ -28,6 +28,12 @@
 namespace cpu = strata::kernels::cpu;
 using Clock = std::chrono::steady_clock;
 constexpr int H = 2560, FF = 640, experts = 252, group = 6, repetitions = 5;
+#ifdef STRATA_BENCH_IQ3S_PAIR
+constexpr bool direct_iq3s = true;
+#else
+constexpr bool direct_iq3s = false;
+#endif
+constexpr int gu_type = direct_iq3s ? 21 : 18;
 constexpr float sentinel = 123.0f;
 enum class Entry { Oracle, Production };
 void need(bool b, const char* why) { if (!b) throw std::runtime_error(why); }
@@ -81,6 +87,8 @@ struct File {
 };
 struct Inputs {
     cpu::NativeFmt fmt;
+    unsigned arm;
+    uint64_t direct_calls = 0, direct_rows = 0, direct_pair_rows = 0;
     std::vector<Buffer> weights;
     std::vector<uint64_t> weight_hashes;
     std::vector<std::array<float, FF + 2>> outputs{experts};
@@ -88,9 +96,9 @@ struct Inputs {
     std::array<std::array<float, H>, 4> x{};
     std::array<uint64_t, 4> act_hashes{};
     Buffer scratch{4096};
-    explicit Inputs(char** a) {
+    explicit Inputs(char** a, unsigned selected_arm) : arm(selected_arm) {
         std::string error;
-        const bool valid = cpu::native_fmt(18, 20, H, FF, fmt, error);
+        const bool valid = cpu::native_fmt(gu_type, 20, H, FF, fmt, error);
         need(valid, error.c_str());
         need(fmt.bytes == number(a[5]) && number(a[6]) == 512, "model geometry");
         const uint64_t gate = number(a[2]), up = number(a[3]), down = number(a[4]);
@@ -128,17 +136,24 @@ struct Inputs {
         scratch.check();
     }
     void call(Entry entry, int e, const void* act, float* out, int begin, int end) {
-        if (entry == Entry::Oracle) {
-            const auto dot = ggml_get_type_traits_cpu(GGML_TYPE_IQ3_XXS)->vec_dot;
+        if (entry == Entry::Oracle || (direct_iq3s && arm == 0)) {
+            const auto dot = ggml_get_type_traits_cpu(ggml_type(gu_type))->vec_dot;
             for (int r = begin; r < end; ++r) {
                 float g, u;
                 dot(H, &g, 0, weights[e].data() + r * fmt.gu_row, 0, act, 0, 1);
                 dot(H, &u, 0, weights[e].data() + fmt.up_off + r * fmt.gu_row, 0, act, 0, 1);
                 out[r] = (g / (1.f + std::exp(-g))) * u;
             }
+        } else if constexpr (direct_iq3s) {
+            need(cpu::iq3s_pair_gu_rows(fmt, weights[e].data(), act, out, begin, end),
+                "direct IQ3_S pair refused the admitted layout");
         } else { const void* ap[]{act}; float* fp[]{out};
             cpu::native_gu_rows(fmt, weights[e].data(), ap, 1, fp, begin, end,
                 cpu::NativeGuPhase::Decode); }
+        if constexpr (direct_iq3s) if (entry == Entry::Production) {
+            ++direct_calls; direct_rows += end - begin;
+            direct_pair_rows += arm ? end - begin : 0;
+        }
     }
     void validate() {
         uint64_t checked = 0;
@@ -175,8 +190,9 @@ int main(int argc, char** argv) try {
     need(single && std::string(single) == "0", "reference requires SINGLE_EXACT=0");
     const char* pair = std::getenv("STRATA_IQ3_PAIR");
     const char* audit = std::getenv("STRATA_IQ3_PAIR_AUDIT");
-    need(pair && std::string(pair) == std::to_string(arm) && audit &&
-        std::string(audit) == "1", "production selection/audit must be fixed before exec");
+    need(pair && std::string(pair) == (direct_iq3s ? "0" : std::to_string(arm)) && audit &&
+        std::string(audit) == (direct_iq3s ? "0" : "1"),
+        "comparison selection/audit must be fixed before exec");
     need(!std::getenv("STRATA_IQ_MT_MIN") && !std::getenv("STRATA_IQ2_PAIR_AUDIT"),
         "no alternate NT rule or GU audit");
     const auto cores = cpu::physical_cores(false);
@@ -185,15 +201,17 @@ int main(int argc, char** argv) try {
     need(!sched_getaffinity(0, sizeof mask, &mask) && CPU_COUNT(&mask) == 1 &&
         CPU_ISSET(cores[0], &mask), "actual affinity");
     std::cout << std::setprecision(12);
-    const auto setup = Clock::now(); Inputs in(argv); const double setup_s = elapsed(setup);
+    const auto setup = Clock::now(); Inputs in(argv, arm); const double setup_s = elapsed(setup);
     std::cout << "{\"kind\":\"input\",\"arm\":" << arm << ",\"process\":" << process <<
         ",\"CPU\":" << cores[0] << ",\"experts\":" << experts << ",\"group\":" << group <<
-        ",\"blob_bytes\":" << in.fmt.bytes << ",\"setup_s_excluded\":" << setup_s <<
+        ",\"blob_bytes\":" << in.fmt.bytes << ",\"gu_type\":" << gu_type << ",\"setup_s_excluded\":" << setup_s <<
         ",\"weight_input_fingerprint_fnv1a64\":\"" << hash(in.weight_hashes.data(),
             in.weight_hashes.size() * sizeof(in.weight_hashes[0])) <<
         "\",\"activation_input_fingerprint_fnv1a64\":\"" << hash(in.act_hashes.data(),
             sizeof(in.act_hashes)) << "\",\"activation_bytes\":" << in.fmt.act_bytes <<
-        ",\"reference\":\"native_gu_rows/decode IQ3PAIR0\",\"candidate\":\"native_gu_rows/decode IQ3PAIR1\"}" << std::endl;
+        ",\"reference\":\"" << (direct_iq3s ? "GGML IQ3_S two-dot GU" : "native_gu_rows/decode IQ3PAIR0") <<
+        "\",\"candidate\":\"" << (direct_iq3s ? "iq3s_pair_gu_rows/direct" : "native_gu_rows/decode IQ3PAIR1") <<
+        "\",\"production_entry\":" << !direct_iq3s << "}" << std::endl;
     in.validate();
     for (int rows : {FF, 128}) for (bool pack : {false, true}) for (bool stream : {false, true}) {
         for (auto& out : in.outputs) out.fill(sentinel);
@@ -211,16 +229,25 @@ int main(int argc, char** argv) try {
         const uint64_t jobs = stream ? experts : group;
         for (int rep = 0; rep < repetitions; ++rep) {
             const auto before = cpu::iq3_gu_audit_snapshot();
+            const auto direct_calls = in.direct_calls, direct_rows = in.direct_rows,
+                direct_pair_rows = in.direct_pair_rows;
             const double cpu0 = cpu_seconds(); const auto start = Clock::now();
             uint64_t passes = 0; double wall;
             do { pass(); ++passes; wall = elapsed(start); } while (wall < .35 && passes < 1000000);
             const double scheduled = cpu_seconds() - cpu0;
             const auto after = cpu::iq3_gu_audit_snapshot();
             const uint64_t calls = passes * jobs, active = calls * rows;
-            need(before.enabled && after.enabled && !before.overflow && !after.overflow &&
-                before.threads == 1 && after.threads == 1 && after.calls - before.calls == calls &&
-                after.nt1_rows - before.nt1_rows == active &&
-                after.pair_rows - before.pair_rows == (arm ? active : 0), "actual timed production dispatch");
+            if constexpr (direct_iq3s) {
+                need(!before.enabled && !after.enabled &&
+                    in.direct_calls - direct_calls == calls && in.direct_rows - direct_rows == active &&
+                    in.direct_pair_rows - direct_pair_rows == (arm ? active : 0),
+                    "actual timed direct helper calls");
+            } else {
+                need(before.enabled && after.enabled && !before.overflow && !after.overflow &&
+                    before.threads == 1 && after.threads == 1 && after.calls - before.calls == calls &&
+                    after.nt1_rows - before.nt1_rows == active &&
+                    after.pair_rows - before.pair_rows == (arm ? active : 0), "actual timed production dispatch");
+            }
             need(wall >= .25 && passes < 1000000, "timing duration/pass budget");
             need(!std::memcmp(in.outputs.data(), expected.data(),
                 expected.size() * sizeof(expected[0])), "timed output or inactive rows differ");
@@ -231,9 +258,10 @@ int main(int argc, char** argv) try {
                 ",\"wall_s\":" << wall << ",\"cpu_s\":" << scheduled << ",\"timer_s\":" << cost <<
                 ",\"fastest_warm_pass_s\":" << fastest <<
                 ",\"unique_GU_bytes\":" << jobs * 2 * rows * in.fmt.gu_row <<
-                ",\"timed_dispatch_calls\":" << after.calls - before.calls <<
-                ",\"timed_nt1_rows\":" << after.nt1_rows - before.nt1_rows <<
-                ",\"timed_pair_rows\":" << after.pair_rows - before.pair_rows <<
+                (direct_iq3s ? ",\"timed_direct_calls\":" : ",\"timed_dispatch_calls\":") <<
+                    (direct_iq3s ? in.direct_calls - direct_calls : after.calls - before.calls) <<
+                ",\"timed_nt1_rows\":" << (direct_iq3s ? in.direct_rows - direct_rows : after.nt1_rows - before.nt1_rows) <<
+                ",\"timed_pair_rows\":" << (direct_iq3s ? in.direct_pair_rows - direct_pair_rows : after.pair_rows - before.pair_rows) <<
                 ",\"outputs_match_untimed_reference\":true}" << std::endl;
         }
         in.check();
@@ -242,5 +270,6 @@ int main(int argc, char** argv) try {
     std::cout << "{\"kind\":\"closed\",\"passed\":true}" << std::endl;
     return 0;
 } catch (const std::exception& e) {
-    std::cerr << "IQ3_XXS pair comparison failed: " << e.what() << std::endl; return 1;
+    std::cerr << (direct_iq3s ? "IQ3_S direct" : "IQ3_XXS entry") <<
+        " pair comparison failed: " << e.what() << std::endl; return 1;
 }

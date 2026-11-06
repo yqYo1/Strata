@@ -926,7 +926,14 @@ plan and qualify this fixture before timing. Use actual IQ3_S/IQ4_NL model
 weights,128/640-row ranges,six-expert reuse/252-expert streaming and separate
 prequantized/activation-inclusive cells in three opposite-order independent
 pairs. Freeze exact inputs,recipe,budgets,timing eligibility and decision before
-collection;the existing IQ3_XXS benchmark does not yet implement this new case.
+collection. Keep the IQ3_XXS production-entry comparison separate.
+The CPU-only `cpu_iq3s_pair` target now reuses the maintained comparison source
+with an explicit compile-time direct-component mode. Its prospective
+`bench/sycl/cpu_roofline/iq3s_pair.py` controller defines the eight-cell matrix,
+six correctness children,actual-symbol ISA check and three opposite-order
+pairs. Neither timed arm selects a production dispatcher;the reference is the
+linked GGML two-dot GU. Source,plan preparation,compilation and execution remain
+separate stages;no new benchmark has run alongside the caller cohort.
 A direct-component gain must precede production-entry/pool dispatch and model
 qualification. Retire the component if it does not justify that next comparison.
 The earlier `iq3xxs_pair_gu_rows` IQ3_XXS NT1 GU candidate shares activation
