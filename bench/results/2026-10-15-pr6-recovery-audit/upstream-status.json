@@ -1096,7 +1096,104 @@
         "consumer": "Apply and validate the required parser behavior after both current frozen speed cohorts close,before the next long benchmark freeze.",
         "next_review": "At cohort closure,recheck exact base bytes and inspect the full patch;commit applied source and recipes before tests. Retire the patch after integrated source/results are pushed.",
         "tests_executed": false,
-        "applied": false
+        "applied": false,
+        "test_recipe": {
+          "state": "preregistered_unexecuted",
+          "python_selected": {
+            "workspace_venv": false,
+            "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+            "file": {
+              "realpath": "/usr/bin/python3.12",
+              "dev": 29,
+              "ino": 774532,
+              "bytes": 8020928,
+              "mtime_ns": 1788171506000000000,
+              "ctime_ns": 1790581701420197973,
+              "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+            }
+          },
+          "python_contract": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+            "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+            "files": 3597,
+            "bytes": 270975442
+          },
+          "environment": {
+            "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "LANG": "C.UTF-8"
+          },
+          "commands": [
+            {
+              "role": "literal-tags",
+              "command": [
+                "/usr/bin/timeout",
+                "-k",
+                "5s",
+                "300s",
+                "/usr/bin/prlimit",
+                "--as=2147483648",
+                "--cpu=120",
+                "--fsize=8388608",
+                "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+                "-X",
+                "faulthandler",
+                "-B",
+                "-m",
+                "unittest",
+                "-v",
+                "serve.test_streamed_tool_tags"
+              ]
+            },
+            {
+              "role": "scan-and-existing-terminators",
+              "command": [
+                "/usr/bin/timeout",
+                "-k",
+                "5s",
+                "300s",
+                "/usr/bin/prlimit",
+                "--as=2147483648",
+                "--cpu=120",
+                "--fsize=8388608",
+                "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+                "-X",
+                "faulthandler",
+                "-B",
+                "-m",
+                "unittest",
+                "-v",
+                "tools.test_frontend_stream_scan",
+                "serve.test_server.ToolCallTerminators",
+                "serve.test_server.UnfinishedToolCall"
+              ]
+            },
+            {
+              "role": "server-mock-regression",
+              "command": [
+                "/usr/bin/timeout",
+                "-k",
+                "5s",
+                "300s",
+                "/usr/bin/prlimit",
+                "--as=2147483648",
+                "--cpu=120",
+                "--fsize=8388608",
+                "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+                "-X",
+                "faulthandler",
+                "-B",
+                "-m",
+                "unittest",
+                "-v",
+                "serve.test_server"
+              ]
+            }
+          ],
+          "criteria": "Apply the pinned proposal only after both frozen cohorts close. Commit exact applied source and this recipe before tests;pin all actual test/import/template inputs then. Every suite needs actual normal0,zero failures/errors,explicit skip counts/reasons,closed mock processes and loopback servers. Retain compact individual suite counts/exit outcomes and only distinct failure excerpts. These are CPU/mock tests;no model weights,inference,GPU reset or runtime upgrade.",
+          "result_key": "upstream_streamed_tool_tags_host_v1"
+        }
       },
       "behavior": "Match upstream bounded disambiguation:final tool_call may wait for end of input,a later call or1500lookahead characters;tool_start and argument pieces remain early. Preserve the suffix and no-close scan optimization.",
       "prospective_scan_cost_contract": "Keep zero structural walks while an ordinary growing body has no close,one at its first complete closing candidate,and two after end-of-input confirmation. The source proposal updates these expectations before any test is run.",
@@ -1104,6 +1201,90 @@
         "Focused new whole/chunk/every-byte tool-tag cases,tools.test_frontend_stream_scan,and existing serve.test_server.ToolCallTerminators/UnfinishedToolCall.",
         "Then the complete CPU/mock serve.test_server regression suite;no GPU or performance adoption from these functional tests."
       ]
+    },
+    "selected_server_slices": {
+      "reviewed_utc": "2026-11-06T22:37:11.107343+00:00",
+      "fork_source_commit": "a5f09d4de5448695ea42fbd7286ad2b00a20cf72",
+      "fork_server_sha256": "ea6c4b23a15ad94532392ba6c27ae641cf73545fa9c1231312f07e2c7ac5a18d",
+      "provenance": "Niko1221/Strata only;the fetched target LICENSE equals the fork MIT LICENSE,sha256 949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0. No XeStrata source.",
+      "coverage": "Five selected server concerns in the already fetched v0.2.11 interval,besides the queued parser slice. This is not the complete209-commit/338-path function ledger. The19serve paths,remaining setup/catalog/desktop/CLI deltas,earlier obligations and unmodified tuned-upstream measurements remain pending.",
+      "rows": [
+        {
+          "feature": "Bound a stalled SSE socket write and return the engine turn",
+          "origin": [
+            "c08fd2ecc87327125dfb76de57f64a5377707242"
+          ],
+          "paths": [
+            "serve/server.py::make_handler._sse",
+            "serve/test_serve_robustness.py::StalledClient"
+          ],
+          "state": "selected_hunk_reviewed_unported",
+          "fork_evidence": "Current shared _sse ends after end_headers;STREAM_WRITE_TIMEOUT_S and settimeout are absent.",
+          "dependencies": "Current SSE/disconnect and Service FIFO contract;no new native inference interface.",
+          "validation": "Unread streaming client must release its turn within the configured write deadline;the next request must proceed. Cover OpenAI,Responses and Anthropic plus limit0. Use a loopback MockEngine,finite child/output budgets and confirmed closure."
+        },
+        {
+          "feature": "Decouple server diagnostics from a blocked console",
+          "origin": [
+            "b776e1cd02c11e8cb0824d5dd0087fd907641091"
+          ],
+          "paths": [
+            "serve/nonblocking_out.py",
+            "serve/server.py::main"
+          ],
+          "state": "module_and_entry_hunks_reviewed_unported",
+          "fork_evidence": "No nonblocking_out module or main/_main console wrapper in the current tree.",
+          "dependencies": "Adapt the wrapper to this fork main() signature;engine pipe and HTTP protocol output must stay independent.",
+          "validation": "Blocked-sink control,nonblocking producer,bounded queue/drop accounting,newest-line ordering,drain/restoration and actual child normal exit with unread stdout. Upstream _bytes uses len(str),so do not claim an encoded-byte bound without separate validation."
+        },
+        {
+          "feature": "Lost end-event errors preserve the request engine identity",
+          "origin": [
+            "c30aa6475485259ee77521c8162c6b0bea7eb8fa",
+            "a8767488ce57128f84545fce681202c756fe2795",
+            "74f390538cd5284acd6ae5c6cf8441943ac10288"
+          ],
+          "paths": [
+            "serve/server.py::StrataEngine.end_for_restart",
+            "serve/server.py::Service.end_engine_if_unchanged",
+            "serve/server.py::openai_chunks",
+            "serve/server.py::died_note"
+          ],
+          "state": "selected_hunks_reviewed_interface_mapping_pending",
+          "fork_evidence": "The newer lost-end/generation/turn/error-text chain is absent by its source anchors;semantic equivalence is unproved.",
+          "dependencies": "Map the actual fork generation identity,FIFO and replica/batch contracts;the follow-up fixes belong with the initial lost-end change.",
+          "validation": "Missing end event must be an error;never kill a later request/replacement process;report restart only when that process was ended. Include cancel and replica/batch exclusions."
+        },
+        {
+          "feature": "Release this server orphaned picture encoder after engine death",
+          "origin": [
+            "c30aa6475485259ee77521c8162c6b0bea7eb8fa"
+          ],
+          "paths": [
+            "serve/server.py::Service._release_orphan_encoder"
+          ],
+          "state": "selected_hunks_reviewed_interface_mapping_pending",
+          "fork_evidence": "No _release_orphan_encoder anchor in the current server.",
+          "dependencies": "Map current vision alive/unload ownership and the free-VRAM/load/unload call sites.",
+          "validation": "Own stale encoder is released on load/unload after text-engine death;live/foreign ownership is preserved;use mocks,no live service stop."
+        },
+        {
+          "feature": "Direct serve activity lease and source-install update-store defaults",
+          "origin": [
+            "c30aa6475485259ee77521c8162c6b0bea7eb8fa"
+          ],
+          "paths": [
+            "serve/server.py::main",
+            "strata_cli/update_cmd.py",
+            "tests/terminal/test_update_source_install.py"
+          ],
+          "state": "server_hunks_reviewed_cli_dependencies_pending",
+          "fork_evidence": "The current tree has no strata_control/strata_cli package paths;copying an optional import would not establish the activity lease feature.",
+          "dependencies": "Actual runtime-store/lease and CLI/Control function mapping;preserve earlier required CLI obligations.",
+          "validation": "A direct source server owns the correct shared activity lease;update uses the same engine store and refuses/waits while it is active. Complete interface and mock validation before claiming support."
+        }
+      ],
+      "next_after_parser": "The shared SSE write deadline is an independent next functional slice;pin/adapt its loopback non-reading-client regression before any test. Other interface-dependent slices remain pending. No source,tests,engine or current benchmark inputs changed by this review."
     }
   }
 }
