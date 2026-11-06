@@ -387,10 +387,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prose shows a larger variation that the first-pair description does not explain.
   Process4's errors are-1.242242%/+4.703693%. Use process5 as the final
   held-out check without refitting or changing the original cohort decisions.
-  Successful raw output/JIT from processes0..3 is retired after pushing their
-  individual samples through `4b02b7666847ed2a930a9dad8799001ad04e3975`,recovering
-  all320original inputs from Git,and checking closed ownership:276files and
-  52623761bytes (69files per process). Native-source recovery also matches
+  Successful raw output/JIT from processes0..4 is retired after pushing their
+  individual samples through `02462f24154e343051d3fccb459140be3a61ae0b`,recovering
+  all320original inputs from Git,and checking closed ownership:345files and
+  65776639bytes (69files per process). Native-source recovery also matches
   all567materialized inputs and the exact recipe through
   `build_q6_native_half_model.py:projection`:this build is an explicit historical
   composition,not the plain ec4 controller-commit tree. Required inputs match
@@ -405,6 +405,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   has SHA256 `c01e2b4b9441cf9f705af788a323adcceb066bb0c682b57bf70b204aff00d370`.
   Process3's `mtp-width-generation-process3-output-retirement-20261106.json`
   has SHA256 `f1ef8414a6320a559843aedd2b952cdcde75e465fcc178fa5cfbd4921f8008b2`.
+  Process4's `mtp-width-generation-process4-output-retirement-20261106.json`
+  has SHA256 `9cc8d14ac348c0b795d2aef498fecb71155dc74fdb348ee43c28e68414a1d351`.
 - Current ec4 adaptive publication updates the private `ExpertCache` residency
   snapshot as well as host/device tables. The older20f2 stale-private-map finding
   is not a current-source defect. Closed static-swap0 model entries and long
