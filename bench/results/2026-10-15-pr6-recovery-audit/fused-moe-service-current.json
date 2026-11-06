@@ -181201,7 +181201,7 @@
     "environment_template_sha256": "91e90021537b9ebd75f2e2fde7434b65dfdca6aac43c7f4b43ee94f2c8f60b8c"
   },
   "compat_collector_window_build_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "7a1706d114e2cdd8af5abd533882747412d59ea5",
     "native_source_commit": "ec4ab9a0edfaf33e7bf84c43778c0cc157dc0139",
     "native_record_sha256": "07c38cc31954f83c8296a81746d0f223e7b609d60fdc8ce5a961c15e5333addb",
@@ -181397,6 +181397,11 @@
     "plan": "Commit before build. Four serial SYCL compilations and one device/host link;all normal0 and closed. Pin complete installed compiler/package image,actual headers and host-link inputs. Use the exact selected runtime/adapter/command-profile sources and a new137-line fixture;no engine or collector rebuild. Do not execute this ELF during the build action.",
     "next": "Commit the built result,then a separate prospective smoke/prefix-only/prefix-window plan using strict before-main validation and the existing indexed collector. Expected4/10 named kernels;normal20-kernel numerical/guard execution,unique host flows,raw-clock gap exclusion,finite output and fresh-fault/closure checks. No model attribution follows from build success.",
     "retention": "One-use diagnostic executable/objects/dependencies outside Git. Retire after the bounded current-runtime collector-window decision and original source/recipe recovery;current cb7 and552b engine generations remain unchanged.",
+    "outcome": {
+      "passed": false,
+      "complete": false,
+      "error": "RuntimeError('selected runtime/SYCL input closure missing')"
+    },
     "source_inputs": {
       "count": 117,
       "sha256": "a7830a961d4402c8809cf151fd1814ad678b2ce12c9d51e56cc2c5744d63d934",

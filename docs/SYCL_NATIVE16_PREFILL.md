@@ -255,8 +255,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   package image and actual header/link closure. The build is now prepared
   from `7a1706d114e2cdd8af5abd533882747412d59ea5`,with117exact source/controller
   inputs,the original6239-file compiler/package image and four compile commands
-  followed by one link. No compilation or device execution has occurred yet.
-  Commit the prepared exact recipe before building,and a separate bounded
+  followed by one link. All five compiler commands exit0 with closed owners,
+  but V1 fails its final closure check before any device execution. The driver
+  transforms all four SYCL objects into private host-link inputs,so requiring
+  their original names in GNU ld's trace is incorrect. Preserve V1's failed
+  outcome. A prospective V2 must pin the objects before/after link and retain
+  the verbose driver's original-object inputs as well as ld's transformed
+  inputs. Commit that corrected recipe before another build,and a separate bounded
   smoke/prefix-only/prefix-window plan before execution. This is a disposable
   collector fixture,not another engine generation or current model attribution.
   The completed Orca Luna/native Luna-max writer review finds no supported
