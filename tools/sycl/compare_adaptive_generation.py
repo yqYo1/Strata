@@ -6,6 +6,7 @@ qualify this engine, environment and focused workload prospectively.
 """
 import copy
 import fcntl
+import hashlib
 import importlib.util
 import json
 import math
@@ -22,12 +23,21 @@ import pool_spin
 positive = refusal.positive
 P, B, RESULT, base = refusal.P, refusal.B, refusal.RESULT, refusal.base
 SELF = Path(__file__).resolve()
+PROFILE = 'data/expert-profile.bin'
 require, digest, write, signature = refusal.require, refusal.digest, refusal.write, positive.width.signature
 ARMS = (('reference',0),('candidate',8),('candidate',8),('reference',0),('reference',0),('candidate',8))
 CAPS = {'regular-code':4, 'varied-prose':2}
 OBSERVERS = ('STRATA_TRACE','STRATA_TRACE_ADAPT','STRATA_SYCL_ADAPT_AUDIT',
     'STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE','STRATA_DECODE_TIMING','STRATA_VERIFY_PROFILE',
     'STRATA_DRAFT_TIMING','STRATA_PREFILL_CPU_WAIT_PROFILE')
+
+
+def source_pins(revision):
+    pins=dict(generation.benchmark_pins(revision),**base.controls(revision,controller=SELF))
+    raw=base.basis.build.git(P,'show',revision+':'+PROFILE)
+    require((P/PROFILE).read_bytes()==raw,'initial expert placement must match its exact Git input')
+    pins[PROFILE]=hashlib.sha256(raw).hexdigest()
+    return pins
 
 
 def compact(row):
@@ -73,6 +83,8 @@ def environment(row,plan):
 def configuration(row,plan):
     config = copy.deepcopy(row['configuration']); config['log']=str(Path(plan['root'])/'engine.stderr')
     args = config['args']
+    require(args.count('--expert-profile')==1 and args[args.index('--expert-profile')+1]==str(P/PROFILE),
+            'initial placement must use the pinned profile')
     for key,value in (('--adapt-swaps',plan['adapt_swaps']),('--mtp-max-t',CAPS[row['workload']])):
         require(args.count(key)==1, 'ambiguous selection: '+key); args[args.index(key)+1]=str(value)
     require('--adapt-every' not in args and '--eos-ids' not in args, 'diagnostic EOS or existing adaptive interval')
@@ -152,7 +164,7 @@ def context(workload):
     require(workload in CAPS, 'unknown focused workload')
     spec=importlib.util.spec_from_file_location('strata_current_adaptive_generation',pool_spin.__file__)
     ctx=importlib.util.module_from_spec(spec); spec.loader.exec_module(ctx)
-    ctx.ROOT=B/('adaptive-generation-'+workload+'-v1'); ctx.KEY='adaptive_generation_'+workload.replace('-','_')+'_v1'
+    ctx.ROOT=B/('adaptive-generation-'+workload+'-v2'); ctx.KEY='adaptive_generation_'+workload.replace('-','_')+'_v2'
     ctx.WORKLOADS=(workload,); ctx.ARMS=ARMS; ctx.MODE='cohort'
     ctx.WORKLOAD_ID='adaptive_generation_20261107_'+workload
     ordinary_route, clean = ctx.route, ctx.clean_observers
@@ -163,7 +175,7 @@ def context(workload):
 
     def current(row):
         require(base.committed(RESULT)[ctx.KEY]==compact(row) and
-            dict(generation.benchmark_pins(row['source_commit']),**base.controls(row['source_commit'],controller=SELF))==row['sources'],
+            source_pins(row['source_commit'])==row['sources'],
             'commit exact comparison source/plan')
         normal,prior,contract,manifest,providers,refs=basis()
         require(refs==row['qualification_refs'] and row['configuration']==prior['configuration'] and
@@ -214,11 +226,14 @@ def context(workload):
 
 def prepare(ctx):
     require(not ctx.ROOT.exists() and ctx.KEY not in base.committed(RESULT),'one fresh focused cohort only')
+    old=base.committed(RESULT).get(ctx.KEY.removesuffix('_v2')+'_v1')
+    require(old is None or old.get('stage')=='cancelled' and old.get('cancelled_before_native') is True and
+        old.get('GPU_executed') is False and not old.get('processes'),'close original unlaunched V1 first')
     host=controls();normal,prior,contract,manifest,providers,refs=basis(full=True)
     revision=base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
     row={k:copy.deepcopy(normal[k]) for k in ('binary','native_source_commit','native_validation_probe','runtime_manifest','boot','driver','model_assets')}
     row.update(stage='prepared',source_commit=revision,
-        sources=dict(generation.benchmark_pins(revision),**base.controls(revision,controller=SELF)),
+        sources=source_pins(revision),
         configuration=copy.deepcopy(prior['configuration']),template=prior['template'],
         python_contract=contract,python_selected=manifest['selected'],qualification_refs=refs,
         environment_template=positive.width.generation_context(0).environment(prior,prior['plans'][0]),

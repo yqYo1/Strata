@@ -693,6 +693,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   repeated gain,without a minimum floor;judge prompt/TTFT separately. Commit
   source/generated plans before new host probes and native execution. This is
   prospective source only,no new speed or adoption evidence.
+  Pre-execution review cancelled the unlaunched code V1 plan:the existing model
+  inventory covers pack/MTP/GGUF assets,but not the separately configured initial
+  expert profile. No frontend probe,native process or speed sample ran. Its
+  original plan is recoverable at`3b7756d0241e02c509ab5cdcc45aa5a7752297b1`;
+  all13unused metadata files/76403bytes are retired. The fresh V2 source adds
+  exact Git/current-byte pinning of`data/expert-profile.bin`and requires the
+  native argument to select that file. Do not amend V1 source hashes or treat
+  its preparation as speed/qualification evidence.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
