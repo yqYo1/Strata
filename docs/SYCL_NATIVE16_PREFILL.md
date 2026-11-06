@@ -996,6 +996,26 @@ Read-only `lscpu -J` on 2026-11-04 identifies a Ryzen 5 5600X with six physical
 cores, 12 SMT threads and 32 MiB L3; the earlier 256 MiB read buffer is eight
 times that L3 capacity. Configured DIMM speed and physical RAM bandwidth remain
 unknown; the current user cannot read the DMI table, and no ceiling is inferred.
+Read-only PCI sysfs inventory at2026-11-06 13:51UTC resolves the B570 path as
+`00:01.2/01:00.0/02:02.0/03:00.0/04:01.0/05:00.0` (domain0000).
+Read `vendor`,`device`,`class`,`current_link_speed`,`current_link_width`,
+`max_link_speed`,`max_link_width` in the resolved endpoint directory and every
+parent;no Sysman,driver setting,collector or workload change was made.
+AMD00:01.2/01:00.0 and Intel03:00.0(e2ff) report current16GT/s x4,max16GT/s x8;
+AMD02:02.0(57a3) reports current/max16GT/s x4. Intel04:01.0(e2f0) and the
+05:00.0(e20c) GPU endpoint report current/max2.5GT/s x1. Do not use that endpoint
+report as the external host-link ceiling. Intel's pinned
+[BMG helper](https://github.com/intel/compute-runtime/blob/724697d73af22685918fcad4575c6bc267589ca5/level_zero/sysman/source/shared/linux/product_helper/xe2_hpg_core/bmg/sysman_product_helper_bmg.cpp#L1288)
+selects an upstream-connected topology;its
+[card-bus selector](https://github.com/intel/compute-runtime/blob/724697d73af22685918fcad4575c6bc267589ca5/level_zero/sysman/source/shared/linux/zes_os_sysman_imp.cpp#L160)
+walks two parents,which identifies03:00.0 here. This is source-supported topology
+interpretation,not verification of the installed Sysman implementation.
+The observed16GT/s x4 path gives `16*4*128/130/8 = 7.876923` decimalGB/s per
+direction before packet/protocol overhead,sharing and host-copy costs,using
+[Intel's encoding calculation](https://github.com/intel/compute-runtime/blob/724697d73af22685918fcad4575c6bc267589ca5/level_zero/sysman/source/api/pci/sysman_pci_imp.cpp#L22).
+This is an encoding-only link bound,not achieved transfer bandwidth or model
+bus traffic/saturation. Use it to bound the next serialized transfer measurement;
+the current critical resource remains unresolved.
 The observer build's actual GGML x86 quantizer compile command already uses
 `icx -O3 -march=native -fno-associative-math`. Static disassembly of
 `ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o`, SHA256
