@@ -498,8 +498,17 @@ Its exact-B570 traced smoke now passes all32cases,including finite half-scale
 edges,subnormal Q8_1 scales,columns5..7 reference fallback and invalid-column
 refusals. Output bits,scalar/Q8-byte oracles,guards and read-only inputs pass;
 the child exits0 with quiet validation,closed ownership,unchanged inputs/boot
-and no fresh driver fault. Three-process entry timing remains pending;no
-phase selection or model-speed qualification follows. Retire this
+and no fresh driver fault. All three independent speed processes now pass
+35cases each,with1050individual timing samples and20ns median host clock-pair
+screens. **27of35shape/column combinations are faster in all three processes**;
+their geometric-mean time reductions range from0.44% to25.31%,median12.94%.
+All five larger model geometries pass every measured column count;the640-row
+geometry passes none,and512rows pass only4/8columns. Keep the other8combinations
+on the reference,including mixed directions and the640-row/4-column outlier.
+All numerical,source/provider,ownership and fresh-fault gates pass. This is
+full public-entry wall time with resident data in the parameter-validation
+envelope,not clean model TG/GPU saturation. Native-half remains unselected;
+caller/phase policy,actual GPU ISA and model impact remain pending. Retire this
 auxiliary component build after recording its decision and exact-input recovery;
 keep the named552b fallback and5c5e diagnostic-model consumers separately.
 The standalone converter's `prepare`, `build` and `check` actions require the original cohort's
