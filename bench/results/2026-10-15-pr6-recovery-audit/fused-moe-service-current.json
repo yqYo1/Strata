@@ -169269,7 +169269,7 @@
     }
   },
   "q6_native_half_model_entry_arm0_v1": {
-    "stage": "frontend-qualified",
+    "stage": "failed",
     "source_commit": "9e06d1253cc57f29675f40875730859fc1dd247b",
     "native_source_commit": "ec4ab9a0edfaf33e7bf84c43778c0cc157dc0139",
     "binary": {
@@ -169583,7 +169583,7 @@
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "model_executed": false,
     "inference_adopted": false,
     "criteria": "Two pinned frontend probes,one short thinking-on warmup,and two fresh32769-input/1..24-output bench.sh requests. Spec8,short-read0,1256decode slots,adapt-swaps0,chunk8192,throughput,GDN16/MTP16,and immutable runtime safety. Require complete existing body/token/route/cache/dense/head/MTP/clock/validation/asset/fault/owner gates. Require request-bound complete live phase/T/shape snapshots with exact independently measured routes,no selection in observed prompt snapshots,closed replay counts,and positive completed Q6 output-head use in the declared arm.Snapshot counters are cumulative for live capture epochs;do not call them request deltas or retired history.This audit-on short-output model entry is not clean/sustained TG,prompt-verify,task or physical262144/RESTORE qualification.",
@@ -169618,6 +169618,69 @@
         "passed": true
       }
     ],
+    "outcome": {
+      "complete": false,
+      "host_probe_accepted": false,
+      "model_executed": false,
+      "error": "RuntimeError('model process failed')",
+      "ownership_closed": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": false
+    },
+    "failure_diagnosis": {
+      "cause": "Main selected spec8 while the unchanged cache-scratch lease explicitly requires spec4. Configuration refusal before inference;not a GPU fault.",
+      "native_exit_code": 2,
+      "benchmark_exit_code": 1,
+      "guard_message": "cache scratch lease requires serve, native dense bank, profiled borrowing, MTP4 and one GPU without token graphs/vision/remote experts",
+      "source": "Composed src/program/generate.cpp:2598-2603 from ec4ab9a0e,well before Verifier initialization.",
+      "model_inference_started": false,
+      "stderr_sha256": "12214d1946f852e2eebac1d4372d37f4a0669e9c0d55f45d78066d1e23ea8b93",
+      "original_protocol_observation_remains_incomplete": true,
+      "next": "A fresh spec4/scratch-lease1 plan isolates the same Q6 change on the qualified placement;preserve this failed spec8 plan."
+    },
+    "closure_reconciliation": {
+      "closed": true,
+      "original_ownership_closed_preserved": false,
+      "reason": "Original closed() also required complete benchmark protocol,which failed at EOF. Its anchored final ownership scan was empty and the direct child was reaped;all four recorded identities are now absent or different. Do not change the original failed qualification.",
+      "identities": [
+        {
+          "pid": 3400305,
+          "start_ticks": 229077694,
+          "sid": 3400305
+        },
+        {
+          "pid": 3400312,
+          "start_ticks": 229077720,
+          "sid": 3400305
+        },
+        {
+          "pid": 3400340,
+          "start_ticks": 229077803,
+          "sid": 3400305
+        },
+        {
+          "pid": 3400344,
+          "start_ticks": 229077819,
+          "sid": 3400305
+        }
+      ],
+      "native_identity": {
+        "pid": 3400344,
+        "start_ticks": 229077819,
+        "sid": 3400305
+      },
+      "native_exit_code": 2,
+      "no_termination_required": true
+    },
     "source_inputs": {
       "files": 317,
       "aggregate_sha256": "2fa18da2c5c6b9bbafc19296a5d82d098fe398f2f612718930065455fd11c271"

@@ -182,11 +182,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Normal build/host/device output and private temporary/cache files are
   retired after source recovery:24 files,12991534 bytes. The live build/device
   records and15 selected comparison/fallback executables remain for model entry.
-  Next admit both spec8,thinking-on32K model-entry arms,then freeze the repeated
-  long-generation comparison. The short model entry does not qualify sustained TG.
-  A host pass will not qualify full-engine syntax, GPU capture/replay or model
-  speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
-  gates; retain the validated 552b fallback and 5c comparison outputs.
+  The first half0 model entry failed before inference: Main selected spec8,
+  while the unchanged scratch lease requires spec4. The engine refused the
+  configuration with exit2;the benchmark exited1 and reported incomplete
+  protocol observation. All four recorded process identities are now absent;
+  the separate closure reconciliation preserves the original failed result
+  and incomplete observation. No fresh GPU fault was recorded. Follow
+  `q6_native_half_model_entry_arm0_v1` for the original settings and diagnosis.
+  Next commit a fresh spec4/scratch-lease1 plan for both thinking-on32K arms,
+  preserving the same native bytes and placement. Reuse the closed device
+  qualification only after proving the model-controller-only change and all
+  native/fixture/recipe/runtime identities;do not rewrite its original pins.
+  Then freeze the repeated long-generation comparison. The short model entry
+  does not qualify sustained TG or model speed. Keep separate prefill/handoff,
+  task, agent and physical 262144/RESTORE gates;retain the validated552b fallback
+  and the new same-binary half0/1 comparison generation.
 
 ## Prefill envelope and scaling
 
