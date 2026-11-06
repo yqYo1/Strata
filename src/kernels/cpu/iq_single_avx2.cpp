@@ -280,6 +280,74 @@ __attribute__((noinline)) void iq2s_dot(int n, float * GGML_RESTRICT s, size_t b
 
 }
 
+// Main-authored IQ3_S gate/up scheduling from the GGML arithmetic below and
+// this project's independent IQ3_XXS pair. Read packed metadata as bytes;
+// activation loads and masks are shared, while each weight stream stays packed.
+static inline __m256i iq3s_pair_chunk(const uint8_t* block, int p, __m256i q8,
+                                    __m256i mask1, __m256i mask2) {
+    const auto* qs = block + offsetof(block_iq3_s, qs) + 8 * p;
+    const unsigned high = block[offsetof(block_iq3_s, qh) + p];
+    const auto grid = _mm256_set_epi32(
+        iq3s_grid[qs[7] | (((high >> 7) & 1) << 8)],
+        iq3s_grid[qs[6] | (((high >> 6) & 1) << 8)],
+        iq3s_grid[qs[5] | (((high >> 5) & 1) << 8)],
+        iq3s_grid[qs[4] | (((high >> 4) & 1) << 8)],
+        iq3s_grid[qs[3] | (((high >> 3) & 1) << 8)],
+        iq3s_grid[qs[2] | (((high >> 2) & 1) << 8)],
+        iq3s_grid[qs[1] | (((high >> 1) & 1) << 8)],
+        iq3s_grid[qs[0] | (((high >> 0) & 1) << 8)]);
+    int32_t signs;
+    std::memcpy(&signs, block + offsetof(block_iq3_s, signs) + 4 * p, sizeof signs);
+    const auto bits = _mm256_and_si256(
+        _mm256_shuffle_epi8(_mm256_set1_epi32(signs), mask1), mask2);
+    const auto negative = _mm256_cmpeq_epi8(bits, mask2);
+    const auto signed_q8 = _mm256_sub_epi8(_mm256_xor_si256(negative, q8), negative);
+    const unsigned scale = (block[offsetof(block_iq3_s, scales) + p / 2]
+        >> (4 * (p & 1))) & 15;
+    return _mm256_madd_epi16(_mm256_maddubs_epi16(grid, signed_q8),
+                            _mm256_set1_epi16(2 * scale + 1));
+}
+
+__attribute__((noinline)) void iq3s_pair_dot(const uint8_t* GGML_RESTRICT g,
+    const uint8_t* GGML_RESTRICT u, const uint8_t* GGML_RESTRICT activation,
+    float& gout, float& uout) {
+    static const uint8_t sign_masks[32] = {
+        1, 2, 4, 8, 16, 32, 64, 128, 1, 2, 4, 8, 16, 32, 64, 128,
+        1, 2, 4, 8, 16, 32, 64, 128, 1, 2, 4, 8, 16, 32, 64, 128};
+    const auto mask1 = _mm256_set_epi64x(0x0303030303030303LL,
+        0x0202020202020202LL, 0x0101010101010101LL, 0);
+    const auto mask2 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(sign_masks));
+    __m256 ga = _mm256_setzero_ps(), ua = _mm256_setzero_ps();
+    for (int b = 0; b < 10; ++b) {
+        const auto* gb = g + b * sizeof(block_iq3_s);
+        const auto* ub = u + b * sizeof(block_iq3_s);
+        const auto* ab = activation + b * sizeof(block_q8_K);
+        __m256i gi = _mm256_setzero_si256(), ui = _mm256_setzero_si256();
+        #pragma clang loop unroll(full)
+        for (int p = 0; p < 8; ++p) {
+            const auto a = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(
+                ab + offsetof(block_q8_K, qs) + 32 * p));
+            gi = _mm256_add_epi32(gi, iq3s_pair_chunk(gb, p, a, mask1, mask2));
+            ui = _mm256_add_epi32(ui, iq3s_pair_chunk(ub, p, a, mask1, mask2));
+        }
+        // iq3s_grid bytes are <=15. A pair of products fits int16 (3840),
+        // and each int32 lane is bounded by8*4*15*128*31=1904640.
+        // Integer regrouping is exact; retain each output's block FMA order.
+        uint16_t gd, ud;
+        float ad;
+        std::memcpy(&gd, gb + offsetof(block_iq3_s, d), sizeof gd);
+        std::memcpy(&ud, ub + offsetof(block_iq3_s, d), sizeof ud);
+        std::memcpy(&ad, ab + offsetof(block_q8_K, d), sizeof ad);
+        ga = _mm256_fmadd_ps(_mm256_set1_ps(GGML_CPU_FP16_TO_FP32(gd) * ad),
+            _mm256_cvtepi32_ps(gi), ga);
+        ua = _mm256_fmadd_ps(_mm256_set1_ps(GGML_CPU_FP16_TO_FP32(ud) * ad),
+            _mm256_cvtepi32_ps(ui), ua);
+    }
+    gout = hsum_float_8(ga);
+    uout = hsum_float_8(ua);
+    _mm256_zeroupper();
+}
+
 __attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t bs, const void * GGML_RESTRICT vx, size_t bx, const void * GGML_RESTRICT vy, size_t by, int nrc) {
     assert(n % QK_K == 0);
     assert(nrc == 1);
@@ -399,6 +467,37 @@ bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* ac
     return true;
 }
 
+bool iq3s_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
+                      float* ff, int r0, int r1) {
+    constexpr size_t rows = 640, blocks = 10;
+    if (f.gu_type != 21 || f.gu_act != 15 || f.n_embd != 2560 || f.n_ff != 640 ||
+        !blob || !act || !ff || r0 < 0 || r1 < r0 || r1 > 640 ||
+        f.gu_row < blocks * sizeof(block_iq3_s) ||
+        f.act_bytes != blocks * sizeof(block_q8_K) || f.gu_row > f.bytes / rows)
+        return false;
+    const size_t gate_bytes = rows * f.gu_row;
+    if (f.up_off < gate_bytes || f.up_off > f.bytes || gate_bytes > f.bytes - f.up_off ||
+        f.down_off < f.up_off + gate_bytes || f.down_off > f.bytes)
+        return false;
+    const auto w = reinterpret_cast<uintptr_t>(blob), a = reinterpret_cast<uintptr_t>(act),
+               o = reinterpret_cast<uintptr_t>(ff);
+    constexpr size_t output_bytes = rows * sizeof(float);
+    const auto max = std::numeric_limits<uintptr_t>::max();
+    if (f.bytes > max - w || f.act_bytes > max - a || output_bytes > max - o ||
+        o % alignof(float) || (w < a + f.act_bytes && a < w + f.bytes) ||
+        (w < o + output_bytes && o < w + f.bytes) ||
+        (a < o + output_bytes && o < a + f.act_bytes))
+        return false;
+    const auto* activation = static_cast<const uint8_t*>(act);
+    for (int r = r0; r < r1; ++r) {
+        const auto* g = blob + size_t(r) * f.gu_row;
+        float gv, uv;
+        iq3s_pair_dot(g, g + f.up_off, activation, gv, uv);
+        ff[r] = (gv / (1.f + std::exp(-gv))) * uv;
+    }
+    return true;
+}
+
 bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_off,
                           int n, const void* act, float* ff, int r0, int r1) {
     if (type != 18 && type != 21 && type != 22) return false;
@@ -416,6 +515,9 @@ bool iq256_single_gu_rows(int type, const uint8_t* blob, size_t row, size_t up_o
 #else
 namespace strata::kernels::cpu {
 bool iq3xxs_pair_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
+    return false;
+}
+bool iq3s_pair_gu_rows(const NativeFmt&, const uint8_t*, const void*, float*, int, int) {
     return false;
 }
 bool iq256_single_gu_rows(int, const uint8_t*, size_t, size_t, int, const void*, float*, int, int) {

@@ -25,6 +25,11 @@ bool iq256_single_gu_rows(int ggml_type, const uint8_t* blob, size_t gu_row, siz
 bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
                         float* ff, int r0, int r1);
 
+// Experimental IQ3_S counterpart with the same H2560/FF640 and nonaliasing
+// contract. Direct component only; no production dispatcher selects it yet.
+bool iq3s_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
+                      float* ff, int r0, int r1);
+
 bool iq256_supported(int ggml_type) noexcept;
 /// ff[t][r] = silu(gate_r . a[t]) * (up_r . a[t]), rows [r0, r1); gate rows at blob, up rows at blob + up_off.
 void iq256_gu_rows(int ggml_type, const uint8_t* blob, size_t gu_row, size_t up_off, int n, const void* const* act,

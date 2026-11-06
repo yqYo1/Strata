@@ -900,16 +900,38 @@ Before testing `STRATA_IQ_SINGLE_EXACT=1`, the worktree now confines that
 single-token GU selector to `NativeGuPhase::Decode`, preserving the prefill
 dispatch. This source-only containment is outside the frozen observer build;
 its compiled qualification and matched model comparison remain pending.
-The unselected `iq3xxs_pair_gu_rows` component is the next IQ3_XXS NT1 GU
-candidate. It shares activation loads between gate/up, keeps packed weights
+The next IQ3_S NT1 GU component is `iq3s_pair_gu_rows`,currently unselected by
+production. IQ3_XXS and IQ2_S already have paired NT1 selections in the caller
+comparison;IQ3_S still evaluates gate/up separately. This source candidate
+shares activation loads and masks,keeps packed weights unchanged,and preserves
+each output's block FMA and horizontal reduction. Its integer lane bound is
+1904640. The512-entry official GGML `iq3s_grid` has maximum byte15 at commit
+`3cf03257f219afbe7334045ff7c6a06ac68c627d`(MIT);the new scheduling is Main-authored
+from this project's existing GGML arithmetic and independent IQ3_XXS pair,with
+no XeStrata input. The optional `iq_single_exact_test --iq3s-pair` now defines
+80 additional synthetic oracle/canary cases,all512 grids,256 high/sign bytes,
+16 scale nibbles,FP16 edge scales and invalid/overlapping layout refusals.
+The original default and IQ3_XXS dispatch test modes retain their scope.
+No compilation,test execution,production selection or speed result follows yet.
+After the frozen caller comparison closes,commit a CPU-only build/comparison
+plan and qualify this fixture before timing. Use actual IQ3_S/IQ4_NL model
+weights,128/640-row ranges,six-expert reuse/252-expert streaming and separate
+prequantized/activation-inclusive cells in three opposite-order independent
+pairs. Freeze exact inputs,recipe,budgets,timing eligibility and decision before
+collection;the existing IQ3_XXS benchmark does not yet implement this new case.
+A direct-component gain must precede production-entry/pool dispatch and model
+qualification. Retire the component if it does not justify that next comparison.
+The earlier `iq3xxs_pair_gu_rows` IQ3_XXS NT1 GU candidate shares activation
+loads between gate/up, keeps packed weights
 unchanged and preserves each output's block FMA and final float reduction.
 Its integer lane bound is 7872512; byte loads avoid unaligned scale/sign objects.
 The maintained single-exact fixture now defines GGML parity, padded/unaligned
 input, output-canary, invalid-layout, overlap and overflow checks for this
 component. Its V2 same-build correctness fixture and direct single-core
 component comparison now pass as detailed below. The helper
-is not selected by production; qualify the actual decode entry/pool dispatch before a model
-trial. Retire it if the component does not justify that trial.
+initially needed decode entry/pool qualification before a model trial;the
+subsequent production and model evidence is recorded below. That evidence
+does not qualify the new IQ3_S component.
 The independent source audit uses the frozen scalar oracle at
 `/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-verify-window-v2/source/src/kernels/cpu/iq_single_avx2.cpp`,
 SHA256 `8579db5f02086cc660d376a77e00a9285e038f6757a53e8b2a8ef6d79eb2074f`.

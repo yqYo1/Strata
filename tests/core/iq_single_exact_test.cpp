@@ -16,6 +16,7 @@
 #include <vector>
 
 namespace {
+template<class Block, int Type, auto Pair>
 bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
     namespace cpu = strata::kernels::cpu;
     constexpr int rows = 640, n = 2560;
@@ -23,13 +24,14 @@ bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
     constexpr uint16_t edge_scales[] = {0x0000, 0x8000, 0x0001, 0x8001,
         0x03ff, 0x83ff, 0x0400, 0x8400, 0x3c00, 0xbc00, 0x7bff, 0xfbff};
     for (int padding : {0, 17}) {
-        std::array<bool, 128> sign_seen{};
+        std::array<bool, Type == 18 ? 128 : 256> sign_seen{};
         std::array<bool, 16> nibble_seen{};
-        std::array<bool, 256> grid_seen{};
+        std::array<bool, Type == 18 ? 256 : 512> grid_seen{};
+        std::array<bool, 256> high_seen{};
         std::array<bool, sizeof(edge_scales) / sizeof(edge_scales[0])> edge_seen{};
         cpu::NativeFmt f;
         std::string error;
-        if (!cpu::native_fmt(18, 20, n, rows, f, error)) return false;
+        if (!cpu::native_fmt(Type, 20, n, rows, f, error)) return false;
         f.gu_row += padding;
         f.up_off = rows * f.gu_row + (padding ? 33 : 0);
         f.down_off = f.up_off + rows * f.gu_row;
@@ -39,36 +41,55 @@ bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
         std::vector<uint8_t> storage(f.bytes + 2), raw_act(f.act_bytes + 2);
         auto* weights = storage.data() + (padding ? 1 : 0);
         std::vector<block_q8_K> act(n / 256);
-        const auto dot = ggml_get_type_traits_cpu(GGML_TYPE_IQ3_XXS)->vec_dot;
+        const auto dot = ggml_get_type_traits_cpu(ggml_type(Type))->vec_dot;
         for (unsigned seed = 1; seed <= 8; ++seed) {
             uint32_t state = seed;
             const auto random = [&] { state = state * 1664525u + 1013904223u; return state; };
             for (auto& byte : storage) byte = random() >> 24;
             for (size_t offset : {size_t(0), f.up_off}) for (int r = 0; r < rows; ++r)
                 for (int b = 0; b < n / 256; ++b) {
-                    auto* block = weights + offset + r * f.gu_row + b * sizeof(block_iq3_xxs);
+                    auto* block = weights + offset + r * f.gu_row + b * sizeof(Block);
                     uint16_t scale = uint16_t(0x1400 + (random() & 1023) +
                         (seed == 5 ? 0x8000 : 0));
                     if (seed >= 6) {
                         const size_t edge = (r * 10 + b + seed + (offset != 0)) % edge_seen.size();
                         scale = edge_scales[edge];
                         edge_seen[edge] = true;
-                        auto* packed = block + offsetof(block_iq3_xxs, qs);
+                        auto* packed = block + offsetof(Block, qs);
                         for (unsigned group = 0; group < 8; ++group) {
                             const unsigned ordinal = (r * 10 + b) * 8 + group + seed + (offset != 0);
                             const unsigned nibble = (ordinal / 128) % 16;
-                            uint32_t gas = nibble << 28;
                             nibble_seen[nibble] = true;
-                            for (unsigned j = 0; j < 4; ++j) {
-                                const unsigned sign = (ordinal + 31 * j) % 128;
-                                gas |= sign << (7 * j);
-                                sign_seen[sign] = true;
-                            }
-                            std::memcpy(packed + 64 + 4 * group, &gas, sizeof gas);
-                            for (unsigned j = 0; j < 8; ++j) {
-                                const uint8_t grid = uint8_t(8 * ordinal + j);
-                                packed[8 * group + j] = grid;
-                                grid_seen[grid] = true;
+                            if constexpr (Type == 18) {
+                                uint32_t gas = nibble << 28;
+                                for (unsigned j = 0; j < 4; ++j) {
+                                    const unsigned sign = (ordinal + 31 * j) % 128;
+                                    gas |= sign << (7 * j);
+                                    sign_seen[sign] = true;
+                                }
+                                std::memcpy(packed + 64 + 4 * group, &gas, sizeof gas);
+                                for (unsigned j = 0; j < 8; ++j) {
+                                    const uint8_t grid = uint8_t(8 * ordinal + j);
+                                    packed[8 * group + j] = grid;
+                                    grid_seen[grid] = true;
+                                }
+                            } else {
+                                const uint8_t high = uint8_t(ordinal / 32);
+                                block[offsetof(Block, qh) + group] = high;
+                                high_seen[high] = true;
+                                for (unsigned j = 0; j < 8; ++j) {
+                                    const uint8_t low = uint8_t(8 * ordinal + j);
+                                    packed[8 * group + j] = low;
+                                    grid_seen[low | (((high >> j) & 1) << 8)] = true;
+                                }
+                                for (unsigned j = 0; j < 4; ++j) {
+                                    const uint8_t sign = uint8_t(ordinal + 31 * j);
+                                    block[offsetof(Block, signs) + 4 * group + j] = sign;
+                                    sign_seen[sign] = true;
+                                }
+                                auto& scales = block[offsetof(Block, scales) + group / 2];
+                                const unsigned shift = 4 * (group & 1);
+                                scales = uint8_t((scales & ~(15u << shift)) | (nibble << shift));
                             }
                         }
                     }
@@ -88,7 +109,7 @@ bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
             std::memcpy(a, act.data(), f.act_bytes);
             std::vector<float> expected(rows);
             for (int r = 0; r < rows; ++r) {
-                block_iq3_xxs gate[n / 256], up[n / 256];
+                Block gate[n / 256], up[n / 256];
                 std::memcpy(gate, weights + r * f.gu_row, sizeof gate);
                 std::memcpy(up, weights + f.up_off + r * f.gu_row, sizeof up);
                 float g, u;
@@ -100,18 +121,17 @@ bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
                                       std::pair{639, 640}, std::pair{319, 320},
                                       std::pair{640, 640}}) {
                 std::vector<float> got(rows + 2, canary);
-                if (!cpu::iq3xxs_pair_gu_rows(f, weights, a, got.data() + 1,
-                                            bounds.first, bounds.second)) return false;
+                if (!Pair(f, weights, a, got.data() + 1, bounds.first, bounds.second)) return false;
                 for (int r = -1; r <= rows; ++r) {
                     const float value = r >= bounds.first && r < bounds.second ? expected[r] : canary;
                     if (!std::isfinite(got[r + 1]) || std::memcmp(&got[r + 1], &value, sizeof value)) {
-                        std::fprintf(stderr, "pair mismatch padding=%d seed=%u rows=%d:%d at=%d\n",
-                            padding, seed, bounds.first, bounds.second, r);
+                        std::fprintf(stderr, "pair mismatch type=%d padding=%d seed=%u rows=%d:%d at=%d\n",
+                            Type, padding, seed, bounds.first, bounds.second, r);
                         return false;
                     }
                 }
                 ++cases;
-                if (dispatch_arm >= 0 && padding == 0) {
+                if (Type == 18 && dispatch_arm >= 0 && padding == 0) {
                     for (auto phase : {cpu::NativeGuPhase::Prefill, cpu::NativeGuPhase::Decode}) {
                         std::fill(got.begin(), got.end(), canary);
                         const void* ap[]{a}; float* fp[]{got.data() + 1};
@@ -138,12 +158,13 @@ bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
         };
         if (!complete(sign_seen) || !complete(nibble_seen) || !complete(grid_seen) ||
             !complete(edge_seen)) return false;
+        if (Type == 21 && !complete(high_seen)) return false;
         std::vector<float> untouched(rows + 2, canary);
         const auto weights_before = storage;
         const auto act_before = raw_act;
         const auto refused = [&](const cpu::NativeFmt& fmt, const uint8_t* w, const void* a,
                                  float* out, int begin, int end) {
-            if (cpu::iq3xxs_pair_gu_rows(fmt, w, a, out, begin, end)) return false;
+            if (Pair(fmt, w, a, out, begin, end)) return false;
             // An aliased output points into these actual input buffers, rather
             // than untouched. Check both complete targets on every refusal.
             if (storage != weights_before || raw_act != act_before) return false;
@@ -156,11 +177,11 @@ bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
         for (int kind = 0; kind < 11; ++kind) {
             auto bad = f;
             switch (kind) {
-                case 0: bad.gu_type = 21; break;
+                case 0: bad.gu_type = Type == 18 ? 21 : 18; break;
                 case 1: bad.gu_act = 8; break;
                 case 2: bad.n_embd = 256; break;
                 case 3: bad.n_ff = rows - 1; break;
-                case 4: bad.gu_row = 10 * sizeof(block_iq3_xxs) - 1; break;
+                case 4: bad.gu_row = 10 * sizeof(Block) - 1; break;
                 case 5: --bad.act_bytes; break;
                 case 6: bad.up_off = rows * f.gu_row - 1; break;
                 case 7: bad.up_off = f.bytes + 1; break;
@@ -192,7 +213,8 @@ bool pair_cases(unsigned& cases, int dispatch_arm = -1) {
 int main(int argc, char** argv) {
     using strata::kernels::cpu::iq256_single_gu_rows;
     int dispatch_arm = -1;
-    if (argc != 1) {
+    const bool iq3s_pair = argc == 2 && !std::strcmp(argv[1], "--iq3s-pair");
+    if (argc != 1 && !iq3s_pair) {
         const char* arm = std::getenv("STRATA_IQ3_PAIR");
         const char* audit = std::getenv("STRATA_IQ3_PAIR_AUDIT");
         const char* single = std::getenv("STRATA_IQ_SINGLE_EXACT");
@@ -264,9 +286,15 @@ int main(int argc, char** argv) {
         }
     }
     unsigned paired = 0;
-    if (!pair_cases(paired, dispatch_arm)) return 1;
+    if (!pair_cases<block_iq3_xxs, 18, strata::kernels::cpu::iq3xxs_pair_gu_rows>(
+            paired, dispatch_arm)) return 1;
+    unsigned iq3s_paired = 0;
+    if (iq3s_pair && !pair_cases<block_iq3_s, 21, strata::kernels::cpu::iq3s_pair_gu_rows>(
+            iq3s_paired)) return 1;
     std::printf("IQ single exact PASS: %u single and %u paired cases, bitwise GGML parity and row canaries\n",
         cases, paired);
+    if (iq3s_pair) std::printf("IQ3_S pair exact PASS: %u cases,512 grids,256 high/sign bytes,16 scales\n",
+        iq3s_paired);
     if (dispatch_arm >= 0) {
         const auto audit = strata::kernels::cpu::iq3_gu_audit_snapshot();
         if (!audit.enabled || audit.overflow || audit.threads != 1 || audit.calls != 80 ||
