@@ -836,8 +836,15 @@ V3 preparation now passes at controller0b950da2e:all15 model assets and326
 source inputs are pinned,and all six generated arms have one invariant
 configuration/runtime signature. V1/V2 failed during preparation before any
 native execution;their original failures remain recorded. Both current-source
-frontend probes now pass with normal0 and closed owners. All long-generation
-processes remain pending;frontend admission is not an overhead result.
+frontend probes now pass with normal0 and closed owners. The first off process
+now passes both long requests:3170/7275 generated tokens,actual MTP acceptance
+0.8244/0.3892,all six census/leaf joins,strict completed prefixes4/5 and caller
+absence. Native/benchmark exit0,owners close,validation is quiet and no fresh
+fault is recorded. Its observer-envelope TG13.4038/8.7556 is not clean speed.
+Five processes remain;no paired overhead result follows yet. A closed-process
+retention addendum keeps only four already-emitted rounded host timing scopes
+and window counts to compare draft time with future caller-unclassified waits;
+it changes no execution or decision criterion.
 No engine rebuild or GPU fault follows from the V2 preparation failure.
 Useful CPU service still does not prove RAM bandwidth or arithmetic saturation.
 The six closed CPU-service processes also agree exactly on logical work volume
