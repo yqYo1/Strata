@@ -182652,7 +182652,7 @@
     }
   },
   "adaptive_residency_native_entry_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "b9c952b147b3e6be996ce30366534b0541ca32c3",
     "host_controls": {
       "passed": true,
@@ -183071,16 +183071,116 @@
       "total_cap": 268435456
     },
     "whole_wall_s": 2100,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
-    "GPU_execution_attempted": false,
-    "model_executed": false,
+    "GPU_executed": true,
+    "GPU_execution_attempted": true,
+    "model_executed": true,
     "plan": "One fresh owned direct serving engine,two synthetic requests1024/256 then32769/256. Commit exact inputs/source/native/environment first. Same original cap4/half1/INT8resident131072/1256slots/5workers/8192chunk/throughput BF16 HC/GDN16/MTP16/20ms pool spin/runtime safety;only positive8swaps/every8,rare EOS and opt-in trace/payload/map/dispatch/loan audits are added before exec. Require INFO full-resident0,READY,complete ordered RESUME/PP/REUSED/T/DONE for both,normalQUIT0,strict pre-main validation,exact current PID/environment/providers,completed actual T1/T4 Q6 windows per request,real prepared/masked/published positive generations with exact tuple/count conservation,incoming GPU dispatch observed and valid CPU/GPU job checks,second-request occupied post-positive loan/refill with complete payload/maps/ready checks,unchanged final15asset hashes/boot/driver,no fresh GPU fault and closed owners. Rare EOS controls extent,not quality. Keep original failure status;no retry,hash refresh,full trace,profiler or runtime safety change. Native and post-processing progress persist separately for any host fault.",
     "limits": "Synthetic native correctness only;outgoing replacement CPU observations are recorded separately. No thinking/task quality,clean/sustained PP/TG,physical resource saturation,ordinary provider teardown or262144/RESTORE qualification. Checked record-failure injection still needs a separate native control before clean adaptive comparisons.",
     "retention": "Keep compact per-request extent/hash,Q6 and replacement/dispatch/loan conservation,source/configuration and validation/fault outcome. Retire successful full output/JIT after its exact next comparison/qualification consumer;retain one minimal distinct failure diagnostic only.",
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "host_probe_accepted": true,
+      "requests": [
+        {
+          "request": 1,
+          "input_tokens": 1024,
+          "output_tokens": 256,
+          "input_sha256": "c517e5cab65b569d0d5dc8c902dfd3d2fe15fa03585197ddbe51c9948b22708f",
+          "output_sha256": "c1179b267fff4dd95653a608cb5dd0e1adfc85634e102c2680d7dc4d82d19fcf",
+          "progress_notifications": 1,
+          "progress_reached": 1023,
+          "finish": "length"
+        },
+        {
+          "request": 2,
+          "input_tokens": 32769,
+          "output_tokens": 256,
+          "input_sha256": "a627cdc0b8a99691267f61c4bfbd38e955d5e13ea6c76827b8e4b6571c2dc3ea",
+          "output_sha256": "4227b68e96384f9f6ed77f57593d87acb889b2539a1c7cbfeab01f910803c5ab",
+          "progress_notifications": 4,
+          "progress_reached": 32768,
+          "finish": "length"
+        }
+      ],
+      "startup": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "4",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.00",
+        "arena_mib": "47962"
+      },
+      "native_pid": 1205627,
+      "native_exit_code": 0,
+      "native_normal_closed": true,
+      "validation": {
+        "pid": 1205627,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "adaptive": {
+        "generations": 23,
+        "swaps": 184,
+        "request_coverage": [
+          {
+            "request": 1,
+            "published": 12,
+            "dispatch_calls": 4608,
+            "incoming_GPU_entries": 7213,
+            "outgoing_CPU_entries": 53,
+            "post_swap_refills": 0
+          },
+          {
+            "request": 2,
+            "published": 23,
+            "dispatch_calls": 8832,
+            "incoming_GPU_entries": 19004,
+            "outgoing_CPU_entries": 399,
+            "post_swap_refills": 1
+          }
+        ],
+        "post_positive_loan_groups": 1,
+        "outgoing_CPU_observed": true,
+        "all_observed_payload_map_dispatch_checks_passed": true
+      },
+      "Q6": [
+        {
+          "request": 1,
+          "completed_heads": 2
+        },
+        {
+          "request": 2,
+          "completed_heads": 2
+        }
+      ],
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
     "source_inputs": {
       "files": 115,
       "sha256": "034e349e40265f33d689b26c1c6d842b8cc4d0f6ce1bdf3057b0d3612a0a7568"

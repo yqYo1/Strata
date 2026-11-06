@@ -635,9 +635,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controls now pass at source`b9c952b147b3e6be996ce30366534b0541ca32c3`without
   GPU execution. Preparation also passes with all15model assets fully hashed
   and the exact engine429b/environment/two requests pinned. Commit this plan,
-  then run once. Require actual incoming GPU hits
-  again after the32Kloan;record outgoing CPU observations separately. Checked
-  record-failure injection remains a separate native gate before clean timing.
+  then run once. The native entry now closes successfully:both256-output
+  requests complete with normal native/controller0,quiet strict validation,
+  completed T1/T4 Q6 heads,closed ownership,unchanged final15assets/boot/driver
+  and no fresh GPU fault. Across23published groups,all184actual swaps pass
+  victim/incoming payload,three-map,completion/publication and real GPU-plan/
+  CPU-job conservation. Request1has7213incoming GPU entries and53outgoing CPU
+  entries;request2cumulative counts are19004/399. The32Kprefill lends/refills
+  1124occupied slots with matching payload/maps/decode readiness,and incoming
+  GPU dispatch increases after that loan. Follow`adaptive_residency_native_entry_v1`.
+  This establishes the bounded positive path and post-loan dispatch,not model
+  quality,clean PP/TG,physical262144/RESTORE or inference adoption. Checked
+  record-failure injection remains the next separate native control before the
+  clean static-versus-adaptive bench.sh comparison. Preserve the fast552b prefill
+  fallback and assess its PP/TTFT independently of any decode gain.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
