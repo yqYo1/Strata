@@ -1,39 +1,44 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-04T21:34:43.645370+00:00",
+  "queried_utc": "2026-11-06T20:27:33+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "revision": "6d3fe3f4b8e0282c1e8cc433324b0f2774c3ac7f",
+    "revision": "5943022da76d6ee75b6b9af6cf5dd71dd73c40ff",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
-    "observed_sha": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
-    "queried_utc": "2026-11-02T21:17:40.857563+00:00",
-    "sha256": "0d477203865dd2d12dc72bf761fa8791a02c429751747ee5b384cf6d20c3f2a4"
+    "observed_sha": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "queried_utc": "2026-11-04T21:34:43.645370+00:00",
+    "sha256": "52e29f9c2c172dd1578cc5b874b64cac16c0e7a5d0226d2949e2f4572bad73e5"
   },
-  "observed_sha": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+  "observed_sha": "54828c7efbcdf9474697e70922d851f6707f4b32",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
     "git",
     "-C",
     "/home/yayoi/ghq/github.com/Niko1221/Strata",
+    "-c",
+    "url.https://github.com/.insteadOf=git@github.com:",
+    "-c",
+    "credential.https://github.com.helper=!gh auth git-credential",
     "fetch",
     "origin"
   ],
   "remote_check": [
-    "ffa80d73133ea5c548aefe57889a16e8085a938f\tHEAD",
-    "ffa80d73133ea5c548aefe57889a16e8085a938f\trefs/heads/main"
+    "54828c7efbcdf9474697e70922d851f6707f4b32\tHEAD",
+    "54828c7efbcdf9474697e70922d851f6707f4b32\trefs/heads/main"
   ],
   "new_interval": {
-    "start": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
-    "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
-    "commits": 708,
-    "changed_paths": 798,
-    "tags_at_target": [
-      "v0.2.10"
-    ],
-    "source_tree": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-ffa80d73",
-    "inspection": "Actual fetched origin/main and latest ls-remote HEAD/main agree. Both detached source trees are clean;all changed checkout bytes are checked against Git blobs,with three exact CRLF-only checkout normalizations explicitly recorded. Source review/evaluation pending;no import or inference adoption from this check."
+    "start": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
+    "commits": 209,
+    "changed_paths": 338,
+    "tags_at_target": [],
+    "release_tag": "v0.2.11",
+    "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
+    "describe": "v0.2.11-4-g54828c7e",
+    "source_access": "Immutable fetched Git objects via git show/diff;no additional branch,checkout or build created.",
+    "inspection": "Fetched origin/main and actual ls-remote HEAD/main agree. Previous target is an ancestor. Source-delta review,functional integration and unmodified hardware-tuned performance evaluation remain pending;no inference change from this check."
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
@@ -43,8 +48,8 @@
   "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
   "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-06T21:34:43.645370+00:00",
-  "pending": "Review the new c62d5e3a..ffa80d73(v0.2.10) interval and continue all earlier required function ports/whole-ledger obligations. Complete unmodified hardware-tuned upstream long,agent-session and thinking-on generation evaluation. Fetch/source review is not integration. Main continues the decode-only IQ3 candidate after passed same-build host and small traced GPU prerequisites;short actual-model and repeated long-generation admission remain pending. Keep479a/552b fallback and independent prefill/decode selections.",
+  "next_check_utc": "2026-11-08T20:27:33+00:00",
+  "pending": "Review ffa80d73..54828c7e(v0.2.11+4) and continue v0.2.10 and earlier required functional ports/whole-ledger obligations. Complete unmodified hardware-tuned upstream long,agent-session and thinking-on generation evaluation. Fetch/source review is not integration or inference adoption. Preserve the maintained independent prefill/decode selections;current tuning and qualification are recorded in docs/SYCL_NATIVE16_PREFILL.md.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -668,15 +673,16 @@
   },
   "remote_default_ref": "refs/heads/main",
   "pending_interval": {
-    "start": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
-    "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
-    "commits": 708,
-    "changed_paths": 798,
-    "tags_at_target": [
-      "v0.2.10"
-    ],
-    "source_tree": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-ffa80d73",
-    "inspection": "Actual fetched origin/main and latest ls-remote HEAD/main agree. Both detached source trees are clean;all changed checkout bytes are checked against Git blobs,with three exact CRLF-only checkout normalizations explicitly recorded. Source review/evaluation pending;no import or inference adoption from this check."
+    "start": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
+    "commits": 209,
+    "changed_paths": 338,
+    "tags_at_target": [],
+    "release_tag": "v0.2.11",
+    "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
+    "describe": "v0.2.11-4-g54828c7e",
+    "source_access": "Immutable fetched Git objects via git show/diff;no additional branch,checkout or build created.",
+    "inspection": "Fetched origin/main and actual ls-remote HEAD/main agree. Previous target is an ancestor. Source-delta review,functional integration and unmodified hardware-tuned performance evaluation remain pending;no inference change from this check."
   },
   "current_engine_role": "Validated479a/552b worker/map fallback;clean117K warmed PP and input-length curve remain the reference. Closed05a9 decode gains are recorded,with117K PP/TTFT preservation inconclusive;its binary and the closed CPU-service observer build are retired. The new decode-only IQ3 candidate has an all-eight-cell CPU production-entry gain,exact arithmetic/pool parity and same-build small traced GPU admission. No new model speed,full-context or inference adoption follows.",
   "web_api_key_input_port": {
@@ -864,6 +870,17 @@
       ],
       "source_tree": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-c62d5e3a",
       "inspection": "Fetched official main/tags and verified ls-remote HEAD/main. Clean detached source prepared for read-only component/function review and prospective unmodified hardware-tuned evaluation. Existing unfinished ports remain open;no source integration or inference adoption."
+    },
+    {
+      "start": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
+      "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+      "commits": 708,
+      "changed_paths": 798,
+      "tags_at_target": [
+        "v0.2.10"
+      ],
+      "source_tree": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-ffa80d73",
+      "inspection": "Actual fetched origin/main and latest ls-remote HEAD/main agree. Both detached source trees are clean;all changed checkout bytes are checked against Git blobs,with three exact CRLF-only checkout normalizations explicitly recorded. Source review/evaluation pending;no import or inference adoption from this check."
     }
   ],
   "v0210_review": {
@@ -1035,5 +1052,20 @@
         "inference_implementation_changed_by_slice": false
       }
     }
+  },
+  "v0211_review": {
+    "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
+    "release_tag": "v0.2.11",
+    "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
+    "state": "fetched_unreviewed",
+    "source_only": true,
+    "code_imported": false,
+    "whole_function_ledger_complete": false,
+    "performance_evaluation_complete": false,
+    "changed_serve_paths": 19,
+    "changed_sycl_paths": 5,
+    "pending": "Review required server,API,CLI,Control,desktop,setup and catalog deltas plus component-specific inference changes. Actual Arc resolver remains part of the review. Preserve all earlier functional obligations and origin/license checks.",
+    "research_dispatch": "New Orca workers remain conditional on supported worker transport;no substitute worker or repeated failed socket probe was started.",
+    "measurement_isolation": "Current332input static/adaptive code/prose comparison and engine are unchanged. Defer edits to frozen frontend/benchmark/native inputs and all tests/builds/GPU work until the owned comparison boundary."
   }
 }

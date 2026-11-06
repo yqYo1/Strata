@@ -2181,9 +2181,14 @@ original source/recipe recovery and validated migration remain independent holds
 
 Niko1221/Strata remains the only upstream. The maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
-records the last actual check at **2026-11-04 21:34:43 UTC**,
-`ffa80d73133ea5c548aefe57889a16e8085a938f` (`v0.2.10`), with the next check due
-approximately 48 hours later. The configuration parsing helpers are ported and
+records the last actual check at **2026-11-06 20:27:33 UTC**,
+`54828c7efbcdf9474697e70922d851f6707f4b32`(`v0.2.11-4-g54828c7e`). The
+actual fetch and remote HEAD/main agree;the209-commit/338-path interval from
+`ffa80d73`is pending review,integration and hardware-tuned vanilla evaluation.
+The v0.2.11tag is`c3b3f5035506f3e966f1b4b7b188aeaabae92f1d`,four commits
+before the observed head. No new checkout,branch,build or inference change
+was made;the next remote check is due approximately48hours later. Earlier
+v0.2.10and functional backlog remain pending. The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
 tests and is now merged into feature/sycl at `4c24b6931`;its completed child
