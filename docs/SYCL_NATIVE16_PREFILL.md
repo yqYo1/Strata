@@ -915,6 +915,12 @@ no XeStrata input. The optional `iq_single_exact_test --iq3s-pair` now defines
 16 scale nibbles,FP16 edge scales and invalid/overlapping layout refusals.
 The original default and IQ3_XXS dispatch test modes retain their scope.
 No compilation,test execution,production selection or speed result follows yet.
+The Orca gpt-6-luna source audit and native gpt-6-luna max report review now
+accept this as conditional source-level decision support:all three assigned
+source hashes match and no necessary source correction was identified.
+This does not establish compiler/ISA or numerical correctness. Keep its local
+report/review only through the Main-owned CPU-only qualification below;the
+research index records the source pins,limits and no-duplicate-scope decision.
 After the frozen caller comparison closes,commit a CPU-only build/comparison
 plan and qualify this fixture before timing. Use actual IQ3_S/IQ4_NL model
 weights,128/640-row ranges,six-expert reuse/252-expert streaming and separate
