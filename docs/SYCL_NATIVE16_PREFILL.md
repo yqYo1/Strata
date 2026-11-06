@@ -270,8 +270,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   key `mtp_width_model_entry_cap4_v1`:320frozen inputs,all15model assets,
   the unchanged cb7/ec4 generation and common half1. Only the declared startup
   frontend delta and controller/test additions extend the original317inputs.
-  Fresh frontend probes and model execution remain pending;cap2 cannot prepare
-  until this reference closes. No GPU work was executed by preparation.
+  Both fresh frontend probes now pass with the new startup import:benchmark
+  144modules/18code maps and server191modules/26code maps,normal exits and
+  closed ownership. Model execution remains pending;cap2 cannot prepare until
+  this reference closes. Preparation/frontend probes execute no native/GPU work.
 
 ## Prefill envelope and scaling
 
