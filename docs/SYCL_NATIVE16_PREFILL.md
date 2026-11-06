@@ -359,8 +359,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   First-pair exact TG is13.811709->12.247815 code and8.581628->10.626079 prose;
   candidate/reference ratios are.886770/1.238236. Keep the different generated
   lengths and fixed2 acceptance denominator. Fixed4 alone establishes each MTP
-  class. Two processes are closed;four processes and the three-pair decision
-  remain pending. The per-workload gain must reproduce;this is not adoption.
+  class. Process2,the second cap2 candidate,also passes the same route,journal,
+  footer,validation,fault and closed-owner gates with native exit0 and unchanged
+  boot/driver. It generates3592/8418tokens with5496/6359answer characters,
+  decode_ms296978.5/790574.1 and TG12.095152/10.647958;client TTFT is
+  50.528/42.748s. Three processes are closed;three processes and the three-pair
+  decision remain pending,including the second pair's cap4 reference.
+  The per-workload gain must reproduce;this is not adoption.
   The cap4 reference's completed target windows are1xT1+913xT4 for code and1xT1+3357xT4 for prose:
   3653/13429token positions,or1.152366/1.845911per generated token. Dividing
   those extents by whole decode time gives15.916143/15.840919positions/s.
@@ -383,10 +388,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `D_ms = 53.271936*R + 49.806690*P` for prose. They interpolate the first pair
   exactly by construction;linearity and physical fixed/per-token costs are
   unproven. Separate draft work,scheduling,first/tail work and both devices
-  remain inside `D_ms`. Use remaining processes2..5 as held-out checks of these
-  fixed descriptions,recording relative whole-decode prediction errors without
-  refitting or changing the cohort's original speed/eligibility decisions.
-  Both closed processes' successful raw output/JIT are retired after pushing
+  remain inside `D_ms`. Process2's held-out prediction errors relative to
+  measured whole-decode time are-1.246454%/+0.205901% for code/prose. These are
+  repeatability checks at an already observed width,not validation of linearity,
+  unseen widths or different contexts. Use remaining processes3..5 as further
+  held-out checks without refitting or changing the original cohort decisions.
+  Successful raw output/JIT from processes0/1 is retired after pushing
   their individual samples at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76` and
   `ef5d26fc18bbc6510c7a65c7b2d9a93f5c3a9363`,recovering all320original inputs
   from Git,and checking closed ownership. Process0 retires69files/13154182bytes;
