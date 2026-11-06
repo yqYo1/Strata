@@ -950,7 +950,14 @@ no XeStrata input. The optional `iq_single_exact_test --iq3s-pair` now defines
 80 additional synthetic oracle/canary cases,all512 grids,256 high/sign bytes,
 16 scale nibbles,FP16 edge scales and invalid/overlapping layout refusals.
 The original default and IQ3_XXS dispatch test modes retain their scope.
-No compilation,test execution,production selection or speed result follows yet.
+The CPU-only component now builds from source00eb08ece with196project,
+1376official GGML and12179external pins. All628actual compiler inputs and22
+external link inputs are covered;three CPU ELFs use the same freshly compiled
+expert archive. The actual public-wrapper/dot AVX2/FMA call-chain gate passes.
+All six same-build correctness children exit0 with quiet stderr and closed
+ownership:384single/80XXS cases,the new80IQ3_S cases,old dispatch off/on and both
+28-case pool selectors. Both pool checksums remain `e5d7a50a8e7d5ac5`.
+No production selection or component/model speed result follows yet.
 The Orca gpt-6-luna source audit and native gpt-6-luna max report review now
 accept this as conditional source-level decision support:all three assigned
 source hashes match and no necessary source correction was identified.

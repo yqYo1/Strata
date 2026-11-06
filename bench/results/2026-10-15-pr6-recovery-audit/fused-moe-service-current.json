@@ -164347,7 +164347,7 @@
     }
   },
   "cpu_iq3s_pair_component_v1": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "00eb08ecec66122967776543752c7d592db18622",
     "prior_admission": {
       "evidence_commit": "00eb08ecec66122967776543752c7d592db18622",
@@ -164836,6 +164836,96 @@
     "same_build_library": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3s-pair-component-v1/build/libexpert_cpu.a",
       "sha256": "2265e031083625b959d884dff58c8a113f63ec66b762b9ba368871fa6d73c965"
+    },
+    "ISA": {
+      "passed": true,
+      "public_wrapper": "_ZN6strata7kernels3cpu17iq3s_pair_gu_rowsERKNS1_9NativeFmtEPKhPKvPfii",
+      "directly_called_dot_variants": [
+        "_ZN6strata7kernels3cpu12_GLOBAL__N_113iq3s_pair_dotEPKhS4_S4_RfS5_"
+      ],
+      "reachable_symbols": {
+        "_ZN6strata7kernels3cpu12_GLOBAL__N_113iq3s_pair_dotEPKhS4_S4_RfS5_": {
+          "disassembly_sha256": "fcd48026bcda3914370ba42bf984117d52daf8834a57805c7cb97861620f534a",
+          "called_pair_symbols": [],
+          "forbidden_registers": false,
+          "FMA": true,
+          "vzeroupper": true,
+          "integer_madd_inline": true,
+          "outlined_chunks": []
+        },
+        "_ZN6strata7kernels3cpu17iq3s_pair_gu_rowsERKNS1_9NativeFmtEPKhPKvPfii": {
+          "disassembly_sha256": "2e063b72c87dda24789c1021be10a8598e46dd945660c92c8ae2b2b50fe5e38d",
+          "called_pair_symbols": [
+            "_ZN6strata7kernels3cpu12_GLOBAL__N_113iq3s_pair_dotEPKhS4_S4_RfS5_"
+          ],
+          "forbidden_registers": false
+        }
+      },
+      "unreachable_named_symbols": [],
+      "scope": "Actual public wrapper/dot/outlined-chunk call chain,with compiler variants identified separately. Unreachable symbols and unrelated AVX512 library functions supply no arithmetic evidence;this is not exhaustive dynamic-path verification."
+    },
+    "correctness": {
+      "passed": true,
+      "IQ3_S_pair_cases": 80,
+      "default_single_cases": 384,
+      "default_IQ3_XXS_pair_cases": 80,
+      "pool_checksum": "e5d7a50a8e7d5ac5",
+      "checks": [
+        {
+          "label": "exact-default",
+          "passed": true,
+          "receipt": {
+            "exit_code": 0,
+            "direct_child_reaped": true,
+            "session_empty": true
+          }
+        },
+        {
+          "label": "exact-iq3s",
+          "passed": true,
+          "receipt": {
+            "exit_code": 0,
+            "direct_child_reaped": true,
+            "session_empty": true
+          }
+        },
+        {
+          "label": "dispatch-0",
+          "passed": true,
+          "receipt": {
+            "exit_code": 0,
+            "direct_child_reaped": true,
+            "session_empty": true
+          }
+        },
+        {
+          "label": "pool-0",
+          "passed": true,
+          "receipt": {
+            "exit_code": 0,
+            "direct_child_reaped": true,
+            "session_empty": true
+          }
+        },
+        {
+          "label": "dispatch-1",
+          "passed": true,
+          "receipt": {
+            "exit_code": 0,
+            "direct_child_reaped": true,
+            "session_empty": true
+          }
+        },
+        {
+          "label": "pool-1",
+          "passed": true,
+          "receipt": {
+            "exit_code": 0,
+            "direct_child_reaped": true,
+            "session_empty": true
+          }
+        }
+      ]
     },
     "project_inputs": {
       "files": 196,
