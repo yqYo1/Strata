@@ -363,8 +363,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   footer,validation,fault and closed-owner gates with native exit0 and unchanged
   boot/driver. It generates3592/8418tokens with5496/6359answer characters,
   decode_ms296978.5/790574.1 and TG12.095152/10.647958;client TTFT is
-  50.528/42.748s. Three processes are closed;three processes and the three-pair
-  decision remain pending,including the second pair's cap4 reference.
+  50.528/42.748s. Process3,the second cap4 reference,also passes with native0,
+  quiet validation,closed owners,unchanged boot/driver,no fresh fault,all four
+  paused gates and six footers. It generates3170/7275tokens with5578/4632answer
+  characters,decode_ms229115.5/805007.2,TG13.835816/9.037186 and client
+  TTFT50.737/42.208s. Actual T1/T4 and selected heads complete. Second-pair
+  cap2/reference TG ratios are.874191/1.178238:code remains slower and prose
+  faster. Four processes/two pairs are closed;processes4/5 and the final
+  three-pair decision remain pending.
   The per-workload gain must reproduce;this is not adoption.
   The cap4 reference's completed target windows are1xT1+913xT4 for code and1xT1+3357xT4 for prose:
   3653/13429token positions,or1.152366/1.845911per generated token. Dividing
@@ -391,7 +397,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   remain inside `D_ms`. Process2's held-out prediction errors relative to
   measured whole-decode time are-1.246454%/+0.205901% for code/prose. These are
   repeatability checks at an already observed width,not validation of linearity,
-  unseen widths or different contexts. Use remaining processes3..5 as further
+  unseen widths or different contexts. Process3's errors are+0.174541%/+5.308524%:
+  prose shows a larger variation that the first-pair description does not explain.
+  Use remaining processes4/5 as further
   held-out checks without refitting or changing the original cohort decisions.
   Successful raw output/JIT from processes0..2 is retired after pushing their
   individual samples through `1cdf1b116bf835c6c39e28011b300f0df93bea3d`,recovering
@@ -402,7 +410,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   composition,not the plain ec4 controller-commit tree. Required inputs match
   before/after retirement;the next process still requires full unchanged native
   admission. Keep all12generated config/plan files and global cohort/provider
-  inputs for the remaining three processes. External deletion manifests
+  inputs for the remaining two processes. External deletion manifests
   `mtp-width-generation-process0-output-retirement-20261106.json` and
   `mtp-width-generation-process1-output-retirement-20261106.json` have respective
   SHA256 `7e8d87edafaa5208fc46ad26f7747a1e2de975195782f8d9514cb3244dd6c0e4`
