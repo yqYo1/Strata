@@ -429,9 +429,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fields/duplicates/missing values. The parent records bounded PID/start/SID-
   checked memory,counter and CPU-tick snapshots at READY,four drained gates and
   DONE. Counter regressions remain ineligible;unavailable optional metrics do
-  not become zero or qualify a bottleneck claim. This source is not yet tested,
-  prepared or executed. Commit it,run the CPU controls,prepare/commit V2,then
-  run once with unchanged native math and placement.
+  not become zero or qualify a bottleneck claim. At controller source
+  `e124ed4e3fc8f44fc08acbf26949dfb84beff666`,the CPU INFO controls pass:
+  the actual captured INFO is accepted and all10corrupt variants are rejected.
+  V2 preparation now passes with all15model assets fully hashed and the exact
+  native519e/request/environment pinned. Commit the prepared plan,then run once
+  with unchanged native math and placement. No V2 model execution has occurred.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
