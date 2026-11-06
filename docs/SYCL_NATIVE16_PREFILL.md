@@ -232,9 +232,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   A candidate crossing the reference's acceptance-class threshold must not
   retrospectively exclude its speed sample. Commit final criteria and controls
   before this new experiment;do not change the active Q6 comparison's rules.
-  Main's bounded-entry and generation controller is now committed at
-  `19b43827ae503e58123fa43aaf4492a40213f285` in the existing isolated
-  `maintenance/upstream-config-wiring` child. It preserves spec4 allocation,
+  Main's bounded-entry and generation controller at
+  `19b43827ae503e58123fa43aaf4492a40213f285` is now integrated into feature/sycl
+  by merge `4c24b6931e9090538cb400153856704f9b33eb00`. The pushed merge preserves
+  original source/test commits;the completed child branch/worktree is retired.
+  It preserves spec4 allocation,
   compares explicit cap4/cap2 with min-p/suffix disabled,and checks actual
   traced widths against completed live Q6 captures. It requires a positive
   occupied tail loan,checked resident-prefix/refill payload,ordered owner
@@ -247,8 +249,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   execution. Exact command in the child was `env PYTHONDONTWRITEBYTECODE=1
   PYTHONNOUSERSITE=1 prlimit --as=1073741824 --cpu=60 --fsize=65536 -- timeout
   --signal=TERM --kill-after=5s 90s /home/yayoi/.local/share/strata-sycl/venv/bin/python3
-  -B tools/sycl/check_mtp_width_model.py controls`. Merge the child after this
-  closed Q6 cohort's evidence is pushed. Fresh frontend/model entries remain pending;
+  -B tools/sycl/check_mtp_width_model.py controls`. Integration followed the
+  pushed closed Q6 evidence. Fresh frontend/model entries remain pending;
   no new native build or speed result follows from the parser controls.
   The later source adds a separate `speed` mode for six fresh4/2/2/4/4/2
   processes with the fixed v5 thinking-on long workloads. It requires both
@@ -1610,8 +1612,9 @@ records the last actual check at **2026-11-04 21:34:43 UTC**,
 approximately 48 hours later. The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
-tests in the isolated child;its primary-tree integration and fresh model/frontend
-qualification wait for the frozen Q6 cohort to close. Required tracking/recovery/alias/API/CLI imports and
+tests and is now merged into feature/sycl at `4c24b6931`;its completed child
+is retired and original commits remain reachable from the pushed primary.
+Fresh model/frontend qualification remains pending. Required tracking/recovery/alias/API/CLI imports and
 hardware-tuned unmodified-upstream measurements remain incomplete. PR 180 is
 blocked by a squash-only ruleset; preserve measured source commit identities
 and do not claim default-branch integration.
@@ -1620,6 +1623,8 @@ The Q6 policy source and closed CPU host result are published on
 The default remains `05069aeed`; the current branch-rule query still permits
 only squash PR merges. Default integration remains unfinished because the
 measured original commit identities must be preserved.
+Rechecked2026-11-06 09:21UTC:repository merge commits are enabled,but the actual
+main-branch pull-request rule still restricts allowed methods to `squash`.
 
 ## Evidence pointers
 
