@@ -372,6 +372,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   verification positions per output,but positions per whole-decode second also
   fall. Keep round overhead,draft work,shape-dependent compute and weight reuse
   unresolved until source-matched attribution;the ratios do not identify hardware saturation.
+  A second normalization uses completed target rounds `R` and positions `P`.
+  Whole-decode milliseconds per round are251.110941/153.307266 for code and
+  252.454199/152.875704 for prose (cap4/cap2). Generated tokens per round are
+  3.468271/1.877679 and2.166468/1.624469. Thus cap2/cap4 cost ratios
+  .610516/.605558 combine with yield ratios.541388/.749824 to reproduce the
+  opposing TG directions. This is accounting,not an independent causal finding.
+  At evidence `ef5d26fc18bbc6510c7a65c7b2d9a93f5c3a9363`,two-point descriptions
+  are `D_ms = 55.394057*R + 48.969404*P` for code and
+  `D_ms = 53.271936*R + 49.806690*P` for prose. They interpolate the first pair
+  exactly by construction;linearity and physical fixed/per-token costs are
+  unproven. Separate draft work,scheduling,first/tail work and both devices
+  remain inside `D_ms`. Use remaining processes2..5 as held-out checks of these
+  fixed descriptions,recording relative whole-decode prediction errors without
+  refitting or changing the cohort's original speed/eligibility decisions.
   Both closed processes' successful raw output/JIT are retired after pushing
   their individual samples at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76` and
   `ef5d26fc18bbc6510c7a65c7b2d9a93f5c3a9363`,recovering all320original inputs
