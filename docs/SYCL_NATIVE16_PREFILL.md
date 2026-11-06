@@ -486,8 +486,11 @@ building:Main compared the build-controller commit tree instead of the actual
 materialized model sources. V2 also failed before its root/build because Main
 used the compact source signature as the full source map. V3 loads the original
 full record,checks its566-input signature against committed evidence and uses
-those actual hashes. Both failed outcomes remain failed. V3 is source-prepared only. No new
-build,GPU execution,phase selection or model-speed result follows yet. Retire this
+those actual hashes. Both failed outcomes remain failed. At source
+`4947b7746dafb0efde7da9bb2ead49dc89790d89`,all15host controls pass and V3
+preparation closes with the exact source/production recipe and toolchain image.
+Its build and GPU stages remain unexecuted;phase selection and model speed are
+not qualified. Retire this
 auxiliary component build after recording its decision and exact-input recovery;
 keep the named552b fallback and5c5e diagnostic-model consumers separately.
 The standalone converter's `prepare`, `build` and `check` actions require the original cohort's

@@ -164670,5 +164670,358 @@
     "error": "KeyError: 'src/sycl/runtime.cpp'",
     "cause": "Main indexed the compact native_sources signature as if it were the full566-file source map. The original full retained build record contains the map;its signature agrees with committed evidence. No native child or root was created.",
     "correction": "V3 loads the full original record,checks its source-map signature,selected basis,recipe identity and record hash against committed evidence. Host regression covers compact/full source records and changed-input refusal. V1/V2 remain failed."
+  },
+  "q6_native_half_component_v3": {
+    "stage": "prepared",
+    "source_commit": "4947b7746dafb0efde7da9bb2ead49dc89790d89",
+    "cohort_signature": "d7223d5e9c2339a55f359ca4cb2645087e22b386ff5ab75db82d88f36a0afbef",
+    "qualifications": {
+      "cpu_signature": "199e1b896ea5af47b51149250673e3d0f04dded2ea74e8ad751820c0afdf5073",
+      "audit_signature": "a248adb637bbb7fc2bfa602fc41e3db6b8f6b0bfc0b066bda6315c067714eb75",
+      "audit_source_revision": "ef5614bfafa86687f1da98aba673b8e58e83bfa3",
+      "source_hashes": {
+        "src/kernels/sycl/native_mmvq.cpp": "2db527d87fce1a24ffb7998d87701c5cd0f5d0c2aa1a20a46904d1262b0dca58",
+        "include/strata/kernels/native_mmvq.hpp": "16bf1137a722437a9986968937dbd134a935dfcdfbd23bdb2b9e0039e1125335",
+        "bench/sycl/q6_columns.cpp": "78657bdb9fbd83209cd4bc4a36e1da6732e2e1ac000a4453974a8be095089bd9",
+        "include/strata/kernels/f16_bits.hpp": "0f74e6dd832da427b681c9971265a0af1a91198694fdef3654d860b98863fc8c",
+        "include/strata/kernels/q6_packed_center.hpp": "2a6df6a2fdc1e8e8ad17cd6eeda6e2b9cb57be62e2ab2ee7cb1e63d1b702ff75",
+        "cmake/sycl_backend.cmake": "7efcda2af8bafddcde6ece056cd9a0b986ae750ce920105d378ae2ee0404502a",
+        "bench/sycl/f16_widen_clz_device.cpp": "869c4092e22d10926cc48a4ddce5363a3c33bb4c863d8496ee3d639a26fa0ed3"
+      },
+      "fixture_supplement": {
+        "sha256": "64f6c765dc029c832ab9626f3912fc4973e4eb3b0b2eaaedc3e07dd80f145d56",
+        "diff_sha256": "4f662412d8878f819806552d75cbc4a5936a82649ce75e3c685d402b7fed7cc2",
+        "main_review": "Host-only steady-clock pair screen outside both arms;no math/workload change."
+      }
+    },
+    "tools": {
+      "compiler": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "realpath": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+      },
+      "git": {
+        "path": "/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin/git",
+        "realpath": "/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin/git",
+        "sha256": "d88c25f33602bd5898b398b04418916512be06821f47034832b3f5736e911706"
+      },
+      "python": {
+        "path": "/usr/bin/python3",
+        "realpath": "/usr/bin/python3.12",
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      },
+      "assembler": {
+        "path": "/usr/bin/as",
+        "realpath": "/usr/bin/x86_64-linux-gnu-as",
+        "sha256": "21aff249b692b5c31a44007491f922dcb49f41323e362c57d2ada3f52eddb7f0"
+      },
+      "linker": {
+        "path": "/usr/bin/ld",
+        "realpath": "/usr/bin/x86_64-linux-gnu-ld.bfd",
+        "sha256": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b"
+      }
+    },
+    "toolchain": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/toolchain.json",
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838",
+      "files": 6239,
+      "bytes": 3202685889,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ]
+    },
+    "native_recipe_origin": {
+      "source_commit": "70169d3881ab588d45f7df7baa132b4293f00970",
+      "compile_database": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-model-v1/build/compile_commands.json",
+        "sha256": "e9908b1bec09e6cd07f8a7a7f6abe2b87da04d3a776924c6e686e2313676b45f"
+      },
+      "materialized_source_record": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-model-v1/record.json",
+        "sha256": "548a9d2c0f0a2894e2084bf261b2153167a22c0c702c91ba4448504e81227675"
+      },
+      "native_build_signature": "ed5464e7998d094a1de168684815cc20df16b3b2d2c3a25a9378716f26ec0ab8",
+      "flags": [
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/source/include/strata/sycl/compat",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13"
+      ],
+      "change": "Private source paths plus explicit GCC13 host-header selection;no math/optimization flag change."
+    },
+    "common_source_delta": {
+      "original_GPU_units": {
+        "src/sycl/runtime.cpp": "e6c20e148bc7ceec250ad9a58ddfc851c1476aaab3d68982d2aee2897e572b83",
+        "src/sycl/compat.cpp": "214c721c5be036e4410b4eca4051e8df6157effb8e2e0f575a9d6915b2700bad",
+        "src/sycl/command_profile.cpp": "480139608ebad117634cfe98a4e30c12926757ef026f23da3e66b7c78f6adf2b",
+        "src/kernels/sycl/native_mmvq.cpp": "24f79d4b5cd154123337344ef27eab89e88c0b56e644b8ffa6d470f3d3823bde",
+        "src/kernels/sycl/native_q5_head.cpp": "c916932c0b2d5e37876b3f36221d071c8586b69e488142ef0d08f33a71002365",
+        "src/kernels/sycl/native_q3_esimd.cpp": "8348851986f91d162b08d4be20c7551aadc8c732f4b9fca5a8c79fc9f6f82a8c",
+        "src/kernels/sycl/native_q4_esimd.cpp": "ced4f387fcfb318b0e3f4f2bdebbf4270cef4a0d3e27560fa9fbca7919505a68",
+        "src/kernels/sycl/native_q2_esimd.cpp": "3365fe1b905684d50d9a6de902a2faf27833325382c2418afc7b55ee99681fd2",
+        "src/kernels/sycl/native_iq4xs_esimd.cpp": "5e6b78ca4a9775304a9f209f6750fff88b608281fefed7242cb6709c655957ef",
+        "src/kernels/sycl/native_iq_esimd.cpp": "cdd822167d73c4446ca195b3f5c937c2fe545710000d87a707ffc9857fce18c1",
+        "src/kernels/sycl/native_mmq_xmx.cpp": "f5f69d0920c694fc84eb912ff282ae96770428a93887689fb4177ac4bfffdaef",
+        "src/kernels/sycl/iq.cpp": "414872755b46a01b3cdb940e39fe65c2bc5595ca62ff970c0465e6d79c5f49ef"
+      },
+      "changed": [
+        "src/kernels/sycl/native_mmvq.cpp",
+        "src/sycl/command_profile.cpp"
+      ],
+      "review": "native_mmvq adds the unselected audited entry. Shared command_profile adds inactive kinds/metadata;the fixture constructs no Trace,so fused_tag returns before registration. Both arms share it. Other GPU translation units match retained5c5e. Actual compiler dependencies are checked after build;this is not whole-model equivalence."
+    },
+    "compiler_version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)",
+    "environment": {
+      "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONUNBUFFERED": "1",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "STRATA_SYCL_MMQ_XMX": "1",
+      "STRATA_SYCL_MMQ_XMX_TILE": "8",
+      "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+      "STRATA_SYCL_MMQ_XMX_PACK": "0",
+      "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_PREFILL_RING": "8",
+      "STRATA_PREFILL_MMQ": "0",
+      "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+      "STRATA_WATCHDOG_S": "480",
+      "STRATA_SYCL_PROMPT_DIRECT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+      "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+      "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1",
+      "STRATA_SYCL_KV_COPY_GROUPS": "0",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+      "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+      "STRATA_IQ_TIMING_PROGRESS": "0",
+      "STRATA_PREFILL_RELEASE_HEADS": "1",
+      "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+      "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+      "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+      "STRATA_GR_UNFUSED": "0",
+      "STRATA_PREFILL_BF16X2": "0",
+      "STRATA_PF_FUSED": "0",
+      "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+      "STRATA_SYCL_SELECT_RADIX4": "1",
+      "STRATA_SYCL_SELECT_CYCLIC": "0",
+      "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+      "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/cache",
+      "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+      "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+      "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+      "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+      "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+      "STRATA_ROPE_TABLE": "1",
+      "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+      "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+      "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+      "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/tmp",
+      "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3",
+      "ZES_ENABLE_SYSMAN": "0",
+      "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+      "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+      "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+      "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+      "STRATA_SYCL_CACHE_SCRATCH_LEASE": "1",
+      "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+      "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+      "CUDA_MODULE_LOADING": "EAGER",
+      "STRATA_MTP_BATCH_F16": "1",
+      "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+      "STRATA_IQ2_PAIR": "1",
+      "STRATA_SYCL_MTP_OBSERVER": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+      "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+      "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+      "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/cache/python",
+      "STRATA_TRACE": "1",
+      "STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR": "1",
+      "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+      "STRATA_SYCL_PREFILL_TOPK_EARLY": "0",
+      "STRATA_SYCL_PREFILL_GDN_BARRIERS3": "1",
+      "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+      "STRATA_SYCL_PREFILL_GDN_FP16": "1",
+      "STRATA_SNAPSHOT_VERIFY": "1",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_CPU_WORK_CENSUS": "0",
+      "STRATA_DECODE_TIMING": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_ADAPT_SYNC": "1"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "budgets": {
+      "wall": 1200,
+      "cpu": 2400,
+      "rss_cap": 8589934592,
+      "text_cap": 16777216,
+      "file_cap": 134217728,
+      "total_cap": 805306368
+    },
+    "plan": {
+      "reference": "native_q6_k_columns_mmvq",
+      "candidate": "native_q6_k_native_half_columns_mmvq",
+      "difference": "Byte-copy half bits,bit_cast to real sycl::half,then widen Q6/Q81 scales to float;same packed data,dot,FP32 accumulation/reduction,geometry and outputs. Per-call fp16 capability check remains timed.",
+      "provenance": "Own existing Q6 kernel and standalone SYCL conversion;no XeStrata implementation input.",
+      "device_identity": "Exact LevelZero,vendor8086,devicee20c,PCI0000:05:00.0,fp16,in-order;descriptive name is emitted,not matched.",
+      "order": "One traced smoke,then three fresh processes;five paired batches per shape/column,arm=(batch+column+position)%2.",
+      "shapes": [
+        [
+          2560,
+          10240,
+          256
+        ],
+        [
+          6144,
+          2560,
+          256
+        ],
+        [
+          2560,
+          6144,
+          256
+        ],
+        [
+          2560,
+          640,
+          1024
+        ],
+        [
+          2560,
+          512,
+          1024
+        ],
+        [
+          2560,
+          12288,
+          256
+        ],
+        [
+          2560,
+          248320,
+          8
+        ]
+      ],
+      "columns": [
+        1,
+        2,
+        3,
+        4,
+        8
+      ],
+      "smoke_cases": 32,
+      "speed_cases": 35,
+      "timer": "Steady-clock full public dispatch and queue completion;resident weights/Q81;conversion,allocation,oracles outside timers.",
+      "minimum_batch_seconds": 0.01,
+      "timer_screen": "2048 adjacent steady-clock pairs before speed cases;finite positive median <=0.1% of fastest timing batch.",
+      "process_repetitions": 3,
+      "batches_per_arm": 5,
+      "acceptance": "All output bits,read-only inputs,guards and finite values pass;Q6 scalar and every Q81 byte oracle pass. Exact B570,in-order queue,normal0,quiet validation,closed owners,unchanged inputs/providers/boot and no fresh fault. A shape is eligible only when all three independent median candidate/reference time ratios are below1;no percentage floor.",
+      "stopping": "Stop on first source/provider/owner/numerical/validation/fault/budget/short-timer failure;no retries or hash refresh.",
+      "limits": "Synthetic model geometries and parameter-validation/preload envelope. Logical bytes unchanged;no physical-traffic,saturation,native-ISA,clean model-speed,ordinary runtime-teardown,prefill or262144/RESTORE qualification. No production selector is enabled."
+    },
+    "retention": "One auxiliary component build for this imminent native-half comparison. Keep552b validated prefill fallback(9ELFs) and5c5e current diagnostic model(5ELFs) for their recorded consumers;no b310/CPU comparison build is needed. Retire this fixture ELF/objects/source snapshot/traces after committing the decision and verifying exact source/recipe recovery;not another model reference generation.",
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "final_owner_guard": {
+      "passed": true,
+      "evidence": {
+        "same_uid_model_owners": [],
+        "scope": "bounded read-only cmdline scan; cannot prove hidden foreign GPU use absent"
+      }
+    },
+    "host_controls": {
+      "source_commit": "4947b7746dafb0efde7da9bb2ead49dc89790d89",
+      "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 60s python3 -B -m unittest discover -s tests/core -p test_q6_columns.py -q",
+      "tests": 15,
+      "passed": true,
+      "exit_code": 0,
+      "GPU_executed": false
+    },
+    "source_inputs": {
+      "files": 382,
+      "aggregate_sha256": "0e7f8b50608f1aaccd0b65c85ea9a57b58861d314bac89dd33b30ff274cba10e"
+    },
+    "runtime_inputs": {
+      "files": 84,
+      "aggregate_sha256": "12f00cc0c1e71fad681f18c9a2550e288f36a0a0af12709e604840df884a2ab2"
+    },
+    "command_inputs": {
+      "count": 14,
+      "sha256": "98b5e73c42d5f5a8c3d889f0a84d8cd723cddf6cd76f58f28d7f275cf0f00bc5"
+    }
   }
 }
