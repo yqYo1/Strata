@@ -494,7 +494,12 @@ all822actual compiler/link inputs covered. The actual project dependencies
 change only the candidate entry/declaration and shared inactive profile
 source/header,plus the fixture. Executable SHA256 is
 `67d942b16b456c8595028a73b71b0aad9f7e62563357ead216089b90a66adc8a`.
-No GPU execution,phase selection or model-speed qualification follows yet. Retire this
+Its exact-B570 traced smoke now passes all32cases,including finite half-scale
+edges,subnormal Q8_1 scales,columns5..7 reference fallback and invalid-column
+refusals. Output bits,scalar/Q8-byte oracles,guards and read-only inputs pass;
+the child exits0 with quiet validation,closed ownership,unchanged inputs/boot
+and no fresh driver fault. Three-process entry timing remains pending;no
+phase selection or model-speed qualification follows. Retire this
 auxiliary component build after recording its decision and exact-input recovery;
 keep the named552b fallback and5c5e diagnostic-model consumers separately.
 The standalone converter's `prepare`, `build` and `check` actions require the original cohort's

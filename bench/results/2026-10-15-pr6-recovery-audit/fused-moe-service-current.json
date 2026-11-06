@@ -164672,7 +164672,7 @@
     "correction": "V3 loads the full original record,checks its source-map signature,selected basis,recipe identity and record hash against committed evidence. Host regression covers compact/full source records and changed-input refusal. V1/V2 remain failed."
   },
   "q6_native_half_component_v3": {
-    "stage": "compiled",
+    "stage": "smoke-passed",
     "source_commit": "4947b7746dafb0efde7da9bb2ead49dc89790d89",
     "cohort_signature": "d7223d5e9c2339a55f359ca4cb2645087e22b386ff5ab75db82d88f36a0afbef",
     "qualifications": {
@@ -164994,7 +164994,7 @@
     "ownership_closed": true,
     "passed": false,
     "complete": false,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "final_owner_guard": {
       "passed": true,
@@ -165017,6 +165017,12 @@
         "sha256": "37adb64d62b9248e0673bd98354961995f252b51637da659fb37dfbc4d499287",
         "closed": true,
         "commands": 14
+      },
+      "smoke": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/smoke-owner.json",
+        "sha256": "55426291a919b794cfd74019ca2f1df3780e00a187387e31c74c195f63dca8f4",
+        "closed": true,
+        "commands": 1
       }
     },
     "actual_inputs": {
@@ -165044,6 +165050,47 @@
         "bench/sycl/q6_columns.cpp"
       ],
       "scope": "Actual MD/link input map:all822inputs covered. Four reviewed project changes are the candidate entry/declaration and common inactive profile kinds/metadata;fixture is independently authored. This does not claim whole-model equivalence."
+    },
+    "GPU_execution_attempted": true,
+    "native_postchecks": [
+      {
+        "phase": "smoke",
+        "process": 0,
+        "passed": true,
+        "faults": {
+          "passed": true,
+          "evidence": []
+        },
+        "inputs_boot_driver": {
+          "passed": true,
+          "evidence": null
+        },
+        "model_owners": {
+          "passed": true,
+          "evidence": {
+            "same_uid_model_owners": [],
+            "scope": "bounded read-only cmdline scan; cannot prove hidden foreign GPU use absent"
+          }
+        }
+      }
+    ],
+    "smoke": {
+      "passed_cases": 32,
+      "native_exit_code": 0,
+      "ownership_closed": true,
+      "validation": {
+        "pid": 3149545,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "fresh_faults": []
     },
     "source_inputs": {
       "files": 382,
