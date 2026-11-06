@@ -170,8 +170,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   tools/sycl/q6_native_half_generation_speed.py controls`;no GPU is executed.
   Closed entry output is retired:165files,28364861bytes,with explicit hashes
   and original outcomes preserved in `q6_native_half_model_entry_output_retirement_v1`.
-  Both current entries retain only record/config/plan/provider files for the
-  next comparison;all567native sources and15selected executables are unchanged.
+  Their useful outcomes remain committed. At generation closure,the next MTP
+  admission needs only the full cohort record and original half0 record;
+  obsolete arm configs/plans,provider clones,host output and the duplicate
+  half1 receipt are retired. All567native sources and15selected executables
+  are unchanged.
   The generation plan at source `03f5e0192` froze318source inputs,
   all15model-asset hashes and one invariant for the six normalized arm plans.
   Follow `q6_native_half_generation_speed_v1`:three counterbalanced adjacent
