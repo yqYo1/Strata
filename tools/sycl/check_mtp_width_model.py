@@ -65,9 +65,16 @@ def prospective_basis(revision):
                  ctx.shared.gen.blobs(P, original['source_commit'], original['sources'])}
     require(recovered == original['sources'] and len(recovered) == 317,
             'recover the actual original model inputs from Git')
+    cohort_sources = {n: hashlib.sha256(raw).hexdigest() for n, raw in
+        ctx.shared.gen.blobs(P, cohort['source_commit'], cohort['sources'])}
+    require(cohort_sources == cohort['sources'] and len(cohort_sources) == 318 and
+            set(cohort_sources) - set(recovered) == {str(q6.SELF.relative_to(P))} and
+            all(cohort_sources.get(n) == h for n, h in recovered.items()),
+            'recover and preserve all original comparison inputs including its decision controller')
     sources = pinned_sources(revision)
     added = {str(SELF.relative_to(P)), str(q6.SELF.relative_to(P)), FRONTEND_FILES[2]}
     source_delta(recovered, sources, added)
+    source_delta(cohort_sources, sources, added - {str(q6.SELF.relative_to(P))})
     require(all(sources[n] == hashlib.sha256(short.build.blob(FRONTEND, n)).hexdigest()
                 for n in FRONTEND_FILES), 'use the tested exact startup-config port')
     # An unsuccessful half optimization must not block the independent width test.
