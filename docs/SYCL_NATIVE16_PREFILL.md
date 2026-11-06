@@ -22,7 +22,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cumulative row in [`performance-records.csv`](../bench/performance-records.csv).
 - The immediate decode comparison uses **a330 / engine429b** as the positive-swap
   candidate alongside the552b prefill fallback. Its bounded184-swap/32K-loan
-  correctness entry passes;checked record-failure control and clean repeated
+  correctness entry and second-event-record refusal both pass;clean repeated
   speed comparisons remain pending. No new PP/TG record or adoption follows.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -650,17 +650,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   GPU dispatch increases after that loan. Follow`adaptive_residency_native_entry_v1`.
   This establishes the bounded positive path and post-loan dispatch,not model
   quality,clean PP/TG,physical262144/RESTORE or inference adoption. Checked
-  record-failure injection remains the next separate native control before the
+  record-failure injection is now closed in a separate native control before the
   clean static-versus-adaptive bench.sh comparison. The Main-authored
-  `check_adaptive_record_failure.py` now source-prepares that control using the
+  `check_adaptive_record_failure.py` uses the
   same429b engine/configuration and one1024-input/max256-output request. The
   existing native injection calls the real compatibility API with a null event
   on the second record,after accepted positive copies;the first event remains
   intact. Require generation1 published,generation2 masked but never published,
   exact adaptive-refill ERR without DONE,and owned native exit1 without cleanup,
   quiet validation,unchanged final assets/boot/driver and no fresh GPU fault.
-  Its reducer/source and prospective plan must be committed before execution;
-  this source preparation supplies no new native result or speed claim.
+  At source`31cdb841de048f95bf919944a19992cf3c51ec8d`,its one valid reducer
+  fixture and21corrupt variants pass. The committed native plan now passes:
+  generation1publishes8swaps;generation2has8accepted copies and a masked map,
+  but its real record returns1 and no second publication occurs. The request
+  emits45tokens,then the exact ERR without DONE;native exits1 as expected with
+  normal closed ownership and no supervisor cleanup. Strict validation is quiet,
+  all15final model hashes match,boot/driver remain unchanged and no fresh GPU
+  fault appears. Follow`adaptive_record_failure_native_v1`. This expected error
+  control supplies no throughput,task,ordinary-teardown or full-context claim.
   Preserve the fast552b prefill
   fallback and assess its PP/TTFT independently of any decode gain.
   After pushing the useful result at`dca625eac0fdec4c2b47cbd524c0ca73a3c3399f`
