@@ -282,8 +282,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   native host-flow joins and all GPU events inside the active raw-clock
   interval. The paused gap/window/suffix work is excluded;native exit0,
   validation,ownership and no-fresh-fault gates pass. The resumed-window case
-  remains unexecuted;commit this outcome before it. Interior-window/model
-  qualification still needs that separate case and prospective model plan.
+  also closes successfully:20kernels execute,exactly4prefix+6resumed named
+  kernels are recorded,with unique native host joins and all16GPU operations
+  inside active raw-clock intervals. The paused six-kernel gap and four-kernel
+  suffix are excluded;the41069-byte trace has199host events. All three cases
+  pass numerical/guard,normal-exit,strict validation,closed-owner,unchanged
+  boot/driver and no-fresh-fault gates. This qualifies pause/resume only at
+  fully drained fixture gates after active graph construction. It does not
+  qualify asynchronous toggling during in-flight model work,model coverage,
+  observer overhead or physical resource saturation. The next model plan must
+  preserve that distinction rather than assuming arbitrary timed toggles are
+  lossless. Keep its current model-attribution consumer and source/recipe
+  recovery separate from the disposable fixture's binary/raw retirement.
   The closed V1 failure is recoverable at `730726403c58e3ca40176469cd1ef9e7c933a799`;
   its superseded full result is removed from the active JSON. The closed V1
   outputs and successful62-kernel
@@ -323,8 +333,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `orca-narrow-ipc-connect-probe-20261106` for the current narrow sandbox-policy
   question,with a256KiB total budget and review after that question. The older
   status diagnostic is superseded and awaits serialized retirement. A fresh
-  finite native Luna-max coordinator reviews the policy/schema while Main
-  continues GPU work. Resume bounded Luna research only after worker-side connectivity and
+  finite native Luna-max review identifies a macOS-only Unix-socket proxy
+  limitation in the local Codex0.162.1binary,consistent with the Linux denial.
+  It does not prove an actual Orca worker's effective tool permissions. A new
+  bounded coordinator checks existing supported Linux transports,without
+  widening the sandbox or adding a privileged bridge,while Main continues
+  tuning. Resume bounded Luna research only after worker-side connectivity and
   lifecycle settlement can be verified;continue Main's tuning independently.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
