@@ -181427,5 +181427,126 @@
       "sha256": "a0c334df381a2b8229354df7dc5c6e06290c1121fa026fb93bc8a9ced78ef511",
       "fixture": "a2b99187a45226c5c204f5ac3c52bda2be74b154a0f366e60678813ccbc55a02"
     }
+  },
+  "compat_collector_window_check_v1": {
+    "stage": "prepared",
+    "source_commit": "d15525f286862d35da76cc0b3549ba7c0f068e09",
+    "fixture_build_source_commit": "087edccfd6f04398434d968cb2615595b2c952ca",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-collector-window-v2/compat_window",
+      "sha256": "cb8cbb6596829b5488b29170a35be0936227f145d4cc5a2d2ce8bfaddf1f6116",
+      "bytes": 289696
+    },
+    "native_source_commit": "ec4ab9a0edfaf33e7bf84c43778c0cc157dc0139",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "profiles": {
+      "prefix": {
+        "mode": "aggregate",
+        "launcher": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "bytes": 513168,
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+        },
+        "collector": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+          "bytes": 2329704,
+          "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+        },
+        "session": "StrataPrefillc74288741393448e8eb4ee9b",
+        "environment": {
+          "UNITRACE_SystemTime": "1",
+          "UNITRACE_FollowChildProcess": "1",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-collector-window-v2/checks-v1/prefix/trace",
+          "LD_DEBUG": "libs"
+        }
+      },
+      "window": {
+        "mode": "aggregate",
+        "launcher": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "bytes": 513168,
+          "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+        },
+        "collector": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+          "bytes": 2329704,
+          "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+        },
+        "session": "StrataPrefilld742320c77b2fde4ef355d79",
+        "environment": {
+          "UNITRACE_SystemTime": "1",
+          "UNITRACE_FollowChildProcess": "1",
+          "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-collector-window-v2/checks-v1/window/trace",
+          "LD_DEBUG": "libs"
+        }
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "budgets": {
+      "wall": 90,
+      "cpu": 90,
+      "rss_cap": 4294967296,
+      "text_cap": 8388608,
+      "file_cap": 16777216,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 134217728,
+    "reader_controls": {
+      "passed": true,
+      "positive": 2,
+      "negative": 7,
+      "GPU_executed": false
+    },
+    "cases": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "model_executed": false,
+    "plan": "Three separate owned processes in order:unprofiled smoke,prefix-only,prefix+resumed-window. All execute10two-kernel graph replays with numerical/guard checks after each. Collector active during construction;prefix2replays,paused gap3,resumed window3,paused suffix2. Prefix-only stays paused after its first2replays. Expected4/10 named kernels with unique native host-flow joins and raw-clock containment,all gap/suffix GPU work excluded. Gate only after actual completion and readback drain. A failed case stops progression;commit each closed outcome before the next. Keep strict before-main validation,Sysman0,nativecapture0 and immutable safety environment. No timing-speed or model/saturation qualification.",
+    "retention": "Keep useful counts/names/clocks/validation/fault/closure outcomes. Retire full successful API/timeline/JIT/owner output and this disposable fixture after the current-runtime interior-window decision. Preserve cb7 and552b engines.",
+    "inputs": {
+      "sources": {
+        "count": 118,
+        "sha256": "2a3caf35e8c99081a0284dde279dbfab095b414b208f104fc010691e1d1554de"
+      },
+      "providers": {
+        "count": 84,
+        "sha256": "12f00cc0c1e71fad681f18c9a2550e288f36a0a0af12709e604840df884a2ab2"
+      },
+      "environment_template": {
+        "count": 106,
+        "sha256": "91e90021537b9ebd75f2e2fde7434b65dfdca6aac43c7f4b43ee94f2c8f60b8c"
+      }
+    }
   }
 }
