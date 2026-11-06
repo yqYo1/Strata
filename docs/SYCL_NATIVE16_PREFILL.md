@@ -208,6 +208,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   winners;its synthetic public-entry timer does not measure graph-replay service
   or a physical bottleneck. A bounded post-cohort T4 attribution still needs
   lossless,unambiguous UnitTrace joins/counts and disjoint host/wait accounting.
+  UnitTrace is not on PATH. The existing ghq Intel/PTI source is clean at
+  `4b6d74294cdc72766c00a9211fe2e4261ee94244`,MIT licensed. Its planned L0-only
+  build disables MPI,ITT,XPTI,OpenCL,OpenMP and Perfetto;mandatory header pins
+  are Level Zero v1.32.0(`d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c`),
+  compute-runtime`050536ff3b6f830199ec99cff8ffcac3d804c40a`,and IGA
+  `4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82`. The first two exist in local ghq
+  object stores;IGA still needs acquisition. Preserve ghq default mirrors when
+  preparing pinned dependency worktrees. No tool build or collection capability
+  is qualified yet;build and bounded replay/flush/count checks remain pending.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
@@ -272,8 +281,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   frontend delta and controller/test additions extend the original317inputs.
   Both fresh frontend probes now pass with the new startup import:benchmark
   144modules/18code maps and server191modules/26code maps,normal exits and
-  closed ownership. Model execution remains pending;cap2 cannot prepare until
-  this reference closes. Preparation/frontend probes execute no native/GPU work.
+  closed ownership. The fixed4 model entry also closes successfully:two actual
+  32769-input/24-output thinking-on requests,normal native0,quiet validation,
+  closed owners,unchanged boot/driver,all15final model hashes and no fresh fault.
+  Both requests lend1124slots starting at132 of1256,with2321664000B capacity
+  for2319958528B needed. The native audit checks all1256resident expert payloads
+  (2575206400B),including the unlent prefix,after refill;masked/ready admission
+  and owner phase ordering pass. Loan generations2/3 and disjoint capture IDs
+  3/4 then5/6 prove renewal;each request has oneT1 and sevenT4 completed replays
+  matched to its eight traced rounds. Follow `mtp_width_model_entry_cap4_v1`.
+  These logged short-output checks qualify this reference route/lifetime only;
+  no clean or sustained TG,task/full-context or ordinary-teardown claim follows.
+  The cap2 entry can now prepare with the same configuration except its cap.
 
 ## Prefill envelope and scaling
 
