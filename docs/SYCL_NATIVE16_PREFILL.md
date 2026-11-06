@@ -2265,11 +2265,17 @@ comparison,adapt the required streamed-tool closing-tag behavior from Niko
 fork has an older parser without`_close_verdict`;the small upstream hunk is
 not directly applicable. The queued source/behavior/validation slice is in
 `v0211_review.next_required_slice`;all other functional obligations stay open.
-Its13,295-byte Main proposal is now pinned to base`100038e01`and exact old
-frontend/scan-test hashes,unapplied and untested. It preserves early tool/argument
-streaming while prospectively deferring an ambiguous final close to EOF,a later
-call or the upstream1500-character bound. Current benchmark files are unchanged;
-apply/commit/test only after the frozen cohort,then retire the temporary patch.
+The13,295-byte Main proposal is now applied at`f7784635b`after both frozen
+cohorts closed. Six new literal-tag tests and11existing boundary/terminator
+tests pass. The initial full CPU/mock suite fails:130tests,one failure and
+30errors after thread creation fails under its2GiB virtual-address limit;
+peak sampled session RSS is80.5MB and cgroup PID rejection events remain0.
+Keep`upstream_streamed_tool_tags_host_v1`failed. A separately preregistered
+8GiB-AS envelope,with the2GiB RSS and other criteria unchanged,will test the
+resource hypothesis;no full validation or inference qualification follows yet.
+Early tool/argument streaming remains;an ambiguous final close waits for EOF,
+a later call or the upstream1500-character bound. Retire the temporary patch
+after source/results are verified and pushed.
 The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration

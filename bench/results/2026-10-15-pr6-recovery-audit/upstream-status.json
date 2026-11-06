@@ -1057,8 +1057,8 @@
     "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
     "release_tag": "v0.2.11",
     "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
-    "state": "parser_source_applied_unvalidated",
-    "source_only": true,
+    "state": "parser_focused_passed_full_validation_failed",
+    "source_only": false,
     "code_imported": true,
     "whole_function_ledger_complete": false,
     "performance_evaluation_complete": false,
@@ -1073,7 +1073,7 @@
       "origin_path": "serve/frontend.py",
       "fork_path": "serve/frontend.py",
       "fork_sha256": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
-      "state": "source_applied_unvalidated",
+      "state": "focused_passed_full_validation_failed",
       "provenance": "Niko-authored upstream commit;upstream/fork MIT LICENSE bytes match. No XeStrata material used in this inspection.",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
       "difference": "The current fork parser has no upstream _close_verdict helper;adapt the behavior instead of applying the eight-line hunk blindly or replacing unrelated parser behavior.",
@@ -1095,10 +1095,10 @@
         "owner": "Main",
         "consumer": "Apply and validate the required parser behavior after both current frozen speed cohorts close,before the next long benchmark freeze.",
         "next_review": "At cohort closure,recheck exact base bytes and inspect the full patch;commit applied source and recipes before tests. Retire the patch after integrated source/results are pushed.",
-        "tests_executed": false,
+        "tests_executed": true,
         "applied": true,
         "test_recipe": {
-          "state": "source_applied_unexecuted",
+          "state": "initial_full_suite_failed",
           "python_selected": {
             "workspace_venv": false,
             "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
@@ -1200,7 +1200,17 @@
       "planned_validation": [
         "Focused new whole/chunk/every-byte tool-tag cases,tools.test_frontend_stream_scan,and existing serve.test_server.ToolCallTerminators/UnfinishedToolCall.",
         "Then the complete CPU/mock serve.test_server regression suite;no GPU or performance adoption from these functional tests."
-      ]
+      ],
+      "applied_source_commit": "f7784635bc8c6ab832f39bd8d13b29b1c1623c10",
+      "applied_frontend_sha256": "9b4700ca3baa484f9a05cbe15f22f992caa258cb7bed1f6256fb703a63e62907",
+      "validation_result_key": "upstream_streamed_tool_tags_host_v1",
+      "followup": {
+        "result_key": "upstream_streamed_tool_tags_host_v2",
+        "state": "prospective_resource_envelope_revision",
+        "virtual_address_bytes": 8589934592,
+        "RSS_cap_bytes": 2147483648,
+        "reason": "Initial full suite failed thread creation under2GiB AS with only80.5MB peak RSS and no cgroup PID rejection;test the virtual-space hypothesis without changing parser/tests/runtime or correctness criteria. Keep V1 failed."
+      }
     },
     "selected_server_slices": {
       "reviewed_utc": "2026-11-06T22:37:11.107343+00:00",
