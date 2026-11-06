@@ -4,6 +4,7 @@
 Reuse this fork's qualified runtime/owner/parser contracts. No model, speed,
 physical saturation, ordinary teardown or full-context qualification follows.
 """
+import ast
 import fcntl
 from functools import lru_cache
 import importlib.util
@@ -253,26 +254,90 @@ def parser_controls():
         scope='Synthetic parser controls;not execution of the native route writer.')
 
 
+def model_projection(raw):
+    """Preserve every device/parser/global node across model-only admission edits."""
+    model_names={'model_proof','model_context','model_prepare'}
+    added={'model_projection','model_controller_reuse','model_reuse_controls'}
+    tree=ast.parse(raw);found=set();nodes=[]
+    for node in tree.body:
+        if isinstance(node,ast.FunctionDef) and node.name in model_names|added:
+            require(node.name not in found and not node.decorator_list and node.returns is None and
+                not node.args.defaults and not node.args.kw_defaults and
+                all(a.annotation is None for a in ast.walk(node.args) if isinstance(a,ast.arg)),
+                'model-only functions must have inert definition headers')
+            found.add(node.name)
+        elif isinstance(node,ast.Import) and ast.dump(node)==ast.dump(ast.Import(names=[ast.alias(name='ast')])):
+            continue
+        else:nodes.append(node)
+    require(model_names<=found,'missing model admission function')
+    return ast.dump(ast.Module(body=nodes,type_ignores=[]),include_attributes=False)
+
+
+def model_controller_reuse(row):
+    require(row['source_commit']=='2b1c8f6fe17893e47b8e1722f88d06866f5e650d',
+        'reuse only the original closed same-build device qualification')
+    name=str(SELF.relative_to(P));revision=base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
+    before=build.blob(row['source_commit'],name)
+    projected=model_projection(before)
+    require(model_projection(build.blob(revision,name))==projected,'device/parser/global AST changed')
+    require(base.controls(row['source_commit'],controller=SELF,reuse_revision=revision,
+        controller_changes=(name,))==row['controller_inputs'] and len(row['controller_inputs'])==105,
+        'original device pins or another transitive controller changed')
+    return dict(qualified_controller_commit=row['source_commit'],controller_path=name,
+        qualified_controller_sha256=row['controller_inputs'][name],admission_controller_sha256=digest(SELF),
+        unchanged_projection_sha256=build.lineage.signature(dict(ast=projected)),
+        unchanged_dependency_controls=104,
+        scope='Only model admission bodies and these inert reuse helpers differ;device cases,budgets,validators,parser,globals and entrypoint are unchanged. Original GPU evidence/pins are preserved;this is not a new GPU validation.')
+
+
+def model_reuse_controls():
+    before=build.blob('2b1c8f6fe17893e47b8e1722f88d06866f5e650d',str(SELF.relative_to(P)))
+    raw=SELF.read_bytes();expected=model_projection(before)
+    require(model_projection(raw)==expected,'actual model-only update changes device qualification')
+    corrupt=[(b'    return 32\n',b'    return 31\n'),
+        (b'whole_wall_seconds=900',b'whole_wall_seconds=901'),
+        (b'len(columns)==30 and len(half)==26',b'len(columns)==30 and len(half)==25'),
+        (b"ROOT=B/'q6-native-half-device-v1'",b"ROOT=B/'other-device'"),
+        (b'import fcntl\n',b'import fcntl\nimport unqualified_controller\n'),
+        (b'def model_proof():',b'@unqualified_decorator\ndef model_proof():')]
+    for old,new in corrupt:
+        require(before.count(old)==1,'reuse control mutation must have one source anchor')
+        try:accepted=model_projection(before.replace(old,new))==expected
+        except RuntimeError:accepted=False
+        require(not accepted,'changed device/parser/import/definition control accepted')
+    return dict(passed=True,positive=1,negative=len(corrupt),GPU_executed=False,
+        scope='Actual model-only AST projection accepted;mutated numerical count,deadline,shape policy,device root,import and active definition header rejected.')
+
+
 def model_proof():
-    row=json.loads((ROOT/'record.json').read_text());unchanged(row);native=built()
+    row=json.loads((ROOT/'record.json').read_text());reuse=model_controller_reuse(row)
+    require(digest(row['build_record']['path'])==row['build_record']['sha256'],'qualified build record changed')
+    for asset in [*row['binaries'].values(),*row['native_validation_probe'].values()]:
+        require(digest(asset['path'])==asset['sha256'],'qualified fixture/engine/validation provider changed')
+    inv=row['runtime_manifest'];require(digest(inv['path'])==inv['sha256'],'qualified runtime manifest changed')
+    providers=json.loads(Path(inv['path']).read_text())
+    require(len(providers)==inv['files'] and all(digest(p)==h for p,h in providers.items()),'qualified runtime provider changed')
+    require(Path('/proc/sys/kernel/random/boot_id').read_text().strip()==row['boot'] and
+        base.guards.driver_guard()==row['driver'],'qualified boot/driver changed')
+    native=built();require(native['binaries']==row['binaries'],'same-build fixture set differs')
     require(base.committed(RESULT)[KEY]==compact(row) and row['stage']=='closed' and
         row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'] and
         row['GPU_executed'] and row['fresh_faults']==[] and row['boot_unchanged'] and
         [(r['name'],r['native_exit'],r['checks']) for r in row['results']]==
             [('submission',0,10),('q6-half',0,32),('phase-cache',0,16)],'closed same-build device gate required')
-    providers=json.loads(Path(row['runtime_manifest']['path']).read_text())
     native=dict(native,environment=native['recipe']['environment'],boot=row['boot'],driver=row['driver'])
-    return native,dict(source_commit=row['source_commit'],environment=row['environment']),providers
+    return native,dict(source_commit=row['source_commit'],environment=row['environment'],
+        qualification_reuse=reuse),providers
 
 
 def model_context(arm):
-    # Start from the shared benchmark supervisor, not the legacy Q6 wrapper's
-    # fixed spec4 guard. This prospective entry uses the intended spec8 route.
+    # Keep the original spec4/scratch-lease1 placement; change only the Q6 arm.
+    require(arm in (0,1),'choose immutable half arm0 or1')
     spec=importlib.util.spec_from_file_location('strata_q6_half_model_entry',model_template.template.__file__)
     ctx=importlib.util.module_from_spec(spec);spec.loader.exec_module(ctx)
     ctx.configure('adaptive-throughput')
-    ctx.ROOT=build.ROOT/('model-entry-half'+str(arm)+'-v1')
-    ctx.KEY='q6_native_half_model_entry_arm'+str(arm)+'_v1'
+    ctx.ROOT=build.ROOT/('model-entry-half'+str(arm)+'-v2')
+    ctx.KEY='q6_native_half_model_entry_arm'+str(arm)+'_v2'
     ctx.proof=model_proof
     original_pins=model_template.pinned_sources
     ctx.pinned_sources=lambda revision:dict(original_pins(revision),**base.controls(revision,controller=SELF))
@@ -282,10 +347,15 @@ def model_context(arm):
         require(env['STRATA_SYCL_DECODE_Q6_NATIVE_HALF']==str(arm) and
             env['STRATA_SYCL_Q6_ROUTE_AUDIT']==env['STRATA_SYCL_DECODE_Q6_COLUMNS']==env['STRATA_IQ3_PAIR']==env['STRATA_IQ3_PAIR_AUDIT']=='1' and
             env['STRATA_SYCL_DECODE_Q6_CENTERING']==env['STRATA_CPU_SERVICE']==env['STRATA_CPU_WORK_CENSUS']==env['STRATA_DECODE_TIMING']=='0' and
-            args[args.index('--spec')+1]=='8' and args[args.index('--short-read')+1]=='0' and
+            env['STRATA_SYCL_CACHE_SCRATCH_LEASE']==env['STRATA_PREFILL_NATIVE_DENSE_BANK']=='1' and
+            args[args.index('--spec')+1]=='4' and args[args.index('--short-read')+1]=='0' and
             args[args.index('--adapt-swaps')+1]=='0' and args[args.index('--expert-cache')+1]=='1256' and
+            '--no-token-graph' in args and '--no-prefill-borrow' not in args and
             row['read_tokens']==32769 and row['runs']==2,
             'freeze the independently selected half arm and route observer')
+        require(row['qualification_basis']['device_controller_reuse']==
+            model_controller_reuse(json.loads((ROOT/'record.json').read_text())),
+            'declared controller-only qualification reuse changed')
         return previous_current(row)
     def route(text):
         value=previous_route(text);ids=dispatches(text,1,positive=True)
@@ -297,20 +367,22 @@ def model_context(arm):
 
 
 def model_prepare(ctx,arm):
-    controls=parser_controls();ctx.prepare()
+    controls=parser_controls();reuse_controls=model_reuse_controls();ctx.prepare()
     row=json.loads((ctx.ROOT/'record.json').read_text())
     row['environment'].update(STRATA_SYCL_DECODE_Q6_NATIVE_HALF=str(arm),STRATA_SYCL_Q6_ROUTE_AUDIT='1',
         STRATA_SYCL_DECODE_Q6_COLUMNS='1',STRATA_SYCL_DECODE_Q6_CENTERING='0',STRATA_SYCL_ADAPT_SYNC='1',
         STRATA_IQ3_PAIR='1',STRATA_IQ3_PAIR_AUDIT='1',STRATA_IQ_SINGLE_EXACT='0',
         STRATA_CPU_SERVICE='0',STRATA_CPU_WORK_CENSUS='0',STRATA_DECODE_TIMING='0')
     args=row['configuration']['args'];require(args[args.index('--spec')+1]=='4','original template spec changed')
-    args[args.index('--spec')+1]='8'
-    write(ctx.ROOT/'config.json',row['configuration']);row['generated']['config.json']=digest(ctx.ROOT/'config.json')
+    require(row['environment']['STRATA_SYCL_CACHE_SCRATCH_LEASE']=='1','preserve the qualified scratch placement')
     row['half_arm'],row['Q6_snapshot_parser_controls']=arm,controls
+    row['controller_reuse_controls']=reuse_controls
     row['qualification_basis']=dict(build_key=build.KEY,device_key=KEY,
-        source_commit=build.POLICY_SOURCE,kernel_source=build.KERNEL_SOURCE,incumbent_shapes=30,selected_intersection=26)
+        source_commit=build.POLICY_SOURCE,kernel_source=build.KERNEL_SOURCE,incumbent_shapes=30,selected_intersection=26,
+        device_controller_reuse=model_controller_reuse(json.loads((ROOT/'record.json').read_text())),
+        original_failed_plan='q6_native_half_model_entry_arm0_v1')
     row['criteria']=('Two pinned frontend probes,one short thinking-on warmup,and two fresh32769-input/1..24-output bench.sh requests.'
-        ' Spec8,short-read0,1256decode slots,adapt-swaps0,chunk8192,throughput,GDN16/MTP16,and immutable runtime safety.'
+        ' Spec4,scratch-lease1,short-read0,1256decode slots,adapt-swaps0,chunk8192,throughput,GDN16/MTP16,and immutable runtime safety.'
         ' Require complete existing body/token/route/cache/dense/head/MTP/clock/validation/asset/fault/owner gates.'
         ' Require request-bound complete live phase/T/shape snapshots with exact independently measured routes,'
         'no selection in observed prompt snapshots,closed replay counts,and positive completed Q6 output-head use in the declared arm.'
