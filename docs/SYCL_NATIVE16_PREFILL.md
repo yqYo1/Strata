@@ -463,6 +463,11 @@ and final GPU ISA,model impact and decode-only selection remain pending. The
 new code derives from this fork's existing Q6 kernel and own standalone SYCL
 conversion,with no XeStrata implementation input. Review its retained entry and
 fixture mode when this named Q6 comparison closes.
+Its Orca gpt-6-luna source audit and native Luna-max review now give a
+conditional source pass. The entry remains unselected;decode-only ownership is
+not established. The retained5c5e compile database confirms `-ffp-contract=off`
+and the production optimization flags;native-half compilation and full-entry
+subnormal/numerical/timing checks remain pending.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
@@ -957,16 +962,27 @@ expert archive. The actual public-wrapper/dot AVX2/FMA call-chain gate passes.
 All six same-build correctness children exit0 with quiet stderr and closed
 ownership:384single/80XXS cases,the new80IQ3_S cases,old dispatch off/on and both
 28-case pool selectors. Both pool checksums remain `e5d7a50a8e7d5ac5`.
-No production selection or component/model speed result follows yet.
+Production selection and model speed remain unqualified.
 All six timing children have now exited0 with240samples and2016real-model GU
 cases checked before/after each. V1's final aggregation nevertheless fails:
 Main's result curation removed `receipt.direct_identity`,which the unchanged
 decision function needs for independent-process proof. Keep V1 failed. Its
-original full owner records and hashed raw outputs remain available. The
-separate,read-only `analyze` action checks those records,all source/build/model
-identities and the original outputs before restoring identity metadata in a
-copy and applying the same decision function. Commit this prospective recovery
-before execution;it neither reruns a native child nor rewrites V1 into a pass.
+original full owner records and hashed raw outputs supply the separate offline
+`analyze` action. That analysis now passes at source99123b122:all240original
+samples,628compiler inputs,original source/build/model identities and six actual
+owner/argv/environment/exit records match. It restores identities in a copy and
+uses the unchanged three-pair decision,without another native execution or a
+V1 parent pass. Four cells qualify:640rows/prequantized reuse/stream time ratios
+are0.992100/0.987010,640rows/packing-included stream is0.991277,and128rows/
+prequantized reuse is0.990867 (geometric means). The other four cells have mixed
+pair directions,including a1.005874mean for128rows/packing-included stream;
+do not advance those cells. The next eligible CPU question is a separately
+planned640-row production entry,after the queued GPU component. The earlier
+qualified service cohort attributes only13.44..13.48%of code worker CPU and
+9.60..9.63%of prose worker CPU to IQ3_S NT1 GU. These are worker-time shares,
+not additive wall intervals or a model-speed prediction;this component does not
+cover the whole GU bottleneck. Retire the auxiliary build/raw output after
+committing the analysis and recovering its exact source/recipe.
 The Orca gpt-6-luna source audit and native gpt-6-luna max report review now
 accept this as conditional source-level decision support:all three assigned
 source hashes match and no necessary source correction was identified.
