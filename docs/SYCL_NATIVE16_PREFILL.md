@@ -277,9 +277,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   passes two positive and seven corrupt reader controls without GPU execution.
   The first separately owned smoke case now passes all20kernel numerical/guard
   checks,normal native0,strict before-main validation,closed ownership,unchanged
-  boot/driver and no fresh fault. Prefix-only and resumed-window cases remain
-  unexecuted;commit this outcome before the next case. No collector/model
-  qualification follows from the unprofiled smoke alone.
+  boot/driver and no fresh fault. Prefix-only also passes:20kernels execute
+  correctly,but only the four named prefix kernels are recorded,with unique
+  native host-flow joins and all GPU events inside the active raw-clock
+  interval. The paused gap/window/suffix work is excluded;native exit0,
+  validation,ownership and no-fresh-fault gates pass. The resumed-window case
+  remains unexecuted;commit this outcome before it. Interior-window/model
+  qualification still needs that separate case and prospective model plan.
   The closed V1 failure is recoverable at `730726403c58e3ca40176469cd1ef9e7c933a799`;
   its superseded full result is removed from the active JSON. The closed V1
   outputs and successful62-kernel
@@ -311,11 +315,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `stale_bootstrap`;this is not a successful worker IPC check. Main's ordinary
   status independently reaches the ready runtime. No new researcher,task,
   dispatch or terminal was launched from that failed capability result.
-  Keep the one small diagnostic under external
-  `orca-narrow-ipc-probe-20261106` only for the next exact-socket connectivity
-  check,with a256KiB total budget and review immediately after that check.
-  Neither PID-namespace isolation nor socket denial is established by status
-  alone. Resume bounded Luna research only after worker-side connectivity and
+  A new bounded exact-socket probe distinguishes the failure:metadata is
+  readable and names the expected0600/UID1000Unix socket,but `socket(AF_UNIX,
+  SOCK_STREAM)` itself returns EPERM before `connect()` can run. The target
+  PID probe returns ESRCH in that sandbox. This does not test the socket path's
+  connect permission or Orca RPC. Keep its small diagnostic under external
+  `orca-narrow-ipc-connect-probe-20261106` for the current narrow sandbox-policy
+  question,with a256KiB total budget and review after that question. The older
+  status diagnostic is superseded and awaits serialized retirement. A fresh
+  finite native Luna-max coordinator reviews the policy/schema while Main
+  continues GPU work. Resume bounded Luna research only after worker-side connectivity and
   lifecycle settlement can be verified;continue Main's tuning independently.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
