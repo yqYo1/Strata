@@ -132,6 +132,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   preserving all prefill,CPU and runtime bytes. Its1452 actual compiler inputs,
   recipe and six ELFs are checked;engine SHA256 is
   `cb7dd5aad4cb613dd98a1347e91eb75a157397f88040f18d5e26cf99056b0e15`.
+  Its ended compiled products are now retired for the optional decode-gate
+  replacement below;its measured source/recipe/results remain recoverable.
   Follow `q6_native_half_model_build_v1`. The old5c generation and normal
   build/host/device output are retired after original-source recovery;the
   immutable shared5c record remains a required provenance input.
@@ -358,9 +360,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   controls,the full original compiler image and recovered external inputs are
   pinned before compilation. The actual generated diff is reviewed and changes
   only the two declared files. No native compilation or device/model execution
-  has occurred. Commit this preparation,retire the ended cb7 products,commit
-  that result,then build. Neither build nor component checks qualify the new
-  model gates or a performance gain.
+  has occurred. The ended cb7 build/source/temp/cache/normal-output trees are
+  now retired after567original sources,101controls,the recipe and1452actual
+  compiler inputs were recovered and compared. This deletes738files/152691467
+  bytes;`decode-profile-model-v1/old-retirement-manifest.json` has SHA256
+  `d993e5ee454000a47ee02c3e53c0ef6a8aa06351b3322c41099a126e46945ded`.
+  The original record/shared compiler image remain consumed;552b and all nine
+  fallback outputs are intact. Commit retirement before building the single
+  replacement. Neither build nor component checks qualify the new model gates
+  or a performance gain.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
@@ -600,8 +608,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   failure-injection mode;the attachment uses a separate success-generation stamp.
   This transformation is not yet executed,compiled or runtime-qualified.
   Actual hit/miss dispatch,record failure,subsequent loan/refill and native
-  lifetime gates remain open. Close current cb7 collector consumers before
-  replacing the comparison generation;keep the552b fallback.
+  lifetime gates remain open. The cb7 collector consumers are closed and its
+  compiled generation is retired for the decode-gate replacement;keep552b.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
   remains on HOLD as written:its unsupported swap0/MTP2 claims and incorrect
   `generate.cpp:1559` anchor are not adopted. Its pins and bounded-control design
