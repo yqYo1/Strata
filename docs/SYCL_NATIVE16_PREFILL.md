@@ -728,8 +728,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The independent cap2/prose cohort is now prepared at source
   `a6a8e863ebf41c04f173eb3d916b36d1be752320`,with the same332pinned inputs,
   six-process ordering and15asset hashes. Its supplementary exact-TG plan
-  is declared before even the first reference. Fresh frontend probes and
-  native prose execution remain pending. Keep552b as the fast prefill
+  is declared before even the first reference. Both fresh benchmark/server
+  frontend probes now pass;native prose execution remains pending. Keep552b
+  as the fast prefill
   fallback;this code TG gain is not whole-model adoption or70TG.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
