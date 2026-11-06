@@ -451,8 +451,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   complete progress/128-token/DONE stream and25malformed/order/extent variants,
   beside the10INFO refusals. All these CPU controls now pass at source
   `89a8c71dd63a52dd71cfb33ca4df57885a2c0c2b`. V3 preparation also passes with
-  all15model assets fully hashed and113source/controller inputs pinned. Commit
-  the fresh V3 plan before its one model execution;native519e is unchanged.
+  all15model assets fully hashed and113source/controller inputs pinned.
+  Actual native execution now reaches all four0/8/16/24round gates,emits128
+  bounded tokens and DONE length,and exits0 with normally closed ownership.
+  The parent Python3.12 then segfaults in `PyObject_GC_Del`before its post-run
+  validation/final assets finish. V3 remains failed;the exact statement and
+  host-crash cause are unknown. Both processes are absent,the session is empty
+  and kernel-journal evidence has no new GPU fault. All six read-only resource
+  observations are preserved. The new Main-authored
+  `tools/sycl/inspect_decode_gate_entry.py`source prepares a separate finite
+  CPU-only replay with faulthandler and persisted validation stages. It checks
+  the saved protocol/gates,Q6,cycle counters and original/final inputs without
+  another GPU run;it cannot relabel V3 or claim a Python-crash fix. Commit this
+  source,prepare/commit its plan,then run the replay once.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
