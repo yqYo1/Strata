@@ -399,9 +399,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `--pairing-address` changes only the advertised address;it cannot provision
   an in-place loopback-only listener. The raw-json-v1 hook is notification,
   not status/lifecycle RPC. No app,profile,listener or worker sandbox changed.
-  The current decision-support report is `.cache/research/2026-11-06/`
-  `orca-supported-loopback-worker-transport-review.md`,SHA256
-  `caf541c00d0ec8bff580ac81cbfb101d745708399385303d16b9edc159f10762`.
+  The installed-source decision is curated at
+  `b1d255bde0c282b494c44aa7bdf8311e4ade0547`and here. Three superseded
+  coordination bodies are retired after curation(12115bytes);external
+  manifest`orca-transport-review-retirement-20261107.json`has SHA256
+  `0d866c8b5f0cfdb3b686bfb10afdc09957694f9c7704aeb0251e5d69841b009f`.
   Its installed-source references are `cli/specs/serve.js`and
   `cli/runtime/serve-orcad-launch.js`in the immutable Orca1.4.229Nix package.
   Keep dispatch pending until a supported narrow worker transport exists;
