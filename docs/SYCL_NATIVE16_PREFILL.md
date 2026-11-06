@@ -233,6 +233,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its next consumer is the post-cohort current-ELF collector check,followed by a
   separately committed representative model-service plan. This is no new
   capability,speed,saturation or model-coverage result.
+  Main's new `tests/sycl/compat_window.cpp` source-prepares the next pause/resume
+  control using the actual CUDA-named SYCL adapter and checked graph-completion
+  path. It records a two-kernel graph while collection is active,then executes
+  2active,3paused,3resumed and2paused replays,with fully drained external gates.
+  Expected coverage is4prefix+6resumed kernels out of20executed;names,unique
+  host-flow joins,raw-clock containment and excluded gap/suffix work still need
+  qualification. Every replay checks unsigned32 numerical results and both
+  allocation guards. No environment changes or device spin loops are used.
+  Source is outside the frozen320/native567inputs. It has not been compiled or
+  executed;after the active62-kernel check,commit its exact current-runtime
+  source composition,compiler/dependency image and bounded build/run recipe
+  before execution. This is a disposable collector fixture,not another engine
+  generation or current long-generation attribution.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
