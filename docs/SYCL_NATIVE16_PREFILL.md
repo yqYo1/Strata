@@ -263,7 +263,20 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the same four units with117pinned inputs and the same compiler image,adding
   verbose driver evidence and object hashes before/after link. It requires the
   original-object inputs at that driver boundary as well as ld's transformed
-  inputs. V2 has not compiled yet. The closed V1 outputs and successful62-kernel
+  inputs. V2 now builds successfully:all five commands exit0 with closed owners,
+  739actual input paths are qualified,including four unchanged driver objects,
+  2720dependency entries,42host-link entries and five derived private inputs.
+  The289696-byte fixture SHA256 is
+  `cb8cbb6596829b5488b29170a35be0936227f145d4cc5a2d2ce8bfaddf1f6116`.
+  Compilation does not qualify its device or collector behavior. The source-only
+  `tools/sycl/compat_window_check.py` now prepares the three separate smoke,
+  prefix-only and resumed-window controls with the existing owned launcher,
+  strict validation and original providers. It checks20actual numerical/guard
+  kernels,4/10recorded named kernels,unique host joins and excluded gap/suffix
+  intervals. Its seven reader-corruption controls and device cases have not run.
+  The closed V1 failure is recoverable at `730726403c58e3ca40176469cd1ef9e7c933a799`;
+  its superseded full result is removed from the active JSON. The closed V1
+  outputs and successful62-kernel
   control's raw trace/JIT/logs are retired after original117/114controller and
   567native-input/recipe recovery:31files,1391544bytes,manifest SHA256
   `7282ab4cfb8b0c5cdb61031430a3f8b0653898495e9a52bad429a477a32eb89d`
