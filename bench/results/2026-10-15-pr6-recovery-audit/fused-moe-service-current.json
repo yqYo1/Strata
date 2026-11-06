@@ -168913,7 +168913,7 @@
     }
   },
   "q6_native_half_model_device_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "2b1c8f6fe17893e47b8e1722f88d06866f5e650d",
     "native_source_commit": "ec4ab9a0edfaf33e7bf84c43778c0cc157dc0139",
     "build_record": {
@@ -169122,15 +169122,137 @@
     "plan": "Once each:submission10,Q6-half32 explicit small shapes and scalar/Q81 byte oracles,then16 phase/T windows with12captures. Require normal0,strict same-PID before-main validation,quiet layers,guards,closed owners,unchanged build/source/ELFs/provider/boot/driver,and no fresh fault. Stop on first error,no retries.",
     "limits": "The Q6 entry is called directly by the same-build numerical fixture. Synthetic phase graphs do not execute full record_window/run or the new model route writer. Model gain,prefill/handoff,physical saturation,ordinary teardown,agent/task,262144/tails/RESTORE remain unqualified.",
     "retention": "Immediate model-entry prerequisite. Keep compact identities/outcomes;retire normal traces,owner detail and cache after closure. The preload retains one runtime reference until process exit.",
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "name": "submission",
+        "pid": 3349026,
+        "start_ticks": 228953909,
+        "native_exit": 0,
+        "checks": 10,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 3349026,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "dadad801d8022f3b40ad3bdab3e29f65fc13e1f61d60b219406f04e9881bb5be",
+        "stderr_sha256": "58ab98d493353061b5be76947a8bca387375d5c3f8afeebaf234301a6c78fcfc"
+      },
+      {
+        "name": "q6-half",
+        "pid": 3349270,
+        "start_ticks": 228954322,
+        "native_exit": 0,
+        "checks": 32,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 3349270,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "49ddedb331891cb46f4519397173fcbeb158a3cfd6cc1effc73c3ce9fef6b459",
+        "stderr_sha256": "edd9a4cc5b212c1b4c19b2eb21dae29e4d75103c8ee2fc91c0fd8efdb8744f78"
+      },
+      {
+        "name": "phase-cache",
+        "pid": 3350014,
+        "start_ticks": 228955693,
+        "native_exit": 0,
+        "checks": 16,
+        "ownership_closed": true,
+        "validation": {
+          "pid": 3350014,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "stdout_sha256": "302bfc5aa45f4f40c86fffbd478324505570caf95276408800d6099ac5963b14",
+        "stderr_sha256": "89c3f7a610080e18f64c1524792a5d7e32f951150998bb4720204c629960b7f7"
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
-    "GPU_execution_attempted": false,
+    "GPU_executed": true,
+    "GPU_execution_attempted": true,
     "model_executed": false,
     "inference_adopted": false,
+    "fresh_faults": [],
+    "boot_unchanged": true,
+    "model_Q6_header_observation": {
+      "reader": "tools/gguf_reader.py:GGUFFile;header-only,no tensor payload reads",
+      "source_commit": "679afaab22c94fb9507909092c7f4d02192ed66f",
+      "model_shards": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-0000{1,2}-of-00002.gguf",
+      "output_head": {
+        "name": "output.weight",
+        "shape": [
+          2560,
+          248320
+        ],
+        "type_id": 14,
+        "type_name": "Q6_K",
+        "encoded_bytes": 521472000
+      },
+      "geometry_counts": [
+        [
+          2560,
+          248320,
+          1
+        ],
+        [
+          2560,
+          10240,
+          22
+        ],
+        [
+          6144,
+          2560,
+          40
+        ],
+        [
+          2560,
+          6144,
+          14
+        ],
+        [
+          2560,
+          640,
+          26
+        ],
+        [
+          2560,
+          512,
+          21
+        ],
+        [
+          2560,
+          12288,
+          5
+        ]
+      ],
+      "scope": "Observed tensor metadata supports this shape-specific admission. Full asset hashes and actual timed model dispatch remain separate gates."
+    },
     "controller_inputs": {
       "files": 105,
       "aggregate_sha256": "f7a9b7c12787ccece7e0d7f4ed798007aa75d5bb7315159ecb6e8959b1c75959"

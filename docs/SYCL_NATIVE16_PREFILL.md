@@ -171,8 +171,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   neither retired history nor per-request deltas are inferred. At source
   `d30834e71`,the synthetic reader passes2 positive cases and rejects17 corrupt
   cases via `python3 -B tools/sycl/check_q6_native_half_model.py parser`.
-  The new device checks and model route/speed comparison remain pending.
-  The prospective model entry uses spec8 and does not qualify sustained TG.
+  The new same-build device checks now pass:submission10,Q6-half32 and
+  phase-cache16,with normal exits,strict before-main validation,closed owners,
+  unchanged inputs/boot/driver,and no fresh fault. Follow
+  `q6_native_half_model_device_v1`;the preload still leaves ordinary provider
+  teardown unqualified. A header-only scan of the actual model confirms its
+  Q6_K output head is2560x248320 (521472000 encoded bytes),and all seven
+  Q6 matrix geometries match the component's geometry set. This is metadata,
+  not actual model dispatch or physical-traffic measurement.
+  Next admit both spec8,thinking-on32K model-entry arms,then freeze the repeated
+  long-generation comparison. The short model entry does not qualify sustained TG.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
   speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
   gates; retain the validated 552b fallback and 5c comparison outputs.
