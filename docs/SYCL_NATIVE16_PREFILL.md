@@ -755,11 +755,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   valid32-group fixture and22corrupt variants at source
   `409ad93c554ef984f7522c4aecff75ef84fc9909`;the committed20-second locked
   command exits0 in0.726s. The native32entry is now prepared with all15asset
-  hashes,not yet executed. Its unchanged auditor caps a cycle at64MiB;actual
-  layer blobs are1,510,400..2,662,400bytes,so32copies can total48,332,800..
-  85,196,800bytes. A cap refusal remains a failed diagnostic,not a device fault
-  or clean-speed result. Vectors are dynamic/reserved before submission and
-  publication waits for the checked real event. It keeps
+  hashes. Its first execution fails the qualification:three full32-copy groups
+  publish96swaps with three-map/payload checks,but the fourth group hits the
+  unchanged64MiB cumulative auditor limit before prepare/mask/copy. Native
+  emits ERR;the supervisor terminates it(exit-15). The original normal-exit
+  and ownership gates remain failed,although the child is reaped,the session
+  is empty and pinned identities are gone. Boot/driver stay unchanged with no
+  fresh GPU fault. Actual layer blobs are1,510,400..2,662,400bytes,so32copies
+  can total48,332,800..85,196,800bytes. This is an auditor-cap refusal,not
+  a clean32speed result. Next retain64MiB per-expert bounds but qualify a
+  separate256MiB aggregate cap,which covers96times the actual maximum blob;
+  keep32and its full publication/dispatch/loan/refusal gates. No successor
+  header,host test or native build has run. The static resource profiler is
+  independently eligible on unchanged429b;its census disables adaptation.
+  Vectors are dynamic/reserved before submission and publication waits for
+  the checked real event. The diagnostic keeps
   the same429b native engine,runtime safety,prefill layout
   and every8round interval,and blocks preparation/execution until both frozen
   code/prose cohorts close. The reducer requires a full32-copy generation,
