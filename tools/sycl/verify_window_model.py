@@ -217,11 +217,140 @@ def check():
         save(row)
 
 
+# The closed legacy composition above remains available to its historical
+# consumers. These actions check the new policy directly;they do not reconstruct
+# or execute a model,or inherit its GPU qualification.
+HALF_ROOT = B / 'q6-native-half-policy-host-v1'
+HALF_KEY = 'q6_native_half_policy_host_v1'
+
+
+def half_compact(row):
+    out = {k:v for k,v in row.items() if k != 'sources'}
+    out['source_inputs'] = dict(files=len(row['sources']),aggregate_sha256=hashlib.sha256(
+        json.dumps(row['sources'],sort_keys=True).encode()).hexdigest())
+    return out
+
+
+def half_save(row):
+    write(HALF_ROOT/'record.json',row)
+    data=json.loads(RESULT.read_text());data[HALF_KEY]=half_compact(row);write(RESULT,data)
+
+
+def half_committed(key):
+    original=json.loads(base.basis.build.git(P,'show','HEAD:'+str(RESULT.relative_to(P))))
+    current=json.loads(RESULT.read_text())
+    require(original[key]==current[key],'commit exact consumed result: '+key)
+    return current[key]
+
+
+def half_prepare():
+    import device_fp64_probe as compiler_image
+    require(not HALF_ROOT.exists() and HALF_KEY not in json.loads(RESULT.read_text()),'one fresh host-policy attempt')
+    component=half_committed('q6_native_half_component_v3')
+    require(component['passed'] and component['complete'] and component['ownership_closed'] and
+        not component['active'] and component['decision']['qualified_shapes']==27 and
+        len(component['processes'])==3,'closed native-half entry evidence required')
+    revision=base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
+    tracked=base.basis.build.git(P,'ls-files','-z','include','tools/sycl').decode().split('\0')
+    names=sorted({n for n in tracked if n and (n.startswith('include/') or n.endswith('.py'))} |
+        {POLICY,FIXTURE,'src/core/verify.cpp','src/program/generate.cpp','src/kernels/sycl/native_mmvq.cpp',
+         'AGENTS.md','docs/ARTIFACT_RETENTION.md'})
+    sources={n:hashlib.sha256(base.basis.build.git(P,'show',revision+':'+n)).hexdigest() for n in names}
+    require(all(digest(P/n)==h for n,h in sources.items()),'commit exact policy,engine and controller inputs')
+    image=compiler_image.toolchain();encoded=(json.dumps(image,indent=2)+'\n').encode()
+    compiler='/opt/intel/oneapi/compiler/2026.2/bin/icpx'
+    exe=HALF_ROOT/'fixture'
+    environment=dict(PATH='/usr/bin:/bin',HOME=str(Path.home()),LANG='C.UTF-8',LC_ALL='C.UTF-8',
+        LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib',TMPDIR=str(HALF_ROOT/'tmp'),
+        XDG_CACHE_HOME=str(HALF_ROOT/'cache'),PYTHONDONTWRITEBYTECODE='1')
+    flags=['--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13','-std=c++20','-O2','-DNDEBUG',
+        '-Wall','-Wextra','-Werror','-ffp-contract=off','-fsanitize=undefined','-fno-sanitize-recover=all',
+        '-I'+str(HALF_ROOT/'source/include')]
+    commands=[['compile',[compiler,*flags,'-MD','-MF',str(HALF_ROOT/'fixture.d'),
+        str(HALF_ROOT/'source'/FIXTURE),'-Wl,-t','-o',str(exe)]],['run',[str(exe)]]]
+    row=dict(stage='prepared',source_commit=revision,sources=sources,
+        component_evidence=dict(commit='3e6b836a438b419dcd43e2eab68ba3cc3f7ea798',key='q6_native_half_component_v3'),
+        compiler=dict(path=compiler,sha256=digest(compiler),version=subprocess.check_output(
+            [compiler,'--version'],text=True,env=environment,timeout=15).splitlines()[0]),
+        toolchain=dict(path=str(HALF_ROOT/'toolchain.json'),sha256=hashlib.sha256(encoded).hexdigest(),
+            files=len(image['files']),packages=image['packages']),environment=environment,commands=commands,
+        budgets=dict(wall=120,cpu=120,rss_cap=3<<30,text_cap=1<<20,file_cap=32<<20,total_cap=64<<20),
+        expected='verify-window-policy: passed selections=30 centering=18 native-half=26 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n',
+        plan='Compile and run once with UBSan/no-recover. Check the exact independently measured26-cell incumbent intersection;prompt/disabled/nonexact/type/geometry refusals;actual phase/T cache and route metadata isolation;interrupted clear,recapture,bounded route table and invalid-route refusal. Stop on first error;no retries. This does not compile the full Verifier/program or run their GPU/capture/replay paths.',
+        passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False,model_executed=False,
+        retention='Immediate host-policy check only. Retire the auxiliary ELF,source copies,compiler inventory and normal logs after recording outcomes and exact-source recovery;keep14inference ELFs untouched.')
+    HALF_ROOT.mkdir(mode=0o700)
+    for directory in ['tmp','cache','source']:(HALF_ROOT/directory).mkdir()
+    (HALF_ROOT/'toolchain.json').write_bytes(encoded)
+    for name in [POLICY,FIXTURE]:
+        path=HALF_ROOT/'source'/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes((P/name).read_bytes())
+    half_save(row)
+    print('Prepared UBSan host-policy check;commit plan before execution.',flush=True)
+
+
+def half_check():
+    import device_fp64_probe as compiler_image
+    row=json.loads((HALF_ROOT/'record.json').read_text())
+    require(half_committed(HALF_KEY)==half_compact(row) and row['stage']=='prepared' and
+        not (HALF_ROOT/'commands').exists() and not (HALF_ROOT/'check-attempt.json').exists(),
+        'one committed host-policy check')
+    def inputs():
+        require(all(digest(P/n)==h and hashlib.sha256(base.basis.build.git(P,'show',row['source_commit']+':'+n)).hexdigest()==h
+            for n,h in row['sources'].items()),'host-policy inputs changed')
+        require(digest(row['compiler']['path'])==row['compiler']['sha256'] and
+            digest(row['toolchain']['path'])==row['toolchain']['sha256'] and
+            compiler_image.toolchain()==json.loads(Path(row['toolchain']['path']).read_text()),'host compiler/package image changed')
+        for n in [POLICY,FIXTURE]:require(digest(HALF_ROOT/'source'/n)==row['sources'][n],'private host input changed')
+    # Consume the attempt before admission/Owner setup:an early failure must
+    # remain terminal instead of silently permitting the same test to restart.
+    with (HALF_ROOT/'check-attempt.json').open('x') as receipt:
+        json.dump(dict(source_commit=row['source_commit'],operation='native-half-check'),receipt)
+    owner=None
+    row.update(stage='running',active=True,ownership_closed=False);half_save(row)
+    try:
+        inputs();owner=supervision.Owner(HALF_ROOT/'commands')
+        owner.persist=lambda:write(HALF_ROOT/'execution.json',dict(commands=owner.commands))
+        for label,argv in row['commands']:
+            if label=='run':row['binary']=dict(sha256=digest(argv[0]),bytes=Path(argv[0]).stat().st_size)
+            entry,out,err=owner.run(label,argv,row['environment'],HALF_ROOT,**row['budgets'])
+            require(supervision.closed(entry) and entry['exit_code']==0,label+' failed: '+err.read_text()[-4000:])
+            if label=='run':require(out.read_text()==row['expected'] and not err.read_text() and
+                digest(argv[0])==row['binary']['sha256'],'host policy/UBSan output or executable mismatch')
+        image=json.loads(Path(row['toolchain']['path']).read_text())
+        allowed={v['realpath']:v['sha256'] for v in image['files'].values() if v['kind']=='file'}
+        allowed.update({str((HALF_ROOT/'source'/n).resolve()):row['sources'][n] for n in [POLICY,FIXTURE]})
+        names=shlex.split((HALF_ROOT/'fixture.d').read_text().replace('\\\n',' ').split(':',1)[1])
+        names += [line.strip() for line in (HALF_ROOT/'commands/compile.stdout').read_text().splitlines() if line.startswith('/')]
+        used={}
+        for name in names:
+            path=Path(name).resolve()
+            if path.is_relative_to(HALF_ROOT/'tmp'):continue
+            require(str(path) in allowed and digest(path)==allowed[str(path)],'uncovered host compiler/link input: '+str(path))
+            used[str(path)]=allowed[str(path)]
+        require(len(used)>100,'missing actual host compiler/link inputs')
+        inputs();row.update(stage='closed',passed=True,complete=True,actual_inputs=dict(files=len(used),
+            sha256=hashlib.sha256(json.dumps(used,sort_keys=True).encode()).hexdigest()),
+            results=[dict(label=e['label'],pid=e['pid'],start_ticks=e['direct_identity']['start_ticks'],exit_code=e['exit_code'],
+                ownership_closed=supervision.closed(e)) for e in owner.commands],
+            scope='UBSan host policy/cache/route-table checks only;full engine syntax/build,GPU routing/model speed and adoption remain unqualified.')
+    except BaseException as error:
+        row.update(stage='failed',passed=False,complete=False,error=repr(error));raise
+    finally:
+        row.update(active=owner is not None and owner.active is not None,
+            ownership_closed=owner is None or (owner.active is None and
+                all(supervision.closed(e) for e in owner.commands)))
+        half_save(row)
+    print('Host native-half policy/cache check passed;full engine/GPU/model qualification remains pending.',flush=True)
+
+
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('projection','prepare','check'), 'use projection|prepare|check')
+    require(len(sys.argv)==2 and sys.argv[1] in ('projection','prepare','check','native-half-prepare','native-half-check'),
+        'use projection|prepare|check|native-half-prepare|native-half-check')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);base.guards.no_model_owners([])
-        if sys.argv[1]=='projection':
+        if sys.argv[1]=='native-half-prepare':half_prepare()
+        elif sys.argv[1]=='native-half-check':half_check()
+        elif sys.argv[1]=='projection':
             _,values=projection(base.basis.build.git(P,'rev-parse','HEAD').decode().strip())
             print(json.dumps(dict(source_files=len(values),changed_files=[*Q6_FILES,*PHASE_FILES,POLICY,FIXTURE],GPU_executed=False)))
         else: {'prepare':prepare,'check':check}[sys.argv[1]]()

@@ -112,6 +112,36 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `verify_window_policy_host_v3`. These
   component results do not qualify model TG or adoption; follow also
   `verify_window_generation_speed_v1`.
+- The Q6 native-half scale-load component is now closed at source
+  `4947b7746dafb0efde7da9bb2ead49dc89790d89`, evidence
+  `3e6b836a438b419dcd43e2eab68ba3cc3f7ea798:q6_native_half_component_v3`.
+  All 32 small numerical/guard/refusal cases pass. Three independent speed
+  processes retain 1050 individual timing samples; 27/35 geometry/column cells
+  are faster in every process. Their paired geometric-mean time reductions
+  range from 0.435% to 25.313%, median 12.937%. This is the full public Q6 entry
+  with resident operands and queue completion under parameter validation,
+  not model TG or physical-resource saturation. The 35 result points are in
+  the cumulative CSV (172 rows total). The closed auxiliary build and consumed
+  conversion review are retired after exact-source recovery: 457 files,
+  51361158 bytes; all original outcomes and useful samples remain recoverable.
+  Main's next source-prepared policy uses the retained 5c model's 30-cell
+  incumbent: only 26 native-half winners intersect it. The 512x4 component win
+  remains outside that incumbent; all 640-row and other ineligible cells keep
+  their existing path. `STRATA_SYCL_DECODE_Q6_NATIVE_HALF=1` is opt-in,
+  decode-only, immutable after init, and requires columns=1/centering=0.
+  Prompt/prefill selection is unchanged. Optional
+  `STRATA_SYCL_Q6_ROUTE_AUDIT=1` distinguishes captured phase/T/shape dispatch
+  from cache hits and started/completed windows; its request-boundary output
+  covers currently live capture epochs cumulatively, not retired captures or
+  per-request deltas. It is owner-only after drain, with checked output and a
+  bounded 64-shape table. This source has not yet been compiled or executed.
+  First commit/prepare/commit/run the CPU-only UBSan policy fixture through
+  `tools/sycl/verify_window_model.py native-half-prepare` and
+  `native-half-check`. Then prepare an exact selective 5c model composition,
+  traced small same-build checks and a frozen repeated long-generation A/B.
+  A host pass will not qualify full-engine syntax, GPU capture/replay or model
+  speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
+  gates; retain the validated 552b fallback and 5c comparison outputs.
 
 ## Prefill envelope and scaling
 

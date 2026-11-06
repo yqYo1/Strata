@@ -222,6 +222,8 @@ public:
     bool query_profile_enabled() const { return query_profile_enabled_; }
     QueryProfile query_profile() const { return query_profile_; }
     void reset_query_profile() { query_profile_ = {}; }
+    // Optional Q6 route/capture/replay snapshot;owner only,after request drain.
+    bool report_q6_routes(std::FILE* file, uint64_t request) const;
 #endif
     int64_t windows = 0;
     /// STRATA_VERIFY_PROFILE=1 - GPU stage times of the windows since the last call (ms per
@@ -291,6 +293,9 @@ private:
     VerifyInput last_input_ = VerifyInput::decode;
     bool decode_q6_columns_ = false; // immutable after init; opt-in model candidate
     bool decode_q6_centering_ = false; // independent opt-in;18 measured column shapes only
+    bool decode_q6_native_half_ = false; // immutable;26-cell incumbent intersection
+    bool q6_route_audit_ = false;
+    uint64_t q6_capture_sequence_ = 0;
     cudaEvent_t pcie_copy_ready_ = nullptr, pcie_done_ = nullptr;
     bool early_pcie_ = false, early_pcie_audit_ = false, pcie_launched_ = false, pcie_copy_recorded_ = false;
     cudaError_t pcie_status_ = cudaSuccess;

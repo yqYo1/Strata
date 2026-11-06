@@ -232,6 +232,44 @@ void Verifier::diag(std::FILE* f) const {
                  cur_layer_.load() + 1, reached, flag(h_flag_), flag(h_flagA_), flag(h_flagB_));
 }
 
+#ifdef STRATA_ENABLE_SYCL
+bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
+    if (!q6_route_audit_) return true;
+    if (!file) return false;
+    bool valid = true;
+    for (VerifyInput input : {VerifyInput::prompt, VerifyInput::decode}) for (int T = 1; T <= 8; ++T) {
+        const auto& window = window_graphs_.at(input, T);
+        if (!window.ready) continue;
+        std::array<uint64_t, 4> total{};
+        for (const auto& shape : window.q6_shapes)
+            for (size_t arm = 0; arm < total.size(); ++arm) total[arm] += shape.calls[arm];
+        const bool complete = window.q6_routes_complete && window.q6_capture_id != 0 &&
+            window.q6_replay_started == window.q6_replay_completed &&
+            total[0] == window.q6_reference_calls &&
+            total[1] + total[2] + total[3] == window.q6_columns_calls &&
+            total[2] == window.q6_centered_calls && total[3] == window.q6_native_half_calls;
+        valid = valid && complete;
+        const char* phase = input == VerifyInput::prompt ? "prompt" : "decode";
+        valid = std::fprintf(file, "strata Q6_ROUTE request=%llu device=%d phase=%s tokens=%d "
+            "capture_id=%llu scope=live_capture_cumulative native_half_enabled=%d complete=%d "
+            "shapes=%zu cache_hits=%llu replay_started=%llu replay_completed=%llu\n",
+            (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
+            int(decode_q6_native_half_), int(complete), window.q6_shapes.size(),
+            (unsigned long long)window.q6_cache_hits, (unsigned long long)window.q6_replay_started,
+            (unsigned long long)window.q6_replay_completed) >= 0 && valid;
+        for (const auto& shape : window.q6_shapes)
+            valid = std::fprintf(file, "strata Q6_SHAPE request=%llu device=%d phase=%s tokens=%d "
+                "capture_id=%llu ni=%d no=%d nc=%d reference_calls=%llu columns_calls=%llu "
+                "centered_calls=%llu native_half_calls=%llu\n",
+                (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
+                shape.n_in, shape.n_out, shape.columns, (unsigned long long)shape.calls[0],
+                (unsigned long long)shape.calls[1], (unsigned long long)shape.calls[2],
+                (unsigned long long)shape.calls[3]) >= 0 && valid;
+    }
+    return std::fflush(file) == 0 && valid;
+}
+#endif
+
 bool Verifier::can_retire_prefill_dense(std::string& err) const {
 #ifndef STRATA_ENABLE_SYCL
     err="verify: dense bank requires SYCL"; return false;
@@ -478,6 +516,19 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     if (decode_q6_centering_ && !decode_q6_columns_) {
         err = "verify: decode Q6 centering requires decode Q6 columns"; return false;
     }
+    const char* q6_half = std::getenv("STRATA_SYCL_DECODE_Q6_NATIVE_HALF");
+    if (q6_half && std::strcmp(q6_half, "0") != 0 && std::strcmp(q6_half, "1") != 0) {
+        err = "verify: STRATA_SYCL_DECODE_Q6_NATIVE_HALF must be 0 or 1"; return false;
+    }
+    decode_q6_native_half_ = q6_half && std::strcmp(q6_half, "1") == 0;
+    if (decode_q6_native_half_ && (!decode_q6_columns_ || decode_q6_centering_)) {
+        err = "verify: decode Q6 native-half requires columns=1 and centering=0"; return false;
+    }
+    const char* q6_audit = std::getenv("STRATA_SYCL_Q6_ROUTE_AUDIT");
+    if (q6_audit && std::strcmp(q6_audit, "0") != 0 && std::strcmp(q6_audit, "1") != 0) {
+        err = "verify: STRATA_SYCL_Q6_ROUTE_AUDIT must be 0 or 1"; return false;
+    }
+    q6_route_audit_ = q6_audit && std::strcmp(q6_audit, "1") == 0;
     const char* query_profile = std::getenv("STRATA_SYCL_QUERY_PROFILE");
     query_profile_enabled_ = query_profile && std::strcmp(query_profile, "1") == 0;
     reset_query_profile();
@@ -734,7 +785,8 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     using namespace strata::kernels;
 #ifdef STRATA_ENABLE_SYCL
     auto& graph_window = window_graphs_.at(input, T);
-    graph_window.q6_reference_calls = graph_window.q6_columns_calls = graph_window.q6_centered_calls = 0;
+    graph_window.q6_reference_calls = graph_window.q6_columns_calls =
+        graph_window.q6_centered_calls = graph_window.q6_native_half_calls = 0;
 #endif
     auto window_mmvq = [&](int type, const void* weights, const void* x, float* y,
                            int n_in, int n_out, int columns, void* stream) {
@@ -742,17 +794,29 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
         if (verify_q6_columns(decode_q6_columns_, input, native_mmvq_multi_exact(),
                               type, n_in, n_out, columns)) {
             // The outer policy already established the exact Q81 layout.
-            if (verify_q6_centering(decode_q6_centering_, input, true,
+            VerifyQ6Route route = VerifyQ6Route::columns;
+            if (verify_q6_native_half(decode_q6_native_half_, input, true,
+                                      type, n_in, n_out, columns)) {
+                native_q6_k_native_half_columns_mmvq(weights, x, y, n_in, n_out, columns, stream);
+                ++graph_window.q6_native_half_calls;
+                route = VerifyQ6Route::native_half;
+            } else if (verify_q6_centering(decode_q6_centering_, input, true,
                                     type, n_in, n_out, columns)) {
                 native_q6_k_centered_columns_mmvq(weights, x, y, n_in, n_out, columns, stream);
                 ++graph_window.q6_centered_calls;
+                route = VerifyQ6Route::centered;
             } else {
                 native_q6_k_columns_mmvq(weights, x, y, n_in, n_out, columns, stream);
             }
             ++graph_window.q6_columns_calls;
+            if (q6_route_audit_) graph_window.record_q6(n_in, n_out, columns, route);
             return;
         }
-        if (type == 14) ++graph_window.q6_reference_calls;
+        if (type == 14) {
+            ++graph_window.q6_reference_calls;
+            if (q6_route_audit_)
+                graph_window.record_q6(n_in, n_out, columns, VerifyQ6Route::reference);
+        }
 #endif
         native_mmvq(type, weights, x, y, n_in, n_out, columns, stream);
     };
@@ -1369,7 +1433,13 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     if(dense_retired_ || head_detached_){err="verify: head is detached for prompt";return false;}
 #ifdef STRATA_ENABLE_SYCL
     auto& window = window_graphs_.at(input, T);
-    if (window.ready) return true;
+    if (window.ready) {
+        if (q6_route_audit_) ++window.q6_cache_hits;
+        return true;
+    }
+    if (q6_route_audit_ && q6_capture_sequence_ == std::numeric_limits<uint64_t>::max()) {
+        err = "verify: Q6 capture identity exhausted"; return false;
+    }
     if (!window.layer.empty() || !window.resident.empty() || !window.pcie.empty()) {
         err = "verify: incomplete phase graph cache"; return false;
     }
@@ -1400,6 +1470,7 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
         return false;
     }
     window.ready = true;
+    if (q6_route_audit_) window.q6_capture_id = ++q6_capture_sequence_;
     std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
                  T, window.layer.size());
     std::fprintf(stderr, "strata verify: phase=%s tokens=%d q6_reference_calls=%llu q6_columns_calls=%llu\n",
@@ -1409,6 +1480,10 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     std::fprintf(stderr, "strata verify centering: phase=%s tokens=%d enabled=%d centered_calls=%llu columns_calls=%llu\n",
                  input == VerifyInput::prompt ? "prompt" : "decode", T, decode_q6_centering_ ? 1 : 0,
                  static_cast<unsigned long long>(window.q6_centered_calls),
+                 static_cast<unsigned long long>(window.q6_columns_calls));
+    std::fprintf(stderr, "strata verify native-half: phase=%s tokens=%d enabled=%d native_half_calls=%llu columns_calls=%llu\n",
+                 input == VerifyInput::prompt ? "prompt" : "decode", T, decode_q6_native_half_ ? 1 : 0,
+                 static_cast<unsigned long long>(window.q6_native_half_calls),
                  static_cast<unsigned long long>(window.q6_columns_calls));
     size_t free_bytes = 0, total_bytes = 0;
     if (cudaMemGetInfo(&free_bytes, &total_bytes) == cudaSuccess)
@@ -1659,6 +1734,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     const cudaError_t le = cudaGraphLaunch(exec_[T], cs_);
 #endif
     if (le != cudaSuccess) { err = std::string("verify: launch: ") + cudaGetErrorString(le); return false; }
+#ifdef STRATA_ENABLE_SYCL
+    if (q6_route_audit_) ++window_graphs_.at(input, T).q6_replay_started;
+#endif
     (void) cudaStreamQuery(cs_);
     VDBG("launched\n");
 #ifndef STRATA_ENABLE_SYCL
@@ -1859,7 +1937,12 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     if (le_ < g.n_layers) {   // a layer split's earlier stage: the hand-off is written (synced above)
         ++windows;
         const bool ok = next_ == nullptr || next_->run(T, tokens, pos0, pool, next_user_, out, err, input);
-        if (ok) window_scope.finish();
+        if (ok) {
+            window_scope.finish();
+#ifdef STRATA_ENABLE_SYCL
+            if (q6_route_audit_) ++window_graphs_.at(input, T).q6_replay_completed;
+#endif
+        }
         return ok;
     }
     const bool sampled = !sampling_.greedy && sampling_.temperature > 0.0f;
@@ -1917,6 +2000,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         }
     }
     window_scope.finish();
+#ifdef STRATA_ENABLE_SYCL
+    if (q6_route_audit_) ++window_graphs_.at(input, T).q6_replay_completed;
+#endif
     VDBG("window done\n");
     ++windows;
     progress_at("decode");

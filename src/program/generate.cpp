@@ -6943,6 +6943,10 @@ int main(int argc, char** argv) {
 #endif
 #ifdef STRATA_ENABLE_SYCL
             mtp_observation.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
+            if (!ver.report_q6_routes(stderr, census_request)) {
+                std::printf("ERR invalid or incomplete Q6 route audit\n");
+                return 1;
+            }
             if (iq3_audit_enabled) {
                 // All CPU work and the final commit are drained. Charge the
                 // optional counters to decode, but emit their delta afterwards.
