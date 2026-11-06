@@ -1,4 +1,4 @@
-"""Reject invalid evidence before advancing the complete Q6 centering candidate."""
+"""Reject invalid evidence before advancing the complete Q6 component."""
 import copy
 import json
 import sys
@@ -14,7 +14,7 @@ import run_q6_columns as runner
 
 
 def samples():
-    lines = []
+    lines = ['Q6_TIMER pairs=2048 median_seconds=0.00000002']
     for ni, no, calls in comparison.SHAPES:
         for nc in (1, 2, 3, 4, 8):
             for batch in range(5):
@@ -115,8 +115,8 @@ class Evidence(unittest.TestCase):
 
     def test_missing_duplicate_and_wrong_shape(self):
         lines = samples()
-        for changed in (lines[:-1], lines + [lines[0]],
-                        [lines[0].replace('ni=2560', 'ni=1280')] + lines[1:]):
+        for changed in (lines[:-1], lines + [lines[1]],
+                        [lines[0], lines[1].replace('ni=2560', 'ni=1280')] + lines[2:]):
             with self.subTest(first=changed[0], count=len(changed)), self.assertRaises(RuntimeError):
                 comparison.parse_speed('\n'.join(changed))
 
@@ -125,14 +125,24 @@ class Evidence(unittest.TestCase):
         for wrong in ('position=7', 'calls=1'):
             field = 'position=0' if wrong.startswith('position') else 'calls=256'
             with self.subTest(wrong=wrong), self.assertRaises(RuntimeError):
-                comparison.parse_speed('\n'.join([lines[0].replace(field, wrong)] + lines[1:]))
+                comparison.parse_speed('\n'.join([lines[0], lines[1].replace(field, wrong)] + lines[2:]))
 
     def test_short_and_nonfinite_batch(self):
         lines = samples()
         for value in ('0.009', 'nan', 'inf'):
             with self.subTest(value=value), self.assertRaises(RuntimeError):
-                comparison.parse_speed('\n'.join([lines[0].replace('seconds=0.125',
-                    'seconds=' + value)] + lines[1:]))
+                comparison.parse_speed('\n'.join([lines[0], lines[1].replace('seconds=0.125',
+                    'seconds=' + value)] + lines[2:]))
+
+    def test_missing_duplicate_nonfinite_and_expensive_clock_screen(self):
+        lines = samples()
+        cases = [lines[1:], lines + [lines[0]]]
+        cases += [[lines[0].replace('0.00000002', value)] + lines[1:]
+                  for value in ('0', 'nan', 'inf', '0.001')]
+        cases.append([lines[0].replace('pairs=2048', 'pairs=1')] + lines[1:])
+        for changed in cases:
+            with self.subTest(timer=changed[0]), self.assertRaises(RuntimeError):
+                comparison.parse_speed('\n'.join(changed))
 
 
 class ValidationTrace(unittest.TestCase):

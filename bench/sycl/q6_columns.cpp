@@ -73,6 +73,18 @@ constexpr std::array<Shape, 7> Shapes{{{2560, 10240, 256}, {6144, 2560, 256},
     {2560, 6144, 256}, {2560, 640, 1024}, {2560, 512, 1024},
     {2560, 12288, 256}, {2560, 248320, 8}}};
 
+void timer_screen() {
+  std::array<double, 2048> samples{};
+  for (auto &sample : samples) {
+    const auto begin = Clock::now();
+    sample = std::chrono::duration<double>(Clock::now() - begin).count();
+  }
+  std::sort(samples.begin(), samples.end());
+  std::cout << "Q6_TIMER pairs=" << samples.size() << " median_seconds="
+            << std::setprecision(12) << samples[samples.size() / 2] << '\n'
+            << std::flush;
+}
+
 // Independent byte-wise oracle for the packed helper's six-bit precondition.
 // Vary each lane through every value with other lanes at mixed endpoints.
 constexpr bool centering_byte_contract() {
@@ -317,6 +329,7 @@ int main(int argc, char **argv) {
         }
       }
     } else {
+      timer_screen();
       for (auto shape : Shapes) one_shape(shape, false, arms, native_half);
     }
     rt->wait();

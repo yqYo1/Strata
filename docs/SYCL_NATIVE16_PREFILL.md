@@ -468,7 +468,24 @@ conditional source pass. The entry remains unselected;decode-only ownership is
 not established. The retained5c5e compile database confirms `-ffp-contract=off`
 and the production optimization flags;native-half compilation and full-entry
 subnormal/numerical/timing checks remain pending.
-Its `prepare`, `build` and `check` actions still require the original cohort's
+The maintained [Q6 controller](../tools/sycl/measure_q6_columns.py) now prepares
+this comparison instead of the closed centering experiment. It requires the
+closed six-process CPU IQ3_S analysis and scoped committed Q6 source review,
+then pins the actual5c5e production recipe,compiler/package image and84qualified
+providers before a fresh build. The common inactive command-profile changes
+are recorded separately;other GPU translation units match5c5e. Its
+`prepare`, `build`, `smoke` and `speed` transitions require each prior result
+committed. One traced32-case edge/guard smoke precedes three independent
+35-case entry-cost processes,five paired batches per arm and a10ms batch floor.
+A host-only2048-pair steady-clock screen is outside both arms;its positive
+median must be at most0.1% of the fastest batch. The new fixture supplement
+does not change kernels or numerical workloads. Require every process's
+candidate/reference median time ratio below1 for each eligible shape,without
+a percentage-gain floor. This plan is source-prepared only. No new build,GPU
+execution,phase selection or model-speed result follows yet. Retire this
+auxiliary component build after recording its decision and exact-input recovery;
+keep the named552b fallback and5c5e diagnostic-model consumers separately.
+The standalone converter's `prepare`, `build` and `check` actions require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.
 It preserves per-arm semantic failures,checks both byte offsets and mismatch

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Own the complete Q6 centering comparison; Main-authored, repository LICENSE.
+"""Own the complete Q6 native-half comparison; Main-authored, repository LICENSE.
 
-Both arms use the existing column geometry and production checks. The old
-column-specialization controller/results remain recoverable from Git. No
-component action may overlap the frozen six-process IQ3 audit.
+Both arms include the public column entry and production checks. Closed
+centering experiments remain recoverable from Git. This unselected component
+does not establish phase ownership or model adoption.
 """
 import fcntl
 import hashlib
@@ -24,8 +24,11 @@ import mapped_row_copy_component as shared
 from run_q6_columns import validation_log
 
 P, B, RESULT = shared.P, shared.B, shared.RESULT
-ROOT = B / 'q6-centering-component-v2'
-KEY, COHORT = 'q6_centering_component_v2', 'decode_iq3_audit_speed_v2'
+ROOT = B / 'q6-native-half-component-v1'
+KEY, COHORT = 'q6_native_half_component_v1', 'decode_iq3_audit_speed_v2'
+CPU_KEY = 'cpu_iq3s_pair_component_v1_analysis'
+AUDIT_KEY = 'q6_native_half_entry_contract_20261106'
+INDEX = P / 'bench/results/2026-10-15-pr6-recovery-audit/research-index.json'
 EXE = ROOT / 'sycl_q6_columns_bench'
 GIT = str(Path(shutil.which('git')).resolve())
 CORE, FIXTURE = 'src/kernels/sycl/native_mmvq.cpp', 'bench/sycl/q6_columns.cpp'
@@ -64,6 +67,36 @@ def cohort():
             p['native_exit_code'] == 0 and p['fresh_faults'] == [] for p in row['processes']),
         'close all six IQ3 audit processes before Q6 preparation')
     return row
+
+
+def qualifications():
+    cpu = committed(CPU_KEY)
+    require(cpu['stage'] == 'closed' and cpu['passed'] and cpu['complete'] and
+        cpu['ownership_closed'] and not cpu['active'] and
+        cpu['original_failure_preserved'] and cpu['native_executed'] is False and
+        cpu['original_samples_verified'] == 240 and len(cpu['processes']) == 6 and
+        [p['index'] for p in cpu['processes']] == list(range(6)) and
+        all(p['exit_code'] == 0 and p['pid'] > 0 and p['start_ticks'] > 0
+            for p in cpu['processes']), 'close the CPU comparison before GPU preparation')
+    previous = json.loads(git('show', 'HEAD:' + str(INDEX.relative_to(P))))[AUDIT_KEY]
+    audit = json.loads(INDEX.read_text())[AUDIT_KEY]
+    require(canonical(previous) == canonical(audit) and
+        audit['verdict'] == 'conditional_source_pass' and
+        audit['ownership']['worker_completed'] and
+        audit['ownership']['own_external_terminal_closed'], 'commit closed Q6 source review')
+    for name, expected in audit['source_hashes'].items():
+        require(hashlib.sha256(git('show', audit['source_revision'] + ':' + name)).hexdigest()
+            == expected, 'original reviewed source differs: ' + name)
+        if name != FIXTURE:
+            require(sha(P / name) == expected, 'reviewed kernel/contract changed: ' + name)
+    # Main reviewed the only fixture supplement: a host clock-pair screen
+    # outside either arm. Native math and the numerical workload are unchanged.
+    fixture_delta = git('diff', audit['source_revision'], 'HEAD', '--', FIXTURE)
+    return dict(cpu_signature=signature(cpu), audit_signature=signature(audit),
+        audit_source_revision=audit['source_revision'], source_hashes=audit['source_hashes'],
+        fixture_supplement=dict(sha256=sha(P / FIXTURE),
+            diff_sha256=hashlib.sha256(fixture_delta).hexdigest(),
+            main_review='Host-only steady-clock pair screen outside both arms;no math/workload change.'))
 
 
 def signature(value):
@@ -161,18 +194,27 @@ def final_owner_guard(row):
 
 def prepare():
     closed = cohort()
+    qualification = qualifications()
     require(not ROOT.exists() and KEY not in json.loads(RESULT.read_text()), 'fresh attempt only')
     revision = git('rev-parse', 'HEAD').decode().strip()
     tracked = git('ls-files', '-z', 'include', 'tools/sycl').decode().split('\0')
     names = sorted(set(SOURCES) | {n for n in tracked if n and
         (n.startswith('include/') or n.endswith('.py'))} |
+        set(qualification['source_hashes']) |
         {'AGENTS.md', 'docs/ARTIFACT_RETENTION.md', 'tools/sycl/measurement_environment.json',
          'tests/core/test_q6_columns.py'})
     values = {n: git('show', revision + ':' + n) for n in names}
     require(len(names) <= 1024 and sum(map(len, values.values())) <= 32 << 20 and
         all((P / n).read_bytes() == raw for n, raw in values.items()),
         'commit exact native, fixture and transitive controller sources first')
-    native = committed('decode_iq3_pair_model_build_v1')
+    native = committed('decode_service_model_build_v1')
+    require(native['passed'] and native['complete'] and native['ownership_closed'] and
+        not native['active'], 'closed retained production build')
+    original_hashes = {name: hashlib.sha256(git('show', native['source_commit'] + ':' + name)).hexdigest()
+        for name in SOURCES if name != FIXTURE}
+    changed = sorted(name for name, expected in original_hashes.items() if sha(P / name) != expected)
+    require(changed == [CORE, 'src/sycl/command_profile.cpp'],
+        'unexpected production GPU translation-unit delta')
     database = native['compile_database']
     require(sha(database['path']) == database['sha256'], 'actual native compile database changed')
     units = [u for u in json.loads(Path(database['path']).read_text()) if u['file'].endswith('/' + CORE)]
@@ -218,28 +260,32 @@ def prepare():
     commands.append(('link', [original[0], *flags, *objects, '-Wl,-t', '-o', str(EXE)]))
     row = dict(stage='preparing', source_commit=revision,
         sources={n: hashlib.sha256(raw).hexdigest() for n, raw in values.items()},
-        runtime_pins=runtime, cohort_signature=signature(closed), tools=tools,
+        runtime_pins=runtime, cohort_signature=signature(closed), qualifications=qualification, tools=tools,
         toolchain=dict(path=str(ROOT / 'toolchain.json'), sha256=hashlib.sha256(encoded).hexdigest(),
             files=len(image['files']), bytes=image['bytes'], packages=image['packages']),
         native_recipe_origin=dict(source_commit=native['source_commit'], compile_database=database,
             flags=flags, change='Private source paths plus explicit GCC13 host-header selection;no math/optimization flag change.'),
+        common_source_delta=dict(original_GPU_units=original_hashes, changed=changed,
+            review='native_mmvq adds the unselected audited entry. Shared command_profile adds inactive kinds/metadata;the fixture constructs no Trace,so fused_tag returns before registration. Both arms share it. Other GPU translation units match retained5c5e. Actual compiler dependencies are checked after build;this is not whole-model equivalence.'),
         compiler_version=subprocess.check_output([original[0], '--version'], env=env, text=True,
             timeout=15).splitlines()[0], environment=env,
         native_validation_probe=closed['native_validation_probe'], commands=commands,
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=guards.driver_guard(),
         budgets=dict(wall=1200, cpu=2400, rss_cap=8 << 30, text_cap=16 << 20,
             file_cap=128 << 20, total_cap=768 << 20),
-        plan=dict(reference='native_q6_k_columns_mmvq', candidate='native_q6_k_centered_columns_mmvq',
-            difference='Q6 centering after 0x0f/0x30 masks only;same byte loads,dot/scales,geometry and reductions.',
-            device_identity='Exact LevelZero,vendor8086,devicee20c,PCI0000:05:00.0;descriptive name is emitted,not matched. V1 remains failed for its decorated-name rejection before any kernel enqueue.',
+        plan=dict(reference='native_q6_k_columns_mmvq', candidate='native_q6_k_native_half_columns_mmvq',
+            difference='Byte-copy half bits,bit_cast to real sycl::half,then widen Q6/Q81 scales to float;same packed data,dot,FP32 accumulation/reduction,geometry and outputs. Per-call fp16 capability check remains timed.',
+            provenance='Own existing Q6 kernel and standalone SYCL conversion;no XeStrata implementation input.',
+            device_identity='Exact LevelZero,vendor8086,devicee20c,PCI0000:05:00.0,fp16,in-order;descriptive name is emitted,not matched.',
             order='One traced smoke,then three fresh processes;five paired batches per shape/column,arm=(batch+column+position)%2.',
             shapes=SHAPES, columns=[1, 2, 3, 4, 8], smoke_cases=32, speed_cases=35,
             timer='Steady-clock full public dispatch and queue completion;resident weights/Q81;conversion,allocation,oracles outside timers.',
-            minimum_batch_seconds=.01, process_repetitions=3, batches_per_arm=5,
+            minimum_batch_seconds=.01, timer_screen='2048 adjacent steady-clock pairs before speed cases;finite positive median <=0.1% of fastest timing batch.',
+            process_repetitions=3, batches_per_arm=5,
             acceptance='All output bits,read-only inputs,guards and finite values pass;Q6 scalar and every Q81 byte oracle pass. Exact B570,in-order queue,normal0,quiet validation,closed owners,unchanged inputs/providers/boot and no fresh fault. A shape is eligible only when all three independent median candidate/reference time ratios are below1;no percentage floor.',
             stopping='Stop on first source/provider/owner/numerical/validation/fault/budget/short-timer failure;no retries or hash refresh.',
             limits='Synthetic model geometries and parameter-validation/preload envelope. Logical bytes unchanged;no physical-traffic,saturation,native-ISA,clean model-speed,ordinary runtime-teardown,prefill or262144/RESTORE qualification. No production selector is enabled.'),
-        retention='Temporary third project build generation for this imminent component comparison only. Both552b validated prefill fallback and b310 current model reference still have named consumers. Count this fixture with project builds and retire its ELF/objects/source snapshot/traces after recording the decision and verifying source recovery;do not retain it as another reference generation.',
+        retention='One auxiliary component build for this imminent native-half comparison. Keep552b validated prefill fallback(9ELFs) and5c5e current diagnostic model(5ELFs) for their recorded consumers;no b310/CPU comparison build is needed. Retire this fixture ELF/objects/source snapshot/traces after committing the decision and verifying exact source/recipe recovery;not another model reference generation.',
         processes=[], active=False, ownership_closed=True, passed=False, complete=False,
         GPU_executed=False, model_executed=False)
     ROOT.mkdir(mode=0o700)
@@ -252,11 +298,13 @@ def prepare():
         row['stage'] = 'prepared'; save(row)
     except BaseException as error:
         row.update(stage='failed-prepare', error=repr(error)); save(row); raise
-    print('Prepared Q6 centering;commit exact plan before build.', flush=True)
+    print('Prepared Q6 native-half;commit exact plan before build.', flush=True)
 
 
 def inputs_current(row):
     require(signature(cohort()) == row['cohort_signature'], 'closed cohort evidence changed')
+    require(canonical(qualifications()) == canonical(row['qualifications']),
+            'closed CPU or Q6 source-review qualification changed')
     require(all(sha(ROOT / 'source' / n) == h and sha(P / n) == h for n, h in row['sources'].items()),
             'frozen source/fixture/controller changed')
     require(all(sha(p) == h for p, h in row['runtime_pins'].items()), 'runtime provider changed')
@@ -328,7 +376,18 @@ def build_component():
         finish_owner(row, supervisor, 'build')
 
 
+def timer_screen(text):
+    lines = [line for line in text.splitlines() if line.startswith('Q6_TIMER ')]
+    require(len(lines) == 1, 'one host clock-pair screen per speed process')
+    fields = dict(word.split('=', 1) for word in lines[0].split()[1:])
+    seconds = float(fields['median_seconds'])
+    require(set(fields) == {'pairs', 'median_seconds'} and int(fields['pairs']) == 2048 and
+        math.isfinite(seconds) and seconds > 0, 'invalid host clock-pair evidence')
+    return dict(pairs=2048, median_seconds=seconds)
+
+
 def parse_speed(text):
+    timer = timer_screen(text)
     groups = {}
     for line in text.splitlines():
         if not line.startswith('Q6_SAMPLE '): continue
@@ -344,6 +403,9 @@ def parse_speed(text):
         bucket[arm][batch] = seconds
     expected = {(ni, no, nc): calls for ni, no, calls in SHAPES for nc in (1, 2, 3, 4, 8)}
     require(set(groups) == set(expected), 'missing/extra model geometry')
+    fastest = min(seconds for group in groups.values() for arm in (0, 1)
+                  for seconds in group[arm].values())
+    require(timer['median_seconds'] / fastest <= .001, 'clock-pair cost exceeds batch budget')
     result = []
     for key, calls in expected.items():
         g = groups[key]
@@ -393,16 +455,17 @@ def run(smoke):
             start = None
             try:
                 require(time.monotonic() < deadline, 'whole component deadline')
-                start = cursor(); print('Q6 centering', phase, process, flush=True)
+                start = cursor(); print('Q6 native-half', phase, process, flush=True)
                 entry, out, err = supervisor.run('process-' + str(process),
-                    [str(EXE), '--smoke' if smoke else '--speed', '--centering'], env, ROOT,
+                    [str(EXE), '--smoke' if smoke else '--speed', '--native-half'], env, ROOT,
                     **dict(row['budgets'], wall=min(row['budgets']['wall'], deadline-time.monotonic())))
                 text = out.read_text(); count = 32 if smoke else 35
                 if 'Q6_TARGET_ENDIAN_LITTLE=1' in text:
                     row['GPU_executed'] = True
                 require(owner.closed(entry) and entry['exit_code'] == 0,
                         'component failed: ' + (err.read_text()+text)[-4000:])
-                require(text.count('Q6_COMPARISON=centering') == 1 and text.count('Q6_TARGET_B570=1') == 1 and
+                require(text.count('Q6_COMPARISON=native-half') == 1 and text.count('Q6_TARGET_B570=1') == 1 and
+                    text.count('Q6_TARGET_FP16=1') == 1 and
                     text.count('Q6_TARGET_ENDIAN_LITTLE=1') == 1 and text.count('Q6_CASE_PASS ') == count and
                     text.count(' scalar_oracle=PASS') == count and text.count(' q8_oracle=PASS') == count and
                     text.count('Q6_COLUMNS_PASS mode=' + ('smoke' if smoke else 'speed')) == 1,
@@ -417,7 +480,9 @@ def run(smoke):
             result = dict(passed_cases=count, native_exit_code=0, ownership_closed=True,
                           validation=proof, fresh_faults=[])
             if smoke: row['smoke'] = result
-            else: result['samples'] = parse_speed(text); row['processes'].append(result)
+            else:
+                result['timer_screen'] = timer_screen(text)
+                result['samples'] = parse_speed(text); row['processes'].append(result)
             save(row)
         if smoke: row['stage'] = 'smoke-passed'
         else:
