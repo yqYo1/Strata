@@ -651,7 +651,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   This establishes the bounded positive path and post-loan dispatch,not model
   quality,clean PP/TG,physical262144/RESTORE or inference adoption. Checked
   record-failure injection remains the next separate native control before the
-  clean static-versus-adaptive bench.sh comparison. Preserve the fast552b prefill
+  clean static-versus-adaptive bench.sh comparison. The Main-authored
+  `check_adaptive_record_failure.py` now source-prepares that control using the
+  same429b engine/configuration and one1024-input/max256-output request. The
+  existing native injection calls the real compatibility API with a null event
+  on the second record,after accepted positive copies;the first event remains
+  intact. Require generation1 published,generation2 masked but never published,
+  exact adaptive-refill ERR without DONE,and owned native exit1 without cleanup,
+  quiet validation,unchanged final assets/boot/driver and no fresh GPU fault.
+  Its reducer/source and prospective plan must be committed before execution;
+  this source preparation supplies no new native result or speed claim.
+  Preserve the fast552b prefill
   fallback and assess its PP/TTFT independently of any decode gain.
   After pushing the useful result at`dca625eac0fdec4c2b47cbd524c0ca73a3c3399f`
   and recovering all115controller inputs,the normal raw streams,poll receipt,
