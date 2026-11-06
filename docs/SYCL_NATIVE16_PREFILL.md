@@ -120,7 +120,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   process;paired geometric-mean time reductions range0.435%..25.313%,median
   12.937%. These are resident-operand public-entry timings including queue
   completion under parameter validation,not model TG or saturation. The CSV
-  retains all35 result points,172rows total.
+  retains all35 component result points;with the closed model comparison it now
+  has176rows total.
   The actual5c30-cell incumbent intersects26 winners;512x4 and all other
   ineligible cells retain their previous path. Native half requires columns1,
   centering0,explicit decode phase and an immutable default-off selector.
@@ -192,6 +193,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   candidate in all three pairs;these are separate observations,not dedicated
   long-prefill preservation. The next width comparison may use half1 in both
   arms while preserving the fallback and the remaining gates.
+  Closed evidence is `1b6e71f60e9590419857c9fffb8dab1ce19ce7b1`,key
+  `q6_native_half_generation_speed_v1`;four CSV points retain reference/candidate
+  code/prose aggregates with that evidence commit and the native source separately.
   Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
