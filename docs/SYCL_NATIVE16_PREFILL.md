@@ -882,8 +882,11 @@ random-expert behavior,CPU arithmetic saturation or a model bottleneck. The
 older30.642GB/s single-thread result is a different pattern and remains valid.
 Follow`cpu_read_capacity_v1`;consume its calibration with actual format/NT
 service rather than converting historical logical job bytes to a measured limit.
-The disposable fixture is now due for retirement after pushed results/source
-recovery;both inference engine generations remain protected.
+The auxiliary ELF,dependency output and successful streams are retired after
+pushed results and recovery of all7original sources/the committed recipe. Its
+one-use source/controller are archived at the source commit above;normal Git
+history restores them. Both inference engine generations remain protected.
+The best-median two-thread point is also in the cumulative CSV.
 
 The next source-matched decode-resource consumer can reuse the current429b
 engine:its recorded CMake recipe has `STRATA_CPU_SERVICE_PROFILE=ON`,and its
@@ -2256,15 +2259,16 @@ The Q6 policy source and closed CPU host result are published on
 The default remains `05069aeed`; the current branch-rule query still permits
 only squash PR merges. Default integration remains unfinished because the
 measured original commit identities must be preserved.
-Rechecked2026-11-06 19:35UTC:the actual main-branch pull-request rule still
+Rechecked2026-11-06 21:56UTC:the actual main-branch pull-request rule still
 restricts allowed methods to `squash`;PR180 remains open. Preserve measured
 source identities rather than bypassing this rule.
 
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently186
-milestone rows including the four MTP-width and two current adaptive-code aggregates.
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently187
+milestone rows including the four MTP-width,two current adaptive-code aggregates
+and the CPU read-payload calibration.
 Detailed current evidence and frozen plans are in
 [`fused-moe-service-current.json`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json)
 under `cache_map_prefill_speed117489_v1`, `cache_map_prefill_curve_v7`,
