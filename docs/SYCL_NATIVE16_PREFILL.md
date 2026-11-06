@@ -243,6 +243,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   (SHA256 e879f20b/241894d5)serve only the post-cohort current-collector design
   decision;curate the needed source findings and retire those bodies there.
   Current-ELF qualification and finite output budgets still apply.
+  The old tool receipt's Xe-named loader path is historical
+  `original_assets.preload.loader.path` metadata. No such path occurs in its460
+  compiler inputs or system-only ELF dependency list. The current control
+  constructs loader expectations from its selected native validation probe;
+  actual current provider mappings remain part of the unexecuted device gate.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
@@ -348,6 +353,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   all four paused gates[4,5,5,6] and six cache/IQ3 footers pass. These are single
   reference samples;five processes and the three-pair width decision remain
   pending. No cap2 speed gain or new TG milestone follows yet.
+  Its completed target windows are1xT1+913xT4 for code and1xT1+3357xT4 for prose:
+  3653/13429token positions,or1.152366/1.845911per generated token. Dividing
+  those extents by whole decode time gives15.916143/15.840919positions/s.
+  This descriptive work normalization supports checking rejected verification
+  work with cap2;it excludes separate draft work and is neither a target-only
+  service timer nor FLOPs,physical traffic or a limiting-resource measurement.
   Process0's successful raw output/JIT is now retired after pushing its result
   at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76`,recovering all320original inputs
   from Git,and checking closed owners and cohort admission before/after deletion:
