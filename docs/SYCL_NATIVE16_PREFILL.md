@@ -345,32 +345,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   common. Classify MTP only from fixed4;keep fixed2 acceptance at its changed
   denominator and retain every speed sample. Each workload needs all three
   paired TG ratios above one for a repeated gain. Both fresh generation frontend
-  probes now pass with normal exits and closed owners. Process0,the first cap4
-  reference,now closes with both long requests eligible,native0,quiet validation,
-  closed owners,unchanged boot/driver and no fresh fault.
-  Code/prose generate3170/7275tokens with decode_ms229515.4/847741.2 and client
-  TTFT50.437/43.267s;acceptance is.824388/.389236. Actual T1/T4 replays complete,
-  all four paused gates[4,5,5,6] and six cache/IQ3 footers pass. Process1,the
-  first cap2 candidate,also closes normally with both requests eligible,quiet
-  validation,closed owners,unchanged boot/driver and no fresh fault. It generates
-  3592/8418tokens with decode_ms293276.8/792201.9,client TTFT50.990/43.203s,
-  acceptance.878138/.624590 and5496/6359answer characters. Actual T1/T2 and
-  selected head replays,all four paused gates and six footers pass.
-  First-pair exact TG is13.811709->12.247815 code and8.581628->10.626079 prose;
-  candidate/reference ratios are.886770/1.238236. Keep the different generated
-  lengths and fixed2 acceptance denominator. Fixed4 alone establishes each MTP
-  class. Process2,the second cap2 candidate,also passes the same route,journal,
-  footer,validation,fault and closed-owner gates with native exit0 and unchanged
-  boot/driver. It generates3592/8418tokens with5496/6359answer characters,
-  decode_ms296978.5/790574.1 and TG12.095152/10.647958;client TTFT is
-  50.528/42.748s. Process3,the second cap4 reference,also passes with native0,
-  quiet validation,closed owners,unchanged boot/driver,no fresh fault,all four
-  paused gates and six footers. It generates3170/7275tokens with5578/4632answer
-  characters,decode_ms229115.5/805007.2,TG13.835816/9.037186 and client
-  TTFT50.737/42.208s. Actual T1/T4 and selected heads complete. Second-pair
-  cap2/reference TG ratios are.874191/1.178238:code remains slower and prose
-  faster. Four processes/two pairs are closed;processes4/5 and the final
-  three-pair decision remain pending.
+  probes and processes0..4 now pass with both long requests eligible per process,
+  normal native exits,quiet validation,closed owners,unchanged boot/driver and
+  no fresh fault. Actual T1/T4 or T1/T2 and selected Q6 heads complete;all four
+  paused gates[4,5,5,6] and six cache/IQ3 footers pass per process. The original
+  individual samples,body hashes and route evidence stay in the cumulative
+  result. Fixed4 establishes MTP classes at acceptance.824388/.389236;keep
+  fixed2's changed denominator and different generated lengths.
+  The first two cap2/reference TG ratios are.886770/.874191 for code and
+  1.238236/1.178238 for prose:code is slower and prose faster in both pairs.
+  The third cap4 reference is now closed at TG13.640135/8.985282tok/s and
+  client TTFT53.538/41.718s. Five processes/two complete pairs are closed;
+  process5,the final cap2 candidate,and the final three-pair decision remain pending.
   The per-workload gain must reproduce;this is not adoption.
   The cap4 reference's completed target windows are1xT1+913xT4 for code and1xT1+3357xT4 for prose:
   3653/13429token positions,or1.152366/1.845911per generated token. Dividing
@@ -399,8 +385,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   repeatability checks at an already observed width,not validation of linearity,
   unseen widths or different contexts. Process3's errors are+0.174541%/+5.308524%:
   prose shows a larger variation that the first-pair description does not explain.
-  Use remaining processes4/5 as further
-  held-out checks without refitting or changing the original cohort decisions.
+  Process4's errors are-1.242242%/+4.703693%. Use process5 as the final
+  held-out check without refitting or changing the original cohort decisions.
   Successful raw output/JIT from processes0..3 is retired after pushing their
   individual samples through `4b02b7666847ed2a930a9dad8799001ad04e3975`,recovering
   all320original inputs from Git,and checking closed ownership:276files and
@@ -410,7 +396,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   composition,not the plain ec4 controller-commit tree. Required inputs match
   before/after retirement;the next process still requires full unchanged native
   admission. Keep all12generated config/plan files and global cohort/provider
-  inputs for the remaining two processes. External deletion manifests
+  inputs for the final process. External deletion manifests
   `mtp-width-generation-process0-output-retirement-20261106.json` and
   `mtp-width-generation-process1-output-retirement-20261106.json` have respective
   SHA256 `7e8d87edafaa5208fc46ad26f7747a1e2de975195782f8d9514cb3244dd6c0e4`
