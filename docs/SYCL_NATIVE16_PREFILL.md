@@ -483,8 +483,10 @@ does not change kernels or numerical workloads. Require every process's
 candidate/reference median time ratio below1 for each eligible shape,without
 a percentage-gain floor. V1 preparation failed before creating its root or
 building:Main compared the build-controller commit tree instead of the actual
-materialized model sources. V2 uses the original `native_sources` hashes and
-checks the retained image;V1 remains failed. V2 is source-prepared only. No new
+materialized model sources. V2 also failed before its root/build because Main
+used the compact source signature as the full source map. V3 loads the original
+full record,checks its566-input signature against committed evidence and uses
+those actual hashes. Both failed outcomes remain failed. V3 is source-prepared only. No new
 build,GPU execution,phase selection or model-speed result follows yet. Retire this
 auxiliary component build after recording its decision and exact-input recovery;
 keep the named552b fallback and5c5e diagnostic-model consumers separately.

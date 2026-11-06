@@ -24,8 +24,8 @@ import mapped_row_copy_component as shared
 from run_q6_columns import validation_log
 
 P, B, RESULT = shared.P, shared.B, shared.RESULT
-ROOT = B / 'q6-native-half-component-v2'
-KEY, COHORT = 'q6_native_half_component_v2', 'decode_iq3_audit_speed_v2'
+ROOT = B / 'q6-native-half-component-v3'
+KEY, COHORT = 'q6_native_half_component_v3', 'decode_iq3_audit_speed_v2'
 CPU_KEY = 'cpu_iq3s_pair_component_v1_analysis'
 AUDIT_KEY = 'q6_native_half_entry_contract_20261106'
 INDEX = P / 'bench/results/2026-10-15-pr6-recovery-audit/research-index.json'
@@ -97,6 +97,17 @@ def qualifications():
         fixture_supplement=dict(sha256=sha(P / FIXTURE),
             diff_sha256=hashlib.sha256(fixture_delta).hexdigest(),
             main_review='Host-only steady-clock pair screen outside both arms;no math/workload change.'))
+
+
+def production_sources(native):
+    path = B / 'decode-service-model-v1/record.json'
+    record = json.loads(path.read_text())
+    require(record['source_commit'] == native['source_commit'] and
+        record['compile_database'] == native['compile_database'] and
+        record['selected_basis'] == native['selected_basis'] and
+        shared.signature(record['native_sources']) == native['native_sources'],
+        'full materialized-source record differs from committed build evidence')
+    return record['native_sources'], dict(path=str(path), sha256=sha(path))
 
 
 def signature(value):
@@ -212,7 +223,8 @@ def prepare():
         not native['active'], 'closed retained production build')
     # source_commit identifies the build controller/recipe. The selected model
     # image is materialized from pinned source revisions; use its actual inputs.
-    original_hashes = {name: native['native_sources'][name]
+    materialized, production_record = production_sources(native)
+    original_hashes = {name: materialized[name]
         for name in SOURCES if name != FIXTURE}
     require(all(sha(B / 'decode-service-model-v1/source' / name) == expected
         for name, expected in original_hashes.items()), 'retained production source image changed')
@@ -268,6 +280,7 @@ def prepare():
         toolchain=dict(path=str(ROOT / 'toolchain.json'), sha256=hashlib.sha256(encoded).hexdigest(),
             files=len(image['files']), bytes=image['bytes'], packages=image['packages']),
         native_recipe_origin=dict(source_commit=native['source_commit'], compile_database=database,
+            materialized_source_record=production_record, native_build_signature=signature(native),
             flags=flags, change='Private source paths plus explicit GCC13 host-header selection;no math/optimization flag change.'),
         common_source_delta=dict(original_GPU_units=original_hashes, changed=changed,
             review='native_mmvq adds the unselected audited entry. Shared command_profile adds inactive kinds/metadata;the fixture constructs no Trace,so fused_tag returns before registration. Both arms share it. Other GPU translation units match retained5c5e. Actual compiler dependencies are checked after build;this is not whole-model equivalence.'),
@@ -309,6 +322,11 @@ def inputs_current(row):
     require(signature(cohort()) == row['cohort_signature'], 'closed cohort evidence changed')
     require(canonical(qualifications()) == canonical(row['qualifications']),
             'closed CPU or Q6 source-review qualification changed')
+    native = row['native_recipe_origin']
+    require(signature(committed('decode_service_model_build_v1')) == native['native_build_signature'] and
+        sha(native['materialized_source_record']['path']) == native['materialized_source_record']['sha256'] and
+        sha(native['compile_database']['path']) == native['compile_database']['sha256'],
+        'original production source/recipe record changed')
     require(all(sha(ROOT / 'source' / n) == h and sha(P / n) == h for n, h in row['sources'].items()),
             'frozen source/fixture/controller changed')
     require(all(sha(p) == h for p, h in row['runtime_pins'].items()), 'runtime provider changed')

@@ -164655,5 +164655,20 @@
     "error": "RuntimeError: unexpected production GPU translation-unit delta",
     "cause": "Main compared the build-controller source_commit tree with current GPU units. The actual5c5e model source image is materialized from separately pinned inputs:command_profile.cpp differs from that recipe commit but matches its native_sources record. This is a preparation admission error,not a compiler/runtime/device failure.",
     "correction": "V2 compares the original native_sources hashes and actual retained source image,then records the two real changed GPU units. New source and plan must be committed before execution;V1 remains failed."
+  },
+  "q6_native_half_component_v2": {
+    "stage": "failed-prepare",
+    "source_commit": "055ac09b92a643fc6716135ca428d382ffe046e3",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "build_executed": false,
+    "root_created": false,
+    "error": "KeyError: 'src/sycl/runtime.cpp'",
+    "cause": "Main indexed the compact native_sources signature as if it were the full566-file source map. The original full retained build record contains the map;its signature agrees with committed evidence. No native child or root was created.",
+    "correction": "V3 loads the full original record,checks its source-map signature,selected basis,recipe identity and record hash against committed evidence. Host regression covers compact/full source records and changed-input refusal. V1/V2 remain failed."
   }
 }

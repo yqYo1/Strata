@@ -59,6 +59,23 @@ class ClosedAudit(unittest.TestCase):
 
 
 class DurableAdmission(unittest.TestCase):
+    def test_compact_build_signature_resolves_exact_materialized_sources(self):
+        sources = {'src/sycl/runtime.cpp': 'actual-runtime-hash'}
+        record = dict(source_commit='recipe-commit', compile_database={'sha256': 'recipe-hash'},
+            selected_basis={'source': 'earlier-commit'}, native_sources=sources)
+        compact = dict(record, native_sources=comparison.shared.signature(sources))
+        with TemporaryDirectory() as directory:
+            root = Path(directory); (root/'decode-service-model-v1').mkdir()
+            path = root/'decode-service-model-v1/record.json'
+            path.write_text(json.dumps(record))
+            with mock.patch.object(comparison, 'B', root):
+                actual, receipt = comparison.production_sources(compact)
+                self.assertEqual(actual, sources)
+                self.assertEqual(receipt['sha256'], comparison.sha(path))
+                record['native_sources']['src/sycl/runtime.cpp'] = 'changed-input'
+                path.write_text(json.dumps(record))
+                with self.assertRaises(RuntimeError): comparison.production_sources(compact)
+
     def test_changed_generated_command_refused_before_inputs_or_build(self):
         row = dict(sources={}, runtime_pins={}, commands=[['compile', ['icpx', '-O3']]])
         frozen = comparison.compact(row)
