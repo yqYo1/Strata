@@ -181779,5 +181779,97 @@
         "sha256": "91e90021537b9ebd75f2e2fde7434b65dfdca6aac43c7f4b43ee94f2c8f60b8c"
       }
     }
+  },
+  "decode_profile_gate_host_v1": {
+    "stage": "prepared",
+    "contract": "decode-profile",
+    "source_commit": "1a0c9c3c3d690c6da6a94212833c067c30053e0d",
+    "toolchain_image": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/toolchain.json",
+      "files": 6239,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ],
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838"
+    },
+    "native_dependency_record_sha256": "07c38cc31954f83c8296a81746d0f223e7b609d60fdc8ce5a961c15e5333addb",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "executable": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-gate-host-v1/audit_test",
+    "command": [
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-std=c++17",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+      "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+      "-MD",
+      "-MT",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-gate-host-v1/audit_test",
+      "-MF",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-gate-host-v1/headers.d",
+      "-Wl,-t",
+      "-pthread",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/decode_profile_gate_test.cpp",
+      "-o",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-gate-host-v1/audit_test"
+    ],
+    "environment": {
+      "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-gate-host-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-profile-gate-host-v1/cache"
+    },
+    "budgets": {
+      "compile": {
+        "wall": 90,
+        "cpu": 120,
+        "rss_cap": 2147483648,
+        "text_cap": 262144,
+        "file_cap": 4194304,
+        "total_cap": 8388608
+      },
+      "test": {
+        "wall": 15,
+        "cpu": 15,
+        "rss_cap": 536870912,
+        "text_cap": 65536,
+        "file_cap": 4194304,
+        "total_cap": 8388608
+      }
+    },
+    "expected": "decode_profile_gate cases=45 status=PASS",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "plan": "Commit before check. One host compile,ELF dependency check and fixture;normal0 and closed owners. Actual headers/link inputs must match the prebuild complete compiler/package image plus the exact project files. No retry,source/image refresh or GPU/SYCL work. Adaptive tests host identity/payload/fence assertions. Decode-profile tests45 cases:immutable-config parsing,inactive no-work behavior,four fully drained regular-file handshakes,round ordering,partial completion,failed/throwing drains,wrong peer identity/extent/type/mode/links,stale entries,private-directory checks and bounded missing-ack failure. Neither qualifies native callbacks,queue lifetime,model coverage,speed or full context.",
+    "retention": "Commit compact source/recipe/case/closure evidence;then retire this one-use executable,compiler temporaries and successful full output after exact Git source/recipe recovery. Native and fallback generations remain untouched.",
+    "source_inputs": {
+      "count": 110,
+      "sha256": "455eb8ca9385a7a8b702a0d609b0a2c406c3e59aac3ec77414466e210a6a9410",
+      "project": {
+        "include/strata/sycl/decode_profile_gate.hpp": "5bc9b648948631c5dbb5946a0c38b0cf47b6071eebf80f13736652c7917f1642",
+        "tests/core/decode_profile_gate_test.cpp": "811d40d0f1b88144a2a47d7dcdf988e0996a1f0b9df43eeaa24f8919228c74c6"
+      }
+    }
   }
 }
