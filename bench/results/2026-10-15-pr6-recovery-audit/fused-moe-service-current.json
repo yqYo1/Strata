@@ -185109,7 +185109,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "a6a8e863ebf41c04f173eb3d916b36d1be752320",
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -186069,6 +186069,127 @@
           "original_sources_recovered": 332,
           "protected_ELF_outputs": 15
         }
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1962414,
+          "start_ticks": 235283133,
+          "sid": 1962360
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33279,
+            "reused_tokens": 0,
+            "generated_tokens": 10147,
+            "output_chars": 6956,
+            "reasoning_chars": 20127,
+            "prompt_ms": 61235.2,
+            "prompt_tps": 543.5,
+            "decode_ms": 1004104.5,
+            "decode_tps": 10.1,
+            "ttft_s": 61.407,
+            "total_s": 1065.365,
+            "drafts_offered": 6268,
+            "drafts_accepted": 3879,
+            "acceptance_rate": 0.6188576898532228,
+            "request_sha256": "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee",
+            "output_sha256": "237ff0b5a8f1e3ed596ef3ac506f7775e1e37e8ed66862484cc6511108a623ae",
+            "reasoning_sha256": "d570609258b32dd6f21261142cc67c05467f8ea6a02a22e2cadf640840d46fe7",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1962414,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33279,
+            "rows": 33278,
+            "GPU_residual_rows": 33278,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19977,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33278,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 2,
+            "request": 5,
+            "IQ3_calls": 7231146,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 2790923,
+            "lookups": 6017760,
+            "hit_percent": 46.4
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "965fb4fa6a64f49bb997654f7bc15c19812571c92573524ba98357aba06613da",
+            "c68cf64b10891ea1a96f677b485cdefec67a97b9dad7f6ec1a53bf4ffd1ccea2",
+            "a3fb423efc701eb3e11df431625f05c0dcdc2d2fcc31822315380822c1e6045c",
+            "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee"
+          ],
+          "valid": true,
+          "journal_sha256": "b9f5bd53628a75a843961b9217ff3963c9bd3d4ccede7766674a93eeb4c12a49"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35592
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_controls": {
@@ -186082,8 +186203,8 @@
       "GPU_executed": false
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "whole_bytes": 469762048,
@@ -186108,6 +186229,61 @@
         "passed": true
       }
     ],
+    "decision": {
+      "candidate_over_reference_TG": [
+        1.308641975308642,
+        1.2183908045977012,
+        1.2023809523809523
+      ],
+      "geometric_mean_TG_ratio": 1.2422714821641325,
+      "repeated_TG_gain": true,
+      "minimum_gain_floor": false,
+      "arms": {
+        "reference": {
+          "median_TG": 8.4,
+          "minimum_TG": 8.1,
+          "maximum_TG": 8.7,
+          "acceptance": [
+            0.6304604486422668,
+            0.6304604486422668,
+            0.6304604486422668
+          ],
+          "generated_tokens": [
+            8286,
+            8286,
+            8286
+          ]
+        },
+        "candidate": {
+          "median_TG": 10.6,
+          "minimum_TG": 10.1,
+          "maximum_TG": 10.6,
+          "acceptance": [
+            0.6188576898532228,
+            0.6188576898532228,
+            0.6188576898532228
+          ],
+          "generated_tokens": [
+            10147,
+            10147,
+            10147
+          ]
+        }
+      },
+      "candidate_over_reference_prompt_time": [
+        0.9509614694877112,
+        1.0138027273369603,
+        1.0107236880111576
+      ],
+      "candidate_over_reference_TTFT": [
+        0.9504430369225142,
+        1.0132927215747032,
+        1.009551836385756
+      ],
+      "prompt_nonregression": false,
+      "TTFT_nonregression": false,
+      "limits": "Matched focused workload at one context/width only. Cap2 acceptance uses its own denominator;no strong/weak relabeling,quality,agent,64K/117K preservation,physical262144/RESTORE,adoption or70TG claim."
+    },
     "input_signatures": {
       "sources": "b4b9eba8edcf15edd4e418d57302f2f82e1ca93e01f004762add68fbaf5cbc41",
       "environment_template": "3819ebcd7f1638791579f7d628f1c7a94a0e011734096475407b547987110082",
@@ -186130,7 +186306,7 @@
     "require_all_six_processes_pass": true,
     "require_original_body_clock_route_ownership_and_fault_gates": true,
     "limits": "Prospective unrounded arithmetic on the separate cap2/prose cohort;preserve its rounded controller decision and all samples/gates. No prior code/prose speed is a matched baseline. Cap2 acceptance has its own denominator;no current fixed4 classification,changed eligibility,quality,adoption,physical-context or70TG claim.",
-    "stage": "collecting",
+    "stage": "closed",
     "cohort_key": "adaptive_generation_varied_prose_v2",
     "declared_after_reference_processes": 0,
     "declared_before_reference_execution": true,
@@ -186159,11 +186335,99 @@
         "candidate_over_reference_prompt_time": 1.0138027273369603,
         "candidate_over_reference_TTFT": 1.0132927215747032,
         "same_request_sha256": true
+      },
+      {
+        "pair": 2,
+        "reference_index": 4,
+        "candidate_index": 5,
+        "reference_exact_TG": 8.36098212378431,
+        "candidate_exact_TG": 10.105521885421288,
+        "candidate_over_reference_exact_TG": 1.2086524927106734,
+        "candidate_over_reference_prompt_time": 1.0107236880111576,
+        "candidate_over_reference_TTFT": 1.009551836385756,
+        "same_request_sha256": true
       }
     ],
-    "complete": false,
-    "repeatability_qualified": false,
-    "initial_reference_exact_TG": 8.073057762699063
+    "complete": true,
+    "repeatability_qualified": true,
+    "initial_reference_exact_TG": 8.073057762699063,
+    "arms": {
+      "reference": {
+        "exact_TG": [
+          8.073057762699063,
+          8.749192763955099,
+          8.36098212378431
+        ],
+        "median_TG": 8.36098212378431,
+        "minimum_TG": 8.073057762699063,
+        "maximum_TG": 8.749192763955099,
+        "exact_PP": [
+          555.1616740095454,
+          587.8435667349679,
+          549.2898465804524
+        ],
+        "median_PP": 555.1616740095454,
+        "minimum_PP": 549.2898465804524,
+        "maximum_PP": 587.8435667349679,
+        "median_prefill_s": 59.9447,
+        "median_TTFT_s": 60.153,
+        "read_tokens": [
+          33279,
+          33279,
+          33279
+        ],
+        "generated_tokens": [
+          8286,
+          8286,
+          8286
+        ],
+        "acceptance": [
+          0.6304604486422668,
+          0.6304604486422668,
+          0.6304604486422668
+        ]
+      },
+      "candidate": {
+        "exact_TG": [
+          10.55484776137785,
+          10.609532100500196,
+          10.105521885421288
+        ],
+        "median_TG": 10.55484776137785,
+        "minimum_TG": 10.105521885421288,
+        "maximum_TG": 10.609532100500196,
+        "exact_PP": [
+          583.7898714325561,
+          579.8401906839463,
+          543.4619303929766
+        ],
+        "median_PP": 579.8401906839463,
+        "minimum_PP": 543.4619303929766,
+        "maximum_PP": 583.7898714325561,
+        "median_prefill_s": 57.3934,
+        "median_TTFT_s": 57.553,
+        "read_tokens": [
+          33279,
+          33279,
+          33279
+        ],
+        "generated_tokens": [
+          10147,
+          10147,
+          10147
+        ],
+        "acceptance": [
+          0.6188576898532228,
+          0.6188576898532228,
+          0.6188576898532228
+        ]
+      }
+    },
+    "geometric_mean_TG_ratio": 1.2420751431702066,
+    "all_original_process_gates_passed": true,
+    "prompt_nonregression": false,
+    "TTFT_nonregression": false,
+    "inference_adopted": false
   },
   "adaptive_budget32_reader_host_v1": {
     "stage": "closed",

@@ -25,8 +25,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   correctness entry and second-event-record refusal both pass. The six-process
   code cohort is closed:exact median TG is **10.1410 -> 10.7173tok/s**
   (static0 -> adaptive8),with all three paired TG ratios above one. Prompt/TTFT
-  nonregression does not pass. The weak-MTP prose comparison and broader
-  qualification remain pending;no inference adoption or new best TG follows.
+  nonregression does not pass. The separate cap2/prose cohort is also closed:
+  exact median TG is **8.3610 -> 10.5548tok/s**,with three favorable pairs.
+  Its prompt/TTFT nonregression also fails. Cap2 acceptance does not establish
+  a fixed4 weak-MTP class. Broader qualification remains pending;no inference
+  adoption,new best TG or70TG follows.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -731,17 +734,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `a6a8e863ebf41c04f173eb3d916b36d1be752320`,with the same332pinned inputs,
   six-process ordering and15asset hashes. Its supplementary exact-TG plan
   is declared before even the first reference. Both fresh benchmark/server
-  frontend probes pass. Five prose processes now close normally:reference0/3/4
-  exactTG is8.073058/8.749193/8.360982,candidate1/2is10.554848/10.609532tok/s.
-  The two paired TG ratios are1.307416/1.212630;both favor
-  adaptive8. Candidate/reference prompt ratios are.950961/1.013803
-  and TTFT ratios.950443/1.013293,so the independent prefill
-  directions are mixed. Every request reads33279fresh tokens;reference/candidate
-  generate8286/10147with6.8%/46.4%cache hits. Actual cap2/heads/body/clock/journal,
-  native0,quiet validation,closed ownership and no-fresh-fault checks pass.
-  Cap2acceptance uses its own denominator. One candidate process remains;two TG pairs
-  do not qualify repeatability or adoption. Keep552b as the fast prefill fallback;
-  this decode gain does not qualify whole-model adoption or70TG.
+  frontend probes pass. The six-process prose cohort now closes normally,
+  with quiet validation,closed owners,unchanged boot/driver,no fresh fault
+  and all15final asset hashes matching. Reference exactTG is8.073058/8.749193/
+  8.360982,candidate is10.554848/10.609532/10.105522tok/s;their medians
+  are8.360982/10.554848. Three paired TG ratios are1.307416/1.212630/1.208652,
+  geometric mean1.242075;all exact and original-rounded pairs favor
+  adaptive8. Candidate/reference prompt ratios are0.950961/1.013803/1.010724
+  and TTFT ratios0.950443/1.013293/1.009552. Both independent
+  nonregression decisions fail;retain all samples and the original outcomes.
+  Every request reads33279fresh tokens;reference/candidate generate8286/10147
+  with6.8%/46.4%cache hits. Actual cap2/heads/body/clock/journal gates pass.
+  Cap2acceptance uses its own denominator and establishes no fixed4 weak class.
+  Follow`adaptive_generation_varied_prose_precision_analysis_v1`. Keep552b as
+  the fast prefill fallback;these focused gains do not qualify whole-model
+  adoption,other lengths,agent/task,physical262144/RESTORE,ordinary provider
+  teardown or70TG.
   The next bounded32-swap entry is source-prepared in
   `tools/sycl/check_adaptive_budget_entry.py`. Its CPU reducer now passes a
   valid32-group fixture and22corrupt variants at source
