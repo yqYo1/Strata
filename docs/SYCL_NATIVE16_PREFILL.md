@@ -765,8 +765,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   can total48,332,800..85,196,800bytes. This is an auditor-cap refusal,not
   a clean32speed result. Next retain64MiB per-expert bounds but qualify a
   separate256MiB aggregate cap,which covers96times the actual maximum blob;
-  keep32and its full publication/dispatch/loan/refusal gates. No successor
-  header,host test or native build has run. The static resource profiler is
+  keep32and its full publication/dispatch/loan/refusal gates. The independent
+  `tools/sycl/adaptive_payload_sources.py`now prepares that one-header projection
+  from the original299218/0a47Git source. Its legacy41-case fixture projection
+  replaces only the obsolete80MiB overflow case with five valid64MiB extents;
+  the separate source-only16-case`tests/core/adaptive_payload_budget_test.cpp`
+  covers actual32/96 maximum-blob groups,exact256MiB and plus-one limits,
+  per-expert bounds,checked-event failure,last-payload refusal and all three
+  partial-publication views. These callbacks check metadata/order,not real
+  payload bytes or GPU copies. No projection,host test or successor native
+  build has run;the running cohort's public/header/controller inputs stay
+  unchanged. The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
   the checked real event. The diagnostic keeps
@@ -959,9 +968,9 @@ cohorts are now closed. The regular-code resource plan is prepared at source
 Fresh benchmark/server frontend probes now pass at source`54802134745c35f35c8df144edad3e562f5d2227`,
 with normal closed owners. Next run
 `python3 -X faulthandler -B tools/sycl/profile_decode_resources.py regular-code INDEX`
-for indices0..5 in order,committing each closed process. No profiling model
-process has run yet;the
-prepared plan establishes neither attribution nor observer-overhead qualification.
+for indices0..5 in order,committing each closed process. Process0is running;
+its four warmups pass the prefix gate and its32K long request has started.
+The unfinished cohort establishes neither attribution nor observer-overhead qualification.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
