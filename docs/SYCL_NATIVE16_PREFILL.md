@@ -350,15 +350,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   closed owners,unchanged boot/driver and no fresh fault.
   Code/prose generate3170/7275tokens with decode_ms229515.4/847741.2 and client
   TTFT50.437/43.267s;acceptance is.824388/.389236. Actual T1/T4 replays complete,
-  all four paused gates[4,5,5,6] and six cache/IQ3 footers pass. These are single
-  reference samples;five processes and the three-pair width decision remain
-  pending. No cap2 speed gain or new TG milestone follows yet.
-  Its completed target windows are1xT1+913xT4 for code and1xT1+3357xT4 for prose:
+  all four paused gates[4,5,5,6] and six cache/IQ3 footers pass. Process1,the
+  first cap2 candidate,also closes normally with both requests eligible,quiet
+  validation,closed owners,unchanged boot/driver and no fresh fault. It generates
+  3592/8418tokens with decode_ms293276.8/792201.9,client TTFT50.990/43.203s,
+  acceptance.878138/.624590 and5496/6359answer characters. Actual T1/T2 and
+  selected head replays,all four paused gates and six footers pass.
+  First-pair exact TG is13.811709->12.247815 code and8.581628->10.626079 prose;
+  candidate/reference ratios are.886770/1.238236. Keep the different generated
+  lengths and fixed2 acceptance denominator. Fixed4 alone establishes each MTP
+  class. Two processes are closed;four processes and the three-pair decision
+  remain pending. The per-workload gain must reproduce;this is not adoption.
+  The cap4 reference's completed target windows are1xT1+913xT4 for code and1xT1+3357xT4 for prose:
   3653/13429token positions,or1.152366/1.845911per generated token. Dividing
   those extents by whole decode time gives15.916143/15.840919positions/s.
   This descriptive work normalization supports checking rejected verification
   work with cap2;it excludes separate draft work and is neither a target-only
   service timer nor FLOPs,physical traffic or a limiting-resource measurement.
+  Cap2 completes3825/10363positions,or1.064866/1.231053per generated token and
+  13.042286/13.081261positions/s of whole decode. Both workloads process fewer
+  verification positions per output,but positions per whole-decode second also
+  fall. Keep round overhead,draft work,shape-dependent compute and weight reuse
+  unresolved until source-matched attribution;the ratios do not identify hardware saturation.
   Process0's successful raw output/JIT is now retired after pushing its result
   at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76`,recovering all320original inputs
   from Git,and checking closed owners and cohort admission before/after deletion:
