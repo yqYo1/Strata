@@ -200,11 +200,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   inert reuse helpers to differ. All six ELFs,preloader/loader,84providers,
   native567-source/1452-compiler-input recipe,boot and driver still need their
   existing checks. CPU controls accept the real model-only projection and
-  reject six changed device/parser/import/definition controls. The half0 V2
-  plan is prepared with all15model assets hashed and no model execution yet;
-  follow `q6_native_half_model_entry_arm0_v2`. These controls are not new GPU
-  validation. Both corrected half0 frontend probes now pass with normal closed
-  processes. Next commit that result,then run its model entry before preparing half1.
+  reject six changed device/parser/import/definition controls. Both half0 V2
+  frontend probes and its two actual32769-input thinking-on model requests
+  now pass:normal native0,quiet validation,closed owners,all15final asset
+  hashes,and no fresh fault. The observed live decode windows use the existing
+  Q6 columns/head route and all started replays complete. Follow
+  `q6_native_half_model_entry_arm0_v2`. This is short model-route qualification,
+  not clean/sustained TG or a new device-fixture validation. Next prepare and
+  admit half1 with the identical native binary,source,placement and safety.
   Then freeze the repeated long-generation comparison. The short model entry
   does not qualify sustained TG or model speed. Keep separate prefill/handoff,
   task, agent and physical 262144/RESTORE gates;retain the validated552b fallback
