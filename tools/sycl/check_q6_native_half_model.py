@@ -394,10 +394,17 @@ def model_prepare(ctx,arm):
 
 
 if __name__=='__main__':
+    profile_mode=len(sys.argv)==3 and sys.argv[1]=='decode-profile' and sys.argv[2] in ('prepare','run')
+    if profile_mode:
+        import build_decode_profile_model as build
+        ROOT=B/'decode-profile-device-v1'
+        KEY='decode_profile_model_device_v1'
+        sys.argv=[sys.argv[0],sys.argv[2]]
     device_mode=len(sys.argv)==2 and sys.argv[1] in ['prepare','run']
     parser_mode=len(sys.argv)==2 and sys.argv[1]=='parser'
     model_mode=len(sys.argv)==3 and sys.argv[1] in ['0','1'] and sys.argv[2] in ['prepare','host','run']
-    require(device_mode or parser_mode or model_mode,'use prepare|run|parser,or 0|1 prepare|host|run')
+    require(device_mode or parser_mode or model_mode,
+        'use prepare|run|parser,or 0|1 prepare|host|run,or decode-profile prepare|run')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);base.guards.no_model_owners([])
         if parser_mode:print(json.dumps(parser_controls()))

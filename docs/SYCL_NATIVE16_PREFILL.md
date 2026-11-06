@@ -339,6 +339,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `decode-profile-gate-host-output-retirement-20261106.json`,SHA256
   `027c18e0a61dc3cf39720aab5dbd010681bd42e50e7f1306cd7236bfd64dd3ad`.
   Only its required record remains;both selected engine generations are intact.
+  `tools/sycl/decode_profile_sources.py` now source-prepares the actual serving
+  attachment against the exact567-file native composition. It reads the selector
+  before runtime setup,drains pending commit plus registered/runtime queues
+  before gate publication,and gates each whole target/commit/draft round after
+  the adaptive worker joins and errors are checked. Selected requests ending
+  before24rounds fail rather than qualifying an incomplete window. This is
+  optional host control;all prefill,CPU/GPU kernels and runtime sources stay
+  unchanged. The new `build_decode_profile_model.py` source prepares a568-file
+  replacement using the original recipe,full SDK/compiler/package image and
+  recovered third-party Git inputs. It must retire the closed cb7 compiled
+  products after original567-source/control/recipe/actual-input recovery before
+  building;552b and all nine fallback outputs remain protected. It reuses the
+  existing finite build monitor and two-mode same-build CPU-pool check. The
+  existing device controller adds `decode-profile prepare|run` for fresh strict
+  traced submission/Q6/phase checks. These new source paths have not been
+  composed,compiled or executed yet. Source review,committed preparation and
+  actual owner closure remain prerequisites;neither build nor component checks
+  qualify the new model gates or a performance gain.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
