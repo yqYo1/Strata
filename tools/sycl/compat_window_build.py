@@ -19,8 +19,8 @@ import q6_half_collector as collector
 width = collector.width
 P, B, RESULT, base = width.P, width.B, width.RESULT, width.base
 SELF = Path(__file__).resolve()
-ROOT = B / 'compat-collector-window-v1'
-KEY = 'compat_collector_window_build_v1'
+ROOT = B / 'compat-collector-window-v2'
+KEY = 'compat_collector_window_build_v2'
 CPP = 'tests/sycl/compat_window.cpp'
 RUNTIME = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp')
 require, digest, write = width.require, width.digest, width.write
@@ -89,7 +89,7 @@ def recipe():
     objects = [str(ROOT / ('unit' + str(i) + '.o')) for i in range(len(inputs))]
     commands = [[compiler, *flags, '-MD', '-MT', obj, '-MF', obj + '.d', '-c', src, '-o', obj]
                 for src, obj in zip(inputs, objects)]
-    commands.append([compiler, '-fsycl', '-fsycl-id-queries-range=size_t',
+    commands.append([compiler, '-v', '-fsycl', '-fsycl-id-queries-range=size_t',
         '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13', '-Wl,-t', *objects,
         '-o', str(ROOT / 'compat_window')])
     return commands
@@ -114,7 +114,7 @@ def prepare():
                     file_cap=32 << 20, total_cap=128 << 20), whole_wall_s=900,
         passed=False, complete=False, active=False, ownership_closed=True,
         GPU_executed=False, model_executed=False, collector_qualified=False,
-        plan='Commit before build. Four serial SYCL compilations and one device/host link;all normal0 and closed. Pin complete installed compiler/package image,actual headers and host-link inputs. Use the exact selected runtime/adapter/command-profile sources and a new137-line fixture;no engine or collector rebuild. Do not execute this ELF during the build action.',
+        plan='Commit before build. Four serial SYCL compilations and one verbose device/host link;all normal0 and closed. Pin complete installed compiler/package image,actual headers and host-link inputs. Hash all four objects immediately before and after link;require their original input paths in actual verbose driver commands,while GNU ld consumes derived private host objects. Preserve failed V1. Use the exact selected runtime/adapter/command-profile sources and137-line fixture;no engine or collector rebuild. Do not execute this ELF during the build action.',
         next='Commit the built result,then a separate prospective smoke/prefix-only/prefix-window plan using strict before-main validation and the existing indexed collector. Expected4/10 named kernels;normal20-kernel numerical/guard execution,unique host flows,raw-clock gap exclusion,finite output and fresh-fault/closure checks. No model attribution follows from build success.',
         retention='One-use diagnostic executable/objects/dependencies outside Git. Retire after the bounded current-runtime collector-window decision and original source/recipe recovery;current cb7 and552b engine generations remain unchanged.')
     save(row)
@@ -131,7 +131,7 @@ def current(row):
     return native, image
 
 
-def closure(row, native, image, text):
+def closure(row, native, image, text, diagnostics, object_inputs):
     allowed = {v['realpath']: v['sha256'] for v in image['files'].values() if v['kind'] == 'file'}
     allowed.update({str((width.short.build.ROOT / 'source' / n).resolve()): h
                     for n, h in native['native_sources'].items()})
@@ -145,6 +145,25 @@ def closure(row, native, image, text):
         names.extend(tokens[1:])
     links = [s.strip() for s in text.splitlines() if s.startswith('/')]
     require(names and links, 'actual compiler dependency/link evidence missing')
+    # The SYCL driver unbundles/transforms its input objects before calling ld.
+    # Verify the original inputs at that driver boundary, not in ld's output.
+    driver_objects = set()
+    for line in diagnostics.splitlines():
+        if not line.lstrip().startswith(('"', '/')):
+            continue
+        tokens = shlex.split(line)
+        if not tokens or not Path(tokens[0]).is_absolute():
+            continue
+        used = {str(p) for p in objects if any(
+            str(p) in token.split('=', 1)[-1].split(',') for token in tokens[1:])}
+        if used:
+            tool = Path(tokens[0]).resolve(strict=True)
+            require(str(tool) in allowed and digest(tool) == allowed[str(tool)],
+                    'unqualified compiler driver tool')
+            driver_objects.update(used)
+    require(driver_objects == set(map(str, objects)) and
+            object_inputs == {str(p): digest(p) for p in objects},
+            'original driver objects missing or changed during link')
     actual, derived = {}, 0
     for name in dict.fromkeys(names + links):
         path = Path(name); require(path.is_absolute(), 'relative compiler input: ' + name)
@@ -155,10 +174,11 @@ def closure(row, native, image, text):
         actual[real] = allowed[real]
     require(all(str((width.short.build.ROOT / 'source' / n).resolve()) in actual for n in RUNTIME) and
             str((P / CPP).resolve()) in actual and
-            all(str(p.resolve()) in actual for p in objects) and
             any(Path(n).name.startswith('libsycl.') for n in links), 'selected runtime/SYCL input closure missing')
+    actual.update({str(p.resolve()): object_inputs[str(p)] for p in objects})
     return dict(sha256=width.signature(actual), files=len(actual), dependency_entries=len(names),
-                host_link_inputs=len(links), derived_private_inputs=derived)
+                host_link_inputs=len(links), derived_private_inputs=derived,
+                driver_original_objects=len(driver_objects), objects_unchanged_during_link=True)
 
 
 def build():
@@ -173,11 +193,18 @@ def build():
         with (ROOT / 'execution.json').open('x') as stream: stream.write('{}\n')
         native, image = current(row)
         owner = base.supervision.Owner(ROOT / 'owned', persist)
+        object_inputs = None
         for i, command in enumerate(row['recipe']):
             require(time.monotonic() - started < row['whole_wall_s'], 'whole fixture build deadline')
-            entry, stdout, _ = owner.run('compile' + str(i), command, row['environment'], ROOT, **row['budget'])
+            if i == 4:
+                object_inputs = {str(ROOT / ('unit' + str(j) + '.o')):
+                                 digest(ROOT / ('unit' + str(j) + '.o')) for j in range(4)}
+                outcome['object_inputs'] = object_inputs
+                persist()
+            entry, stdout, stderr = owner.run('compile' + str(i), command, row['environment'], ROOT, **row['budget'])
             require(base.supervision.closed(entry) and entry['exit_code'] == 0, 'fixture compile/link failed')
-        outcome['compiler_inputs'] = closure(row, native, image, stdout.read_text())
+        outcome['compiler_inputs'] = closure(row, native, image, stdout.read_text(),
+                                             stderr.read_text(), object_inputs)
         outcome['binary'] = dict(path=row['executable'], sha256=digest(row['executable']),
                                  bytes=Path(row['executable']).stat().st_size)
         current(row)
