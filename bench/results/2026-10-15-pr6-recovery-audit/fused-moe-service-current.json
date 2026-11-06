@@ -164672,7 +164672,7 @@
     "correction": "V3 loads the full original record,checks its source-map signature,selected basis,recipe identity and record hash against committed evidence. Host regression covers compact/full source records and changed-input refusal. V1/V2 remain failed."
   },
   "q6_native_half_component_v3": {
-    "stage": "prepared",
+    "stage": "compiled",
     "source_commit": "4947b7746dafb0efde7da9bb2ead49dc89790d89",
     "cohort_signature": "d7223d5e9c2339a55f359ca4cb2645087e22b386ff5ab75db82d88f36a0afbef",
     "qualifications": {
@@ -165010,6 +165010,40 @@
       "passed": true,
       "exit_code": 0,
       "GPU_executed": false
+    },
+    "owner_receipts": {
+      "build": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/build-owner.json",
+        "sha256": "37adb64d62b9248e0673bd98354961995f252b51637da659fb37dfbc4d499287",
+        "closed": true,
+        "commands": 14
+      }
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/actual-inputs.json",
+      "sha256": "20b2605262561433359cdcc65e6ef444e59669035fd49dbb04890d63349ebf85",
+      "signature": {
+        "files": 822,
+        "aggregate_sha256": "98592927f3c0fe96a0c0a549562d877549ecd50a53f887b7c76eeee09bab2493"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-component-v3/sycl_q6_columns_bench",
+      "sha256": "67d942b16b456c8595028a73b71b0aad9f7e62563357ead216089b90a66adc8a",
+      "bytes": 11665224
+    },
+    "compiled_source_delta": {
+      "same_as_original_materialized_model": 28,
+      "changed": [
+        "include/strata/kernels/native_mmvq.hpp",
+        "src/kernels/sycl/native_mmvq.cpp",
+        "include/strata/sycl/command_profile.hpp",
+        "src/sycl/command_profile.cpp"
+      ],
+      "new": [
+        "bench/sycl/q6_columns.cpp"
+      ],
+      "scope": "Actual MD/link input map:all822inputs covered. Four reviewed project changes are the candidate entry/declaration and common inactive profile kinds/metadata;fixture is independently authored. This does not claim whole-model equivalence."
     },
     "source_inputs": {
       "files": 382,

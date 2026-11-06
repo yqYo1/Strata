@@ -489,8 +489,12 @@ full record,checks its566-input signature against committed evidence and uses
 those actual hashes. Both failed outcomes remain failed. At source
 `4947b7746dafb0efde7da9bb2ead49dc89790d89`,all15host controls pass and V3
 preparation closes with the exact source/production recipe and toolchain image.
-Its build and GPU stages remain unexecuted;phase selection and model speed are
-not qualified. Retire this
+Its13translation units and link now finish with normal0,closed ownership and
+all822actual compiler/link inputs covered. The actual project dependencies
+change only the candidate entry/declaration and shared inactive profile
+source/header,plus the fixture. Executable SHA256 is
+`67d942b16b456c8595028a73b71b0aad9f7e62563357ead216089b90a66adc8a`.
+No GPU execution,phase selection or model-speed qualification follows yet. Retire this
 auxiliary component build after recording its decision and exact-input recovery;
 keep the named552b fallback and5c5e diagnostic-model consumers separately.
 The standalone converter's `prepare`, `build` and `check` actions require the original cohort's
