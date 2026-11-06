@@ -208,15 +208,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   winners;its synthetic public-entry timer does not measure graph-replay service
   or a physical bottleneck. A bounded post-cohort T4 attribution still needs
   lossless,unambiguous UnitTrace joins/counts and disjoint host/wait accounting.
-  UnitTrace is not on PATH. The existing ghq Intel/PTI source is clean at
-  `4b6d74294cdc72766c00a9211fe2e4261ee94244`,MIT licensed. Its planned L0-only
-  build disables MPI,ITT,XPTI,OpenCL,OpenMP and Perfetto;mandatory header pins
-  are Level Zero v1.32.0(`d3b3efbdaa27a0aef9a9812cc8fa4260557c1e7c`),
-  compute-runtime`050536ff3b6f830199ec99cff8ffcac3d804c40a`,and IGA
-  `4ba3c2aaab4f189b143ef288bc3e75eb02ad6f82`. The first two exist in local ghq
-  object stores;IGA still needs acquisition. Preserve ghq default mirrors when
-  preparing pinned dependency worktrees. No tool build or collection capability
-  is qualified yet;build and bounded replay/flush/count checks remain pending.
+  UnitTrace is not on PATH,but the existing `unitrace-indexed-collector-v1`
+  tool is built from MIT Intel/PTI `4b6d74294cdc72766c00a9211fe2e4261ee94244`
+  at source `e57b5ee7fce1de6391c793f1014c44cae3b85d9c`. Its launcher/library
+  hashes still match6faac1e7/e7626aed. The host-only indexed-aggregation change
+  and460compiler inputs are recorded;the local Level Zero/IGA headers already
+  exist. Do not infer a missing build from PATH or acquire duplicate dependencies.
+  Reuse the owned `unitrace_launch.py` admission with explicit Sysman0;the stock
+  launcher forces Sysman1. Existing SDK-graph evidence does not qualify the
+  selected compatibility-graph route. Inspect the maintained IQ3 profiler and
+  its prior receipts before bounded current-route replay/flush/count checks;
+  host build success does not establish current collector or model qualification.
   On the current greedy linear MTP route,adding only a second token candidate
   duplicates the existing fallback correction rather than adding useful accepted
   continuation. Retain linear MTP;reopen only for a concrete branch-aware proposal
@@ -292,7 +294,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   matched to its eight traced rounds. Follow `mtp_width_model_entry_cap4_v1`.
   These logged short-output checks qualify this reference route/lifetime only;
   no clean or sustained TG,task/full-context or ordinary-teardown claim follows.
-  The cap2 entry can now prepare with the same configuration except its cap.
+  The cap2 entry is prepared at `e2fc5f7050ec17fee0353a4b9eb6fdb9d8e1166f`,
+  key `mtp_width_model_entry_cap2_v1`,with the same320source pins,15model assets,
+  native binary and normalized configuration/environment except the cap.
+  Fresh frontend probes and the bounded cap2 model check remain pending;no
+  sustained width comparison has run yet.
 
 ## Prefill envelope and scaling
 
