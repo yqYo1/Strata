@@ -161,9 +161,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   per-request deltas or retired history. Short-read0 does not exercise prompt
   verification. The actual model contains129Q6 tensors across seven matrix
   geometries;the521472000-byte head metadata is not physical bus traffic.
-  **No sustained model-speed improvement is established.** The new Main-authored
-  `tools/sycl/q6_native_half_generation_speed.py` at `24b271b60` prepares the
-  next six-process0/1/1/0/0/1 comparison with thinking-on v5 code/prose. Its
+  **The closed model comparison below qualifies a repeated TG gain.** Main's
+  `tools/sycl/q6_native_half_generation_speed.py` at `24b271b60` fixes the
+  six-process0/1/1/0/0/1 comparison with thinking-on v5 code/prose. Its
   source is outside the original317model inputs;all317 remain unchanged.
   Its CPU decision/cache/parser controls pass via `python3 -B
   tools/sycl/q6_native_half_generation_speed.py controls`;no GPU is executed.
@@ -171,28 +171,27 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and original outcomes preserved in `q6_native_half_model_entry_output_retirement_v1`.
   Both current entries retain only record/config/plan/provider files for the
   next comparison;all567native sources and15selected executables are unchanged.
-  The generation plan is now prepared at source `03f5e0192` with318source inputs,
+  The generation plan at source `03f5e0192` froze318source inputs,
   all15model-asset hashes and one invariant for the six normalized arm plans.
   Follow `q6_native_half_generation_speed_v1`:three counterbalanced adjacent
   pairs,thinking-on code/prose,at least32K fresh input and1K generated tokens,
   answer-body/actual-MTP/route/fault/ownership gates,and separate PP/TTFT.
-  Both generation frontend probes pass. The first reference/candidate pair is
-  now closed:33212/33282fresh input,3170/7275generated tokens including thinking,
-  code TG13.4707->13.7110 and prose TG8.8402->8.9541tok/s. Exact candidate/reference
-  ratios are1.017834/1.012887;MTP acceptance stays82.44%/38.92% and both arms
-  produce actual answers. All four paused request gates and six cache footers
-  pass in each process,selected Q6 head replays complete,native exits are0,
-  validation is quiet,ownership closes and no fresh fault occurs. These are
-  two processes of six. Candidate process2 is also closed:code TG13.6191 and
-  prose TG8.9809tok/s,with the same actual lengths/MTP classes,all four paused
-  gates,six footers,normal exit,quiet validation,closed owners and no fresh fault.
-  Reference3 is now closed with the same gates:code TG13.3796 and prose
-  TG8.7744tok/s. The second candidate/reference ratios are1.017903/1.023539.
-  Reference4 also closes with all the same gates,normal exit,quiet validation,
-  closed ownership and no fresh fault:code TG13.4539 and prose TG8.81175tok/s.
-  Five processes/two complete pairs are closed;both complete pairs favor the
-  candidate in both workloads. The final candidate5 is still required before
-  the third-pair/reproducible-gain decision. Preserve every paired outcome.
+  Both generation frontend probes and all six processes/twelve long requests
+  now pass:33212/33282fresh input and3170/7275generated tokens including thinking.
+  Reference/candidate median code TG is13.453906/13.710960tok/s,and prose is
+  8.811746/8.980914tok/s. The three exact candidate/reference ratios are
+  1.017834/1.017903/1.026035 for code and1.012887/1.023539/1.025999 for prose;
+  geometric-mean gains are2.058%/2.079%. Each workload passes the predeclared
+  all-three-pairs-faster screen. MTP acceptance stays82.44%/38.92% in every
+  sample and all requests produce actual answers. All four paused gates and
+  six cache/IQ3 footers pass per process,selected Q6 head replays complete,
+  native exits are0,validation is quiet,ownership closes and no fresh fault
+  occurs. All15model-asset hashes pass at final closure. This qualifies a
+  sustained decode gain in this common audit/runtime envelope,not70tok/s or
+  inference adoption. The32K prompt-time and client-TTFT ratios also favor the
+  candidate in all three pairs;these are separate observations,not dedicated
+  long-prefill preservation. The next width comparison may use half1 in both
+  arms while preserving the fallback and the remaining gates.
   Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
@@ -235,25 +234,29 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retirement/restoration,and renewed loan/capture identities across requests.
   It explicitly admits only the tested startup-config frontend delta plus its
   new controller/test inputs;fresh frontend probes and both model entries are
-  required. The entry-only host controls pass at the earlier source
-  `e40714dedc501df8fcc62419176f405d87df48b9`:lease1positive/12negative,
+  required. Full host-only controls now pass at the declared19bsource:
+  lease1positive/12negative,
   source1positive/3negative,and width4positive/24negative,exit0,without native/GPU
   execution. Exact command in the child was `env PYTHONDONTWRITEBYTECODE=1
   PYTHONNOUSERSITE=1 prlimit --as=1073741824 --cpu=60 --fsize=65536 -- timeout
   --signal=TERM --kill-after=5s 90s /home/yayoi/.local/share/strata-sycl/venv/bin/python3
-  -B tools/sycl/check_mtp_width_model.py controls`. Merge the child only after
-  all six frozen Q6 processes close. Fresh frontend/model entries remain pending;
+  -B tools/sycl/check_mtp_width_model.py controls`. Merge the child after this
+  closed Q6 cohort's evidence is pushed. Fresh frontend/model entries remain pending;
   no new native build or speed result follows from the parser controls.
   The later source adds a separate `speed` mode for six fresh4/2/2/4/4/2
   processes with the fixed v5 thinking-on long workloads. It requires both
   bounded entries first,disables entry-only trace/payload audits,and records
   individual TG,PP,TTFT and depth-specific acceptance. Only fixed4 establishes
   the MTP class;all three speed ratios must exceed one for a per-workload gain.
-  The added generation/decision controls are not yet executed. They also
-  exercise the actual generated cap-pair invariant,immutable entry template,
-  preparation-time common-half selection,disabled entry observers,and rejection
-  of changed runtime safety or prefill settings. Run the full controller's CPU
-  controls at cohort closure before any new preparation.
+  Generation/decision controls also pass:changed candidate acceptance denominator
+  and small gains remain eligible,a slower pair and a misclassified reference
+  are distinguished. The actual generated cap-pair invariant,immutable entry
+  template,preparation-time common-half selection and disabled entry observers
+  pass;missing selection,changed runtime safety and prefill drift are rejected.
+  The reused protocol controls also pass,including2positive/17negative Q6 parser
+  cases,5invalid cache footers,5invalid pre-generation histories,9invalid workload
+  contracts and4disabled-observer cases. These are CPU-only controls,not new
+  native/device/model or speed qualification.
 
 ## Prefill envelope and scaling
 

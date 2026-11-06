@@ -171701,7 +171701,7 @@
       "STRATA_CPU_WORK_CENSUS": "0",
       "STRATA_DECODE_TIMING": "0"
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "03f5e0192cb638dc4750c15bd1e2f788e4a707d2",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00",
@@ -174751,11 +174751,580 @@
           "completed_requests": 6,
           "scope": "observed_live_capture_cumulative"
         }
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 3926003,
+          "start_ticks": 230310486,
+          "sid": 3925940
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33212,
+            "reused_tokens": 0,
+            "generated_tokens": 3170,
+            "output_chars": 5578,
+            "reasoning_chars": 3706,
+            "prompt_ms": 50218.7,
+            "prompt_tps": 661.3,
+            "decode_ms": 229640.5,
+            "decode_tps": 13.8,
+            "ttft_s": 50.343,
+            "total_s": 279.881,
+            "drafts_offered": 2739,
+            "drafts_accepted": 2258,
+            "acceptance_rate": 0.8243884629426798,
+            "request_sha256": "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "af34a2d690c431c65220f918c7afc407b6b27236f97c5a63e98f653cf2a841b0",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33282,
+            "reused_tokens": 0,
+            "generated_tokens": 7275,
+            "output_chars": 4632,
+            "reasoning_chars": 14409,
+            "prompt_ms": 41881.2,
+            "prompt_tps": 794.7,
+            "decode_ms": 804681.3,
+            "decode_tps": 9.0,
+            "ttft_s": 42.067,
+            "total_s": 846.587,
+            "drafts_offered": 10071,
+            "drafts_accepted": 3920,
+            "acceptance_rate": 0.3892364214080032,
+            "request_sha256": "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22",
+            "output_sha256": "0bbd043abf9212ab45b4bf8794a261534529dd4c28ecff1cdcfc8c836434ad7c",
+            "reasoning_sha256": "d3ec503b2e7266e34b70c5123c07f543b06ff48306decd6e7659660b16581f21",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 3926003,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33212,
+            "rows": 33211,
+            "GPU_residual_rows": 33211,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20285,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33211,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "IQ3_dispatch": {
+              "request": 5,
+              "arm": 1,
+              "calls": 1859090,
+              "nt1_rows": 221271040,
+              "pair_rows": 221271040
+            },
+            "Q6_live_snapshot": {
+              "request": 5,
+              "scope": "observed_live_capture_cumulative",
+              "windows": [
+                {
+                  "phase": "decode",
+                  "tokens": 1,
+                  "capture_id": 7,
+                  "shapes": 6,
+                  "cache_hits": 0,
+                  "replay_started": 1,
+                  "replay_completed": 1,
+                  "shape_calls": [
+                    {
+                      "shape": [
+                        2560,
+                        10240,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        22
+                      ]
+                    },
+                    {
+                      "shape": [
+                        6144,
+                        2560,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        40
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        6144,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        14
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        512,
+                        1
+                      ],
+                      "calls": [
+                        21,
+                        0,
+                        0,
+                        0
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        12288,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        5
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        248320,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        1
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "phase": "decode",
+                  "tokens": 4,
+                  "capture_id": 8,
+                  "shapes": 6,
+                  "cache_hits": 912,
+                  "replay_started": 913,
+                  "replay_completed": 913,
+                  "shape_calls": [
+                    {
+                      "shape": [
+                        2560,
+                        10240,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        22
+                      ]
+                    },
+                    {
+                      "shape": [
+                        6144,
+                        2560,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        40
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        6144,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        14
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        512,
+                        4
+                      ],
+                      "calls": [
+                        21,
+                        0,
+                        0,
+                        0
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        12288,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        5
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        248320,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        1
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "completed_head_capture_ids": [
+                7,
+                8
+              ],
+              "prompt_window_observed": false
+            }
+          },
+          {
+            "read_tokens": 33282,
+            "rows": 33281,
+            "GPU_residual_rows": 33281,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19987,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33281,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "IQ3_dispatch": {
+              "request": 6,
+              "arm": 1,
+              "calls": 6071962,
+              "nt1_rows": 566117760,
+              "pair_rows": 566117760
+            },
+            "Q6_live_snapshot": {
+              "request": 6,
+              "scope": "observed_live_capture_cumulative",
+              "windows": [
+                {
+                  "phase": "decode",
+                  "tokens": 1,
+                  "capture_id": 9,
+                  "shapes": 6,
+                  "cache_hits": 0,
+                  "replay_started": 1,
+                  "replay_completed": 1,
+                  "shape_calls": [
+                    {
+                      "shape": [
+                        2560,
+                        10240,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        22
+                      ]
+                    },
+                    {
+                      "shape": [
+                        6144,
+                        2560,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        40
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        6144,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        14
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        512,
+                        1
+                      ],
+                      "calls": [
+                        21,
+                        0,
+                        0,
+                        0
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        12288,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        5
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        248320,
+                        1
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        1
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "phase": "decode",
+                  "tokens": 4,
+                  "capture_id": 10,
+                  "shapes": 6,
+                  "cache_hits": 3356,
+                  "replay_started": 3357,
+                  "replay_completed": 3357,
+                  "shape_calls": [
+                    {
+                      "shape": [
+                        2560,
+                        10240,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        22
+                      ]
+                    },
+                    {
+                      "shape": [
+                        6144,
+                        2560,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        40
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        6144,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        14
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        512,
+                        4
+                      ],
+                      "calls": [
+                        21,
+                        0,
+                        0,
+                        0
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        12288,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        5
+                      ]
+                    },
+                    {
+                      "shape": [
+                        2560,
+                        248320,
+                        4
+                      ],
+                      "calls": [
+                        0,
+                        0,
+                        0,
+                        1
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "completed_head_capture_ids": [
+                9,
+                10
+              ],
+              "prompt_window_observed": false
+            }
+          }
+        ],
+        "cache": [
+          {
+            "hits": 190250,
+            "lookups": 1753440,
+            "hit_percent": 10.9
+          },
+          {
+            "hits": 433265,
+            "lookups": 6445920,
+            "hit_percent": 6.7
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "b8ad600838e690aeefe980ee97aac49111259004b36b65bebd0796fe463f7b1e",
+            "449cd1fc38718491031b395effbc35c6cad07cb79623623a7e4f5460f38e12db",
+            "820e49690239ef1cbb93b7789ecd6de5aa0a998843527deb595eacebd5b0f22c",
+            "d4e059a17020256901dd608a616ea98e9ab4670b7666968b8edb8ec01a6f41de",
+            "ed6034aa4772f6af9acc328f9765935f1f4f32debf8847077772dbe70845da22"
+          ],
+          "valid": true,
+          "journal_sha256": "58f75069f0207a659b6b6ed5b7f729c3699cd759569b3c34ad6b3063adf0372a"
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68800
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "native_half_route": {
+          "passed": true,
+          "arm": 1,
+          "boundary_checks": [
+            4,
+            5,
+            5,
+            6
+          ],
+          "completed_requests": 6,
+          "scope": "observed_live_capture_cumulative"
+        }
       }
     ],
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "controls": {
@@ -174884,6 +175453,154 @@
         "original_outcome_preserved": true
       }
     ],
+    "decision": {
+      "repeated_comparison_complete": true,
+      "workloads": {
+        "regular-code": {
+          "arms": {
+            "candidate": {
+              "samples": [
+                {
+                  "exact_tg": 13.710959987785568,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.619090786062127,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.804185237360135,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                }
+              ],
+              "median_tg": 13.710959987785568,
+              "min_tg": 13.619090786062127,
+              "max_tg": 13.804185237360135,
+              "observed_MTP_class": "strong"
+            },
+            "reference": {
+              "samples": [
+                {
+                  "exact_tg": 13.470720517819595,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.37955258269682,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                },
+                {
+                  "exact_tg": 13.453906365055834,
+                  "acceptance": 0.8243884629426798,
+                  "generated_tokens": 3170
+                }
+              ],
+              "median_tg": 13.453906365055834,
+              "min_tg": 13.37955258269682,
+              "max_tg": 13.470720517819595,
+              "observed_MTP_class": "strong"
+            }
+          },
+          "paired_candidate_over_reference_TG": [
+            1.0178341959992545,
+            1.0179033044554189,
+            1.0260354771915232
+          ],
+          "geometric_mean_TG_ratio": 1.0205837439267642,
+          "reproducible_TG_gain": true,
+          "paired_prompt_time_ratios": [
+            0.9911410472674081,
+            0.9936270653029111,
+            0.990942761806475
+          ],
+          "paired_TTFT_ratios": [
+            0.9910766817022945,
+            0.9939572297429861,
+            0.9901658045355309
+          ],
+          "expected_MTP_class_observed": true,
+          "model_TG_gain_qualified": true
+        },
+        "varied-prose": {
+          "arms": {
+            "candidate": {
+              "samples": [
+                {
+                  "exact_tg": 8.954149217358125,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 8.980913799029,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 9.040846357433681,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                }
+              ],
+              "median_tg": 8.980913799029,
+              "min_tg": 8.954149217358125,
+              "max_tg": 9.040846357433681,
+              "observed_MTP_class": "weak"
+            },
+            "reference": {
+              "samples": [
+                {
+                  "exact_tg": 8.840222367743287,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 8.774369529889182,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                },
+                {
+                  "exact_tg": 8.811745505646421,
+                  "acceptance": 0.3892364214080032,
+                  "generated_tokens": 7275
+                }
+              ],
+              "median_tg": 8.811745505646421,
+              "min_tg": 8.774369529889182,
+              "max_tg": 8.840222367743287,
+              "observed_MTP_class": "weak"
+            }
+          },
+          "paired_candidate_over_reference_TG": [
+            1.012887328494195,
+            1.0235394997254494,
+            1.0259994857591446
+          ],
+          "geometric_mean_TG_ratio": 1.0207928736126302,
+          "reproducible_TG_gain": true,
+          "paired_prompt_time_ratios": [
+            0.9945013723269913,
+            0.9969077086406032,
+            0.9668000941841298
+          ],
+          "paired_TTFT_ratios": [
+            0.9943585457584623,
+            0.9970400189438787,
+            0.9665686319562521
+          ],
+          "expected_MTP_class_observed": true,
+          "model_TG_gain_qualified": true
+        }
+      },
+      "inference_adopted": false,
+      "dedicated_prefill_nonregression_qualified": false,
+      "physical_resource_saturation_qualified": false,
+      "next": "Judge actual MTP workloads separately;retain small gains and unresolved variance. Dedicated64K/117K PP/TTFT,agent/task,physical262144/tails/RESTORE,ordinary provider teardown and adoption remain separate. No saturation claim.",
+      "native_half_model_TG_gain_qualified": true
+    },
     "source_inputs": {
       "files": 318,
       "aggregate_sha256": "c3466e3d4d7c75f5cef41b03cd92d4843c0349a568a16eaeeb9c2571ee08513e"
