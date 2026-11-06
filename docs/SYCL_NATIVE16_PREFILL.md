@@ -596,7 +596,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   then checks all three maps and decode readiness after a post-swap occupied
   loan/refill. Final audit-only publication drains outstanding replacements and
   emits compact cumulative coverage. No core/kernel source changes are planned.
-  This extended transformation is not yet constructed,compiled or runtime-qualified.
+  The extended transformation now constructs568native files successfully at
+  source`9541e37c621990f67a7c2a1d6f0838ce8a6ee204`. Only the generator and audit
+  header differ;all566other files match. Generated generator SHA256 is
+  `5049d431471250de41cef0d89becb696ab26529b2dab331192f1ced97179c648`.
+  `tools/sycl/build_adaptive_audit_model.py`now source-prepares its separate
+  native build using the original six targets,full compiler/package/SDK images,
+  recovered third-party inputs and the physically verified519e retirement.
+  It preserves552b and all nine fallback outputs. Commit this builder,prepare
+  and commit its exact plan,then compile before native model qualification.
+  Source construction does not qualify the new dispatch/loan checks.
   Actual dispatch coverage,record failure,post-swap loan/refill and native lifetime
   gates remain open. The cb7 and519e diagnostic generations are retired;keep552b.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
