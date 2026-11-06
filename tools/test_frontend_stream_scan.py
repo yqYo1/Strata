@@ -78,8 +78,10 @@ class StreamBoundary(unittest.TestCase):
             for _ in range(200):
                 self.assertEqual(parser.feed("ordinary🙂" * 20), [])
             self.assertEqual(walk.call_count, 0)
-            got = parser.feed(f.PARAM_END + f.FUNC_END + f.CALL_END)
+            self.assertEqual(parser.feed(f.PARAM_END + f.FUNC_END + f.CALL_END), [])
             self.assertEqual(walk.call_count, 1)
+            got = parser.finish()       # final input disambiguates a literal close
+            self.assertEqual(walk.call_count, 2)
         self.assertEqual(len(got), 1)
         self.assertEqual(got[0].call.arguments, {"command": "ordinary🙂" * 4000})
 
@@ -89,7 +91,8 @@ class StreamBoundary(unittest.TestCase):
         prefix = f.CALL_START + "<function=run><parameter=command>"
         self.assertEqual(parser.feed(prefix + value), [])
         self.assertEqual(parser.feed(f.PARAM_END + f.FUNC_END), [])
-        result = parser.feed(f.CALL_END)
+        self.assertEqual(parser.feed(f.CALL_END), [])
+        result = parser.finish()
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].call.arguments, {"command": value})
 
