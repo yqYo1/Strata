@@ -754,7 +754,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `tools/sycl/check_adaptive_budget_entry.py`. Its CPU reducer now passes a
   valid32-group fixture and22corrupt variants at source
   `409ad93c554ef984f7522c4aecff75ef84fc9909`;the committed20-second locked
-  command exits0 in0.726s. No native32entry is prepared or executed. It keeps
+  command exits0 in0.726s. The native32entry is now prepared with all15asset
+  hashes,not yet executed. Its unchanged auditor caps a cycle at64MiB;actual
+  layer blobs are1,510,400..2,662,400bytes,so32copies can total48,332,800..
+  85,196,800bytes. A cap refusal remains a failed diagnostic,not a device fault
+  or clean-speed result. Vectors are dynamic/reserved before submission and
+  publication waits for the checked real event. It keeps
   the same429b native engine,runtime safety,prefill layout
   and every8round interval,and blocks preparation/execution until both frozen
   code/prose cohorts close. The reducer requires a full32-copy generation,
