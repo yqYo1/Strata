@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import tempfile
 
 sys.dont_write_bytecode = True
 import check_q6_native_half_model as short
@@ -404,6 +405,7 @@ def generation_controls():
             'reference classification and speed must remain separate')
     return dict(passed=True, depth_denominator_change_retained=True, small_gain_retained=True,
         slower_pair_retained=True, reference_MTP_class_separate=True, GPU_executed=False,
+        configuration_controls=generation_configuration_controls(),
         unchanged_protocol_controls=q6.context().selfcheck())
 
 
@@ -518,6 +520,53 @@ def generation_context(index=None):
         print('Prepared fixed4/fixed2 sustained cohort;commit before fresh host probes.', flush=True)
     ctx.prepare = prepare
     return ctx
+
+
+def generation_configuration_controls():
+    """Exercise the actual environment/signature,including preparation bootstrap."""
+    ctx = generation_context()
+    with tempfile.TemporaryDirectory(prefix='strata-mtp-width-controls-') as temporary:
+        root = Path(temporary)
+        config, env = frozen_entry(4, 0, root / 'entry')
+        row = dict(configuration=config, environment_template=env, selected_half=0)
+        original = signature(row)
+        plans = []
+        for index, cap in enumerate((4, 2)):
+            folder = root / str(index); folder.mkdir()
+            plan = dict(index=index, kernel='reference' if cap == 4 else 'candidate',
+                adapt_swaps=0, heads=1, root=str(folder))
+            actual = copy.deepcopy(config); actual['log'] = str(folder / 'engine.stderr')
+            actual['args'][actual['args'].index('--mtp-max-t') + 1] = str(cap)
+            write(folder / 'config.json', actual); plans.append(plan)
+        baseline = ctx.invariant(row, plans[0])
+        require(baseline == ctx.invariant(row, plans[1]), 'cap-only paired plans must share one invariant')
+        require(signature(row) == original, 'plan generation must not mutate the entry template')
+        selected = ctx.environment(row, plans[0])
+        require(selected['STRATA_SYCL_DECODE_Q6_NATIVE_HALF'] == '0' and
+                selected['STRATA_SYCL_CACHE_LOAN_AUDIT'] == '0' and
+                'STRATA_TRACE' not in selected and 'STRATA_DECODE_TIMING' not in selected,
+                'clean observer/half selection differs')
+        preparing = dict(row); preparing.pop('selected_half')
+        ctx.preparing_half = 1
+        try: prepared = ctx.environment(preparing, plans[0])
+        finally: ctx.preparing_half = None
+        expected = dict(selected, STRATA_SYCL_DECODE_Q6_NATIVE_HALF='1')
+        require(prepared == expected, 'explicit preparation half must preserve every other environment value')
+        try: ctx.environment(preparing, plans[0])
+        except RuntimeError: pass
+        else: raise RuntimeError('missing common half accepted outside preparation')
+        unsafe = copy.deepcopy(row); unsafe['environment_template']['EnableDirectSubmission'] = '1'
+        try: ctx.environment(unsafe, plans[0])
+        except RuntimeError: pass
+        else: raise RuntimeError('changed runtime safety accepted')
+        path = Path(plans[1]['root']) / 'config.json'; altered = json.loads(path.read_text())
+        altered['args'][altered['args'].index('--prefill') + 1] = '4096'
+        write(path, altered)
+        require(ctx.invariant(row, plans[1]) != baseline, 'prefill drift hidden by cap normalization')
+    return dict(passed=True, matched_cap_pair=True, immutable_template=True,
+        clean_observers=True, preparation_half_bootstrap=True,
+        missing_half_rejected=True, unsafe_runtime_rejected=True, prefill_drift_detected=True,
+        GPU_executed=False)
 
 
 def generation_run(ctx, index):
