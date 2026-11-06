@@ -731,20 +731,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `a6a8e863ebf41c04f173eb3d916b36d1be752320`,with the same332pinned inputs,
   six-process ordering and15asset hashes. Its supplementary exact-TG plan
   is declared before even the first reference. Both fresh benchmark/server
-  frontend probes now pass. Prose reference0now passes:33279fresh input,
-  8286generated tokens,8.073058exactTG,59944.7ms prompt and60.153s client
-  TTFT,with6.8%cache hits. Actual cap2/heads/body/clock/journal checks pass;
-  native exits0,validation is quiet,owners close and no fresh fault appears.
-  Acceptance.630460uses the cap2denominator,not a new fixed4MTP classification.
-  The first prose pair now closes normally:static0/adaptive8exactTG is
-  8.073058/10.554848tok/s,with8286/10147generated and6.8%/46.4%cache hits.
-  Both requests read33279fresh tokens from the same body and produce answers;
-  candidate prompt/TTFT are57.0051/57.172s,versus59.9447/60.153s. All
-  native,validation,fault and ownership checks pass. Candidate2also closes
-  with10147generated,10.609532exactTG and46.4%cache hits;prompt/TTFT are
-  57.3934/57.553s. Three processes remain,including this pair's reference;
-  one complete pair is not repeatability or adoption. Keep552b as the fast prefill
-  fallback;this code TG gain is not whole-model adoption or70TG.
+  frontend probes pass. Four prose processes now close normally:reference0/3
+  exactTG is8.073058/8.749193,candidate1/2is10.554848/10.609532tok/s.
+  The two paired TG ratios are1.307416/1.212630;both favor
+  adaptive8. Candidate/reference prompt ratios are.950961/1.013803
+  and TTFT ratios.950443/1.013293,so the independent prefill
+  directions are mixed. Every request reads33279fresh tokens;reference/candidate
+  generate8286/10147with6.8%/46.4%cache hits. Actual cap2/heads/body/clock/journal,
+  native0,quiet validation,closed ownership and no-fresh-fault checks pass.
+  Cap2acceptance uses its own denominator. Two processes remain;two TG pairs
+  do not qualify repeatability or adoption. Keep552b as the fast prefill fallback;
+  this decode gain does not qualify whole-model adoption or70TG.
   The next bounded32-swap entry is source-prepared in
   `tools/sycl/check_adaptive_budget_entry.py`. Its CPU reducer now passes a
   valid32-group fixture and22corrupt variants at source

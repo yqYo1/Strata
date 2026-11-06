@@ -185811,6 +185811,127 @@
           "original_sources_recovered": 332,
           "protected_ELF_outputs": 15
         }
+      },
+      {
+        "index": 3,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1790734,
+          "start_ticks": 234843435,
+          "sid": 1790690
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33279,
+            "reused_tokens": 0,
+            "generated_tokens": 8286,
+            "output_chars": 5332,
+            "reasoning_chars": 17337,
+            "prompt_ms": 56612.0,
+            "prompt_tps": 587.8,
+            "decode_ms": 947058.8,
+            "decode_tps": 8.7,
+            "ttft_s": 56.798,
+            "total_s": 1003.698,
+            "drafts_offered": 5082,
+            "drafts_accepted": 3204,
+            "acceptance_rate": 0.6304604486422668,
+            "request_sha256": "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee",
+            "output_sha256": "dd8a2a5177bdff01683be9375bd093381f386ba5233e99952fec144a8919eaf5",
+            "reasoning_sha256": "087dab02c2e1a249188e9ba44d35c5723ea783b8fa04a716beb2d761efe7cc5e",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1790734,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33279,
+            "rows": 33278,
+            "GPU_residual_rows": 33278,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19977,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33278,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 2,
+            "request": 5,
+            "IQ3_calls": 7118956,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 329543,
+            "lookups": 4879200,
+            "hit_percent": 6.8
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "965fb4fa6a64f49bb997654f7bc15c19812571c92573524ba98357aba06613da",
+            "c68cf64b10891ea1a96f677b485cdefec67a97b9dad7f6ec1a53bf4ffd1ccea2",
+            "a3fb423efc701eb3e11df431625f05c0dcdc2d2fcc31822315380822c1e6045c",
+            "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee"
+          ],
+          "valid": true,
+          "journal_sha256": "bf3b1a86c356913f8fb663de3ef998fcf35412cbb944004f43993030e4ca9b17"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35592
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_controls": {
@@ -185889,6 +186010,17 @@
         "candidate_over_reference_exact_TG": 1.3074163559371152,
         "candidate_over_reference_prompt_time": 0.9509614694877112,
         "candidate_over_reference_TTFT": 0.9504430369225142,
+        "same_request_sha256": true
+      },
+      {
+        "pair": 1,
+        "reference_index": 3,
+        "candidate_index": 2,
+        "reference_exact_TG": 8.749192763955099,
+        "candidate_exact_TG": 10.609532100500196,
+        "candidate_over_reference_exact_TG": 1.2126298261720005,
+        "candidate_over_reference_prompt_time": 1.0138027273369603,
+        "candidate_over_reference_TTFT": 1.0132927215747032,
         "same_request_sha256": true
       }
     ],
