@@ -736,8 +736,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   TTFT,with6.8%cache hits. Actual cap2/heads/body/clock/journal checks pass;
   native exits0,validation is quiet,owners close and no fresh fault appears.
   Acceptance.630460uses the cap2denominator,not a new fixed4MTP classification.
-  This single reference supplies no repeated gain. Keep552b as the fast
-  prefill fallback;this code TG gain is not whole-model adoption or70TG.
+  The first prose pair now closes normally:static0/adaptive8exactTG is
+  8.073058/10.554848tok/s,with8286/10147generated and6.8%/46.4%cache hits.
+  Both requests read33279fresh tokens from the same body and produce answers;
+  candidate prompt/TTFT are57.0051/57.172s,versus59.9447/60.153s. All
+  native,validation,fault and ownership checks pass. Four processes remain;
+  one pair is not repeatability or adoption. Keep552b as the fast prefill
+  fallback;this code TG gain is not whole-model adoption or70TG.
   The next bounded32-swap entry is source-prepared in
   `tools/sycl/check_adaptive_budget_entry.py`. Its CPU reducer now passes a
   valid32-group fixture and22corrupt variants at source
@@ -754,7 +759,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   it reuses the existing owned second-record supervisor,requires a closed
   positive32entry,and checks two full32-copy generations with only the first
   published. Its prospective CPU adversarial controls and native expected-exit1
-  refusal have not run. The frozen speed-cohort inputs are unchanged.
+  refusal have not run. A20-second locked CPU-only control plan is committed
+  before invocation at`adaptive_budget32_failure_reader_host_v1`;it requires
+  two full groups and86corrupt variants,without launching the native engine.
+  The frozen speed-cohort inputs are unchanged.
   The retrieved review's stale-map condition is resolved for the current
   bounded8-swap route:actual compiled inputs match its generator/cache/header
   identities,`adaptive_res_upload`updates`xcache.replace_residency(host_res)`

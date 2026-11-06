@@ -185553,6 +185553,127 @@
           "original_sources_recovered": 332,
           "protected_ELF_outputs": 15
         }
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "adapt_swaps": 8,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1656002,
+          "start_ticks": 234524428,
+          "sid": 1655955
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33279,
+            "reused_tokens": 0,
+            "generated_tokens": 10147,
+            "output_chars": 6956,
+            "reasoning_chars": 20127,
+            "prompt_ms": 57005.1,
+            "prompt_tps": 583.8,
+            "decode_ms": 961359.2,
+            "decode_tps": 10.6,
+            "ttft_s": 57.172,
+            "total_s": 1018.399,
+            "drafts_offered": 6268,
+            "drafts_accepted": 3879,
+            "acceptance_rate": 0.6188576898532228,
+            "request_sha256": "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee",
+            "output_sha256": "237ff0b5a8f1e3ed596ef3ac506f7775e1e37e8ed66862484cc6511108a623ae",
+            "reasoning_sha256": "d570609258b32dd6f21261142cc67c05467f8ea6a02a22e2cadf640840d46fe7",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1656002,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33279,
+            "rows": 33278,
+            "GPU_residual_rows": 33278,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19977,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33278,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 2,
+            "request": 5,
+            "IQ3_calls": 7231146,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 2790923,
+            "lookups": 6017760,
+            "hit_percent": 46.4
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "965fb4fa6a64f49bb997654f7bc15c19812571c92573524ba98357aba06613da",
+            "c68cf64b10891ea1a96f677b485cdefec67a97b9dad7f6ec1a53bf4ffd1ccea2",
+            "a3fb423efc701eb3e11df431625f05c0dcdc2d2fcc31822315380822c1e6045c",
+            "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee"
+          ],
+          "valid": true,
+          "journal_sha256": "0e755908a0020fd44bfa0123a49aa3e0ee6c3cbaa3d14b608aa4bbb2cfb2c5e8"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35592
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_controls": {
@@ -185621,7 +185742,19 @@
     "declared_before_candidate_execution": true,
     "native_source_commit": "a330eb7fbd300d6f2755be51f8419e33ab3fd89e",
     "native_engine_sha256": "429b69f2984b06db36fde39eb4f1a0e39b8e4dbec406169b35a3c96db78106bd",
-    "observed_pairs": [],
+    "observed_pairs": [
+      {
+        "pair": 0,
+        "reference_index": 0,
+        "candidate_index": 1,
+        "reference_exact_TG": 8.073057762699063,
+        "candidate_exact_TG": 10.55484776137785,
+        "candidate_over_reference_exact_TG": 1.3074163559371152,
+        "candidate_over_reference_prompt_time": 0.9509614694877112,
+        "candidate_over_reference_TTFT": 0.9504430369225142,
+        "same_request_sha256": true
+      }
+    ],
     "complete": false,
     "repeatability_qualified": false,
     "initial_reference_exact_TG": 8.073057762699063
@@ -185672,5 +185805,51 @@
     },
     "exit_code": 0,
     "elapsed_wall_s": 0.726092228
+  },
+  "adaptive_budget32_failure_reader_host_v1": {
+    "stage": "prepared",
+    "source_commit": "5943022da76d6ee75b6b9af6cf5dd71dd73c40ff",
+    "source_path": "tools/sycl/check_adaptive_budget_failure.py",
+    "source_sha256": "95bb38d45125adf2b996f69f25b0a06d87001516495a5aeed3807ae8160cc259",
+    "source_count": 118,
+    "source_signature": "b5ecce05d338a1738eac4b1ba9b94542a2ea577c7d07ad5fb5f5192db8c33c68",
+    "command": [
+      "/usr/bin/prlimit",
+      "--as=1073741824",
+      "--cpu=10",
+      "--fsize=65536",
+      "--",
+      "/usr/bin/timeout",
+      "--signal=TERM",
+      "--kill-after=5s",
+      "20s",
+      "/usr/bin/python3.12",
+      "-X",
+      "faulthandler",
+      "-B",
+      "tools/sycl/check_adaptive_budget_failure.py",
+      "controls"
+    ],
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+    },
+    "helpers": {
+      "/usr/bin/prlimit": "17064f67e650d6152a6902b013aab496b54c87587c8eea6f5023aafee6154069",
+      "/usr/bin/timeout": "12690a043dfd555a6c14ccc1564f5649c18f1762c0d6ff66729948130898ec52"
+    },
+    "budget": {
+      "wall_seconds": 20,
+      "cpu_seconds": 10,
+      "address_space_bytes": 1073741824,
+      "text_bytes": 65536
+    },
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "plan": "One CPU-only ordered-reader invocation after prose process1 normal closure and before process2. Commit this exact source/recipe first. The CLI acquires the shared nonblocking lock itself;do not nest an external flock. Require actual0,valid two full32 groups and all86 corrupt variants rejected. No native model or GPU runtime,no retry or source-hash refresh.",
+    "limits": "CPU reader controls only;native32 positive/expected-refusal and clean performance remain unqualified."
   }
 }
