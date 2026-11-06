@@ -134,10 +134,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   from cache hits and started/completed windows; its request-boundary output
   covers currently live capture epochs cumulatively, not retired captures or
   per-request deltas. It is owner-only after drain, with checked output and a
-  bounded 64-shape table. This source has not yet been compiled or executed.
-  First commit/prepare/commit/run the CPU-only UBSan policy fixture through
-  `tools/sycl/verify_window_model.py native-half-prepare` and
-  `native-half-check`. Then prepare an exact selective 5c model composition,
+  bounded 64-shape table. The CPU-only UBSan policy fixture passes at source
+  `517a285094bffa8cd49168282f4ef813d9cbfbdd` through
+  `tools/sycl/verify_window_model.py native-half-check`, with the preceding
+  committed preparation plan. Both compile/run processes exit0 and close;
+  all203 actual include/link inputs match the pinned compiler/source image,
+  with no UBSan output. Follow `q6_native_half_policy_host_v1` for the exact
+  commands and binary hash. This checks the policy and cache container only;
+  the full Verifier/program and GPU route writer have not been compiled or run.
+  Next prepare an exact selective 5c model composition,
   traced small same-build checks and a frozen repeated long-generation A/B.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
   speed. Keep separate prefill/handoff, task, agent and physical 262144/RESTORE
