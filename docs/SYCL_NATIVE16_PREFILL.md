@@ -22,7 +22,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cumulative row in [`performance-records.csv`](../bench/performance-records.csv).
 - The immediate decode comparison uses **a330 / engine429b** as the positive-swap
   candidate alongside the552b prefill fallback. Its bounded184-swap/32K-loan
-  correctness entry and second-event-record refusal both pass. Four of six
+  correctness entry and second-event-record refusal both pass. Five of six
   clean code-comparison processes now pass;both completed pairs favor adaptive
   TG,but reference variability remains large. The third pair and weak-MTP
   prose comparison remain pending. No new PP/TG record or adoption follows.
@@ -741,6 +741,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   unchanged boot/driver. Reference TG varies7.294485to10.141007;the first
   pair's46.9%gain is not a general speedup estimate. Keep the third pair,
   final full-asset hashes and weak-MTP prose comparison pending;no adoption.
+  Third-pair reference4also passes:3157outputs in305781.2ms decode,
+  10.324376exactTG,prompt64282.3ms and TTFT64.485s. Its native exits0,
+  all five request/route/cache gates pass,and no fresh GPU fault appears.
+  Candidate5and the three-pair decision remain pending.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
