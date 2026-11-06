@@ -701,6 +701,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   exact Git/current-byte pinning of`data/expert-profile.bin`and requires the
   native argument to select that file. Do not amend V1 source hashes or treat
   its preparation as speed/qualification evidence.
+  The V2 code cohort is prepared at source
+  `7378e89dc0baa63f1acde7c8a2e95d4ad9eee442`,with332input files including
+  the placement profile,full15model hashes and independent TG/prompt/TTFT
+  decision controls. Both fresh current-source benchmark/server probes pass.
+  Native speed processes remain the next step;no new speed claim follows.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
