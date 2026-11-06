@@ -203,8 +203,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reject six changed device/parser/import/definition controls. The half0 V2
   plan is prepared with all15model assets hashed and no model execution yet;
   follow `q6_native_half_model_entry_arm0_v2`. These controls are not new GPU
-  validation. Next commit this plan,then run its two frontend probes and model
-  entry before preparing half1.
+  validation. Both corrected half0 frontend probes now pass with normal closed
+  processes. Next commit that result,then run its model entry before preparing half1.
   Then freeze the repeated long-generation comparison. The short model entry
   does not qualify sustained TG or model speed. Keep separate prefill/handoff,
   task, agent and physical 262144/RESTORE gates;retain the validated552b fallback
