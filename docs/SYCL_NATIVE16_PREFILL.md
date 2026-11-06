@@ -275,8 +275,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   PYTHONNOUSERSITE=1 prlimit --as=1073741824 --cpu=60 --fsize=65536 -- timeout
   --signal=TERM --kill-after=5s 90s /home/yayoi/.local/share/strata-sycl/venv/bin/python3
   -B tools/sycl/check_mtp_width_model.py controls`. Integration followed the
-  pushed closed Q6 evidence. Fresh frontend/model entries remain pending;
-  no new native build or speed result follows from the parser controls.
+  pushed closed Q6 evidence. These parser controls alone do not qualify the
+  fresh frontend/model entries recorded below,or a new native build or speed.
   The later source adds a separate `speed` mode for six fresh4/2/2/4/4/2
   processes with the fixed v5 thinking-on long workloads. It requires both
   bounded entries first,disables entry-only trace/payload audits,and records
@@ -330,8 +330,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   common. Classify MTP only from fixed4;keep fixed2 acceptance at its changed
   denominator and retain every speed sample. Each workload needs all three
   paired TG ratios above one for a repeated gain. Both fresh generation frontend
-  probes now pass with normal exits and closed owners. All six model processes
-  remain pending;no width speed result exists yet.
+  probes now pass with normal exits and closed owners. Process0,the first cap4
+  reference,now closes with both long requests eligible,native0,quiet validation,
+  closed owners,unchanged boot/driver and no fresh fault.
+  Code/prose generate3170/7275tokens with decode_ms229515.4/847741.2 and client
+  TTFT50.437/43.267s;acceptance is.824388/.389236. Actual T1/T4 replays complete,
+  all four paused gates[4,5,5,6] and six cache/IQ3 footers pass. These are single
+  reference samples;five processes and the three-pair width decision remain
+  pending. No cap2 speed gain or new TG milestone follows yet.
 - The exact ec4 HC/interlayer source audit now supplies static262144-index
   evidence,not physical-context qualification. At full `n=262144`,the HC tensor
   has2684354560elements;its BF16 store ends at5368709120bytes. `checked_count`
@@ -1697,7 +1703,9 @@ pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
 tests and is now merged into feature/sycl at `4c24b6931`;its completed child
 is retired and original commits remain reachable from the pushed primary.
-Fresh model/frontend qualification remains pending. Required tracking/recovery/alias/API/CLI imports and
+Fresh bounded model/frontend checks now pass for both fixed-width routes;
+their sustained comparison and broader model qualification remain pending.
+Required tracking/recovery/alias/API/CLI imports and
 hardware-tuned unmodified-upstream measurements remain incomplete. PR 180 is
 blocked by a squash-only ruleset; preserve measured source commit identities
 and do not claim default-branch integration.
