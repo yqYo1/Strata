@@ -181429,7 +181429,7 @@
     }
   },
   "compat_collector_window_check_v1": {
-    "stage": "prepared",
+    "stage": "checked",
     "source_commit": "d15525f286862d35da76cc0b3549ba7c0f068e09",
     "fixture_build_source_commit": "087edccfd6f04398434d968cb2615595b2c952ca",
     "binary": {
@@ -181526,10 +181526,75 @@
       "negative": 7,
       "GPU_executed": false
     },
-    "cases": [],
+    "cases": [
+      {
+        "mode": "smoke",
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "numerical_guards_passed": true,
+        "validation": {
+          "pid": 773656,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": null,
+        "clocks": {
+          "begin": 2324587971281662,
+          "before-runtime": {
+            "arrival": 2324588007723461,
+            "release": 2324588009478813
+          },
+          "runtime-ready": {
+            "arrival": 2324588033911482,
+            "release": 2324588036252301
+          },
+          "prefix-drained": {
+            "arrival": 2324588072203611,
+            "release": 2324588094900143
+          },
+          "gap-drained": {
+            "arrival": 2324588096654193,
+            "release": 2324588119515895
+          },
+          "window-drained": {
+            "arrival": 2324588121166300,
+            "release": 2324588144040737
+          },
+          "suffix-drained": {
+            "arrival": 2324588145351996,
+            "release": 2324588147962922
+          },
+          "before-exit": {
+            "arrival": 2324588148746271,
+            "release": 2324588151069848
+          },
+          "end": 2324588240118481
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
+    "passed": true,
     "complete": false,
     "model_executed": false,
     "plan": "Three separate owned processes in order:unprofiled smoke,prefix-only,prefix+resumed-window. All execute10two-kernel graph replays with numerical/guard checks after each. Collector active during construction;prefix2replays,paused gap3,resumed window3,paused suffix2. Prefix-only stays paused after its first2replays. Expected4/10 named kernels with unique native host-flow joins and raw-clock containment,all gap/suffix GPU work excluded. Gate only after actual completion and readback drain. A failed case stops progression;commit each closed outcome before the next. Keep strict before-main validation,Sysman0,nativecapture0 and immutable safety environment. No timing-speed or model/saturation qualification.",

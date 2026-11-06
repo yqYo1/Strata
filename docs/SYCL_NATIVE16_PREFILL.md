@@ -275,8 +275,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   kernels,4/10recorded named kernels,unique host joins and excluded gap/suffix
   intervals. Preparation at `d15525f286862d35da76cc0b3549ba7c0f068e09` now
   passes two positive and seven corrupt reader controls without GPU execution.
-  The three separately owned device cases remain unexecuted;commit their
-  exact prepared plan before the smoke check.
+  The first separately owned smoke case now passes all20kernel numerical/guard
+  checks,normal native0,strict before-main validation,closed ownership,unchanged
+  boot/driver and no fresh fault. Prefix-only and resumed-window cases remain
+  unexecuted;commit this outcome before the next case. No collector/model
+  qualification follows from the unprofiled smoke alone.
   The closed V1 failure is recoverable at `730726403c58e3ca40176469cd1ef9e7c933a799`;
   its superseded full result is removed from the active JSON. The closed V1
   outputs and successful62-kernel
