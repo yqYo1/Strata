@@ -877,6 +877,12 @@ After the frozen static/adaptive code and prose comparisons close,prepare a
 separate same-ELF observer plan with immutable pre-exec selectors and matched
 work/observer-cost checks. Reuse the measured cap4/code and cap2/prose choices;
 keep CPU leaf sums,caller regions,nested wait CPU and draft work separate.
+Start that census-backed profile with static0:the current compiled
+`CpuWorkCensus` snapshots slots at construction and rejects`residency_changed`
+in`record`,and its Python reader requires the initial profile membership.
+The429b compiled/current header hashes match. Enabling these existing checks
+on adaptive8/32does not qualify dynamic attribution;that needs a prospective
+membership-aware contract rather than suppressing the rejection.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
