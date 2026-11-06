@@ -20,8 +20,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Source/result: `cache_map_prefill_speed117489_v1.decision` in
   [`fused-moe-service-current.json`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json);
   cumulative row in [`performance-records.csv`](../bench/performance-records.csv).
-- Keep **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1** as
-  the named decode candidate. Its six-process, three-pair comparison is closed:
+- The immediate decode comparison uses **a330 / engine429b** as the positive-swap
+  candidate alongside the552b prefill fallback. Its bounded184-swap/32K-loan
+  correctness entry passes;checked record-failure control and clean repeated
+  speed comparisons remain pending. No new PP/TG record or adoption follows.
+- The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
+  decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
   **8.6795 -> 8.8299** tok/s (reference -> candidate). All three paired TG ratios
   exceed one in each workload; their geometric means are **1.017949 / 1.016802**.
@@ -649,6 +653,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   record-failure injection remains the next separate native control before the
   clean static-versus-adaptive bench.sh comparison. Preserve the fast552b prefill
   fallback and assess its PP/TTFT independently of any decode gain.
+  After pushing the useful result at`dca625eac0fdec4c2b47cbd524c0ca73a3c3399f`
+  and recovering all115controller inputs,the normal raw streams,poll receipt,
+  empty validation log and temporary/JIT products are retired:59files/13590344
+  bytes. External manifest`adaptive-native-entry-success-output-retirement-20261106.json`
+  has SHA256`5031d7415120d69fea490918d56aaf3dcf35479d1e156e7b8f25bd0388506226`.
+  Keep the original record and both552b/429b generations for the imminent
+  negative control and clean comparison;the separate Python host-fault diagnostic
+  is unchanged. The next control needs no successful full trace or normal JIT.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
@@ -2040,7 +2052,8 @@ retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
 probe binaries and the two schema2 host fixtures are retired after original-input
 recovery. The ended519e diagnostic and all its five component outputs are also
 retired after closed native-gate evidence and source recovery;the current
-comparison retains the552b fallback and its nine ELF outputs. Other configured
+comparison retains the552b fallback's nine ELF outputs and the429b positive-swap
+candidate's six outputs for its immediate record-failure/clean comparison. Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
 numerical/IL choice;successful host/device/build output and superseded source
