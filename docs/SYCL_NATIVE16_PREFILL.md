@@ -836,12 +836,22 @@ V3 preparation now passes at controller0b950da2e:all15 model assets and326
 source inputs are pinned,and all six generated arms have one invariant
 configuration/runtime signature. V1/V2 failed during preparation before any
 native execution;their original failures remain recorded. Both current-source
-frontend probes now pass with normal0 and closed owners. The first off process
-now passes both long requests:3170/7275 generated tokens,actual MTP acceptance
-0.8244/0.3892,all six census/leaf joins,strict completed prefixes4/5 and caller
-absence. Native/benchmark exit0,owners close,validation is quiet and no fresh
-fault is recorded. Its observer-envelope TG13.4038/8.7556 is not clean speed.
-Five processes remain;no paired overhead result follows yet. A closed-process
+frontend probes now pass with normal0 and closed owners. The first off/on pair
+now passes both long requests per process:3170/7275 generated tokens,actual MTP
+acceptance0.8244/0.3892,all six census/leaf joins and strict completed prefixes4/5.
+The off process emits no caller record;the on process has six complete conserved
+caller records. Native/benchmark exit0,owners close,validation is quiet and no
+fresh fault is recorded in either process. The first on/off per-output latency
+ratios are1.005990/1.003774,with matching logical work in both workloads. Four
+processes remain;the three-pair overhead decision is still pending. The on
+caller's code/prose wall intervals are237.918/834.038s,including pool regions
+109.089/355.207s,layer waits77.883/287.238s and unclassified31.729/116.189s.
+Nested native waits total119.421/439.711s;their caller CPU is118.554/435.462s.
+These nested values must not be added to their containing regions or worker CPU.
+The off observer-envelope TG13.4038/8.7556 is not clean speed. The declared
+overhead ratios use reported decode time,which ends before final wait_commit,
+caller-scope finish and profile/footer writes;they do not bound complete
+end-to-end or final output-formatting cost. A closed-process
 retention addendum keeps only four already-emitted rounded host timing scopes
 and window counts to compare draft time with future caller-unclassified waits;
 it changes no execution or decision criterion.
