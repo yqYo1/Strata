@@ -313,173 +313,43 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep only the required V2 build/check records and both selected engine
   generations. This fixture is not another engine generation or current model
   attribution.
-  The new Main-authored `include/strata/sycl/decode_profile_gate.hpp` source
-  supplies four opt-in host gates at0/8/16/24completed decode rounds. A checked
-  completion callback must succeed before atomic event publication;the peer's
-  private regular-file acknowledgement must match request,sequence and round.
-  Startup configuration is immutable;the default-disabled checkpoint does no
-  filesystem,clock,completion or allocation work. Round/order/peer failures
-  remain failed and acknowledgement waiting has a finite deadline. The new
-  host fixture covers45cases,including actual four-gate handshakes and
-  malformed/stale/missing acknowledgements. The existing host-contract controller
-  adds `prepare|check decode-profile`,using the original full compiler image,
-  actual header/link closure and finite owned CPU-only execution. The host
-  check now passes all45cases from source
-  `1a0c9c3c3d690c6da6a94212833c067c30053e0d`,with110committed inputs and the
-  original6239-file compiler/package image. Compile,ELF inspection and test
-  each exit0 with closed ownership;311actual header/link inputs are qualified
-  and no GPU provider is linked. Follow `decode_profile_gate_host_v1` for the
-  exact recipe/result. This does not qualify a native GPU drain,model
-  integration,collector coverage or speed. The immediate consumer is a
-  source-pinned native attachment at
-  post-prefill and whole-round completion boundaries,with a separately bounded
-  entrypoint/device check before any long-generation collection.
-  After result commit `1681e74bd5649fc51c26f9cc1e372a0f99f9bdd3`,all110original
-  source inputs and the prepared recipe were recovered from pushed Git. The
-  closed host executable,dependencies and successful raw output are retired:
-  9files/149434bytes,external manifest
-  `decode-profile-gate-host-output-retirement-20261106.json`,SHA256
-  `027c18e0a61dc3cf39720aab5dbd010681bd42e50e7f1306cd7236bfd64dd3ad`.
-  Only its required record remains;both selected engine generations are intact.
-  `tools/sycl/decode_profile_sources.py` now source-prepares the actual serving
-  attachment against the exact567-file native composition. It reads the selector
-  before runtime setup,drains pending commit plus registered/runtime queues
-  before gate publication,and gates each whole target/commit/draft round after
-  the adaptive worker joins and errors are checked. Selected requests ending
-  before24rounds fail rather than qualifying an incomplete window. This is
-  optional host control;all prefill,CPU/GPU kernels and runtime sources stay
-  unchanged. The new `build_decode_profile_model.py` source prepares a568-file
-  replacement using the original recipe,full SDK/compiler/package image and
-  recovered third-party Git inputs. It must retire the closed cb7 compiled
-  products after original567-source/control/recipe/actual-input recovery before
-  building;552b and all nine fallback outputs remain protected. It reuses the
-  existing finite build monitor and two-mode same-build CPU-pool check. The
-  existing device controller adds `decode-profile prepare|run` for fresh strict
-  traced submission/Q6/phase checks. Preparation now succeeds from
-  `a388c63f70b1f33363b6e8e51293f6989791ba09`:568native inputs,110transitive
-  controls,the full original compiler image and recovered external inputs are
-  pinned before compilation. The actual generated diff is reviewed and changes
-  only the two declared files. Compilation now closes successfully:configure,
-  compile and dependency commands all exit0 with closed owners;1453actual
-  compiler inputs and host-link closure are qualified. The new24508888-byte
-  engine SHA256 is
-  `519e2e74240cfc38b136a05b69c02267023fecfd39ba0780fb7799a1f73fe355`.
-  All five same-build fixture ELFs have exactly their previous cb7-era hashes;
-  only the generator executable changes. No new device/model execution has
-  occurred. The ended cb7 build/source/temp/cache/normal-output trees are
-  now retired after567original sources,101controls,the recipe and1452actual
-  compiler inputs were recovered and compared. This deletes738files/152691467
-  bytes;`decode-profile-model-v1/old-retirement-manifest.json` has SHA256
-  `d993e5ee454000a47ee02c3e53c0ef6a8aa06351b3322c41099a126e46945ded`.
-  The original record/shared compiler image remain consumed;552b and all nine
-  fallback outputs are intact. The two retained generations are now552b and
-  the new519e diagnostic. Compilation does not qualify the changed generator
-  or model gates. The new `profile_decode_gates.py reuse` source prepares an
-  explicit component-only reuse decision before further execution:check all
-  five actual fixture bytes,566unchanged native files,original CPU/device/
-  collector/window outcomes and recover their original controls from Git;
-  require the same84providers,pre-main probe,boot,driver and collector tools.
-  Preserve all original outcomes and do not label this a new GPU test. This
-  identity-based plan replaces repeating identical component fixtures;the
-  actual generator still needs a bounded request exercising all four native
-  gates before long-generation profiling. The reuse check now passes at
-  `9ad9b8ca41fdce80379f131b4dc57971e82496b0`:438original control inputs are
-  recovered,all five actual fixtures and84providers match,and the boot/driver,
-  validation probe and collector identities are unchanged. Follow
-  `decode_profile_model_build_v1.component_reuse`. This is limited reuse of
-  original outcomes,without any new GPU/model execution. Disposable private
-  linker-output names are omitted from the compact result;their count remains.
-  The Main-authored `tools/sycl/decode_gate_entry.py` source prepares that next
-  check using the actual native serving protocol:1024fixed valid input IDs,
-  128outputs,an explicit rare EOS ID for bounded extent,and the original
-  cap4/half1/131072-context/static-cache placement. The parent services private
-  event/ack gates while checking the actual native PID,environment,providers,
-  request/sequence/round/raw-clock identities. Acceptance includes all four
-  gates,128valid output IDs,completed T1/T4 Q6 heads,normal length/DONE/QUIT0,
-  strict before-main validation,unchanged final assets/boot/driver,no fresh
-  fault and closed owners. No full API trace or profiler is used in this
-  first model entry. This synthetic diagnostic has no thinking/task/PP/TG or
-  full-context claim. Preparation now succeeds at
-  `3e5f2a3fcfb618e4b7810bae26f6a59fbce8c2eb`,with all15model assets fully
-  hashed and the exact native519e/request/environment/finite owner plan pinned.
-  The first native entry now fails its controller's startup INFO gate before
-  any GEN request or decode gate. INFO reports context131072,INT8,1256expert
-  slots and `kv_resident=0`;the controller incorrectly demanded131072. Actual
-  `layer.cpp:492-518` keeps `mode=0,pages=slots` when the requested resident
-  limit covers the full context. INFO prints a positive resident limit only
-  for streamed mode1,so0is valid for this full-resident route. Preserve V1's
-  failed result:the owned supervisor sends SIGTERM,native exits-15,and the
-  original normal-ownership gate is false. Its direct child is reaped,session
-  empty and all original identities are independently confirmed absent;no
-  fresh GPU fault occurs. No generator/gate correctness follows.
-  Startup also reports0MiB free VRAM after verifier/draft binding. This is an
-  unresolved capacity/paging question,not saturation proof:the caller ignores
-  `cudaMemGetInfo` status. A new V2 must fix only the source-derived INFO
-  interpretation and add bounded,read-only kernel DRM client memory/cycle
-  snapshots at READY and drained gates. Keep the same native519e,placement,
-  safety and128-output extent;do not rerun V1 or assume that lowering capacity
-  solves the performance question. Requested versus resident memory and engine
-  busy cycles are separately defined by the
-  [DRM specification](https://docs.kernel.org/gpu/drm-usage-stats.html) and
-  [Xe driver documentation](https://docs.kernel.org/gpu/xe/xe-drm-usage-stats.html).
-  Deduplicate client IDs per PCI device;optional missing counters remain unknown.
-  The V2 source now implements that correction with the existing
-  `bench/sycl/client_resources.py` reader,explicitly pinned beside the controller.
-  Its INFO controls accept the captured full-resident0case and reject10corrupt
-  fields/duplicates/missing values. The parent records bounded PID/start/SID-
-  checked memory,counter and CPU-tick snapshots at READY,four drained gates and
-  DONE. Counter regressions remain ineligible;unavailable optional metrics do
-  not become zero or qualify a bottleneck claim. At controller source
-  `e124ed4e3fc8f44fc08acbf26949dfb84beff666`,the CPU INFO controls pass:
-  the actual captured INFO is accepted and all10corrupt variants are rejected.
-  V2 preparation passes with all15model assets fully hashed and the exact
-  native519e/request/environment pinned. Actual V2 execution passes INFO/READY
-  but fails on the existing `RESUME 0`progress notification,which the controller
-  omitted. The owner then sends SIGTERM;native exits-6 with an IGC
-  termination-request message. This is not evidence of an independent compiler
-  defect. All recorded process identities are absent,the session is empty and
-  no fresh GPU fault occurs;the original failed normal-ownership gate stays false.
-  The READY snapshot records10227867648bytes of both requested and resident
-  client VRAM,and945856512bytes of both requested and resident GTT. This one
-  snapshot establishes no decode paging or saturation. Preserve V2;before V3,
-  check the full selected-source RESUME/PP/REUSED/T/DONE protocol and existing
-  frontend reader,then commit offline controls and a new plan with the same
-  native math,request and placement. The V3 source now handles ordered
-  RESUME/monotonic PP/REUSED before token output and retains the exact128-output
-  DONE and four-gate extent. It uses the owned interactive exit reader to reject
-  trailing output rather than clearing it. Offline source controls include the
-  complete progress/128-token/DONE stream and25malformed/order/extent variants,
-  beside the10INFO refusals. All these CPU controls now pass at source
-  `89a8c71dd63a52dd71cfb33ca4df57885a2c0c2b`. V3 preparation also passes with
-  all15model assets fully hashed and113source/controller inputs pinned.
-  Actual native execution now reaches all four0/8/16/24round gates,emits128
-  bounded tokens and DONE length,and exits0 with normally closed ownership.
-  The parent Python3.12 then segfaults in `PyObject_GC_Del`before its post-run
-  validation/final assets finish. V3 remains failed;the exact statement and
-  host-crash cause are unknown. Both processes are absent,the session is empty
-  and kernel-journal evidence has no new GPU fault. All six read-only resource
-  observations are preserved. The new Main-authored
-  `tools/sycl/inspect_decode_gate_entry.py`source prepares a separate finite
-  CPU-only replay with faulthandler and persisted validation stages. It checks
-  the saved protocol/gates,Q6,cycle counters and original/final inputs without
-  another GPU run;it cannot relabel V3 or claim a Python-crash fix. Its CPU-only
-  plan is now prepared from source`5e18110fcc3bcabaf1fc45c946fcb257cf4a29e1`,
-  pinning the original failed record,execution receipt and both native streams.
-  The CPU-only replay now exits0 within its declared420-second wall/360-second
-  CPU/8GiB address-space limits. It verifies the saved complete protocol,four
-  gates,128-token hash,strict pre-main UR validation and completed T1/T4 Q6
-  heads,recomputes all six counter snapshots,and fully hashes all15model assets
-  again. Source/native/runtime/boot/driver still match and no fresh GPU fault
-  appears. Follow `decode_gate_model_entry_v3_postcheck_v1`;V3's original host
-  failure stays failed and this does not identify or fix that Python crash.
-  Between rounds8..16 and16..24,the sampled process uses5.0907/5.2786CPU-core
-  equivalents while CCS busy-cycle fractions are0.543462/0.562392. All six
-  snapshots show requested client VRAM fully resident;decode reaches10577268736
-  bytes. These are short synthetic observations,including CPU polling and GPU
-  stalls,not clean speed,physical bandwidth/saturation or an exclusion of
-  transient paging. They support returning to the previously faster owned
-  positive-swap cache path to reduce CPU misses;first qualify its actual
-  replacement payload/map/dispatch and subsequent scratch-loan/refill behavior.
+  The optional native decode-gate diagnostic is closed. Main-authored source
+  `a388c63f70b1f33363b6e8e51293f6989791ba09`changes only the selected generator
+  plus its default-disabled host gate header. Its45-case host fixture passes;
+  all five native component fixtures are byte-identical to the previously
+  qualified generation. The actual519e engine reaches0/8/16/24completed rounds,
+  emits128bounded tokens from1024inputs,and exits0 with normally closed ownership.
+  Its Python3.12 controller then segfaults in `PyObject_GC_Del`during post-run
+  processing. The exact statement/cause remains unknown and that run stays failed.
+  All original processes are absent and no new GPU fault is recorded.
+  The separate CPU-only replay,source
+  `5e18110fcc3bcabaf1fc45c946fcb257cf4a29e1`,now exits0. It verifies the saved
+  protocol,four gates,token hash,strict pre-main UR evidence and completed T1/T4
+  Q6 heads,recomputes all six resource snapshots,and fully hashes all15model
+  assets again. Follow `decode_gate_model_entry_v3_postcheck_v1`,original closed
+  evidence `3ceff37475b397f9154bf95040cf7497fff7afcc`. This verifies retained
+  native gate evidence without another GPU run;it does not fix Python,qualify
+  clean speed/task quality,ordinary provider teardown or physical262144/RESTORE.
+  The superseded INFO and RESUME controller failures and the host-crash outcome
+  are archived unchanged at `5e18110fcc3bcabaf1fc45c946fcb257cf4a29e1`;their
+  duplicate per-version configurations are removed from the active result.
+  Between rounds8..16 and16..24,process CPU use is5.0907/5.2786core equivalents
+  and CCS busy-cycle fractions are0.543462/0.562392. All six boundary snapshots
+  show requested client VRAM fully resident;decode reaches10577268736bytes.
+  CPU includes polling,GPU busy includes stalls,and intermediate paging is
+  unmeasured. These short synthetic observations establish no bandwidth ceiling,
+  physical saturation or clean PP/TG. Next revalidate the previously faster owned
+  positive-swap cache path to reduce CPU misses;its payload/map/actual dispatch
+  and subsequent occupied scratch-loan/refill checks still need native execution.
+  The ended519e build/source/temp/cache and superseded protocol-failure raw output
+  are retired after recovering568native inputs,110controls,9311third-party source
+  inputs and the exact recipe from pushed Git:814files/182274867bytes.
+  External manifest`decode-gate-diagnostic-retirement-20261106.json`has SHA256
+  `30b82fba1a35ab73723a49259c4b1b964f182241023fae64fe7fbe7331bd3f07`.
+  Keep the552b fallback and all nine ELF outputs,original required records,and
+  one minimal host-Python failure diagnostic. No519e compiled generation remains.
+  The source-level protocol reader is the imminent positive-swap entrypoint
+  consumer;retire its obsolete CLI/admission modes when that consumer is composed.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
@@ -2101,17 +1971,14 @@ executables, with the missing inputs, consumer, next bounded recovery action
 and review point recorded in the retained-build result. The fallback currently
 retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
 probe binaries and the two schema2 host fixtures are retired after original-input
-recovery. Seventeen retained project runtime/tool ELF outputs remain across the scanned
-state directory and both project worktrees;three installed Python dependency
-extensions are separate assets. This includes the configured deployment
-outputs and qualified validation/profiling tools. The standalone widening
-executable,IR and receipt are retired after numerical/IL choice;successful
-host/device/build output and superseded source reviews are also retired. The
-new diagnostic adds five candidate outputs for
-its immediate same-build admission;compilation does not make it the validated
-fallback. This is not global
-cleanup:the configured deployments' original source/recipe recovery and
-validated migration remain explicit independent holds.
+recovery. The ended519e diagnostic and all its five component outputs are also
+retired after closed native-gate evidence and source recovery;the current
+comparison retains the552b fallback and its nine ELF outputs. Other configured
+deployment outputs and qualified validation/profiling tools have separate named
+consumers. The standalone widening executable,IR and receipt are retired after
+numerical/IL choice;successful host/device/build output and superseded source
+reviews are also retired. This is not global cleanup:the configured deployments'
+original source/recipe recovery and validated migration remain independent holds.
 
 Niko1221/Strata remains the only upstream. The maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
