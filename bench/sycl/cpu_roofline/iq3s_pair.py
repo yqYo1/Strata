@@ -24,6 +24,10 @@ spec.loader.exec_module(base)
 base.ROOT = base.B / 'cpu-iq3s-pair-component-v1'
 base.KEY = 'cpu_iq3s_pair_component_v1'
 base.TARGETS = ('cpu_iq_single_exact_test', 'cpu_iq3s_pair', 'cpu_service_pool_test')
+# Preparation consumes this audit and these policies. Keep their exact committed
+# bytes frozen through the CPU cohort,including the transitive audit dependency.
+base.PROJECT += ('AGENTS.md', 'docs/ARTIFACT_RETENTION.md',
+    'bench/results/2026-10-15-pr6-recovery-audit/research-index.json')
 ROOT, KEY, need, digest = base.ROOT, base.KEY, base.need, base.digest
 
 
