@@ -730,15 +730,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   pairs,task/agent quality,dedicated PP/TTFT,physical262144/RESTORE and broader
   resource attribution remain pending. The previous13.8code result remains
   above this candidate;the historical decrease is still unexplained.
+  Candidate process2also closes normally with33211input,3293output,
+  309769.1ms decode(10.630499exactTG),acceptance.820028and24.3%cache hits.
+  Prompt time/TTFT are62397.1ms/62.584s. The paired reverse-order reference3
+  remains unmeasured;two candidate samples alone do not qualify a second gain.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
   `python3 -X faulthandler -B -m unittest discover -s tests/core -p test_native_request_protocol.py -v`.
   They cover1/1024/32769-input extents,the actual RESUME/PP omission,malformed
-  order/counters/output and geometry bounds. Actual dispatch,positive copying
-  and post-positive occupied loan/refill still require the bounded native check.
-  Actual dispatch coverage,record failure,post-swap loan/refill and native lifetime
-  gates remain open. The cb7 and519e diagnostic generations are retired;keep552b.
+  order/counters/output and geometry bounds. The bounded native checks above
+  now exercise actual dispatch,positive copying,post-positive occupied loan/refill
+  and checked record refusal. These CPU reader tests alone do not supply those
+  native results. Task quality,physical262144/RESTORE and ordinary provider
+  teardown remain open. The cb7 and519e diagnostic generations are retired;
+  retain552b and429b for the current comparisons.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
   remains on HOLD as written:its unsupported swap0/MTP2 claims and incorrect
   `generate.cpp:1559` anchor are not adopted. Its pins and bounded-control design
