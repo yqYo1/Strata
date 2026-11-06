@@ -168476,7 +168476,6 @@
       "version": "Intel(R) oneAPI DPC++/C++ Compiler 2026.2.0 (2026.2.0.20261001)"
     },
     "toolchain": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-v1/toolchain.json",
       "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838",
       "files": 6239,
       "packages": [
@@ -168551,10 +168550,11 @@
     "ownership_closed": true,
     "GPU_executed": false,
     "model_executed": false,
-    "retention": "Immediate host-policy check only. Retire the auxiliary ELF,source copies,compiler inventory and normal logs after recording outcomes and exact-source recovery;keep14inference ELFs untouched.",
+    "retention": "Closed auxiliary ELF,private source copies,compiler inventory and normal output retired after original-input recovery. Retain policy/test source for the imminent selective5c model comparison;keep14 inference executables.",
     "binary": {
       "sha256": "955eb23af6f7a733b9f266f1593877d75300fb111fa64579378370c858df86d6",
-      "bytes": 524296
+      "bytes": 524296,
+      "local_artifact_retired": true
     },
     "actual_inputs": {
       "files": 203,
@@ -168580,6 +168580,25 @@
     "source_inputs": {
       "files": 369,
       "aggregate_sha256": "96946660e8e8403a93e64ef71f6a3135e54edef68d64db82fd958ad520538d50"
+    },
+    "artifact_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-policy-host-retirement-20261106.json",
+      "sha256": "27a8b6ab0e1f6cf36382b0514fcbcf67fb0d7b6d0d5ce54397c4b2828702f187",
+      "files": 12,
+      "bytes": 3053275,
+      "source_recovery": {
+        "project_files": 369,
+        "actual_compiler_link_inputs": 203,
+        "commands": 2,
+        "all_match": true
+      },
+      "protected_inference_executables": 14,
+      "scope": "Only the closed CPU policy auxiliary root;all selected552b/5c comparison executables unchanged. No global cleanup claim."
+    },
+    "original_artifact_evidence": {
+      "commit": "83d859db04248701aacd3211a6ea4bdfd5d63c2b",
+      "key": "q6_native_half_policy_host_v1",
+      "scope": "Original closed recipe and local toolchain path,subsequently retired;source identities and useful host outcomes remain current."
     }
   }
 }

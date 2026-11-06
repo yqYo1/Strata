@@ -138,10 +138,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `517a285094bffa8cd49168282f4ef813d9cbfbdd` through
   `tools/sycl/verify_window_model.py native-half-check`, with the preceding
   committed preparation plan. Both compile/run processes exit0 and close;
-  all203 actual include/link inputs match the pinned compiler/source image,
+  all 203 actual include/link inputs match the pinned compiler/source image,
   with no UBSan output. Follow `q6_native_half_policy_host_v1` for the exact
   commands and binary hash. This checks the policy and cache container only;
   the full Verifier/program and GPU route writer have not been compiled or run.
+  Its closed auxiliary build and normal output are retired after source/recipe
+  recovery: 12 files,3053275 bytes; the 14 retained inference executables are unchanged.
   Next prepare an exact selective 5c model composition,
   traced small same-build checks and a frozen repeated long-generation A/B.
   A host pass will not qualify full-engine syntax, GPU capture/replay or model
@@ -1491,15 +1493,16 @@ Niko1221/Strata remains the only upstream. The maintained
 records the last actual check at **2026-11-04 21:34:43 UTC**,
 `ffa80d73133ea5c548aefe57889a16e8085a938f` (`v0.2.10`), with the next check due
 approximately 48 hours later. The configuration parsing helpers are ported and
-pass five focused tests; server wiring remains pending until the frozen audit
-comparison closes. Required tracking/recovery/alias/API/CLI imports and
+pass five focused tests; server wiring remains pending after the frozen audit
+comparison closed. Required tracking/recovery/alias/API/CLI imports and
 hardware-tuned unmodified-upstream measurements remain incomplete. PR 180 is
 blocked by a squash-only ruleset; preserve measured source commit identities
 and do not claim default-branch integration.
-Remote publication recovered: the actual ref check at 2026-11-04 10:12 UTC
-confirms `feature/sycl` at `394e6689e`, including the first 64K pair, CSV and
-raw-output retirement. The default remains `05069aeed`; PR integration is
-still blocked independently of the resolved push error.
+The Q6 policy source and closed CPU host result are published on
+`feature/sycl` through `83d859db04248701aacd3211a6ea4bdfd5d63c2b`.
+The default remains `05069aeed`; the current branch-rule query still permits
+only squash PR merges. Default integration remains unfinished because the
+measured original commit identities must be preserved.
 
 ## Evidence pointers
 
