@@ -186,8 +186,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   two processes of six. Candidate process2 is also closed:code TG13.6191 and
   prose TG8.9809tok/s,with the same actual lengths/MTP classes,all four paused
   gates,six footers,normal exit,quiet validation,closed owners and no fresh fault.
-  Three processes are closed;reference3 is still needed for the second pair.
-  Reproducible model-speed gain is not established. Preserve every paired outcome.
+  Reference3 is now closed with the same gates:code TG13.3796 and prose
+  TG8.7744tok/s. The second candidate/reference ratios are1.017903/1.023539.
+  Four processes/two pairs are closed;both pairs favor the candidate in both
+  workloads. The third pair is still required before a reproducible-gain decision.
+  Preserve every paired outcome and collect reference4 before candidate5.
   Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
@@ -206,6 +209,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   [research index](../bench/results/2026-10-15-pr6-recovery-audit/research-index.json),
   keys `q6_replay_component_bridge_20261106` and
   `qwen38_weak_mtp_sibling_source_feasibility_20261106`. No new speed claim follows.
+  The reviewed current fixed2/cache-lease delta has a conditional source pass,
+  not runtime or speed qualification. Keep `--spec 4`,change only the planned
+  `--mtp-max-t 2` selector,and hold min-p/suffix controls. The new controller must
+  require prefill borrowing and a positive single-cache tail loan,then verify
+  actual T1/T2 routing,graph-reader retirement/recapture,borrower lifetime and
+  state handoff before model speed collection. Loan-driven graph retirement
+  applies even without optional dense/head release. Use the existing fixed2
+  short-route evidence only within its original scope. Corrected source anchors
+  and review pins are in `mtp2_current_cache_lease_source_feasibility_20261106`
+  in the research index. Fix the input workloads and classify strong/
+  weak MTP from the matched fixed4 reference;report fixed2 acceptance and yield
+  separately because reducing draft depth changes the aggregate's denominator.
+  A candidate crossing the reference's acceptance-class threshold must not
+  retrospectively exclude its speed sample. Commit final criteria and controls
+  before this new experiment;do not change the active Q6 comparison's rules.
 
 ## Prefill envelope and scaling
 
