@@ -729,9 +729,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `a6a8e863ebf41c04f173eb3d916b36d1be752320`,with the same332pinned inputs,
   six-process ordering and15asset hashes. Its supplementary exact-TG plan
   is declared before even the first reference. Both fresh benchmark/server
-  frontend probes now pass;the first native prose reference is running. Keep
-  552b as the fast prefill fallback;this code TG gain is not whole-model
-  adoption or70TG.
+  frontend probes now pass. Prose reference0now passes:33279fresh input,
+  8286generated tokens,8.073058exactTG,59944.7ms prompt and60.153s client
+  TTFT,with6.8%cache hits. Actual cap2/heads/body/clock/journal checks pass;
+  native exits0,validation is quiet,owners close and no fresh fault appears.
+  Acceptance.630460uses the cap2denominator,not a new fixed4MTP classification.
+  This single reference supplies no repeated gain. Keep552b as the fast
+  prefill fallback;this code TG gain is not whole-model adoption or70TG.
   The next bounded32-swap entry is source-prepared in
   `tools/sycl/check_adaptive_budget_entry.py`;nothing from that controller has
   executed. It keeps the same429b native engine,runtime safety,prefill layout

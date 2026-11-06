@@ -185109,7 +185109,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "a6a8e863ebf41c04f173eb3d916b36d1be752320",
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -185424,7 +185424,129 @@
         "environment_sha256": "ca17f356497d10be93632d43fdbe211bbab69c2c80d967332d0559b568823732"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1582431,
+          "start_ticks": 234336097,
+          "sid": 1582329
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33279,
+            "reused_tokens": 0,
+            "generated_tokens": 8286,
+            "output_chars": 5332,
+            "reasoning_chars": 17337,
+            "prompt_ms": 59944.7,
+            "prompt_tps": 555.2,
+            "decode_ms": 1026376.9,
+            "decode_tps": 8.1,
+            "ttft_s": 60.153,
+            "total_s": 1086.348,
+            "drafts_offered": 5082,
+            "drafts_accepted": 3204,
+            "acceptance_rate": 0.6304604486422668,
+            "request_sha256": "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee",
+            "output_sha256": "dd8a2a5177bdff01683be9375bd093381f386ba5233e99952fec144a8919eaf5",
+            "reasoning_sha256": "087dab02c2e1a249188e9ba44d35c5723ea783b8fa04a716beb2d761efe7cc5e",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1582431,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33279,
+            "rows": 33278,
+            "GPU_residual_rows": 33278,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19977,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33278,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 2,
+            "request": 5,
+            "IQ3_calls": 7118956,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 329543,
+            "lookups": 4879200,
+            "hit_percent": 6.8
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "965fb4fa6a64f49bb997654f7bc15c19812571c92573524ba98357aba06613da",
+            "c68cf64b10891ea1a96f677b485cdefec67a97b9dad7f6ec1a53bf4ffd1ccea2",
+            "a3fb423efc701eb3e11df431625f05c0dcdc2d2fcc31822315380822c1e6045c",
+            "95a2d72ccf93b717bee72594b83c72cf173874f9649188d08190828fb84e0cee"
+          ],
+          "valid": true,
+          "journal_sha256": "07d492065bd7d90d0bd9df6d39e3e824ea87d2ed2315cf0b277eec9b555ba6f9"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35592
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_controls": {
       "passed": true,
       "small_gain_retained": true,
@@ -185493,6 +185615,44 @@
     "native_engine_sha256": "429b69f2984b06db36fde39eb4f1a0e39b8e4dbec406169b35a3c96db78106bd",
     "observed_pairs": [],
     "complete": false,
-    "repeatability_qualified": false
+    "repeatability_qualified": false,
+    "initial_reference_exact_TG": 8.073057762699063
+  },
+  "adaptive_budget32_reader_host_v1": {
+    "stage": "prepared",
+    "source_commit": "409ad93c554ef984f7522c4aecff75ef84fc9909",
+    "source_path": "tools/sycl/check_adaptive_budget_entry.py",
+    "source_sha256": "ce1d7f05d4e323323acb6aaae1daf42a0b3c7d81ea2bd51b6ae646ab0900e2ff",
+    "source_count": 116,
+    "source_signature": "1defa744516939c780feb588c286c5fa236bcdacb31e0104d3d77caf73e6e212",
+    "command": [
+      "/usr/bin/flock",
+      "-n",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock",
+      "/usr/bin/timeout",
+      "--signal=TERM",
+      "20",
+      "/usr/bin/python3.12",
+      "-X",
+      "faulthandler",
+      "-B",
+      "-c",
+      "import sys,json; sys.path.insert(0,\"tools/sycl\"); import check_adaptive_budget_entry as m; print(json.dumps(m.controls(),sort_keys=True))"
+    ],
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+    },
+    "budget": {
+      "wall_seconds": 20,
+      "text_bytes": 65536
+    },
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "plan": "One CPU-only pure reducer invocation under the shared nonblocking measurement lock,after prose process0 closure and before process1. Sources committed first. Require valid32group plus all adversarial variants to pass and actual command exit0;no native model or GPU runtime. Do not retry/refresh a failed attempt.",
+    "limits": "CPU log-contract test only;no native32-swap correctness,performance or model qualification."
   }
 }
