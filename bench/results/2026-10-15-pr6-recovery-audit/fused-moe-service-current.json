@@ -183751,7 +183751,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "7378e89dc0baa63f1acde7c8a2e95d4ad9eee442",
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -184066,7 +184066,129 @@
         "environment_sha256": "4c7ab0a428d05ba691b5cd40f1daeff28837e437aceb1c9ae5ddd5ceed48a95c"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1315638,
+          "start_ticks": 233747211,
+          "sid": 1315580
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 3157,
+            "output_chars": 5578,
+            "reasoning_chars": 3232,
+            "prompt_ms": 63437.4,
+            "prompt_tps": 523.5,
+            "decode_ms": 432792.7,
+            "decode_tps": 7.3,
+            "ttft_s": 63.668,
+            "total_s": 496.257,
+            "drafts_offered": 2697,
+            "drafts_accepted": 2259,
+            "acceptance_rate": 0.8375973303670745,
+            "request_sha256": "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "0ec6a61d8f53a0fedb3cd298da139a354e265086e3927e563af9dcd87f256427",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1315638,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33211,
+            "rows": 33210,
+            "GPU_residual_rows": 33210,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20301,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33210,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 4,
+            "request": 5,
+            "IQ3_calls": 1835806,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 182054,
+            "lookups": 1726560,
+            "hit_percent": 10.5
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "0012ff6d6b878bc01c951a3b354233c9c3457ae2e5021ce2a6f4190016c5a0e2",
+            "45fb842df8a19c045e5449d4d87063f362b39394d19e5be6c6d2d0c5353c9f87",
+            "f98c66c95e288442c4e045bb6c8e961ad0a77c744de68f2fb4be4553365123bb",
+            "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033"
+          ],
+          "valid": true,
+          "journal_sha256": "c4eaa738b191d2b3b987ec05fcb06ab44bec1271c3a236240ac2329bd120e6ae"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35520
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_controls": {
       "passed": true,
       "small_gain_retained": true,
@@ -184109,5 +184231,29 @@
       "environment_template": "3819ebcd7f1638791579f7d628f1c7a94a0e011734096475407b547987110082",
       "model_assets": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
     }
+  },
+  "adaptive_generation_precision_analysis_v1": {
+    "stage": "planned",
+    "cohort_key": "adaptive_generation_regular_code_v2",
+    "declared_after_reference_processes": 1,
+    "declared_before_candidate_execution": true,
+    "native_source_commit": "a330eb7fbd300d6f2755be51f8419e33ab3fd89e",
+    "native_engine_sha256": "429b69f2984b06db36fde39eb4f1a0e39b8e4dbec406169b35a3c96db78106bd",
+    "question": "Printed engine TG has one decimal place. Preserve its original predeclared controller decision;also evaluate the already retained generated counts and whole-decode milliseconds with a prospectively fixed unrounded calculation before any candidate executes.",
+    "expressions": {
+      "TG": "generated_tokens * 1000.0 / decode_ms",
+      "paired_ratio": "candidate_exact_TG / reference_exact_TG",
+      "aggregate": "geometric mean of the three adjacent R/C,C/R,R/C paired ratios",
+      "repeatability": "all three exact paired ratios > 1;no minimum percentage floor"
+    },
+    "source_fields": [
+      "generated_tokens",
+      "decode_ms"
+    ],
+    "retain_original_rounded_decision": true,
+    "require_all_six_processes_pass": true,
+    "require_original_body_clock_route_ownership_and_fault_gates": true,
+    "initial_reference_exact_TG": 7.294485327502058,
+    "limits": "Supplementary prospectively declared arithmetic on unchanged native samples,not a new native measurement,changed eligibility,discarded sample or adoption decision. Prompt/TTFT remain independent;retain spread and all samples."
   }
 }

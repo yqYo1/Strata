@@ -705,7 +705,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `7378e89dc0baa63f1acde7c8a2e95d4ad9eee442`,with332input files including
   the placement profile,full15model hashes and independent TG/prompt/TTFT
   decision controls. Both fresh current-source benchmark/server probes pass.
-  Native speed processes remain the next step;no new speed claim follows.
+  Reference process0now passes all four warmups and its long request:33211fresh
+  input,3157generated tokens,432792.7ms decode,7.3printedTG,and10.5%cache hits.
+  Prompt time is63437.4ms and client TTFT63.668s. Native/benchmark exit0,
+  source/route/body/journal/validation/closure checks and no fresh fault pass.
+  This one sample is below the prior13.8printed code reference;the earlier
+  cache hit rate was10.9%,so the similar hit fractions do not explain the
+  decrease. Current and ec4Git placement-profile bytes match;the earlier run
+  did not separately pin that file. Keep the decrease unexplained rather than
+  dismissing it as variation. Continue the matched same429b adaptive comparison
+  before selecting source-matched resource attribution;no gain/adoption follows.
+  Before any candidate executes,`adaptive_generation_precision_analysis_v1`
+  prospectively fixes supplementary TG=`generated_tokens*1000/decode_ms`,the
+  three paired ratios and their geometric mean. Preserve the original rounded
+  controller decision and all eligibility/phase gates;the additional view avoids
+  losing small differences to the printed one-decimal TG. One reference alone
+  does not establish repeatability or a current limiting hardware resource.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
