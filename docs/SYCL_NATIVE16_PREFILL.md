@@ -318,14 +318,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Startup configuration is immutable;the default-disabled checkpoint does no
   filesystem,clock,completion or allocation work. Round/order/peer failures
   remain failed and acknowledgement waiting has a finite deadline. The new
-  host fixture source covers45cases,including actual four-gate handshakes and
+  host fixture covers45cases,including actual four-gate handshakes and
   malformed/stale/missing acknowledgements. The existing host-contract controller
   adds `prepare|check decode-profile`,using the original full compiler image,
-  actual header/link closure and finite owned CPU-only execution. These are
-  source-prepared only:commit source,then prepare and commit the exact recipe
-  before checking. Neither compilation nor this host protocol qualifies a
-  native GPU drain,model integration,collector coverage or speed. After the
-  host check,the immediate consumer is a source-pinned native attachment at
+  actual header/link closure and finite owned CPU-only execution. The host
+  check now passes all45cases from source
+  `1a0c9c3c3d690c6da6a94212833c067c30053e0d`,with110committed inputs and the
+  original6239-file compiler/package image. Compile,ELF inspection and test
+  each exit0 with closed ownership;311actual header/link inputs are qualified
+  and no GPU provider is linked. Follow `decode_profile_gate_host_v1` for the
+  exact recipe/result. This does not qualify a native GPU drain,model
+  integration,collector coverage or speed. The immediate consumer is a
+  source-pinned native attachment at
   post-prefill and whole-round completion boundaries,with a separately bounded
   entrypoint/device check before any long-generation collection.
   The completed Orca Luna/native Luna-max writer review finds no supported

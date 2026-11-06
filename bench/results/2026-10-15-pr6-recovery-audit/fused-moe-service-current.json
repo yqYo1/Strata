@@ -181781,7 +181781,7 @@
     }
   },
   "decode_profile_gate_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "contract": "decode-profile",
     "source_commit": "1a0c9c3c3d690c6da6a94212833c067c30053e0d",
     "toolchain_image": {
@@ -181854,8 +181854,8 @@
       }
     },
     "expected": "decode_profile_gate cases=45 status=PASS",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -181863,6 +181863,19 @@
     "inference_adopted": false,
     "plan": "Commit before check. One host compile,ELF dependency check and fixture;normal0 and closed owners. Actual headers/link inputs must match the prebuild complete compiler/package image plus the exact project files. No retry,source/image refresh or GPU/SYCL work. Adaptive tests host identity/payload/fence assertions. Decode-profile tests45 cases:immutable-config parsing,inactive no-work behavior,four fully drained regular-file handshakes,round ordering,partial completion,failed/throwing drains,wrong peer identity/extent/type/mode/links,stale entries,private-directory checks and bounded missing-ack failure. Neither qualifies native callbacks,queue lifetime,model coverage,speed or full context.",
     "retention": "Commit compact source/recipe/case/closure evidence;then retire this one-use executable,compiler temporaries and successful full output after exact Git source/recipe recovery. Native and fallback generations remain untouched.",
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "compiler_inputs": {
+        "sha256": "04f7d247dbe2fb1a8c305a1b17651110f7a3431522d3d75ac5dd3c57232b0f55",
+        "files": 311,
+        "headers": 288,
+        "link_inputs": 37,
+        "derived_private_inputs": 1
+      },
+      "executable_sha256": "9f30f840f4baa89ea27505723dcf0f92287ca740aa3496575ec5b5d8be7a8a25",
+      "receipt": "decode_profile_gate cases=45 status=PASS"
+    },
     "source_inputs": {
       "count": 110,
       "sha256": "455eb8ca9385a7a8b702a0d609b0a2c406c3e59aac3ec77414466e210a6a9410",
