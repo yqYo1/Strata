@@ -868,15 +868,22 @@ arithmetic nor physical RAM/PCIe transactions, VRAM traffic/bandwidth, hardware
 ceilings or saturation are established. Keep requested transfer bytes distinct
 from measured physical traffic.
 
-The Main-authored `cpu_read_capacity.cpp` and `measure_cpu_read_capacity.py`
-now source-prepare a bounded CPU-only calibration: one 1GiB anonymous 4KiB-page
-mapping, first-touch CPU0, 1/2/4/6/12 pinned threads, one warm pass and five
-seven-pass samples per group. Eight AVX2 integer accumulators consume every
-256-byte block, with complete per-worker modular checksums and compiler barriers
-between passes. Compile/run and assembly review remain unexecuted. Rates will
-be observed sequential read-payload throughput, not DRAM transactions, an
-absolute hardware ceiling or a model bottleneck. The one-use auxiliary fixture
-is retired after pushed results/source recovery; both inference engines remain.
+The CPU-only read calibration at source
+`b3f2d7f31fbd836008930c2354c0a6479a6caea5`now closes:one1GiB anonymous
+4KiB-page mapping,CPU0first touch,one warm pass and five seven-pass samples
+at each1/2/4/6/12pinned-thread condition. All worker checksums/affinities pass,
+with zero timed minor/major faults and every batch above100ms. Actual assembly
+shows eight32-byte reads per256-byte block,eight accumulators,a real reloading
+pass loop and vzeroupper;compile/test exit0 and owners close. Median payload
+GB/s is24.5573/33.7208/33.5026/33.6126/32.1893;the observed peak is34.6618.
+This ordered sequential pattern plateaus around33.5..33.7GB/s from2to6threads.
+It does not qualify physical DRAM transactions,an absolute hardware ceiling,
+random-expert behavior,CPU arithmetic saturation or a model bottleneck. The
+older30.642GB/s single-thread result is a different pattern and remains valid.
+Follow`cpu_read_capacity_v1`;consume its calibration with actual format/NT
+service rather than converting historical logical job bytes to a measured limit.
+The disposable fixture is now due for retirement after pushed results/source
+recovery;both inference engine generations remain protected.
 
 The next source-matched decode-resource consumer can reuse the current429b
 engine:its recorded CMake recipe has `STRATA_CPU_SERVICE_PROFILE=ON`,and its

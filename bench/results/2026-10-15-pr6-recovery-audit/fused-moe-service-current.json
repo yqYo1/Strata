@@ -186422,10 +186422,6 @@
       "conditions": [
         {
           "threads": 1,
-          "cpus": [
-            0
-          ],
-          "checksum": "aa4d2b3234000000",
           "elapsed_ns": [
             302936433,
             306067501,
@@ -186433,38 +186429,12 @@
             327563127,
             343596053
           ],
-          "minor_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "major_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "payload_GB_per_s": [
-            24.811121902924103,
-            24.557304331373622,
-            25.158302088852366,
-            22.945784028981993,
-            21.875084717576776
-          ],
           "median_payload_GB_per_s": 24.557304331373622,
           "minimum_payload_GB_per_s": 21.875084717576776,
           "maximum_payload_GB_per_s": 25.158302088852366
         },
         {
           "threads": 2,
-          "cpus": [
-            0,
-            1
-          ],
-          "checksum": "aa4d2b3234000000",
           "elapsed_ns": [
             253991217,
             222894879,
@@ -186472,40 +186442,12 @@
             224412253,
             221364883
           ],
-          "minor_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "major_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "payload_GB_per_s": [
-            29.592333375842678,
-            33.72079610676026,
-            34.661833958191096,
-            33.49279135841125,
-            33.953862356749696
-          ],
           "median_payload_GB_per_s": 33.72079610676026,
           "minimum_payload_GB_per_s": 29.592333375842678,
           "maximum_payload_GB_per_s": 34.661833958191096
         },
         {
           "threads": 4,
-          "cpus": [
-            0,
-            1,
-            2,
-            3
-          ],
-          "checksum": "aa4d2b3234000000",
           "elapsed_ns": [
             224346880,
             219616817,
@@ -186513,42 +186455,12 @@
             229596592,
             250924372
           ],
-          "minor_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "major_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "payload_GB_per_s": [
-            33.502550906881346,
-            34.224122135419165,
-            34.02957033150684,
-            32.736517134365826,
-            29.954016455603604
-          ],
           "median_payload_GB_per_s": 33.502550906881346,
           "minimum_payload_GB_per_s": 29.954016455603604,
           "maximum_payload_GB_per_s": 34.224122135419165
         },
         {
           "threads": 6,
-          "cpus": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5
-          ],
-          "checksum": "aa4d2b3234000000",
           "elapsed_ns": [
             258552445,
             230810685,
@@ -186556,75 +186468,18 @@
             223612380,
             219506281
           ],
-          "minor_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "major_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "payload_GB_per_s": [
-            29.07028308318647,
-            32.564318969895176,
-            33.842976766658374,
-            33.612596798084255,
-            34.24135625531371
-          ],
           "median_payload_GB_per_s": 33.612596798084255,
           "minimum_payload_GB_per_s": 29.07028308318647,
           "maximum_payload_GB_per_s": 34.24135625531371
         },
         {
           "threads": 12,
-          "cpus": [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11
-          ],
-          "checksum": "aa4d2b3234000000",
           "elapsed_ns": [
             225953132,
             218263084,
             242262227,
             235920924,
             233499752
-          ],
-          "minor_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "major_faults": [
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          "payload_GB_per_s": [
-            33.264388510445606,
-            34.43639038839935,
-            31.025029618009743,
-            31.85894934863853,
-            32.189296577925276
           ],
           "median_payload_GB_per_s": 32.189296577925276,
           "minimum_payload_GB_per_s": 31.025029618009743,
@@ -186636,8 +186491,49 @@
       "physical_bus_traffic_qualified": false,
       "absolute_hardware_ceiling_qualified": false,
       "model_bottleneck_qualified": false,
-      "assembly_review_pending": true,
-      "scope": "1GiB ordinary anonymous4KiB-page mapping,first-touch CPU0,one untimed pass then five7-pass batches per CPU group. Parent start/finish barriers and thread scheduling remain in wall time. Payload rates are decimalGB/s,not measured DRAM transactions or inference speed."
+      "assembly_review_pending": false,
+      "scope": "1GiB ordinary anonymous4KiB-page mapping,first-touch CPU0,one untimed pass then five7-pass batches per CPU group. Parent start/finish barriers and thread scheduling remain in wall time. Payload rates are decimalGB/s,not measured DRAM transactions or inference speed.",
+      "assembly_review": {
+        "passed": true,
+        "binary_sha256": "749a352219bbda86dfa79482fbcab767238b200767ac3ff1b12241215caba61f",
+        "tool": {
+          "path": "/usr/bin/x86_64-linux-gnu-objdump",
+          "sha256": "325c4205a4c658a9d1e1ebc469ae55975a2b897a3d3c1e79d9b158612d37f745"
+        },
+        "command": [
+          "/usr/bin/objdump",
+          "-d",
+          "--no-show-raw-insn",
+          "--disassemble=strata_read_payload",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-read-capacity-v1/read"
+        ],
+        "symbol": "strata_read_payload",
+        "disassembly_sha256": "c5bfd81be79a929a8a8ab5d21d6bb4d9eaea3b12753fad15ff6a9c39e9515b56",
+        "payload_loads_per_block": 8,
+        "bytes_per_block": 256,
+        "independent_accumulators": 8,
+        "pass_loop_reloads_observed": true,
+        "vzeroupper_observed": true,
+        "scope": "Actual inner loop5990..59c6 advances256bytes and adds all eight32-byte memory operands;outer loop59c8..59ce resets the payload pointer each pass. Scalar/horizontal reduction is outside the read loop. No instruction or physical memory hardware counters."
+      },
+      "interpretation": {
+        "best_median_threads": 2,
+        "best_median_payload_GB_per_s": 33.72079610676026,
+        "observed_peak_payload_GB_per_s": 34.661833958191096,
+        "question_answered": "This ordered1GiB4KiB-page sequential-read pattern plateaus at about33.5..33.7GB/s median from2to6threads;more cores do not multiply its available read throughput.",
+        "limits": "One process,five ordered thread conditions and five samples each. The earlier30.642GB/s single-thread read remains a different pattern/reference,not invalidated by this24.557GB/s median. No absolute hardware ceiling,physical DRAM transactions,CPU arithmetic saturation,random-expert behavior,worker-count choice or model bottleneck follows.",
+        "next_consumer": "Current static CPU leaf/caller/census attribution and subsequent format/NT-specific CPU experiment;do not divide historical logical job bytes by this rate as a measured model limit."
+      },
+      "validation_summary": {
+        "conditions": 5,
+        "timed_samples": 25,
+        "minor_faults_total": 0,
+        "major_faults_total": 0,
+        "every_worker_checksum_and_affinity_passed": true,
+        "checksum": "aa4d2b3234000000",
+        "individual_raw_elapsed_ns_retained": true,
+        "CPU_groups_in_hardware": true
+      }
     }
   }
 }
