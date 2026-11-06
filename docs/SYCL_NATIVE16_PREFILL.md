@@ -725,9 +725,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   differs by one and its actual placement-profile file was not separately
   pinned,although current and ec4Git profile bytes match. Keep this historical
   decrease unresolved and Main's further work on tuning/current attribution.
-  Next prepare the independent cap2/prose cohort with the same six-process
-  ordering and exact-TG plan before any native run. Keep552b as the fast
-  prefill fallback;this code TG gain is not whole-model adoption or70TG.
+  The independent cap2/prose cohort is now prepared at source
+  `a6a8e863ebf41c04f173eb3d916b36d1be752320`,with the same332pinned inputs,
+  six-process ordering and15asset hashes. Its supplementary exact-TG plan
+  is declared before even the first reference. Fresh frontend probes and
+  native prose execution remain pending. Keep552b as the fast prefill
+  fallback;this code TG gain is not whole-model adoption or70TG.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
