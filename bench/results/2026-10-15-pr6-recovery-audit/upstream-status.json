@@ -1206,10 +1206,16 @@
       "validation_result_key": "upstream_streamed_tool_tags_host_v1",
       "followup": {
         "result_key": "upstream_streamed_tool_tags_host_v2",
-        "state": "prospective_resource_envelope_revision",
+        "state": "prepared_unexecuted",
         "virtual_address_bytes": 8589934592,
         "RSS_cap_bytes": 2147483648,
-        "reason": "Initial full suite failed thread creation under2GiB AS with only80.5MB peak RSS and no cgroup PID rejection;test the virtual-space hypothesis without changing parser/tests/runtime or correctness criteria. Keep V1 failed."
+        "reason": "Initial full suite failed thread creation under2GiB AS with only80.5MB peak RSS and no cgroup PID rejection;test the virtual-space hypothesis without changing parser/tests/runtime or correctness criteria. Keep V1 failed.",
+        "source_commit": "44ad93dfe8f6f59ef784f23ec7cecac0b259051f",
+        "changed_controls": [
+          "tools/sycl/compare_adaptive_budget_generation.py",
+          "tools/sycl/run_host_checks.py"
+        ],
+        "unchanged_original_source_files": 349
       }
     },
     "selected_server_slices": {
