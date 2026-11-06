@@ -90,6 +90,15 @@ void native_q6_k_centered_columns_mmvq(const void* weights, const void* x_q8_1,
                                       float* y, int n_in, int n_out, int ncols,
                                       void* stream);
 
+// Unselected component: keep the column layout/reduction and packed bytes,
+// widening Q6/Q8_1 scales through sycl::half instead of the shared bit converter.
+// Requires fp16; columns5..7 keep the reference. Finite values,zero signs and
+// subnormals need production-flag qualification;NaN payload behavior differs.
+// No production or prefill caller selects this entry.
+void native_q6_k_native_half_columns_mmvq(const void* weights, const void* x_q8_1,
+                                         float* y, int n_in, int n_out, int ncols,
+                                         void* stream);
+
 void native_q6_k_f32(const void* weights, const float* x, void* scratch_q8_1,
                      float* y, int n_in, int n_out, int ncols, void* stream);
 

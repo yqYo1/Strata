@@ -235,6 +235,15 @@ inline float load_q6_half(const void *ptr) {
   __builtin_memcpy(&bits, ptr, sizeof(bits));
   return f32_from_f16(bits);
 }
+// Component-only representation transfer into a real half value. The input
+// remains a packed byte span; no unaligned or unconstructed half is read.
+inline float load_q6_native_half(const void *ptr) {
+  static_assert(sizeof(sycl::half) == sizeof(uint16_t) &&
+                std::is_trivially_copyable_v<sycl::half>);
+  uint16_t bits = 0;
+  __builtin_memcpy(&bits, ptr, sizeof(bits));
+  return float(sycl::bit_cast<sycl::half>(bits));
+}
 inline int load_int_b2(const void *ptr, int i32) {
   const auto *x = static_cast<const uint16_t *>(ptr);
   int value = x[2 * i32] << 0;
@@ -611,6 +620,19 @@ struct Q6KTraits {
     r.d = load_q6_half(w + offsetof(Block, d));
     return r;
   }
+  // Keep the existing load and generic MMVQ callers unchanged. Only the
+  // explicit native-half component uses this otherwise identical metadata.
+  static W load_native_half(const unsigned char *__restrict__ w, int iqs) {
+    W r;
+    r.bq8_offset = 4 * (iqs / 16) + (iqs % 16) / 8;
+    const int scale_offset = 8 * (iqs / 16) + (iqs % 16) / 4;
+    const int vh_shift = 2 * ((iqs % 16) / 8);
+    r.vl = load_q6_word(w + offsetof(Block, ql), iqs);
+    r.vh = load_q6_word(w + offsetof(Block, qh), 8 * (iqs / 16) + iqs % 8) >> vh_shift;
+    r.scales = w + offsetof(Block, scales) + scale_offset;
+    r.d = load_q6_native_half(w + offsetof(Block, d));
+    return r;
+  }
   template <bool PackedCenter = false>
   static float apply(const W &r, const unsigned char *__restrict__ x, int iqs) {
     int u[2];
@@ -622,6 +644,18 @@ struct Q6KTraits {
       d8[i] = load_q6_half(block + offsetof(Q81Block, ds));
     }
     return q6_q8_dot_impl<PackedCenter>(r.vl, r.vh, u, r.scales, r.d, d8);
+  }
+  static float apply_native_half(const W &r, const unsigned char *__restrict__ x,
+                                 int iqs) {
+    int u[2];
+    float d8[2];
+#pragma unroll
+    for (int i = 0; i < 2; ++i) {
+      const auto *block = x + size_t(r.bq8_offset + 2 * i) * sizeof(Q81Block);
+      u[i] = load_q6_word(block + offsetof(Q81Block, qs), iqs % 8);
+      d8[i] = load_q6_native_half(block + offsetof(Q81Block, ds));
+    }
+    return q6_q8_dot_impl<false>(r.vl, r.vh, u, r.scales, r.d, d8);
   }
 };
 int signed_grid_word(uint32_t positive, unsigned signs) {
@@ -1025,9 +1059,11 @@ void dispatch(const void *w, const void *x, float *y, int n_in, int n_out,
 // Explicit Q6_K candidate; the production dispatch above stays unchanged.
 // Keep its exact thread/block and reduction order, specializing only the column
 // bound so private accumulators need not support eight runtime-indexed columns.
-template <int COLS, int ROWS, bool PackedCenter = false>
+template <int COLS, int ROWS, bool PackedCenter = false, bool NativeHalf = false>
 void launch_q6_columns(const void *weights, const void *activations, float *y,
                        int n_in, int n_out, void *stream) {
+  static_assert(!NativeHalf || !PackedCenter,
+                "half conversion and packed centering are separate comparisons");
   using F = Q6KTraits;
   constexpr int NW = 4;
   const void *w = weights;
@@ -1048,13 +1084,20 @@ void launch_q6_columns(const void *weights, const void *activations, float *y,
             const int kqs = F::kqs(tid);
             for (int i = 0; i < ROWS; ++i)
               if (row0 + i < size_t(n_out)) {
-                const auto weight = F::load(
-                    weight_block_at<F>(w, (row0 + i) * blocks + kbx), kqs);
+                const auto *block = weight_block_at<F>(w, (row0 + i) * blocks + kbx);
+                const auto weight = [&] {
+                  if constexpr (NativeHalf) return F::load_native_half(block, kqs);
+                  else return F::load(block, kqs);
+                }();
 #pragma unroll
-                for (int j = 0; j < COLS; ++j)
-                  tmp[j][i] +=
+                for (int j = 0; j < COLS; ++j) {
+                  if constexpr (NativeHalf)
+                    tmp[j][i] += F::apply_native_half(weight,
+                        activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
+                  else tmp[j][i] +=
                       F::template apply<PackedCenter>(weight,
                           activation_block_at<F>(x, j * stride + kbx * F::KBY), kqs);
+                }
               }
           }
           if (warp > 0)
@@ -1083,19 +1126,20 @@ void launch_q6_columns(const void *weights, const void *activations, float *y,
   });
 }
 
-template <int COLS, bool PackedCenter = false>
+template <int COLS, bool PackedCenter = false, bool NativeHalf = false>
 void dispatch_q6_columns(const void *w, const void *x, float *y, int n_in,
                          int n_out, void *stream) {
   if (n_in / Q6KTraits::DIV < Q6KTraits::BPI)
-    launch_q6_columns<COLS, 4, PackedCenter>(w, x, y, n_in, n_out, stream);
+    launch_q6_columns<COLS, 4, PackedCenter, NativeHalf>(w, x, y, n_in, n_out, stream);
   else
-    launch_q6_columns<COLS, 1, PackedCenter>(w, x, y, n_in, n_out, stream);
+    launch_q6_columns<COLS, 1, PackedCenter, NativeHalf>(w, x, y, n_in, n_out, stream);
 }
 
-// Both component arms traverse the same public checks and column dispatch.
-// Only the selected specialization changes centering; generic MMVQ, prompt
-// products and the fallback for columns 5..7 retain the scalar reference.
-template <bool PackedCenter>
+// Component arms retain the public span/layout checks and column dispatch.
+// Centering and native-half widening are independent specializations; the latter
+// also checks fp16 support on each entry, including that cost in comparisons.
+// Generic MMVQ, prompt products and columns 5..7 retain the scalar reference.
+template <bool PackedCenter, bool NativeHalf = false>
 void q6_columns_entry(const void *w, const void *x, float *y, int n_in,
                       int n_out, int ncols, void *stream) {
   const auto wb = native_mmvq_weight_bytes(14, n_in, n_out);
@@ -1105,10 +1149,13 @@ void q6_columns_entry(const void *w, const void *x, float *y, int n_in,
                  {{w, wb}, {x, xb}});
   if (!multi_exact.load(std::memory_order_relaxed))
     throw std::invalid_argument("Q6 column specialization requires exact layout");
+  if constexpr (NativeHalf)
+    if (!queue_for(stream).get_device().has(sycl::aspect::fp16))
+      throw std::invalid_argument("Q6 native-half component requires fp16");
   switch (ncols) {
 #define Q6_COLUMNS(N)                                                          \
   case N:                                                                     \
-    dispatch_q6_columns<N, PackedCenter>(w, x, y, n_in, n_out, stream);          \
+    dispatch_q6_columns<N, PackedCenter, NativeHalf>(w, x, y, n_in, n_out, stream); \
     break
     Q6_COLUMNS(1);
     Q6_COLUMNS(2);
@@ -1419,6 +1466,11 @@ void native_q6_k_centered_columns_mmvq(const void *w, const void *x, float *y,
                                       int n_in, int n_out, int ncols,
                                       void *stream) {
   q6_columns_entry<true>(w, x, y, n_in, n_out, ncols, stream);
+}
+void native_q6_k_native_half_columns_mmvq(const void *w, const void *x, float *y,
+                                        int n_in, int n_out, int ncols,
+                                        void *stream) {
+  q6_columns_entry<false, true>(w, x, y, n_in, n_out, ncols, stream);
 }
 size_t native_mmvq_weight_bytes(int type, int n_in, int n_out) {
   const auto f = format(type);

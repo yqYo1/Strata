@@ -444,6 +444,23 @@ The standalone executable,device IR and receipt are now retired after recovering
 the original6038 source/recipe and checking all705 compiler inputs. Restore that
 source when a production-flag numerical comparison is selected;no closed-test
 binary is required by the current diagnostic model admission.
+The Main-authored,unselected `native_q6_k_native_half_columns_mmvq` entry now
+offers that comparison inside the existing Q6 column kernel. It changes only
+Q6/Q8_1 scale widening,retaining packed bytes,FP32 accumulation and reduction
+order. Generic/prompt products and columns5..7 keep the reference;no production
+caller selects the entry. Its per-call fp16 capability check is part of the
+candidate's eventual entry timing. The maintained Q6 fixture's `--native-half`
+mode compares this entry with the existing columns entry;smoke inputs add signed
+zero,subnormal,normal and max-finite weight scales and a subnormal Q8_1 scale.
+This is source preparation only:it has not been compiled or run. The current
+model cohort uses its immutable old source image,whose326control inputs remain
+unchanged. After that cohort and the queued CPU IQ3_S comparison,commit the
+production-flag build/numerical and paired-entry timing plan before executing
+this candidate. The standalone conversion result does not qualify this kernel,
+and final GPU ISA,model impact and decode-only selection remain pending. The
+new code derives from this fork's existing Q6 kernel and own standalone SYCL
+conversion,with no XeStrata implementation input. Review its retained entry and
+fixture mode when this named Q6 comparison closes.
 Its `prepare`, `build` and `check` actions still require the original cohort's
 closed decision,and each next action requires the prior plan/result committed.
 The fixture/controller remains outside the original benchmark's314inputs.

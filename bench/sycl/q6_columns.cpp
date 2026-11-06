@@ -1,4 +1,4 @@
-// Main-authored Q6_K column-specialization comparison; repository LICENSE.
+// Main-authored Q6_K component comparisons; repository LICENSE.
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/q6_packed_center.hpp"
@@ -63,6 +63,8 @@ constexpr std::array<Kernel, 2> ColumnArms{k::native_q6_k_mmvq,
                                          k::native_q6_k_columns_mmvq};
 constexpr std::array<Kernel, 2> CenterArms{k::native_q6_k_columns_mmvq,
                                          k::native_q6_k_centered_columns_mmvq};
+constexpr std::array<Kernel, 2> NativeHalfArms{k::native_q6_k_columns_mmvq,
+    k::native_q6_k_native_half_columns_mmvq};
 struct Shape {
   int ni, no, iterations;
 };
@@ -161,7 +163,8 @@ void scalar_reference(const Shape &shape, int columns,
   }
 }
 
-void one_shape(Shape shape, bool smoke, const std::array<Kernel, 2> &arms) {
+void one_shape(Shape shape, bool smoke, const std::array<Kernel, 2> &arms,
+               bool native_half = false) {
   const int ni = shape.ni, no = shape.no;
   std::cout << "Q6_SHAPE_BEGIN ni=" << ni << " no=" << no << '\n' << std::flush;
   std::vector<uint8_t> weights(k::native_mmvq_weight_bytes(14, ni, no));
@@ -173,7 +176,11 @@ void one_shape(Shape shape, bool smoke, const std::array<Kernel, 2> &arms) {
     value = uint8_t(random);
   }
   for (size_t block = 0; block < weights.size() / 210; ++block) {
-    const uint16_t scale = block % 3 ? 0x2400 : 0x9800;
+    constexpr uint16_t edges[] = {0x0000, 0x8000, 0x0001, 0x8001, 0x03ff,
+        0x83ff, 0x0400, 0x8400, 0x2400, 0x9800, 0x3c00, 0xbc00, 0x7bff, 0xfbff};
+    const uint16_t scale = native_half && smoke
+        ? edges[block % (sizeof edges / sizeof edges[0])]
+        : (block % 3 ? 0x2400 : 0x9800);
     std::memcpy(weights.data() + block * 210 + 208, &scale, sizeof(scale));
   }
   Buffer<uint8_t> w(weights.size());
@@ -188,6 +195,10 @@ void one_shape(Shape shape, bool smoke, const std::array<Kernel, 2> &arms) {
       const auto first = input.begin() + size_t(column) * ni;
       std::fill(first, first + 32, 0.f);
       std::fill(first + 32, first + 64, -0.5f);
+      if (native_half) {
+        for (int lane = 0; lane < 32; ++lane)
+          first[64 + lane] = lane % 2 ? -0x1p-17f : 0x1p-17f;
+      }
     }
     Buffer<float> x(input.size()), reference(size_t(no) * nc), candidate(size_t(no) * nc);
     Buffer<uint8_t> packed(k::native_q8_1_bytes(ni, nc));
@@ -250,24 +261,31 @@ int main(int argc, char **argv) {
   try {
     need((argc == 2 || argc == 3) && (std::string(argv[1]) == "--smoke" ||
                           std::string(argv[1]) == "--speed") &&
-             (argc == 2 || std::string(argv[2]) == "--centering"),
-         "expected --smoke or --speed, optionally followed by --centering");
+             (argc == 2 || std::string(argv[2]) == "--centering" ||
+              std::string(argv[2]) == "--native-half"),
+         "expected --smoke or --speed, optionally --centering or --native-half");
     const bool smoke = std::string(argv[1]) == "--smoke";
-    const bool centering = argc == 3;
-    const auto &arms = centering ? CenterArms : ColumnArms;
-    std::cout << "Q6_COMPARISON=" << (centering ? "centering" : "columns") << '\n';
+    const bool centering = argc == 3 && std::string(argv[2]) == "--centering";
+    const bool native_half = argc == 3 && std::string(argv[2]) == "--native-half";
+    const auto &arms = native_half ? NativeHalfArms : (centering ? CenterArms : ColumnArms);
+    std::cout << "Q6_COMPARISON=" << (native_half ? "native-half" :
+        (centering ? "centering" : "columns")) << '\n';
     rt = sb::runtime_for();
-    if (centering) {
+    if (centering || native_half) {
       const auto &device = rt->device();
       need(device.get_backend() == sycl::backend::ext_oneapi_level_zero &&
                device.get_info<sycl::info::device::vendor_id>() == 0x8086 &&
                device.get_info<sycl::ext::intel::info::device::device_id>() == 0xe20c &&
                device.get_info<sycl::ext::intel::info::device::pci_address>() == "0000:05:00.0",
-           "Q6 centering comparison requires the exact B570");
+           "Q6 component comparison requires the exact B570");
       need(rt->compute().has_property<sycl::property::queue::in_order>(),
-           "Q6 centering comparison requires the qualified in-order queue");
+           "Q6 component comparison requires the qualified in-order queue");
       std::cout << "Q6_TARGET_B570=1\n";
       std::cout << "Q6_TARGET_NAME=" << device.get_info<sycl::info::device::name>() << '\n';
+      if (native_half) {
+        need(device.has(sycl::aspect::fp16), "native-half comparison requires fp16");
+        std::cout << "Q6_TARGET_FP16=1\n";
+      }
     }
     // Check the representation on the actual device; SYCL2020 has no
     // info::device::endian_little query in the pinned headers.
@@ -287,7 +305,7 @@ int main(int argc, char **argv) {
     if (smoke) {
       for (auto shape : {Shape{256, 1, 0}, Shape{512, 3, 0}, Shape{1024, 13, 0},
                           Shape{2560, 129, 0}})
-        one_shape(shape, true, arms);
+        one_shape(shape, true, arms, native_half);
       // Refuse invalid geometry before submitting any candidate work.
       for (int columns : {0, 9}) {
         for (auto kernel : arms) {
@@ -299,7 +317,7 @@ int main(int argc, char **argv) {
         }
       }
     } else {
-      for (auto shape : Shapes) one_shape(shape, false, arms);
+      for (auto shape : Shapes) one_shape(shape, false, arms, native_half);
     }
     rt->wait();
     std::cout << "Q6_COLUMNS_PASS mode=" << (smoke ? "smoke" : "speed") << '\n';
