@@ -372,13 +372,21 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   verification positions per output,but positions per whole-decode second also
   fall. Keep round overhead,draft work,shape-dependent compute and weight reuse
   unresolved until source-matched attribution;the ratios do not identify hardware saturation.
-  Process0's successful raw output/JIT is now retired after pushing its result
-  at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76`,recovering all320original inputs
-  from Git,and checking closed owners and cohort admission before/after deletion:
-  69files,13154182bytes. Keep its two generated config/plan files and all global
-  cohort/provider inputs for the remaining five admissions. External deletion
-  manifest `mtp-width-generation-process0-output-retirement-20261106.json`
-  has SHA256 `7e8d87edafaa5208fc46ad26f7747a1e2de975195782f8d9514cb3244dd6c0e4`.
+  Both closed processes' successful raw output/JIT are retired after pushing
+  their individual samples at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76` and
+  `ef5d26fc18bbc6510c7a65c7b2d9a93f5c3a9363`,recovering all320original inputs
+  from Git,and checking closed ownership. Process0 retires69files/13154182bytes;
+  process1 retires69files/13158569bytes. Its native-source recovery additionally
+  matches all567materialized inputs and the exact recipe through
+  `build_q6_native_half_model.py:projection`:this build is an explicit historical
+  composition,not the plain ec4 controller-commit tree. Required inputs match
+  before/after retirement;the next process still requires full unchanged native
+  admission. Keep all12generated config/plan files and global cohort/provider
+  inputs for the remaining four processes. External deletion manifests
+  `mtp-width-generation-process0-output-retirement-20261106.json` and
+  `mtp-width-generation-process1-output-retirement-20261106.json` have respective
+  SHA256 `7e8d87edafaa5208fc46ad26f7747a1e2de975195782f8d9514cb3244dd6c0e4`
+  and `a07ae9e6ab4e024f74219b97ecd80539f2b4439519736c0636e6da6ee22028d3`.
 - The exact ec4 HC/interlayer source audit now supplies static262144-index
   evidence,not physical-context qualification. At full `n=262144`,the HC tensor
   has2684354560elements;its BF16 store ends at5368709120bytes. `checked_count`
