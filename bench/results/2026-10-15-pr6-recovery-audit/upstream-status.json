@@ -1073,12 +1073,37 @@
       "origin_path": "serve/frontend.py",
       "fork_path": "serve/frontend.py",
       "fork_sha256": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
-      "state": "adaptation_and_tests_pending",
+      "state": "patch_prepared_unapplied_untested",
       "provenance": "Niko-authored upstream commit;upstream/fork MIT LICENSE bytes match. No XeStrata material used in this inspection.",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
       "difference": "The current fork parser has no upstream _close_verdict helper;adapt the behavior instead of applying the eight-line hunk blindly or replacing unrelated parser behavior.",
       "validation": "Whole input,pieces and every-byte split with stream_tools on/off,embedded closing tags,text after a final call,two calls and existing fork parser regressions. Source review is not functional validation.",
-      "boundary": "After the current frozen code/prose speed cohorts close,before freezing the next long benchmark inputs. Pin and qualify any frontend delta prospectively;do not edit or relabel the closed comparisons."
+      "boundary": "After the current frozen code/prose speed cohorts close,before freezing the next long benchmark inputs. Pin and qualify any frontend delta prospectively;do not edit or relabel the closed comparisons.",
+      "proposal": {
+        "base_commit": "100038e0186725a873531b367ca4f0b6d83e0d05",
+        "base_files": {
+          "serve/frontend.py": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
+          "tools/test_frontend_stream_scan.py": "584045bbb6be72822cf76326beea1443bc6aa8543b5907d26fa37f60145f15ef"
+        },
+        "new_file": "serve/test_streamed_tool_tags.py",
+        "patch": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-tool-tags-port-20261107.patch",
+          "sha256": "dfebadae4d39104ea26827e59bcbbf9d4ca4024364cbe8e71bd33a598c17154e",
+          "bytes": 13295,
+          "budget_bytes": 32768
+        },
+        "owner": "Main",
+        "consumer": "Apply and validate the required parser behavior after both current frozen speed cohorts close,before the next long benchmark freeze.",
+        "next_review": "At cohort closure,recheck exact base bytes and inspect the full patch;commit applied source and recipes before tests. Retire the patch after integrated source/results are pushed.",
+        "tests_executed": false,
+        "applied": false
+      },
+      "behavior": "Match upstream bounded disambiguation:final tool_call may wait for end of input,a later call or1500lookahead characters;tool_start and argument pieces remain early. Preserve the suffix and no-close scan optimization.",
+      "prospective_scan_cost_contract": "Keep zero structural walks while an ordinary growing body has no close,one at its first complete closing candidate,and two after end-of-input confirmation. The source proposal updates these expectations before any test is run.",
+      "planned_validation": [
+        "Focused new whole/chunk/every-byte tool-tag cases,tools.test_frontend_stream_scan,and existing serve.test_server.ToolCallTerminators/UnfinishedToolCall.",
+        "Then the complete CPU/mock serve.test_server regression suite;no GPU or performance adoption from these functional tests."
+      ]
     }
   }
 }

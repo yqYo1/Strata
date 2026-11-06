@@ -2221,6 +2221,11 @@ comparison,adapt the required streamed-tool closing-tag behavior from Niko
 fork has an older parser without`_close_verdict`;the small upstream hunk is
 not directly applicable. The queued source/behavior/validation slice is in
 `v0211_review.next_required_slice`;all other functional obligations stay open.
+Its13,295-byte Main proposal is now pinned to base`100038e01`and exact old
+frontend/scan-test hashes,unapplied and untested. It preserves early tool/argument
+streaming while prospectively deferring an ambiguous final close to EOF,a later
+call or the upstream1500-character bound. Current benchmark files are unchanged;
+apply/commit/test only after the frozen cohort,then retire the temporary patch.
 The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
