@@ -423,6 +423,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   [DRM specification](https://docs.kernel.org/gpu/drm-usage-stats.html) and
   [Xe driver documentation](https://docs.kernel.org/gpu/xe/xe-drm-usage-stats.html).
   Deduplicate client IDs per PCI device;optional missing counters remain unknown.
+  The V2 source now implements that correction with the existing
+  `bench/sycl/client_resources.py` reader,explicitly pinned beside the controller.
+  Its INFO controls accept the captured full-resident0case and reject10corrupt
+  fields/duplicates/missing values. The parent records bounded PID/start/SID-
+  checked memory,counter and CPU-tick snapshots at READY,four drained gates and
+  DONE. Counter regressions remain ineligible;unavailable optional metrics do
+  not become zero or qualify a bottleneck claim. This source is not yet tested,
+  prepared or executed. Commit it,run the CPU controls,prepare/commit V2,then
+  run once with unchanged native math and placement.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.

@@ -26,12 +26,65 @@ import runtime_probe
 import ur_validation
 
 P, B, RESULT, base = admission.P, admission.B, admission.RESULT, admission.base
-ROOT = B / 'decode-gate-entry-v1'
-KEY = 'decode_gate_model_entry_v1'
+ROOT = B / 'decode-gate-entry-v2'
+KEY = 'decode_gate_model_entry_v2'
 SELF = Path(__file__).resolve()
 require, digest, write = base.require, base.digest, base.write
 IDS = [248045] + [13] * 1023
 ROUNDS = [0,8,16,24]
+READER = P / 'bench/sycl/client_resources.py'
+sys.path.insert(0,str(READER.parent))
+import client_resources
+
+
+def sources(revision):
+    pins = base.controls(revision,controller=SELF)
+    raw = base.basis.build.git(P,'show',revision+':'+str(READER.relative_to(P)))
+    require(READER.read_bytes() == raw, 'commit exact DRM reader source')
+    pins[str(READER.relative_to(P))] = hashlib.sha256(raw).hexdigest()
+    return pins
+
+
+def startup_info(line):
+    require(line.startswith('INFO '), 'native INFO marker missing')
+    info = {}
+    for item in line.split()[1:]:
+        require(item.count('=') == 1, 'native INFO field syntax')
+        key,value = item.split('=',1)
+        require(key and key not in info, 'native INFO duplicate key')
+        info[key] = value
+    # Full residency is mode0. Only streamed mode1 prints a positive limit.
+    expected = dict(context='131072',kv='int8',kv_resident='0',expert_slots='1256',
+        spec='4',mtp_max='4',pool_workers='5',pcie_frac='0.00',spec_min_p='0.00')
+    require(all(info.get(k) == v for k,v in expected.items()), 'native INFO configuration differs')
+    require(info.get('vram_free_mib','').isdecimal(), 'invalid reported free-memory quantity')
+    return {k:info[k] for k in (*expected,'vram_free_mib')}
+
+
+def controls():
+    old = base.committed(RESULT)['decode_gate_model_entry_v1']
+    require(old['stage'] == 'failed' and old['diagnosis']['physical_closure']['confirmed'] and
+            old['outcome']['gates'] == [] and old['outcome']['fresh_faults'] == [],
+            'preserve and physically settle failed V1 first')
+    settled = old['diagnosis']['physical_closure']
+    now = base.supervision.identity(settled['original_pid'])
+    require(now is None or now['start_ticks'] != settled['original_start_ticks'],
+            'original V1 native identity is still live')
+    facts = dict(old['diagnosis']['initial_info'],pcie_frac='0.00',spec_min_p='0.00')
+    line = 'INFO '+' '.join(k+'='+v for k,v in facts.items())
+    startup_info(line)
+    variants = [line.replace('kv_resident=0','kv_resident=131072'),
+        line.replace('context=131072','context=1024'),line.replace('kv=int8','kv=fp16'),
+        line.replace('expert_slots=1256','expert_slots=1255'),line.replace('spec=4','spec=8'),
+        line.replace('mtp_max=4','mtp_max=2'),line.replace('pool_workers=5','pool_workers=6'),
+        line.replace('vram_free_mib=0','vram_free_mib=-1'),line+' kv_resident=0',
+        line.replace('kv_resident=0','')]
+    for value in variants:
+        try: startup_info(value)
+        except RuntimeError: continue
+        raise RuntimeError('corrupt INFO control accepted')
+    return dict(passed=True,actual_failed_INFO_now_accepted=True,negative=len(variants),
+        GPU_executed=False,scope='Source-derived INFO parser only;not native execution or resource counters.')
 
 
 def compact(row):
@@ -61,14 +114,15 @@ def configuration():
 
 def prepare():
     require(not ROOT.exists() and KEY not in base.committed(RESULT), 'fresh single native entry only')
+    info_controls = controls()
     native,device,providers,collector = admission.native()
     config,environment,expected = configuration()
     model_assets = assets.model_pins(config,expected,full=True)
     revision = base.basis.build.git(P,'rev-parse','HEAD').decode().strip()
-    sources = base.controls(revision,controller=SELF)
+    pins = sources(revision)
     ROOT.mkdir(mode=0o700)
     for n in ('tmp','cache','gates'): (ROOT / n).mkdir(mode=0o700)
-    row = dict(stage='prepared',source_commit=revision,sources=sources,
+    row = dict(stage='prepared',source_commit=revision,sources=pins,INFO_controls=info_controls,
         native_source_commit=native['source_commit'],binary=native['binaries']['strata'],
         build_record=dict(path=str(admission.build.ROOT / 'record.json'),sha256=digest(admission.build.ROOT / 'record.json')),
         native_validation_probe=device['native_validation_probe'],runtime_manifest=device['runtime_manifest'],
@@ -79,7 +133,7 @@ def prepare():
         budgets=dict(wall=900,cpu=5400,rss_cap=104<<30,text_cap=8<<20,file_cap=16<<20,total_cap=128<<20),
         whole_wall_s=1500,passed=False,complete=False,active=False,ownership_closed=True,
         GPU_executed=False,GPU_execution_attempted=False,model_executed=False,
-        plan='Commit source,exact effective environment,model inputs and this request before launch. One fresh direct serving engine;READY131072,GEN128 with1024 valid fixed IDs. Preserve original spec4/cap4/half1,131072INT8 context,1256static slots,5workers,8192chunk and qualified safety. Rare EOS248319 is diagnostic extent control,not a production sampling choice. Require exact four native gates0/8/16/24,raw-clock/request/sequence identities,checked complete GPU work before publication,private atomic acknowledgements,same actual PID/ELF/environment/providers,128bounded output IDs,normalDONE length/QUIT0,quiet strict before-main validation,completed T1/T4 Q6 heads,unchanged final assets/boot/driver,no freshfaults and closed owners. No retry or source/hash refresh. No full API trace or profiler in this small model entry.',
+        plan='Preserve failed V1 and its physical closure;V2 corrects INFO full-resident mode0 and adds existing bounded read-only proc/DRM observations. Commit source,exact effective environment,model inputs and request before launch. One fresh direct serving engine;INFO kv_resident0,READY131072,GEN128 with1024 valid fixed IDs. Same spec4/cap4/half1,131072INT8 context,1256static slots,5workers,8192chunk and qualified safety. Rare EOS248319 is diagnostic extent control,not production sampling. Require exact four gates0/8/16/24,raw-clock/request/sequence identities,checked completion before publication,private atomic acknowledgements,same PID/ELF/environment/providers,128bounded outputs,normalDONE length/QUIT0,quiet strict before-main validation,completed T1/T4 Q6 heads,unchanged final assets/boot/driver,no freshfaults and closed owners. Existing client_resources.snapshot validates PID/start/SID before/after bounded fdinfo/thread reads,deduplicates client IDs per PCI device and keeps counter regressions ineligible. Observe READY,each drained gate and DONE. Optional unavailable proc/DRM data remains explicitly unknown and cannot qualify resource attribution;it does not replace generator correctness. No retry,hash refresh,full API trace or profiler.',
         limits='Short synthetic diagnostic only;not thinking/task quality,clean PP/TG,sustained generation,collector/model-window coverage,observer overhead,physical resource saturation,ordinary provider teardown or physical262144/RESTORE qualification.',
         retention='Keep compact native identity/gate clocks/token hash/counts/live replay conservation and validation/fault outcome. After next collector-window consumer and verified result commit,retire successful full output/JIT;no new engine generation.')
     save(row)
@@ -88,7 +142,7 @@ def prepare():
 
 def current(row,full_models=False):
     require(base.committed(RESULT)[KEY] == compact(row) and
-            base.controls(row['source_commit'],controller=SELF) == row['sources'], 'entry plan or source changed')
+            sources(row['source_commit']) == row['sources'], 'entry plan or source changed')
     native,device,providers,collector = admission.native()
     require(native['binaries']['strata'] == row['binary'] and native['source_commit'] == row['native_source_commit'] and
             digest(row['build_record']['path']) == row['build_record']['sha256'] and
@@ -106,7 +160,7 @@ def current(row,full_models=False):
 def run():
     row = json.loads((ROOT / 'record.json').read_text()); frozen = copy.deepcopy(row)
     require(row['stage'] == 'prepared' and not (ROOT / 'execution.json').exists(), 'one native entry attempt only')
-    outcome = dict(passed=False,complete=False,host_probe_accepted=False,gates=[])
+    outcome = dict(passed=False,complete=False,host_probe_accepted=False,gates=[],resource_observations=[])
     owner = None
     def persist():
         write(ROOT / 'execution.json',dict(outcome,active=bool(owner and owner.active),
@@ -123,6 +177,19 @@ def run():
         def interact(io,entry):
             old_poll = io.poll
             last = None
+            target_identity = None
+            cycles = client_resources.CycleIntervals()
+            def observe(label):
+                try:
+                    sample = client_resources.snapshot(target_identity,'0000:05:00.0')
+                    intervals = cycles.update(sample)
+                    outcome['resource_observations'].append(dict(label=label,available=True,
+                        begin_monotonic_ns=sample['begin_monotonic_ns'],end_monotonic_ns=sample['end_monotonic_ns'],
+                        process={n:sample['process'][n] for n in ('cpu_ticks','minor_faults','major_faults','rss_pages')},
+                        thread_cpu_ticks={str(v['tid']):v['cpu_ticks'] for v in sample['threads']},
+                        disappeared_threads=sample['disappeared_threads'],clients=sample['clients'],engine_intervals=intervals))
+                except (OSError,ValueError,KeyError,client_resources.TargetExited) as error:
+                    outcome['resource_observations'].append(dict(label=label,available=False,error=repr(error)))
             def poll():
                 nonlocal last
                 old_poll()
@@ -149,6 +216,7 @@ def run():
                 require(seen <= set(providers) | {row['binary']['path'],row['native_validation_probe']['library']['path']},
                         'unexpected native provider')
                 outcome['gates'].append(dict(request=request,sequence=sequence,rounds=rounds,raw_ns=raw_ns))
+                observe('rounds-'+str(rounds))
                 acknowledgement = ROOT / 'gates/ack'
                 require(not acknowledgement.exists(), 'stale gate acknowledgement')
                 temporary = ROOT / 'gates/ack.tmp'
@@ -159,12 +227,14 @@ def run():
             io.poll = poll
             ready = io.line(600)
             if ready.startswith('INFO '):
-                info = dict(v.split('=',1) for v in ready.split()[1:] if '=' in v)
-                require(all(info.get(k) == v for k,v in dict(context='131072',kv='int8',
-                    kv_resident='131072',expert_slots='1256').items()), 'native INFO configuration differs')
+                outcome['startup_info'] = startup_info(ready)
                 ready = io.line(600)
             require(ready == 'READY 131072 stop', 'native ready protocol differs')
             outcome.update(native_pid=entry['pid'],native_ready=True)
+            actual_identity = base.supervision.identity(entry['pid'])
+            require(actual_identity and actual_identity['sid'] == entry['pid'], 'native identity before resource observation')
+            target_identity = dict(pid=entry['pid'],start_ticks=actual_identity['start_ticks'],sid=actual_identity['sid'])
+            observe('ready')
             io.send(('GEN 128 '+','.join(map(str,IDS))+'\n').encode())
             tokens,done,reused = [],None,0
             while done is None:
@@ -181,6 +251,7 @@ def run():
                     done[14] == '1024' and len(outcome['gates']) == 4, 'incomplete native request or gate extent')
             require(not (ROOT / 'gates/ack').exists(), 'final acknowledgement not consumed')
             outcome.update(output_tokens=128,output_token_sha256=width.signature(tokens),native_pid=entry['pid'])
+            observe('done')
             io.send(b'QUIT\n'); io.proc.stdin.close()
             deadline = time.monotonic()+90
             while not io.exit_watch.poll(0) or not io.eof:
@@ -226,7 +297,8 @@ def run():
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'],['run']), 'use prepare|run')
+    require(sys.argv[1:] in (['prepare'],['run'],['controls']), 'use prepare|run|controls')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB); base.guards.no_model_owners([])
-        (prepare if sys.argv[1] == 'prepare' else run)()
+        if sys.argv[1] == 'controls': print(json.dumps(controls()))
+        else: (prepare if sys.argv[1] == 'prepare' else run)()
