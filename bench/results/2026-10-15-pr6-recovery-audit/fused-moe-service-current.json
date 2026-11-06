@@ -184881,5 +184881,38 @@
       "files": 113,
       "sha256": "f619508710c7f09e41670d08a996167a58032dfa3760c9e560fd01a809e1e7b5"
     }
+  },
+  "decode_gate_model_entry_v3_postcheck_v1": {
+    "stage": "prepared",
+    "source_commit": "5e18110fcc3bcabaf1fc45c946fcb257cf4a29e1",
+    "original_files": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-gate-entry-v3/record.json": "5c841b60054d2bcf20834a137fe2bd6425eff19c9890ca0736ee0a7c500e8528",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-gate-entry-v3/execution.json": "5eeb701408aa12df84b5bfab253a532144c5a61ba5294632e11ac7d4d184639a",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-gate-entry-v3/owned/native.stdout": "c820efb01206d6199294d823d2588eeca37984a47e60583cf0e747c0ab9f8a6d",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-gate-entry-v3/owned/native.stderr": "f7162e3f98a4b0e1b74421921470f1d5ef19b7a104fe0abfadd72deb410203d4"
+    },
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+    },
+    "limits": {
+      "wall_s": 420,
+      "cpu_s": 360,
+      "address_space_bytes": 8589934592,
+      "file_bytes": 16777216
+    },
+    "plan": "One CPU-only replay with -X faulthandler,stage persistence and finite limits. Reuse original native0/gates/output,never launch the native engine. Verify exact frozen failed V3 and raw hashes,current source/runtime/provider/native identities,ordered complete serving protocol,128token hash,four gates,strict UR validation,T1/T4 Q6 heads,all6resource snapshots/cycle recomputation,final full15asset hashes and kernel-journal/boot/driver/closed owners. Keep V3 failed;this result verifies retained native gate evidence separately. No retry or hash refresh.",
+    "scope": "No new GPU execution,model speed,task/numerical quality,resource saturation,ordinary provider teardown,physical262144 or Python-crash fix claim.",
+    "retention": "After verified result commit,retain compact protocol/gate/resource/validation/source facts and one host-fault excerpt;retire normal native output/JIT after the next model collector consumer.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "GPU_executed": false,
+    "stages": [],
+    "source_inputs": {
+      "files": 114,
+      "sha256": "319e83f234b5de403a41fd258094d6e67189d7a0988f12a1798e147bf01ce930"
+    }
   }
 }

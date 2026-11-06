@@ -462,8 +462,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `tools/sycl/inspect_decode_gate_entry.py`source prepares a separate finite
   CPU-only replay with faulthandler and persisted validation stages. It checks
   the saved protocol/gates,Q6,cycle counters and original/final inputs without
-  another GPU run;it cannot relabel V3 or claim a Python-crash fix. Commit this
-  source,prepare/commit its plan,then run the replay once.
+  another GPU run;it cannot relabel V3 or claim a Python-crash fix. Its CPU-only
+  plan is now prepared from source`5e18110fcc3bcabaf1fc45c946fcb257cf4a29e1`,
+  pinning the original failed record,execution receipt and both native streams.
+  Commit this plan,then run once with faulthandler and the declared420-second
+  wall/360-second CPU/8GiB address-space limits.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
