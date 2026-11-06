@@ -186217,5 +186217,167 @@
     },
     "exit_code": 0,
     "elapsed_wall_s": 0.577081755
+  },
+  "cpu_read_capacity_v1": {
+    "stage": "prepared",
+    "source_commit": "b3f2d7f31fbd836008930c2354c0a6479a6caea5",
+    "sources": {
+      "bench/sycl/cpu_read_capacity.cpp": "014bec6e87cb70a7e3d5653c2ed99d8e708d19f2403953f36c2183e3bb27daee",
+      "tools/sycl/measure_cpu_read_capacity.py": "a96baf531c98b5d71344bd648934943d9c8639fc3edd33fe2afa9d53030da7b0",
+      "tools/sycl/decode_service_contract.py": "f63dd861794496b8b41a25ad5019bcf8800c6cd8cb68b5611a30de880dfbe210",
+      "tools/sycl/measurement_guards.py": "794e332c70aca0acadad4f26d0414548e023a02fd27b72ed78fc773674423ec8",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a",
+      "AGENTS.md": "afaae976137380f258f147dd06d50571b3a4f1b8414330fc10273ef7511b9623",
+      "docs/ARTIFACT_RETENTION.md": "cdf9c635257bd2d1cb6dd8d05d1d85ac8b5eda395d0ea7fd622d19d12d4fd08d"
+    },
+    "compiler": {
+      "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+      "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+      "version": "13.3.0",
+      "cc1plus": {
+        "path": "/usr/libexec/gcc/x86_64-linux-gnu/13/cc1plus",
+        "sha256": "840b332fb62ec6f694ac77d91fe69ef7f80b0d69512ed89374af0ee7a506255d"
+      },
+      "packages": [
+        "g++-13 13.3.0-6ubuntu2~24.04.1",
+        "libc6-dev 2.39-0ubuntu8.9",
+        "libstdc++-13-dev 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6 14.2.0-4ubuntu2~24.04.1"
+      ]
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-read-capacity-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-read-capacity-v1/cache"
+    },
+    "fixtures": [
+      {
+        "name": "read",
+        "source": "bench/sycl/cpu_read_capacity.cpp",
+        "cases": 5,
+        "footer": "validated JSON capacity conditions",
+        "compile": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++17",
+          "-O3",
+          "-g",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-read-capacity-v1/read.d",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_read_capacity.cpp",
+          "-march=znver3",
+          "-pthread",
+          "-fno-lto",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-read-capacity-v1/read"
+        ],
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-read-capacity-v1/read"
+        ]
+      }
+    ],
+    "compile_budget": {
+      "wall": 60,
+      "cpu": 60,
+      "rss_cap": 1073741824,
+      "text_cap": 65536,
+      "file_cap": 8388608,
+      "total_cap": 16777216
+    },
+    "test_budget": {
+      "wall": 60,
+      "cpu": 120,
+      "rss_cap": 2147483648,
+      "text_cap": 65536,
+      "file_cap": 1048576,
+      "total_cap": 16777216
+    },
+    "plan": "Compile one disposable CPU-only fixture,then run its small checksum control and five ordered1/2/4/6/12-thread payload conditions. One1GiB4KiB-page mapping and first-touch CPU0;each condition has one untimed full pass and five timed7-pass samples. Check every worker checksum and actual affinity,zero timed minor/major faults,100ms minimum batch,normal0/quiet stderr/closed owners and exact committed source/compiler/dependencies. Barriers/scheduling stay charged. Do not retry,refresh hashes,discard samples or change floors. Static assembly review precedes interpreting rates. No GPU,engine build,model execution,physical bus counter or saturation claim.",
+    "retention": "One short-lived auxiliary CPU-capacity fixture,not a third inference engine. Keep source,recipe,individual times/rates/checksums/affinity/faults and interpretation. Preserve both retained engine generations. Retire this auxiliary ELF,dependency output and successful raw streams after useful evidence is pushed and exact source/recipe is recovered;consumer ends at this capacity result.",
+    "results": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "GPU_executed": false,
+    "model_executed": false,
+    "capacity_schema_version": 1,
+    "hardware": {
+      "cpus": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cores": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "page_bytes": 4096,
+      "groups": [
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          1,
+          2,
+          3
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ]
+      ],
+      "THP_policy": "always [madvise] never",
+      "L3": "32768K"
+    }
   }
 }
