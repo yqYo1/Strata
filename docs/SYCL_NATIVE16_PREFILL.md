@@ -441,6 +441,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its one-use executable and successful output are retired after consuming the
   host test and recovering all111inputs/recipe from pushed Git:10files,170369bytes.
   Follow `adaptive_residency_audit_host_v1` for the source,result and deletion pins.
+  `tools/sycl/adaptive_residency_sources.py` source-prepares the native serving
+  attachments against the exact b4423da4 generator and tested assertion header.
+  It adds only an opt-in,single-GPU/full-RAM-arena diagnostic:pre-mask victim
+  bytes,three map views,successful refill-record generation,checked completion,
+  incoming bytes and publication. The legacy record counter advances only in
+  failure-injection mode;the attachment uses a separate success-generation stamp.
+  This transformation is not yet executed,compiled or runtime-qualified.
+  Actual hit/miss dispatch,record failure,subsequent loan/refill and native
+  lifetime gates remain open. Close current cb7 collector consumers before
+  replacing the comparison generation;keep the552b fallback.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
   remains on HOLD as written:its unsupported swap0/MTP2 claims and incorrect
   `generate.cpp:1559` anchor are not adopted. Its pins and bounded-control design
