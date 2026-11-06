@@ -204,7 +204,193 @@ def generator(original):
         #endif
     ''', 12)
     value = one(value, anchor, anchor.replace('            (void) main_live;', recorded + '            (void) main_live;', 1))
-    return value.encode('utf-8')
+    return dispatch_and_loan(value).encode('utf-8')
+
+
+def dispatch_and_loan(value):
+    """Inspect the real window plan/jobs after completion;no core/kernel edits."""
+    anchor = '#include "strata/core/adaptive_residency_audit.hpp"'
+    value = one(value, anchor, anchor + '\n#include <functional>')
+    anchor = '    std::FILE* expert_inputs = nullptr;\n};'
+    fields = cpp(r'''
+        #ifdef STRATA_ENABLE_SYCL
+            std::function<void(const strata::core::ExpertDispatch&, const int32_t*, int64_t, int64_t,
+                               const float*, int64_t, int64_t, int64_t, int64_t)> adaptive_dispatch_audit;
+        #endif
+    ''', 4)
+    value = one(value, anchor, anchor.replace('\n};', '\n' + fields + '};'))
+    anchor = '    strata::core::expert_pool_dispatch_multi(t->d, x_f, ids, n_tok, k, out);\n'
+    before = cpp(r'''
+        #ifdef STRATA_ENABLE_SYCL
+            int64_t audit_before[3] = {};
+            if (t->adaptive_dispatch_audit) {
+                audit_before[0] = t->d.cache_hits;
+                audit_before[1] = t->d.multi_entries;
+                audit_before[2] = t->d.multi_misses;
+            }
+        #endif
+    ''', 4)
+    after = cpp(r'''
+        #ifdef STRATA_ENABLE_SYCL
+            if (t->adaptive_dispatch_audit && !t->d.failed)
+                t->adaptive_dispatch_audit(t->d, ids, n_tok, k, out, layer,
+                    t->d.cache_hits - audit_before[0], t->d.multi_entries - audit_before[1],
+                    t->d.multi_misses - audit_before[2]);
+        #endif
+    ''', 4)
+    value = one(value, anchor, before + anchor + after)
+    anchor = '            std::vector<AdaptiveAudit::Swap> adapt_audit_changes;\n'
+    value = one(value, anchor, anchor + cpp(r'''
+        std::vector<int8_t> adapt_audit_role;
+        uint64_t adapt_audit_dispatch_calls = 0, adapt_audit_incoming_hits = 0;
+        uint64_t adapt_audit_outgoing_misses = 0, adapt_audit_post_swap_refills = 0;
+    ''', 12))
+    anchor = '                    o.adapt_every <= 0 || o.adapt_swaps <= 0 ||\n'
+    value = one(value, anchor, anchor +
+        '                    !loan_audit || !cache_scratch_lease_enabled || adapt_nowait() ||\n'
+        '                    o.pcie_frac != 0 || o.spec < 2 ||\n')
+    anchor = '                adapt_audit_device.resize(host_res.size());\n'
+    value = one(value, anchor, anchor + '                adapt_audit_role.assign(host_res.size(), 0);\n')
+    anchor = '            auto adapt_audit_payload = [&](const AdaptiveAudit::Swap& s, bool incoming,\n'
+    callback = cpp(r'''
+        if (adapt_audit) {
+            // The real pool has completed and reset its job_of table. The next
+            // adapt worker has not started;the previous one was joined and its
+            // checked refill was published before this verifier window.
+            drive.adaptive_dispatch_audit = [&](const strata::core::ExpertDispatch& D,
+                const int32_t* ids, int64_t nt, int64_t k, const float* out, int64_t layer,
+                int64_t hits, int64_t cpu_entries, int64_t cpu_jobs) {
+                auto need = [](bool ok, const char* why) {
+                    if (!ok) {
+                        std::fprintf(stderr, "strata serve: ADAPT_AUDIT_FAILURE %s\n", why);
+                        std::fflush(stderr);
+                        std::_Exit(1); // Do not unwind live graph/USM owners.
+                    }
+                };
+                need(adapt_audit->idle() && layer >= 0 && layer < g.n_layers &&
+                     D.layers == layer + 1 && D.cache == &xcache && D.src == srcp &&
+                     D.host_res == host_res.data() && D.plan && D.pcie_num == 0 &&
+                     D.remote_count == 0 && !D.peer && nt > 0 && nt <= 8 && k > 0 && k <= 64,
+                     "unsupported dispatch ownership/geometry");
+                const int64_t n = nt * k;
+                const auto& P = *D.plan;
+                need(n <= 512 && P.cap >= n && P.counts && P.start && P.dst && P.tok && P.ptr,
+                     "missing window plan buffers");
+                const int groups = P.counts[0], entries = P.counts[1];
+                need(groups >= 0 && groups <= n && entries >= 0 && entries <= n &&
+                     P.counts[2] == 0 && P.start[0] == 0 && P.start[groups] == entries,
+                     "window plan group/entry extent");
+                bool seen[512] = {};
+                for (int q = 0; q < groups; ++q) {
+                    need(P.start[q] >= 0 && P.start[q] < P.start[q + 1] && P.start[q + 1] <= entries,
+                         "window plan group range");
+                    int32_t expert = -1;
+                    for (int j = P.start[q]; j < P.start[q + 1]; ++j) {
+                        const int i = P.dst[j];
+                        need(i >= 0 && i < n && !seen[i] && P.tok[j] == i / k,
+                             "window plan duplicate or wrong destination");
+                        const int32_t e = ids[i];
+                        need(e >= 0 && e < g.n_expert && (expert < 0 || e == expert),
+                             "window plan expert identity");
+                        expert = e;
+                        const int32_t slot = host_res[size_t(layer * g.n_expert + e)];
+                        need(slot >= 0 && slot < xcache.slots() && xcache.slot_of(layer, e) == slot &&
+                             P.ptr[q] == (unsigned long long)xcache.device_slot(slot),
+                             "actual GPU plan names a stale slot/payload");
+                        seen[i] = true;
+                    }
+                }
+                int64_t expected_hits = 0, expected_cpu = 0, distinct = 0;
+                int32_t misses[512];
+                for (int64_t i = 0; i < n; ++i) {
+                    const int32_t e = ids[i];
+                    need(e >= 0 && e < g.n_expert, "routed expert bounds");
+                    const size_t row = size_t(layer * g.n_expert + e);
+                    const int32_t slot = host_res[row];
+                    need(xcache.slot_of(layer, e) == slot && seen[i] == (slot >= 0),
+                         "actual hit/miss decision differs from residency");
+                    if (slot >= 0) {
+                        ++expected_hits;
+                        if (adapt_audit_role[row] == 1) ++adapt_audit_incoming_hits;
+                        for (int x = 0; x < strata::kernels::cpu::H; ++x)
+                            need(out[size_t(i) * strata::kernels::cpu::H + size_t(x)] == 0.0f,
+                                 "GPU hit also has a CPU result");
+                    } else {
+                        ++expected_cpu;
+                        if (adapt_audit_role[row] == -1) ++adapt_audit_outgoing_misses;
+                        if (std::find(misses, misses + distinct, e) == misses + distinct)
+                            misses[distinct++] = e;
+                    }
+                }
+                need(hits == expected_hits && cpu_entries == expected_cpu && cpu_jobs == distinct &&
+                     entries == expected_hits && size_t(distinct) <= D.jobs_multi.size(),
+                     "actual GPU/CPU work counters do not conserve routed entries");
+                for (int64_t j = 0; j < distinct; ++j) {
+                    const auto& job = D.jobs_multi[size_t(j)];
+                    const int32_t e = misses[j];
+                    need(job.blob == srcp->blob(layer, e), "actual CPU job names the wrong payload");
+                    int count = 0;
+                    for (int64_t i = 0; i < n; ++i) if (ids[i] == e) {
+                        need(count < job.nt && count < strata::kernels::cpu::MAXT &&
+                             job.out[count] == out + size_t(i) * strata::kernels::cpu::H &&
+                             job.nact[count] == D.nact_multi.data() + size_t(i / k) * strata::kernels::cpu::kNativeActBytes,
+                             "actual CPU job token/destination differs");
+                        ++count;
+                    }
+                    need(count == job.nt, "actual CPU job entry extent");
+                }
+                ++adapt_audit_dispatch_calls;
+            };
+        }
+    ''', 12)
+    value = one(value, anchor, callback + anchor)
+    anchor = '                std::fprintf(stderr, "strata serve: ADAPT_AUDIT phase=published generation=%llu swaps=%zu identities=3 payload_match=1\\n",\n'
+    roles = cpp(r'''
+        for (const auto& s : adapt_audit->swaps()) {
+            adapt_audit_role[s.outgoing] = -1;
+            adapt_audit_role[s.incoming] = 1;
+        }
+    ''', 16)
+    value = one(value, anchor, roles + anchor)
+    anchor = '                    p.lent.clear(); p.lent_chunk = 0; p.lease = {};\n'
+    loan = cpp(r'''
+        if (adapt_audit) {
+            if (!adapt_audit->idle() || !p.cache->decode_ready() || !adapt_audit_read(e) ||
+                adapt_audit_device != host_res) {
+                e = "adaptive audit: loan/refill did not restore the published map"; return false;
+            }
+            for (size_t row = 0; row < host_res.size(); ++row)
+                if (adapt_audit_lookup(row) != host_res[row]) {
+                    e = "adaptive audit: loan/refill private identity differs"; return false;
+                }
+            if (adapt_audit->completed() > 0) {
+                ++adapt_audit_post_swap_refills;
+                std::fprintf(stderr, "strata serve: ADAPT_AUDIT phase=loan-after-positive completed=%llu lent=%zu identities=3 payload_match=1\n",
+                    (unsigned long long)adapt_audit->completed(), p.lent.size());
+            }
+        }
+    ''', 20)
+    value = one(value, anchor, loan + anchor)
+    anchor = ('            if (!ver.wait_commit(err)) {\n'
+              '                std::printf("ERR %s\\n", err.c_str());\n'
+              '                return 1;\n'
+              '            }\n#ifdef STRATA_ENABLE_SYCL\n            decode_service.finish')
+    footer = cpp(r'''
+        #ifdef STRATA_ENABLE_SYCL
+            if (adapt_audit) {
+                if (!apply_pending(true, err) || !adapt_audit->idle()) {
+                    std::fprintf(stderr, "strata serve: ADAPT_AUDIT_FAILURE final refill %s\n", err.c_str());
+                    std::fflush(stderr);std::_Exit(1);
+                }
+                std::fprintf(stderr, "strata serve: ADAPT_AUDIT phase=dispatch request=%llu published=%llu calls=%llu incoming_vram_entries=%llu outgoing_cpu_entries=%llu post_swap_refills=%llu\n",
+                    (unsigned long long)census_request,(unsigned long long)adapt_audit->completed(),
+                    (unsigned long long)adapt_audit_dispatch_calls,(unsigned long long)adapt_audit_incoming_hits,
+                    (unsigned long long)adapt_audit_outgoing_misses,(unsigned long long)adapt_audit_post_swap_refills);
+            }
+        #endif
+    ''', 12)
+    value = one(value, anchor, anchor.replace('\n#ifdef STRATA_ENABLE_SYCL\n', '\n' + footer + '#ifdef STRATA_ENABLE_SYCL\n', 1))
+    return value
 
 
 def projection(selected, header):

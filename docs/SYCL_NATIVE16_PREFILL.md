@@ -587,10 +587,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bytes,three map views,successful refill-record generation,checked completion,
   incoming bytes and publication. The legacy record counter advances only in
   failure-injection mode;the attachment uses a separate success-generation stamp.
-  This transformation is not yet executed,compiled or runtime-qualified.
-  Actual hit/miss dispatch,record failure,subsequent loan/refill and native
-  lifetime gates remain open. The cb7 collector consumers are closed and its
-  compiled generation is retired for the decode-gate replacement;keep552b.
+  Its source now also attaches an opt-in check after the actual window pool:
+  conserve routed GPU/CPU entries,verify every GPU plan slot/pointer/destination
+  and every CPU job's blob/token/output mapping,and count replaced incoming
+  GPU hits and outgoing CPU misses. The callback runs after pool completion and
+  before the next adaptive worker starts;previous workers are joined before the
+  next window. Audit mode requires the existing full-payload scratch-loan checks,
+  then checks all three maps and decode readiness after a post-swap occupied
+  loan/refill. Final audit-only publication drains outstanding replacements and
+  emits compact cumulative coverage. No core/kernel source changes are planned.
+  This extended transformation is not yet constructed,compiled or runtime-qualified.
+  Actual dispatch coverage,record failure,post-swap loan/refill and native lifetime
+  gates remain open. The cb7 and519e diagnostic generations are retired;keep552b.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
   remains on HOLD as written:its unsupported swap0/MTP2 claims and incorrect
   `generate.cpp:1559` anchor are not adopted. Its pins and bounded-control design
