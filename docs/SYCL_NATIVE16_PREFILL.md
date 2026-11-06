@@ -883,6 +883,14 @@ in`record`,and its Python reader requires the initial profile membership.
 The429b compiled/current header hashes match. Enabling these existing checks
 on adaptive8/32does not qualify dynamic attribution;that needs a prospective
 membership-aware contract rather than suppressing the rejection.
+The Main-authored`tools/sycl/profile_decode_resources.py`now provides that
+source-only static plan on the same429b engine,with cap4/code and cap2/prose
+in separate off/on,on/off,off/on cohorts. CPU leaf/census/decode/trace remain
+common;only caller profiling changes. Its new T1/Tcap reader binds traces,
+work and rounded clocks directly,without changing the frozen T1/T4 reader.
+CPU adversarial/environment controls and all new model/profiling execution
+remain unrun. Preparation is gated on both frozen speed cohorts closing;
+this is neither new attribution nor observer-overhead qualification.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
