@@ -393,21 +393,37 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   repeatability checks at an already observed width,not validation of linearity,
   unseen widths or different contexts. Use remaining processes3..5 as further
   held-out checks without refitting or changing the original cohort decisions.
-  Successful raw output/JIT from processes0/1 is retired after pushing
-  their individual samples at `51c2177a7e5ad6b98631fe372ad33e50c57ecf76` and
-  `ef5d26fc18bbc6510c7a65c7b2d9a93f5c3a9363`,recovering all320original inputs
-  from Git,and checking closed ownership. Process0 retires69files/13154182bytes;
-  process1 retires69files/13158569bytes. Its native-source recovery additionally
-  matches all567materialized inputs and the exact recipe through
+  Successful raw output/JIT from processes0..2 is retired after pushing their
+  individual samples through `1cdf1b116bf835c6c39e28011b300f0df93bea3d`,recovering
+  all320original inputs from Git,and checking closed ownership:207files and
+  39471556bytes (69files per process). Native-source recovery also matches
+  all567materialized inputs and the exact recipe through
   `build_q6_native_half_model.py:projection`:this build is an explicit historical
   composition,not the plain ec4 controller-commit tree. Required inputs match
   before/after retirement;the next process still requires full unchanged native
   admission. Keep all12generated config/plan files and global cohort/provider
-  inputs for the remaining four processes. External deletion manifests
+  inputs for the remaining three processes. External deletion manifests
   `mtp-width-generation-process0-output-retirement-20261106.json` and
   `mtp-width-generation-process1-output-retirement-20261106.json` have respective
   SHA256 `7e8d87edafaa5208fc46ad26f7747a1e2de975195782f8d9514cb3244dd6c0e4`
   and `a07ae9e6ab4e024f74219b97ecd80539f2b4439519736c0636e6da6ee22028d3`.
+  Process2's `mtp-width-generation-process2-output-retirement-20261106.json`
+  has SHA256 `c01e2b4b9441cf9f705af788a323adcceb066bb0c682b57bf70b204aff00d370`.
+- Current ec4 adaptive publication updates the private `ExpertCache` residency
+  snapshot as well as host/device tables. The older20f2 stale-private-map finding
+  is not a current-source defect. Closed static-swap0 model entries and long
+  generation remain separate evidence;they do not qualify positive replacement.
+  The next bounded positive-swap plan must exercise actual replacements,identity
+  and payload agreement,checked completion/publication,and a subsequent occupied
+  scratch loan/refill before clean speed comparisons. Preserve the checked
+  refill-failure control and runtime safety;do not require identical generated
+  text or turn the old answerless prose failure into a pass.
+  The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
+  remains on HOLD as written:its unsupported swap0/MTP2 claims and incorrect
+  `generate.cpp:1559` anchor are not adopted. Its pins and bounded-control design
+  were checked by native Luna-max review;neither is runtime qualification.
+  Keep the report/review only until the post-width positive-swap plan consumes
+  the applicable design. Research-index edits remain deferred during the cohort.
 - The exact ec4 HC/interlayer source audit now supplies static262144-index
   evidence,not physical-context qualification. At full `n=262144`,the HC tensor
   has2684354560elements;its BF16 store ends at5368709120bytes. `checked_count`
@@ -416,7 +432,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   preflight failure paths do not prove actual allocation or final-slot writes.
   Keep the existing MoE/expert-bank planner fixtures distinct from runtime
   admission,and `validate_spans` distinct from complete lifetime/alias proof.
-  The native Luna-max review accepts the source report with these corrections:
+  Ordinary serve rejects zero output and reserves `n+max_new+8` context slots.
+  Its prefill loop uses exclusive end `n-1`;the final input position is processed
+  by the first T1 verifier window inside the generation loop. A private full-fill
+  diagnostic must explicitly run,commit and drain that T1 window at262143
+  before suppressing output/drafts;merely setting `max_new=0` skips the final
+  position. The reviewed q6 engine-entry report remains HOLD until this is
+  explicit. Keep its report/review in
+  `.cache/research/2026-11-06/full-context-engine-entry-design` only for the
+  post-cohort implementation plan;ordinary API admission remains unchanged.
+  The separate HC-address review accepts its static source report with the
+  count/notation/fixture corrections above:
   report SHA256 `7664086617755171588e42d0ff5c7d4b6fd172af4628144246b50c12f995f0ff`,
   review `df6db1aa0898e50ddcf18cc3c8dca493ff41f7617692e5fab8bbb1a84d7d348e`.
   Worker/terminal closure is confirmed;worker-side startup IPC chronology is
