@@ -297,8 +297,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The cap2 entry is prepared at `e2fc5f7050ec17fee0353a4b9eb6fdb9d8e1166f`,
   key `mtp_width_model_entry_cap2_v1`,with the same320source pins,15model assets,
   native binary and normalized configuration/environment except the cap.
-  Fresh frontend probes and the bounded cap2 model check remain pending;no
-  sustained width comparison has run yet.
+  Both fresh cap2 frontend probes pass:benchmark144modules/18code maps and
+  server191modules/26code maps,normal exits and closed owners. The bounded
+  cap2 model check remains pending;no sustained width comparison has run yet.
 
 ## Prefill envelope and scaling
 
