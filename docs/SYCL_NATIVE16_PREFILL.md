@@ -676,8 +676,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bytes. External manifest`adaptive-native-entry-success-output-retirement-20261106.json`
   has SHA256`5031d7415120d69fea490918d56aaf3dcf35479d1e156e7b8f25bd0388506226`.
   Keep the original record and both552b/429b generations for the imminent
-  negative control and clean comparison;the separate Python host-fault diagnostic
-  is unchanged. The next control needs no successful full trace or normal JIT.
+  clean comparison;the separate Python host-fault diagnostic is unchanged.
+  The expected-refusal control's successful full streams,poll receipt and JIT
+  are also retired after source recovery:50files/12562814bytes,with all15
+  comparison ELF outputs unchanged. Its external manifest is
+  `adaptive-record-failure-success-output-retirement-20261106.json`,SHA256
+  `6406c2d021bde38c029f35e80b46c4864070447ba5eba2698807e5acff013150`.
+  The Main-authored`compare_adaptive_generation.py`source-prepares the next
+  same429b static0/adaptive8,every8rounds comparison through maintained
+  `bench.sh`. Each focused workload has six fresh processes R/C,C/R,R/C,four
+  official warmups and one thinking-on32K+/1K+output request with actual answer.
+  Use fixed4for code and fixed2for prose in separate cohorts;do not import the
+  previous after-code prose speed or cap4acceptance label as a matched baseline.
+  Heavy correctness audits/traces are off;qualified runtime safety and existing
+  light route footers stay. Require all three paired TG ratios above1for a
+  repeated gain,without a minimum floor;judge prompt/TTFT separately. Commit
+  source/generated plans before new host probes and native execution. This is
+  prospective source only,no new speed or adoption evidence.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
@@ -2070,7 +2085,7 @@ probe binaries and the two schema2 host fixtures are retired after original-inpu
 recovery. The ended519e diagnostic and all its five component outputs are also
 retired after closed native-gate evidence and source recovery;the current
 comparison retains the552b fallback's nine ELF outputs and the429b positive-swap
-candidate's six outputs for its immediate record-failure/clean comparison. Other configured
+candidate's six outputs for its immediate clean comparison. Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
 numerical/IL choice;successful host/device/build output and superseded source
