@@ -171,7 +171,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and original outcomes preserved in `q6_native_half_model_entry_output_retirement_v1`.
   Both current entries retain only record/config/plan/provider files for the
   next comparison;all567native sources and15selected executables are unchanged.
-  Next commit the frozen generation plan before probes/runs. Keep separate64K/117K PP/TTFT,handoff,
+  The generation plan is now prepared at source `03f5e0192` with318source inputs,
+  all15model-asset hashes and one invariant for the six normalized arm plans.
+  Follow `q6_native_half_generation_speed_v1`:three counterbalanced adjacent
+  pairs,thinking-on code/prose,at least32K fresh input and1K generated tokens,
+  answer-body/actual-MTP/route/fault/ownership gates,and separate PP/TTFT.
+  No clean generation process has run yet. Commit the plan,run its frontends,
+  then process0;preserve every paired outcome. Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
   are15 selected executables across two generations,not global cleanup.
