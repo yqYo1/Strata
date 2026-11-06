@@ -401,10 +401,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prose shows a larger variation that the first-pair description does not explain.
   Use remaining processes4/5 as further
   held-out checks without refitting or changing the original cohort decisions.
-  Successful raw output/JIT from processes0..2 is retired after pushing their
-  individual samples through `1cdf1b116bf835c6c39e28011b300f0df93bea3d`,recovering
-  all320original inputs from Git,and checking closed ownership:207files and
-  39471556bytes (69files per process). Native-source recovery also matches
+  Successful raw output/JIT from processes0..3 is retired after pushing their
+  individual samples through `4b02b7666847ed2a930a9dad8799001ad04e3975`,recovering
+  all320original inputs from Git,and checking closed ownership:276files and
+  52623761bytes (69files per process). Native-source recovery also matches
   all567materialized inputs and the exact recipe through
   `build_q6_native_half_model.py:projection`:this build is an explicit historical
   composition,not the plain ec4 controller-commit tree. Required inputs match
@@ -417,6 +417,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and `a07ae9e6ab4e024f74219b97ecd80539f2b4439519736c0636e6da6ee22028d3`.
   Process2's `mtp-width-generation-process2-output-retirement-20261106.json`
   has SHA256 `c01e2b4b9441cf9f705af788a323adcceb066bb0c682b57bf70b204aff00d370`.
+  Process3's `mtp-width-generation-process3-output-retirement-20261106.json`
+  has SHA256 `f1ef8414a6320a559843aedd2b952cdcde75e465fcc178fa5cfbd4921f8008b2`.
 - Current ec4 adaptive publication updates the private `ExpertCache` residency
   snapshot as well as host/device tables. The older20f2 stale-private-map finding
   is not a current-source defect. Closed static-swap0 model entries and long
@@ -436,6 +438,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the ELF has no GPU-provider dependency. The frozen320-input cohort and both
   engine generations are unchanged. A host pass cannot qualify real copies,positive model swaps,
   native lifetime or speed;native integration remains the next consumer.
+  Its one-use executable and successful output are retired after consuming the
+  host test and recovering all111inputs/recipe from pushed Git:10files,170369bytes.
+  Follow `adaptive_residency_audit_host_v1` for the source,result and deletion pins.
   The source report in `.cache/research/2026-11-06/adaptive-cache-revalidation`
   remains on HOLD as written:its unsupported swap0/MTP2 claims and incorrect
   `generate.cpp:1559` anchor are not adopted. Its pins and bounded-control design
