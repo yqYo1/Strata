@@ -348,8 +348,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `30b82fba1a35ab73723a49259c4b1b964f182241023fae64fe7fbe7331bd3f07`.
   Keep the552b fallback and all nine ELF outputs,original required records,and
   one minimal host-Python failure diagnostic. No519e compiled generation remains.
-  The source-level protocol reader is the imminent positive-swap entrypoint
-  consumer;retire its obsolete CLI/admission modes when that consumer is composed.
+  The protocol reader is now maintained in`native_request_protocol.py`,with
+  four passing CPU tests for the imminent positive-swap entrypoint. The closed
+  `decode_gate_entry.py`,`inspect_decode_gate_entry.py`and`profile_decode_gates.py`
+  CLIs are retired(3files/45567bytes);recover them from
+  `c7f50a3456656d05c3d7fd35e58cc16fdfa2544e`.
+  Their paths are outside both current build/admission input graphs. Keep the
+  separate minimal host-Python failure diagnostic;its cause remains unresolved.
   The completed Orca Luna/native Luna-max writer review finds no supported
   bounded live-reduction route:the pinned PTI writer writes one JSON document
   through a buffered stream,and the owned reducer loads the whole file before flow joins.
@@ -611,10 +616,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the original optimization/contraction flags pass. Engine SHA256 is
   `429b69f2984b06db36fde39eb4f1a0e39b8e4dbec406169b35a3c96db78106bd`.
   All five component fixture ELFs are byte-identical to the original cb7 outputs.
-  The new `adaptive_native_admission.py`source prepares explicit reuse of the
+  The new `adaptive_native_admission.py`source checks explicit reuse of the
   original real-pool28+28and device10/32/16checks with unchanged providers,
   validation probe,boot/driver and recoverable original controls. This is not
   another GPU test and cannot qualify the new generator's adaptive attachments.
+  This reuse check now passes at source`c7f50a3456656d05c3d7fd35e58cc16fdfa2544e`:
+  all206original control inputs are recovered from Git,the five actual fixture
+  ELFs and84providers match,and validation-probe/boot/driver identities are unchanged.
+  Follow`adaptive_residency_native_build_v1.component_reuse`. Native positive
+  replacement,actual dispatch and post-positive loan/refill remain the next gates.
   The source-level request reader is extracted to
   `tools/sycl/native_request_protocol.py`. All four CPU regression tests pass
   at source`67e7e2154e69968d1a5a31ef00ac2d9cd7769f84`via
