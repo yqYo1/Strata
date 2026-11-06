@@ -762,6 +762,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   variants,actual0 in0.576s,without a native engine or GPU runtime. Follow
   `adaptive_budget32_failure_reader_host_v1`. Native expected-exit1 refusal
   remains unexecuted. The frozen speed-cohort inputs are unchanged.
+  The follow-up`tools/sycl/compare_adaptive_budget_generation.py`is source-only
+  and untested. It prospectively compares adaptive8/32on the same429b engine,
+  every8rounds,with separate cap4/code and cap2/prose cohorts. Preparation
+  requires both current cohorts closed,the required streamed-tool frontend
+  port tested,and the real32-copy positive/second-record refusal controls.
+  Exact generated-count/decode-time TG is primary,with the printed decision
+  retained;all three pairs must improve without a minimum percentage floor.
+  Prompt/TTFT remain independent. No new native generation or model execution
+  follows from preparing this source;run its CPU controls at the serialized
+  post-cohort boundary before preparing the comparison.
   The retrieved review's stale-map condition is resolved for the current
   bounded8-swap route:actual compiled inputs match its generator/cache/header
   identities,`adaptive_res_upload`updates`xcache.replace_residency(host_res)`
