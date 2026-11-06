@@ -134,8 +134,9 @@ def prepare():
 def isa_check(row, run):
     binary = row['binaries']['cpu_iq3s_pair']['path']
     _, out, _ = run('symbols', ['/usr/bin/nm', '--defined-only', binary], 10)
-    symbols = [line.split()[-1] for line in out.read_text().splitlines()
-        if 'iq3s_pair_' in line and '.cold' not in line]
+    symbols = [fields[-1] for line in out.read_text().splitlines()
+        if len(fields := line.split()) == 3 and fields[-2] in ('t', 'T', 'w', 'W')
+        and 'iq3s_pair_' in fields[-1] and '.cold' not in fields[-1]]
     wrappers = [s for s in symbols if 'iq3s_pair_gu_rows' in s and '.' not in s]
     need(symbols and len(symbols) <= 8 and len(wrappers) == 1,
         'one actual public IQ3_S wrapper required;clones are not alternate roots')
