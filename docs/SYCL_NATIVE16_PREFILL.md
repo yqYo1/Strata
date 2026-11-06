@@ -165,8 +165,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `tools/sycl/q6_native_half_generation_speed.py` at `24b271b60` prepares the
   next six-process0/1/1/0/0/1 comparison with thinking-on v5 code/prose. Its
   source is outside the original317model inputs;all317 remain unchanged.
-  Validate this controller,retire the closed entry output,then commit the frozen
-  generation plan before probes/runs. Keep separate64K/117K PP/TTFT,handoff,
+  Its CPU decision/cache/parser controls pass via `python3 -B
+  tools/sycl/q6_native_half_generation_speed.py controls`;no GPU is executed.
+  Closed entry output is retired:165files,28364861bytes,with explicit hashes
+  and original outcomes preserved in `q6_native_half_model_entry_output_retirement_v1`.
+  Both current entries retain only record/config/plan/provider files for the
+  next comparison;all567native sources and15selected executables are unchanged.
+  Next commit the frozen generation plan before probes/runs. Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
   are15 selected executables across two generations,not global cleanup.
