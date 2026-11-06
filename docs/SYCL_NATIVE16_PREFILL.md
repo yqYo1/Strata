@@ -318,8 +318,26 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   DECODE_TIMING and profiler are disabled;IQ3/Q6 audits and runtime safety stay
   common. Classify MTP only from fixed4;keep fixed2 acceptance at its changed
   denominator and retain every speed sample. Each workload needs all three
-  paired TG ratios above one for a repeated gain. Fresh frontend probes and
-  all six processes remain pending;no width speed result exists yet.
+  paired TG ratios above one for a repeated gain. Both fresh generation frontend
+  probes now pass with normal exits and closed owners. All six model processes
+  remain pending;no width speed result exists yet.
+- The exact ec4 HC/interlayer source audit now supplies static262144-index
+  evidence,not physical-context qualification. At full `n=262144`,the HC tensor
+  has2684354560elements;its BF16 store ends at5368709120bytes. `checked_count`
+  bounds the `size_t` count below `INT64_MAX` before the `for_each` handoff;
+  per-chunk `T` remains distinct from full `n`. Chunk/window planning and
+  preflight failure paths do not prove actual allocation or final-slot writes.
+  Keep the existing MoE/expert-bank planner fixtures distinct from runtime
+  admission,and `validate_spans` distinct from complete lifetime/alias proof.
+  The native Luna-max review accepts the source report with these corrections:
+  report SHA256 `7664086617755171588e42d0ff5c7d4b6fd172af4628144246b50c12f995f0ff`,
+  review `df6db1aa0898e50ddcf18cc3c8dca493ff41f7617692e5fab8bbb1a84d7d348e`.
+  Worker/terminal closure is confirmed;worker-side startup IPC chronology is
+  unverified. Full allocation/fill,tails,handoff,RESTORE,safety,speed and adoption
+  remain open. Keep the bounded report/review only until the post-cohort runtime
+  plan has consumed its source/fixture matrix in
+  `.cache/research/2026-11-06/full-context-current-source`;defer research-index edits while
+  the current comparison's transitive reader freezes that file.
 
 ## Prefill envelope and scaling
 
