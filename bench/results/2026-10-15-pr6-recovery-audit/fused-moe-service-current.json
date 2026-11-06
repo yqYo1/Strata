@@ -186678,7 +186678,7 @@
     }
   },
   "adaptive_budget_generation_reader_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "a70edb59a3ca6909c90178339b6bd2986dad4774",
     "source_inputs": {
       "files": 120,
@@ -186707,15 +186707,6 @@
       "tools/sycl/compare_adaptive_budget_generation.py",
       "controls"
     ],
-    "environment": {
-      "PATH": "/usr/local/cuda/bin:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/usr/local/cuda/bin:/home/yayoi/.codex/tmp/arg0/codex-arg0xudpVA:/home/yayoi/.codex/packages/standalone/releases/0.160.1-x86_64-unknown-linux-musl/codex-path:/home/yayoi/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/home/yayoi/.local/bin:/home/yayoi/.config/orca/linux-orca-cli-shim:/nix/store/dcfq48bhf63aib71vlwyxnkk24m2h4a7-getopt-1.1.6/bin:/nix/store/iw8dx6lhrkdc5wzszjzqzl677y68y88r-xvfb-21.1.24/bin:/nix/store/bym5vygd4dz2xz8ymp658rdk0fdbsi4k-xauth-1.1.5/bin:/nix/store/mdwxdimw26b72k7wign651n8clh4jzii-which-2.25/bin:/nix/store/vhz3kzcdznprs2wflg44szkbrfji9z3v-util-linux-2.42.3-bin/bin:/nix/store/63g104xwbzfpcq0h7c99w19m6j9ly3p1-gawk-5.4.1/bin:/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin:/usr/local/bin:/usr/bin:/bin:/nix/store/lg46w7hrjx7kylsh6645c9l975i8h43b-git-2.55.0/bin:/nix/store/b7fwsbih3gqz84abg1h9k48zm9j00n7k-xclip-0.13/bin:/nix/store/2ims5ws8n37x3zkml086jydis7f5ikxa-xdg-utils-1.2.1/bin:/nix/store/hb8zd1rp98jychmdvl7iinr76mkdbsis-xdotool-4.20260303.1/bin:/nix/store/icmd843yc2wk908cmy5g610qdnsh8vc7-xvfb-run-1+g87f6705/bin:/home/yayoi/.config/zsh/plugins/fast-syntax-highlighting:/home/yayoi/.config/zsh/plugins/powerlevel10k:/home/yayoi/.config/zsh/plugins/powerlevel10k-config:/home/yayoi/.config/zsh/plugins/zsh-autocomplete:/home/yayoi/.volta/bin:/home/yayoi/.asdf/shims:/home/yayoi/.fnm/aliases/default/bin:/home/yayoi/.local/share/mise/shims:/home/yayoi/.local/share/pnpm:/home/yayoi/.yarn/bin:/home/yayoi/.bun/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/sbin:/snap/bin:/home/linuxbrew/.linuxbrew/bin:/home/yayoi/bin:/home/yayoi/.opencode/bin:/home/yayoi/.vite-plus/bin",
-      "PYTHONPATH": null,
-      "PYTHONHOME": null,
-      "PYTHONNOUSERSITE": null,
-      "PYTHONDONTWRITEBYTECODE": null,
-      "LD_LIBRARY_PATH": "/usr/local/cuda/lib64:/usr/local/cuda/lib64:/usr/local/cuda/lib64:/nix/store/mj9klbkhzal0vc1aazsajrydkimhc0h2-libglvnd-1.7.0/lib",
-      "LD_PRELOAD": null
-    },
     "plan": "Run once at a closed-process boundary with the internal exclusive lock and no model owners. Verify the committed source closure/interpreter/command before and after. Actual normal0,quiet stderr,small exact gain preserved,one slower pair retained,independent TG/prompt/TTFT verdicts,four immutable budget/width configurations. CPU-only reader controls;no native engine or GPU runtime launch. Stop on first failure;retain outcome,not a relabeled retry.",
     "retention": "Keep compact source/recipe,individual control totals and actual exit/stderr/elapsed result. No external raw output or binary is created.",
     "budgets": {
@@ -186724,11 +186715,31 @@
       "address_bytes": 1073741824,
       "file_bytes": 65536
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
-    "model_executed": false
+    "model_executed": false,
+    "tests_executed": true,
+    "result": {
+      "exit_code": 0,
+      "elapsed_s": 0.5943649490363896,
+      "stderr_bytes": 0,
+      "stdout_bytes": 178,
+      "controls": {
+        "GPU_executed": false,
+        "immutable_configuration_controls": 4,
+        "passed": true,
+        "phase_decisions_separate": true,
+        "slower_pair_retained": true,
+        "small_exact_gain_retained": true
+      }
+    },
+    "environment_reference": {
+      "record_commit": "064a7dfebdcede8d6c43d47a4b3152b2e1701a41",
+      "evidence_key": "adaptive_budget_generation_reader_host_v1.environment",
+      "sha256": "78b1a1d287098383a27f89e777eb11162b26fd1ba700ff2d82935e12d66ef6ac"
+    }
   }
 }
