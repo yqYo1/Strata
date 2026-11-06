@@ -176,9 +176,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Follow `q6_native_half_generation_speed_v1`:three counterbalanced adjacent
   pairs,thinking-on code/prose,at least32K fresh input and1K generated tokens,
   answer-body/actual-MTP/route/fault/ownership gates,and separate PP/TTFT.
-  Both generation frontend probes now pass with closed normal owners;no clean
-  generation process has run yet. Commit that result,then run reference
-  process0;preserve every paired outcome. Keep separate64K/117K PP/TTFT,handoff,
+  Both generation frontend probes pass. Reference process0 is now closed and
+  eligible:33212/33282fresh input,3170/7275generated tokens including thinking,
+  code/prose TG13.4707/8.8402tok/s and MTP acceptance82.44%/38.92%. Both produce
+  actual answers. All four paused request gates and six cache footers pass,
+  selected Q6 head replays complete,native exit is0,validation is quiet,
+  ownership closes and no fresh fault occurs. This is one reference process
+  of six;no candidate model-speed gain is established. Preserve every paired
+  outcome and run candidate process1 next. Keep separate64K/117K PP/TTFT,handoff,
   agent/task,physical262144/tails/RESTORE and ordinary-provider-teardown gates.
   Preserve the validated552b fallback and current same-binary candidate;these
   are15 selected executables across two generations,not global cleanup.
