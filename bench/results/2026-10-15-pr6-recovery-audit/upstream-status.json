@@ -1982,73 +1982,144 @@
       ]
     },
     "closed_diagnostic_retirement": {
-      "stage": "complete",
-      "evidence_commit": "03a4c3552dc57ac3b8a91f5161654402834aa6ee",
-      "reasons": {
-        "*-spec.md": "Settled and released report-only worker startup transaction;reports/review and compact scope evidence remain.",
-        "*/cache/*": "Closed bounded fixture driver/JIT caches;recoverable source,compiler,runtime,exact ELF identities and original outcomes retained;no immediate cache consumer.",
-        "*/owned*/*": "Closed successful build/API output or resolved mapping/unused-parameter diagnostics;useful markers,errors,provider identities and original failure/pass status committed.",
-        "*/active.json": "Closed duplicate lifecycle snapshot with no live admission reader;keep currentv3 active receipt and all source/result records required by the next gate."
-      },
-      "source_recovery": {
-        "original_source": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
-        "original_files": 839,
-        "aggregate_sha256": "b7635d8b36cdf33fb14ec90a78ee047eb4471635162b5d7bf4d1db4a3eebb799",
-        "recipe_and_dependencies_match": true,
-        "current_source": "689c3da346aeeb819d03ee644b27648adc241d3b",
-        "current_source_verified": true
-      },
-      "manifest_sha256": "cc01eb528fd3463b9d4c36c90128d67811099b58b81780af87d2fcc8b1a44027",
-      "files": {
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/dflash2-spec.md": "5b17790fd9337abc3fe8b20e5944ca1a45bc66467846551f6cb20ef0631afbdf",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/features-spec.md": "ae2fe8d744244d5003b178f82fc78f329ebfee8faa65e686364f2404327bb284",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/fixture-contract-spec.md": "9a0a9118fb55f65ef4572612bb84016756121796dce80d66748f3d231f5104a4",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/kernel-audit-spec.md": "63bbec2da524de7851fe75f00096e5b9684774df565942868a87dc9f6d8f7dbd",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/native-compat-spec.md": "dc70352f64eeabefb0421a07f2fefd133a09a826abee0be8256bc0017cb89f6d",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/owner-audit-spec.md": "6e76b955e1f8e7583fe263ab4e1cebc2c22a12337464e56502b5166665eca8b8",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/prefill-audit-spec.md": "ae754ee891d4b165b95c61c5883ccb45cebdf20152cc59c618e0285f92125fa8",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/route-audit-spec.md": "67db7b3032bdd28e600cd4927514a005ea06f9ba647c4b7d7f6895c7940a70d8",
-        "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/upstream-146df3c4/v31-spec.md": "23236ce30d69df5ad700448ba91fb83a3eedef52595b4f7bbf5f82e4064fdd45",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/cache/neo_compiler_cache/a/8/a81402bbe25b0b93.l0_cache": "52c3e18bc76fd8fb656fb9b4718d80fa2354bb15e2868fd4c6de40140c285bcf",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/cache/neo_compiler_cache/b/8/b8db32c7ac2c204e.l0_cache": "6f0da4ede5eff8deac75ab96d519b4bcc1a07b8850f7bc0f259d6debc6c204b3",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/cache/neo_compiler_cache/config.file": "88be841d6769d1b9a9b51c6f8a809ccdb3d381888bb06ea96c39fe6501c3ad34",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/cache/neo_compiler_cache/d/2/d20839217f75ab08.l0_cache": "6c3ad230ac8c636cc226a615542e68e2c6289c0de0ae756828d400f60436d40a",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/owned/dflash2.stdout": "fa348a412ef9736eb91730619155b0d042d2429b88ccae84c056fe948b0a74e5",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/owned/dflash2.stderr": "17c529c4ed854ebb7b8ae3bd8b0ff162b71d760092ca1645e02ab977e228ba15",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/active.json": "b6d87300b6d910a62789e7f8cdd11180cbbeaced91918ef6a2173619cfb95854",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/cache/neo_compiler_cache/a/8/a81402bbe25b0b93.l0_cache": "52c3e18bc76fd8fb656fb9b4718d80fa2354bb15e2868fd4c6de40140c285bcf",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/cache/neo_compiler_cache/b/8/b8db32c7ac2c204e.l0_cache": "6f0da4ede5eff8deac75ab96d519b4bcc1a07b8850f7bc0f259d6debc6c204b3",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/cache/neo_compiler_cache/config.file": "88be841d6769d1b9a9b51c6f8a809ccdb3d381888bb06ea96c39fe6501c3ad34",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/cache/neo_compiler_cache/d/2/d20839217f75ab08.l0_cache": "6c3ad230ac8c636cc226a615542e68e2c6289c0de0ae756828d400f60436d40a",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/owned/dflash2.stdout": "fa348a412ef9736eb91730619155b0d042d2429b88ccae84c056fe948b0a74e5",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/owned/dflash2.stderr": "05b3d819c2356f5f78acec7b596ba11b3b3ec9e22268780b2e34ce21fc0915ca",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/active.json": "428b316d7c21633c50de9ae10487f0d5db1124ba781cc0e63c146ed6af3eaa0b",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/cache/neo_compiler_cache/0/2/0272d8ad09322f95.l0_cache": "056da0747012f6330c18ee29b55d1b797189ddd475c465cf718079a3de269700",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/cache/neo_compiler_cache/7/9/7965f89ce1e303d4.l0_cache": "7365657474c1ee9aeb9a36a95a1cac4ef5944310b860305d123adf59909b2e7c",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/cache/neo_compiler_cache/a/4/a408c5c20ca90acd.l0_cache": "84a054bd842372b3e1b8827e541685b10eed4c1780bc4b42774849d5c3d14150",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/cache/neo_compiler_cache/config.file": "5d6febfcedd0c02dbe5ea1ccfa21fe6553f852710f7c76ce3a4639f996181e93",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/cache/neo_compiler_cache/e/2/e22583c13002c5d3.l0_cache": "71b4a4be845a38179e4dba65470a11cf311e04a2472d7ed84b632e607a445098",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/owned/dflash2.stdout": "3737cca885ca23f6038da62e18a1cafe2d69567646e82251109ec2e7986148a9",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/owned/dflash2.stderr": "a34314be8670ee4cb2e96f935f21980104dd36b222d91cd230afba7cee4e816d",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned/compile.stdout": "78a97b49337b9b8b53506f7c866d0f9ed98a49e20b4e976a11e7d1d76a21b02c",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned/configure.stdout": "12541c1835a9733353188356ee49035459a00fe0fa1e87625da012b41eb9ba3b",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned/configure.stderr": "491dd4a0145cf57cc78fea5b8e55b566d6325e5b78996eea8433467099b3c996",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-2/compile.stdout": "2b3b00545576a957c23f15f7df6e0deb5f48f9a551426f4f472bbddab6fcf8b1",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-2/configure.stdout": "8d6122201352310ddd3f0691860ff1450a2659eb44ab22b73dc4d4a496a2c790",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-2/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-2/configure.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-3/compile.stdout": "e336bb6efba41b4ce351704a497fe1ef2f122b12bf6692143c499f6b14908a9a",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-3/configure.stdout": "d96d849f1f7718f40c521b011b4048d90be91b75a24ef035f16faf1087d1d351",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-3/compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-3/configure.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/active.json": "6187861303af0cda6b67f11ddaea3c76799e12289051a59c143b770c363d2ccd"
-      },
-      "file_count": 43,
-      "bytes": 9667515,
-      "retained": "Both552b/e1b011 phase references,current native feature build,all current gate/source records,v3active,required research reports/reviews and model weights;no raw tensors or speed samples deleted.",
-      "removed_files": 43,
-      "removed_bytes": 9667515
+      "state": "planned",
+      "evidence_commit": "53dd189744fa0bcbdfa1369d5ead42daf5aa492c",
+      "files": 26,
+      "bytes": 15725757,
+      "entries": [
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-4/compile.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-4/compile.stdout",
+          "sha256": "39af72202e84c51e240c555b1c970a3d7c017db9a308e8138f9e843a12b64691",
+          "bytes": 5900
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-4/configure.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/owned-4/configure.stdout",
+          "sha256": "68b5b9e8a615d89696efe274a4192810baf2541297936eff9906c6ae3213cf19",
+          "bytes": 1932
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/0/2/0272d8ad09322f95.l0_cache",
+          "sha256": "056da0747012f6330c18ee29b55d1b797189ddd475c465cf718079a3de269700",
+          "bytes": 16112
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/0/2/027a4cd710c73b46.l0_cache",
+          "sha256": "b5dee2c2ef7168d3eb16d68b53ece7ef9489d81b1b8980dc3e6d4af68d54709d",
+          "bytes": 19096
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/7/9/7965f89ce1e303d4.l0_cache",
+          "sha256": "7365657474c1ee9aeb9a36a95a1cac4ef5944310b860305d123adf59909b2e7c",
+          "bytes": 48720
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/8/0/80e44fb989d34c36.l0_cache",
+          "sha256": "c39e5e2aad573ffa33758650344388959a44fc9eec7a94f192db64d3ec2a0ceb",
+          "bytes": 4044144
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/9/7/971f595da3bf0e1b.l0_cache",
+          "sha256": "2824610117dcc8de7db96d9dcb1dfa643d0be3a702bdb8e7ea8d9f3dadb83819",
+          "bytes": 129720
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/a/4/a408c5c20ca90acd.l0_cache",
+          "sha256": "84a054bd842372b3e1b8827e541685b10eed4c1780bc4b42774849d5c3d14150",
+          "bytes": 223496
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/c/b/cbf0e94e354882cc.l0_cache",
+          "sha256": "7a0c8c53f5c28bdc26b54d93c5fdfbf57f885fbef052b5b5573f85a38a33c0fb",
+          "bytes": 1927520
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/config.file",
+          "sha256": "c46aa9f63145b16051f30bb60436e6d2e883909d913cd0678007aa1f473d4e7e",
+          "bytes": 8
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/cache/neo_compiler_cache/e/2/e22583c13002c5d3.l0_cache",
+          "sha256": "71b4a4be845a38179e4dba65470a11cf311e04a2472d7ed84b632e607a445098",
+          "bytes": 1927520
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/owned/kernel.stderr",
+          "sha256": "7928dde593367215e78d37b75ac8017ff1c5af856efb3a6beefc453da80ddf0c",
+          "bytes": 191705
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/owned/kernel.stdout",
+          "sha256": "3737cca885ca23f6038da62e18a1cafe2d69567646e82251109ec2e7986148a9",
+          "bytes": 729
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/owned/ring_small.stderr",
+          "sha256": "61d06825e6a64842356e2ad8fd16ba0e60cc6e2caaabed93562d42e1de5c32a4",
+          "bytes": 794997
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/small/owned/ring_small.stdout",
+          "sha256": "b42d649bb0b66453319700f863b57a4a713c839894ace60cb3f7e927622d4eec",
+          "bytes": 326
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/cache/neo_compiler_cache/0/2/027a4cd710c73b46.l0_cache",
+          "sha256": "b5dee2c2ef7168d3eb16d68b53ece7ef9489d81b1b8980dc3e6d4af68d54709d",
+          "bytes": 19096
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/cache/neo_compiler_cache/7/9/7965f89ce1e303d4.l0_cache",
+          "sha256": "7365657474c1ee9aeb9a36a95a1cac4ef5944310b860305d123adf59909b2e7c",
+          "bytes": 48720
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/cache/neo_compiler_cache/8/0/80e44fb989d34c36.l0_cache",
+          "sha256": "c39e5e2aad573ffa33758650344388959a44fc9eec7a94f192db64d3ec2a0ceb",
+          "bytes": 4044144
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/cache/neo_compiler_cache/9/7/971f595da3bf0e1b.l0_cache",
+          "sha256": "2824610117dcc8de7db96d9dcb1dfa643d0be3a702bdb8e7ea8d9f3dadb83819",
+          "bytes": 129720
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/cache/neo_compiler_cache/a/4/a408c5c20ca90acd.l0_cache",
+          "sha256": "84a054bd842372b3e1b8827e541685b10eed4c1780bc4b42774849d5c3d14150",
+          "bytes": 223496
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/cache/neo_compiler_cache/c/b/cbf0e94e354882cc.l0_cache",
+          "sha256": "7a0c8c53f5c28bdc26b54d93c5fdfbf57f885fbef052b5b5573f85a38a33c0fb",
+          "bytes": 1927520
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/cache/neo_compiler_cache/config.file",
+          "sha256": "252e9dd470cf71826f44e76cc5110cc2415ee74cee300e72e8168ae1ae18bbde",
+          "bytes": 8
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/owned/ring_full.stderr",
+          "sha256": "43481fb4ae285385341cea0bf73de81b60f22f9399f42a87a5b8b680dcecdc83",
+          "bytes": 822
+        },
+        {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/full/owned/ring_full.stdout",
+          "sha256": "8ab749d499ee2df0dd1accd2df141fc7837eab4a8a6fcfa891302884e196577b",
+          "bytes": 306
+        }
+      ],
+      "retained": "Native build tree/executables,ring record/active closure,stock pack,both fast phase references and pending report/review remain.No engine/model source or fixture deletion.",
+      "reason_for_all_entries": "Closed successful build/API progress or disposable private JIT cache;compact26case source/runtime/normal-closure/fault outcomes committed at53dd189744fa0bcbdfa1369d5ead42daf5aa492c. No remaining raw-trace question."
     },
     "default_integration": {
       "checked_utc": "2026-11-07T22:17:11Z",
