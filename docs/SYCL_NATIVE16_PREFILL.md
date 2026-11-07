@@ -808,8 +808,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the unchanged full32copy/dispatch/occupied-loan reader and supervisor to the
   successor at a fresh`adaptive_payload32_native_entry_v1`key/root. It requires
   the new header/component proof and keeps the original64MiB trial failed.
-  Its model inputs have not been prepared or run. Second-record32refusal and
-  clean-speed consumers still need migration before429bcan be retired.
+  Its model inputs have not been prepared or run. Source-only
+  `tools/sycl/check_adaptive_payload_failure.py`also rebinds the existing
+  full32second-record control to that closed successor entry at a separate
+  `adaptive_payload32_record_failure_v1`key/root. It requires a real first
+  publication,32queued second copies and checked refusal with no second
+  publication,normal expected1/closed owners/no fault. It has not been prepared
+  or executed. Clean-speed consumers still need migration before429bretirement.
   The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
