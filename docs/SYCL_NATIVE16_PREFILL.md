@@ -1546,6 +1546,15 @@ Extend only the read fixture's thread-count contract in a new committed plan,
 keeping1/2/3/6references. Reusing the completed expert cells requires exact
 expert ELF/input/environment identity and explicit prospective reuse;otherwise
 collect a new complete cohort. Do not retry the failed single-use stage.
+The public read-reference source now source-prepares1..6/12threads,with
+allowed-affinity/range and duplicate-CPU checks before spawning workers.
+Its scan/checksum/partition math is unchanged. The maintained mix CMake target
+can explicitly select this updated scanner while keeping the frozen native
+CPU kernels and private source intact. The expert ELF and all634original
+compiler inputs remain unchanged. The new scanner is unbuilt/unexecuted;
+prospective continuation/reuse qualification is still required. Keep the
+current auxiliary build solely for that immediate identity/reuse check,then
+retire it when the reference continuation closes.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
