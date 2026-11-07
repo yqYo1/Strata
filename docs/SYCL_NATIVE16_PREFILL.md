@@ -899,17 +899,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   lengths and acceptance preclude fixed-work attribution. Individual clocks,
   counts and routes remain in the linked compact result. Continue the frozen
   plan with process4/5(8/32).
-  Processes0/1/2each have69successful raw/JIT files retired(13095666/13096255/
-  13096306bytes),after recovering all346source inputs from Git and pushing their
+  Processes0/1/2/3each have69successful raw/JIT files retired(13095666/13096255/
+  13096306/13095722bytes),after recovering all346source inputs from Git and pushing their
   compact results. Keep their generated configs/plans for the ongoing cohort.
-  Admission passes after all three deletions;all15ELFs and four immutable native/
+  Admission passes after all four deletions;all15ELFs and four immutable native/
   control receipts are unchanged. The external deletion manifests are
   `adaptive-payload-generation-regular-code-v1-process0-output-retirement-20261107.json`,
   SHA256`0741507908c4976b8bed7b6cf1ecc5364b4fbe37a4fbc526da51522b2c5a85e7`,
   `adaptive-payload-generation-regular-code-v1-process1-output-retirement-20261107.json`,
   SHA256`ae43e20567d57e3c1da3e9bf5713f084642bd891fbaa35edc8dc6f94f3941258`,
-  and`adaptive-payload-generation-regular-code-v1-process2-output-retirement-20261107.json`,
-  SHA256`0a9081498ca80b097ab20df3b9597ddaec7d0676a369283d2721697a878cb7bc`.
+  `adaptive-payload-generation-regular-code-v1-process2-output-retirement-20261107.json`,
+  SHA256`0a9081498ca80b097ab20df3b9597ddaec7d0676a369283d2721697a878cb7bc`,
+  and`adaptive-payload-generation-regular-code-v1-process3-output-retirement-20261107.json`,
+  SHA256`258a63edc119b877a078d0c20f5142f85720a07ac410301752da8c9476071076`.
   Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
