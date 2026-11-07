@@ -985,6 +985,13 @@ hidden quantization1.146. Of1207577CPU jobs,78.13%haveNT1. Logical blob
 visits total2.463TB,not measured physical RAM traffic. Next process1enables
 the disjoint caller ledger. Keep these observer results separate from clean
 speed;incremental caller cost and the complete six-process decision are pending.
+A fixed-work sensitivity model for process0is
+`T_hyp[s]=130.006616/r_pool+101.988/r_reach+31.428/r_draft+35.514584`,
+where each`r`reduces only that measured interval and all logical work/other
+intervals stay fixed. Hypothetical2x pool reduction gives13.495tok/s;
+zero pool time gives18.688tok/s. These are conditional diagnostic arithmetic,
+not measured gains or physical hardware ceilings. A changed cache can also
+change work,overlap and the other intervals,so it needs its own model samples.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
