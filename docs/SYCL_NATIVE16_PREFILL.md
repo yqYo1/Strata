@@ -3061,46 +3061,26 @@ source inputs and the qualified interpreter manifest. This is transport/CPU
 validation,not GPU or inference qualification. The other four reviewed server concerns,
 remaining functional ports,whole function ledger and vanilla performance remain
 incomplete.
-For the next required server slice,`serve/nonblocking_out.py`was initially copied
-unchanged from Niko`b776e1cd02c11e8cb0824d5dd0087fd907641091`(4969bytes,
-SHA256`05e3d46c38eeeaac4975591d4c2854d53db125f442e9fb6e5ac5529ade821c10`).
-That commit's MIT LICENSE matches this fork. Main-authored
-`serve/test_nonblocking_out.py`source-prepares eight bounded CPU cases:
-blocked-sink/newest-chunk order and drops,bounded close,broken sink,owned-stream
-restoration,capture preservation,and unread-pipe child control plus normal
-buffered/unbuffered child exit. Neither module is in the frozen346benchmark
-or568native inputs;the server does not import it yet. The prepared
-`upstream_nonblocking_console_module_host_v1`plan pins34source inputs at
-`df426f83c`and the qualified Python runtime. All eight cases now run with
-closed owners;seven pass,but the buffered unread-pipe child aborts with-6
-after emittingDONE. Its diagnostic is Python`_enter_buffered_busy`on the
-original stdout BufferedWriter during interpreter shutdown:the daemon still
-holds that object's I/O lock. The unbuffered child and blocked control behave
-as expected. This is a CPU/Python failure,not GPU execution or a device fault.
-Preserve this failed attempt and repair the writer before a new committed
-host plan;the server remains unwired. The Main-authored repair is now source-
-prepared:POSIX process-owned stdout/stderr use an owned duplicate descriptor
-and partial-write-safe encoded output,so the daemon avoids the original
-BufferedWriter lock. Other sinks/platforms retain the upstream stream path.
-The worker closes its descriptor at retirement;thread-start failure also closes
-it. A ninth case checks Unicode output and descriptor retirement. These
-modified sources now pass all nine cases without skips,normal0and closed
-ownership. Follow`upstream_nonblocking_console_module_host_v2`,with34inputs
-pinned at`5327c9454`. This qualifies the POSIX module repair,not server wiring,
-other-platform behavior,native execution or inference performance.
-Both module-only attempts' six raw files/12658bytes are retired after
-recovering each34-input source set from pushed Git;the original failure
-remains failed in the compact result. The shared runtime is retained.
-Manifest:`upstream-nonblocking-console-module-output-retirement-20261107.json`,
-SHA256`7a5ed752f9809c0737647d0dde696d530e8915265f5e1fd0a7aaadd6c6134771`.
-Qualify these checks before adapting the
-server's existing no-argument`main()`wrapper and its upstream
-`STRATA_BLOCKING_CONSOLE=1`bypass;then qualify actual startup and existing
-server/Responses regressions before another frontend-dependent model plan.
-Retain original failures and commit any repair before rerunning. The upstream
-queue's`max_bytes`counts string characters,so this unmodified source does not
-establish an encoded-byte memory bound. This is source preparation,not a
-completed functional port or inference change.
+The Niko`b776e1cd`console-backpressure function is now connected at source
+`f3115189c`:the existing no-argument`main()`uses`decoupled_console`,with
+`STRATA_BLOCKING_CONSOLE=1`preserving the upstream tester bypass. The module
+origin is MIT and matches this fork's LICENSE. The Main POSIX owned-descriptor
+repair avoids holding Python's original BufferedWriter lock at interpreter
+shutdown;the original buffered-child failure remains failed under
+`upstream_nonblocking_console_module_host_v1`,and the nine-case module repair
+passes underV2. Source/test identities and original outcomes remain in Git.
+
+The new`upstream_nonblocking_console_entry_host_v1`pins396actual source/template/
+controller inputs and the qualified Python runtime. All13console-entry/module,
+147server mock and20Responses cases pass,zero skips,normal0and closed owners.
+Unread buffered/unbuffered child entry exits normally;the explicit blocking
+bypass still blocks its control,and both CLI-help modes pass. The source
+inventory is recoverable from committed plan9256be028;compact results keep
+useful source/count/closure evidence. This qualifies wiring and CPU/mock
+compatibility,not actual model startup,GPU inference or performance. Obtain
+fresh bounded actual frontend/model startup before the next model comparison.
+Upstream queue`max_bytes`counts characters,not encoded bytes;no encoded-byte
+memory bound is claimed. Other required functional imports remain incomplete.
 The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration

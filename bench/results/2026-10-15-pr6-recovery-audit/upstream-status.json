@@ -1189,7 +1189,7 @@
             "serve/server.py::main"
           ],
           "state": "module_validated_posix_startup_port_pending",
-          "fork_evidence": "Main POSIX process-owned stdio descriptor repair passes9CPU cases,including buffered/unbuffered unread-pipe normal exit,Unicode and descriptor retirement. The server still has no console wrapper;startup and bypass integration remain pending.",
+          "fork_evidence": "Main POSIX descriptor repair plus no-argument server.main wrapper and STRATA_BLOCKING_CONSOLE1 bypass implemented at f3115189c. All13entry/module,147server mock and20Responses tests pass without skips,normal0,closed owners. Actual model/frontend startup remains fresh qualification.",
           "dependencies": "Adapt the wrapper to this fork main() signature;engine pipe and HTTP protocol output must stay independent.",
           "validation": "Blocked-sink control,nonblocking producer,bounded queue/drop accounting,newest-line ordering,drain/restoration and actual child normal exit with unread stdout. Upstream _bytes uses len(str),so do not claim an encoded-byte bound without separate validation.",
           "module_validation": {
@@ -1204,7 +1204,20 @@
             "original_failed_key": "upstream_nonblocking_console_module_host_v1",
             "original_failure": "Unchanged Niko writer aborts its buffered unread-pipe child with _enter_buffered_busy at interpreter shutdown;original failed result/source retained.",
             "server_wired": false,
-            "next": "Adapt main() and STRATA_BLOCKING_CONSOLE bypass,then qualify actual startup and server/Responses regressions at a closed GPU boundary. This module result does not qualify the complete port or inference."
+            "next": "Module and main-entry/CLI/mock regressions pass;fresh actual frontend/model startup before another model comparison. No inference performance claim."
+          },
+          "status": "ported_and_host_validated",
+          "entry_validation": {
+            "result_key": "upstream_nonblocking_console_entry_host_v1",
+            "source_commit": "f3115189c5f958417444008252a018358570e938",
+            "tests": [
+              13,
+              147,
+              20
+            ],
+            "skips": 0,
+            "GPU_executed": false,
+            "actual_model_frontend_startup_qualified": false
           }
         },
         {
