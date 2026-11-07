@@ -1069,6 +1069,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   admission passes before/after deletion;only its generated config/plan remain.
   Manifest:`adaptive-payload96-generation-regular-code-v1-process0-output-retirement-20261107.json`,
   SHA256`e8e6e76bd232cd8e960e2e806f613c427e9690875616ba2891272a0ee35495ff`.
+  Process1,the96candidate,also closes normally0with quiet validation,closed
+  owners,unchanged boot/driver and no fresh fault. The same33208-token input
+  generates3111tokens,with prompt59857.5ms,decode231899.8ms,client TTFT60.023s
+  and exact PP/TG554.784279/13.415277. Cache hits are753606/1692000(44.5%)and
+  draft acceptance2231/2643. The first paired TG ratio is1.068515;prompt/TTFT
+  time ratios are0.992150/0.992116. All five request bodies match process0.
+  Different output lengths/acceptance preclude fixed-work hardware attribution.
+  This is one pair,not a repeated-gain decision or adoption;finish the remaining
+  96/32and32/96pairs and the final15asset hashes.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
@@ -1424,6 +1433,21 @@ the shared runtime remains. The compact result holds the deletion manifest.
 no leaf-only adaptive model profile or observer-cost comparison has run. Both new files
 are outside the frozen speed/qualification import closures,which continue
 to pass after the first process's raw retirement.
+The Main-authored`tools/sycl/profile_adaptive_cpu_leaves.py`source-prepares
+separate leaf-off/on,on/off,off/on cohorts on the same native engine. It must
+wait for its workload's32/96cohort to close,then uses96only with a repeated
+TGgain,otherwise32. That is a focused decode choice,not route adoption.
+Only the pre-exec CPU leaf flag differs;static census,caller/full trace and
+decode timing remain off,with runtime safety unchanged. Bind the four warmup
+records before the long request and all five after normal exit. Matching
+aggregate CPU/token/draft work and long-output hashes plus all three paired
+latency ratios<=1.05qualify the leaf observer's cost only. A work/hash mismatch
+is inconclusive for that cost,not a task-quality failure. Concurrent leaf CPU
+sums still cannot distinguish arithmetic from memory stalls or prove a critical
+path. Retain operation totals,format/NT job counts and top3GU/Down bins for the
+next named working-set calibration. The controller CPU controls are prepared
+but have not run;the command is:
+`/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py controls`.
 For a later full adaptive census,the reviewed design refreshes membership on
 the request owner only after the adaptive worker joins and refill publication
 succeeds,latches a published-map epoch per window,and rejects masked/in-flight
