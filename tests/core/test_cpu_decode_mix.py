@@ -14,128 +14,97 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'tools/sycl'))
 import cpu_decode_mix as mix
 
 
+
 class EvidenceTests(unittest.TestCase):
-    def gu_fixture(self,arm='gu-compact',workers=5,group=6):
-        row=dict(blob_bytes=2176000,observed_jobs_NT=[1,1,1,1]);count=group*mix.math.ceil((128<<20)/(group*row['blob_bytes']))
-        valid=dict(kind='gu_validation',compute_threads=6 if workers==5 else 1,group=group,experts=count,
-            NT_mask=30,variants=3,mixed_NT=True,bits=True,inactive=True,canaries=True)
-        result=dict(kind='gu_result',experts=count,active_values_equal=True,finite_guards=True)
-        lines=[dict(kind='gu_setup',experts=count,logical_view_bytes=count*1715200,
-                view_storage_bytes=count*12802*134,raw_blob_bytes=count*row['blob_bytes'],
-                allocation_encode_wall_s=.2,allocation_encode_cpu_s=.18),copy.deepcopy(valid),
-            dict(kind='gu_work',arm=arm,compute_threads=6 if workers==5 else 1,group=group,experts=count,
-                batches=100,jobs_NT=mix.expected_histogram(row['observed_jobs_NT'],group),
-                host_cpu=0,affinity_verified=True)]
-        if arm!='gu-check':
+    def fixture(self,arm='lut',group=10):
+        row=dict(blob_bytes=2176000);count=mix.stream_count(row)
+        lines=[dict(kind='lut_validation',experts=count,activation_cases=4,comparisons=4*count,native_bits_equal=True,finite_guards=True),
+            dict(kind='lut_work',arm=arm,group=group,NT=1,experts=count,host_cpu=0,affinity_verified=True,
+                slab_bytes=524288,accumulator_bytes=group*640*64,raw_blob_bytes=count*row['blob_bytes'])]
+        if arm!='check':
             for stream in (False,True):
-                lines.append(dict(kind='gu_timer',stream=stream,query_s=1e-8,fastest_pass_s=.1))
+                lines.append(dict(kind='lut_timer',stream=stream,query_s=1e-8,fastest_call_s=.001))
                 for rep in range(5):
-                    total=7*100*group*640;one=7*mix.expected_histogram(row['observed_jobs_NT'],group)[0]*640
-                    compact=one if arm=='gu-compact' else 0;packed=one if arm=='gu-packed' else 0
-                    lines.append(dict(kind='gu_sample',stream=stream,rep=rep,passes=7,wall_s=1.4,
-                        cpu_s=7,rows=total,NT1_rows=one,compact_rows=compact,raw_rows=total-compact-packed,packed_rows=packed))
-                lines.extend([copy.deepcopy(result),copy.deepcopy(valid)])
-        else:
-            lines.append(result)
-            lines.insert(0,dict(kind='compact_validation',format=18,nt=1,activation_cases=4,experts=count,
-                native_pair_bits_equal=True,packed_native_pair_bits_equal=True,finite=True,canaries=True,
-                compact_GU_bytes_per_expert=1715200,raw_plus_compact_bytes_per_expert=row['blob_bytes']+1715200))
+                    rows=10*group*640
+                    lines.append(dict(kind='lut_sample',stream=stream,rep=rep,calls=10,wall_s=1.8 if arm=='raw' else 1.2,
+                        cpu_s=1.0,output_rows=rows,slabs=100 if arm=='lut' else 0,
+                        block_rows=10*rows if arm=='lut' else 0,native_pair_rows=rows if arm=='raw' else 0))
+                lines.append(dict(kind='lut_result',stream=stream,native_bits_equal=True,finite_guards=True))
         lines.append(dict(kind='closed',passed=True));return row,lines
 
-    def test_gu_timing_refuses_wrong_route_and_incomplete_samples(self):
-        for variant in ('valid','missing','extra','early_result','guard','boolean','footprint','setup',
-                        'histogram','arm','affinity','NT1','compact_rows','packed_rows','raw_rows','rows',
-                        'short','passes','nan','timer','stream','closure'):
-            row,lines=self.gu_fixture();sample=lines[4]
+    def test_lut_and_native_cases(self):
+        for group in (1,10):
+            for arm in ('raw','lut','check'):
+                row,lines=self.fixture(arm,group)
+                with patch.object(mix.base,'machine',return_value={'physical_cpus':[0]}):
+                    v=mix.parse_lut(lines,row,group,arm);self.assertTrue(v['numerical_qualified'])
+                    self.assertEqual(len(v.get('samples',[])),0 if arm=='check' else 10)
+
+    def test_incomplete_or_false_evidence_is_refused(self):
+        variants=('missing','extra','short','nan','badcpu','zero_calls','boolean_count','wrong_slabs','wrong_rows',
+                  'fallback','wrong_NT','wrong_affinity','last_bits','timer','closure','boolean_closure')
+        for variant in variants:
+            row,lines=self.fixture()
             if variant=='missing':lines.pop(4)
-            if variant=='extra':sample['unknown']=0
-            if variant=='early_result':lines[3],lines[9]=lines[9],lines[3]
-            if variant=='guard':lines[-2]['canaries']=False
-            if variant=='boolean':lines[1]['bits']=1
-            if variant=='footprint':lines[0]['raw_blob_bytes']=0
-            if variant=='setup':lines[0]['allocation_encode_wall_s']=float('inf')
-            if variant=='histogram':lines[2]['jobs_NT']=[151,149,150,150]
-            if variant=='arm':lines[2]['arm']='gu-raw'
-            if variant=='affinity':lines[2]['affinity_verified']=False
-            if variant in ('NT1','compact_rows','packed_rows','raw_rows','rows'):sample[{'NT1':'NT1_rows'}.get(variant,variant)]+=1
-            if variant=='short':sample['wall_s']=.9
-            if variant=='passes':sample['passes']=True
-            if variant=='nan':sample['cpu_s']=float('nan')
-            if variant=='timer':lines[3]['query_s']=.01
-            if variant=='stream':sample['stream']=0
+            if variant=='extra':lines.insert(4,dict(kind='unknown'))
+            if variant=='short':lines[3]['wall_s']=.99
+            if variant=='nan':lines[3]['wall_s']=float('nan')
+            if variant=='badcpu':lines[3]['cpu_s']=3
+            if variant=='zero_calls':lines[3]['calls']=0
+            if variant=='boolean_count':lines[3]['calls']=True
+            if variant=='wrong_slabs':lines[3]['slabs']-=1
+            if variant=='wrong_rows':lines[3]['block_rows']+=1
+            if variant=='fallback':lines[3]['native_pair_rows']=640
+            if variant=='wrong_NT':lines[1]['NT']=2
+            if variant=='wrong_affinity':lines[1]['affinity_verified']=False
+            if variant=='last_bits':lines[8]['native_bits_equal']=False
+            if variant=='timer':lines[2]['query_s']=.1
             if variant=='closure':lines[-1]['passed']=False
-            with self.subTest(variant=variant),patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
-                if variant=='valid':self.assertEqual(len(mix.parse_gu(lines,row,5,6,'gu-compact')['samples']),10)
-                else:
-                    with self.assertRaises(RuntimeError):mix.parse_gu(lines,row,5,6,'gu-compact')
-        for arm in ('gu-check','gu-raw','gu-compact','gu-packed'):
-            for workers in (1,5):
-                for group in (6,28):
-                    row,lines=self.gu_fixture(arm,workers,group)
-                    with self.subTest(arm=arm,workers=workers,group=group),\
-                         patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
-                        self.assertTrue(mix.parse_gu(lines,row,workers,group,arm)['validated'])
+            if variant=='boolean_closure':lines[-1]['passed']=1
+            with self.subTest(variant=variant),patch.object(mix.base,'machine',return_value={'physical_cpus':[0]}):
+                with self.assertRaises(RuntimeError):mix.parse_lut(lines,row,10,'lut')
 
-    def test_screen_decision_preserves_failed_shape_and_all_samples(self):
-        children=[]
+    def test_control_mapping_and_typed_counts(self):
+        good=dict(kind='lut_controls',table_entries=2097152,scaled_chunks=4194304,activation_edges=8,refusals=14,guards=True)
+        self.assertEqual(mix.parse_controls([good,dict(kind='closed',passed=True)]),good)
+        for key in good:
+            bad=copy.deepcopy(good);bad[key]=False if type(good[key]) is bool else -1
+            with self.subTest(key=key),self.assertRaises(RuntimeError):mix.parse_controls([bad,dict(kind='closed',passed=True)])
+        for key in ('activation_edges','refusals'):
+            bad=copy.deepcopy(good);bad[key]=float(bad[key])
+            with self.assertRaises(RuntimeError):mix.parse_controls([bad,dict(kind='closed',passed=True)])
+
+    def children(self):
+        values=[]
         for case in mix.screen_order():
-            row,lines=self.gu_fixture('gu-'+case[5],case[2],case[3])
-            # Packed is faster except one process pair in one shape.
-            for s in lines:
-                if s['kind']=='gu_sample' and case[5]=='raw':s['wall_s']=2.8
-                if s['kind']=='gu_sample' and case[2:5]==[5,28,1] and case[5]=='packed':s['wall_s']=5.6
-            with patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
-                children.append(dict(case=case,validation=mix.parse_gu(lines,row,case[2],case[3],'gu-'+case[5])))
-        decision=mix.screen_decision(children)
-        self.assertEqual(len(decision['cells']),8)
-        self.assertTrue(decision['performance_qualified']);self.assertFalse(decision['model_adoption_qualified'])
-        failed=[c for c in decision['cells'] if c['compute_threads']==6 and c['group']==28]
-        self.assertTrue(all(not c['followup_eligible'] and c['paired_raw_over_packed']==[2,.5,2] for c in failed))
-        for altered in (children[:-1],children+[children[0]],list(reversed(children))):
-            with self.assertRaises(RuntimeError):mix.screen_decision(altered)
+            row,lines=self.fixture(case[4],case[2])
+            with patch.object(mix.base,'machine',return_value={'physical_cpus':[0]}):validation=mix.parse_lut(lines,row,case[2],case[4])
+            values.append(dict(case=case,validation=validation,exit_code=0))
+        return values
 
-    def fixture(self):
-        row=dict(blob_bytes=2<<20,observed_jobs_NT=[1,1,1,1])
-        valid=dict(kind='validation',distinct_experts=66,NT_mask=30,pool_serial_bits_equal=True,mixed_NT_bits_equal=True,
-            inactive_outputs_untouched=True,canaries=True)
-        lines=[dict(kind='work',workers=5,host_works=True,group=6,batches=100,
-            unique_stream_experts=66,blob_bytes=2<<20,jobs_NT=[150]*4,phase='decode'),
-            valid,dict(kind='placement',workers=5,host_cpu=0,worker_cpus=[1,2,3,4,5],actual_affinity_verified=True)]
-        for stream in (False,True):
-            lines.append(dict(kind='timer',stream=stream,query_s=1e-8,fastest_pass_s=.2))
-            lines.extend(dict(kind='sample',stream=stream,rep=i,passes=7,wall_s=1.4,cpu_s=7,
-                gu_s=.9,quant_s=.1,down_s=.3) for i in range(5))
-            lines.append(copy.deepcopy(valid))
-        lines.append(dict(kind='closed',passed=True))
-        return row,lines
+    def test_negative_control_and_upper_reuse_have_distinct_roles(self):
+        cells=mix.screen_decision(self.children())['cells']
+        self.assertTrue(all(c['repeated_gain_qualified'] for c in cells))
+        self.assertTrue(all(c['followup_eligible']==(c['group']==10) for c in cells))
 
-    def test_known_histograms_and_integer_conservation(self):
-        self.assertEqual(mix.expected_histogram([1,1,1,1],6),[150]*4)
-        self.assertEqual(mix.expected_histogram([0,0,0,7],28),[0,0,0,2800])
-        self.assertEqual(mix.expected_histogram([1,1,1,0],28),[934,933,933,0])
+    def test_favorable_mean_does_not_erase_unstable_pairs(self):
+        children=self.children()
+        for c in children:
+            if c['case']==[18,20,10,1,'lut']:
+                for s in c['validation']['samples']:s['wall_s']=3.6
+        d=mix.screen_decision(children);self.assertFalse(d['performance_qualified'])
+        upper=[c for c in d['cells'] if c['group']==10]
+        self.assertTrue(all(c['geomean']>1 and not c['repeated_gain_qualified'] for c in upper))
 
-    def test_compact_evidence_is_complete_and_typed(self):
-        controls=dict(kind='compact_controls',codec_cases=524288,integer_chunks=524288,
-            encoded_values=134217728,FMA_cases=16,partial_ranges=64,GU_refusals=10,
-            encode_refusals=2,packed_integer_chunks=524288,packed_FMA_cases=16,
-            packed_partial_ranges=64,packed_GU_refusals=11,finite_canaries=True)
-        row=dict(experts=84,blob_bytes=2176000)
-        model=dict(kind='compact_validation',format=18,nt=1,activation_cases=4,experts=84,
-            native_pair_bits_equal=True,packed_native_pair_bits_equal=True,finite=True,canaries=True,
-            compact_GU_bytes_per_expert=1715200,raw_plus_compact_bytes_per_expert=3891200)
-        for expected,fixture in ((controls,None),(model,row)):
-            for variant in ('valid','missing','extra','count','boolean','guard','closure'):
-                value=[copy.deepcopy(expected),dict(kind='closed',passed=True)]
-                if variant=='missing':value.pop(0)
-                if variant=='extra':value[0]['unknown']=0
-                if variant=='count':value[0]['codec_cases' if fixture is None else 'experts']-=1
-                if variant=='boolean':value[0]['finite_canaries' if fixture is None else 'finite']=1
-                if variant=='guard':value[0]['finite_canaries' if fixture is None else 'canaries']=False
-                if variant=='closure':value[-1]['passed']=False
-                with self.subTest(model=fixture is not None,variant=variant):
-                    if variant=='valid':self.assertEqual(mix.parse_compact(value,fixture),expected)
-                    else:
-                        with self.assertRaises(RuntimeError):mix.parse_compact(value,fixture)
+    def test_missing_duplicate_and_reordered_pairs_are_refused(self):
+        for mode in ('missing','duplicate','reordered','boolean','failed'):
+            c=self.children()
+            if mode=='missing':c.pop()
+            if mode=='duplicate':c[-1]=c[0]
+            if mode=='reordered':c.reverse()
+            if mode=='boolean':c[0]['case'][2]=True
+            if mode=='failed':c[0]['exit_code']=1
+            with self.subTest(mode=mode),self.assertRaises(RuntimeError):mix.screen_decision(c)
 
     def resource(self):
         cells=[dict(gu=gu,down=dn,nt=nt,jobs=nt) for gu,dn in sorted(mix.base.PAIRS)
@@ -170,30 +139,6 @@ class EvidenceTests(unittest.TestCase):
                     self.assertEqual(set(mix.observed_histograms(value)),set(mix.base.PAIRS))
                 else:
                     with self.assertRaises(RuntimeError):mix.observed_histograms(value)
-
-    def test_intermediate_worker_evidence_and_histogram_types(self):
-        for workers in mix.WORKERS:
-            row,lines=self.fixture();lines[0].update(workers=workers,host_works=workers==5)
-            lines[2].update(workers=workers,worker_cpus=list(range(1,workers+1)))
-            with self.subTest(workers=workers),patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
-                self.assertTrue(mix.parse(lines,row,workers,6,'measure')['validated'])
-        for hist in ([0]*4,[True,0,0,0],[-1,1,1,1],[1.0,1,1,1],[1,2,3]):
-            with self.subTest(hist=hist),self.assertRaises(RuntimeError):mix.expected_histogram(hist,6)
-        row,lines=self.fixture()
-        for workers,group in ((True,6),(4,6),(5,7)):
-            with self.subTest(workers=workers,group=group),self.assertRaises(RuntimeError):
-                mix.parse(lines,row,workers,group,'measure')
-
-    def test_complete_matrix_rejects_duplicate_missing_and_boolean_cells(self):
-        order=[list(x) for x in sorted(mix.matrix())];mix.validate_order(order)
-        mix.validate_order(list(reversed(order)))
-        for variant in ('missing','duplicate','boolean','unsupported_worker'):
-            value=copy.deepcopy(order)
-            if variant=='missing':value.pop()
-            if variant=='duplicate':value[-1]=value[0]
-            if variant=='boolean':value[0][2]=True
-            if variant=='unsupported_worker':value[0][2]=4
-            with self.subTest(variant=variant),self.assertRaises(RuntimeError):mix.validate_order(value)
 
     def test_owner_setup_failure_is_terminal_before_any_child(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -246,28 +191,6 @@ class EvidenceTests(unittest.TestCase):
                     if variant=='valid':self.assertEqual(mix.attest_build({},output)['compiled_inputs']['uncovered'],0)
                     else:
                         with self.assertRaises(RuntimeError):mix.attest_build({},output)
-
-    def test_full_evidence_and_refusals(self):
-        for variant in ('valid','phase','histogram','affinity','numerical','mixed_NT','lost_sample','extra',
-                        'short','zero_passes','nonfinite','overcount','timer','closure'):
-            row,lines=self.fixture()
-            if variant=='phase':lines[0]['phase']='prefill'
-            if variant=='histogram':lines[0]['jobs_NT']=[151,149,150,150]
-            if variant=='affinity':lines[2]['actual_affinity_verified']=False
-            if variant=='numerical':lines[1]['pool_serial_bits_equal']=False
-            if variant=='mixed_NT':lines[1]['mixed_NT_bits_equal']=False
-            if variant=='lost_sample':lines.pop(4)
-            if variant=='extra':lines.insert(0,dict(kind='unknown'))
-            if variant=='short':lines[4]['wall_s']=.9
-            if variant=='zero_passes':lines[4]['passes']=0
-            if variant=='nonfinite':lines[4]['cpu_s']=float('nan')
-            if variant=='overcount':lines[4]['gu_s']=2
-            if variant=='timer':lines[3]['query_s']=.1
-            if variant=='closure':lines[-1]['passed']=False
-            with self.subTest(variant=variant),patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
-                if variant=='valid':self.assertEqual(len(mix.parse(lines,row,5,6,'measure')['samples']),10)
-                else:
-                    with self.assertRaises(RuntimeError):mix.parse(lines,row,5,6,'measure')
 
 
 if __name__=='__main__':unittest.main()
