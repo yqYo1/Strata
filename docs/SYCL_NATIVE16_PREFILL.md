@@ -788,7 +788,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gate;regenerate the retired private inputs from Git rather than reusing them.
   After the frozen resource cohort closes,qualify the successor
   native header,positive32publication/dispatch/occupied loan and second-record
-  refusal before preparing an8/32speed comparison.
+  refusal before preparing an8/32speed comparison. The source-only
+  `tools/sycl/build_adaptive_payload_model.py`now prepares that exact568-file
+  composition:only the audit header changes,all567other inputs and the recipe
+  remain fixed. It has not been prepared,built or executed. It gates preparation
+  on all six resource processes closing. Allow one temporary third comparison
+  generation only through successor native32positive/refusal qualification:
+  keep552b and429b's15outputs for fallback and exact five-fixture comparison,
+  then prospectively migrate consumers and retire429b before clean8/32trials.
+  Retire the successor instead if qualification fails. This is a bounded
+  replacement window,not another retained generation per experiment.
   The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
