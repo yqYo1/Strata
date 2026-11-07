@@ -199927,6 +199927,18 @@
               ]
             }
           }
+        },
+        "artifact_retirement": {
+          "complete": true,
+          "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-cpu-leaves-regular-code-v1-process2-output-retirement-20261107.json",
+          "manifest_sha256": "50b673a04c03eaf1aab71197eba4d1e5727ef01be72a35ea09700b48030953be",
+          "files": 69,
+          "bytes": 13137074,
+          "source_inputs_recovered": 358,
+          "protected_ELFs": 15,
+          "immutable_receipts_unchanged": true,
+          "continued_admission_passed": true,
+          "evidence_commit": "bf33a5015812a69d227f3eefe958d15ca818bb66"
         }
       }
     ],
@@ -199982,6 +199994,21 @@
       "sources": "e867f8947f89a4596b32b897e1bb295c9584968a0f273f7b4acc395b680c7f56",
       "environment_template": "3819ebcd7f1638791579f7d628f1c7a94a0e011734096475407b547987110082",
       "model_assets": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
+    },
+    "working_set_calibration_context": {
+      "evidence_commit": "bf33a5015812a69d227f3eefe958d15ca818bb66",
+      "process_indices": [
+        1,
+        2
+      ],
+      "pack_metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+      "formula": "sum(format_nt_jobs.jobs * original_pack_blob_bytes);one nominal full-blob visit per CPU job",
+      "nominal_full_blob_bytes": 1728439500800,
+      "generated_tokens": 3227,
+      "nominal_bytes_per_generated_token": 535618066.56337154,
+      "conditional_required_GB_s_at70": 37.493264659436015,
+      "consumer": "Current production-kernel working-set/thread calibration and CPU-expert footprint reduction decision",
+      "limits": "Nominal footprint at this workload,cache and context only. Actual reuse,physical DRAM traffic and limiting resource remain unmeasured;no hard throughput ceiling."
     }
   }
 }

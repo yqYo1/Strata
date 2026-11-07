@@ -1490,7 +1490,11 @@ GU265.234,HQ0.726and DOWN132.883. Of846250CPU expert jobs,728497(86.085%)
 are NT1;989999entries give1.170entries/job. The top GU bins are NT1
 IQ3_XXS/IQ4_NL,IQ2_S/IQ4_NLand IQ3_S/IQ4_NL. These concurrent CPU sums
 include memory stalls and do not establish critical path,physical traffic or
-hardware saturation. Use the named current working-set calibration after
+hardware saturation. For these matched CPU jobs,the sum of original full-blob
+extents is1728439500800bytes,or535.62MB per generated token. If each job reads
+its full blob once,70tok/s requires37.49GB/s. Actual cache reuse and DRAM traffic
+remain unmeasured;this is not a hard ceiling. Use the named current working-set
+calibration after
 the complete cost comparison;the legacy calibration driver uses an older
 compiler/reference and is not qualified unchanged for this engine.
 The maintained CPU mix CMake selector at`1274b0bbd` can now take
@@ -1515,6 +1519,9 @@ Process1's69normal raw/JIT files and the consumed6493-byte cache-scope review
 are also retired:70files/13143564bytes,358Git inputs recovered,all15ELFs/six
 receipts preserved and full continued admission passed. Its retirement manifest
 is`adaptive-cpu-leaves-regular-code-v1-process1-output-retirement-20261107.json`.
+Process2's69normal raw/JIT files(13137074bytes)are retired with the same358-input
+recovery,15ELF/six-receipt protection and continued-admission proof. Manifest:
+`adaptive-cpu-leaves-regular-code-v1-process2-output-retirement-20261107.json`.
 The completed preparation command is:
 `/usr/bin/timeout -k 15s 900s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code prepare`.
 After committing the plan,run the same command with`host`instead of`prepare`.
