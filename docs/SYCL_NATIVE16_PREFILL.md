@@ -846,8 +846,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   full32second-record control to that closed successor entry at a separate
   `adaptive_payload32_record_failure_v1`key/root. It requires a real first
   publication,32queued second copies and checked refusal with no second
-  publication,normal expected1/closed owners/no fault. It has not been prepared
-  or executed. Source-only`tools/sycl/compare_adaptive_payload_generation.py`
+  publication,normal expected1/closed owners/no fault. Its plan is now prepared
+  at source`0c56a1f48`,with all15assets checked,the immutable closed32positive
+  receipt and the unchanged two32-group/86-corrupt reader controls. No native
+  refusal has run. Source-only`tools/sycl/compare_adaptive_payload_generation.py`
   now reuses the original same-ELF8/32decision/benchmark runner with successor
   positive/refusal qualifications. Prior settings/frontend selection supply no
   old-engine qualification;refs bind only the successor controls and tested
