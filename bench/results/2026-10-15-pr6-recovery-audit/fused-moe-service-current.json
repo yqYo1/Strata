@@ -196642,7 +196642,7 @@
     }
   },
   "adaptive_payload96_record_failure_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "a93e4edcc964b534755081da631dd7ccd376dab2",
     "positive_entry": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload96-entry-v1/record.json",
@@ -197052,11 +197052,11 @@
       "total_cap": 201326592
     },
     "whole_wall_s": 1500,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_execution_attempted": false,
+    "GPU_execution_attempted": true,
     "plan": "One fresh unchanged e1b011 engine after the actual96positive entry closes. Same96/every8,placement/precision/runtime safety and synthetic1024/max256,except private paths and pre-exec STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE=1. Require two exactly96-copy prepared/masked groups,real first record0 and publication, real second null-record status1,second map unpublished,no later generation, exact ordered ERR/noDONE wire prefix with emitted tokens,and normal expected native1 without supervisor cleanup. Keep owners live until checked retirement. Require quiet validation,unchanged final15assets/boot/driver,no fresh fault and closed owners. Preserve the immutable positive96receipt. No retry, narrower group,hash refresh,new engine build or runtime safety change.",
     "limits": "Expected software record-refusal only;no GPU fault injection,successful generation,clean96speed,quality,prefill preservation,ordinary teardown, physical262144/RESTORE or adoption. Actual96positive and this expected-exit1 control must both close before a separately committed96speed plan.",
     "retention": "Keep compact first/second statuses,swap counts,nonpublication,wire extent/output hash,source/configuration and validation/closure/fault result. Retire successful raw output/JIT after verifying and pushing the result;one minimal distinct failure diagnostic only if unexpected.",
@@ -197077,6 +197077,71 @@
       "cycle_cap_bytes": 268435456,
       "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
       "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d"
+    },
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "host_probe_accepted": true,
+      "startup": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "4",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.00",
+        "arena_mib": "47962"
+      },
+      "native_pid": 3610503,
+      "wire": {
+        "error": "ERR an adaptive refill failed",
+        "input_tokens": 1024,
+        "output_tokens": 45,
+        "output_sha256": "1fab2dd536ef0a6f33bb2ea997a4b11d6ce16502e186f9c0b27b21fb608b8348",
+        "progress_reached": 1023,
+        "progress_notifications": 1,
+        "DONE_seen": false
+      },
+      "native_exit_code": 1,
+      "native_normal_closed": true,
+      "validation": {
+        "pid": 3610503,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "adaptive": {
+        "first_record_status": 0,
+        "second_record_status": 1,
+        "successful_generation": 1,
+        "first_swaps": 96,
+        "failed_generation": 2,
+        "queued_second_swaps": 96,
+        "second_generation_masked": true,
+        "second_generation_published": false,
+        "first_H2D_requested_bytes": 191334400,
+        "stale_event_not_published": true,
+        "maximum_group": 96
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
     },
     "source_inputs": {
       "files": 125,

@@ -1004,7 +1004,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   committed inputs,all15model assets checked and the exact positive receipt
   pinned. Only the pre-exec failure-injection selector/private paths differ;
   the expected native exit is1with no supervisor kill,noDONE and no second
-  publication. Execution has not run. Keep the original32
+  publication. The actual control now closes with the declared normal native1,
+  no supervisor kill,quiet validation,closed owners,unchanged boot/driver,no
+  fresh fault and all15final asset hashes. First record0publishes96;second
+  record1follows96queued copies and keeps generation2masked/unpublished.
+  The wire emits45tokens thenERR,noDONE. First requested H2D is191334400bytes,
+  below the pinned model bound. Preserve its immutable receipt SHA256
+  `300b500dc856304c961fa7dbaf12e1e37caf9d71ed43c48fbcc4c9ced3410cce`.
+  Both actual96controls now pass;this permits a separately committed speed
+  plan,not a96speed or inference-adoption claim. Keep the original32
   reader and all current cohort/native inputs unchanged. Its ordered/index
   adversarial controls completed normally0after both cohorts closed:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
