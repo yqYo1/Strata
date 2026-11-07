@@ -189263,5 +189263,139 @@
       "environment_template": "3819ebcd7f1638791579f7d628f1c7a94a0e011734096475407b547987110082",
       "model_assets": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
     }
+  },
+  "adaptive_payload_audit_host_v1": {
+    "stage": "prepared",
+    "source_commit": "ab23c478b74b1c319e13063eb6f6fa95605691c5",
+    "generated": {
+      "include/strata/core/adaptive_residency_audit.hpp": "8387ea06c7fed9afa89c86c2faf528b32abe2366bb2f65a4eb66d5d445ec220a",
+      "tests/core/adaptive_residency_audit_test.cpp": "c67450be9b3d991e7b923f852b68b7013b563044d4e3d7832c420d71258874d3",
+      "include/strata/core/expert_cache.hpp": "168a1d2c3bddda4e2a2313bb51f0450b9634a4802039528992119ca5f926926f",
+      "tests/core/adaptive_payload_budget_test.cpp": "c0b119b68ebbe794c3f82a8e11c35599a3dbfcf9e0e2fa04c383774caeb7463d"
+    },
+    "cases": [
+      {
+        "name": "legacy",
+        "fixture": "tests/core/adaptive_residency_audit_test.cpp",
+        "executable": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/legacy/audit_test",
+        "expected": "adaptive_residency_audit cases=41 status=PASS",
+        "command": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/source/include",
+          "-MD",
+          "-MT",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/legacy/audit_test",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/legacy/headers.d",
+          "-Wl,-t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/source/tests/core/adaptive_residency_audit_test.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/legacy/audit_test"
+        ]
+      },
+      {
+        "name": "budget",
+        "fixture": "tests/core/adaptive_payload_budget_test.cpp",
+        "executable": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/budget/audit_test",
+        "expected": "adaptive_payload_budget cases=16 status=PASS",
+        "command": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/source/include",
+          "-MD",
+          "-MT",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/budget/audit_test",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/budget/headers.d",
+          "-Wl,-t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/source/tests/core/adaptive_payload_budget_test.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/budget/audit_test"
+        ]
+      }
+    ],
+    "toolchain_image": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/toolchain.json",
+      "files": 6239,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ],
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838"
+    },
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "original_header_commit": "0a47fe046f2828c111009edecbf95f5595f0000b",
+    "original_header_sha256": "299218f250c51d4f9cfe33d0a5aee07bfaf04bc02473db971079d7e38767bb9e",
+    "expert_limit_bytes": 67108864,
+    "cycle_limit_bytes": 268435456,
+    "environment": {
+      "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-host-v1/cache"
+    },
+    "budgets": {
+      "compile": {
+        "wall": 90,
+        "cpu": 120,
+        "rss_cap": 2147483648,
+        "text_cap": 262144,
+        "file_cap": 4194304,
+        "total_cap": 8388608
+      },
+      "test": {
+        "wall": 15,
+        "cpu": 15,
+        "rss_cap": 536870912,
+        "text_cap": 65536,
+        "file_cap": 4194304,
+        "total_cap": 8388608
+      }
+    },
+    "whole_wall_seconds": 600,
+    "whole_output_bytes": 33554432,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "inference_adopted": false,
+    "plan": "Commit source,projection,compiler image and both recipes before execution. Compile legacy41 with only its obsolete80MiB overflow replaced by five valid64MiB extents;compile separate16-case bounds/order fixture. Require normal0,exact receipts,quiet stderr,actual project/header/link closure and no GPU provider dependency. Reject source/image/input mismatch;no retry or pin refresh. Model32 publication/dispatch/post-positive loan,second-record refusal and clean performance remain pending.",
+    "retention": "Retain source/recipe,57-case outcome and actual-input signatures. Retire the two one-use ELFs and successful output after pushed results/source recovery. The current552b/429b generations and their15outputs remain unchanged.",
+    "source_inputs": {
+      "count": 117,
+      "sha256": "481c35cf58a340542bb42db47e046c4cc97002d030c7c84b33493ecb36ad57dd",
+      "project": {
+        "include/strata/core/adaptive_residency_audit.hpp": "299218f250c51d4f9cfe33d0a5aee07bfaf04bc02473db971079d7e38767bb9e",
+        "tests/core/adaptive_residency_audit_test.cpp": "d65aec5814e765b1c4947df1cc06b78aa2ad9666e791b1edb6b4aced9e052ec5",
+        "include/strata/core/expert_cache.hpp": "168a1d2c3bddda4e2a2313bb51f0450b9634a4802039528992119ca5f926926f",
+        "tests/core/adaptive_payload_budget_test.cpp": "c0b119b68ebbe794c3f82a8e11c35599a3dbfcf9e0e2fa04c383774caeb7463d"
+      }
+    }
   }
 }
