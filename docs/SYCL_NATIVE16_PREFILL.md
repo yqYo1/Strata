@@ -806,8 +806,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   commands and six targets,with1453covered actual compiler inputs,checked
   header/link/flags and all five fixture ELFs byte-identical to429b. The new
   engine SHA starts`e1b01116cc`;its native source remains`bbd345c63`. Only the
-  audit header changes;fresh same-build CPU parity,component reuse and actual
-  native32positive/refusal remain pending. No GPU was executed by the build. It gates preparation
+  audit header changes. Fresh same-build observer0/1CPU pool checks now each
+  pass28cases with identical checksums,normal0and closed owners. Component
+  reuse and actual native32positive/refusal remain pending. No GPU was executed
+  by compilation or these CPU checks. It gates preparation
   on all six resource processes closing. Allow one temporary third comparison
   generation only through successor native32positive/refusal qualification:
   keep552b and429b's15outputs for fallback and exact five-fixture comparison,
