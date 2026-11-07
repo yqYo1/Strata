@@ -88,6 +88,8 @@ def compact(row):
     value = original.compact(row)
     value['recipe'].update(helper='tools/sycl/build_adaptive_payload_model.py:recipe',
         scope='Exact429b recipe with private paths;only the host-qualified audit header changes.')
+    if 'host_result' in value:
+        value['host_result'] = {n: v for n, v in value['host_result'].items() if n != 'commands'}
     return value
 
 
@@ -117,10 +119,12 @@ def factory():
     return ctx
 
 
-def prepare():
-    ctx = factory(); ctx.prepare()
-    row = json.loads((ROOT / 'record.json').read_text())
+def prepare_details(row):
     old, _ = basis(); proof = host_proof()
+    external = json.loads(Path(row['external_inputs']['path']).read_text())
+    require(not any(Path(p).is_relative_to(original.ROOT) for p in external),
+        'successor must not retain predecessor build products as external inputs')
+    row['predecessor_artifacts_in_build_inputs'] = False
     row['selected_basis'].update(recovered_files=568, changed=[source.HEADER],
         unchanged_native_kernel_CPU_runtime_prefill_files=567)
     row['host_header_qualification'].update(cases=57, legacy_cases=41, added_budget_cases=16,
@@ -142,7 +146,17 @@ def prepare():
         'second-record refusal;full publication/dispatch/occupied-loan checks remain required. '
         'No speed,quality,ordinary-provider-teardown or physical262144qualification from build. '
         'Prospectively migrate consumers and retire429b before same-successor8/32clean comparison.')
-    save(row)
+
+
+def prepare():
+    factory().prepare()
+    row = json.loads((ROOT / 'record.json').read_text())
+    try:
+        prepare_details(row)
+    except BaseException as error:
+        row.update(stage='failed-successor-prepare', passed=False, complete=False, error=repr(error))
+        raise
+    finally: save(row)
     print('Prepared one-header successor;commit before compilation. Native32 remains unqualified.', flush=True)
 
 
