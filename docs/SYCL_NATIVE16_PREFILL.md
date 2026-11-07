@@ -1054,9 +1054,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   actual96positive/refusal receipts pinned and all15shared model assets fully
   verified. Its six fresh-process order is32/96,96/32,32/96;the CPU controls
   pass and both arms preserve the same invariant configuration. Follow
-  `adaptive_payload96_generation_regular_code_v1`. Commit this prepared plan
-  before fresh benchmark/server frontend probes,then commit their result
-  before process0. No speed-process model execution or96speed qualification
+  `adaptive_payload96_generation_regular_code_v1`. Fresh benchmark/server
+  frontend probes now both pass with empty stderr and closed owners. Commit
+  this ready result before process0. No speed-process model execution or96speed qualification
   has run;the varied-prose32/96cohort is not yet prepared.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
