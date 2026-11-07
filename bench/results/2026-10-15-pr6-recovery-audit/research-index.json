@@ -25591,7 +25591,7 @@
   },
   "gpu_native_expert_cache_scope_review_20261107": {
     "classification": "Native gpt-6-luna max review of existing references and pinned compiled source;not new Orca research",
-    "state": "reviewed_existing_references_sufficient",
+    "state": "actual_model_route_checked",
     "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-07/gpu-native-expert-cache-next-scope-review.md",
     "report_bytes": 6493,
     "report_sha256": "b1ae8c0ba6bbc2e05f8cd683768eb1a7bf370082dee130b6dcfbd8a4b0c2731d",
@@ -25603,9 +25603,67 @@
     "decision": "Existing references and exact-source audit suffice;no fresh Orca task recommended. The compiled snapshot supports original packed native weights with direct SYCL consumption for supported runtime-pack formats. Availability does not establish the selected model route or a speedup.",
     "scope_eligibility": {
       "schedulable_now": false,
-      "reason": "No additional nonduplicative research is needed for this source question. Main must verify actual selected pack,route and slot sizes before proposing a representation change."
+      "reason": "The exact compiled source and selected runtime pack already use raw packed native cache weights. This representation is present;no additional research task or missing-feature implementation is needed."
     },
-    "Main_next_action": "Continue the fixed-budget leaf comparison. At its next source-design boundary,check actual runtime-pack formats,allocation/slot geometry and selected GPU path against the compiled snapshot;keep hardware attribution and adoption separate.",
-    "retention": "Temporary decision-support retrieval for that named actual-pack/route/slot check. Main has consumed only the operational digest and verified file size/hash,not the body. Retire the consumed review body after compact source/route findings are preserved;original substantive references remain indexed."
+    "Main_next_action": "Continue fixed-budget leaf cost comparison,then current NT1 production-kernel calibration and independently scoped cache/CPU tuning. Do not propose raw-native expert storage as a missing feature.",
+    "retention": "Actual-pack/route/slot question answered from exact compiled source and current runtime prefix;compact facts retained here. Retire the consumed review body with closed process1 raw output after this result is pushed;retain original substantive indexed references.",
+    "actual_model_route_check": {
+      "evidence_commit": "dcfde6ab754e559200b46b8a80581cf205a894ad",
+      "evidence_key": "adaptive_cpu_leaves_regular_code_v1.processes[1]",
+      "pack_metadata": {
+        "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/native_experts.txt",
+        "sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+        "layers": 48,
+        "format_pairs": [
+          [
+            18,
+            20
+          ],
+          [
+            18,
+            42
+          ],
+          [
+            21,
+            20
+          ],
+          [
+            21,
+            42
+          ],
+          [
+            22,
+            20
+          ],
+          [
+            22,
+            42
+          ],
+          [
+            23,
+            20
+          ]
+        ],
+        "blob_min_bytes": 1510400,
+        "blob_max_bytes": 2662400
+      },
+      "cache": {
+        "slots": 1256,
+        "bytes_from_compiled_per_layer_plan": 2575206400,
+        "per_layer_slots": 26,
+        "last_layer_slots": 34,
+        "runtime_printed_GiB": "2.40",
+        "native_hit_graphs_captured": true
+      },
+      "compiled_sources": {
+        "src/program/generate.cpp": "5049d431471250de41cef0d89becb696ab26529b2dab331192f1ced97179c648",
+        "src/core/expert_cache.cpp": "4330db0592bf7d860647fda5a7db9a7d2a2d2d35fcb28800bd2f918912abaf6e",
+        "src/core/expert_source.cpp": "30092bcc3d706aa99027f8c12d8093e9e6a330cf63ab58d7484f87c0c7dfcc78",
+        "src/kernels/sycl/native_mmvq.cpp": "2db527d87fce1a24ffb7998d87701c5cd0f5d0c2aa1a20a46904d1262b0dca58",
+        "include/strata/core/expert_slot_sizes.hpp": "50e006e3b485ff1a835f7e2df3f36293f6615e5995041cc6040a281792e26131"
+      },
+      "conclusion": "The selected native pack uses raw original quantized blobs in sized per-layer slots. fill_slot copies those bytes;expert_hit_run passes device_slot pointers and layer format to native_expert_grouped. Its Q8_1 quantization is activation input/intermediate arithmetic,not expanded expert-weight storage. Existing packed storage is selected;no new compression speedup or hardware-saturation claim.",
+      "limits": "Source/runtime-route check with rounded allocation log;exact bytes are reconstructed from immutable metadata and compiled slot geometry,not a new memory telemetry measurement. Full launch counts,physical traffic and saturation remain unmeasured."
+    }
   }
 }

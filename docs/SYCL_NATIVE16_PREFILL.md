@@ -1488,6 +1488,13 @@ include memory stalls and do not establish critical path,physical traffic or
 hardware saturation. Use the named current working-set calibration after
 the complete cost comparison;the legacy calibration driver uses an older
 compiler/reference and is not qualified unchanged for this engine.
+The selected GPU cache already retains original packed native expert weights.
+The immutable48-layer pack and compiled per-layer plan give1256slots and
+2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
+26slots and the last owns34. Slot fills copy raw blobs and the captured native
+hit path passes their device pointers plus per-layer formats directly to the
+SYCL grouped kernels. Q8_1 names activation arithmetic,not expanded weight
+storage. This closes the source question,not a new speedup or saturation claim.
 Varied-prose
 preparation still requires its own closed32/96cohort.
 Process0's69normal raw/JIT files(13094842bytes)are retired after358-input Git
