@@ -45,12 +45,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source`c632a0421`,with346inputs,all15model assets checked and six immutable
   8/32,32/8,8/32configurations on the same e1b011 executable. Both fresh
   benchmark/server frontend probes pass normally0at source`d79bd3448`,with
-  quiet stderr and closed owners. Four prose processes now close normally0
+  quiet stderr and closed owners. Five prose processes now close normally0
   with quiet validation,closed owners,unchanged boot/driver and no fresh fault.
-  Each reads33278fresh tokens. Adaptive8TG is10.46625/10.48170and32TG is
+  Each reads33278fresh tokens. Adaptive8TG is10.46625/10.48170/10.45067and32TG is
   10.75104/10.72590;paired ratios are1.027211/1.023297. Prompt-time ratios
-  are0.983862/0.990009and client-TTFT ratios0.984159/0.990145. The final8/32
-  pair and final15asset hashes remain. These two pairs do not satisfy the
+  are0.983862/0.990009and client-TTFT ratios0.984159/0.990145. The final32
+  process and final15asset hashes remain. These two pairs do not satisfy the
   preregistered three-pair decision or establish adoption/a fixed4weak-MTP class.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
@@ -941,6 +941,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   driver are unchanged with no fresh fault. Process3(8)also closes normally0
   with quiet validation,closed owners,unchanged boot/driver and no fresh fault;
   its body,route,length,cache counts and acceptance match the first8sample.
+  Process4(8)passes the same gates with matching body,route,length,cache counts
+  and acceptance;native/benchmark exit0and all owned processes are closed.
 
   | Prose process | Swaps | Generated | PP tok/s | Client TTFT s | TG tok/s | Cache hit % | Draft acceptance % |
   | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -948,6 +950,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | 1 | 32 | 7433 | 559.54897 | 59.644 | 10.75104 | 53.5 | 62.3062 |
   | 2 | 32 | 7433 | 571.33929 | 58.474 | 10.72590 | 53.5 | 62.3062 |
   | 3 | 8 | 9854 | 565.63109 | 59.056 | 10.48170 | 47.6 | 63.1997 |
+  | 4 | 8 | 9854 | 557.66611 | 59.820 | 10.45067 | 47.6 | 63.1997 |
 
   Exact TG uses9854*1000/941502.8ms and7433*1000/691374.9ms;prompt times are
   60448.4/59472.9ms. First-pair TG ratio is1.027211;prompt and client-TTFT
@@ -956,9 +959,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Generation lengths and MTP acceptance differ,so no fixed-work attribution
   follows. Process2uses58245.6ms prompt and692995.5ms decode;process3uses
   58833.4ms prompt and940114.3ms decode. The reverse-pair TG ratio is1.023297,
-  prompt ratio0.990009and TTFT ratio0.990145. The last8/32pair and final15asset
-  hashes remain;two favorable pairs do not satisfy the preregistered decision
-  or establish a fixed4weak-MTP class. Continue with process4(8);
+  prompt ratio0.990009and TTFT ratio0.990145. Process4uses59673.7ms prompt
+  and942905.7ms decode. The last32process and final15asset hashes remain;
+  two favorable pairs do not satisfy the preregistered decision
+  or establish a fixed4weak-MTP class. Continue with process5(32);
   keep native/controller inputs unchanged.
   Follow`adaptive_payload_generation_varied_prose_v1`.
   The next96-copy positive entry is source-prepared in
