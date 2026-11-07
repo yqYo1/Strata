@@ -1538,49 +1538,50 @@ path remain unqualified. No new model speedup,adoption or device execution
 follows from this calibration.
 
 The benchmark-only `bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp` stores exact
-IQ3_XXS signed magnitude indices in134-byte blocks,with unchanged half scale
-and eight sub-scales. AVX2 register shuffles replace runtime codebook loads;
-integer lanes,per-block FP32 FMA order,final reduction/0.25 factor and SwiGLU
-preserve the compiled native pair contract. The full added GU view is1715200B
-per expert;raw weights remain. Raw-plus-view footprint is3891200B for18/20
-and3430400B for18/42. This does not change production/prefill,NT2+selection or
-model ownership. Numerical consistency does not prove performance or adoption.
+IQ3_XXS signed-magnitude indices in134-byte blocks,versus98raw bytes. AVX2
+register shuffles replace codebook loads while preserving native integer lanes,
+per-block FP32 FMA/reduction order and SwiGLU. Raw weights remain;the additional
+GU view is1715200B/expert. Raw-plus-view is3891200B for18/20and3430400B for18/42.
+This changes neither production/prefill nor NT2+selection. Earlier codec and
+168-expert/672-comparison numerical evidence is recoverable at6403ca995.
 
-At source6aba98829,all eight host controller tests pass,without skips. The
-263-input correctness plan uses1376GGML inputs and the recovered568-file
-native composition/actual2026.2CPU recipe;all633actual compiler inputs are
-covered and the CPU-only ELF links no GPU runtime. All15inference ELFs remain
-unchanged. Synthetic controls close normally0with quiet stderr and closed
-ownership:524288grid/sign/scale base cases,134217728encoded values and524288
-actual SIMD integer chunks,16full GU/FMA cases,64partial ranges and12refusals.
-Zero/negative-zero/subnormal/max-finite half scales,zero/signed activation
-scales and-128activation lanes are included. Outputs,integer lanes,inactive
-rows and guards pass. Both real-weight IQ3_XXS formats also close normally0:
-84distinct experts each,four quantized NT1 activations each,672GU comparisons
-with exact finite native-pair bits and guards. The retained auxiliary ELF is
-`ab274d68`,built from6aba98829. This qualifies the isolated native-pair GU
-contract,not independent task quality,full production dispatch or model speed.
+The new CPU-only timing ELF`30e45b85`,source`313e5c4bc`,covers636actual compiler
+inputs. All ten controller tests and the repeated codec/integer/FMA/bounds
+controls pass. All eight threaded real-weight checks pass:both formats,
+groups6/28,1/6compute threads,NT1..4 and heterogeneous jobs,with finite exact
+native GU outputs,inactive rows,guards and actual affinity.
+The18/20current-NT screen closes24independent processes and240eligible timing
+samples,normal0,quiet stderr and closed ownership. Three opposite-order pairs
+per thread/group shape use a matched component-only barrier team. These are
+raw/compact geometric-mean speed ratios;each cell retains all three ratios
+and individual samples in`cpu-roofline-current.json`.
 
-The new timing source at`313e5c4bc`adds a component-only matched barrier team,
-actual row-dispatch counts,setup cost and full raw-plus-view storage. All ten
-controller tests pass without skips,normal0. The committed timing plan first
-requires eight threaded checks:both formats,groups6/28 and1/6compute threads,
-including NT1..4 and heterogeneous jobs. Then24independent timing children
-screen18/20with the measured NT mixture in three opposite-order pairs per
-thread/group shape. Each child measures reuse and stream with five eligible
-samples each;all samples and negative shapes remain. This isolates GU math,
-not the production ExpertPool or model critical path. Other-format and pure
-NT1 performance,production dispatch/lifecycle,RAM admission and model gates
-remain prerequisites for production selection. No compact performance result
-exists yet. The new build root is`cpu-compact-iq3xxs-timing-v1`;keep the old
-`ab274d68`auxiliary ELF only as its immediate numerical fallback until the new
-checks pass,then recover its original inputs and retire it. The two inference
-generations remain.
-Luna-max's post-calibration review agrees this bounded comparison is the next
-question;existing references suffice and no new Orca survey is selected.
-The closed calibration is recovered from8547cb65d in Git;retired V3/V4 paths
-are not current inputs. No full model adoption or physical262144/RESTORE
-qualification follows from these CPU checks.
+| Compute threads | Expert group | Reuse | Stream |
+| --- | --- | --- | --- |
+|1|6|1.83066|1.70772|
+|1|28|1.76161|1.70872|
+|6|6|1.29047|0.95351|
+|6|28|1.24012|1.04266|
+
+All three pairs favor compact for one-thread and six-thread reuse cells.
+Both six-thread stream cells fail the all-three-pairs gate;their geometric
+means do not qualify stable improvement. Full allocation+encoding costs
+0.354..0.481s for66/84loaded experts;observed owned RSS is263720960..334970880B.
+Both arms retain raw+view storage. Setup amortization is recorded per cell,
+not converted into model TG. This isolates GU math with a shared scheduler,
+not the production ExpertPool,DRAM traffic,model critical path or hardware
+saturation. No inference implementation or model-speed adoption follows.
+
+Next prioritize a packed98B/register-decode variant or bounded hot-view
+comparison against this qualified component baseline. Other-format,pureNT1,
+production dispatch/lifecycle,actual RAM admission and setup reuse remain
+prerequisites. Keep the two inference generations and the current auxiliary
+ELF for that immediate follow-up. The old`ab274d68`numeric consumer has ended;
+recover its original6aba/58fb/8f7inputs before retiring its build.
+Luna-max's post-calibration review supports bounded comparison using existing
+references;no duplicate Orca survey is selected. Closed CPU calibration remains
+recoverable at8547cb65d. Physical262144/RESTORE and model/task qualification
+remain open.
 
 Both closed auxiliary CPU builds and their output are retired after recovering
 original261/V4 262controller inputs,568native inputs,GGML source/recipes and
