@@ -956,8 +956,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the552b prefill fallback and independent phase selection.
   Follow`adaptive_payload_generation_varied_prose_v1`.
   The next96-copy positive entry is source-prepared in
-  `tools/sycl/check_adaptive_payload96_entry.py`;no controls,preparation or
-  native execution have run. It reuses the unchanged e1b011engine and ordered
+  `tools/sycl/check_adaptive_payload96_entry.py`;its CPU controls now pass at
+  `df426f83c`,but preparation and native execution have not run. It reuses the unchanged e1b011engine and ordered
   owned supervisor,requires both current8/32cohorts closed,and does not enable
   a performance trial. The pinned48-layer native index has max blob2662400B;
   even96maximum blobs total255590400B(243.75MiB),within the unchanged256MiB
@@ -968,7 +968,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   total/min/max requested bytes and empty-update count;no per-layer arrays.
   Zero updates must request zero bytes with no unpublished group. Pure CPU
   cases add mixed-size/partial groups,missing/duplicate/late requests,incorrect
-  counts/bytes,integer overflow and invalid layer bounds. These have not run.
+  counts/bytes,integer overflow and invalid layer bounds. These CPU cases pass.
   This measures expert-copy requests,not initial placement,map/audit traffic,
   physical PCIe bytes,transfer duration or saturation. Require two full96-copy
   publications,both dispatch
@@ -980,13 +980,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   queued copies,second map unpublished,noDONE,no supervisor kill,quiet
   validation and closed owners/no fresh fault. Its byte bound is the pinned
   model's96-group maximum. Source-prepared CPU controls cover second-group
-  publication,malformed status/count/order and oversized payload;they have not run.
+  publication,malformed status/count/order and oversized payload;these CPU cases pass.
   This separate exact96second-record refusal remains mandatory before any96
   speed comparison. Keep the original32
   reader and all current cohort/native inputs unchanged. Its ordered/index
-  adversarial controls are preregistered for the closed-cohort boundary:
+  adversarial controls completed normally0after both cohorts closed:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
-  This source-only plan establishes no96native safety,performance or adoption.
+  The125-input source signature and28ordered,7index-bound,14copy-request and
+  213refusal negative cases are recorded under`adaptive_payload96_reader_host_v1`.
+  This CPU result establishes no96native safety,performance or adoption.
   The separately source-prepared
   `tools/sycl/compare_adaptive_payload96_generation.py`uses32as the speed
   reference after its repeated code gain,with32/96,96/32,32/96process pairs
@@ -994,15 +996,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   independent prompt/TTFT gates. Both current8/32cohorts and the actual96
   positive/refusal pair must close before preparation;each workload also
   requires its own repeated32over8TGgain before selecting32as reference.
-  No controls,preparation,
-  model execution or96speed qualification have run. This new source is outside
-  the active prose cohort's346frozen inputs. Retire it if96admission fails
+  No speed-controller controls,preparation,model execution or96speed qualification
+  have run. Its CPU controls are preregistered before preparation:
+  `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
+  This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
   without a named follow-up consumer.
-  Prose processes0/1/2/3/4each have69successful raw/JIT files
-  (13136414/13122266/13122277/13136451/13136498bytes)retired after recovering346Git inputs
-  and pushing the compact result. Their generated configs/plans remain for
-  the last pending process;admission still passes
-  after deletion and all15ELFs/four immutable receipts are unchanged. Manifest:
+  All six prose processes each have69successful raw/JIT files
+  (13136414/13122266/13122277/13136451/13136498/13122251bytes)retired after recovering346Git inputs
+  and pushing compact results. The closed-cohort recovery also reproduces
+  all12generated config/plan files byte-for-byte,the105-key environment and
+  model-asset inventory from the recorded source/recipe. The remaining17files/
+  126943bytes,including successful frontend logs,are retired;the root no
+  longer exists. The next96reader passes without that root;all15ELFs/four
+  immutable receipts are unchanged. Original samples/decisions remain at
+  `c2e317112`;metadata manifest:
+  `adaptive-payload-generation-varied-prose-v1-metadata-retirement-20261107.json`,
+  SHA256`3ad29bc3a863745c63a00c20c8e88c0486d88a54aeda9c8db7299cc9a7f2cd21`.
+  Per-process manifests:
   `adaptive-payload-generation-varied-prose-v1-process0-output-retirement-20261107.json`,
   SHA256`e8e7ef533b03366618eb612cc3cf7030197a8047a2152a8f4eeed705008de0cc`,and
   `adaptive-payload-generation-varied-prose-v1-process1-output-retirement-20261107.json`,
@@ -1012,7 +1022,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `adaptive-payload-generation-varied-prose-v1-process3-output-retirement-20261107.json`,
   SHA256`ccde4bb997c82d2a9b1c8a56c42e262913b6da9b26957d20465726b1ebe4577b`,and
   `adaptive-payload-generation-varied-prose-v1-process4-output-retirement-20261107.json`,
-  SHA256`941ce371cd176ae564cdef6d61ed4dcf780e324536920e36b06947e9e079e8e0`.
+  SHA256`941ce371cd176ae564cdef6d61ed4dcf780e324536920e36b06947e9e079e8e0`,and
+  `adaptive-payload-generation-varied-prose-v1-process5-output-retirement-20261107.json`,
+  SHA256`395f6c8f763d77923a1c19876cab5d088c275e3f7b971b194f59c44b29024d88`.
   For the closed regular-code cohort,all six processes each have69successful
   raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
@@ -2740,8 +2752,10 @@ That commit's MIT LICENSE matches this fork. Main-authored
 blocked-sink/newest-chunk order and drops,bounded close,broken sink,owned-stream
 restoration,capture preservation,and unread-pipe child control plus normal
 buffered/unbuffered child exit. Neither module is in the frozen346benchmark
-or568native inputs;the server does not import it yet. No tests have run.
-After the current8/32cohort closes,run these checks before adapting the
+or568native inputs;the server does not import it yet. The prepared
+`upstream_nonblocking_console_module_host_v1`plan pins34source inputs at
+`df426f83c`and the qualified Python runtime for these eight cases;no tests
+have run. Both8/32cohorts are now closed. Run these checks before adapting the
 server's existing no-argument`main()`wrapper and its upstream
 `STRATA_BLOCKING_CONSOLE=1`bypass;then qualify actual startup and existing
 server/Responses regressions before another frontend-dependent model plan.
