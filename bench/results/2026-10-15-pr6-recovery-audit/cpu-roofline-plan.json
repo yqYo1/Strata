@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-decode-mix-v3",
+  "schema": "strata-cpu-decode-mix-v4",
   "source": {
-    "revision": "893e7cebb689078edd6b5f7744befdcc33ea6a2a",
-    "count": 261,
-    "aggregate_sha256": "815906bfadc3907506da7cc14efe51d0f6d7a210042dfac6f52979664020825f"
+    "revision": "d7a92b074d5b625b350936ab434e88cba2610ffe",
+    "count": 262,
+    "aggregate_sha256": "fb7d4908e8ae217b34a1ac32974699e559f5709750e915da658232a1175077b1"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -709,16 +709,16 @@
     }
   },
   "previous_result": {
-    "commit": "105385ccce64b0169ed7d2137e8df9f1fa081f0e",
+    "commit": "49b2d4821077e4aa51425c0450a8414e013cd79a",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
-    "sha256": "0c036357f41009c8ffd550e73d63c21bbe82d78f107b80a9dc6e55b5cb0ba741"
+    "sha256": "55292fd22ddc6231e7d8bad70eb865542539d8e6f3e195665ce00ea649fbd243"
   },
   "configure": [
     "/usr/bin/cmake",
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v4/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
@@ -730,20 +730,20 @@
     "-DCMAKE_C_FLAGS=-DSTRATA_CPU_SERVICE_PROFILE=1",
     "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
     "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
-    "-DSTRATA_CPU_SOURCE_ROOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/source"
+    "-DSTRATA_CPU_SOURCE_ROOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/source",
+    "-DSTRATA_CPU_SCAN_SOURCE=/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_roofline/main.cpp"
   ],
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v4/build",
     "--target",
-    "cpu_decode_mix",
     "cpu_roofline",
     "--parallel",
     "4"
   ],
   "protocol": {
-    "question": "How does actual e1b011 CPU expert work respond to compute-thread count and working-set reuse at the current adaptive96 NT/format distribution?",
+    "question": "Complete the 1/2/3/6-thread read-reference curve alongside explicitly reused exact-source V3 expert calibration.",
     "groups": [
       6,
       28
@@ -777,9 +777,11 @@
     "scan": "Read-only256MiB persistent1/2/3/6-thread checksum reference;five>=1s samples. Achieved reference,not a DRAM or arithmetic ceiling.",
     "validation": "All loaded distinct experts at NT1..4 and heterogeneous-NT timed-size groups:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive lanes and external canaries. This is route consistency,not independent task quality.",
     "observers": "Same native IQ2/IQ3 pairs and IQ3 audit,CPU service/census off,20ms pool spin. Profile-enabled CPU layout and actual icx/icpx2026.2 sources;no GPU runtime.",
-    "gates": "All56 check children before timing;all112 expert cells and4 read references with five individual eligible samples,actual affinity/work/histogram conservation and normal closed owners. Stop first failure/budget;no retries,replacement or exclusions.",
+    "gates": "Reuse all original56 checks/112 cells/560 samples with full source/build/fixture/environment proof. Build only the new scanner. Require four bounded negative CLI checks,then all four read references with five eligible samples each. Stop first failure;no retries or sample replacement.",
     "interpretation": "Thread and reuse sensitivity guide CPU optimization. Pool waiting,quantization,scheduling and memory effects remain mixed. Neither concurrent CPU time nor requested bytes/read reference proves physical traffic,saturation,critical path,model speed or70tok/s.",
-    "retention": "Keep compact individual timing/work/validation samples and exact provenance. Retire successful raw/compiler output and this auxiliary CPU build after the calibration decision and original-source recovery. Preserve the two current engine generations."
+    "retention": "Keep compact individual timing/work/validation samples and exact provenance. Retire successful raw/compiler output and this auxiliary CPU build after the calibration decision and original-source recovery. Preserve the two current engine generations.",
+    "analysis": "Per format/worker/group/mode use the median wall/pass sample and its matched GU/quant/down/cpu values. Divide by passes*100*group for per-job costs,weight formats by observed job counts;compare 1/2/3/6 threads and stream/reuse. Read rates are requested_bytes/wall with median/range/CV. Synthetic marginals and achieved read rates are not model latency,physical DRAM traffic,hardware saturation or a70TG ceiling.",
+    "continuation": "Original expert checks and samples are reused unchanged,not executed by V4. All four read references are newly measured. V3 remains failed in its pinned commit."
   },
   "retained_generation": "Auxiliary CPU-only calibration;does not overwrite either of the two current engine/fixture generations. Retire it at calibration closure.",
   "budgets": {
@@ -791,5 +793,52 @@
     "rss_bytes": 3221225472,
     "text_bytes": 8388608,
     "root_bytes": 268435456
+  },
+  "reuse": {
+    "result_commit": "49b2d4821077e4aa51425c0450a8414e013cd79a",
+    "stage_commits": {
+      "build": "ce9f3aa0f9ebc7e6c6dabcb185b009d52b887f71",
+      "check": "6f453cc31eaca7e22687e2757bd37b5a82ac6dbe",
+      "measure": "49b2d4821077e4aa51425c0450a8414e013cd79a"
+    },
+    "original_passed": false,
+    "original_complete": false,
+    "original_error": "RuntimeError('owned child failed: scan-2')",
+    "original_plan_sha256": "e3e22be414eaba33d19a864367634e85e750f707a6f8e66d400110d4d138b4de",
+    "original_source": {
+      "revision": "893e7cebb689078edd6b5f7744befdcc33ea6a2a",
+      "count": 261,
+      "aggregate_sha256": "815906bfadc3907506da7cc14efe51d0f6d7a210042dfac6f52979664020825f"
+    },
+    "expert_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build/cpu_decode_mix",
+      "sha256": "c18208a5d012592fb29f871cea899d912a02654b07dd3e9b260869e6b002ad12"
+    },
+    "receipts": {
+      "build": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build.json",
+        "sha256": "71ba86d85d831e743b23a495ce2de713b913394a9c6eab9566b775dcd1accfe3"
+      },
+      "check": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/check.json",
+        "sha256": "aef7aabfc62b56a63a5579f75852a12807c5591827fa574383a79219bad411d1"
+      },
+      "measure": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/measure.json",
+        "sha256": "49c916dc962efcc51c2a51ccd1112e9c341d6036c0be15420eee897e849769fe"
+      }
+    },
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/compiler-inputs.json",
+      "files": 634,
+      "sha256": "3ca4580036f3d9655c7789e12d9b546553f9d90f53fdf194dc166020c4c17012",
+      "uncovered": 0
+    },
+    "compile_commands_sha256": "6b1ba44437a0886ec76c7e4b2c60b63d3acce7d7e3b2387c5dc41277ccb85b92",
+    "link_inputs_sha256": "a6e9e45c731a7dd4bc1752a1eb6065fcf54c8a5151820afff9b9a9781466e9f5",
+    "numerical_cases": 56,
+    "expert_cells": 112,
+    "expert_samples": 560,
+    "scope": "Original expert checks and samples are reused unchanged,not executed by V4. All four read references are newly measured. V3 remains failed in its pinned commit."
   }
 }

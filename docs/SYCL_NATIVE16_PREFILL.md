@@ -1561,8 +1561,13 @@ inputs,and rechecks all634actual compiler inputs,the original links,expert
 ELF,56numerical/560timing samples,model slices and environment. Reused expert
 samples remain identified as V3 evidence;V4 newly builds only the public
 scanner,checks four bounded invalid-CLI refusals,and measures all1/2/3/6read
-references with five eligible samples each. This continuation has not yet
-built or executed;its plan must be committed first.
+references with five eligible samples each. At source d7a92b074,all eight
+host controller tests pass without skips,normal0under the measurement lock;
+they include intermediate scan counts and malformed/short/work-drift refusals.
+The V4 plan is now prepared at that source,with262controller/scanner inputs.
+All original expert evidence and fixture identities pass prospective reuse
+qualification. Commit this plan before building the new scanner;no V4 build
+or device execution has occurred.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
