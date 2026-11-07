@@ -3006,7 +3006,11 @@ payload successor's six. The temporary third429b generation is physically
 retired after source/recipe recovery and actual successor preparation/frontend
 admission without its original paths. Its immutable metadata record remains
 consumed;no old compiled tree or quarantine is retained. This is the two-build
-window for the immediate clean8/32comparison. Other configured
+window for the closed adaptive comparisons. The current DFlash2/v3.1 work
+temporarily retains a third, unadopted native feature candidate, replacing its
+superseded component generation in place after original-input recovery. Keep
+552b for prefill and e1b011 for decode; select retained outputs and retire the
+extra candidate at feature qualification/comparison closure. Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
 numerical/IL choice;successful host/device/build output and superseded source
@@ -3015,12 +3019,27 @@ original source/recipe recovery and validated migration remain independent holds
 
 Niko1221/Strata remains the only upstream. The maintained
 [`upstream-status.json`](../bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json)
-records the last actual check at **2026-11-06 20:27:33 UTC**,
-`54828c7efbcdf9474697e70922d851f6707f4b32`(`v0.2.11-4-g54828c7e`). The
-209-commit/338-path interval from`ffa80d73`still needs full functional review,
-remaining imports and hardware-tuned vanilla evaluation. The v0.2.11tag is
-`c3b3f5035506f3e966f1b4b7b188aeaabae92f1d`;the next actual check is due
-approximately48hours after the timestamp above. Earlier obligations remain.
+records the last actual check at **2026-11-07 20:27:59 UTC**,
+`146df3c468739147f520ac3816de806f71232571`(`v0.2.11-98-g146df3c4`).
+Shared Python/setup/control/server/CLI imports are present, but the native
+function ledger, full host validation and hardware-tuned unmodified-upstream
+evaluation remain incomplete. The next check is due approximately48hours after
+that timestamp. **DeepSeek and35B execution support remain excluded until the
+user explicitly requests them, including future syncs.**
+
+Unsloth v3.1 catalog/pinned metadata and the stock DFlash2 Q4 pack are present.
+The native optional DFlash2 route is compiled at`689c3da346aeeb819d03ee644b27648adc241d3b`;
+its16-case GPU fixture passes signed Q4 GEMM,FP32 taps and production mixed
+FP32/BF16 prompt-tail means,complete/sparse row positions,clipping,span admission
+and release/rebegin. It admits the104806400-byte tail allocation,exits normally0,
+verifies36executable mappings and has no fresh fault. This does not qualify the
+full drafter/model route,ring recovery,RESTORE,physical262144 fill or performance.
+Next:tail transition lengths2046/2047/2048 and ring/request/failed-owner fixtures,
+then bounded target-model execution and independent-phase comparisons. Default
+MTP and both fast references remain selected. See`current_sync`in the linked
+status for exact source/build/runtime identity and remaining functional ports.
+The following earlier host-component results refer to their original pinned
+inputs;they do not qualify the later bulk Python imports.
 After both frozen cohorts closed,the required streamed-tool closing-tag
 behavior from Niko`3bbf0f399e2a1b3d38642eca4342721fc7994201`was adapted to
 the older fork parser at`f7784635b`,preserving early tool/argument streaming
