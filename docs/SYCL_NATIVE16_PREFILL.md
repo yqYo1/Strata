@@ -2676,6 +2676,23 @@ source inputs and the qualified interpreter manifest. This is transport/CPU
 validation,not GPU or inference qualification. The other four reviewed server concerns,
 remaining functional ports,whole function ledger and vanilla performance remain
 incomplete.
+For the next required server slice,`serve/nonblocking_out.py`is copied
+unchanged from Niko`b776e1cd02c11e8cb0824d5dd0087fd907641091`(4969bytes,
+SHA256`05e3d46c38eeeaac4975591d4c2854d53db125f442e9fb6e5ac5529ade821c10`).
+That commit's MIT LICENSE matches this fork. Main-authored
+`serve/test_nonblocking_out.py`source-prepares eight bounded CPU cases:
+blocked-sink/newest-chunk order and drops,bounded close,broken sink,owned-stream
+restoration,capture preservation,and unread-pipe child control plus normal
+buffered/unbuffered child exit. Neither module is in the frozen346benchmark
+or568native inputs;the server does not import it yet. No tests have run.
+After the current8/32cohort closes,run these checks before adapting the
+server's existing no-argument`main()`wrapper and its upstream
+`STRATA_BLOCKING_CONSOLE=1`bypass;then qualify actual startup and existing
+server/Responses regressions before another frontend-dependent model plan.
+Retain original failures and commit any repair before rerunning. The upstream
+queue's`max_bytes`counts string characters,so this unmodified source does not
+establish an encoded-byte memory bound. This is source preparation,not a
+completed functional port or inference change.
 The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
