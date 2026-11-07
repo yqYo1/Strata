@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-packed-iq3xxs-gather-v1",
+  "schema": "strata-cpu-activation-lut-v1",
   "source": {
-    "revision": "41167d33b2c9ce38c207075dd9bfe16448d54d6c",
-    "count": 264,
-    "aggregate_sha256": "a7644baceb7e364c77a0540fef78494d339c68c39bb84c2c7c35a8f15ed860c0"
+    "revision": "3406abc97bd9a84732dc4a0bf267c9c941bfb2d8",
+    "count": 263,
+    "aggregate_sha256": "7fd9ebeb20f0830516d994ab9d24a4f9251549572e312cb7f1708a826ba1933c"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -111,9 +111,9 @@
     "sha256": "860127397c3d46585ad2925b1f9ae418c0392b62a3c3706c3d7fd029b3643136"
   },
   "numerical_origin": {
-    "commit": "286b4a132b960a3a633511173846b57ebef32cee",
+    "commit": "e4f6f064449c89b97f3f52527d4acad2baf4af37",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
-    "sha256": "3c71fb6b9e6c1a45fb9b121b5f759b084735931a228b5c41a946e57a02e3d77e"
+    "sha256": "c7d5c7d5e7d632b1574d23e3093db7fe5ed86d49357a2049a8db7c5710cda3b7"
   },
   "environment": {
     "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
@@ -231,7 +231,7 @@
       "up": 1711166464,
       "down_offset": 913711104,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 84,
+      "experts": 70,
       "gu_bytes": 627200,
       "down_bytes": 921600,
       "observed_jobs_NT": [
@@ -240,7 +240,7 @@
         5106,
         1010
       ],
-      "fixture_sha256": "5895760f169c51da395dbd1d1b39dcb4c70dd068d27a2b7766a2aeaa829d5131"
+      "fixture_sha256": "bbb8f12562ea2cf61b7cbde7a5e49619e329d7fe8557501bbede497f71235e23"
     },
     {
       "layer": 12,
@@ -251,7 +251,7 @@
       "up": 14026847104,
       "down_offset": 13464898944,
       "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 84,
+      "experts": 80,
       "gu_bytes": 627200,
       "down_bytes": 460800,
       "observed_jobs_NT": [
@@ -260,7 +260,7 @@
         1120,
         202
       ],
-      "fixture_sha256": "b106ea4fc2490b3c2e294d8d82fc7746c9863a92c1006c902818e7591c8afd38"
+      "fixture_sha256": "a9bc619991c5ea44810dd78a731d91ce2ecc59d5b403e2be4def480ce8dbc2b2"
     }
   ],
   "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
@@ -278,14 +278,15 @@
     "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
     "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
     "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
-    "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+    "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
+    "/usr/bin/python3": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
   },
   "configure": [
     "/usr/bin/cmake",
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-packed-iq3xxs-gather-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-activation-lut-v1/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
@@ -302,62 +303,72 @@
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-packed-iq3xxs-gather-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-activation-lut-v1/build",
     "--target",
     "cpu_decode_mix",
     "--parallel",
     "4"
   ],
+  "host_environment": {
+    "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LANG": "C.UTF-8",
+    "HOME": "/home/yayoi",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-activation-lut-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-activation-lut-v1/cache",
+    "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-nonblocking-console-entry-host-v1/cache/python"
+  },
+  "python_contract": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+    "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+    "files": 3597,
+    "bytes": 270975442
+  },
+  "python_selected": {
+    "workspace_venv": false,
+    "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+    "file": {
+      "realpath": "/usr/bin/python3.12",
+      "dev": 29,
+      "ino": 774532,
+      "bytes": 8020928,
+      "mtime_ns": 1788171506000000000,
+      "ctime_ns": 1790581701420197973,
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    }
+  },
+  "host_command": [
+    "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+    "-X",
+    "faulthandler",
+    "-B",
+    "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/test_cpu_decode_mix.py",
+    "-v"
+  ],
   "protocol": {
-    "question": "Does direct AVX2 gather from the original98B IQ3_XXS format reduce current-mixture GU time without per-expert expansion?",
+    "question": "Does a512KiB exact block-local activation-dependent partial-dot LUT repay generation cost within the actual top_k10reuse limit?",
     "check_order": [
       [
         18,
         20,
-        1,
-        6
+        1
       ],
       [
         18,
         20,
-        1,
-        28
-      ],
-      [
-        18,
-        20,
-        5,
-        6
-      ],
-      [
-        18,
-        20,
-        5,
-        28
+        10
       ],
       [
         18,
         42,
-        1,
-        6
+        1
       ],
       [
         18,
         42,
-        1,
-        28
-      ],
-      [
-        18,
-        42,
-        5,
-        6
-      ],
-      [
-        18,
-        42,
-        5,
-        28
+        10
       ]
     ],
     "screen_order": [
@@ -365,7 +376,6 @@
         18,
         20,
         1,
-        6,
         0,
         "raw"
       ],
@@ -373,23 +383,20 @@
         18,
         20,
         1,
-        6,
         0,
-        "packed"
+        "lut"
       ],
       [
         18,
         20,
         1,
-        6,
         1,
-        "packed"
+        "lut"
       ],
       [
         18,
         20,
         1,
-        6,
         1,
         "raw"
       ],
@@ -397,7 +404,6 @@
         18,
         20,
         1,
-        6,
         2,
         "raw"
       ],
@@ -405,184 +411,72 @@
         18,
         20,
         1,
-        6,
         2,
-        "packed"
+        "lut"
       ],
       [
         18,
         20,
-        1,
-        28,
+        10,
         0,
         "raw"
       ],
       [
         18,
         20,
-        1,
-        28,
+        10,
         0,
-        "packed"
+        "lut"
       ],
       [
         18,
         20,
+        10,
         1,
-        28,
-        1,
-        "packed"
+        "lut"
       ],
       [
         18,
         20,
-        1,
-        28,
+        10,
         1,
         "raw"
       ],
       [
         18,
         20,
-        1,
-        28,
+        10,
         2,
         "raw"
       ],
       [
         18,
         20,
-        1,
-        28,
+        10,
         2,
-        "packed"
-      ],
-      [
-        18,
-        20,
-        5,
-        6,
-        0,
-        "raw"
-      ],
-      [
-        18,
-        20,
-        5,
-        6,
-        0,
-        "packed"
-      ],
-      [
-        18,
-        20,
-        5,
-        6,
-        1,
-        "packed"
-      ],
-      [
-        18,
-        20,
-        5,
-        6,
-        1,
-        "raw"
-      ],
-      [
-        18,
-        20,
-        5,
-        6,
-        2,
-        "raw"
-      ],
-      [
-        18,
-        20,
-        5,
-        6,
-        2,
-        "packed"
-      ],
-      [
-        18,
-        20,
-        5,
-        28,
-        0,
-        "raw"
-      ],
-      [
-        18,
-        20,
-        5,
-        28,
-        0,
-        "packed"
-      ],
-      [
-        18,
-        20,
-        5,
-        28,
-        1,
-        "packed"
-      ],
-      [
-        18,
-        20,
-        5,
-        28,
-        1,
-        "raw"
-      ],
-      [
-        18,
-        20,
-        5,
-        28,
-        2,
-        "raw"
-      ],
-      [
-        18,
-        20,
-        5,
-        28,
-        2,
-        "packed"
+        "lut"
       ]
     ],
-    "controls": "Repeat compact controls,and independently check packed gather/sign integer lanes on524288mixed grid/sign/scale chunks;16full FMA/GU cases,64partial ranges and11packed GU refusals.",
-    "real": "Both formats,groups6/28,1/6compute threads;four NT1 activation vectors per real expert plus NT1..4/mixed threaded jobs. Validate all3raw/compact/packed variants,finite/native bits,inactive rows,guards and actual affinity.",
-    "scope": "Component isolation:both arms use the same bounded GuTeam barrier scheduler. NT1 calls the compiled native pair or packed-gather entry directly;compact is an additional numerical control. NT2+uses unchanged native_gu_rows. This is not the production ExpertPool dispatch/scheduling or model latency.",
-    "memory": "Both arms keep the original raw blobs and all compact views. Report allocation+encode wall/CPU time,logical and guarded view storage,raw bytes and owned peak RSS. Packed needs no per-expert expansion;the unused compact views intentionally coexist in both arms to match the prior component envelope. Report this diagnostic setup separately,not as required packed conversion. No measured production RSS claim.",
-    "samples": "Per child,reuse then stream;one initial pass,three pilot/warmup passes,10K timer queries with query/fastest pass<0.001. Five whole-pass samples per mode,target1.3s,floor1s,passes<1000000. Validate actual total/NT1/compact/packed/raw row counts. All samples retained;no replacement.",
-    "comparison": "Representative18/20/current measured NT mixture screen:1/6compute threads,groups6/28,three opposite-order process pairs per shape. Each child supplies both reuse/stream. Per-process median seconds/pass;paired raw/packed ratio;geometric mean and all individual ratios/spread retained.",
-    "acceptance": "A shape/stream is eligible for a separately committed follow-up only when all3paired ratios>1 and geometric mean>1;no blanket minimum speedup. Mixed/negative results stay recorded. No per-expert setup is required by packed;shared unused-view setup remains separately recorded. No conversion to model TG.",
-    "gate": "Commit each stage before next. Require all8checks and synthetic controls before screen;normal0,quiet stderr,closed owners,exact source/build/work/env. Stop first execution/numerical/budget failure;no retry/exclusion. No model trial from this screen alone.",
-    "pending": "Before production selection,validate other-format/pureNT1 performance and actual production entry/lifecycle,then model task quality,prefill independence and physical262144/RESTORE. Keep the qualified prefill route.",
-    "retention": "Keep individual useful samples,setup/footprint,source/build identity and compact decisions. The30e45b85timing ELF is the immediate numerical fallback until new checks pass;recover its original313e5source/recipe/636inputs before retirement. Retire successful raw timing/build output after closing the comparison. Preserve both inference generations."
+    "controls": "All2097152table entries for8edge activations,4194304scaled native-sign chunks,14shape/alias refusals;all guards and no writes on refusal.",
+    "real": "Both real model IQ3_XXS formats,E1/E10,NT1,four activation vectors per expert;all rows bit-equal to current production native_gu_rows and finite with guards.",
+    "scope": "Serial pinned host thread,component GU only. Raw arm calls actual native_gu_rows Decode entry with audited IQ3 paired dispatch. LUT arm has its own bounded checked entry. No production ExpertPool,phase dispatch,model TG or saturation claim. NT2-4and threading remain pending.",
+    "sharing": "Same quantized input across E1orE10experts only. Actual source limits per-token routes to10;28jobs across tokens is not28way activation reuse. Candidate rebuilds10slabs per call with no cross-request reuse.",
+    "memory": "512KiB slab plus64B/FF-row accumulators,preallocated equally in both arms. Clear accumulators,build tables,raw row loads,FMA,SwiGLU and output writes are timed. No per-expert expansion. Both arms retain identical >=128MiB raw fixture set;reuse and cyclic stream measured separately.",
+    "samples": "One initial call,three pilots,10K timer queries/query<0.001fastest call,five>=1s whole-call batches,target1.3s. All samples retained. Actual native pair rows and LUT build/block/output counts must conserve;validate final timed output before resetting it.",
+    "comparison": "Three opposite-order independent process pairs per E;both reuse/stream in every child. Per-process median seconds/call;raw/LUT paired ratios and geometric means,with all samples/spread.",
+    "acceptance": "A cell is eligible for a separately committed next screen only when all3paired ratios>1and GM>1. No blanket minimum gain. E1is negative control;only E10gain warrants actual reuse/NT/thread tests,never model adoption. Keep unsuccessful results;no retry or posthoc exclusions.",
+    "gate": "Commit source,host tests and plan before build. Commit build,controls and all4real checks before next stage. Stop first execution,numerical,budget or ownership failure. No model trial from this discriminator alone.",
+    "pending": "If favorable,verify actual per-token CPU-miss/NT reuse,production entry and critical-path benefit;preserve prefill/decode handoff and repeated model performance,agent/task and physical262144/RESTORE.",
+    "retention": "One fresh auxiliary generation;baseline and LUT compile together from the frozen native CPU source. Prior compact/gather roots are retired. Keep useful samples and source/recipe identities;retire successful raw output after closure. Preserve two inference generations."
   },
   "budgets": {
     "build_seconds": 600,
     "controls_seconds": 180,
-    "check_child_seconds": 120,
+    "check_child_seconds": 180,
     "screen_child_seconds": 180,
     "stage_seconds": 1800,
     "rss_bytes": 3221225472,
     "text_bytes": 8388608,
     "root_bytes": 268435456
-  },
-  "host_controller_validation": {
-    "source_commit": "41167d33b2c9ce38c207075dd9bfe16448d54d6c",
-    "command": "/usr/bin/flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock /usr/bin/timeout -k 5s 30s /usr/bin/prlimit --as=1073741824 --cpu=20 --fsize=1048576 /usr/bin/python3 -X faulthandler -B -m unittest discover -s tests/core -p test_cpu_decode_mix.py -v",
-    "tests": 10,
-    "skips": 0,
-    "elapsed_s": 0.137,
-    "exit_code": 0,
-    "passed": true,
-    "scope": "CPU controller/typed dispatch/binary-input refusal controls;intentional owner-setup refusal remains a test,not an actual build failure."
   }
 }
