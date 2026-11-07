@@ -1467,24 +1467,17 @@ all15model assets fully hashed and focused decode budget96selected from the
 closed32/96decision. Follow`adaptive_cpu_leaves_regular_code_v1`.
 The prepared invariant,serial admission and five compiled producer/resolver
 hashes are pinned. No native code changes. Fresh current-source benchmark and
-server frontend probes both pass with closed owners. Process0,leaf-off,now
-closes normally0with quiet validation,closed owners,unchanged boot/driver and
-no fresh fault. Its33209fresh-input/3227generated sample has prompt58740.8ms,
-decode237853.8ms,TTFT58.912s and exact PP/TG565.348106/13.567158. All five
-native/client work records bind,with a checked four-warmup prefix and no leaf
-records. This input differs from the closed32/96cohort;no cross-cohort speed
-gain follows. Process1,leaf-on,also closes normally0with quiet validation,
-closed owners,unchanged boot/driver and no fresh fault. Its matching33209/
-3227-token sample has prompt59991.8ms,decode244549.3ms,TTFT60.157s and exact
-PP/TG553.558986/13.195703. All five native/leaf request records bind,and the
-aggregate CPU/token/draft/long-output work signature matches process0.
-The first leaf-on/off per-token latency ratio is1.028149645,within1.05.
-Process2,the second leaf-on sample,also closes normally0with quiet validation,
-closed owners,unchanged boot/driver and no fresh fault. Its matching33209/
-3227-token sample has prompt60316.4ms,decode247694.0ms,TTFT60.490s and exact
-PP/TG550.579942/13.028172. Its work signature and format/NT counts match the
-first two processes. Three processes remain;the second pair still needs its
-leaf-off sample before an observer-cost decision.
+server frontend probes both pass with closed owners. The first four processes
+now close normally0with quiet validation,closed owners,unchanged boot/driver
+and no fresh fault. Every process has33209fresh-input/3227generated tokens,
+five bound native/client records and a checked four-warmup prefix. The work and
+long-output signatures match. Processes0/3are leaf-off,with exact TG13.567158/
+13.338442;processes1/2are leaf-on,with13.195703/13.028172. Their full individual
+PP,time,TTFT and work samples remain in the compact result. These inputs differ
+from the earlier32/96cohort;no cross-cohort speed gain follows.
+The first two opposite-order leaf-on/off per-token latency ratios are
+1.028149645and1.023815340,both within1.05with matching work. The final two
+processes remain before observer-cost qualification.
 The first charged leaf sample totals398.843CPU seconds across six threads:
 GU265.234,HQ0.726and DOWN132.883. Of846250CPU expert jobs,728497(86.085%)
 are NT1;989999entries give1.170entries/job. The top GU bins are NT1
@@ -1499,6 +1492,10 @@ the complete cost comparison;the legacy calibration driver uses an older
 compiler/reference and is not qualified unchanged for this engine.
 The maintained CPU mix CMake selector at`1274b0bbd` can now take
 `STRATA_CPU_SOURCE_ROOT` for the measured engine's frozen CPU composition.
+At`fc7aad011`,the harness also accepts intermediate workers1..5;only5includes
+host computation,so the effective compute counts are1,2,3,4and6. Validate
+these cases before timing a new scaling curve. Match both the native icx2026.2
+C build of GGML quantization and icpx2026.2C++CPU build in the new plan.
 This prepares source selection only;the new calibration plan/build/check remains
 pending and no extra executable has been built during this model cohort.
 The selected GPU cache already retains original packed native expert weights.
