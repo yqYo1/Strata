@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import collections
 import contextlib
+import os
 import sys
 import threading
 
@@ -28,8 +29,25 @@ class NonBlockingOut:
         self._idle = True
         self.dropped_chunks = 0
         self.dropped_bytes = 0
+        # A daemon must not retain the original BufferedWriter's lock when
+        # Python flushes stdout/stderr at shutdown. On POSIX use an owned
+        # descriptor instead; dup preserves the original descriptor's flags.
+        # Other platforms and file-like sinks retain the upstream stream path.
+        self._fd = None
+        if os.name == "posix" and (real is sys.__stdout__ or real is sys.__stderr__):
+            try:
+                self._fd = os.dup(real.fileno())
+            except (OSError, ValueError, AttributeError):
+                pass
+        self._encoding = getattr(real, "encoding", None) or "utf-8"
+        self._errors = getattr(real, "errors", None) or "strict"
         self._thread = threading.Thread(target=self._run, name="strata-console", daemon=True)
-        self._thread.start()
+        try:
+            self._thread.start()
+        except BaseException:
+            if self._fd is not None:
+                os.close(self._fd)
+            raise
 
     # ---- what the program calls: never blocks on the console
     def write(self, text) -> int:
@@ -67,6 +85,25 @@ class NonBlockingOut:
 
     # ---- the one thread that may block
     def _run(self) -> None:
+        try:
+            self._drain_queue()
+        finally:
+            if self._fd is not None:
+                os.close(self._fd)
+
+    def _write(self, text: str) -> None:
+        if self._fd is None:
+            self._real.write(text)
+            self._real.flush()
+            return
+        data = memoryview(text.encode(self._encoding, self._errors))
+        while data:
+            written = os.write(self._fd, data)
+            if written <= 0:
+                raise OSError("console write made no progress")
+            data = data[written:]
+
+    def _drain_queue(self) -> None:
         while True:
             with self._cv:
                 while not self._q and not self._closing:
@@ -81,8 +118,7 @@ class NonBlockingOut:
                 text = self._q.popleft()
                 self._bytes -= len(text)
             try:
-                self._real.write(text)
-                self._real.flush()
+                self._write(text)
             except (OSError, ValueError, UnicodeError):
                 pass                                    # a closed or broken console: the text is lost, the server is not held
 

@@ -2744,7 +2744,7 @@ source inputs and the qualified interpreter manifest. This is transport/CPU
 validation,not GPU or inference qualification. The other four reviewed server concerns,
 remaining functional ports,whole function ledger and vanilla performance remain
 incomplete.
-For the next required server slice,`serve/nonblocking_out.py`is copied
+For the next required server slice,`serve/nonblocking_out.py`was initially copied
 unchanged from Niko`b776e1cd02c11e8cb0824d5dd0087fd907641091`(4969bytes,
 SHA256`05e3d46c38eeeaac4975591d4c2854d53db125f442e9fb6e5ac5529ade821c10`).
 That commit's MIT LICENSE matches this fork. Main-authored
@@ -2761,7 +2761,14 @@ original stdout BufferedWriter during interpreter shutdown:the daemon still
 holds that object's I/O lock. The unbuffered child and blocked control behave
 as expected. This is a CPU/Python failure,not GPU execution or a device fault.
 Preserve this failed attempt and repair the writer before a new committed
-host plan;the server remains unwired. Qualify these checks before adapting the
+host plan;the server remains unwired. The Main-authored repair is now source-
+prepared:POSIX process-owned stdout/stderr use an owned duplicate descriptor
+and partial-write-safe encoded output,so the daemon avoids the original
+BufferedWriter lock. Other sinks/platforms retain the upstream stream path.
+The worker closes its descriptor at retirement;thread-start failure also closes
+it. A ninth case checks Unicode output and descriptor retirement. These
+modified sources have not run;commit a new host plan before qualification.
+Qualify these checks before adapting the
 server's existing no-argument`main()`wrapper and its upstream
 `STRATA_BLOCKING_CONSOLE=1`bypass;then qualify actual startup and existing
 server/Responses regressions before another frontend-dependent model plan.

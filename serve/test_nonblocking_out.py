@@ -9,6 +9,7 @@ from pathlib import Path
 import select
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import unittest
@@ -34,6 +35,27 @@ class HeldSink:
 
 
 class ConsoleQueue(unittest.TestCase):
+    def test_posix_descriptor_preserves_unicode_and_closes_its_copy(self):
+        if os.name != "posix":
+            self.skipTest("POSIX descriptor ownership")
+        with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as sink, \
+                patch.object(sys, "__stdout__", sink):
+            out = NonBlockingOut(sink)
+            descriptor = out._fd
+            self.assertIsNotNone(descriptor)
+            self.assertNotEqual(descriptor, sink.fileno())
+            try:
+                out.write("日本語\n")
+                self.assertTrue(out.drain(2))
+            finally:
+                out.close(.1)
+                out._thread.join(1)
+            self.assertFalse(out._thread.is_alive())
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
+            sink.seek(0)
+            self.assertEqual(sink.read(), "日本語\n")
+
     def held(self, **limits):
         sink = HeldSink()
         out = NonBlockingOut(sink, **limits)
