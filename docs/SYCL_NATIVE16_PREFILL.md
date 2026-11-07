@@ -1011,6 +1011,13 @@ and other runtime threads. The actual pool source confirms host participation
 with`drain(-1)`;the main thread performs useful work as well as completion
 waiting. Keep these observer results separate from clean speed;incremental
 caller cost and the complete six-process decision remain pending.
+Process2(the next caller-on arm)also closes normally0with all five records
+and no fault. Identical logical work/3157output tokens now take241.867s,
+with112.717s native waits and541.929aggregate leaf CPU seconds. This differs
+materially from process1on the same code/settings;retain both samples and
+the observed variability without attributing it to a hardware clock or a code
+change. Process3is its predefined caller-off partner;do not decide from the
+fast single sample. Three of six processes are closed.
 A fixed-work sensitivity model for process0is
 `T_hyp[s]=130.006616/r_pool+101.988/r_reach+31.428/r_draft+35.514584`,
 where each`r`reduces only that measured interval and all logical work/other
