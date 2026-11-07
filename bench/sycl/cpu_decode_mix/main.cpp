@@ -1,9 +1,13 @@
-// Main-authored workload calibration; all inference math links production code.
+// Main-authored CPU component fixtures; raw references link frozen production code.
 #include "strata/kernels/cpu/pool.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "compact_iq3xxs.hpp"
 #include <algorithm>
+#include <atomic>
+#include <barrier>
+#include <functional>
+#include <thread>
 #include <array>
 #include <chrono>
 #include <cmath>
@@ -84,7 +88,49 @@ void verify_affinity(const cpu::CpuTopology& topology,int workers) {
     }
     need(std::all_of(found.begin(),found.end(),[](int n){return n==1;}),"actual pool affinity differs");
 }
+
+class GuTeam {
+    int compute_;
+    std::function<void(int,int)> work_;
+    std::barrier<> phase_;
+    std::vector<std::thread> threads_;
+    std::atomic<bool> stop_{false},failed_{false};
+    void invoke(int id) noexcept {
+        try { if(!failed_.load())work_(id,compute_); }
+        catch(...) { failed_.store(true); }
+    }
+public:
+    GuTeam(int compute,const cpu::CpuTopology& topo,std::function<void(int,int)> fn):
+        compute_(compute),work_(std::move(fn)),phase_(compute==6?6:2) {
+        need(compute==1 || compute==6,"GU compute threads");
+        const int wanted=compute==6?5:1;threads_.reserve(wanted);
+        try {
+            for(int i=0;i<wanted;++i)threads_.emplace_back([&,i] {
+                cpu_set_t mask;CPU_ZERO(&mask);CPU_SET(topo.worker_cores[i],&mask);
+                if(sched_setaffinity(0,sizeof mask,&mask)!=0)failed_.store(true);
+                for(;;) {
+                    phase_.arrive_and_wait();if(stop_.load())break;
+                    invoke(compute_==6?i+1:0);phase_.arrive_and_wait();
+                }
+            });
+        } catch(...) {
+            stop_.store(true);
+            for(size_t i=threads_.size();i<size_t(wanted);++i)phase_.arrive_and_drop();
+            phase_.arrive_and_wait();for(auto& t:threads_)t.join();throw;
+        }
+    }
+    ~GuTeam() { stop_.store(true);phase_.arrive_and_wait();for(auto& t:threads_)t.join(); }
+    GuTeam(const GuTeam&)=delete;
+    void run() {
+        phase_.arrive_and_wait();if(compute_==6)invoke(0);phase_.arrive_and_wait();
+        need(!failed_.load(),"GU team work/affinity failure");
+    }
+};
 struct Work {
+    struct alignas(64) GuCounts { std::array<uint64_t,4> values{}; };
+    std::array<GuCounts,6> gu_counts{};
+    std::vector<std::vector<compact_iq3xxs::Block>> gu_views;
+    int gu_offset=0;bool gu_compact=false;
     cpu::NativeFmt fmt;
     int group,count;
     std::vector<std::unique_ptr<Buffer>> weights,outputs;
@@ -125,6 +171,117 @@ struct Work {
             for(int e=0;e<group;++e)jobs[offset+e].nt=nt[b*group+e];
             pool.run_split_multi_native(fmt,jobs.data()+offset,group,cpu::NativeGuPhase::Decode);
         }
+    }
+
+    void gu_setup() {
+        need(fmt.gu_type==18 && fmt.gu_row==980,"GU view format");
+        const auto begin=Clock::now();const double c0=process_cpu();
+        gu_views.resize(count);
+        constexpr size_t n=compact_iq3xxs::projection_blocks;
+        for(int e=0;e<count;++e) {
+            auto& v=gu_views[e];v.resize(2*n+2);std::memset(v.data(),0xA7,v.size()*sizeof(v[0]));
+            for(size_t b=0;b<n;++b) {
+                need(compact_iq3xxs::encode_block(std::span<const uint8_t>(weights[e]->data()+98*b,98),v[1+b]),"GU gate setup");
+                need(compact_iq3xxs::encode_block(std::span<const uint8_t>(weights[e]->data()+fmt.up_off+98*b,98),v[1+n+b]),"GU up setup");
+            }
+        }
+        std::cout<<"{\"kind\":\"gu_setup\",\"experts\":"<<count
+            <<",\"logical_view_bytes\":"<<uint64_t(count)*1715200
+            <<",\"view_storage_bytes\":"<<uint64_t(count)*(2*n+2)*sizeof(compact_iq3xxs::Block)
+            <<",\"raw_blob_bytes\":"<<uint64_t(count)*fmt.bytes
+            <<",\"allocation_encode_wall_s\":"<<seconds(begin)<<",\"allocation_encode_cpu_s\":"<<process_cpu()-c0<<"}"<<std::endl;
+    }
+    std::array<uint64_t,4> gu_totals() const {
+        std::array<uint64_t,4> result{};
+        for(const auto& c:gu_counts)for(int k=0;k<4;++k)result[k]+=c.values[k];
+        return result;
+    }
+    void gu_part(int id,int participants) {
+        // Partition on16-row/cache-line boundaries,including cross-expert cuts.
+        const int units=group*(cpu::FF/16);
+        int at=(units*id/participants)*16;const int end=(units*(id+1)/participants)*16;
+        for(;at<end;) {
+            const int j=gu_offset+at/cpu::FF,r0=at%cpu::FF,r1=std::min(cpu::FF,r0+end-at);
+            const int nt=jobs[j].nt;const int nr=r1-r0;
+            auto& c=gu_counts[id].values;c[0]+=nr;if(nt==1)c[1]+=nr;
+            if(gu_compact && nt==1) {
+                constexpr size_t n=compact_iq3xxs::projection_blocks;
+                const auto all=std::span<const compact_iq3xxs::Block>(gu_views[j]);
+                need(compact_iq3xxs::gu_rows(all.subspan(1,n),all.subspan(1+n,n),
+                    std::span<const uint8_t>(activations[0]->data(),fmt.act_bytes),
+                    std::span<float>(jobs[j].out[0],cpu::FF),r0,r1),"GU compact dispatch");
+                c[2]+=nr;
+            } else {
+                if(nt==1)need(cpu::iq3xxs_pair_gu_rows(fmt,weights[j]->data(),activations[0]->data(),
+                    jobs[j].out[0],r0,r1),"GU raw pair dispatch");
+                else {
+                    const void* act[4];float* out[4];
+                    for(int t=0;t<nt;++t){act[t]=activations[t]->data();out[t]=jobs[j].out[t];}
+                    cpu::native_gu_rows(fmt,weights[j]->data(),act,nt,out,r0,r1,cpu::NativeGuPhase::Decode);
+                }
+                c[3]+=nr;
+            }
+            at+=nr;
+        }
+    }
+    void gu_pass(GuTeam& team,bool stream) {
+        for(int b=0;b<batches;++b) {
+            gu_offset=stream?(b%(count/group))*group:0;
+            for(int j=0;j<group;++j)jobs[gu_offset+j].nt=nt[b*group+j];
+            team.run();
+        }
+    }
+
+    void gu_check_current() {
+        Buffer reference(4*cpu::H*sizeof(float));auto* want=reinterpret_cast<float*>(reference.data());
+        for(int j=0;j<count;++j) {
+            const int n=jobs[j].nt;need(n>=1 && n<=4,"GU final NT");
+            if(n==1)need(cpu::iq3xxs_pair_gu_rows(fmt,weights[j]->data(),activations[0]->data(),want,0,cpu::FF),"GU final reference");
+            else {
+                const void* act[4];float* out[4];
+                for(int t=0;t<n;++t){act[t]=activations[t]->data();out[t]=want+t*cpu::H;}
+                cpu::native_gu_rows(fmt,weights[j]->data(),act,n,out,0,cpu::FF,cpu::NativeGuPhase::Decode);
+            }
+            for(int t=0;t<n;++t) {
+                need(std::memcmp(want+t*cpu::H,jobs[j].out[t],cpu::FF*sizeof(float))==0,"GU final timed bits");
+                for(int r=0;r<cpu::FF;++r)need(std::isfinite(jobs[j].out[t][r]),"GU final finite");
+            }
+            reference.check();weights[j]->check();outputs[j]->check();
+        }
+        std::cout<<"{\"kind\":\"gu_result\",\"experts\":"<<count
+            <<",\"active_values_equal\":true,\"finite_guards\":true}"<<std::endl;
+    }
+    void gu_validate(GuTeam& team,int participants) {
+        Buffer reference(4*cpu::H*sizeof(float));
+        for(int test=0;test<=4;++test)for(int offset=0;offset<count;offset+=group)for(bool compact:{false,true}) {
+            gu_offset=offset;gu_compact=compact;
+            for(int j=0;j<group;++j) {
+                jobs[offset+j].nt=test?test:(j<4?j+1:nt[(offset+j)%nt.size()]);
+                std::memset(outputs[offset+j]->data(),0xA7,4*cpu::H*sizeof(float));
+            }
+            team.run();
+            for(int j=offset;j<offset+group;++j) {
+                const int n=jobs[j].nt;std::memset(reference.data(),0xA7,reference.bytes);
+                auto* want=reinterpret_cast<float*>(reference.data());
+                if(n==1)need(cpu::iq3xxs_pair_gu_rows(fmt,weights[j]->data(),activations[0]->data(),want,0,cpu::FF),"GU reference pair");
+                else {
+                    const void* act[4];float* out[4];
+                    for(int t=0;t<n;++t){act[t]=activations[t]->data();out[t]=want+t*cpu::H;}
+                    cpu::native_gu_rows(fmt,weights[j]->data(),act,n,out,0,cpu::FF,cpu::NativeGuPhase::Decode);
+                }
+                need(std::memcmp(reference.data(),outputs[j]->data(),reference.bytes)==0,"GU team bits/inactive rows");
+                for(int t=0;t<n;++t)for(int r=0;r<cpu::FF;++r)
+                    need(std::isfinite(jobs[j].out[t][r]),"GU team finite");
+                outputs[j]->check();weights[j]->check();reference.check();
+            }
+        }
+        compact_iq3xxs::Block guard;std::memset(&guard,0xA7,sizeof guard);
+        for(const auto& v:gu_views)need(std::memcmp(&v.front(),&guard,sizeof guard)==0 &&
+            std::memcmp(&v.back(),&guard,sizeof guard)==0,"GU view canaries");
+        for(const auto& a:activations)a->check();
+        std::cout<<"{\"kind\":\"gu_validation\",\"compute_threads\":"<<participants
+            <<",\"group\":"<<group<<",\"experts\":"<<count
+            <<",\"NT_mask\":30,\"mixed_NT\":true,\"bits\":true,\"inactive\":true,\"canaries\":true}"<<std::endl;
     }
     void validate_compact() {
         namespace view=compact_iq3xxs;
@@ -334,9 +491,10 @@ int main(int argc,char** argv) try {
     need(std::string(argv[15])=="20261022","protocol version");
     const auto requested_workers=number(argv[8]),requested_group=number(argv[9]);
     const std::string mode=argv[10];
+    const bool gu_mode=mode=="gu-check" || mode=="gu-raw" || mode=="gu-compact";
     need(requested_workers>=1 && requested_workers<=5 && requested_group>=6 && requested_group<=32 &&
-        (mode=="check"||mode=="measure"||mode=="compact-check"),"mode/shape");
-    need(mode!="compact-check" || number(argv[2])==18,"compact IQ3_XXS only");
+        (mode=="check"||mode=="measure"||mode=="compact-check"||gu_mode),"mode/shape");
+    need((mode!="compact-check" && !gu_mode) || number(argv[2])==18,"compact IQ3_XXS only");
     // Intermediate worker counts expose the scaling curve. Five workers also
     // enable the production host compute thread; smaller counts leave it waiting.
     const int workers=static_cast<int>(requested_workers),group=static_cast<int>(requested_group);
@@ -344,6 +502,47 @@ int main(int argc,char** argv) try {
     const auto nt=schedule(group,observed);std::array<int,4> actual{};for(int n:nt)++actual[n-1];
     const auto topology=cpu::detect_cpu_topology(true);
     need(topology.host_core>=0 && topology.worker_cores.size()>=5,"six physical cores required");
+
+    if(gu_mode) {
+        need(workers==1 || workers==5,"GU planned worker count");
+        cpu_set_t mask;CPU_ZERO(&mask);CPU_SET(topology.host_core,&mask);
+        need(sched_setaffinity(0,sizeof mask,&mask)==0,"GU host affinity");
+        Work work(argv,group,nt);work.gu_setup();
+        const int participants=workers==5?6:1;
+        GuTeam team(participants,topology,[&](int id,int n){work.gu_part(id,n);});
+        work.gu_validate(team,participants);verify_affinity(topology,workers);
+        std::cout<<"{\"kind\":\"gu_work\",\"arm\":\""<<mode<<"\",\"compute_threads\":"<<participants
+            <<",\"group\":"<<group<<",\"experts\":"<<work.count<<",\"batches\":100,\"jobs_NT\":["
+            <<actual[0]<<","<<actual[1]<<","<<actual[2]<<","<<actual[3]
+            <<"],\"host_cpu\":"<<topology.host_core<<",\"affinity_verified\":true}"<<std::endl;
+        if(mode!="gu-check")for(bool stream:{false,true}) {
+            work.gu_compact=mode=="gu-compact";
+            auto pass=[&]{work.gu_pass(team,stream);};pass();
+            double fastest=1e9;for(int i=0;i<3;++i){const auto begin=Clock::now();pass();fastest=std::min(fastest,seconds(begin));}
+            const auto timer=Clock::now();for(int i=0;i<10000;++i){const auto query=Clock::now();(void)query;}
+            const double cost=seconds(timer)/10000;need(fastest>0 && cost/fastest<.001,"GU timer overhead");
+            std::cout<<"{\"kind\":\"gu_timer\",\"stream\":"<<(stream?"true":"false")
+                <<",\"query_s\":"<<cost<<",\"fastest_pass_s\":"<<fastest<<"}"<<std::endl;
+            for(int rep=0;rep<5;++rep) {
+                const auto before=work.gu_totals();const auto begin=Clock::now();const double c0=process_cpu();
+                int passes=0;do{pass();++passes;}while(seconds(begin)<1.3 && passes<1000000);
+                const double wall=seconds(begin),cpu_time=process_cpu()-c0;
+                need(wall>=1 && passes<1000000,"GU timing floor/budget");
+                auto total=work.gu_totals();for(int k=0;k<4;++k)total[k]-=before[k];
+                need(total[0]==uint64_t(passes)*100*group*cpu::FF &&
+                    total[1]==uint64_t(passes)*actual[0]*cpu::FF &&
+                    total[2]==(work.gu_compact?total[1]:0) && total[3]==total[0]-total[2],"GU timed dispatch rows");
+                std::cout<<"{\"kind\":\"gu_sample\",\"stream\":"<<(stream?"true":"false")<<",\"rep\":"<<rep
+                    <<",\"passes\":"<<passes<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<cpu_time
+                    <<",\"rows\":"<<total[0]<<",\"NT1_rows\":"<<total[1]<<",\"compact_rows\":"<<total[2]
+                    <<",\"raw_rows\":"<<total[3]<<"}"<<std::endl;
+            }
+            work.gu_check_current();work.gu_validate(team,participants);
+        }
+        if(mode=="gu-check")work.gu_check_current();
+        verify_affinity(topology,workers);
+        std::cout<<"{\"kind\":\"closed\",\"passed\":true}"<<std::endl;return 0;
+    }
     cpu::ExpertPool pool(workers,true,workers==5);
     cpu_set_t mask;CPU_ZERO(&mask);CPU_SET(topology.host_core,&mask);need(sched_setaffinity(0,sizeof mask,&mask)==0,"host affinity");
     Work work(argv,group,nt);

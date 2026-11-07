@@ -15,6 +15,81 @@ import cpu_decode_mix as mix
 
 
 class EvidenceTests(unittest.TestCase):
+    def gu_fixture(self,arm='gu-compact',workers=5,group=6):
+        row=dict(blob_bytes=2176000,observed_jobs_NT=[1,1,1,1]);count=group*mix.math.ceil((128<<20)/(group*row['blob_bytes']))
+        valid=dict(kind='gu_validation',compute_threads=6 if workers==5 else 1,group=group,experts=count,
+            NT_mask=30,mixed_NT=True,bits=True,inactive=True,canaries=True)
+        result=dict(kind='gu_result',experts=count,active_values_equal=True,finite_guards=True)
+        lines=[dict(kind='gu_setup',experts=count,logical_view_bytes=count*1715200,
+                view_storage_bytes=count*12802*134,raw_blob_bytes=count*row['blob_bytes'],
+                allocation_encode_wall_s=.2,allocation_encode_cpu_s=.18),copy.deepcopy(valid),
+            dict(kind='gu_work',arm=arm,compute_threads=6 if workers==5 else 1,group=group,experts=count,
+                batches=100,jobs_NT=mix.expected_histogram(row['observed_jobs_NT'],group),
+                host_cpu=0,affinity_verified=True)]
+        if arm!='gu-check':
+            for stream in (False,True):
+                lines.append(dict(kind='gu_timer',stream=stream,query_s=1e-8,fastest_pass_s=.1))
+                for rep in range(5):
+                    total=7*100*group*640;one=7*mix.expected_histogram(row['observed_jobs_NT'],group)[0]*640
+                    compact=one if arm=='gu-compact' else 0
+                    lines.append(dict(kind='gu_sample',stream=stream,rep=rep,passes=7,wall_s=1.4,
+                        cpu_s=7,rows=total,NT1_rows=one,compact_rows=compact,raw_rows=total-compact))
+                lines.extend([copy.deepcopy(result),copy.deepcopy(valid)])
+        else:lines.append(result)
+        lines.append(dict(kind='closed',passed=True));return row,lines
+
+    def test_gu_timing_refuses_wrong_route_and_incomplete_samples(self):
+        for variant in ('valid','missing','extra','early_result','guard','boolean','footprint','setup',
+                        'histogram','arm','affinity','NT1','compact_rows','raw_rows','rows',
+                        'short','passes','nan','timer','stream','closure'):
+            row,lines=self.gu_fixture();sample=lines[4]
+            if variant=='missing':lines.pop(4)
+            if variant=='extra':sample['unknown']=0
+            if variant=='early_result':lines[3],lines[9]=lines[9],lines[3]
+            if variant=='guard':lines[-2]['canaries']=False
+            if variant=='boolean':lines[1]['bits']=1
+            if variant=='footprint':lines[0]['raw_blob_bytes']=0
+            if variant=='setup':lines[0]['allocation_encode_wall_s']=float('inf')
+            if variant=='histogram':lines[2]['jobs_NT']=[151,149,150,150]
+            if variant=='arm':lines[2]['arm']='gu-raw'
+            if variant=='affinity':lines[2]['affinity_verified']=False
+            if variant in ('NT1','compact_rows','raw_rows','rows'):sample[{'NT1':'NT1_rows'}.get(variant,variant)]+=1
+            if variant=='short':sample['wall_s']=.9
+            if variant=='passes':sample['passes']=True
+            if variant=='nan':sample['cpu_s']=float('nan')
+            if variant=='timer':lines[3]['query_s']=.01
+            if variant=='stream':sample['stream']=0
+            if variant=='closure':lines[-1]['passed']=False
+            with self.subTest(variant=variant),patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
+                if variant=='valid':self.assertEqual(len(mix.parse_gu(lines,row,5,6,'gu-compact')['samples']),10)
+                else:
+                    with self.assertRaises(RuntimeError):mix.parse_gu(lines,row,5,6,'gu-compact')
+        for arm in ('gu-check','gu-raw','gu-compact'):
+            for workers in (1,5):
+                for group in (6,28):
+                    row,lines=self.gu_fixture(arm,workers,group)
+                    with self.subTest(arm=arm,workers=workers,group=group),\
+                         patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
+                        self.assertTrue(mix.parse_gu(lines,row,workers,group,arm)['validated'])
+
+    def test_screen_decision_preserves_failed_shape_and_all_samples(self):
+        children=[]
+        for case in mix.screen_order():
+            row,lines=self.gu_fixture('gu-'+case[5],case[2],case[3])
+            # Compact is faster except one process pair in one shape.
+            for s in lines:
+                if s['kind']=='gu_sample' and case[5]=='raw':s['wall_s']=2.8
+                if s['kind']=='gu_sample' and case[2:5]==[5,28,1] and case[5]=='compact':s['wall_s']=5.6
+            with patch.object(mix.base,'machine',return_value={'physical_cpus':list(range(6))}):
+                children.append(dict(case=case,validation=mix.parse_gu(lines,row,case[2],case[3],'gu-'+case[5])))
+        decision=mix.screen_decision(children)
+        self.assertEqual(len(decision['cells']),8)
+        self.assertTrue(decision['performance_qualified']);self.assertFalse(decision['model_adoption_qualified'])
+        failed=[c for c in decision['cells'] if c['compute_threads']==6 and c['group']==28]
+        self.assertTrue(all(not c['followup_eligible'] and c['paired_raw_over_compact']==[2,.5,2] for c in failed))
+        for altered in (children[:-1],children+[children[0]],list(reversed(children))):
+            with self.assertRaises(RuntimeError):mix.screen_decision(altered)
+
     def fixture(self):
         row=dict(blob_bytes=2<<20,observed_jobs_NT=[1,1,1,1])
         valid=dict(kind='validation',distinct_experts=66,NT_mask=30,pool_serial_bits_equal=True,mixed_NT_bits_equal=True,
