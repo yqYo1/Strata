@@ -189265,7 +189265,7 @@
     }
   },
   "adaptive_payload_audit_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "ab23c478b74b1c319e13063eb6f6fa95605691c5",
     "generated": {
       "include/strata/core/adaptive_residency_audit.hpp": "8387ea06c7fed9afa89c86c2faf528b32abe2366bb2f65a4eb66d5d445ec220a",
@@ -189378,8 +189378,8 @@
     },
     "whole_wall_seconds": 600,
     "whole_output_bytes": 33554432,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -189387,6 +189387,38 @@
     "inference_adopted": false,
     "plan": "Commit source,projection,compiler image and both recipes before execution. Compile legacy41 with only its obsolete80MiB overflow replaced by five valid64MiB extents;compile separate16-case bounds/order fixture. Require normal0,exact receipts,quiet stderr,actual project/header/link closure and no GPU provider dependency. Reject source/image/input mismatch;no retry or pin refresh. Model32 publication/dispatch/post-positive loan,second-record refusal and clean performance remain pending.",
     "retention": "Retain source/recipe,57-case outcome and actual-input signatures. Retire the two one-use ELFs and successful output after pushed results/source recovery. The current552b/429b generations and their15outputs remain unchanged.",
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "cases": [
+        {
+          "name": "legacy",
+          "passed": true,
+          "receipt": "adaptive_residency_audit cases=41 status=PASS",
+          "executable_sha256": "d2ed4986a2f6c2d475d621d19f478a726a8ade31f8bfaeee861b68d696c59b96",
+          "compiler_inputs": {
+            "files": 207,
+            "sha256": "5dcab556826ea4ee01e6c5865b541806dad5b17e67cbec737dfadb136d289f1f",
+            "headers": 185,
+            "link_inputs": 36,
+            "derived_private_inputs": 1
+          }
+        },
+        {
+          "name": "budget",
+          "passed": true,
+          "receipt": "adaptive_payload_budget cases=16 status=PASS",
+          "executable_sha256": "855591c5203965f9c82b6bcde57dbc3c1444f7a35e3f4740ec807cff4dac4c3b",
+          "compiler_inputs": {
+            "files": 204,
+            "sha256": "19bde79cc9a63255662d910c135a33f5e330c01dd1abec57257321022b8b1eea",
+            "headers": 182,
+            "link_inputs": 36,
+            "derived_private_inputs": 1
+          }
+        }
+      ]
+    },
     "source_inputs": {
       "count": 117,
       "sha256": "481c35cf58a340542bb42db47e046c4cc97002d030c7c84b33493ecb36ad57dd",

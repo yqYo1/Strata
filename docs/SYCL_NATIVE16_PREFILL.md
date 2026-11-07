@@ -773,19 +773,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   covers actual32/96 maximum-blob groups,exact256MiB and plus-one limits,
   per-expert bounds,checked-event failure,last-payload refusal and all three
   partial-publication views. These callbacks check metadata/order,not real
-  payload bytes or GPU copies. The private projection is now prepared at
+  payload bytes or GPU copies. The private projection now passes57host cases at
   source`ab23c478b74b1c319e13063eb6f6fa95605691c5`,with117source/control
   inputs and exact two-fixture recipes. Its new header SHA starts8387ea06c7;
-  no host test or successor native build has run. The cohort's public/header/controller inputs stay
-  unchanged. The new`tools/sycl/adaptive_payload_host.py`provides a separately
-  owned host-only plan:at a closed GPU-process boundary,run`prepare`,commit
-  its exact projected inputs/compiler-image/two recipes,then run`check`.
-  It requires normal0and exact41+16case receipts,closed owners,actual header/link
-  closure and no GPU-provider dependencies,with600s whole/finite per-command
-  budgets. Follow`adaptive_payload_audit_host_v1`;next execute
-  `python3 -X faulthandler -B tools/sycl/adaptive_payload_host.py check`
-  after committing this prepared plan. Review its two temporary CPU
-  ELFs for retirement at host closure;this creates no native engine generation.
+  the public header and all frozen cohort inputs remain unchanged. The owned
+  `tools/sycl/adaptive_payload_host.py`check closes normally with six0exit
+  commands,exact41+16receipts and closed owners. Actual compiler/header/link
+  closures cover207/204files and neither ELF links a GPU provider. Follow
+  `adaptive_payload_audit_host_v1`. No successor native build or32-copy GPU
+  qualification follows from these CPU checks. Retire its two one-use CPU
+  ELFs/output after source/recipe recovery;keep the current15engine/fixture
+  outputs. After the frozen resource cohort closes,qualify the successor
+  native header,positive32publication/dispatch/occupied loan and second-record
+  refusal before preparing an8/32speed comparison.
   The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
