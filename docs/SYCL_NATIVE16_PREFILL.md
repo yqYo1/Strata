@@ -948,8 +948,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   even96maximum blobs total255590400B(243.75MiB),within the unchanged256MiB
   diagnostic cycle cap. The new CPU parser will check all48arena offsets and
   that bound before exec. Require two full96-copy publications,both dispatch
-  roles and occupied post-positive loan/refill. A separate exact96second-record
-  refusal remains mandatory before any96speed comparison. Keep the original32
+  roles and occupied post-positive loan/refill. The same file now source-prepares
+  the separate expected-exit1 control through`refusal-prepare`/`refusal-run`.
+  It requires actual positive96closure and proof that its first1024/256seed
+  produced two full96groups,then uses the unchanged owned refusal supervisor.
+  Require real first record0/publication,second null-record status1 after96
+  queued copies,second map unpublished,noDONE,no supervisor kill,quiet
+  validation and closed owners/no fresh fault. Its byte bound is the pinned
+  model's96-group maximum. Source-prepared CPU controls cover second-group
+  publication,malformed status/count/order and oversized payload;they have not run.
+  This separate exact96second-record refusal remains mandatory before any96
+  speed comparison. Keep the original32
   reader and all current cohort/native inputs unchanged. Its ordered/index
   adversarial controls are preregistered for the closed-cohort boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.

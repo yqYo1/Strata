@@ -18,6 +18,7 @@ import compare_adaptive_payload_generation as speed
 
 SELF = Path(__file__).resolve()
 KEY = 'adaptive_payload96_native_entry_v1'
+REFUSAL_KEY = 'adaptive_payload96_record_failure_v1'
 BUDGET = 96
 EXPERT_CAP = 64 << 20
 CYCLE_CAP = 256 << 20
@@ -25,9 +26,9 @@ HEADER_SHA256 = '8387ea06c7fed9afa89c86c2faf528b32abe2366bb2f65a4eb66d5d445ec220
 require = positive32.require
 
 
-def reader():
+def reader(source=positive32.budget):
     spec = importlib.util.spec_from_file_location('strata_budget96_ordered_reader',
-        positive32.budget.__file__)
+        source.__file__)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     module.BUDGET = BUDGET
@@ -41,6 +42,8 @@ def audit(text):
     require(len(published) >= 2, 'at least two full96-copy publications required')
     result = reader().audit(text)
     result['full96_groups'] = len(published)
+    result['refusal_seed_eligible'] = (published[:2] == ['1', '2'] and
+        result['request_coverage'][0]['published'] >= 2)
     return result
 
 
@@ -111,6 +114,13 @@ def controls():
     partial = good[:-1] + fixture_group(3, 400, 300, 9) + [
         good[-1].replace('published=2', 'published=3')]
     require(audit('\n'.join(partial))['swaps'] == 201, 'retain later partial group')
+    across_requests = fixture_group(1, 100, 0) + [
+        footer[0].replace('published=2', 'published=1'),
+        footer[1].replace('completed=2', 'completed=1')
+    ] + fixture_group(2, 300, 100) + [footer[2]]
+    require(result['refusal_seed_eligible'] and
+        not audit('\n'.join(across_requests))['refusal_seed_eligible'],
+        'second-record refusal needs two full96groups in its first-request seed')
     bad = [good[:i] + good[i+1:] for i in
         (0, 96, 97, 98, 194, 195, 196, 197, 198)]
     for old, new in (
@@ -157,7 +167,62 @@ def controls():
     return dict(passed=True, GPU_executed=False, full96_groups=2,
         later_partial_group_retained=True, ordered_negative_cases=len(bad),
         payload_negative_cases=len(invalid), original32_reader_unchanged=True,
+        first_request_refusal_seed_checked=True,
+        record_failure=refusal_controls(),
         scope='CPU-only ordered/index controls;native96 remains unqualified.')
+
+
+def refusal_audit(text, payload_limit=CYCLE_CAP):
+    require(0 < payload_limit <= CYCLE_CAP, '96refusal payload limit')
+    result = reader(refusal32.original).audit(text)
+    require(result['first_H2D_requested_bytes'] <= payload_limit,
+        '96refusal requested payload exceeds the pinned model bound')
+    return result
+
+
+def refusal_controls():
+    prefix = 'strata serve: ADAPT_AUDIT '
+    first, second = fixture_group(1, 100, 0), fixture_group(2, 300, 100)
+    event1 = 'strata: ADAPT_RECORD_DIAGNOSTIC ordinal=1 injected=0 status=0'
+    submit = f'strata serve: ADAPT_SUBMIT swaps=96 H2D_requested_bytes={CYCLE_CAP}'
+    event2 = 'strata: ADAPT_RECORD_DIAGNOSTIC ordinal=2 injected=1 status=1'
+    refused = 'strata serve: cannot record the adaptive refill event'
+    good = first[:-1] + [event1, submit, first[-1]] + second[:-1] + [event2, refused]
+    result = refusal_audit('\n'.join(good))
+    require(result['first_swaps'] == result['queued_second_swaps'] == BUDGET and
+        result['stale_event_not_published'], 'two full96groups and unpublished refusal')
+    bad = [good[:i] + good[i+1:] for i in range(len(good))]
+    bad += [
+        [*good, prefix + 'phase=published generation=2 swaps=96 identities=3 payload_match=1'],
+        [*good, prefix + 'phase=prepared generation=3 incoming=400 outgoing=300 slot=0'],
+        [good[0], *good],
+        [good[0].replace('incoming=100', 'incoming=512'), *good[1:]],
+        [good[0].replace('slot=0', 'slot=1256'), *good[1:]],
+        [good[0].replace('generation=1', 'generation=18446744073709551616'), *good[1:]],
+        [line.replace('swaps=96', 'swaps=95') for line in good],
+        [line.replace(event1, event1.replace('status=0', 'status=1')) for line in good],
+        [line.replace(event2, event2.replace('status=1', 'status=0')) for line in good],
+        [line.replace(event2, event2.replace('injected=1', 'injected=0')) for line in good],
+        [line.replace(str(CYCLE_CAP), '0') for line in good],
+        [line.replace(str(CYCLE_CAP), str(CYCLE_CAP + 1)) for line in good],
+        [*good[:-1], good[-1] + ' unknown=1']]
+    for lines in bad:
+        try:
+            refusal_audit('\n'.join(lines))
+        except RuntimeError:
+            continue
+        raise RuntimeError('corrupt96second-record refusal accepted')
+    try:
+        refusal_audit('\n'.join(good), CYCLE_CAP - 1)
+    except RuntimeError:
+        pass
+    else:
+        raise RuntimeError('96refusal ignored its model-specific payload bound')
+    require(refusal32.original.BUDGET == 32 and positive32.budget.BUDGET == 32,
+        '96refusal controls changed original32readers')
+    return dict(passed=True, GPU_executed=False, full_groups=2,
+        negative_cases=len(bad) + 1, second_generation_published=False,
+        scope='CPU-only ordered refusal;native expected-exit1 remains unqualified.')
 
 
 def prerequisite_rows(ctx):
@@ -245,10 +310,83 @@ def prepare(ctx):
     print('Prepared96positive entry;commit before native execution.', flush=True)
 
 
+def refusal_context():
+    source = refusal32.original.original
+    spec = importlib.util.spec_from_file_location('strata_budget96_owned_refusal', source.__file__)
+    ctx = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ctx)
+    ctx.positive = context()
+    ctx.ROOT, ctx.KEY, ctx.SELF = ctx.B / 'adaptive-payload96-record-failure-v1', REFUSAL_KEY, SELF
+    prior_current = ctx.current
+
+    def normal_entry():
+        record = json.loads((ctx.positive.ROOT / 'record.json').read_text())
+        require(ctx.base.committed(ctx.RESULT)[KEY] == ctx.positive.compact(record) and
+            record['stage'] == 'closed' and record['passed'] and record['complete'] and
+            record['ownership_closed'] and not record['active'] and
+            record['outcome']['native_exit_code'] == 0 and
+            record['outcome']['adaptive']['maximum_group'] == BUDGET and
+            record['outcome']['adaptive']['full96_groups'] >= 2 and
+            record['outcome']['adaptive']['refusal_seed_eligible'] is True and
+            record['outcome']['adaptive']['outgoing_CPU_observed'] and
+            record['outcome']['adaptive']['post_positive_loan_groups'] > 0,
+            'closed actual96positive/map/dispatch/loan entry required')
+        return record
+
+    def current(row, full=False):
+        require(row['successor_positive_key'] == KEY and row['replacement_budget'] == BUDGET and
+            row['host_qualified_header_sha256'] == HEADER_SHA256 and
+            positive32.budget.profile_pin(ctx, row) == row['placement_profile'] and
+            payload_bound(row['model_assets']) == row['payload_bound'],
+            '96refusal positive/profile/payload binding changed')
+        return prior_current(row, full=full)
+
+    def audit_actual(text):
+        return refusal_audit(text, normal_entry()['payload_bound']['maximum_group_bytes'])
+
+    ctx.normal_entry, ctx.current = normal_entry, current
+    ctx.audit, ctx.controls = audit_actual, refusal_controls
+    return ctx
+
+
+def prepare_refusal(ctx):
+    prerequisite_rows(ctx.positive)
+    ctx.prepare()
+    row = json.loads((ctx.ROOT / 'record.json').read_text())
+    try:
+        row.update(successor_positive_key=KEY, replacement_budget=BUDGET,
+            host_qualified_header_sha256=HEADER_SHA256,
+            placement_profile=positive32.budget.profile_pin(ctx, row),
+            payload_bound=payload_bound(row['model_assets']))
+        row['plan'] = (
+            'One fresh unchanged e1b011 engine after the actual96positive entry closes. '
+            'Same96/every8,placement/precision/runtime safety and synthetic1024/max256,except '
+            'private paths and pre-exec STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE=1. Require '
+            'two exactly96-copy prepared/masked groups,real first record0 and publication, '
+            'real second null-record status1,second map unpublished,no later generation, '
+            'exact ordered ERR/noDONE wire prefix with emitted tokens,and normal expected '
+            'native1 without supervisor cleanup. Keep owners live until checked retirement. '
+            'Require quiet validation,unchanged final15assets/boot/driver,no fresh fault '
+            'and closed owners. Preserve the immutable positive96receipt. No retry, '
+            'narrower group,hash refresh,new engine build or runtime safety change.')
+        row['limits'] = (
+            'Expected software record-refusal only;no GPU fault injection,successful '
+            'generation,clean96speed,quality,prefill preservation,ordinary teardown, '
+            'physical262144/RESTORE or adoption. Actual96positive and this expected-exit1 '
+            'control must both close before a separately committed96speed plan.')
+    except BaseException as error:
+        row.update(stage='failed96refusal-prepare', passed=False, complete=False, error=repr(error))
+        raise
+    finally:
+        ctx.save(row)
+    print('Prepared96second-record refusal;commit before native execution.', flush=True)
+
+
 if __name__ == '__main__':
     args = sys.argv[1:]
-    require(args in (['controls'], ['prepare'], ['run']), 'use controls|prepare|run')
-    ctx = context()
+    require(args in (['controls'], ['prepare'], ['run'], ['refusal-prepare'], ['refusal-run']),
+        'use controls|prepare|run|refusal-prepare|refusal-run')
+    ctx = refusal_context() if args[0].startswith('refusal-') else context()
     with (ctx.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         ctx.fcntl.flock(lock, ctx.fcntl.LOCK_EX | ctx.fcntl.LOCK_NB)
         ctx.base.guards.no_model_owners([])
@@ -260,5 +398,7 @@ if __name__ == '__main__':
                 sort_keys=True))
         elif args == ['prepare']:
             prepare(ctx)
+        elif args == ['refusal-prepare']:
+            prepare_refusal(ctx)
         else:
             ctx.run()
