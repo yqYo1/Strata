@@ -1535,7 +1535,17 @@ normally0with closed owners:seven formats,workers1/2/3/5 andgroups6/28.
 Every loaded real expert passes NT1..4 and mixed-NT pool/serial bit equality,
 finite outputs,untouched inactive lanes,canaries and actual affinity checks.
 This is same-route consistency,not an independent model/task oracle. Commit
-the numerical closure before timing;no speed or saturation result yet.
+the numerical closure before timing. The first timing stage is now failed,
+with closed owners:all56expert shapes finish both five-sample reuse/stream
+cells(560eligible samples),and the one-thread read reference finishes,but
+`scan-2`exits1with`CPU calibration failed: scan thread count`. The frozen
+reference main accepts only1/6/12threads;the new plan asked for1/2/3/6without
+extending that CLI. This is a controller/fixture mismatch,no GPU execution.
+The original failure remains failed;no whole-calibration or saturation verdict.
+Extend only the read fixture's thread-count contract in a new committed plan,
+keeping1/2/3/6references. Reusing the completed expert cells requires exact
+expert ELF/input/environment identity and explicit prospective reuse;otherwise
+collect a new complete cohort. Do not retry the failed single-use stage.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
