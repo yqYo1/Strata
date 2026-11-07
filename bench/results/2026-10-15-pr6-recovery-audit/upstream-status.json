@@ -1753,6 +1753,85 @@
         "evidence_commit": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
         "reason": "Reuse the closed unqualified build cache; exact source/recipe/failure remain in Git. Preserve both validated phase references."
       }
+    },
+    "dflash2_device_check": {
+      "stage": "prepared",
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+      },
+      "environment": {
+        "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/cache",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "environment_origin": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/record.json",
+        "sha256": "ea12fbf59615ed9780083a9f70e92b9bb52256c373ac826943243eb80fce2ab9"
+      },
+      "budgets": {
+        "wall": 180,
+        "cpu": 180,
+        "text_cap": 67108864,
+        "file_cap": 67108864,
+        "total_cap": 100663296,
+        "rss_cap": 8589934592
+      },
+      "cases": 9,
+      "fixture": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_dflash2_test",
+        "sha256": "a9f06baa65ec1d17bcebfdb31eaa853339195e0bd477bc2ba2a64ace862783fa",
+        "bytes": 1835600
+      },
+      "passed": false,
+      "ownership_closed": true,
+      "meaning": "Eight active-column GEMMs with3matrices,exact signed integer oracle and output guards;FP32 mean/pending-GR taps. No model,BF16 tap-route,ring recovery,task quality,performance or physical full-context qualification.",
+      "controller_source": {
+        "commit": "b5f0584d31218a95fa733895a68107a2bb4138b5",
+        "aggregate_sha256": "2b7b6e0ff8294415d3c3856766ff0eab38d208112c92259848013bc0845858b0",
+        "files": 5
+      },
+      "native_build": {
+        "source_commit": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
+        "project_source_sha256": "b7635d8b36cdf33fb14ec90a78ee047eb4471635162b5d7bf4d1db4a3eebb799",
+        "record": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
+          "sha256": "531740f8c7e03a222e1b226f916c8f037d5b96e286c000ffcbd4b78aebedda11"
+        },
+        "passed": true,
+        "ownership_closed": true
+      },
+      "commands": []
     }
   }
 }
