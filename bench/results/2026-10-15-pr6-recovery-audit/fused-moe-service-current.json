@@ -196052,7 +196052,7 @@
     "retention": "Keep compact command/source/control result for the next96comparison;no raw CPU log required."
   },
   "adaptive_payload96_native_entry_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "8380579f7978901c18ecbc6b0a255258089aa918",
     "host_controls": {
       "passed": true,
@@ -196485,13 +196485,13 @@
       "total_cap": 268435456
     },
     "whole_wall_s": 2100,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
-    "GPU_execution_attempted": false,
-    "model_executed": false,
+    "GPU_executed": true,
+    "GPU_execution_attempted": true,
+    "model_executed": true,
     "plan": "One fresh owned unchanged e1b011 serving engine;synthetic1024/256 then32769/256. After both8/32cohorts close,change only budget32to96 at fixed8rounds;retain 1256slots,cap4,half1,131072INT8resident,5workers,8192throughput BF16 HC/GDN16/MTP16,20ms spin and runtime safety. Commit source/config/15asset pins before exec. Require at least two full96-copy groups,checked completion/full-byte host-private-device publication,incoming GPU and outgoing CPU dispatch roles,occupied post-positive loan/refill,actual T1/T4 head windows,ordered two-request protocol,normalQUIT0,quiet validation,no fresh fault,unchanged final15assets/boot/driver and closed owners. Max layer blob and96-group bound must fit the unchanged64/256MiB header before exec. Join each positive copy count and requested-byte counter to its masked/published generation and incoming layer sizes;retain compact count/sum/min/max only. Empty updates must request zero bytes without an unpublished generation. Requested bytes exclude initial placement,map copies,audit readbacks and physical bus traffic. Any refusal/budget stop stays failed;no retry,narrower group,pin refresh,new build or runtime change. This positive entry does not qualify the still-required exact96second-record refusal.",
     "limits": "Synthetic96payload/map/dispatch/loan admission only. No clean speed,task quality,prefill preservation,agent,ordinary teardown,262144/RESTORE or adoption. Require a separate full96second-record refusal before any96speed comparison.",
     "retention": "Keep compact per-request extent/hash,Q6 and replacement/dispatch/loan conservation,source/configuration and validation/fault outcome. Retire successful full output/JIT after its exact next comparison/qualification consumer;retain one minimal distinct failure diagnostic only.",
@@ -196524,6 +196524,118 @@
     "successor_build_key": "adaptive_payload_native_build_v2",
     "host_qualified_header_sha256": "8387ea06c7fed9afa89c86c2faf528b32abe2366bb2f65a4eb66d5d445ec220a",
     "predecessor_failed_key": "adaptive_budget32_native_entry_v1",
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "host_probe_accepted": true,
+      "requests": [
+        {
+          "request": 1,
+          "input_tokens": 1024,
+          "output_tokens": 256,
+          "input_sha256": "c517e5cab65b569d0d5dc8c902dfd3d2fe15fa03585197ddbe51c9948b22708f",
+          "output_sha256": "0d823403fb9aed7b2879071d44f895efadff74ccd14aa786535704d062bbe865",
+          "progress_notifications": 1,
+          "progress_reached": 1023,
+          "finish": "length"
+        },
+        {
+          "request": 2,
+          "input_tokens": 32769,
+          "output_tokens": 256,
+          "input_sha256": "a627cdc0b8a99691267f61c4bfbd38e955d5e13ea6c76827b8e4b6571c2dc3ea",
+          "output_sha256": "c5e00c81adb4158349ed7463c6fc58dfb319e8c9dfe1903731d2ba997a0f1e6d",
+          "progress_notifications": 4,
+          "progress_reached": 32768,
+          "finish": "length"
+        }
+      ],
+      "startup": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "4",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.00",
+        "arena_mib": "47962"
+      },
+      "native_pid": 3562553,
+      "native_exit_code": 0,
+      "native_normal_closed": true,
+      "validation": {
+        "pid": 3562553,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "adaptive": {
+        "generations": 22,
+        "swaps": 2112,
+        "maximum_group": 96,
+        "post_positive_loan_groups": 1,
+        "outgoing_CPU_observed": true,
+        "all_observed_payload_map_dispatch_checks_passed": true,
+        "request_coverage": [
+          {
+            "request": 1,
+            "published": 12,
+            "dispatch_calls": 4656,
+            "incoming_GPU_entries": 68847,
+            "outgoing_CPU_entries": 939,
+            "post_swap_refills": 0
+          },
+          {
+            "request": 2,
+            "published": 22,
+            "dispatch_calls": 8688,
+            "incoming_GPU_entries": 121349,
+            "outgoing_CPU_entries": 27085,
+            "post_swap_refills": 1
+          }
+        ],
+        "full96_groups": 22,
+        "refusal_seed_eligible": true,
+        "upload_requests": {
+          "groups": 22,
+          "copies": 2112,
+          "empty_updates": 0,
+          "H2D_requested_bytes": 4312166400,
+          "minimum_group_bytes": 190592000,
+          "maximum_group_bytes": 201369600,
+          "scope": "Adaptive expert H2D requests only;excludes initial placement,map copies,audit readbacks and other traffic. Physical bus traffic and transfer service remain unknown."
+        }
+      },
+      "Q6": [
+        {
+          "request": 1,
+          "completed_heads": 2
+        },
+        {
+          "request": 2,
+          "completed_heads": 2
+        }
+      ],
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
     "source_inputs": {
       "files": 125,
       "sha256": "28742ec4d75022ff09f86a772f547f2dff2e5b13ae748bbcd4acf5dc98e259ae"

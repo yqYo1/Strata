@@ -958,7 +958,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The next96-copy positive entry is source-prepared in
   `tools/sycl/check_adaptive_payload96_entry.py`;its CPU controls now pass at
   `df426f83c`. Its positive plan is now prepared at`8380579f7`,with125source
-  inputs and all15model assets verified;native execution has not run.
+  inputs and all15model assets verified. Its actual native entry now closes
+  normally0with quiet validation,closed owners,unchanged boot/driver and no
+  fresh fault;all15model assets pass final full hashing. Both1024/256and
+  32769/256requests finish at the declared length. All22groups contain96
+  replacements(2112total),with full payload/host/private/device map equality,
+  incoming-GPU/outgoing-CPU dispatch and occupied post-positive loan/refill.
+  Its first request publishes12full groups,so the planned second-record
+  refusal seed is eligible. Adaptive H2D requests total4312166400bytes,
+  min/max190592000/201369600per group;these are requested bytes,not physical
+  bus traffic or bandwidth. Preserve the immutable positive receipt SHA256
+  `83ba7a590d31533b69696ea958365fd1f061f8048f7468a1624a9bbf79b5c7cb`.
+  No96speed,task quality,ordinary teardown or inference adoption follows.
   It reuses the unchanged e1b011engine and ordered
   owned supervisor,requires both current8/32cohorts closed,and does not enable
   a performance trial. The pinned48-layer native index has max blob2662400B;
@@ -990,7 +1001,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
   The125-input source signature and28ordered,7index-bound,14copy-request and
   213refusal negative cases are recorded under`adaptive_payload96_reader_host_v1`.
-  This CPU result establishes no96native safety,performance or adoption.
+  The CPU result alone establishes no96native safety,performance or adoption;
+  the closed positive entry above supplies only its specifically observed
+  payload/map/dispatch/loan qualification. The actual96refusal is still required.
   The compiled source audit matches the recorded private generator,cache and
   audit header. Swaps and pending metadata are dynamic vectors;the pending
   capacity is reserved before accepted refill copies. The audit reserves96
