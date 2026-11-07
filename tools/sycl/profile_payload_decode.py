@@ -18,8 +18,8 @@ import check_q6_native_half_model as half
 import decode_service_evidence as caller
 
 P, B, RESULT, base = coverage.P, coverage.B, coverage.RESULT, coverage.base
-ROOT = B / 'payload-decode-device-service-v1'
-KEY = 'adaptive_payload96_device_service_v1'
+ROOT = B / 'payload-decode-device-service-v2'
+KEY = 'adaptive_payload96_device_service_v2'
 SELF = Path(__file__).resolve()
 require, digest = coverage.require, coverage.digest
 HEADER = 'include/strata/sycl/decode_service_profile.hpp'
@@ -51,7 +51,10 @@ def basis():
     for name, sha in proof['sources'].items():
         if name not in ('AGENTS.md', 'docs/ARTIFACT_RETENTION.md'):
             require(digest(P / name) == sha, 'caller reader changed: ' + name)
-    cohort = data['adaptive_payload96_generation_regular_code_v1']
+    selected = speed.context('regular-code')
+    cohort = json.loads((selected.ROOT / 'record.json').read_text())
+    require(selected.compact(cohort) == data['adaptive_payload96_generation_regular_code_v1'],
+        'original closed cohort inputs must match all committed signatures')
     require(cohort['stage'] == 'closed' and cohort['passed'] and cohort['complete'] and
         cohort['ownership_closed'] and not cohort['active'] and
         cohort['binary'] == native['binaries']['strata'] and
@@ -144,9 +147,10 @@ def context():
 
 def prepare(ctx):
     _, prior, _, assets, cohort = basis()
+    config, env = clean_inputs(cohort)
     ctx.prepare()
     row = json.loads((ROOT / 'record.json').read_text())
-    row['configuration'], row['environment'] = clean_inputs(cohort)
+    row['configuration'], row['environment'] = config, env
     (ROOT / 'trace').mkdir()
     row['native_profile'] = dict(legacy.profile.profiling(ROOT, assets), mode='aggregate')
     base.write(ROOT / 'config.json', row['configuration'])
