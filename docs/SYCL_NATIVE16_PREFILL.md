@@ -1012,7 +1012,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   below the pinned model bound. Preserve its immutable receipt SHA256
   `300b500dc856304c961fa7dbaf12e1e37caf9d71ed43c48fbcc4c9ced3410cce`.
   Both actual96controls now pass;this permits a separately committed speed
-  plan,not a96speed or inference-adoption claim. Keep the original32
+  plan,not a96speed or inference-adoption claim. Its50raw/JIT files/
+  12579134bytes are retired after125-input Git recovery;both96receipt bytes
+  and all22protected assets are unchanged,with continued admission passing.
+  Manifest:`adaptive-payload96-record-failure-v1-output-retirement-20261107.json`,
+  SHA256`6111e9bf523c14d603995631981876b3e488f7b0876f9588a9b3cfd256a771ac`.
+  Keep the original32
   reader and all current cohort/native inputs unchanged. Its ordered/index
   adversarial controls completed normally0after both cohorts closed:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
@@ -1037,9 +1042,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   independent prompt/TTFT gates. Both current8/32cohorts and the actual96
   positive/refusal pair must close before preparation;each workload also
   requires its own repeated32over8TGgain before selecting32as reference.
-  Its CPU controls now pass at`1735a377e`with129source inputs,four immutable
+  Its revised CPU controls now pass at`8f9636060`with129source inputs,four immutable
   configuration cases,small exact gain,slower-pair retention and independent
-  phase decisions;follow`adaptive_payload96_generation_reader_host_v1`.
+  phase decisions;follow`adaptive_payload96_generation_reader_host_v2`.
+  The earlier equivalent control result is archived at`8380579f7`rather than
+  duplicated in the active result. The preparation now fully hashes shared
+  model assets once against the96positive;all other receipts retain source/
+  runtime/configuration/stat checks and must name identical asset inventories.
   No speed preparation,model execution or96speed qualification has run.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.

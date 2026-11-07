@@ -196017,40 +196017,6 @@
       "reason": "Useful outcomes and exact sources/commands committed;resolved I/O mechanism needs no raw capture. Shared runtime assets retained."
     }
   },
-  "adaptive_payload96_generation_reader_host_v1": {
-    "stage": "closed",
-    "passed": true,
-    "complete": true,
-    "GPU_executed": false,
-    "model_executed": false,
-    "source_commit": "1735a377e721c0a1e7ba040f2af6a784a892af8c",
-    "source_count": 129,
-    "source_signature_sha256": "a2856acb3f3c16c67e7c931f21df6e6c08b50cd4a65f912eeb131c2ee62aaeec",
-    "command": [
-      "/usr/bin/timeout",
-      "-k",
-      "2s",
-      "20s",
-      "/usr/bin/prlimit",
-      "--as=1073741824",
-      "--cpu=10",
-      "--fsize=65536",
-      "/usr/bin/python3",
-      "-X",
-      "faulthandler",
-      "-B",
-      "tools/sycl/compare_adaptive_payload96_generation.py",
-      "controls"
-    ],
-    "exit_code": 0,
-    "tool_session_terminal": true,
-    "small_exact_gain_retained": true,
-    "slower_pair_retained": true,
-    "phase_decisions_separate": true,
-    "immutable_configuration_controls": 4,
-    "scope": "CPU comparison/configuration controls only;actual96positive/refusal and per-workload32reference gains still gate preparation. No96model speed,safety or adoption follows.",
-    "retention": "Keep compact command/source/control result for the next96comparison;no raw CPU log required."
-  },
   "adaptive_payload96_native_entry_v1": {
     "stage": "closed",
     "source_commit": "8380579f7978901c18ecbc6b0a255258089aa918",
@@ -197147,5 +197113,44 @@
       "files": 125,
       "sha256": "28742ec4d75022ff09f86a772f547f2dff2e5b13ae748bbcd4acf5dc98e259ae"
     }
+  },
+  "adaptive_payload96_generation_reader_host_v2": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "source_commit": "8f96360609376e154c9fbf8dd1a5bc2503f1e2a5",
+    "source_count": 129,
+    "source_signature_sha256": "6b52e1e7270be0650b3954428867f4dc2413d6cb110b7fdad689271422337e1c",
+    "command": [
+      "/usr/bin/timeout",
+      "-k",
+      "2s",
+      "20s",
+      "/usr/bin/prlimit",
+      "--as=1073741824",
+      "--cpu=10",
+      "--fsize=65536",
+      "/usr/bin/python3",
+      "-X",
+      "faulthandler",
+      "-B",
+      "tools/sycl/compare_adaptive_payload96_generation.py",
+      "controls"
+    ],
+    "exit_code": 0,
+    "tool_session_terminal": true,
+    "small_exact_gain_retained": true,
+    "slower_pair_retained": true,
+    "phase_decisions_separate": true,
+    "immutable_configuration_controls": 4,
+    "scope": "CPU configuration/decision controls only. Actual96positive/refusal are separate passed controls. No96model speed or adoption follows.",
+    "retention": "Retain current source/command/control result until the next96speed decision;previous equivalent control result is recoverable from its pinned Git commit.",
+    "previous_result": {
+      "commit": "8380579f7978901c18ecbc6b0a255258089aa918",
+      "key": "adaptive_payload96_generation_reader_host_v1"
+    },
+    "revision_scope": "Full model hashing once against the96positive;all receipts still validate source/runtime/configuration/stat identity and must have identical model-asset inventories. Native and phase-decision arithmetic unchanged."
   }
 }
