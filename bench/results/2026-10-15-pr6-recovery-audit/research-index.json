@@ -25540,7 +25540,7 @@
   },
   "adaptive_cpu_leaf_source_audit_20261107": {
     "classification": "decision support;report-only Orca GPT-6-Luna high source audit",
-    "state": "dispatched_worker_status_pending",
+    "state": "completed_native_review_pending",
     "source_commit": "faa0cad99ed29e8f7938612e8714cb38c6ce5740",
     "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
     "engine_sha256": "e1b01116ccdc4adc3d59cbccb78c365ebbcc937dfa343463656263c1044e1eb2",
@@ -25578,8 +25578,18 @@
       "runtime": "9cb50b9b-f8d9-466f-8fef-98360bc7a4fd",
       "launch_state": "ready;input accepted and turn_started observed",
       "worker_status_qualified": false,
-      "completion_qualified": false
+      "completion_qualified": true,
+      "worker_status_evidence": "Required before investigation;report/native review verification pending.",
+      "completion_message": "msg_da736c28696f",
+      "delivery": "delivery_79995154a1cd",
+      "delivery_acknowledged": true,
+      "release_result": "retained external_terminal;processAction none",
+      "owned_terminal_closed": true,
+      "closure_evidence": "Exact terminal created by Main for this Task closed after accepted settlement;terminal close reports ptyKilled=true. No reclaimable workers remain in this Run;old six external holds untouched."
     },
-    "startup_evidence": "Current runtime/graph ready,Run coordinator matches Main,scoped current Run has only one released/exited worker. Fresh custom terminal externally shows GPT-6-Luna high before worker-start --terminal. Workspace-write sandbox,network_access=true,approval never,search enabled;sole named report inside writable workspace. Custom receipt model fields null;screen is the model evidence. Six external ownership holds untouched. Worker-side status and genuine completion remain pending."
+    "startup_evidence": "Current runtime/graph ready,Run coordinator matches Main,scoped current Run has only one released/exited worker. Fresh custom terminal externally shows GPT-6-Luna high before worker-start --terminal. Workspace-write sandbox,network_access=true,approval never,search enabled;sole named report inside writable workspace. Custom receipt model fields null;screen is the model evidence. Six external ownership holds untouched. Genuine current-Run completion is accepted;worker-side startup-status evidence remains pending review.",
+    "report_bytes": 10664,
+    "report_sha256": "dec2d7cbb04ac6e4f8605f5ea80a2667177afa69f86caba6adbb3a468fe4d597",
+    "reviewer": "/root/review_adaptive_cpu_leaf_source_audit_20261107;native gpt-6-luna max;report-only"
   }
 }

@@ -1097,6 +1097,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   paired gain before the matching32reference closes. Three of six processes
   are closed;finish process3reference32,process4reference32and process5candidate96,
   then the final15asset hashes and independent phase decisions.
+  Process2's69raw/JIT files/13095254bytes are retired after350-input Git
+  recovery,with all15ELFs and six immutable receipts unchanged. Full admission
+  passes before/after deletion;only config/plan remain. Manifest:
+  `adaptive-payload96-generation-regular-code-v1-process2-output-retirement-20261107.json`,
+  SHA256`f64ebef6a1d8c78332cb6da65ae57990568325a05dcd1554ab8f8e3343124f1a`.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
