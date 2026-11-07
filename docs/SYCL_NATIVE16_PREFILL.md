@@ -967,7 +967,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a performance trial. The pinned48-layer native index has max blob2662400B;
   even96maximum blobs total255590400B(243.75MiB),within the unchanged256MiB
   diagnostic cycle cap. The new CPU parser will check all48arena offsets and
-  that bound before exec. Require two full96-copy publications,both dispatch
+  that bound before exec. Its positive reader now source-prepares an ordered
+  join of each`ADAPT_SUBMIT`count/byte counter with its masked/published group
+  and the incoming experts' actual layer sizes. It keeps only group/copy counts,
+  total/min/max requested bytes and empty-update count;no per-layer arrays.
+  Zero updates must request zero bytes with no unpublished group. Pure CPU
+  cases add mixed-size/partial groups,missing/duplicate/late requests,incorrect
+  counts/bytes,integer overflow and invalid layer bounds. These have not run.
+  This measures expert-copy requests,not initial placement,map/audit traffic,
+  physical PCIe bytes,transfer duration or saturation. Require two full96-copy
+  publications,both dispatch
   roles and occupied post-positive loan/refill. The same file now source-prepares
   the separate expected-exit1 control through`refusal-prepare`/`refusal-run`.
   It requires actual positive96closure and proof that its first1024/256seed

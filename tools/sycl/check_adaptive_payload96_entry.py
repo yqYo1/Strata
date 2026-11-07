@@ -49,7 +49,7 @@ def audit(text):
     return result
 
 
-def native_extent(text):
+def native_extent(text, *, include_layer_bytes=False):
     lines = [line for line in text.splitlines() if line.strip()]
     require(lines and lines[0].startswith('# strata native experts v3:'),
         'native expert index version')
@@ -59,7 +59,7 @@ def native_extent(text):
     require(0 < total < 2**64, 'native total extent')
     rows = [line.split() for line in lines[1:] if not line.startswith('#')]
     require(len(rows) == 48, 'all48native layers required')
-    offset, maximum = 0, 0
+    offset, maximum, layer_bytes = 0, 0, []
     for layer, fields in enumerate(rows):
         require(len(fields) in (8, 9) and
             all(re.fullmatch(r'\d{1,20}', word) for word in fields[:8]),
@@ -69,23 +69,84 @@ def native_extent(text):
             values[0] == layer and values[3] == offset and
             0 < values[4] <= EXPERT_CAP, 'native index order/extent')
         maximum = max(maximum, values[4])
+        layer_bytes.append(values[4])
         offset += values[4] * 512
         require(offset < 2**64, 'native arena extent overflow')
     require(offset == total and BUDGET * maximum <= CYCLE_CAP,
         'native arena or96-copy payload bound')
-    return dict(layers=48, experts=512, arena_bytes=total,
+    result = dict(layers=48, experts=512, arena_bytes=total,
         maximum_expert_bytes=maximum, maximum_group_bytes=BUDGET * maximum,
         expert_cap_bytes=EXPERT_CAP, cycle_cap_bytes=CYCLE_CAP)
+    if include_layer_bytes:
+        result['layer_blob_bytes'] = layer_bytes
+    return result
 
 
-def payload_bound(assets):
+def payload_bound(assets, *, include_layer_bytes=False):
     paths = [name for name in assets if Path(name).name == 'native_experts.txt']
     require(len(paths) == 1, 'one pinned native expert index required')
     path = Path(paths[0])
     require(digest(path) == assets[str(path)]['sha256'],
         'native expert index bytes changed')
-    return dict(native_extent(path.read_text()), path=str(path),
+    return dict(native_extent(path.read_text(), include_layer_bytes=include_layer_bytes), path=str(path),
         sha256=assets[str(path)]['sha256'])
+
+
+def request_payloads(text, layer_bytes):
+    """Join adaptive copy requests to published maps; no bus-traffic claim."""
+    result = audit(text)
+    require(len(layer_bytes) == 48 and
+        all(type(n) is int and 0 < n <= EXPERT_CAP for n in layer_bytes) and
+        BUDGET * max(layer_bytes) <= CYCLE_CAP, '96request layer-byte bounds')
+    prefix = 'strata serve: ADAPT_AUDIT '
+    prepared, masked, published, submitted = {}, set(), set(), set()
+    group_bytes, empty_updates = [], 0
+    for line in text.splitlines():
+        row = re.fullmatch(prefix + r'phase=prepared generation=(\d+) incoming=(\d+) '
+            r'outgoing=(\d+) slot=(\d+)', line)
+        if row:
+            generation, incoming, _, _ = map(int, row.groups())
+            prepared.setdefault(generation, []).append(incoming)
+            continue
+        row = re.fullmatch(prefix + r'phase=masked generation=(\d+) swaps=(\d+) identities=3', line)
+        if row:
+            masked.add(int(row[1]))
+            continue
+        row = re.fullmatch(prefix + r'phase=published generation=(\d+) swaps=(\d+) '
+            r'identities=3 payload_match=1', line)
+        if row:
+            require(int(row[1]) in submitted, 'publication before its copy request')
+            published.add(int(row[1]))
+            continue
+        if not line.startswith('strata serve: ADAPT_SUBMIT'):
+            continue
+        row = re.fullmatch(r'strata serve: ADAPT_SUBMIT swaps=(\d+) H2D_requested_bytes=(\d+)', line)
+        require(row is not None and all(len(n) <= 20 for n in row.groups()),
+            'malformed copy-request counter')
+        count, reported = map(int, row.groups())
+        require(count < 2**64 and reported < 2**64, 'copy-request counter overflow')
+        if count == 0:
+            require(reported == 0 and set(prepared) == published,
+                'empty copy request with bytes or an unpublished generation')
+            empty_updates += 1
+            continue
+        generation = len(submitted) + 1
+        incoming = prepared.get(generation, [])
+        require(generation in masked and generation not in published and
+            count == len(incoming), 'copy request outside its masked generation')
+        expected = sum(layer_bytes[i // 512] for i in incoming)
+        require(reported == expected and 0 < expected <= CYCLE_CAP,
+            'copy-request bytes differ from the pinned native layer sizes')
+        group_bytes.append(expected)
+        submitted.add(generation)
+    require(set(prepared) == submitted == published and
+        len(group_bytes) == result['generations'], 'incomplete copy/publication join')
+    result['upload_requests'] = dict(groups=len(group_bytes), copies=result['swaps'],
+        empty_updates=empty_updates, H2D_requested_bytes=sum(group_bytes),
+        minimum_group_bytes=min(group_bytes), maximum_group_bytes=max(group_bytes),
+        scope='Adaptive expert H2D requests only;excludes initial placement,map copies,'
+              'audit readbacks and other traffic. Physical bus traffic and transfer service remain unknown.')
+    return result
 
 
 def fixture_group(generation, incoming, outgoing, count=BUDGET):
@@ -97,9 +158,13 @@ def fixture_group(generation, incoming, outgoing, count=BUDGET):
 
 
 def fixture_index(blob):
-    total = 48 * 512 * blob
+    sizes = [blob] * 48 if isinstance(blob, int) else blob
+    total = 512 * sum(sizes)
     lines = [f'# strata native experts v3: fixture (n_expert 512, total {total}; fixture)']
-    lines += [f'{layer} 18 20 {layer*512*blob} {blob} 0 0 0' for layer in range(48)]
+    offset = 0
+    for layer, size in enumerate(sizes):
+        lines.append(f'{layer} 18 20 {offset} {size} 0 0 0')
+        offset += 512 * size
     return '\n'.join(lines)
 
 
@@ -150,6 +215,56 @@ def controls():
         except RuntimeError:
             continue
         raise RuntimeError('corrupt96-copy audit accepted')
+    sizes = native_extent(fixture_index([256 * (i + 1) for i in range(48)]),
+        include_layer_bytes=True)['layer_blob_bytes']
+
+    def with_requests(lines):
+        traced = ['strata serve: ADAPT_SUBMIT swaps=0 H2D_requested_bytes=0']
+        count, requested = 0, 0
+        for line in lines:
+            entry = re.fullmatch(prefix + r'phase=prepared generation=(\d+) incoming=(\d+) '
+                r'outgoing=(\d+) slot=(\d+)', line)
+            if entry:
+                count += 1
+                requested += sizes[int(entry[2]) // 512]
+            if line.startswith(prefix + 'phase=published '):
+                traced.append(f'strata serve: ADAPT_SUBMIT swaps={count} H2D_requested_bytes={requested}')
+                count, requested = 0, 0
+            traced.append(line)
+        return traced
+
+    traced = with_requests(good)
+    uploads = request_payloads('\n'.join(traced), sizes)['upload_requests']
+    require(uploads['groups'] == 2 and uploads['copies'] == 192 and
+        uploads['H2D_requested_bytes'] == 122880 and uploads['empty_updates'] == 1 and
+        uploads['minimum_group_bytes'] == uploads['maximum_group_bytes'] == 61440,
+        'join actual per-layer sizes,not a max-blob estimate')
+    require(request_payloads('\n'.join(with_requests(partial)), sizes)['upload_requests']
+        ['H2D_requested_bytes'] == 125184, 'include later partial-group copy requests')
+    submits = [i for i, line in enumerate(traced) if line.startswith('strata serve: ADAPT_SUBMIT swaps=96 ')]
+    request_bad = [traced[:i] + traced[i+1:] for i in submits]
+    first = submits[0]
+    request_bad += [
+        [*traced[:first], traced[first], *traced[first:]],
+        [*traced[:first], traced[first+1], traced[first], *traced[first+2:]],
+        [traced[0].replace('bytes=0', 'bytes=1'), *traced[1:]]]
+    for old, new in (('bytes=61440', 'bytes=61441'), ('swaps=96', 'swaps=95'),
+        ('bytes=61440', 'bytes=-1'), ('bytes=61440', 'bytes=18446744073709551616'),
+        ('bytes=61440', 'bytes=000000000000000061440'), ('bytes=61440', 'bytes=61440 unknown=1')):
+        request_bad.append([*traced[:first], traced[first].replace(old, new), *traced[first+1:]])
+    for lines in request_bad:
+        try:
+            request_payloads('\n'.join(lines), sizes)
+        except RuntimeError:
+            continue
+        raise RuntimeError('corrupt96copy-request join accepted')
+    invalid_sizes = [sizes[:-1], [0, *sizes[1:]], [CYCLE_CAP // BUDGET + 1] * 48]
+    for invalid_size in invalid_sizes:
+        try:
+            request_payloads('\n'.join(traced), invalid_size)
+        except RuntimeError:
+            continue
+        raise RuntimeError('invalid96request layer sizes accepted')
     at_cap = CYCLE_CAP // BUDGET
     require(native_extent(fixture_index(at_cap))['maximum_group_bytes'] <= CYCLE_CAP,
         'last fitting payload extent')
@@ -170,6 +285,8 @@ def controls():
         later_partial_group_retained=True, ordered_negative_cases=len(bad),
         payload_negative_cases=len(invalid), original32_reader_unchanged=True,
         first_request_refusal_seed_checked=True,
+        requested_payload_negative_cases=len(request_bad) + len(invalid_sizes),
+        requested_bytes_joined_to_published_generations=True,
         record_failure=refusal_controls(),
         scope='CPU-only ordered/index controls;native96 remains unqualified.')
 
@@ -269,7 +386,12 @@ def context():
             '96candidate basis/payload bound changed')
         return prior_current(row, full=full)
 
-    ctx.configuration, ctx.current, ctx.audit, ctx.controls = configuration, current, audit, controls
+    def audit_actual(text):
+        row = json.loads((ctx.ROOT / 'record.json').read_text())
+        bound = payload_bound(row['model_assets'], include_layer_bytes=True)
+        return request_payloads(text, bound['layer_blob_bytes'])
+
+    ctx.configuration, ctx.current, ctx.audit, ctx.controls = configuration, current, audit_actual, controls
     return ctx
 
 
@@ -297,7 +419,12 @@ def prepare(ctx):
             'occupied post-positive loan/refill,actual T1/T4 head windows,ordered two-request '
             'protocol,normalQUIT0,quiet validation,no fresh fault,unchanged final15assets/'
             'boot/driver and closed owners. Max layer blob and96-group bound must fit the '
-            'unchanged64/256MiB header before exec. Any refusal/budget stop stays failed;'
+            'unchanged64/256MiB header before exec. Join each positive copy count and '
+            'requested-byte counter to its masked/published generation and incoming '
+            'layer sizes;retain compact count/sum/min/max only. Empty updates must '
+            'request zero bytes without an unpublished generation. Requested bytes '
+            'exclude initial placement,map copies,audit readbacks and physical bus traffic. '
+            'Any refusal/budget stop stays failed;'
             'no retry,narrower group,pin refresh,new build or runtime change. This positive '
             'entry does not qualify the still-required exact96second-record refusal.')
         row['limits'] = (
