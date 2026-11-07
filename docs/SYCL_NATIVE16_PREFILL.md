@@ -1056,6 +1056,11 @@ A changed cache can alter work,overlap and other intervals,so it needs fresh
 model samples. The independent audit-cap successor can now proceed through
 source preparation and bounded qualification;resource closure does not turn
 the failed observer-cost decision into a pass.
+All six successful raw outputs are retired after source recovery and committed
+evidence. The final69files/13871094bytes and17finished configuration/frontend/
+record files/183538bytes are removed;the resource root no longer exists.
+All341original inputs were recovered and all15engine/fixture ELFs preserved.
+The successor consumes this cohort's compact committed result only.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
