@@ -41,7 +41,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.991177/1.029460/1.007754and TTFT ratios0.991928/1.029290/1.008306fail
   their independent nonregression gates. This qualifies a repeated decode
   gain in this workload,not phase preservation,fixed-work attribution,full
-  model adoption or70TG. The separate cap2/prose comparison remains unprepared.
+  model adoption or70TG. The separate cap2/prose comparison is prepared at
+  source`c632a0421`,with346inputs,all15model assets checked and six immutable
+  8/32,32/8,8/32configurations on the same e1b011 executable. No prose model
+  process has run;fresh benchmark/server frontend probes are next.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -906,10 +909,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   these are not CPU kernel jobs or physical traffic. Different generation
   lengths and acceptance preclude fixed-work attribution. Individual clocks,
   counts and routes remain in the linked compact result under
-  `adaptive_payload_generation_regular_code_v1`. Next prepare the separate
-  cap2/prose cohort on the same executable and fixed8-round cadence;its
+  `adaptive_payload_generation_regular_code_v1`. The separately prepared
+  cap2/prose cohort uses the same executable and fixed8-round cadence;its
   acceptance cannot establish a fixed4 weak-MTP class. Agent/task,quality,
   prompt-verify,physical262144/RESTORE and ordinary teardown remain pending.
+  The cap2/prose plan is now prepared at`c632a0421`,after the separate code
+  cohort closed. All15model assets and346source inputs pass;the four immutable
+  configuration controls,small exact gain,slower-pair retention and independent
+  phase decisions pass. Its six fixed8/32,32/8,8/32processes retain the same
+  e1b011engine,8192chunk,placement,runtime safety and observer settings.
+  Commit this plan before fresh benchmark/server frontend probes;no prose
+  model execution or performance decision yet. Follow
+  `adaptive_payload_generation_varied_prose_v1`.
   All six processes each have69successful raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
   from Git and pushing their compact results. Admission passes after all six
