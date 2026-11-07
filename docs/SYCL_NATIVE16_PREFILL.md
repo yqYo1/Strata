@@ -1055,9 +1055,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   verified. Its six fresh-process order is32/96,96/32,32/96;the CPU controls
   pass and both arms preserve the same invariant configuration. Follow
   `adaptive_payload96_generation_regular_code_v1`. Fresh benchmark/server
-  frontend probes now both pass with empty stderr and closed owners. Commit
-  this ready result before process0. No speed-process model execution or96speed qualification
-  has run;the varied-prose32/96cohort is not yet prepared.
+  frontend probes both pass with empty stderr and closed owners. Process0,
+  the32reference,now closes normally0with quiet validation,closed owners,
+  unchanged boot/driver and no fresh fault. Its33208fresh-input/3477generated
+  sample has prompt60331.1ms,decode276940.0ms,client TTFT60.500s and exact
+  PP/TG550.429215/12.555066. Cache hits are729753/1951200(37.4%)and draft
+  acceptance2462/3048. This is one current-cohort reference sample;its body
+  differs from the old8/32cohort. It establishes no cross-cohort regression,
+  96speed,repeatable gain or adoption. The varied-prose32/96cohort is not yet
+  prepared;final full asset hashing remains due at cohort closure.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
@@ -1327,15 +1333,10 @@ one-use source/controller are archived at the source commit above;normal Git
 history restores them. Both inference engine generations remain protected.
 The best-median two-thread point is also in the cumulative CSV.
 
-The next source-matched decode-resource consumer can reuse the current429b
-engine:its recorded CMake recipe has `STRATA_CPU_SERVICE_PROFILE=ON`,and its
-actual generator/verifier include the existing leaf,census and disjoint caller
-observers. No third engine build is needed to collect those existing clocks.
-After the frozen static/adaptive code and prose comparisons close,prepare a
-separate same-ELF observer plan with immutable pre-exec selectors and matched
-work/observer-cost checks. Reuse the measured cap4/code and cap2/prose choices;
-keep CPU leaf sums,caller regions,nested wait CPU and draft work separate.
-Start that census-backed profile with static0:the current compiled
+The earlier source-matched decode-resource comparison reused the429b
+engine's profile-ON build and existing leaf,census and disjoint caller
+observers. It kept CPU leaf sums,caller regions,nested wait CPU and draft
+work separate and used static0because the compiled
 `CpuWorkCensus` snapshots slots at construction and rejects`residency_changed`
 in`record`,and its Python reader requires the initial profile membership.
 The429b compiled/current header hashes match. Enabling these existing checks
@@ -1395,6 +1396,20 @@ the review is indexed as`cpu_memory_working_set_retrieval_review_20261107`.
 Before selecting a CPU working-set optimization,obtain current operation/format/
 NT attribution with a qualified observer-cost comparison. The unchanged static
 census still rejects adaptive residency changes;do not suppress that guard.
+The current leaf profile is independent of that census:pool construction reads
+`STRATA_CPU_SERVICE=1`,and the compiled generator snapshots/writes its separate
+per-request GU/HQ/DOWN format/NT counters. Main verified its header and pool
+against both the e1b011build record and compiled private source. A new bounded
+leaf-only plan can therefore test the current adaptive route without rebuilding
+the engine or enabling the incompatible static census. It must declare its
+limited scope and compare observers off/on in immutable pre-exec environments;
+this is not a way to disable a census failure or claim dynamic residency
+conservation. No such current-engine profile or cost comparison has run.
+For a later full adaptive census,the reviewed design refreshes membership on
+the request owner only after the adaptive worker joins and refill publication
+succeeds,latches a published-map epoch per window,and rejects masked/in-flight
+state. Preserve final-job NT/footer conservation. The existing library is
+sufficient for that design;follow`adaptive_cpu_census_retrieval_review_20261107`.
 The selected e1b011 path multiplies usage counts by 0.7 after each adaptation;
 neither arm overrides this default. At every eight verifier rounds, the score
 half-life is about 15.55 rounds. The generated-token interval varies with
