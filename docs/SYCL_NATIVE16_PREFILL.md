@@ -857,13 +857,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   starts`b50481aa8dfa`;keep it immutable. The inherited opening`engine429b`
   plan label is stale;structured pins and the actual executable check bind
   this run to e1b011. This expected error is a correctness control,not speed.
-  Source-only`tools/sycl/compare_adaptive_payload_generation.py`
+  `tools/sycl/compare_adaptive_payload_generation.py`
   now reuses the original same-ELF8/32decision/benchmark runner with successor
   positive/refusal qualifications. Prior settings/frontend selection supply no
   old-engine qualification;refs bind only the successor controls and tested
   Niko frontend. Code cap4/prose cap2 remain separate three-pair cohorts,exact
-  TG is primary,and prompt/TTFT remain independent. No model comparison is
-  prepared or run. Before its preparation,the following CPU-only control is
+  TG is primary,and prompt/TTFT remain independent. Its regular-code plan is
+  now prepared at source`bc1413ec2`,with all15assets checked and six actual
+  configurations8/32,32/8,8/32on e1b011. All native/runtime/header/qualification
+  reads succeed with the old429b paths absent. Fresh frontend probes and model
+  processes remain pending;old bytes stay held until frontend admission.
+  Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
   Require actual0,quiet stderr,four immutable configurations,small exact gain,
