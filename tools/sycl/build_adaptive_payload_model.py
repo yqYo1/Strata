@@ -121,17 +121,19 @@ def factory():
 
 def prepare_details(row):
     old, _ = basis(); proof = host_proof()
+    predecessor_sha = digest(original.ROOT / 'record.json')
     external = json.loads(Path(row['external_inputs']['path']).read_text())
     require(not any(Path(p).is_relative_to(original.ROOT) for p in external),
         'successor must not retain predecessor build products as external inputs')
     row['predecessor_artifacts_in_build_inputs'] = False
-    row['selected_basis'].update(recovered_files=568, changed=[source.HEADER],
+    row['selected_basis'].update(record_sha256=predecessor_sha,
+        recovered_files=568, changed=[source.HEADER],
         unchanged_native_kernel_CPU_runtime_prefill_files=567)
     row['host_header_qualification'].update(cases=57, legacy_cases=41, added_budget_cases=16,
         source_commit=proof['source_commit'],
         scope='Exact64MiB expert/256MiB cycle host state machine;native32 remains unqualified.')
     row['comparison_predecessor'] = dict(source_commit=old['source_commit'], binaries=old['binaries'],
-        record_sha256=digest(original.ROOT / 'record.json'))
+        record_sha256=predecessor_sha)
     row['temporary_generation_budget'] = dict(max_temporary_comparison_generations=3,
         protected_existing_generations=2, expected_successor_outputs=6,
         preserve_outputs_before_compile=15,
