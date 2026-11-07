@@ -1582,7 +1582,7 @@
       }
     },
     "native_feature_build": {
-      "stage": "prepared",
+      "stage": "built",
       "source_commit": "689c3da346aeeb819d03ee644b27648adc241d3b",
       "project_source_sha256": "88a9750e3a39942506e9df8bd21a49d02103ac925a3df1363a9740024bf5fe55",
       "dependency_revisions": {
@@ -1699,13 +1699,49 @@
       },
       "record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
-        "sha256": "d5250750234d2ef4623073f3f65e638cd7fb8a2529636090c504ae393f5b0281"
+        "sha256": "b67d69ce17d5fabf3f875acbe9dfbf9da7802f3c606c71a635331abbd71dfabf"
       },
-      "binaries": {},
-      "passed": false,
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/strata",
+          "sha256": "983c5491553456c92b73e7df43a3534ae37eb3010ee3e18e7d6d6036a757e866",
+          "bytes": 26271632
+        },
+        "sycl_dflash2_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_dflash2_test",
+          "sha256": "cd93ee0aa3c8429b04621379827913b0c3a188ec18093a8256b764faf748ab83",
+          "bytes": 15942120
+        },
+        "dflash2_pack_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/dflash2_pack_test",
+          "sha256": "bdd38c4e59b977acffec391a1424065dcff97b08e0a6b10578ad43e0ab1a4fe6",
+          "bytes": 151976
+        },
+        "sycl_submission_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_submission_test",
+          "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
+          "bytes": 351832
+        }
+      },
+      "passed": true,
       "ownership_closed": true,
       "error": null,
-      "commands": [],
+      "commands": [
+        {
+          "label": "configure",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "compile",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ],
       "retention": "Temporary third generation: preserve552b prefill and e1b011 decode. This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. Retire it if qualification fails; at the feature comparison boundary select validated outputs and retire superseded generations after original-source/recipe recovery. No adoption from build success.",
       "attempt": 3,
       "previous_attempt": {
