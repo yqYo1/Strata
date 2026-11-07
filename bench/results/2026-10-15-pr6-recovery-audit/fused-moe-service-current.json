@@ -201222,7 +201222,7 @@
     "correction": "Read all committed prerequisites before the preparation helper writes its new plan. V3uses a fresh root;V2never launched frontend/model/GPU work."
   },
   "adaptive_payload96_device_service_v3": {
-    "stage": "prepared",
+    "stage": "frontend-qualified",
     "source_commit": "0965af0a0c1a3ee8e60e57849dc0f9339c2aca1a",
     "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
     "binary": {
@@ -201543,7 +201543,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -201586,6 +201586,41 @@
       "limits": "Short diagnostic,not sustained generation,MTP-friendly/weak classification,full device coverage,critical path or compute/RAM/VRAM/PCIe saturation,task/agent,physical262144/RESTORE,ordinary provider teardown or adoption. Native caller CPU includes polling during waits;worker CPU is separate. Never add overlapping services.",
       "stopping": "First identity,body,count,route,clock,validation,fault,owner,output or prompt-admission failure ends the attempt;preserve its status. No pin refresh or in-place retry.",
       "retention": "512MiB/file,768MiBjob,1GiBwhole and1200s/104GiBRSS. Full trace temporarily needed for graph IDs and post-flush guarded reduction. Keep compact source/count/interval/caller/request/fault evidence,retire successful raw output after verification."
+    },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 191,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
+    "window_reader_tests": {
+      "passed": true,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "summary": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.001s\n\nOK\n",
+      "command": {
+        "argv": [
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "-B",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/test_decode_window_trace.py"
+        ],
+        "pid": 1639575,
+        "exit_code": 0,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "errors": [],
+        "cleanup": [],
+        "elapsed_seconds": 0.9406362483277917
+      }
     },
     "source_inputs": {
       "files": 357,
