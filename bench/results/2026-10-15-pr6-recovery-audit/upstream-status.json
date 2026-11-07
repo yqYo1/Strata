@@ -1471,6 +1471,15 @@
         "seconds": 0.4,
         "exit_code": 0,
         "meaning": "Deferred DeepSeek/35B catalog/launch contract and current Flash/v3.1 admission; host only."
+      },
+      {
+        "source_commit": "c22ea2441c0e0d52d573d70f6e57f23d4b44f590",
+        "suite": "first native feature build",
+        "configure_exit": 0,
+        "compile_exit": 1,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "error": "src/kernels/sycl/dflash2.cpp:88 unused parameter eps under -Werror; no math/runtime failure. Existing four targets are unqualified; compiler diagnostics must be corrected in a new committed attempt."
       }
     ],
     "dflash2_download_plan": {
@@ -1573,7 +1582,7 @@
       }
     },
     "native_feature_build": {
-      "stage": "prepared",
+      "stage": "build_failed",
       "source_commit": "c22ea2441c0e0d52d573d70f6e57f23d4b44f590",
       "project_source_sha256": "43a60c21936d49d369e30c226fb75eebc1045c0d57aca572f2365e3873cee89f",
       "dependency_revisions": {
@@ -1690,13 +1699,28 @@
       },
       "record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
-        "sha256": "c3b6a19aee1da993d264356339fddaa2a947f7f2f57adf39e8e564b2b216ad7f"
+        "sha256": "0f2305fce97d8afc7a4bd3e05ada39104620497ef6012501ca78c74e39771219"
       },
       "binaries": {},
       "passed": false,
       "ownership_closed": true,
-      "error": null,
-      "commands": [],
+      "error": "RuntimeError('compile failed; read bounded diagnostics in the owned output')",
+      "commands": [
+        {
+          "label": "configure",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "compile",
+          "exit_code": 1,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ],
       "retention": "Temporary third generation: preserve552b prefill and e1b011 decode. This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. Retire it if qualification fails; at the feature comparison boundary select validated outputs and retire superseded generations after original-source/recipe recovery. No adoption from build success."
     }
   }
