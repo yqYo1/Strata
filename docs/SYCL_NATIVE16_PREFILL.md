@@ -791,7 +791,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   refusal before preparing an8/32speed comparison. The source-only
   `tools/sycl/build_adaptive_payload_model.py`now prepares that exact568-file
   composition:only the audit header changes,all567other inputs and the recipe
-  remain fixed. It has not been prepared,built or executed. It gates preparation
+  remain fixed. Its first preparation at source`be2d75dab`fails after the
+  template publishes its own new result:the post-step incorrectly rereads the
+  entire result as a still-committed input. No compiler or GPU runs. Preserve
+  `adaptive_payload_native_build_v1`as failed. The separate V2root/key captures
+  validated predecessor/header evidence before publication and then requires
+  the exact expected output with every other qualification field unchanged.
+  It includes two valid and six corrupt publication controls. The build
+  post-step and positive-entry preparation use the same ordering fix;no input
+  hash is refreshed. V2has not been prepared,built or executed. It gates preparation
   on all six resource processes closing. Allow one temporary third comparison
   generation only through successor native32positive/refusal qualification:
   keep552b and429b's15outputs for fallback and exact five-fixture comparison,

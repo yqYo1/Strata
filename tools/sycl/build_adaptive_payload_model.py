@@ -21,7 +21,7 @@ import adaptive_payload_sources as source
 import build_adaptive_audit_model as original
 
 P, B, RESULT, base = original.P, original.B, original.RESULT, original.base
-ROOT, KEY = B / 'adaptive-payload-audit-model-v1', 'adaptive_payload_native_build_v1'
+ROOT, KEY = B / 'adaptive-payload-audit-model-v2', 'adaptive_payload_native_build_v2'
 SELF = Path(__file__).resolve()
 require, digest, write, signature = original.require, original.digest, original.write, original.signature
 
@@ -119,8 +119,34 @@ def factory():
     return ctx
 
 
-def prepare_details(row):
-    old, _ = basis(); proof = host_proof()
+def check_publication(before, key, value, after):
+    expected = dict(before)
+    expected[key] = value
+    require(after == expected, 'qualification inputs changed during result publication')
+
+
+def publication_controls():
+    before = dict(qualification=dict(passed=True), prior_failure=dict(passed=False))
+    value = dict(stage='prepared')
+    after = dict(before, candidate=value)
+    check_publication(before, 'candidate', value, after)
+    check_publication(after, 'candidate', dict(stage='built'),
+        dict(before, candidate=dict(stage='built')))
+    corrupt = [dict(after, qualification=dict(passed=False)),
+        {k: v for k, v in after.items() if k != 'qualification'},
+        dict(after, unexpected=True), dict(after, prior_failure=dict(passed=True)),
+        dict(after, qualification=[True]), dict(after, candidate=dict(stage='built'))]
+    for changed in corrupt:
+        try:
+            check_publication(before, 'candidate', value, changed)
+        except RuntimeError:
+            continue
+        raise RuntimeError('changed qualification or wrong output accepted')
+    return dict(passed=True, valid_publications=2, corrupt_publications_rejected=len(corrupt),
+        GPU_executed=False, model_executed=False)
+
+
+def prepare_details(row, old, proof):
     predecessor_sha = digest(original.ROOT / 'record.json')
     external = json.loads(Path(row['external_inputs']['path']).read_text())
     require(not any(Path(p).is_relative_to(original.ROOT) for p in external),
@@ -151,10 +177,23 @@ def prepare_details(row):
 
 
 def prepare():
+    snapshot = base.committed(RESULT)
+    failed = snapshot['adaptive_payload_native_build_v1']
+    require(failed['stage'] == 'failed-successor-prepare' and not failed['passed'] and
+        not failed['complete'] and failed['ownership_closed'] and not failed['active'] and
+        not failed['GPU_executed'] and not failed['model_executed'] and
+        'commit exact input:' in failed['error'], 'preserve original preparation failure')
+    old, _ = basis(); proof = host_proof()
+    checks = publication_controls()
     factory().prepare()
     row = json.loads((ROOT / 'record.json').read_text())
     try:
-        prepare_details(row)
+        check_publication(snapshot, KEY, compact(row), json.loads(RESULT.read_text()))
+        prepare_details(row, old, proof)
+        row['publication_controls'] = checks
+        row['previous_prepare_attempt'] = dict(key='adaptive_payload_native_build_v1',
+            source_commit=failed['source_commit'], stage=failed['stage'],
+            reason='Post-publication committed-input reread;no compiler or GPU execution.')
     except BaseException as error:
         row.update(stage='failed-successor-prepare', passed=False, complete=False, error=repr(error))
         raise
@@ -163,10 +202,12 @@ def prepare():
 
 
 def build():
+    snapshot = base.committed(RESULT)
+    old, _ = basis()
     factory().build()
     row = json.loads((ROOT / 'record.json').read_text())
     try:
-        old, _ = basis()
+        check_publication(snapshot, KEY, compact(row), json.loads(RESULT.read_text()))
         names = set(old['binaries']) - {'strata'}
         require(len(names) == 5 and all(row['binaries'][n]['sha256'] == old['binaries'][n]['sha256']
             for n in names), 'changed fixture requires fresh component qualification')

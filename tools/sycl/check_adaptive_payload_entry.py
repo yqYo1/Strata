@@ -36,13 +36,16 @@ def context():
 
 
 def prepare(ctx):
-    failed = ctx.base.committed(ctx.RESULT)['adaptive_budget32_native_entry_v1']
+    snapshot = ctx.base.committed(ctx.RESULT)
+    failed = snapshot['adaptive_budget32_native_entry_v1']
     require(failed['stage'] == 'failed' and failed['passed'] is False and failed['complete'] is False,
         'preserve the failed original64MiB qualification')
+    proof = admission.build.host_proof()
     budget.prepare(ctx)
     row = json.loads((ctx.ROOT / 'record.json').read_text())
     try:
-        proof = admission.build.host_proof()
+        admission.build.check_publication(snapshot, ctx.KEY, ctx.compact(row),
+            json.loads(ctx.RESULT.read_text()))
         row.update(successor_build_key=admission.build.KEY,
             host_qualified_header_sha256=proof['generated'][admission.build.source.HEADER],
             predecessor_failed_key='adaptive_budget32_native_entry_v1')
