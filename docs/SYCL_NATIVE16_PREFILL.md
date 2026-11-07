@@ -788,7 +788,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gate;regenerate the retired private inputs from Git rather than reusing them.
   After the frozen resource cohort closes,qualify the successor
   native header,positive32publication/dispatch/occupied loan and second-record
-  refusal before preparing an8/32speed comparison. The source-only
+  refusal before preparing an8/32speed comparison. The successor builder
   `tools/sycl/build_adaptive_payload_model.py`now prepares that exact568-file
   composition:only the audit header changes,all567other inputs and the recipe
   remain fixed. Its first preparation at source`be2d75dab`fails after the
@@ -802,7 +802,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   hash is refreshed. V2preparation now closes normally0at source`bbd345c63`,
   with568inputs,only header8387changed,the correct429b predecessor receipt,
   the two/six publication controls passing,and no predecessor products in its
-  external build inputs. No compilation or GPU execution has occurred. It gates preparation
+  external build inputs. V2compilation now closes normally0for all three
+  commands and six targets,with1453covered actual compiler inputs,checked
+  header/link/flags and all five fixture ELFs byte-identical to429b. The new
+  engine SHA starts`e1b01116cc`;its native source remains`bbd345c63`. Only the
+  audit header changes;fresh same-build CPU parity,component reuse and actual
+  native32positive/refusal remain pending. No GPU was executed by the build. It gates preparation
   on all six resource processes closing. Allow one temporary third comparison
   generation only through successor native32positive/refusal qualification:
   keep552b and429b's15outputs for fallback and exact five-fixture comparison,
@@ -814,8 +819,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   fixture ELFs and the original10/32/16device checks. Reuse must first verify
   the live429b chain;later readers pin its consumed metadata/Git inputs rather
   than requiring retired429b ELFs. Runtime/probe bytes,boot and driver still
-  need to match. No successor build,component reuse or native32execution has
-  occurred. Source-only`tools/sycl/check_adaptive_payload_entry.py`now binds
+  need to match. The successor is compiled;component reuse and native32execution
+  remain unexecuted. Source-only`tools/sycl/check_adaptive_payload_entry.py`now binds
   the unchanged full32copy/dispatch/occupied-loan reader and supervisor to the
   successor at a fresh`adaptive_payload32_native_entry_v1`key/root. It requires
   the new header/component proof and keeps the original64MiB trial failed.
