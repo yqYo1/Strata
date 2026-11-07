@@ -195866,7 +195866,15 @@
         "stderr_bytes": 2249
       }
     ],
-    "error": "RuntimeError('host suite failed: console-module\\ntest_unwrapped_unread_pipe_blocks_control (serve.test_nonblocking_out.ConsoleChildExit.test_unwrapped_unread_pipe_blocks_control) ... ok\\ntest_wrapped_unread_pipe_exits_buffered (serve.test_nonblocking_out.ConsoleChildExit.test_wrapped_unread_pipe_exits_buffered) ... FAIL\\ntest_wrapped_unread_pipe_exits_unbuffered (serve.test_nonblocking_out.ConsoleChildExit.test_wrapped_unread_pipe_exits_unbuffered) ... ok\\ntest_blocked_sink_keeps_latest_chunks_in_order (serve.test_nonblocking_out.ConsoleQueue.test_blocked_sink_keeps_latest_chunks_in_order) ... ok\\ntest_broken_sink_does_not_stop_later_diagnostics (serve.test_nonblocking_out.ConsoleQueue.test_broken_sink_does_not_stop_later_diagnostics) ... ok\\ntest_close_does_not_wait_forever_for_console (serve.test_nonblocking_out.ConsoleQueue.test_close_does_not_wait_forever_for_console) ... ok\\ntest_context_preserves_replaced_capture_streams (serve.test_nonblocking_out.ConsoleQueue.test_context_preserves_replaced_capture_streams) ... ok\\ntest_context_wraps_owned_streams_and_restores_them (serve.test_nonblocking_out.ConsoleQueue.test_context_wraps_owned_streams_and_restores_them) ... ok\\n\\n======================================================================\\nFAIL: test_wrapped_unread_pipe_exits_buffered (serve.test_nonblocking_out.ConsoleChildExit.test_wrapped_unread_pipe_exits_buffered)\\n----------------------------------------------------------------------\\nTraceback (most recent call last):\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/serve/test_nonblocking_out.py\", line 155, in test_wrapped_unread_pipe_exits_buffered\\n    self.child(True)\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/serve/test_nonblocking_out.py\", line 141, in child\\n    self.assertEqual(code, 0, \"console child must exit normally: \"\\nAssertionError: -6 != 0 : console child must exit normally: DONE\\nFatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedWriter name=\\'<stdout>\\'> at interpreter shutdown, possibly due to daemon threads\\nPython runtime state: finalizing (tstate=0x0000000000ba6748)\\n\\nCurrent thread 0x0000794eeb5ac080 (most recent call first):\\n  <no Python frame>\\n\\n\\n----------------------------------------------------------------------\\nRan 8 tests in 6.589s\\n\\nFAILED (failures=1)\\n')"
+    "error": "Buffered unread-pipe child exited-6 afterDONE:Python _enter_buffered_busy on the original stdout BufferedWriter during interpreter shutdown. One of8module cases failed;unbuffered and blocked-control cases passed.",
+    "artifact_retirement_key": "upstream_nonblocking_console_module_host_v2",
+    "failure_diagnostic": {
+      "case": "ConsoleChildExit.test_wrapped_unread_pipe_exits_buffered",
+      "child_exit_code": -6,
+      "failures": 1,
+      "full_diagnostic_commit": "f2c589df235b2e526e396655c2e42ddb81704b41",
+      "reason": "Resolved by the source-pinned9-case POSIX repair;original full error remains in reachable Git history."
+    }
   },
   "upstream_nonblocking_console_module_host_v2": {
     "stage": "closed",
@@ -195997,6 +196005,50 @@
         "stderr_bytes": 1399
       }
     ],
-    "parent_failure_key": "upstream_nonblocking_console_module_host_v1"
+    "parent_failure_key": "upstream_nonblocking_console_module_host_v1",
+    "artifact_retirement": {
+      "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-nonblocking-console-module-output-retirement-20261107.json",
+      "sha256": "7a5ed752f9809c0737647d0dde696d530e8915265f5e1fd0a7aaadd6c6134771",
+      "scope": "Both original failedv1 and repaired successfulv2 module-only attempts.",
+      "files": 6,
+      "bytes": 12658,
+      "source_inputs_recovered_per_attempt": 34,
+      "original_failure_preserved": true,
+      "reason": "Useful outcomes and exact sources/commands committed;resolved I/O mechanism needs no raw capture. Shared runtime assets retained."
+    }
+  },
+  "adaptive_payload96_generation_reader_host_v1": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "source_commit": "1735a377e721c0a1e7ba040f2af6a784a892af8c",
+    "source_count": 129,
+    "source_signature_sha256": "a2856acb3f3c16c67e7c931f21df6e6c08b50cd4a65f912eeb131c2ee62aaeec",
+    "command": [
+      "/usr/bin/timeout",
+      "-k",
+      "2s",
+      "20s",
+      "/usr/bin/prlimit",
+      "--as=1073741824",
+      "--cpu=10",
+      "--fsize=65536",
+      "/usr/bin/python3",
+      "-X",
+      "faulthandler",
+      "-B",
+      "tools/sycl/compare_adaptive_payload96_generation.py",
+      "controls"
+    ],
+    "exit_code": 0,
+    "tool_session_terminal": true,
+    "small_exact_gain_retained": true,
+    "slower_pair_retained": true,
+    "phase_decisions_separate": true,
+    "immutable_configuration_controls": 4,
+    "scope": "CPU comparison/configuration controls only;actual96positive/refusal and per-workload32reference gains still gate preparation. No96model speed,safety or adoption follows.",
+    "retention": "Keep compact command/source/control result for the next96comparison;no raw CPU log required."
   }
 }

@@ -996,8 +996,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   independent prompt/TTFT gates. Both current8/32cohorts and the actual96
   positive/refusal pair must close before preparation;each workload also
   requires its own repeated32over8TGgain before selecting32as reference.
-  No speed-controller controls,preparation,model execution or96speed qualification
-  have run. Its CPU controls are preregistered before preparation:
+  Its CPU controls now pass at`1735a377e`with129source inputs,four immutable
+  configuration cases,small exact gain,slower-pair retention and independent
+  phase decisions;follow`adaptive_payload96_generation_reader_host_v1`.
+  No speed preparation,model execution or96speed qualification has run.
+  The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
   without a named follow-up consumer.
@@ -2771,6 +2774,11 @@ modified sources now pass all nine cases without skips,normal0and closed
 ownership. Follow`upstream_nonblocking_console_module_host_v2`,with34inputs
 pinned at`5327c9454`. This qualifies the POSIX module repair,not server wiring,
 other-platform behavior,native execution or inference performance.
+Both module-only attempts' six raw files/12658bytes are retired after
+recovering each34-input source set from pushed Git;the original failure
+remains failed in the compact result. The shared runtime is retained.
+Manifest:`upstream-nonblocking-console-module-output-retirement-20261107.json`,
+SHA256`7a5ed752f9809c0737647d0dde696d530e8915265f5e1fd0a7aaadd6c6134771`.
 Qualify these checks before adapting the
 server's existing no-argument`main()`wrapper and its upstream
 `STRATA_BLOCKING_CONSOLE=1`bypass;then qualify actual startup and existing
