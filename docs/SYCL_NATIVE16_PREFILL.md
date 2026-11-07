@@ -1555,6 +1555,14 @@ compiler inputs remain unchanged. The new scanner is unbuilt/unexecuted;
 prospective continuation/reuse qualification is still required. Keep the
 current auxiliary build solely for that immediate identity/reuse check,then
 retire it when the reference continuation closes.
+The V4 controller is source-prepared for a scanner-only continuation. It pins
+the failed V3 result at49b2d4821,recovers its original261controller/recipe
+inputs,and rechecks all634actual compiler inputs,the original links,expert
+ELF,56numerical/560timing samples,model slices and environment. Reused expert
+samples remain identified as V3 evidence;V4 newly builds only the public
+scanner,checks four bounded invalid-CLI refusals,and measures all1/2/3/6read
+references with five eligible samples each. This continuation has not yet
+built or executed;its plan must be committed first.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own

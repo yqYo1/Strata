@@ -30,45 +30,34 @@ class EvidenceTests(unittest.TestCase):
         lines.append(dict(kind='closed',passed=True))
         return row,lines
 
-    def test_legacy_retirement_requires_real_manifest_and_absent_executable(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root=Path(tmp);binary=root/'retired';manifest=root/'manifest.jsonl'
-            manifest.write_text(json.dumps(dict(path=str(binary),sha256='original'))+'\n')
-            old=dict(binary=dict(path=str(binary),sha256='original'),artifact_retirement=dict(
-                original_recipes_recovered=True,manifest=str(manifest),manifest_sha256=mix.base.digest(manifest)))
-            mix.previous_fixture_retired(old)
-            for variant in ('present','wrong_hash','unrecovered'):
-                value=copy.deepcopy(old)
-                if variant=='present':binary.write_bytes(b'not retired')
-                if variant=='wrong_hash':value['artifact_retirement']['manifest_sha256']='0'*64
-                if variant=='unrecovered':value['artifact_retirement']['original_recipes_recovered']=False
-                with self.subTest(variant=variant),self.assertRaises(RuntimeError):mix.previous_fixture_retired(value)
-                binary.unlink(missing_ok=True)
-
-    def test_multi_binary_retirement_requires_each_original_executable(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            root=Path(tmp);manifest=root/'manifest.jsonl'
-            binaries={n:dict(path=str(root/n),sha256=n) for n in ('mix','scan')}
-            rows=list(binaries.values())
-            manifest.write_text(''.join(json.dumps(r)+'\n' for r in rows))
-            old=dict(binaries=binaries,artifact_retirement=dict(original_recipes_recovered=True,
-                manifest=str(manifest),manifest_sha256=mix.base.digest(manifest)))
-            mix.previous_fixture_retired(old)
-            for variant in ('present_scan','missing_scan','wrong_scan','duplicate_scan'):
-                changed=copy.deepcopy(rows)
-                if variant=='present_scan':(root/'scan').write_bytes(b'still present')
-                if variant=='missing_scan':changed.pop()
-                if variant=='wrong_scan':changed[-1]['sha256']='different'
-                if variant=='duplicate_scan':changed.append(changed[-1])
-                manifest.write_text(''.join(json.dumps(r)+'\n' for r in changed))
-                old['artifact_retirement']['manifest_sha256']=mix.base.digest(manifest)
-                with self.subTest(variant=variant),self.assertRaises(RuntimeError):mix.previous_fixture_retired(old)
-                (root/'scan').unlink(missing_ok=True)
-
     def test_known_histograms_and_integer_conservation(self):
         self.assertEqual(mix.expected_histogram([1,1,1,1],6),[150]*4)
         self.assertEqual(mix.expected_histogram([0,0,0,7],28),[0,0,0,2800])
         self.assertEqual(mix.expected_histogram([1,1,1,0],28),[934,933,933,0])
+
+    def test_intermediate_scan_samples_and_refusals(self):
+        for threads in mix.SCANS:
+            original=[dict(kind='timer_check',mode='scan',threads=threads,query_s=2e-8,fastest_pass_s=.01)]
+            original.extend(dict(kind='sample',mode='scan',threads=threads,attempt=0,rep=i,
+                iterations=100,visits=100,requested_bytes=(256<<20)*100,wall_s=1.3,cpu_s=2)
+                for i in range(5))
+            original.append(dict(kind='closed',passed=True))
+            for variant in ('valid','missing','extra','timer','threads','rep','iterations','bytes','short','nonfinite','closure'):
+                value=copy.deepcopy(original)
+                if variant=='missing':value.pop(1)
+                if variant=='extra':value.insert(0,dict(kind='extra'))
+                if variant=='timer':value[0]['query_s']=.01
+                if variant=='threads':value[1]['threads']=12
+                if variant=='rep':value[1]['rep']=1
+                if variant=='iterations':value[1]['iterations']=True
+                if variant=='bytes':value[1]['requested_bytes']-=1
+                if variant=='short':value[1]['wall_s']=.9
+                if variant=='nonfinite':value[1]['wall_s']=float('nan')
+                if variant=='closure':value[-1]['passed']=False
+                with self.subTest(threads=threads,variant=variant):
+                    if variant=='valid':self.assertEqual(len(mix.parse_scan(value,threads)['samples']),5)
+                    else:
+                        with self.assertRaises(RuntimeError):mix.parse_scan(value,threads)
 
     def resource(self):
         cells=[dict(gu=gu,down=dn,nt=nt,jobs=nt) for gu,dn in sorted(mix.base.PAIRS)
@@ -151,7 +140,7 @@ class EvidenceTests(unittest.TestCase):
                 root=Path(tmp)/'run';project=Path(tmp)/'project';source=Path(tmp)/'source'
                 (root/'build').mkdir(parents=True);(root/'owned').mkdir()
                 required=[source/'src/kernels/cpu'/n for n in mix.CPU_UNITS]
-                required += [project/'bench/sycl/cpu_decode_mix/main.cpp',source/'bench/sycl/cpu_roofline/main.cpp']
+                required += [project/'bench/sycl/cpu_roofline/main.cpp']
                 cfile=Path(tmp)/'ggml-cpu/arch/x86/quants.c'
                 paths=required+[cfile]+[Path(tmp)/('header'+str(i)+'.h') for i in range(100)]
                 allowed={str(p.resolve()):'sha' for p in paths}
