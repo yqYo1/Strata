@@ -1574,8 +1574,11 @@ recovered native CPU recipe. Each of the two real formats pins84distinct
 experts and their model slices. The compact-view CPU build now closes
 normally0with four owned commands and633covered actual compiler inputs;it
 links no GPU runtime. All15inference ELFs remain unchanged. Commit this build
-before executing the synthetic controls;no compact numerical/performance
-execution has occurred.
+before executing the synthetic controls. Those controls now close normally0
+with quiet stderr and closed ownership:all524288codec/integer cases,16full
+synthetic GU cases,64partial ranges and12refusals pass,with exact native-pair
+bits and guards. Commit this result before the two real-weight children;
+no compact real-model or performance result exists yet.
 
 Both closed auxiliary CPU builds and their output are retired after recovering
 original261/V4 262controller inputs,568native inputs,GGML source/recipes and
