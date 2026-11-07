@@ -1530,11 +1530,21 @@
       "state": "source_in_progress_not_exposed_or_built",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
       "adaptation": "Use current fork registered allocations, qualified in-order queues, eager execution without native graph capture or GPU host-flag polling. Strong CPU pack admission before any device allocation. Existing native engine and fast prefill/decode routes are not replaced.",
-      "remaining": "Commit and run metadata admission fixture; finish native tap ABI, prefill taps including BF16, request lineage and speculative proposal integration before bounded GPU qualification.",
+      "remaining": "Finish native taps, BF16 prefill taps, request lineage and speculative proposal integration; then compile and bound GPU qualification. Metadata gate passed19cases, not a native model run.",
       "metadata_fixture_plan": {
         "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
         "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
         "scope": "CPU-only metadata; no source weight copies, sparse malformed files under owned temporary directory;900s build and60s test bounds; remove component executable when integrated engine fixture supersedes it."
+      },
+      "metadata_fixture_result": {
+        "native_source_commit": "07328b06a43d43a55d75e7f8920bb2e83ab1adec",
+        "command": "flock -n owned-v0141-measurement.lock timeout -k5s120s g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; flock -n owned-v0141-measurement.lock timeout -k5s60s <fixture> <verified stock pack>",
+        "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+        "build_exit": 0,
+        "test_exit": 0,
+        "cases_passed": 19,
+        "executable_sha256": "4abfea53e0c258e9ba21ebeaef08bfe7a4b9421ca104ac46530dc66ea7a0d161",
+        "meaning": "CPU metadata only; no payload tensor accuracy, GPU or model-route qualification."
       }
     }
   }
