@@ -1525,7 +1525,12 @@ native toolchain image. The prior calibration remains recoverable through the
 plan's pinned previous-result commit/hash;its original two binaries are retired.
 Commit this plan before `cpu_decode_mix.py build`,then commit the build before
 `check`,then commit all56normal numerical closures before `measure`.
-No extra executable is built;real numerical checks and timing remain pending.
+The auxiliary CPU build now closes normally0with five closed owned commands.
+All634actual compiler inputs are covered,with22pinned external link inputs;
+both C/C++math/ISA checks pass and neither executable links a GPU runtime or
+has a missing dynamic library. Mix ELF`c18208a5`and scan ELF`19721811`are the
+new calibration fixtures,not a new inference engine. All15retained engine/
+fixture hashes remain unchanged. Real numerical checks and timing remain pending.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
