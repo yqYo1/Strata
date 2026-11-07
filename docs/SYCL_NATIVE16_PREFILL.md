@@ -1306,6 +1306,23 @@ a configuration-only capacity optimization for this route. A smaller-context
 screen would be a separate workload/capacity comparison;extending QSA16 to
 streamed storage needs its own implementation and validation. Neither has
 been executed,and the current8/32cohort's context/residency remains131072.
+The MTP residency source census is pinned to the actual e1b011 build's
+`bbd345c632e2d472e47ad3a1e36f2cdae2740d5e` inputs. Original Git bytes for
+`src/core/mtp.cpp`,its header,`expert_routing.cpp`and SYCL compatibility
+code match the compiled snapshot and public files. MTP owns a separate512-expert
+bank of707788800bytes(675MiB);the target's`--expert-cache`does not size it.
+Each full MTP forward is one row:GPU top10 routing feeds`moe_group_resident`,
+which forms`base+expert_id*BLOB`pointers for grouped S2 kernels. It does not
+return IDs to the CPU for grouping. Round/chain graphs capture that bank;
+the existing long-prefill release drains its stream and destroys all four
+decode-graph families before free,then restores the full bank before decode.
+A partial decode bank therefore needs explicit address indirection and a
+qualified miss/owner transaction;changing allocation size alone is invalid.
+The next MTP residency decision needs bounded route frequencies,graph-reader
+and owner coverage,actual free/max-allocation admission,and copy/wait costs
+against a full-bank reference. A full-bank reload time alone does not establish
+a residency gain or physical PCIe traffic. No partial-bank candidate
+is implemented or qualified;finish the current8/32and candidate96gates first.
 All six successful raw outputs are retired after source recovery and committed
 evidence. The final69files/13871094bytes and17finished configuration/frontend/
 record files/183538bytes are removed;the resource root no longer exists.
