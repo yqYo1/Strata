@@ -1475,6 +1475,11 @@ native/client work records bind,with a checked four-warmup prefix and no leaf
 records. This input differs from the closed32/96cohort;no cross-cohort speed
 gain follows. Five processes remain;observer cost is unmeasured. Varied-prose
 preparation still requires its own closed32/96cohort.
+Process0's69normal raw/JIT files(13094842bytes)are retired after358-input Git
+recovery,with all15ELFs/six immutable receipts unchanged and full before/after
+admission passing. Only its generated config/plan remain. Manifest:
+`adaptive-cpu-leaves-regular-code-v1-process0-output-retirement-20261107.json`,
+SHA256`fd6a6f7d74e0f6494dae0c4a936faa2b159900354486d478e3e4b61b92c1c5b6`.
 The completed preparation command is:
 `/usr/bin/timeout -k 15s 900s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code prepare`.
 After committing the plan,run the same command with`host`instead of`prepare`.
