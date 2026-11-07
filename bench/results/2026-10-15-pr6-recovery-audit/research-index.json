@@ -25588,5 +25588,24 @@
       "bytes": 5294,
       "compact_decision_commit": "b24ef91e82c2530b6900b34ce0ba66b24baad772"
     }
+  },
+  "gpu_native_expert_cache_scope_review_20261107": {
+    "classification": "Native gpt-6-luna max review of existing references and pinned compiled source;not new Orca research",
+    "state": "reviewed_existing_references_sufficient",
+    "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-07/gpu-native-expert-cache-next-scope-review.md",
+    "report_bytes": 6493,
+    "report_sha256": "b1ae8c0ba6bbc2e05f8cd683768eb1a7bf370082dee130b6dcfbd8a4b0c2731d",
+    "source": {
+      "native_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
+      "build_record_sha256": "d0efa22493779f1240b654b99e1ab7bb7ae14d05a1d6f23d4de14259e9fe4b7a",
+      "compiled_snapshot": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/source"
+    },
+    "decision": "Existing references and exact-source audit suffice;no fresh Orca task recommended. The compiled snapshot supports original packed native weights with direct SYCL consumption for supported runtime-pack formats. Availability does not establish the selected model route or a speedup.",
+    "scope_eligibility": {
+      "schedulable_now": false,
+      "reason": "No additional nonduplicative research is needed for this source question. Main must verify actual selected pack,route and slot sizes before proposing a representation change."
+    },
+    "Main_next_action": "Continue the fixed-budget leaf comparison. At its next source-design boundary,check actual runtime-pack formats,allocation/slot geometry and selected GPU path against the compiled snapshot;keep hardware attribution and adoption separate.",
+    "retention": "Temporary decision-support retrieval for that named actual-pack/route/slot check. Main has consumed only the operational digest and verified file size/hash,not the body. Retire the consumed review body after compact source/route findings are preserved;original substantive references remain indexed."
   }
 }
