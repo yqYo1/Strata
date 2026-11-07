@@ -1051,7 +1051,10 @@ six-process cost qualification cannot pass,even if the last pair is favorable.
 Across four same-code samples,the observed variability remains unattributed;
 the ratio alone does not assign6.8%causal overhead to the caller observer.
 Use these clocks within their diagnostic envelope,with physical traffic and
-saturation still unknown. Four of six processes are closed.
+saturation still unknown. Process4also closes normally0with the same logical
+work/3157outputs,no fault and all five resource records. Its decode time is
+227.937s,pool107.565s and aggregate leaf CPU516.441s. Five of six processes
+are closed;the last caller-on process remains.
 A fixed-work sensitivity model for process0is
 `T_hyp[s]=130.006616/r_pool+101.988/r_reach+31.428/r_draft+35.514584`,
 where each`r`reduces only that measured interval and all logical work/other
