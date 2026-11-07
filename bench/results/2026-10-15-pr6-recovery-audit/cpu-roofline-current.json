@@ -1,6 +1,6 @@
 {
   "schema": "strata-cpu-compact-iq3xxs-timing-v1",
-  "stage": "controls",
+  "stage": "check",
   "source_commit": "313e5c4bc2d2e0c0fedb80020daf45662bec8a95",
   "plan_sha256": "3ee977a24f18b26677eb9e3aaee58470ff7fd5c0c07fdac0f95be623b1ea4159",
   "calibration_origin": {
@@ -15,21 +15,332 @@
   "GPU_executed": false,
   "children": [
     {
-      "case": null,
+      "case": [
+        18,
+        20,
+        1,
+        6
+      ],
       "validation": {
-        "kind": "compact_controls",
-        "codec_cases": 524288,
-        "integer_chunks": 524288,
-        "encoded_values": 134217728,
-        "FMA_cases": 16,
-        "partial_ranges": 64,
-        "GU_refusals": 10,
-        "encode_refusals": 2,
-        "finite_canaries": true
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 66,
+          "logical_view_bytes": 113203200,
+          "view_storage_bytes": 113220888,
+          "raw_blob_bytes": 143616000,
+          "allocation_encode_wall_s": 0.388932637,
+          "allocation_encode_cpu_s": 0.388437
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 1,
+          "group": 6,
+          "experts": 66,
+          "batches": 100,
+          "jobs_NT": [
+            522,
+            64,
+            12,
+            2
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
       },
       "exit_code": 0,
-      "peak_session_rss_bytes": 2588672,
-      "stdout_sha256": "faff2f957ed8211fdd6202c61da94bf2f0f83e3cf4a8f064d5a4d70245e93b2c"
+      "peak_session_rss_bytes": 263753728,
+      "stdout_sha256": "6e783974ab3e801f845522f2ac8c307d27003d13515eb8b186d185fbe830a491"
+    },
+    {
+      "case": [
+        18,
+        20,
+        1,
+        28
+      ],
+      "validation": {
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 84,
+          "logical_view_bytes": 144076800,
+          "view_storage_bytes": 144099312,
+          "raw_blob_bytes": 182784000,
+          "allocation_encode_wall_s": 0.460177404,
+          "allocation_encode_cpu_s": 0.459582
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 1,
+          "group": 28,
+          "experts": 84,
+          "batches": 100,
+          "jobs_NT": [
+            2435,
+            297,
+            57,
+            11
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 334630912,
+      "stdout_sha256": "f96c320654ae869963ef866d7074067f689117fec78baeabe39a0bc3430f65dd"
+    },
+    {
+      "case": [
+        18,
+        20,
+        5,
+        6
+      ],
+      "validation": {
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 66,
+          "logical_view_bytes": 113203200,
+          "view_storage_bytes": 113220888,
+          "raw_blob_bytes": 143616000,
+          "allocation_encode_wall_s": 0.359831402,
+          "allocation_encode_cpu_s": 0.359422
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 6,
+          "group": 6,
+          "experts": 66,
+          "batches": 100,
+          "jobs_NT": [
+            522,
+            64,
+            12,
+            2
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 264032256,
+      "stdout_sha256": "d5773f63684e1653efbd44e75129866d1b911d58b9dc8084ac03a290613be7c8"
+    },
+    {
+      "case": [
+        18,
+        20,
+        5,
+        28
+      ],
+      "validation": {
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 84,
+          "logical_view_bytes": 144076800,
+          "view_storage_bytes": 144099312,
+          "raw_blob_bytes": 182784000,
+          "allocation_encode_wall_s": 0.452189809,
+          "allocation_encode_cpu_s": 0.451356
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 6,
+          "group": 28,
+          "experts": 84,
+          "batches": 100,
+          "jobs_NT": [
+            2435,
+            297,
+            57,
+            11
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 334995456,
+      "stdout_sha256": "e1aff10e24d87608689bb2b48b8b65c8501fcc1fdecc509a4b5dc72010217271"
+    },
+    {
+      "case": [
+        18,
+        42,
+        1,
+        6
+      ],
+      "validation": {
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 84,
+          "logical_view_bytes": 144076800,
+          "view_storage_bytes": 144099312,
+          "raw_blob_bytes": 144076800,
+          "allocation_encode_wall_s": 0.473539643,
+          "allocation_encode_cpu_s": 0.473068
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 1,
+          "group": 6,
+          "experts": 84,
+          "batches": 100,
+          "jobs_NT": [
+            519,
+            67,
+            12,
+            2
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 295591936,
+      "stdout_sha256": "4693f3feca2a56f26172a4239d08fd006c310caf29e262abacb22208f6d9b5d3"
+    },
+    {
+      "case": [
+        18,
+        42,
+        1,
+        28
+      ],
+      "validation": {
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 84,
+          "logical_view_bytes": 144076800,
+          "view_storage_bytes": 144099312,
+          "raw_blob_bytes": 144076800,
+          "allocation_encode_wall_s": 0.459576542,
+          "allocation_encode_cpu_s": 0.459235
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 1,
+          "group": 28,
+          "experts": 84,
+          "batches": 100,
+          "jobs_NT": [
+            2424,
+            310,
+            56,
+            10
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 295858176,
+      "stdout_sha256": "08bc34f3256545c9218766c0eadeca56739d31332ea7d1a12ad5e71658dbc9c8"
+    },
+    {
+      "case": [
+        18,
+        42,
+        5,
+        6
+      ],
+      "validation": {
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 84,
+          "logical_view_bytes": 144076800,
+          "view_storage_bytes": 144099312,
+          "raw_blob_bytes": 144076800,
+          "allocation_encode_wall_s": 0.455706593,
+          "allocation_encode_cpu_s": 0.454723
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 6,
+          "group": 6,
+          "experts": 84,
+          "batches": 100,
+          "jobs_NT": [
+            519,
+            67,
+            12,
+            2
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 296099840,
+      "stdout_sha256": "76f82b63760853288be6db0d7e49d4f3b8e8b03bf2c512aee0db13e145045d54"
+    },
+    {
+      "case": [
+        18,
+        42,
+        5,
+        28
+      ],
+      "validation": {
+        "setup": {
+          "kind": "gu_setup",
+          "experts": 84,
+          "logical_view_bytes": 144076800,
+          "view_storage_bytes": 144099312,
+          "raw_blob_bytes": 144076800,
+          "allocation_encode_wall_s": 0.455119185,
+          "allocation_encode_cpu_s": 0.452615
+        },
+        "work": {
+          "kind": "gu_work",
+          "arm": "gu-check",
+          "compute_threads": 6,
+          "group": 28,
+          "experts": 84,
+          "batches": 100,
+          "jobs_NT": [
+            2424,
+            310,
+            56,
+            10
+          ],
+          "host_cpu": 0,
+          "affinity_verified": true
+        },
+        "validated": true,
+        "timers": [],
+        "samples": []
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 295964672,
+      "stdout_sha256": "f917ce096327f00d04828159341e441aa5796412efa53d22ec522a6cef166e3c"
     }
   ],
   "binaries": {
@@ -38,8 +349,15 @@
       "sha256": "30e45b8589a36763f30e55f5e7e22d84e8f9d59c4db98d6074b357edb0055f15"
     }
   },
+  "decision": {
+    "threaded_GU_numerical_qualified": true,
+    "cases": 8,
+    "performance_qualified": false,
+    "model_adoption_qualified": false,
+    "next_action": "Committed representative-format/current-mixture screen;no timing measured by this check."
+  },
   "owned_commands": {
-    "count": 1,
+    "count": 8,
     "all_closed": true,
     "all_exit_zero": true
   },
