@@ -1,6 +1,6 @@
 {
   "schema": "strata-cpu-activation-lut-v1",
-  "stage": "controls",
+  "stage": "check",
   "source_commit": "3406abc97bd9a84732dc4a0bf267c9c941bfb2d8",
   "plan_sha256": "c2f269066331d124722b400c30d05101fba0a748b7501fad004ce4fd712e8efa",
   "calibration_origin": {
@@ -15,18 +15,104 @@
   "GPU_executed": false,
   "children": [
     {
-      "case": null,
+      "case": [
+        18,
+        20,
+        1
+      ],
       "validation": {
-        "kind": "lut_controls",
-        "table_entries": 2097152,
-        "scaled_chunks": 4194304,
-        "activation_edges": 8,
-        "refusals": 14,
-        "guards": true
+        "work": {
+          "kind": "lut_work",
+          "arm": "check",
+          "group": 1,
+          "NT": 1,
+          "experts": 70,
+          "host_cpu": 0,
+          "affinity_verified": true,
+          "slab_bytes": 524288,
+          "accumulator_bytes": 40960,
+          "raw_blob_bytes": 152320000
+        },
+        "numerical_qualified": true
       },
       "exit_code": 0,
-      "peak_session_rss_bytes": 3006464,
-      "stdout_sha256": "8660afc3b90de372be2a1fcc9134735def2da9874299f9fe5cae8ed2ab92fccc"
+      "peak_session_rss_bytes": 156774400,
+      "stdout_sha256": "1228406fc6240984296c682d98e571b23451d656b489fe07312182dbbb9c15fc"
+    },
+    {
+      "case": [
+        18,
+        20,
+        10
+      ],
+      "validation": {
+        "work": {
+          "kind": "lut_work",
+          "arm": "check",
+          "group": 10,
+          "NT": 1,
+          "experts": 70,
+          "host_cpu": 0,
+          "affinity_verified": true,
+          "slab_bytes": 524288,
+          "accumulator_bytes": 409600,
+          "raw_blob_bytes": 152320000
+        },
+        "numerical_qualified": true
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 157155328,
+      "stdout_sha256": "e6d0dca8d1bdf96448c1baff6132355d6f3d7d3090c172606b7ce8041896de44"
+    },
+    {
+      "case": [
+        18,
+        42,
+        1
+      ],
+      "validation": {
+        "work": {
+          "kind": "lut_work",
+          "arm": "check",
+          "group": 1,
+          "NT": 1,
+          "experts": 80,
+          "host_cpu": 0,
+          "affinity_verified": true,
+          "slab_bytes": 524288,
+          "accumulator_bytes": 40960,
+          "raw_blob_bytes": 137216000
+        },
+        "numerical_qualified": true
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 141623296,
+      "stdout_sha256": "703924dc7d1213b8f7af145a8d6f8b8b7cf9cd38b5dcccccccf61a142c7b349a"
+    },
+    {
+      "case": [
+        18,
+        42,
+        10
+      ],
+      "validation": {
+        "work": {
+          "kind": "lut_work",
+          "arm": "check",
+          "group": 10,
+          "NT": 1,
+          "experts": 80,
+          "host_cpu": 0,
+          "affinity_verified": true,
+          "slab_bytes": 524288,
+          "accumulator_bytes": 409600,
+          "raw_blob_bytes": 137216000
+        },
+        "numerical_qualified": true
+      },
+      "exit_code": 0,
+      "peak_session_rss_bytes": 141975552,
+      "stdout_sha256": "e1b13cda825b92a7232ec7f1e0fc18b9f8e0e572894fdfa6acb5f129fd5b286d"
     }
   ],
   "binaries": {
@@ -35,8 +121,15 @@
       "sha256": "6144036d05c85589163c3189446dc2420d1ed0f415440cf55855901a15e39d3c"
     }
   },
+  "decision": {
+    "numerical_qualified": true,
+    "cases": 4,
+    "performance_qualified": false,
+    "model_adoption_qualified": false,
+    "next_action": "Committed setup-inclusive E1/E10 screen;no speed measured here."
+  },
   "owned_commands": {
-    "count": 1,
+    "count": 4,
     "all_closed": true,
     "all_exit_zero": true
   },
