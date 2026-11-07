@@ -2102,7 +2102,7 @@
       "meaning": "Default-integration check only,not a new Niko upstream check or native/model qualification."
     },
     "dflash2_ring_check": {
-      "stage": "prepared",
+      "stage": "small_passed",
       "prior": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v4/record.json",
         "sha256": "5787e7b9fc15fab9940921a5d37356a50bfc70f0216cbff028d617f1c2fd301e"
@@ -2179,7 +2179,35 @@
         "small": 7,
         "full": 5
       },
-      "phases": {},
+      "phases": {
+        "small": {
+          "passed": true,
+          "cases": 23,
+          "results": [
+            {
+              "label": "kernel",
+              "passed": true,
+              "mapped_files": 36,
+              "unknown": [],
+              "missing": [],
+              "actual_mapping_sha256": "611a757743226f1822e0e9d68384bfdf0b4f540af7cfaf8a31f99fa0d39d6b6f",
+              "cases": 16
+            },
+            {
+              "label": "ring_small",
+              "passed": true,
+              "mapped_files": 36,
+              "unknown": [],
+              "missing": [],
+              "actual_mapping_sha256": "41511d5bd7bfefc4cd0abfa602045cceb4ba52af36dca322d7f21b41717c1899",
+              "cases": 7
+            }
+          ],
+          "fresh_faults": [],
+          "fault_probe_successful": true,
+          "boot_unchanged": true
+        }
+      },
       "passed": false,
       "ownership_closed": true,
       "meaning": "Stock draft weights with synthetic target embedding/Q8zero head;finite state equivalence,failed-owner containment,all13undersized token/probability span refusals before block submission with unchanged ring,all7draft widths with output guards and inactive zeros,optional probabilities.No target model,task quality,benchmark speed,phase preservation or physical full target-context qualification.",
@@ -2195,7 +2223,28 @@
           "sha256": "b47a889d0a17c257e67fa939aef242f7d3bf647e4852de746134c630ad456198"
         }
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "kernel",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": [],
+          "direct_child_reaped": true,
+          "session_empty": true
+        },
+        {
+          "label": "ring_small",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": [],
+          "direct_child_reaped": true,
+          "session_empty": true
+        }
+      ]
     },
     "dflash2_mask_check": {
       "stage": "passed",
