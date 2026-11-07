@@ -804,8 +804,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the live429b chain;later readers pin its consumed metadata/Git inputs rather
   than requiring retired429b ELFs. Runtime/probe bytes,boot and driver still
   need to match. No successor build,component reuse or native32execution has
-  occurred. Prospective32positive/refusal and clean-speed consumers still need
-  migration before429bcan be retired.
+  occurred. Source-only`tools/sycl/check_adaptive_payload_entry.py`now binds
+  the unchanged full32copy/dispatch/occupied-loan reader and supervisor to the
+  successor at a fresh`adaptive_payload32_native_entry_v1`key/root. It requires
+  the new header/component proof and keeps the original64MiB trial failed.
+  Its model inputs have not been prepared or run. Second-record32refusal and
+  clean-speed consumers still need migration before429bcan be retired.
   The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
