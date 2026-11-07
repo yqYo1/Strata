@@ -2395,9 +2395,11 @@ source identities rather than bypassing this rule.
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently189
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently190
 milestone rows including the four MTP-width,four current adaptive code/prose
-aggregates and the CPU read-payload calibration.
+aggregates,the CPU read-payload calibration and the single13.94265TG current
+resource-diagnostic sample. The last point keeps its observer envelope and
+failed caller-cost comparison;it is not a new clean-speed aggregate or code gain.
 Detailed current evidence and frozen plans are in
 [`fused-moe-service-current.json`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json)
 under `cache_map_prefill_speed117489_v1`, `cache_map_prefill_curve_v7`,
