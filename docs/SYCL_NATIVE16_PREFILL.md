@@ -891,13 +891,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   decrease414.971->313.727;these are not CPU kernel jobs or physical traffic.
   Different generation lengths and acceptance preclude fixed-work attribution.
   Continue the frozen plan with process2(adaptive32),then3/4/5(8/8/32).
-  Process0's69successful raw/JIT files(13095666bytes)are retired after
-  recovering all346source inputs from Git and pushing its compact result.
-  Keep its generated config/plan for the ongoing cohort. Admission passes
-  after deletion;all15ELFs and four immutable native/control receipts are
-  unchanged. The external deletion manifest is
+  Processes0/1each have69successful raw/JIT files retired(13095666/13096255
+  bytes),after recovering all346source inputs from Git and pushing their
+  compact results. Keep their generated configs/plans for the ongoing cohort.
+  Admission passes after both deletions;all15ELFs and four immutable native/
+  control receipts are unchanged. The external deletion manifests are
   `adaptive-payload-generation-regular-code-v1-process0-output-retirement-20261107.json`,
-  SHA256`0741507908c4976b8bed7b6cf1ecc5364b4fbe37a4fbc526da51522b2c5a85e7`.
+  SHA256`0741507908c4976b8bed7b6cf1ecc5364b4fbe37a4fbc526da51522b2c5a85e7`,
+  and`adaptive-payload-generation-regular-code-v1-process1-output-retirement-20261107.json`,
+  SHA256`ae43e20567d57e3c1da3e9bf5713f084642bd891fbaa35edc8dc6f94f3941258`.
   Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
