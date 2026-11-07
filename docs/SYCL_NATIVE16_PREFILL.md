@@ -3094,8 +3094,8 @@ source identities rather than bypassing this rule.
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently196
-milestone rows including the two closed e1b011adaptive32/96code aggregates,
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently204
+milestone rows,including eight compact CPU-GU component comparison points and the two closed e1b011adaptive32/96code aggregates,
 the four closed adaptive8/32code/prose aggregates,
 the four MTP-width,four earlier adaptive code/prose aggregates,the CPU
 read-payload calibration and the single13.94265TG resource-diagnostic sample.
