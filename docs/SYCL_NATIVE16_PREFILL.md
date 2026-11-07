@@ -1507,18 +1507,13 @@ SYCL grouped kernels. Q8_1 names activation arithmetic,not expanded weight
 storage. This closes the source question,not a new speedup or saturation claim.
 Varied-prose
 preparation still requires its own closed32/96cohort.
-Process0's69normal raw/JIT files(13094842bytes)are retired after358-input Git
-recovery,with all15ELFs/six immutable receipts unchanged and full before/after
-admission passing. Only its generated config/plan remain. Manifest:
-`adaptive-cpu-leaves-regular-code-v1-process0-output-retirement-20261107.json`,
-SHA256`fd6a6f7d74e0f6494dae0c4a936faa2b159900354486d478e3e4b61b92c1c5b6`.
-Process1's69normal raw/JIT files and the consumed6493-byte cache-scope review
-are also retired:70files/13143564bytes,358Git inputs recovered,all15ELFs/six
-receipts preserved and full continued admission passed. Its retirement manifest
-is`adaptive-cpu-leaves-regular-code-v1-process1-output-retirement-20261107.json`.
-Process2's69normal raw/JIT files(13137074bytes)are retired with the same358-input
-recovery,15ELF/six-receipt protection and continued-admission proof. Manifest:
-`adaptive-cpu-leaves-regular-code-v1-process2-output-retirement-20261107.json`.
+Raw/JIT output from closed processes 0..3 and the consumed cache review are
+retired: 277 files / 52,470,663 bytes. Each closure recovered all 358 Git inputs,
+preserved all 15 ELFs/six immutable receipts and passed full continued admission.
+Only generated config/plan remain in those four process roots. Per-process
+manifests/hashes and original results remain in the compact result;the current
+CPU representation retrieval review has its separate named consumer in the
+research index.
 The completed preparation command is:
 `/usr/bin/timeout -k 15s 900s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code prepare`.
 After committing the plan,run the same command with`host`instead of`prepare`.
