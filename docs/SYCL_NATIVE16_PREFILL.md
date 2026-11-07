@@ -1571,8 +1571,11 @@ At source6aba98829,all eight host controller tests pass without skips,normal0
 under the measurement lock. The compact-view correctness plan is prepared at
 that source with263controller/fixture inputs,1376GGML inputs and the same
 recovered native CPU recipe. Each of the two real formats pins84distinct
-experts and their model slices. Commit this plan before build;no compact
-executable or numerical result exists yet.
+experts and their model slices. The compact-view CPU build now closes
+normally0with four owned commands and633covered actual compiler inputs;it
+links no GPU runtime. All15inference ELFs remain unchanged. Commit this build
+before executing the synthetic controls;no compact numerical/performance
+execution has occurred.
 
 Both closed auxiliary CPU builds and their output are retired after recovering
 original261/V4 262controller inputs,568native inputs,GGML source/recipes and
