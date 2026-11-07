@@ -1556,7 +1556,7 @@
       "config_copy_kept": true
     },
     "dflash2_native_port": {
-      "state": "model_runtime_failed_host_draft_result_extent",
+      "state": "corrected_output_components_passed_model_recheck_pending",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
       "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights;physical tail buffer has2047positions(104806400bytes),while capture omits the last prompt anchor and retains at most2046rows;then loads and seeds the drafter.",
       "remaining": "First thinking-enabled target model completed32tokens with24of24drafts accepted,but SIGABRT(-6) during teardown makes the gate FAILED and unusable for adoption/speed.Normal pre-main validation and38qualified mappings;all owned children reaped/session empty,no fresh GPU fault.Source contract writes7draft outputs,while both serve/standalone callers allocate only S entries(spec4 gave4),corrupting host heap.Next:preserve fixed7entry output contract,validate output spans before submissions,allocate at least7only forDFlash2 in both callers;add narrow-width/guard/admission fixtures,rebuild unadopted candidate and repeat bounded component/model checks before any long benchmark.MTP/prefill fast references remain untouched.",
@@ -1611,7 +1611,9 @@
           }
         ],
         "retention": "One representative host-heap mechanism diagnostic until corrected model normal closure;no core dump(RLIMIT_CORE0).Not a GPU fault or performance sample."
-      }
+      },
+      "progress": "Corrective native source f50df1f3c81272b14d994e4d8fcad19703ad0b7e built;16kernel/prompt,7small stock-drafter,5ring and12mask cases passed normally with no fresh fault.The7small cases include13undersized span refusals,all7active widths/guard/inactive-zero checks and optional probabilities.Read-only audit/native review find no blocker to identical82ID/32output V2diagnostic.V1 remains failed after DONE/-6;not a speed/adoption result.Preserve552b prefill/e1b011 decode.",
+      "unqualified_option_edge": "--mtp-max-t1 can request set_max_drafts0 and is refused by the drafter;V2 uses declared0,unaffected.Reject this combination or define/test no-proposal behavior before claiming all option combinations."
     },
     "native_feature_build": {
       "stage": "built",
@@ -2275,7 +2277,7 @@
       ]
     },
     "dflash2_mask_check": {
-      "stage": "prepared",
+      "stage": "passed",
       "ring_reference": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v2/record.json",
         "sha256": "0a11705cf508f353a9c4558bed22b1c8ab109314f4aff89809cd8e65b99cfead"
@@ -2332,8 +2334,14 @@
       },
       "oracle": "Q=K=0;130 context plus8 block keys,only V[row64]=138. A live tag must give dequantized1 in all32768 elements;stale epoch or wrong absolute position must give0. Absolute error<2e-5,finite nonnegative scales and output guards. Four explicit variant/chunk combinations,12cases. No target model,text identity or speed claim.",
       "original_ring_limit": "The original missing_context_mask case proves execution/tag state only,not exclusion semantics.Original26case V1 PASS stays unchanged;corrected-output V2 repeats28state cases and this12case discriminator.",
-      "passed": false,
+      "passed": true,
       "ownership_closed": true,
+      "mapping": {
+        "files": 32,
+        "sha256": "0381807e414ad2a416b1c464f1bc520b607af858f06158011ee1c0519f5f792c"
+      },
+      "cases_passed": 12,
+      "fresh_faults": [],
       "controller_source": {
         "commit": "6fb8ecbdc09101acadb55da612947bc87717e189",
         "sha256": "6ae05b02d39d9a7b4470ffaca7e98c0548f7dba33d8908faf1c1e2e58e794339"
@@ -2346,7 +2354,16 @@
           "sha256": "b47a889d0a17c257e67fa939aef242f7d3bf647e4852de746134c630ad456198"
         }
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "mask",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ]
     },
     "validation_environment_reuse": {
       "state": "legacy_predicate_refused_newer_closed_reference_found_not_yet_admitted",

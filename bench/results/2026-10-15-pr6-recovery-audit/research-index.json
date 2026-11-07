@@ -26042,7 +26042,7 @@
     "scope": "Knowledge collection, not an immediate optimization/adoption decision. Investigate safe eager execution optimizations for small-block speculative drafters: Q4 linear projections, head/vocabulary reduction, host launch/synchronization overhead and fusion/batching, particularly transfer of SGLang/vLLM or Intel implementations to Arc SYCL. Read current src/core/dflash2.cpp and src/kernels/sycl/dflash2.cpp (locate actual maintained kernel path if needed); compare3..5 substantive alternatives and counterevidence using primary code/docs/papers and author blogs. No unsafe graphs/GPU polling of host flags; do not import XeStrata. The first diagnostic draft stage averaged80ms but includes observers/cold work and ended in a now-corrected host buffer defect; it is NOT clean speed or a measured hardware ceiling. Specify required clean profiling/bytes/shapes and conditions before deciding. Search previous index for DFlash/head/smallGEMM/vocabulary to avoid duplicates. Report budget10KiB.",
     "startup_permissions": "Existing registered workspace writable report dir;normal previously successful Orca launch;worker must prove Orca IPC with status first.",
     "constraints": "Report only,no Git/build/test/GPU/process/profiler/product/index/policy actions,no Xe derivation/DeepSeek35B;Main works concurrently,no steering.",
-    "state": "worker_succeeded_native_review_running",
+    "state": "reviewed_conditional_reference",
     "report": {
       "path": ".cache/research/2026-11-08/dflash2-eager-head-gemm/research-report.md",
       "sha256": "93166c1e12943cd469b5da851fd5631fb37f4cc0cf19ff0ca75a1314922ab04f",
@@ -26064,7 +26064,14 @@
       "agent": "/root/review_dflash2_eager_knowledge_20261108",
       "model": "gpt-6-luna",
       "reasoning": "max",
-      "path": ".cache/research/2026-11-08/dflash2-eager-head-gemm/research-review.md"
+      "path": ".cache/research/2026-11-08/dflash2-eager-head-gemm/research-review.md",
+      "sha256": "07799a141fa61fc3d606fdc322707e133ac83a7ba8917d849c13fb66c9514282",
+      "bytes": 2927
+    },
+    "operational_digest": "Useful nonduplicate eager Q4SYCL reference alongside older Q6/head research.No speed/adoption claim.Corrections:transformer block ncols8,not active head count;df2_conv_rms_quant already fuses proposed operations.Main has read only this short review.Retain report for retrieval after clean shape-specific cost evidence,not immediate implementation.",
+    "next_scope": {
+      "schedulable_now": false,
+      "prerequisite": "Close corrective model gate,then collect clean shape-specific head/Q4 timings and hardware bytes/occupancy before selecting a focused optimization or research followup."
     }
   }
 }
