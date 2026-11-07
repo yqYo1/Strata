@@ -91,9 +91,31 @@ def prepare():
     status = json.loads(STATUS.read_text())
     if ROOT.exists():
         previous = json.loads((ROOT / 'record.json').read_text())
-        require(previous['stage'] == 'build_failed' and not previous['passed'] and previous['ownership_closed'] and
+        failed_compile = previous['stage'] == 'build_failed' and not previous['passed']
+        gate = status['current_sync'].get('dflash2_device_check', {})
+        superseded_component = (previous['stage'] == 'built' and previous['passed'] and
+            gate.get('stage') == 'passed' and gate.get('passed') and gate.get('ownership_closed') and
+            gate.get('numerical_cases_passed') == 9 and
+            gate.get('native_build', {}).get('source_commit') == previous['project']['revision'] and
+            gate.get('fixture') == previous['binaries']['sycl_dflash2_test'] and
+            status['current_sync']['dflash2_native_port']['state'] ==
+                'compiled_small_q4_fp32_kernel_gate_passed_model_route_unqualified')
+        require((failed_compile or superseded_component) and previous['ownership_closed'] and
                 all(ownership.closed(c) for c in previous['commands']) and
                 committed_plan() == compact(previous), 'commit and close failed compilation before a new source attempt')
+        if superseded_component:
+            # This candidate has no model-route consumer or adoption. Its closed
+            # nine-case check is superseded by the new sixteen-case fixture.
+            # Recover original inputs before reusing its disposable output path;
+            # both validated phase engines remain hash-checked fallbacks.
+            for pin in [previous['project'], *previous['dependencies']]:
+                recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
+                    source.blobs(Path(pin['root']), pin['revision'], pin['source_sha256'])}
+                require(recovered == pin['source_sha256'] and signature(recovered) == pin['aggregate_sha256'],
+                        'original candidate inputs not recoverable')
+            source.git(P, 'merge-base', '--is-ancestor', previous['project']['revision'], 'origin/feature/sycl')
+            for value in previous['binaries'].values():
+                require(source.digest(value['path']) == value['sha256'], 'original candidate executable changed')
         require(source.git(P, 'rev-parse', 'HEAD').decode().strip() != previous['project']['revision'], 'new committed source required')
     else:
         require('native_feature_build' not in status['current_sync'], 'existing feature build must close first')
@@ -133,7 +155,14 @@ def prepare():
         row['previous_attempt'] = dict(source_commit=previous['project']['revision'], stage=previous['stage'],
             record_sha256=source.digest(ROOT / 'record.json'), error=previous.get('error'),
             ownership_closed=True, evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
-            reason='Reuse the closed unqualified build cache; exact source/recipe/failure remain in Git. Preserve both validated phase references.')
+            reason='Reuse the closed unqualified candidate cache; exact source/recipe/outcome remain in Git. Preserve both validated phase references.')
+        if superseded_component:
+            row['previous_attempt']['retirement'] = dict(
+                qualification='Only the closed nine-case component passed;never a validated model engine.',
+                original_source_recovered=True, source_sha256=previous['project']['aggregate_sha256'],
+                source_files=previous['project']['count'], original_binaries_verified=previous['binaries'],
+                consumer='Immediate sixteen-case replacement fixture;old component consumer ended after committed pass.',
+                point='Replace this temporary third candidate in place;keep552b/e1b011 unchanged.No fourth generation.')
     check_inputs(row)
     ROOT.mkdir(mode=0o700, exist_ok=bool(previous))
     for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700, exist_ok=bool(previous))

@@ -108,6 +108,17 @@ bool Dflash2PrefillTaps::ingest(core::Dflash2Drafter& drafter, std::string& err)
     if (!data_ || drafter.n_embd() != kWidth || drafter.tap_layers() != std::vector<int>(std::begin(layers), std::end(layers))) {
         err = "DFlash2 prompt taps: drafter/owner mismatch"; return false;
     }
+    return consume([&](const float* data, int64_t rows, int64_t pos, std::string& error) {
+        return drafter.context(data, rows, pos, error);
+    }, err);
+} catch (const std::exception& e) {
+    err = std::string("DFlash2 prompt tap ingestion: ") + e.what(); return false;
+}
+
+bool Dflash2PrefillTaps::consume(const Consumer& consumer, std::string& err) try {
+    if (!data_ || !consumer) {
+        err = "DFlash2 prompt taps: missing owner/consumer"; return false;
+    }
     const core::OnDevice selected(device_);
     if (cudaDeviceSynchronize() != cudaSuccess) {
         err = "DFlash2 prompt taps: producer completion failed"; return false;
@@ -117,12 +128,12 @@ bool Dflash2PrefillTaps::ingest(core::Dflash2Drafter& drafter, std::string& err)
         if (present_[i] != (1u << kLayers) - 1) { ++i; continue; }
         const size_t start = i;
         while (i < present_.size() && present_[i] == (1u << kLayers) - 1) ++i;
-        if (!drafter.context(data_ + start * kLayers * kWidth, int64_t(i - start), first_ + int64_t(start), err)) return false;
+        if (!consumer(data_ + start * kLayers * kWidth, int64_t(i - start), first_ + int64_t(start), err)) return false;
         captured_ += int64_t(i - start);
     }
     return true;
 } catch (const std::exception& e) {
-    err = std::string("DFlash2 prompt tap ingestion: ") + e.what(); return false;
+    err = std::string("DFlash2 prompt tap consumption: ") + e.what(); return false;
 }
 
 } // namespace strata::prefill

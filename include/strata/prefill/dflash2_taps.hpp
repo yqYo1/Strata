@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,12 @@ public:
     /// A completed prompt verifier window already contains all five means.
     /// Retire its copy before the caller may reuse the verifier's tap arena.
     bool capture_window(const float* taps, int64_t rows, int64_t pos0, std::string& err);
+    /// Drain producers and visit contiguous complete rows, in position order.
+    /// Each callback borrows GPU FP32 means [rows][5*2560]; it must complete
+    /// its reads before returning. No host tensor copy is performed here.
+    /// Partial/cached-prefix holes are omitted, never filled with stale data.
+    using Consumer = std::function<bool(const float*, int64_t, int64_t, std::string&)>;
+    bool consume(const Consumer& consumer, std::string& err);
     /// Checked drain before another queue reads the completed rows. Missing
     /// cached-prefix rows remain absent; the target still verifies every draft.
     bool ingest(core::Dflash2Drafter& drafter, std::string& err);

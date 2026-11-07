@@ -19,8 +19,8 @@ import measurement_guards as guards
 import measurement_owner as ownership
 
 P, B, STATUS = build.P, build.B, build.STATUS
-ROOT = B / 'dflash2-kernel-contract-v2'
-PREVIOUS = B / 'dflash2-kernel-contract-v1'
+ROOT = B / 'dflash2-kernel-contract-v3'
+PREVIOUS = B / 'dflash2-kernel-contract-v2'
 REFERENCE = B / 'decode-iq3-audit-speed-v2'
 INPUTS = ['tools/sycl/check_dflash2.py', 'tools/sycl/build_upstream_features.py',
           'tools/sycl/build_engine.py', 'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py']
@@ -79,10 +79,10 @@ def prepare():
     require(not ROOT.exists(), 'one fresh finite device gate; no automatic retry')
     previous = json.loads((PREVIOUS / 'record.json').read_text())
     prior_public = public()
-    require(previous['stage'] == prior_public['stage'] == 'failed' and not previous['passed'] and
-            prior_public['process_retirement']['actual_owned_processes_gone'] and
-            all(c['direct_child_reaped'] and c['session_empty'] and not c.get('survivors')
-                for c in previous['commands']), 'commit failed gate and establish actual process retirement first')
+    require(prior_public == compact(previous), 'commit the exact previous component outcome first')
+    require(previous['stage'] == prior_public['stage'] == 'passed' and previous['passed'] and
+            previous['ownership_closed'] and prior_public['ownership_closed'] and
+            all(ownership.closed(c) for c in previous['commands']), 'commit and close prior component gate first')
     require(not json.loads((PREVIOUS / 'active.json').read_text())['active'], 'previous owner still active')
     native = json.loads((build.ROOT / 'record.json').read_text())
     require(native['passed'] and native['stage'] == 'built' and native['ownership_closed'] and
@@ -102,8 +102,8 @@ def prepare():
         environment=environment, driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         environment_origin=dict(path=str(REFERENCE / 'record.json'), sha256=source.digest(REFERENCE / 'record.json')),
         budgets=dict(wall=180, cpu=180, text_cap=64 << 20, file_cap=64 << 20, total_cap=96 << 20, rss_cap=8 << 30),
-        cases=9, fixture=native['binaries']['sycl_dflash2_test'], commands=[], passed=False, ownership_closed=True,
-        meaning='Eight active-column GEMMs with3matrices,exact signed integer oracle and output guards;FP32 mean/pending-GR taps. No model,BF16 tap-route,ring recovery,task quality,performance or physical full-context qualification.')
+        cases=16, fixture=native['binaries']['sycl_dflash2_test'], commands=[], passed=False, ownership_closed=True,
+        meaning='Eight signed Q4 GEMMs,FP32 row/GR tap and seven production FP32/BF16 prompt-tail cases including sparse runs,clipped positions,tail physical extent,admission and retirement. No model,ring recovery,task quality,performance or physical full-context qualification.')
     # libsycl may statically include UR. Requiring a separate libur_loader mapping
     # rejects that supported linkage. Check all actual executable files plus the
     # exact SYCL, forced adapter and GPU driver providers instead. Keep the UR
@@ -114,8 +114,8 @@ def prepare():
     require(set(row['required_executable_mappings']) <= {str(Path(p).resolve()) for p in row['runtime_files']},
             'required provider is not in the qualified runtime pins')
     row['previous_gate'] = dict(path=str(PREVIOUS / 'record.json'), sha256=source.digest(PREVIOUS / 'record.json'),
-        evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(), stage='failed',
-        reason='Prior separate-UR-loader presence predicate failed after9numerical markers. Preserve failure;new prospective provider gate admits pinned static UR within libsycl. Original map count/set was not recorded,so the exact absent predicate is unknown.',
+        evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(), stage='passed',
+        reason='Original nine-case kernel gate passed normally. This is a new native sixteen-case fixture,not reuse of prior qualification. Retain pinned SYCL/staticUR,forced adapter and GPU driver checks.',
         source='https://github.com/intel/llvm/blob/sycl/sycl/source/CMakeLists.txt')
     require(row['driver'] == reference['driver'] and row['boot'] == reference['boot'], 'requalify changed boot/driver before reuse')
     require(environment['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and environment['EnableDirectSubmission'] == '0' and
@@ -123,7 +123,7 @@ def prepare():
     ROOT.mkdir(mode=0o700)
     for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700)
     save(row)
-    print('Prepared nine-case traced device check; commit before run.', flush=True)
+    print('Prepared sixteen-case traced device check; commit before run.', flush=True)
 
 
 def kernel_log(*args):
@@ -150,9 +150,12 @@ def run():
                 line = io.line(seconds=170); lines.append(line)
                 require(len(lines) <= 24, 'unexpected fixture stdout')
                 if line == 'DF2_WAIT': break
-            require('dflash2 fixture cases=9 PASS' in lines and
+            require('dflash2 fixture cases=16 PASS' in lines and
                     all(f'dflash2 gemm columns={n} matrices=3 PASS' in lines for n in range(1,9)) and
-                    'dflash2 taps rows=3 fp32,pending_GR,interleaved_guards PASS' in lines, 'fixture result incomplete')
+                    'dflash2 taps rows=3 fp32,pending_GR,interleaved_guards PASS' in lines and
+                    all('dflash2 prompt ' + case + ' PASS' in lines for case in [
+                        'empty_anchor', 'mixed_fp32_bf16', 'sparse_complete_runs', 'long_tail_clipping',
+                        'physical_tail_extent', 'rejected_spans_formats', 'release_rebegin']), 'fixture result incomplete')
             actual = set()
             for line in Path('/proc', str(entry['pid']), 'maps').read_text().splitlines():
                 fields = line.split(maxsplit=5)
@@ -180,7 +183,7 @@ def run():
         require('urEnqueueKernelLaunch' in text and not re.search(r'UR_RESULT_ERROR_[A-Z_]+', text),
                 'missing tracing or UR error')
         verify(row)
-        row.update(stage='passed', passed=True, numerical_cases_passed=9)
+        row.update(stage='passed', passed=True, numerical_cases_passed=16)
     except BaseException as error:
         row.update(stage='failed', error=repr(error))
     finally:
@@ -199,7 +202,7 @@ def run():
         if not row['ownership_closed']: row.update(passed=False, stage='failed')
         save(row)
     require(row['passed'] and row['ownership_closed'], row.get('error', row.get('fault_error', 'device gate failed')))
-    print('DFlash2 small kernel gate passed9cases with normal exit,qualified executable maps and no fresh fault.', flush=True)
+    print('DFlash2 kernel/prompt gate passed16cases with normal exit,qualified executable maps and no fresh fault.', flush=True)
 
 
 if __name__ == '__main__':

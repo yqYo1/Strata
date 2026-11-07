@@ -3,6 +3,8 @@
 #include "strata/kernels/dflash2.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
+#include "strata/prefill/dflash2_taps.hpp"
+#include <cuda_runtime.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -10,6 +12,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -120,6 +123,144 @@ void taps(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) {
     }
     std::cout << "dflash2 taps rows=3 fp32,pending_GR,interleaved_guards PASS\n" << std::flush;
 }
+
+// Test the production tail producer/consumer without loading draft/target
+// weights. Readback belongs only to this numerical fixture, never to inference.
+void prompt_taps(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) {
+    using Tail = strata::prefill::Dflash2PrefillTaps;
+    constexpr int N = int(Tail::kWidth), HC = int(Tail::kStreams), Stride = 5 * N, MaxRows = 12;
+    auto& q = runtime->compute();
+    Tail tail;
+    std::string error;
+    Allocation dr(runtime, MaxRows * HC * N * 4, MemoryKind::Device),
+               db(runtime, MaxRows * HC * N * 2, MemoryKind::Device),
+               dw(runtime, MaxRows * Stride * 4, MemoryKind::Device),
+               tiny(runtime, 4, MemoryKind::Device), host(runtime, HC * N * 4, MemoryKind::Host);
+    Drain drain{q};
+    auto ok = [&](bool value) { if (!value) throw std::runtime_error(error); };
+    auto code = [](int64_t pos, int slot, int col, int channel) {
+        constexpr uint16_t values[] = {0x3f81, 0xbf82, 0x4001, 0xc002, 0x427f, 0x3a03, 0xba0f, 0x4580};
+        return values[(pos * 3 + slot * 5 + col + channel * 7) % 8];
+    };
+    // Decode BF16 independently of the device's bit-cast. The selected finite
+    // normal inputs exercise exponent/sign and rounding with FP32 accumulation.
+    auto unpack = [](uint16_t bits) {
+        const int exponent = (bits >> 7) & 255;
+        const double mantissa = double(128 + (bits & 127));
+        return float(std::ldexp((bits & 0x8000) ? -mantissa : mantissa, exponent - 134));
+    };
+    auto sample = [&](int64_t pos, int slot, int col, int channel, bool bf16) {
+        const float value = unpack(code(pos, slot, col, channel));
+        return bf16 ? value : value + float(channel + 1) * 0.0003f;
+    };
+    auto mean = [&](int64_t pos, int slot, int col) {
+        float sum = 0;
+        for (int c = 0; c < HC; ++c) sum += sample(pos, slot, col, c, slot % 2 == 0);
+        return sum / HC;
+    };
+    auto window_value = [](int64_t pos, int slot, int col) {
+        return float((pos % 37) * 17 + slot * 11 + col % 29) * 0.125f;
+    };
+    auto put = [&](int slot, int64_t pos, int rows) {
+        const bool bf16 = slot % 2 == 0;
+        std::vector<float> input(size_t(rows) * HC * N);
+        std::vector<uint16_t> packed(input.size());
+        for (int r = 0; r < rows; ++r) for (int c = 0; c < HC; ++c) for (int i = 0; i < N; ++i) {
+            const auto at = (size_t(r) * HC + c) * N + i;
+            input[at] = sample(pos + r, slot, i, c, false);
+            packed[at] = code(pos + r, slot, i, c);
+        }
+        if (bf16) q.memcpy(db.data(), packed.data(), packed.size() * 2).wait_and_throw();
+        else q.memcpy(dr.data(), input.data(), input.size() * 4).wait_and_throw();
+        ok(tail.capture(Tail::layers[slot], pos, rows, bf16 ? nullptr : dr.as<float>(),
+                        bf16 ? db.as<uint16_t>() : nullptr, &q, error));
+    };
+    auto window = [&](int64_t pos, int rows) {
+        std::vector<float> input(size_t(rows) * Stride);
+        for (int r = 0; r < rows; ++r) for (int slot = 0; slot < 5; ++slot) for (int i = 0; i < N; ++i)
+            input[size_t(r) * Stride + slot * N + i] = window_value(pos + r, slot, i);
+        q.memcpy(dw.data(), input.data(), input.size() * 4).wait_and_throw();
+        ok(tail.capture_window(dw.as<float>(), rows, pos, error));
+    };
+    auto check = [&](const std::vector<std::pair<int64_t, int64_t>>& runs, auto expected) {
+        size_t next = 0;
+        int64_t total = 0;
+        ok(tail.consume([&](const float* data, int64_t rows, int64_t pos, std::string&) {
+            need(next < runs.size() && runs[next] == std::make_pair(pos, rows), "complete row run positions/coverage");
+            std::vector<float> actual(size_t(rows) * Stride);
+            q.memcpy(actual.data(), data, actual.size() * 4).wait_and_throw();
+            for (int64_t r = 0; r < rows; ++r) for (int slot = 0; slot < 5; ++slot) for (int i = 0; i < N; ++i)
+                need(actual[size_t(r) * Stride + slot * N + i] == expected(pos + r, slot, i),
+                     "prompt mean/window numerical or interleaved layout contract");
+            ++next; total += rows; return true;
+        }, error));
+        need(next == runs.size() && tail.captured_rows() == total, "complete row count");
+    };
+    auto pass = [](const char* name) { std::cout << "dflash2 prompt " << name << " PASS\n" << std::flush; };
+
+    ok(tail.begin(1, 0, error));
+    check({}, mean);
+    need(!tail.begin(0, 0, error) && !tail.begin(262145, 0, error), "prompt length admission");
+    pass("empty_anchor");
+
+    ok(tail.begin(10, 0, error));
+    for (int slot = 0; slot < 5; ++slot) put(slot, 0, MaxRows);
+    check({{0, 9}}, mean); // exclude the last prompt anchor and following rows
+    pass("mixed_fp32_bf16");
+
+    ok(tail.begin(12, 0, error));
+    window(1, 3);
+    for (int slot = 0; slot < 4; ++slot) put(slot, 4, 1); // never admit a four-of-five row
+    for (int slot = 0; slot < 5; ++slot) put(slot, 7, 2);
+    ok(tail.capture(4, 0, 1, nullptr, nullptr, nullptr, error)); // unrelated layer
+    need(!tail.consume([](const float*, int64_t, int64_t, std::string& e) {
+        e = "intentional consumer refusal"; return false;
+    }, error) && error == "intentional consumer refusal", "consumer failure propagation");
+    check({{1, 3}, {7, 2}}, [&](int64_t pos, int slot, int i) {
+        return pos < 4 ? window_value(pos, slot, i) : mean(pos, slot, i);
+    });
+    pass("sparse_complete_runs");
+
+    constexpr int64_t Long = 65537, First = Long - Tail::kTail;
+    ok(tail.begin(Long, 0, error));
+    window(First - 2, 5); // left-clipped pointer must skip two complete rows
+    for (int slot = 0; slot < 5; ++slot) put(slot, Long - 2, 2);
+    check({{First, 3}, {Long - 2, 1}}, [&](int64_t pos, int slot, int i) {
+        return pos == Long - 2 ? mean(pos, slot, i) : window_value(pos, slot, i);
+    });
+    pass("long_tail_clipping");
+
+    ok(tail.begin(262144, 0, error));
+    window(262142, 2);
+    ok(tail.capture_window(nullptr, 1, 262143, error)); // decode anchor, not a prompt tap
+    ok(tail.capture(5, 262144, 0, nullptr, nullptr, &q, error));
+    need(!tail.capture(5, 262144, 1, dr.as<float>(), nullptr, &q, error), "one-past physical extent");
+    check({{262142, 1}}, window_value);
+    pass("physical_tail_extent"); // not a full target-context execution
+
+    ok(tail.begin(10, 0, error));
+    need(!tail.capture(5, -1, 1, dr.as<float>(), nullptr, &q, error), "negative row");
+    need(!tail.capture(5, 262143, 2, dr.as<float>(), nullptr, &q, error), "cross physical end");
+    need(!tail.capture(5, 0, 1, nullptr, nullptr, &q, error), "missing residual");
+    need(!tail.capture(5, 0, 1, dr.as<float>(), db.as<uint16_t>(), &q, error), "ambiguous format");
+    need(!tail.capture(5, 0, 1, tiny.as<float>(), nullptr, &q, error), "short registered span");
+    need(!tail.capture(5, 0, 1, host.as<float>(), nullptr, &q, error), "host USM rejected");
+    need(!tail.capture_window(tiny.as<float>(), 2, 0, error), "short verifier mean span");
+    need(!tail.consume({}, error), "missing consumer");
+    check({}, mean); // no refused capture is allowed to publish presence
+    pass("rejected_spans_formats");
+
+    for (int slot = 0; slot < 5; ++slot) put(slot, 0, 3);
+    tail.release(); // complete a queued producer before freeing its tail
+    need(!tail.consume([](const float*, int64_t, int64_t, std::string&) { return true; }, error), "released owner");
+    ok(tail.begin(3, 0, error));
+    check({}, mean); // old row presence must not survive owner reuse
+    window(0, 2);
+    check({{0, 2}}, window_value);
+    ok(tail.begin(1, 0, error));
+    check({}, mean);
+    pass("release_rebegin");
+}
 } // namespace
 
 int main(int argc, char** argv) try {
@@ -129,8 +270,9 @@ int main(int argc, char** argv) try {
     auto runtime = strata::sycl_backend::runtime_for(0);
     gemm(runtime);
     taps(runtime);
+    prompt_taps(runtime);
     runtime->wait();
-    std::cout << "dflash2 fixture cases=9 PASS\n" << std::flush;
+    std::cout << "dflash2 fixture cases=16 PASS\n" << std::flush;
     if (supervised) {
         std::cout << "DF2_WAIT\n" << std::flush;
         std::string command;
