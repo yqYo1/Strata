@@ -1025,7 +1025,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   213refusal negative cases are recorded under`adaptive_payload96_reader_host_v1`.
   The CPU result alone establishes no96native safety,performance or adoption;
   the closed positive entry above supplies only its specifically observed
-  payload/map/dispatch/loan qualification. The actual96refusal is still required.
+  payload/map/dispatch/loan qualification. The separate actual96refusal has now
+  closed as recorded above.
   The compiled source audit matches the recorded private generator,cache and
   audit header. Swaps and pending metadata are dynamic vectors;the pending
   capacity is reserved before accepted refill copies. The audit reserves96
@@ -1049,7 +1050,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   duplicated in the active result. The preparation now fully hashes shared
   model assets once against the96positive;all other receipts retain source/
   runtime/configuration/stat checks and must name identical asset inventories.
-  No speed preparation,model execution or96speed qualification has run.
+  The regular-code speed cohort is now prepared at`a9d072acf`,with the
+  actual96positive/refusal receipts pinned and all15shared model assets fully
+  verified. Its six fresh-process order is32/96,96/32,32/96;the CPU controls
+  pass and both arms preserve the same invariant configuration. Follow
+  `adaptive_payload96_generation_regular_code_v1`. Commit this prepared plan
+  before fresh benchmark/server frontend probes,then commit their result
+  before process0. No speed-process model execution or96speed qualification
+  has run;the varied-prose32/96cohort is not yet prepared.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
