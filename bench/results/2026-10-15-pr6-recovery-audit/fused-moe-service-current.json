@@ -201372,7 +201372,7 @@
     }
   },
   "adaptive_payload96_device_service_v4": {
-    "stage": "prepared",
+    "stage": "closed-before-native-launch",
     "source_commit": "b29f5384c9595fc4d1b183b042ef2c4e2eb0405c",
     "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
     "binary": {
@@ -201694,7 +201694,7 @@
         "head_payload_bytes_verified": false
       }
     },
-    "host_passed": false,
+    "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
@@ -201738,9 +201738,52 @@
       "stopping": "First identity,body,count,route,clock,validation,fault,owner,output or prompt-admission failure ends the attempt;preserve its status. No pin refresh or in-place retry.",
       "retention": "512MiB/file,768MiBjob,1GiBwhole and1200s/104GiBRSS. Full trace temporarily needed for graph IDs and post-flush guarded reduction. Keep compact source/count/interval/caller/request/fault evidence,retire successful raw output after verification."
     },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "modules": 144,
+        "code_maps": 18,
+        "passed": true
+      },
+      {
+        "role": "server",
+        "modules": 191,
+        "code_maps": 26,
+        "passed": true
+      }
+    ],
+    "window_reader_tests": {
+      "passed": true,
+      "ownership_closed": true,
+      "native_exit_code": 0,
+      "summary": "................\n----------------------------------------------------------------------\nRan 16 tests in 0.001s\n\nOK\n",
+      "command": {
+        "argv": [
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "-B",
+          "/home/yayoi/orca/workspaces/Strata/sycl/tests/core/test_decode_window_trace.py"
+        ],
+        "pid": 1699513,
+        "exit_code": 0,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "errors": [],
+        "cleanup": [],
+        "elapsed_seconds": 0.9222521758638322
+      }
+    },
     "source_inputs": {
       "files": 357,
       "aggregate_sha256": "c82415aaa32e4f5e1a8a066ef4bac7ef0cc3a217ab9abd5b896cf7ac991b9d68"
+    },
+    "closure": {
+      "reason": "Latest user request switches next implementation boundary to current Niko feature/Unsloth v3.1/DFlash2 sync. Current policy/source inputs will change; do not refresh frozen pins or launch this prepared attempt.",
+      "native_launched": false,
+      "host_handle_closed": true,
+      "measurement_lock_free": true,
+      "host_validation_retained": true,
+      "next_action": "Resume profiling with a new committed source-pinned plan after upstream functional integration."
     }
   }
 }

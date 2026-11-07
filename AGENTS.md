@@ -251,7 +251,12 @@ integration and testing.
   independent correctness fixes. A numerical pass alone does not justify keeping
   an unused performance prototype in the active implementation.
 - Import all Niko non-inference functions, including server, API, CLI, web UI,
-  settings and setup. Track any unfinished port explicitly. Choose inference changes
+  settings and setup. Track any unfinished port explicitly. When upstream retires
+  a function, compare the cost of removing it with its ongoing maintenance cost;
+  remove it only when that tradeoff justifies removal. An unused function with
+  negligible maintenance may remain when removal costs more. Record the decision
+  in the function ledger rather than assuming either perpetual compatibility or
+  automatic deletion. Choose inference changes
   per component, including prefill and decode separately; retain the faster
   existing fork implementation. Measure unmodified upstream without local
   patches, including a configuration tuned for this hardware; default settings
