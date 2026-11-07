@@ -133,7 +133,7 @@ class ConsoleQueue(unittest.TestCase):
 
 
 class ConsoleChildExit(unittest.TestCase):
-    def child(self, wrapped, unbuffered=False):
+    def child(self, wrapped, unbuffered=False, server_entry=False):
         script = (
             "import os\n"
             "os.write(2,b'READY\\n')\n"
@@ -144,8 +144,23 @@ class ConsoleChildExit(unittest.TestCase):
             "        print('x'*8192,flush=True)\n"
             "os.write(2,b'DONE\\n')\n"
         )
+        if server_entry:
+            script = (
+                "import os\n"
+                "os.write(2,b'READY\\n')\n"
+                "from serve import server\n"
+                "def body():\n"
+                "    for i in range(256):\n"
+                "        print('x'*8192,flush=True)\n"
+                "    os.write(2,b'DONE\\n')\n"
+                "    return 0\n"
+                "server._main=body\n"
+                "raise SystemExit(server.main())\n"
+            )
         env = dict(os.environ)
         env.pop("PYTHONUNBUFFERED", None)
+        if server_entry:
+            env["STRATA_BLOCKING_CONSOLE"] = "0" if wrapped else "1"
         argv = [sys.executable, "-B", "-X", "faulthandler"]
         if unbuffered:
             argv.append("-u")
@@ -178,6 +193,26 @@ class ConsoleChildExit(unittest.TestCase):
 
     def test_wrapped_unread_pipe_exits_unbuffered(self):
         self.child(True, unbuffered=True)
+
+    def test_server_entry_unread_pipe_exits_buffered(self):
+        self.child(True, server_entry=True)
+
+    def test_server_entry_unread_pipe_exits_unbuffered(self):
+        self.child(True, unbuffered=True, server_entry=True)
+
+    def test_server_entry_blocking_bypass_blocks_control(self):
+        self.child(False, server_entry=True)
+
+    def test_server_cli_help_preserves_default_and_bypass(self):
+        for value in ("0", "1"):
+            with self.subTest(blocking=value):
+                env = dict(os.environ, STRATA_BLOCKING_CONSOLE=value)
+                proc = subprocess.run([sys.executable, "-X", "faulthandler", "-B", "-m",
+                    "serve.server", "--help"], env=env, cwd=Path(__file__).resolve().parents[1],
+                    capture_output=True, timeout=10)
+                self.assertEqual(proc.returncode, 0, proc.stderr.decode(errors="replace"))
+                self.assertIn(b"--engine", proc.stdout)
+                self.assertIn(b"--api-key", proc.stdout)
 
 
 if __name__ == "__main__":

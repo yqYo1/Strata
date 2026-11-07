@@ -3964,6 +3964,15 @@ def sampling_defaults_from_config(cfg: dict) -> dict:
 
 
 def main() -> int:
+    """Keep console backpressure out of requests;allow the upstream tester bypass."""
+    if os.environ.get("STRATA_BLOCKING_CONSOLE") == "1":
+        return _main()
+    from serve.nonblocking_out import decoupled_console
+    with decoupled_console():
+        return _main()
+
+
+def _main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--engine", choices=["mock", "strata"], default="mock")
     ap.add_argument("--config", help="strata engine config (JSON: exe, args, cwd, tokenizer, model_name), "
