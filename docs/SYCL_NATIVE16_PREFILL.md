@@ -993,6 +993,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   adversarial controls are preregistered for the closed-cohort boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
   This source-only plan establishes no96native safety,performance or adoption.
+  The separately source-prepared
+  `tools/sycl/compare_adaptive_payload96_generation.py`uses32as the speed
+  reference after its repeated code gain,with32/96,96/32,32/96process pairs
+  on the same executable. It retains exact and printed TG decisions and
+  independent prompt/TTFT gates. Both current8/32cohorts and the actual96
+  positive/refusal pair must close before preparation;no controls,preparation,
+  model execution or96speed qualification have run. This new source is outside
+  the active prose cohort's346frozen inputs. Retire it if96admission fails
+  without a named follow-up consumer.
   Prose processes0/1/2/3each have69successful raw/JIT files
   (13136414/13122266/13122277/13136451bytes)retired after recovering346Git inputs
   and pushing the compact result. Their generated configs/plans remain for
