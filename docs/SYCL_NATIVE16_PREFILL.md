@@ -1537,17 +1537,29 @@ production selection. Current-model GPU counters,physical traffic and critical
 path remain unqualified. No new model speedup,adoption or device execution
 follows from this calibration.
 
-The current component candidate is`packed_iq3xxs.hpp`,source41167d33b:
-AVX2 gathers read the unchanged98B blocks,with compile-time even-parity signs
-and the same native integer/FMA/reduction contract. No per-expert expansion is
-required. All ten controller tests pass,normal0and no skips. Its new committed
-plan first requires packed integer/FMA/bounds controls and eight real-weight
-threaded checks,including four NT1 activations per expert. Then24current-NT
-raw/packed processes compare1/6threads,groups6/28,reuse/stream in three
-opposite-order pairs. Both arms retain unused compact views to match the prior
-component envelope;that setup is diagnostic,not a required packed conversion.
-No packed performance or production selection is established yet. Keep the
-30e45b85auxiliary baseline until the successor's numeric checks qualify.
+The packed98B gather candidate is now closed and **rejected for performance**.
+At source41167d33b,the CPU-only ELF`e374a01b`has637covered actual compiler
+inputs;disassembly confirms16VPGATHERDD and one VZEROUPPER in the paired dot.
+All ten controller tests,524288packed integer chunks,16FMA cases,64partial
+ranges,11refusals and eight real-weight/threaded checks pass. The latter
+include168distinct experts/four NT1 vectors plus all NT1..4/mixed jobs.
+All24timing processes and240eligible samples close normally0,quiet and owned.
+Three opposite-order pairs per shape compare1/6threads,groups6/28,reuse/stream.
+All eight raw/gather geometric-mean speed ratios are below one. Six-thread
+reuse ratios are0.82023/0.87502(group6/28),stream0.80936/0.94404;both shapes
+fail the all-three-favorable-pairs gate. One-thread ratios are0.79342..0.81557.
+Unused compact views coexist in both arms;their setup is diagnostic,not a
+required packed conversion. This proves no model speedup,hardware saturation
+or production regression. No inference code or prefill path changed.
+The compact current result preserves all samples and original failures.
+
+Next review the existing activation-dependent partial-dot/LUT reference for a
+setup-inclusive original-quantization candidate,or select a separate GPU-cache
+placement/configuration mechanism. Do not repeat a generic LUT survey or
+advance this failed gather mechanism to a model trial. Both auxiliary
+comparisons are closed;recover their exact313e5/41167inputs and636/637actual
+compiler inputs before retirement,unless that bounded decision names an
+immediate comparison. The two inference generations remain protected.
 
 The benchmark-only `bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp` stores exact
 IQ3_XXS signed-magnitude indices in134-byte blocks,versus98raw bytes. AVX2
