@@ -20,7 +20,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Source/result: `cache_map_prefill_speed117489_v1.decision` in
   [`fused-moe-service-current.json`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json);
   cumulative row in [`performance-records.csv`](../bench/performance-records.csv).
-- The immediate decode comparison uses **a330 / engine429b** as the positive-swap
+- The closed adaptive8 comparison uses **a330 / engine429b** as the positive-swap
   candidate alongside the552b prefill fallback. Its bounded184-swap/32K-loan
   correctness entry and second-event-record refusal both pass. The six-process
   code cohort is closed:exact median TG is **10.1410 -> 10.7173tok/s**
@@ -29,7 +29,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   exact median TG is **8.3610 -> 10.5548tok/s**,with three favorable pairs.
   Its prompt/TTFT nonregression also fails. Cap2 acceptance does not establish
   a fixed4 weak-MTP class. Broader qualification remains pending;no inference
-  adoption,new best TG or70TG follows.
+  adoption,new best TG or70TG follows. The e1b011 successor now passes its
+  synthetic32-update positive entry;the checked32-record-refusal and new
+  clean8/32comparison remain pending. Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -808,7 +810,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   engine SHA starts`e1b01116cc`;its native source remains`bbd345c63`. Only the
   audit header changes. Fresh same-build observer0/1CPU pool checks now each
   pass28cases with identical checksums,normal0and closed owners. Component
-  reuse now passes;actual native32positive/refusal remain pending. No GPU was executed
+  reuse now passes;native32positive also passes and its refusal control remains
+  pending. No GPU was executed
   by compilation or these CPU checks. It gates preparation
   on all six resource processes closing. Allow one temporary third comparison
   generation only through successor native32positive/refusal qualification:
@@ -823,15 +826,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   later readers pin its consumed metadata/Git inputs rather
   than requiring retired429b ELFs. Runtime/probe bytes,boot and driver still
   need to match. This is unchanged-component identity qualification,not fresh
-  GPU execution. Native32execution remains unexecuted.
+  GPU execution. The separate native32positive entry now closes normally.
   `tools/sycl/check_adaptive_payload_entry.py`now binds
   the unchanged full32copy/dispatch/occupied-loan reader and supervisor to the
   successor at a fresh`adaptive_payload32_native_entry_v1`key/root. It requires
   the new header/component proof and keeps the original64MiB trial failed.
   Its model plan is now prepared at source`4062acfba`on the compiled e1b011
   successor,with all15asset hashes and the unchanged32-group/22-corrupt reader
-  controls passing. The two synthetic1024/256and32769/256requests have not run.
-  Its build-record hash now freezes the compiled/reuse receipt bytes. Source-only
+  controls passing. Both synthetic1024/256and32769/256requests now close
+  normally0,with21full32-copy generations/672swaps and checked three-map/
+  payload publication. Incoming GPU observations increase20616to47016and
+  outgoing CPU observations332to2026;one post-positive1124-slot loan/refill
+  also passes. Actual T1/T4 Q6/heads,closed owners,quiet validation,unchanged
+  final15assets/boot/driver and no fresh fault pass. Follow
+  `adaptive_payload32_native_entry_v1`;this is correctness,not speed or broader
+  model qualification. Its receipt SHA starts`3ba342f1d887`;freeze these bytes
+  and the compiled/reuse receipt for the next consumer. Source-only
   `tools/sycl/check_adaptive_payload_failure.py`also rebinds the existing
   full32second-record control to that closed successor entry at a separate
   `adaptive_payload32_record_failure_v1`key/root. It requires a real first
