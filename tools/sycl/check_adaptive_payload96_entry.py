@@ -14,7 +14,6 @@ import sys
 sys.dont_write_bytecode = True
 import check_adaptive_payload_entry as positive32
 import check_adaptive_payload_failure as refusal32
-import compare_adaptive_payload_generation as speed
 
 SELF = Path(__file__).resolve()
 KEY = 'adaptive_payload96_native_entry_v1'
@@ -24,6 +23,9 @@ EXPERT_CAP = 64 << 20
 CYCLE_CAP = 256 << 20
 HEADER_SHA256 = '8387ea06c7fed9afa89c86c2faf528b32abe2366bb2f65a4eb66d5d445ec220a'
 require = positive32.require
+# Keep qualification independent of later speed-controller revisions.
+digest = positive32.budget.original.digest
+signature = positive32.budget.original.width.signature
 
 
 def reader(source=positive32.budget):
@@ -80,7 +82,7 @@ def payload_bound(assets):
     paths = [name for name in assets if Path(name).name == 'native_experts.txt']
     require(len(paths) == 1, 'one pinned native expert index required')
     path = Path(paths[0])
-    require(speed.clean.digest(path) == assets[str(path)]['sha256'],
+    require(digest(path) == assets[str(path)]['sha256'],
         'native expert index bytes changed')
     return dict(native_extent(path.read_text()), path=str(path),
         sha256=assets[str(path)]['sha256'])
@@ -394,7 +396,7 @@ if __name__ == '__main__':
             revision = ctx.base.basis.build.git(ctx.P, 'rev-parse', 'HEAD').decode().strip()
             pins = ctx.base.controls(revision, controller=SELF)
             print(json.dumps(dict(controls(), source_commit=revision,
-                source_count=len(pins), source_signature_sha256=speed.clean.signature(pins)),
+                source_count=len(pins), source_signature_sha256=signature(pins)),
                 sort_keys=True))
         elif args == ['prepare']:
             prepare(ctx)
