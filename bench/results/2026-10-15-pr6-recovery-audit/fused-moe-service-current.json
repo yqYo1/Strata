@@ -192707,7 +192707,7 @@
     }
   },
   "adaptive_payload32_record_failure_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "0c56a1f485d96f5c1f76654175515378fa50ab5f",
     "positive_entry": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload32-entry-v1/record.json",
@@ -193117,11 +193117,11 @@
       "total_cap": 201326592
     },
     "whole_wall_s": 1500,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_execution_attempted": false,
+    "GPU_execution_attempted": true,
     "plan": "One fresh owned engine429b with exactly the qualified normal-entry config/environment,except private paths and pre-exec STRATA_SYCL_TEST_ADAPT_RECORD_FAILURE=1. Synthetic1024 input/max256 output;real first event succeeds and generation1 publishes;second real cudaEventRecord(null) returns cudaErrorInvalidValue1 after accepted positive copies with owners live. Require generation2 prepared/masked but never published,no further generation,exact ERR an adaptive refill failed,no DONE,strict ordered wire prefix,normal owned native exit1 without supervisor cleanup,quiet strict pre-main validation,unchanged final15model assets/runtime/boot/driver,no fresh GPU fault. Stop once;no retry or safety-setting change. Both first and second generations must contain exactly32 accepted copies;generation2 must stay masked and unpublished. Same host-qualified payload successor native engine and initial Git-pinned placement profile. The new positive32entry must close first. Preserve the original failed64MiB trial. Require real first completion/publication,exact32queued second copies,checked null-record refusal,second mask unpublished,normal expected1,closed owners and no fresh fault. No speed claim or retry.",
     "limits": "Intentional native error1 is expected control success,not successful generation,device fault injection,clean PP/TG,task quality,ordinary provider teardown or physical262144/RESTORE qualification. This larger-budget test does not qualify clean adaptive32 performance.",
     "retention": "Keep compact first/second statuses,swap counts,nonpublication,wire extent/output hash,source/configuration and validation/closure/fault result. Retire successful raw output/JIT after verifying and pushing the result;one minimal distinct failure diagnostic only if unexpected.",
@@ -193131,6 +193131,71 @@
     },
     "successor_positive_key": "adaptive_payload32_native_entry_v1",
     "successor_build_key": "adaptive_payload_native_build_v2",
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "host_probe_accepted": true,
+      "startup": {
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "spec": "4",
+        "mtp_max": "4",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.00",
+        "arena_mib": "47962"
+      },
+      "native_pid": 2554280,
+      "wire": {
+        "error": "ERR an adaptive refill failed",
+        "input_tokens": 1024,
+        "output_tokens": 45,
+        "output_sha256": "1fab2dd536ef0a6f33bb2ea997a4b11d6ce16502e186f9c0b27b21fb608b8348",
+        "progress_reached": 1023,
+        "progress_notifications": 1,
+        "DONE_seen": false
+      },
+      "native_exit_code": 1,
+      "native_normal_closed": true,
+      "validation": {
+        "pid": 2554280,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "adaptive": {
+        "first_record_status": 0,
+        "second_record_status": 1,
+        "successful_generation": 1,
+        "first_swaps": 32,
+        "failed_generation": 2,
+        "queued_second_swaps": 32,
+        "second_generation_masked": true,
+        "second_generation_published": false,
+        "first_H2D_requested_bytes": 64256000,
+        "stale_event_not_published": true,
+        "maximum_group": 32
+      },
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
     "source_inputs": {
       "files": 124,
       "sha256": "504d2cd2694c1ecc86ca737502e9d8d48e5d6d7e4b7ec449f4f677db1541a47b"

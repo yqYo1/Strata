@@ -30,8 +30,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Its prompt/TTFT nonregression also fails. Cap2 acceptance does not establish
   a fixed4 weak-MTP class. Broader qualification remains pending;no inference
   adoption,new best TG or70TG follows. The e1b011 successor now passes its
-  synthetic32-update positive entry;the checked32-record-refusal and new
-  clean8/32comparison remain pending. Preserve the552b prefill fallback.
+  synthetic32-update positive entry and checked32-record-refusal. The new
+  clean8/32comparison remains pending. Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -810,8 +810,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   engine SHA starts`e1b01116cc`;its native source remains`bbd345c63`. Only the
   audit header changes. Fresh same-build observer0/1CPU pool checks now each
   pass28cases with identical checksums,normal0and closed owners. Component
-  reuse now passes;native32positive also passes and its refusal control remains
-  pending. No GPU was executed
+  reuse now passes;native32positive and its refusal control also pass.
+  No GPU was executed
   by compilation or these CPU checks. It gates preparation
   on all six resource processes closing. Allow one temporary third comparison
   generation only through successor native32positive/refusal qualification:
@@ -841,15 +841,23 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   final15assets/boot/driver and no fresh fault pass. Follow
   `adaptive_payload32_native_entry_v1`;this is correctness,not speed or broader
   model qualification. Its receipt SHA starts`3ba342f1d887`;freeze these bytes
-  and the compiled/reuse receipt for the next consumer. Source-only
+  and the compiled/reuse receipt for the next consumer. The companion
   `tools/sycl/check_adaptive_payload_failure.py`also rebinds the existing
   full32second-record control to that closed successor entry at a separate
   `adaptive_payload32_record_failure_v1`key/root. It requires a real first
   publication,32queued second copies and checked refusal with no second
   publication,normal expected1/closed owners/no fault. Its plan is now prepared
   at source`0c56a1f48`,with all15assets checked,the immutable closed32positive
-  receipt and the unchanged two32-group/86-corrupt reader controls. No native
-  refusal has run. Source-only`tools/sycl/compare_adaptive_payload_generation.py`
+  receipt and the unchanged two32-group/86-corrupt reader controls. The native
+  control now closes as expected:record1succeeds and publishes32swaps;record2
+  returns status1after32queued copies,with its generation masked/unpublished.
+  The native exits1normally without supervisor termination,DONE is absent,
+  45wire tokens are retained as extent/hash,and final15assets/boot/driver,
+  strict validation,ownership and no-fresh-fault checks pass. Its receipt SHA
+  starts`b50481aa8dfa`;keep it immutable. The inherited opening`engine429b`
+  plan label is stale;structured pins and the actual executable check bind
+  this run to e1b011. This expected error is a correctness control,not speed.
+  Source-only`tools/sycl/compare_adaptive_payload_generation.py`
   now reuses the original same-ELF8/32decision/benchmark runner with successor
   positive/refusal qualifications. Prior settings/frontend selection supply no
   old-engine qualification;refs bind only the successor controls and tested
