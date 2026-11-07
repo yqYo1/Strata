@@ -852,6 +852,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retirement separately rather than rewriting those receipts or refreshing refs.
   Prospective consumer migration still needs execution qualification before
   retiring429b;the new wrappers alone do not make its active readers qualified.
+  At the closed build/CPU boundary,the failed V1preparation's568projected
+  inputs,115controls and recipe are recovered;its duplicate private source is
+  retired. The old64MiB entry's116inputs and the SSE tests'352inputs are also
+  recovered. Their unneeded output is retired with638files/24966960bytes
+  removed and all21comparison ELFs preserved. Only the567-byte cap-refusal
+  diagnostic remains for the new32trial. Full SSE input inventory is archived
+  at`af613119f`;the current row retains its two changed source hashes.
   The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
@@ -2381,8 +2388,11 @@ retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
 probe binaries and the two schema2 host fixtures are retired after original-input
 recovery. The ended519e diagnostic and all its five component outputs are also
 retired after closed native-gate evidence and source recovery;the current
-comparison retains the552b fallback's nine ELF outputs and the429b positive-swap
-candidate's six outputs for its immediate clean comparison. Other configured
+comparison retains the552b fallback's nine ELF outputs,the429b candidate's six,
+and the new e1b011 payload successor's six through native32positive/refusal
+qualification. This temporary three-generation window ends before clean8/32
+trials:retire429b after consumer migration,or retire the successor on failure.
+Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
 numerical/IL choice;successful host/device/build output and superseded source
