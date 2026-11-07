@@ -45,7 +45,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   source`c632a0421`,with346inputs,all15model assets checked and six immutable
   8/32,32/8,8/32configurations on the same e1b011 executable. Both fresh
   benchmark/server frontend probes pass normally0at source`d79bd3448`,with
-  quiet stderr and closed owners. No prose model process has run.
+  quiet stderr and closed owners. Process0(adaptive8,cap2)is running after
+  four official warmups and its dedicated32K+prefill;long generation is in
+  progress. No prose sample is closed and no performance decision is available.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -920,8 +922,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   phase decisions pass. Its six fixed8/32,32/8,8/32processes retain the same
   e1b011engine,8192chunk,placement,runtime safety and observer settings.
   Both fresh benchmark/server frontend probes now pass at`d79bd3448`,with
-  normal0,quiet stderr and closed owners. No prose model execution or
-  performance decision yet. Commit these outcomes before process0. Follow
+  normal0,quiet stderr and closed owners. Their outcomes are committed before
+  process0,launched from`f2de2cd6d`. Its four official warmups and long prefill
+  have returned;T1/T2graphs are captured and long generation is in progress.
+  Resume through its actual owned handle and execution receipt rather than
+  the cohort's last committed ready state;no closed prose sample or performance
+  decision yet. Keep all native/controller inputs frozen. Follow
   `adaptive_payload_generation_varied_prose_v1`.
   All six processes each have69successful raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
