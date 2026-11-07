@@ -16,6 +16,7 @@ import sys
 import time
 
 sys.dont_write_bytecode=True
+import benchmark_runtime as runtime
 import cpu_roofline as base
 import generation_engine as gen
 import measurement_guards as guards
@@ -193,6 +194,10 @@ def prepare():
     guards.require({(r['gu'],r['down']) for r in rows}=={(18,20),(18,42)},'both IQ3_XXS formats required')
     for r in rows:
         r['experts']=stream_count(r);r['observed_jobs_NT']=observed[r['gu'],r['down']];r['fixture_sha256']=base.fixture_hash(r)
+    host=gen.committed(RESOURCE)['upstream_nonblocking_console_entry_host_v1']
+    host_env=dict(host['environment']);host_env['TMPDIR']=str(ROOT/'tmp');host_env['XDG_CACHE_HOME']=str(ROOT/'cache')
+    runtime.require_environment(host_env);runtime.validate_manifest(runtime.read_manifest(host['python_contract']))
+    guards.require(runtime.selection(host_env)==host['python_selected'],'qualified host Python changed')
     revision=gen.git('rev-parse','HEAD').decode().strip()
     plan=dict(schema=SCHEMA,source=base.source_pin(P,revision,PREFIXES),
         ggml=base.source_pin(base.GGML,base.GGML_REV,('ggml',)),qualification=proof,
@@ -206,6 +211,8 @@ def prepare():
             '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t','-DSTRATA_GGML_DIR='+str(base.GGML),
             '-DSTRATA_CPU_SOURCE_ROOT='+str(CPU_SOURCE)],
         build=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','cpu_decode_mix','--parallel','4'],
+        host_environment=host_env,python_contract=host['python_contract'],python_selected=host['python_selected'],
+        host_command=[host['python_selected']['path'],'-X','faulthandler','-B',str(P/'tests/core/test_cpu_decode_mix.py'),'-v'],
         protocol=dict(question='Does a512KiB exact block-local activation-dependent partial-dot LUT repay generation cost within the actual top_k10reuse limit?',
             check_order=check_order(rows),screen_order=screen_order(),
             controls='All2097152table entries for8edge activations,4194304scaled native-sign chunks,14shape/alias refusals;all guards and no writes on refusal.',
@@ -221,7 +228,7 @@ def prepare():
             retention='One fresh auxiliary generation;baseline and LUT compile together from the frozen native CPU source. Prior compact/gather roots are retired. Keep useful samples and source/recipe identities;retire successful raw output after closure. Preserve two inference generations.'),
         budgets=dict(build_seconds=600,controls_seconds=180,check_child_seconds=180,screen_child_seconds=180,stage_seconds=1800,
             rss_bytes=3<<30,text_bytes=8<<20,root_bytes=256<<20))
-    ROOT.mkdir(mode=0o700);write(PLAN,plan)
+    ROOT.mkdir(mode=0o700);(ROOT/'tmp').mkdir();(ROOT/'cache').mkdir();write(PLAN,plan)
     write(RESULT,dict(schema=SCHEMA,stage='prepared',source_commit=revision,plan_sha256=base.digest(PLAN),
         passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False,
         calibration_origin=origin,hardware_saturation_qualified=False,model_adoption_qualified=False))
@@ -235,6 +242,8 @@ def load():
         plan['numerical_origin']==numerical_origin() and environment()==plan['environment'] and base.machine()==plan['machine'],
         'source/environment/platform/origin drift')
     for p,s in plan['tools'].items():guards.require(base.digest(p)==s,'compiler/tool drift')
+    runtime.require_environment(plan['host_environment']);runtime.validate_manifest(runtime.read_manifest(plan['python_contract']))
+    guards.require(runtime.selection(plan['host_environment'])==plan['python_selected'],'host interpreter changed')
     guards.require(base.digest(base.METADATA)==plan['metadata_sha256'],'metadata drift')
     resource,proof=qualification();guards.require(proof==plan['qualification'],'native/resource proof drift')
     observed=observed_histograms(resource);original={(r['gu'],r['down']):r for r in base.formats() if r['gu']==18}
@@ -428,14 +437,24 @@ def run(stage):
     with path.open('x') as marker:marker.write(json.dumps(record,indent=2)+'\n')
     def persist():
         record['active']=bool(own and own.active is not None);write(path,dict(record,commands=own.commands if own else []))
-    def execute(label,argv,wall):
+    def execute(label,argv,wall,environment=None):
         guards.require(time.monotonic()<deadline,'whole-stage budget expired')
-        entry,_,_=own.run(stage+'-'+label,argv,plan['environment'],P,wall=min(wall,deadline-time.monotonic()),cpu=1200,
+        entry,_,_=own.run(stage+'-'+label,argv,environment if environment is not None else plan['environment'],P,wall=min(wall,deadline-time.monotonic()),cpu=1200,
             rss_cap=plan['budgets']['rss_bytes'],text_cap=plan['budgets']['text_bytes'],total_cap=plan['budgets']['root_bytes'],file_cap=plan['budgets']['root_bytes'])
         guards.require(owner.closed(entry) and entry['exit_code']==0,'owned child failed: '+label);return entry
     try:
         own=owner.Owner(ROOT/'owned',persist)
-        if stage=='build':
+        if stage=='host':
+            entry=execute('unittest',plan['host_command'],120,plan['host_environment'])
+            text=(ROOT/'owned/host-unittest.stderr').read_text()
+            count=re.search(r'^Ran (\d+) tests? in [0-9.]+s$',text,re.M)
+            guards.require(count and re.search(r'^OK$',text,re.M) and int(count[1])>0,'host controller tests incomplete/failed/skipped')
+            record['host_controller_validation']=dict(tests=int(count[1]),skipped=0,exit_code=entry['exit_code'],ownership_closed=True)
+        elif stage=='build':
+            hosted=json.loads((ROOT/'host.json').read_text())
+            guards.require(hosted['passed'] and hosted['complete'] and hosted['ownership_closed'] and not hosted['active'] and
+                hosted['plan_sha256']==base.digest(PLAN) and gen.committed(RESULT)==compact_record(hosted,hosted['commands']),
+                'commit passed controller tests before build')
             execute('configure',plan['configure'],120);execute('compile',plan['build'],plan['budgets']['build_seconds'])
             execute('dependencies',['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','deps'],40)
             record.update(attest_build(plan,(ROOT/'owned/build-dependencies.stdout').read_text()))
@@ -471,7 +490,7 @@ def run(stage):
             if stage=='screen':record['decision']=screen_decision(record['children'])
             elif stage=='check':record['decision']=dict(numerical_qualified=True,cases=len(cases),performance_qualified=False,model_adoption_qualified=False,next_action='Committed setup-inclusive E1/E10 screen;no speed measured here.')
         load()
-        if stage!='build':verify_built(plan,built)
+        if stage not in ('host','build'):verify_built(plan,built)
         guards.require(time.monotonic()<=deadline,'whole-stage budget expired');record.update(passed=True,complete=True)
     except BaseException as error:record['error']=repr(error)
     finally:
@@ -482,7 +501,7 @@ def run(stage):
 
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=('prepare','build','controls','check','screen'));args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=('prepare','host','build','controls','check','screen'));args=parser.parse_args()
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
         return prepare() if args.stage=='prepare' else run(args.stage)
