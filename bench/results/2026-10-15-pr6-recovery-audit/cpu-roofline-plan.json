@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-decode-mix-v2",
+  "schema": "strata-cpu-decode-mix-v3",
   "source": {
-    "revision": "7725d3f838962bc4a5974c0ed77b882ddfd8da4c",
-    "count": 108,
-    "aggregate_sha256": "d38461501440c4e476ee8adaed10854c758a995caaea509114dde26ca6149440"
+    "revision": "893e7cebb689078edd6b5f7744befdcc33ea6a2a",
+    "count": 261,
+    "aggregate_sha256": "815906bfadc3907506da7cc14efe51d0f6d7a210042dfac6f52979664020825f"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -11,28 +11,116 @@
     "aggregate_sha256": "04cc6ab883190bdb3bbcfc3e3d62c630c7b147587b98379157ad768f9936c8d2"
   },
   "qualification": {
-    "native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
-    "native_inputs_recovered": 9853,
-    "native_binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
-      "bytes": 22190000,
-      "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+    "native_source": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
+    "native_record_sha256": "d0efa22493779f1240b654b99e1ab7bb7ae14d05a1d6f23d4de14259e9fe4b7a",
+    "recovered_native_files": 568,
+    "native_source_sha256": "11e2df99e4925860c59b182a73911edea715d2b02099d0ab74f9f619e397a0ab",
+    "CPU_sources": {
+      "bench/sycl/cpu_roofline/CMakeLists.txt": "8ac71c486aa113b4cc0da49dde5cee348a4533a043a62c5ed0b0feb4ff4bd9f3",
+      "bench/sycl/cpu_roofline/main.cpp": "d38a1506724fb774c34a6de5499bbe148e9ba902d805d2303964e7a935484bcb",
+      "include/strata/core/progress.hpp": "f72c21548bea3b8a8b07488bcd561d6c16e5960f5dbf78fca642011d3f8ff923",
+      "include/strata/kernels/cpu/expert.hpp": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+      "include/strata/kernels/cpu/expert_layout.hpp": "00eeaf7d0bde06f3db22d7865f932393cd5e1026434cd0009780d3f063bdf651",
+      "include/strata/kernels/cpu/iq2_pair_avx2.hpp": "206138f69dd76700e2bcbb64c63fe42195ce55ebe4e8a532ff9c8c356dccf9bf",
+      "include/strata/kernels/cpu/iq_avx2.hpp": "6a16c9fd12d41af459c9f576891eb0d58f60e26d25ec0f37a0767ce0e6320cb0",
+      "include/strata/kernels/cpu/iq_avx512.hpp": "ede01ee7e474f5d816d9bc6ad6b0804cabd924c69b2b3d536d40f2432410841b",
+      "include/strata/kernels/cpu/kq_avx2.hpp": "c4cd342ba0f2ffd34f6b5ac9c254c59d0a521370de0d7650f0c28e7a390b55dd",
+      "include/strata/kernels/cpu/native_expert.hpp": "ed3ce91ea23df28cbf94e0fa9ac76e0b5aa6e4737003839c7428b4e9a3fe9341",
+      "include/strata/kernels/cpu/pool.hpp": "a8be9d7685d1ab38ccfdf51f34668e9326cddc127f1ac3d55237d20d5f787dab",
+      "src/kernels/cpu/expert.cpp": "9bcf5d889818ef3cb9619df6536e8844d151714803ac8930eada115a61b62e48",
+      "src/kernels/cpu/expert_layout.cpp": "62a20856e50a955776cab30c293b2a5a03ad68cd08895fa1d984d14e791927d3",
+      "src/kernels/cpu/expert_multi_test.cpp": "b39500f0d1084f2843cdbba4700a79b608f053a1a8625afd724174300c48fea7",
+      "src/kernels/cpu/expert_parity.cpp": "75bd21e3e73d294669dd795832cb174eaecee286c75bb813f80af8d52e135031",
+      "src/kernels/cpu/iq2_pair_avx2.cpp": "87afaae4b56faab7934b44c1b86035f414010a9aa4acf9ab2a3d33a864544a74",
+      "src/kernels/cpu/iq_avx2.cpp": "80efab0bed11ddf3980c0d146101218efa061cf5304e39fc88d93e5e94a99136",
+      "src/kernels/cpu/iq_avx512.cpp": "c57d176884fcd34ab730e4684fb560a21aa1ec2a5dde8759a1705c0344658b96",
+      "src/kernels/cpu/iq_single_avx2.cpp": "feea1a669cf8eb713fe7e22878005517de3afec8c8a4af247fe938ad93fee585",
+      "src/kernels/cpu/kq_avx2.cpp": "9bdade163b90b219ab3be746818cb2e6e9bca93813f69e2cb4e8e448b633c4f1",
+      "src/kernels/cpu/native_expert.cpp": "65d41c1fb4fa4147139a02cc7eff76c4cd591733074d657cc3de6e96c746710a",
+      "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00",
+      "src/kernels/cpu/pool_stress.cpp": "21fdb493bc6aab804583c38a3f8befba418becb67243452d61a6fa3b8a32d88b",
+      "src/kernels/cpu/pool_test.cpp": "d1f225f1b5f5e4ec2805843fc3a49cfc3a53788f15e243c76c63b02f2ed913ef",
+      "src/kernels/cpu/q2_avx2.cpp": "9d43e6314a75a1095953f935ed95583141afff67ba5e4da96b6e2520c5a95eee",
+      "third_party/ggml/LICENSE": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "third_party/ggml/VERSION.txt": "c6ee69e9acdf5b4a2f5b8e64191bd380baeaf00b1984de721d67d4698c96b5fb",
+      "third_party/ggml/ggml-common.h": "0061131b615c5721fc88a78feeb22c1f8c450f1c2646a317d80796a653bf595c",
+      "include/strata/kernels/cpu/service_profile.hpp": "118bd5aaf8384daffc713c33e337e5a4e54132b990ab5b521395df81a5922dae"
     },
-    "native_fixture_count": 12,
-    "component_sha256": "8412bb2d5fffaba976ec0129afe9f3d0a0268a5ba9c4efbe89dff6eff28d46b1",
-    "resource_sha256": "ae608777c52288b5e8803aef04a29bbbdd378598933d7c1f21a5b04a948e6672"
+    "native_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/build/strata",
+      "sha256": "e1b01116ccdc4adc3d59cbccb78c365ebbcc937dfa343463656263c1044e1eb2",
+      "bytes": 24518560
+    },
+    "compiled_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/compiler-inputs.json",
+      "sha256": "498875d100a4532bf88b86d79a6b0d0c94653e799827707fdae8b48baadcd910",
+      "files": 1453,
+      "uncovered": 0
+    },
+    "native_compile_database": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/build/compile_commands.json",
+      "sha256": "9230d5b35914df8bbfd5b23a77c663d98c192394e8d1d3a18a1d92bb9eb725a7"
+    },
+    "toolchain_image": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-native-half-model-v1/toolchain.json",
+      "files": 6239,
+      "packages": [
+        "binutils 2.42-4ubuntu2.10",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6:i386 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libgcc-s1:i386 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:i386 14.2.0-4ubuntu2~24.04.1",
+        "linux-libc-dev:amd64 6.8.0-147.147"
+      ],
+      "sha256": "2648a8683d79ee9b327c3c9a5ebeaa37ebdf51a055a52d91f90d21a1bf402838"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "resource_key": "adaptive_cpu_leaves_regular_code_v1",
+    "resource_source_commit": "ad3723d209eece13989d5a40f5164a713bcf42a4",
+    "resource_model_assets_sha256": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e",
+    "resource_work_signature": "59b683bac33e61062f8299cea39710953d75df8c3fb05cf95020be2861a51d08",
+    "resource_histograms_sha256": "9a5d991c1cbfbd988655be23a11e8f1f17ee536547709b8d64e38a0b0cb6cd6e",
+    "observer_cost_verdict": {
+      "paired_leaf_on_over_off_latency": [
+        1.02814964486588,
+        1.023815340076542,
+        1.012841991613963
+      ],
+      "paired_work_matches": [
+        true,
+        true,
+        true
+      ],
+      "geometric_mean_latency_ratio": 1.0215819719932537,
+      "max_per_pair_latency_ratio": 1.05,
+      "leaf_observer_cost_qualified": true,
+      "limits": "Logical aggregate and long-output hashes constrain this cost comparison,not task quality. Concurrent CPU leaf sums include memory stalls;not additive critical path,physical RAM/PCIe traffic,arithmetic saturation,clean speed,dynamic-map conservation or inference adoption."
+    }
   },
   "environment": {
-    "PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin:/usr/bin:/bin",
-    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib",
+    "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
+    "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib",
     "HOME": "/home/yayoi",
     "LANG": "C.UTF-8",
     "LC_ALL": "C.UTF-8",
     "OMP_NUM_THREADS": "1",
     "PYTHONDONTWRITEBYTECODE": "1",
     "STRATA_IQ2_PAIR": "1",
+    "STRATA_IQ3_PAIR": "1",
+    "STRATA_IQ3_PAIR_AUDIT": "1",
     "STRATA_IQ_SINGLE_EXACT": "0",
-    "STRATA_IQ2_PAIR_AUDIT": "0"
+    "STRATA_IQ2_PAIR_AUDIT": "0",
+    "STRATA_CPU_SERVICE": "0",
+    "STRATA_CPU_WORK_CENSUS": "0",
+    "STRATA_POOL_SPIN_US": "20000"
   },
   "machine": {
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -137,10 +225,10 @@
       "gu_bytes": 627200,
       "down_bytes": 921600,
       "observed_jobs_NT": [
-        312670,
-        65168,
-        16541,
-        5226
+        219467,
+        26802,
+        5106,
+        1010
       ],
       "fixture_sha256": "5895760f169c51da395dbd1d1b39dcb4c70dd068d27a2b7766a2aeaa829d5131"
     },
@@ -157,10 +245,10 @@
       "gu_bytes": 627200,
       "down_bytes": 460800,
       "observed_jobs_NT": [
-        70375,
-        15934,
-        3320,
-        654
+        48812,
+        6254,
+        1120,
+        202
       ],
       "fixture_sha256": "b106ea4fc2490b3c2e294d8d82fc7746c9863a92c1006c902818e7591c8afd38"
     },
@@ -177,10 +265,10 @@
       "gu_bytes": 704000,
       "down_bytes": 921600,
       "observed_jobs_NT": [
-        187015,
-        42554,
-        10760,
-        3429
+        129038,
+        17967,
+        3560,
+        789
       ],
       "fixture_sha256": "e96e073ca66cf71175e540f9e4a4212f2b77db8aeb576d97e4afc54a40969edc"
     },
@@ -197,10 +285,10 @@
       "gu_bytes": 704000,
       "down_bytes": 460800,
       "observed_jobs_NT": [
-        24201,
-        5344,
-        1146,
-        180
+        17212,
+        2459,
+        472,
+        84
       ],
       "fixture_sha256": "dad6430f10fdff4eeb1dc891ab691a10cc6a3cadcb1b3ee1e32c9a2484996bb6"
     },
@@ -217,10 +305,10 @@
       "gu_bytes": 524800,
       "down_bytes": 921600,
       "observed_jobs_NT": [
-        339214,
-        78601,
-        17357,
-        4878
+        229803,
+        30512,
+        5520,
+        1311
       ],
       "fixture_sha256": "284725c0ce17550253cb85c8003c75c0bf6f638cf4b510e69d11197ac6e8ac8f"
     },
@@ -237,10 +325,10 @@
       "gu_bytes": 524800,
       "down_bytes": 460800,
       "observed_jobs_NT": [
-        105622,
-        28237,
-        6804,
-        1693
+        71627,
+        10216,
+        2173,
+        508
       ],
       "fixture_sha256": "74c9cc4647896e505dd10bb42d24fbee5fc1f63dc0eda167346d173930849b63"
     },
@@ -257,133 +345,43 @@
       "gu_bytes": 870400,
       "down_bytes": 921600,
       "observed_jobs_NT": [
-        19700,
-        3442,
-        666,
-        115
+        12538,
+        1468,
+        203,
+        17
       ],
       "fixture_sha256": "9358f1942e6ad86e00e73981baa81b5cb6029f9bf1c9103a9dda3bb541893b40"
     }
   ],
   "order": [
     [
-      18,
-      20,
-      5,
-      6
-    ],
-    [
-      22,
-      42,
-      5,
-      28
-    ],
-    [
-      22,
-      20,
-      5,
-      28
-    ],
-    [
-      23,
-      20,
-      1,
-      28
-    ],
-    [
       21,
       42,
-      1,
+      2,
       6
     ],
     [
       21,
+      42,
+      2,
+      28
+    ],
+    [
+      22,
       20,
       1,
       6
     ],
     [
       18,
-      42,
-      5,
-      6
-    ],
-    [
-      21,
-      42,
-      1,
-      28
-    ],
-    [
-      21,
-      42,
-      5,
-      28
-    ],
-    [
-      23,
       20,
-      1,
-      6
-    ],
-    [
-      23,
-      20,
-      5,
-      6
-    ],
-    [
-      21,
-      20,
-      5,
-      6
-    ],
-    [
-      22,
-      20,
-      1,
-      6
-    ],
-    [
-      21,
-      42,
-      5,
-      6
-    ],
-    [
-      18,
-      20,
-      5,
+      2,
       28
     ],
     [
       22,
-      42,
-      5,
-      6
-    ],
-    [
-      18,
-      42,
-      1,
-      6
-    ],
-    [
-      22,
       20,
-      1,
-      28
-    ],
-    [
-      18,
-      20,
-      1,
-      6
-    ],
-    [
-      22,
-      42,
-      1,
+      2,
       6
     ],
     [
@@ -393,32 +391,14 @@
       28
     ],
     [
-      18,
+      21,
       42,
       5,
       28
     ],
     [
       18,
-      20,
-      1,
-      28
-    ],
-    [
-      18,
       42,
-      1,
-      28
-    ],
-    [
-      21,
-      20,
-      1,
-      28
-    ],
-    [
-      22,
-      20,
       5,
       6
     ],
@@ -429,14 +409,291 @@
       28
     ],
     [
+      18,
+      42,
+      3,
+      6
+    ],
+    [
+      23,
+      20,
+      5,
+      6
+    ],
+    [
+      23,
+      20,
+      3,
+      6
+    ],
+    [
+      18,
+      42,
+      1,
+      6
+    ],
+    [
+      18,
+      20,
+      5,
+      6
+    ],
+    [
+      21,
+      42,
+      5,
+      6
+    ],
+    [
+      18,
+      20,
+      1,
+      28
+    ],
+    [
+      21,
+      20,
+      1,
+      28
+    ],
+    [
+      18,
+      20,
+      5,
+      28
+    ],
+    [
+      21,
+      20,
+      5,
+      6
+    ],
+    [
+      21,
+      20,
+      1,
+      6
+    ],
+    [
+      23,
+      20,
+      2,
+      6
+    ],
+    [
+      18,
+      20,
+      1,
+      6
+    ],
+    [
       22,
       42,
       1,
       28
+    ],
+    [
+      23,
+      20,
+      3,
+      28
+    ],
+    [
+      21,
+      20,
+      3,
+      6
+    ],
+    [
+      22,
+      42,
+      5,
+      28
+    ],
+    [
+      18,
+      20,
+      3,
+      28
+    ],
+    [
+      22,
+      20,
+      3,
+      28
+    ],
+    [
+      22,
+      20,
+      1,
+      28
+    ],
+    [
+      22,
+      20,
+      5,
+      28
+    ],
+    [
+      21,
+      42,
+      3,
+      28
+    ],
+    [
+      22,
+      42,
+      3,
+      28
+    ],
+    [
+      18,
+      42,
+      2,
+      6
+    ],
+    [
+      21,
+      20,
+      3,
+      28
+    ],
+    [
+      18,
+      42,
+      2,
+      28
+    ],
+    [
+      21,
+      20,
+      2,
+      6
+    ],
+    [
+      22,
+      42,
+      1,
+      6
+    ],
+    [
+      21,
+      42,
+      1,
+      28
+    ],
+    [
+      22,
+      42,
+      3,
+      6
+    ],
+    [
+      23,
+      20,
+      1,
+      28
+    ],
+    [
+      22,
+      42,
+      2,
+      28
+    ],
+    [
+      23,
+      20,
+      1,
+      6
+    ],
+    [
+      22,
+      20,
+      2,
+      28
+    ],
+    [
+      18,
+      20,
+      3,
+      6
+    ],
+    [
+      18,
+      42,
+      3,
+      28
+    ],
+    [
+      18,
+      42,
+      5,
+      28
+    ],
+    [
+      21,
+      20,
+      2,
+      28
+    ],
+    [
+      22,
+      20,
+      5,
+      6
+    ],
+    [
+      22,
+      42,
+      5,
+      6
+    ],
+    [
+      18,
+      42,
+      1,
+      28
+    ],
+    [
+      18,
+      20,
+      2,
+      6
+    ],
+    [
+      23,
+      20,
+      2,
+      28
+    ],
+    [
+      21,
+      42,
+      3,
+      6
+    ],
+    [
+      21,
+      42,
+      1,
+      6
+    ],
+    [
+      22,
+      42,
+      2,
+      6
+    ],
+    [
+      22,
+      20,
+      3,
+      6
     ]
   ],
   "tools": {
-    "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang-22": "1290881b4e12a5e002e5b0de0787f85328ee5fe19f253a54be1cdd97dc2f26eb",
+    "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+    "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
     "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
     "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
   },
@@ -452,46 +709,61 @@
     }
   },
   "previous_result": {
-    "commit": "f8d608e58fdbec2e08f7728ac97092fc0a00d7d2",
+    "commit": "105385ccce64b0169ed7d2137e8df9f1fa081f0e",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
-    "sha256": "31c08f16ca50975891c6428f54bc10f529bf1e36c90a18c576a28e3611197b30"
+    "sha256": "0c036357f41009c8ffd550e73d63c21bbe82d78f107b80a9dc6e55b5cb0ba741"
   },
   "configure": [
     "/usr/bin/cmake",
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v2/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
     "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
-    "-DCMAKE_C_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang",
-    "-DCMAKE_CXX_COMPILER=/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/bin/clang++",
-    "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
+    "-DCMAKE_CXX_EXTENSIONS=OFF",
+    "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icx",
+    "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+    "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -DSTRATA_CPU_SERVICE_PROFILE=1",
+    "-DCMAKE_C_FLAGS=-DSTRATA_CPU_SERVICE_PROFILE=1",
+    "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+    "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+    "-DSTRATA_CPU_SOURCE_ROOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/source"
   ],
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v2/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build",
     "--target",
     "cpu_decode_mix",
     "cpu_roofline",
     "--parallel",
-    "6"
+    "4"
   ],
   "protocol": {
-    "question": "Does current decode CPU expert work show batch/cache-footprint or compute-thread sensitivity at the actual post-IQ2 NT/format mix?",
+    "question": "How does actual e1b011 CPU expert work respond to compute-thread count and working-set reuse at the current adaptive96 NT/format distribution?",
     "groups": [
       6,
       28
     ],
     "workers": [
       1,
+      2,
+      3,
       5
     ],
     "computed_threads": [
       1,
+      2,
+      3,
+      6
+    ],
+    "scan_threads": [
+      1,
+      2,
+      3,
       6
     ],
     "batches_per_pass": 100,
@@ -499,21 +771,25 @@
     "sample_floor_seconds": 1.0,
     "target_seconds": 1.3,
     "timer_fraction_cap": 0.001,
-    "NT": "Per-format measured NT1..4 histogram rounded by largest remainder to100*group jobs; deterministic shuffled schedule. This approximates that marginal distribution,not the complete layer/activation/working-set trace.",
-    "reuse": "Reuse the same distinct group of6 or28 real expert blobs.28-expert weights may exceed32MiB L3;do not label it cache-resident.",
-    "stream": "Rotate distinct groups through at least128MiB. A pass has100 batches and may revisit the extent;requested blob visits are not physical RAM traffic.",
-    "scan": "Existing read-only256MiB checksum fixture,persistent1/6 threads,five>=1s samples. An achieved read reference,not an arithmetic or DRAM upper bound.",
-    "validation": "Each loaded distinct expert at uniform NT1..4 and a heterogeneous-NT batch at the timed group size:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive NT lanes,external canaries. Mixed groups force NT1..4 coverage. Real distinct blobs detect job permutations. This is route consistency,not independent model/task validation.",
-    "observers": "Native IQ2 pairing1,SINGLE_EXACT0,IQ2 audit0;fixed before process startup. Existing production pool subphase clocks only. No extra per-callback/thread clocks,no GPU runtime.",
-    "gates": "All28 check children before measure. All56 expert cells and2 read cells with five individual eligible samples,actual placement/work/histogram conservation,normal ownership closure. Stop at first failure or budget,no sample replacement/retry.",
-    "interpretation": "6/28 batches and reuse/stream change scheduling,cache and work together;thread scaling includes main quantization and waiting. Sensitivity may guide a later optimization;it does not establish arithmetic/RAM saturation,physical traffic,clean model speed or70tok/s.",
-    "retention": "Keep compact per-cell individual timing/work samples,source/recipe/fixture hashes,numerical and ownership outcomes. Retire full output and this extra CPU build after source recovery and calibration decision;retain original6e40 engine+12fixtures."
+    "NT": "Three matching leaf samples provide per-format NT1..4 job counts. Largest-remainder rounding to100*group jobs and a fixed shuffled schedule approximate those marginals,not the full layer/activation/access trace.",
+    "reuse": "Same distinct group of6 or28 real expert blobs;28 weights can exceed32MiB L3.",
+    "stream": "Rotate distinct groups through at least128MiB.100 batches/pass can revisit the extent. Requested blob visits are not measured physical RAM traffic.",
+    "scan": "Read-only256MiB persistent1/2/3/6-thread checksum reference;five>=1s samples. Achieved reference,not a DRAM or arithmetic ceiling.",
+    "validation": "All loaded distinct experts at NT1..4 and heterogeneous-NT timed-size groups:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive lanes and external canaries. This is route consistency,not independent task quality.",
+    "observers": "Same native IQ2/IQ3 pairs and IQ3 audit,CPU service/census off,20ms pool spin. Profile-enabled CPU layout and actual icx/icpx2026.2 sources;no GPU runtime.",
+    "gates": "All56 check children before timing;all112 expert cells and4 read references with five individual eligible samples,actual affinity/work/histogram conservation and normal closed owners. Stop first failure/budget;no retries,replacement or exclusions.",
+    "interpretation": "Thread and reuse sensitivity guide CPU optimization. Pool waiting,quantization,scheduling and memory effects remain mixed. Neither concurrent CPU time nor requested bytes/read reference proves physical traffic,saturation,critical path,model speed or70tok/s.",
+    "retention": "Keep compact individual timing/work/validation samples and exact provenance. Retire successful raw/compiler output and this auxiliary CPU build after the calibration decision and original-source recovery. Preserve the two current engine generations."
   },
-  "retained_generation": "Keep original6e40 engine and12 fixtures at their original paths. Extra CPU-only build is solely for this imminent calibration and retires when it closes.",
+  "retained_generation": "Auxiliary CPU-only calibration;does not overwrite either of the two current engine/fixture generations. Retire it at calibration closure.",
   "budgets": {
     "build_seconds": 600,
     "check_child_seconds": 120,
     "measure_child_seconds": 180,
-    "scan_seconds": 40
+    "scan_seconds": 40,
+    "stage_seconds": 3600,
+    "rss_bytes": 3221225472,
+    "text_bytes": 8388608,
+    "root_bytes": 268435456
   }
 }

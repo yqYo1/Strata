@@ -1516,8 +1516,16 @@ under the shared measurement lock. They cover intermediate placement/work,
 typed histogram/matrix refusals,actual compile/link input refusals and terminal
 owner-setup failure with no child or retry. The command is
 `/usr/bin/timeout -k 5s 30s /usr/bin/prlimit --as=1073741824 --cpu=20 --fsize=1048576 /usr/bin/python3 -X faulthandler -B -m unittest discover -s tests/core -p test_cpu_decode_mix.py -v`.
-This qualifies controller controls only;the prospective plan/build/numerical
-checks/timing remain pending. No extra executable is built.
+This qualifies controller controls only. The new plan is now prepared at
+`893e7cebb`,with261current controller inputs,1376official GGML inputs and29
+CPU-source hashes recovered from the568-file native composition. All846250
+observed CPU jobs are bound to the three matching current histograms and the
+original15-asset signature. Both actual compiler bytes match the original
+native toolchain image. The prior calibration remains recoverable through the
+plan's pinned previous-result commit/hash;its original two binaries are retired.
+Commit this plan before `cpu_decode_mix.py build`,then commit the build before
+`check`,then commit all56normal numerical closures before `measure`.
+No extra executable is built;real numerical checks and timing remain pending.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
