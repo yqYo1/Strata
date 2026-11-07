@@ -1415,8 +1415,11 @@ version2record grammar and joins each completed request to its independent
 native CPU-job/entry footer. HQ calls derive final-job counts;GU/HQ/DOWN rows,
 NT-weighted entries and thread/bin clocks must conserve them. This does not
 independently identify each format bin or prove published-map identity,physical
-traffic,saturation or observer cost. Five CPU test groups are source-prepared
-in`tools/test_adaptive_cpu_leaf_evidence.py`;they have not run. Both new files
+traffic,saturation or observer cost. At source`34b86ca1d`,all five CPU test
+groups in`tools/test_adaptive_cpu_leaf_evidence.py`pass with zero skips,normal0
+and closed owners;the host plan pins37inputs and the qualified interpreter.
+Follow`adaptive_cpu_leaf_reader_host_v1`. This is reader-fixture evidence;
+no leaf-only adaptive model profile or observer-cost comparison has run. Both new files
 are outside the frozen speed/qualification import closures,which continue
 to pass after the first process's raw retirement.
 For a later full adaptive census,the reviewed design refreshes membership on

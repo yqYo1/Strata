@@ -197693,7 +197693,7 @@
     }
   },
   "adaptive_cpu_leaf_reader_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "34b86ca1da049d7a0b33489566bc12fbd5f8df92",
     "sources": {
       "tools/sycl/run_host_checks.py": "1acfb012f1852466bdaabb67b090a6b842161eb7ad1beeda9243c724ad149343",
@@ -197800,14 +197800,26 @@
       "total_cap": 16777216
     },
     "virtual_address_bytes": 1073741824,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "model_executed": false,
     "criteria": "Five CPU unittest groups,no skips. Bind every version2leaf record to its request and native job/entry footer;reject malformed/missing/reordered/overflow work,clock and owner evidence. No static census guard changes.",
     "limits": "Pure reader fixtures only;no native execution,model qualification,resource attribution,physical traffic,saturation or observer-cost qualification.",
-    "retention": "Use compact outcome and source for the next leaf-only adaptive resource plan;retire successful raw CPU streams after verification and source recovery. Keep no duplicate reader proposal."
+    "retention": "Use compact outcome and source for the next leaf-only adaptive resource plan;retire successful raw CPU streams after verification and source recovery. Keep no duplicate reader proposal.",
+    "tests": [
+      {
+        "role": "adaptive-cpu-leaf-evidence",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 5,
+        "skipped": 0,
+        "skip_reasons": [],
+        "stdout_bytes": 0,
+        "stderr_bytes": 885
+      }
+    ]
   }
 }
