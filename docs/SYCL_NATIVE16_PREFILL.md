@@ -52,8 +52,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   also closes normally0with quiet validation,closed owners and no fresh fault:
   7433generated tokens,TG10.75104,PP559.54897,TTFT59.644s,hits53.5%,acceptance
   62.3062%. This first pair's TG ratio is1.027211;prompt/TTFT time ratios are
-  0.983862/0.984159. Four processes remain;one pair establishes no repeated
-  gain,phase preservation or adoption.
+  0.983862/0.984159. The second32sample also closes normally0with quiet
+  validation,closed owners and no fresh fault:7433generated tokens,TG10.72590,
+  PP571.33929and TTFT58.474s. Three processes remain;one pair establishes no
+  repeated gain,phase preservation or adoption.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -938,11 +940,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Process1(32)also closes with native/benchmark0,quiet validation,closed owners,
   unchanged boot/driver and no fresh fault. It uses the same33278-token body
   and observed route,then generates7433tokens with6940answer characters.
+  Process2(32)also closes normally0with the same body,route,generated length,
+  cache counts and acceptance;validation stays quiet,owners close,and boot/
+  driver are unchanged with no fresh fault.
 
   | Prose process | Swaps | Generated | PP tok/s | Client TTFT s | TG tok/s | Cache hit % | Draft acceptance % |
   | --- | --- | --- | --- | --- | --- | --- | --- |
   | 0 | 8 | 9854 | 550.51912 | 60.604 | 10.46625 | 47.6 | 63.1997 |
   | 1 | 32 | 7433 | 559.54897 | 59.644 | 10.75104 | 53.5 | 62.3062 |
+  | 2 | 32 | 7433 | 571.33929 | 58.474 | 10.72590 | 53.5 | 62.3062 |
 
   Exact TG uses9854*1000/941502.8ms and7433*1000/691374.9ms;prompt times are
   60448.4/59472.9ms. First-pair TG ratio is1.027211;prompt and client-TTFT
@@ -950,8 +956,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   decrease308.137->275.271;these are not CPU jobs or physical RAM/PCIe bytes.
   Generation lengths and MTP acceptance differ,so no fixed-work attribution
   follows. This one pair does not establish repeated gain or a fixed4 weak-MTP
-  class. Continue the frozen plan with process2(32);keep native/controller
-  inputs unchanged. Follow`adaptive_payload_generation_varied_prose_v1`.
+  class. Process2uses58245.6ms prompt and692995.5ms decode. Its reverse-pair
+  reference is not measured yet. Continue the frozen plan with process3(8);
+  keep native/controller inputs unchanged.
+  Follow`adaptive_payload_generation_varied_prose_v1`.
   The next96-copy positive entry is source-prepared in
   `tools/sycl/check_adaptive_payload96_entry.py`;no controls,preparation or
   native execution have run. It reuses the unchanged e1b011engine and ordered
@@ -978,7 +986,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Prose processes0/1each have69successful raw/JIT files
   (13136414/13122266bytes)retired after recovery of346Git inputs and pushing
   the compact result. Their generated
-  configs/plans remain for the four pending processes;admission still passes
+  configs/plans remain for the three pending processes;admission still passes
   after deletion and all15ELFs/four immutable receipts are unchanged. Manifest:
   `adaptive-payload-generation-varied-prose-v1-process0-output-retirement-20261107.json`,
   SHA256`e8e7ef533b03366618eb612cc3cf7030197a8047a2152a8f4eeed705008de0cc`,and
