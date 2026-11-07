@@ -1,6 +1,6 @@
 {
   "schema": "strata-cpu-decode-mix-v3",
-  "stage": "build",
+  "stage": "check",
   "source_commit": "893e7cebb689078edd6b5f7744befdcc33ea6a2a",
   "plan_sha256": "e3e22be414eaba33d19a864367634e85e750f707a6f8e66d400110d4d138b4de",
   "passed": true,
@@ -8,38 +8,1520 @@
   "active": false,
   "ownership_closed": true,
   "GPU_executed": false,
-  "children": [],
-  "compile_commands_sha256": "6b1ba44437a0886ec76c7e4b2c60b63d3acce7d7e3b2387c5dc41277ccb85b92",
-  "compiled_inputs": {
-    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/compiler-inputs.json",
-    "files": 634,
-    "sha256": "3ca4580036f3d9655c7789e12d9b546553f9d90f53fdf194dc166020c4c17012",
-    "uncovered": 0
-  },
-  "actual_link_inputs": {
-    "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
-    "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
-    "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
-    "/opt/intel/oneapi/compiler/2026.2/lib/libimf.a": "30ad5764c3a5158dd6aeeef0bf65071f6a7bdc938fe6211a788c08dcd1c7069d",
-    "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
-    "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
-    "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
-    "/opt/intel/oneapi/compiler/2026.2/lib/libsvml.a": "37843fd2b9c0208cb32982e6a7d379bba55f3155f63409b6441eba4b17ec2c09",
-    "/opt/intel/oneapi/compiler/2026.2/lib/libirng.a": "12e2b569987ffc7a4e06aa7c78b54e61d8cbdbbfd1a0da4ec27ba15973967302",
-    "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
-    "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
-    "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
-    "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
-    "/opt/intel/oneapi/compiler/2026.2/lib/libirc.a": "ae97435c0d22c761e0b88a3fb85c1a1e61c829e43aa13a336cb0fea72fd445cd",
-    "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
-    "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
-    "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
-    "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
-    "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da",
-    "/opt/intel/oneapi/compiler/2026.2/lib/libirc_s.a": "83733db4362b8a11d7886d64bf7d5e85be63490afbe00d6911a4a8289345e3e1",
-    "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
-    "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f"
-  },
+  "children": [
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 2,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          511,
+          73,
+          14,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "71e1cbe5bee42df4b32b51636dc04a3862166ba4ebc1dc35c249a93fe329f785"
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 2,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          2383,
+          340,
+          65,
+          12
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "241fa8df20427a734ce1bf2c8db7005cc601ad0ada66cc3edd8e806dfcb3ea19"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 1,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          516,
+          69,
+          12,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "f8ac9b9996d46c7dcb6833421818f43f4e0b6be91491d90e15928ced84ea3b33"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 2,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          2435,
+          297,
+          57,
+          11
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "0bffb49b484719235d5df60496fde445b5a686e5bd994b58a261e72db61486d8"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 2,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          516,
+          69,
+          12,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "bf010a054cc7f3a7bd5245128fe631ff0fed574389b227a42f63bc08a39cb976"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 5,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 56,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          2468,
+          289,
+          40,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "502f6b674bc02be94b439af2ddd7a32d991797c34b41bd2dd4a0241c5459e70d"
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 5,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          2383,
+          340,
+          65,
+          12
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "316f344a3864eb5434fec12baae181b9e4013665bd1e38a77ece66c1cba2f9af"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 5,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          519,
+          67,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "285be60a50fc7cf2dd5e7f4f7f01aa8b16bf5329b032b67261fc6093ed9746dc"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 5,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          2387,
+          332,
+          66,
+          15
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "005515e5d8f616a3f7ee7bb1f09a7185baaf8f48e95a1c6778e8c8d290c09629"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 3,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          519,
+          67,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "59788feb229ab1cf3f19f9ee1bd2abf0558cab818ff76464e8ab7f0f216fe591"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 5,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 54,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          529,
+          62,
+          8,
+          1
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "e9db97cd5c27d1557969ead9645221e901246ba2dc731aed199dab0e3cf9e612"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 3,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 54,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          529,
+          62,
+          8,
+          1
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "a08d85963f0017c1a0c84d7bf45a645594d7b93a6e5b4c6d24200d7913ba7d19"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 1,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          519,
+          67,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "a6fdffb599b4ec3d16620620e8406405916a55f8135661e6e906a1da6d1f9704"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 5,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 66,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          522,
+          64,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "5cd8929eb82ac532e883d0992f4ca5b308bf6023e7eafef4cc760e48e2adb545"
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 5,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          511,
+          73,
+          14,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "3e595a8613b16578ef6968dd4c7c4a8e1defdaf4d2ba0deabb0aaafb206229d3"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 1,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          2435,
+          297,
+          57,
+          11
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "8444e27f622ccdee8abfe743151a4f7e38f5a09735ae3f14032812c2eece25ca"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 1,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          2387,
+          332,
+          66,
+          15
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "62f939c66b9b9bb9732066c10ef8f344b74c2dd5fb68c6b443f8954088e9db42"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 5,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          2435,
+          297,
+          57,
+          11
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "04ce144a9d132bd94ecc3edff1ec9c085f126d436d556ae3b1cbffd0b9108d7e"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 5,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 60,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          512,
+          71,
+          14,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "915715e4b40eadaea74d0999ab74ea61468b4794d375ab5e0b2dd71b47817c4f"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 1,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 60,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          512,
+          71,
+          14,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "81af38a3245167b4f4c6b690d7d89c552430208e46c2079403620b32b0cf4a2b"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 2,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 54,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          529,
+          62,
+          8,
+          1
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "279365269993b09baf8028c45421080471c84bca6c65a0c22e5882739db3ed90"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 1,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 66,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          522,
+          64,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "c0185b462a7e247ebb966d8ce409d0b1944b637c086390fac8df56a09afd774d"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 1,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 112,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          2373,
+          338,
+          72,
+          17
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "005959da879ce3e0b0f91c7ffad4d1869d286a20446d577982c34270240ab3ea"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 3,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 56,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          2468,
+          289,
+          40,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "bcb485c66808203efe1f302a1c96dc7fb0b453175bc90cacd010e1c08be9b64f"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 3,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 60,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          512,
+          71,
+          14,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "e728c31ec1de10a9298a78e801f8584481f5e2deb6967ba8d7f5a649a272590e"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 5,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 112,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          2373,
+          338,
+          72,
+          17
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "0baa6ef40ceb1a5efccaeea2efb9917453b474b36034b786a4881016733df0c0"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 3,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          2435,
+          297,
+          57,
+          11
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "db5cf15c3ea8ffb056f27da5318c6d428e2f802190f67a0cd2fb18cf5f16a68d"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 3,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          2408,
+          320,
+          58,
+          14
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "1bd52a72388803ad823cde4765c83488d0f288dc107514e7386b6b0c3cd4a511"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 1,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          2408,
+          320,
+          58,
+          14
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "ed92d375145a993cef6fe64f81950f44c8028bd636e2b1aec52395946cd151f2"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 5,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          2408,
+          320,
+          58,
+          14
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "6920d4e9d90819004bf31c6469d980451cd8668b4db3a26ca84d32df40420ff7"
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 3,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          2383,
+          340,
+          65,
+          12
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "5e7ebe633f1b01089c57b0c337fdd47a772985c1cab89415fac0d60a38c82314"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 3,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 112,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          2373,
+          338,
+          72,
+          17
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "22631d054756f331ec7a5d0a8c7bb70de20295c346bf59b0c46be6b6dd4afa3a"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 2,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          519,
+          67,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "96d3b0252c64d24664d3128321e4a6de7e76083449427bbf36352d39c028c403"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 3,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          2387,
+          332,
+          66,
+          15
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "ee4df854f09b3a8e47f036df286b2ab84d9b80862ff28508a93ce6685d7f718f"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 2,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          2424,
+          310,
+          56,
+          10
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "65d3c670bdb668e3f846127fd905410424a8794986931fac2ecba28a4cb87c8e"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 2,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 60,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          512,
+          71,
+          14,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "887abcf90228c12b8fc403169beb94a9704b27662d084b50bdf87cd9821cc507"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 1,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 90,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          508,
+          73,
+          15,
+          4
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "6835889176ac00923ecca7316c40f2957c10383c9cdbb4e27fa137b4c98a2cff"
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 1,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          2383,
+          340,
+          65,
+          12
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "b06b88db9e5c78957b3d3a2065f9e94882032820990c98f87000c98defcac9a7"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 3,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 90,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          508,
+          73,
+          15,
+          4
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "9df4ae49f6a9eaa3718a9712fb6795c2f24ca51dbfff85814d88dc4d18b83345"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 1,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 56,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          2468,
+          289,
+          40,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "21422cf3a134920e67eff1a1987f69de96c305581b150b26a74e66330804e8ef"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 2,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 112,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          2373,
+          338,
+          72,
+          17
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "184457a5febf2888084348a45eb489d799767a48add07fc0c02904621b6dca82"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 1,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 54,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          529,
+          62,
+          8,
+          1
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "f622b12a2e2c4c3e832f25fce6178e3fe567e3d2aaedd9910309230d6cd18ec9"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 2,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          2408,
+          320,
+          58,
+          14
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "d59d6026a0648a42869b9ae897817906c35cdbca9babd7c7aa605e319c17f26f"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 3,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 66,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          522,
+          64,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "a1ae9420bd7189f03694e02a0cc70a5696ec751d2f1d49930b57d36e20442160"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 3,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          2424,
+          310,
+          56,
+          10
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "4c19c1e15f15a29054053f350cfb8c8499fabfb955167a6c201a25bc0c255e90"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 5,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          2424,
+          310,
+          56,
+          10
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "485a64100e48b0630ff07148bea26ae6cfe8d8e3b6db64d1fc8a38a5ce9f415b"
+    },
+    {
+      "pair": [
+        21,
+        20
+      ],
+      "workers": 2,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 2329600,
+        "jobs_NT": [
+          2387,
+          332,
+          66,
+          15
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "3ed5207123e6558239f8c986f39f43bf0269f66a8119530f9b116b30c5dc660d"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 5,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          516,
+          69,
+          12,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "a23b3f279859e96d0dee862b9e17b36db2c0349373e04936f285a099e42f1936"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 5,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 5,
+        "host_works": true,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 90,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          508,
+          73,
+          15,
+          4
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "3ff5176e742b702b35bcee73878db2311fb7340219b13c8d91da3aca7f37eee3"
+    },
+    {
+      "pair": [
+        18,
+        42
+      ],
+      "workers": 1,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 84,
+        "blob_bytes": 1715200,
+        "jobs_NT": [
+          2424,
+          310,
+          56,
+          10
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "da5b2bdb535cdfaac19840941793a49b38a0eaf666174c46e3675a1193845b66"
+    },
+    {
+      "pair": [
+        18,
+        20
+      ],
+      "workers": 2,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 66,
+        "blob_bytes": 2176000,
+        "jobs_NT": [
+          522,
+          64,
+          12,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "fcd17756c13b96757ca85c4fb5fd8c68e500c8b421a740cb19b9d6c7b7fe5c27"
+    },
+    {
+      "pair": [
+        23,
+        20
+      ],
+      "workers": 2,
+      "group": 28,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 28,
+        "batches": 100,
+        "unique_stream_experts": 56,
+        "blob_bytes": 2662400,
+        "jobs_NT": [
+          2468,
+          289,
+          40,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "7c57b520e6e4f5acf987181bd67e7ab1c54a8d3809b400649ec35f74823d0c60"
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 3,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          511,
+          73,
+          14,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "f9fe7f44e2574fdcbaa229860e58217d5535516ba3c968c683348c30cfdf4a90"
+    },
+    {
+      "pair": [
+        21,
+        42
+      ],
+      "workers": 1,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 1,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1868800,
+        "jobs_NT": [
+          511,
+          73,
+          14,
+          2
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "090dfdb0177e33564800a79bb54bb2b7741106892c952925f498db1299d82861"
+    },
+    {
+      "pair": [
+        22,
+        42
+      ],
+      "workers": 2,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 2,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 90,
+        "blob_bytes": 1510400,
+        "jobs_NT": [
+          508,
+          73,
+          15,
+          4
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "eaff12265c9011c23eb29b9c9ff7a6dd5af7c220080946df729c46228f40766b"
+    },
+    {
+      "pair": [
+        22,
+        20
+      ],
+      "workers": 3,
+      "group": 6,
+      "work": {
+        "kind": "work",
+        "workers": 3,
+        "host_works": false,
+        "group": 6,
+        "batches": 100,
+        "unique_stream_experts": 72,
+        "blob_bytes": 1971200,
+        "jobs_NT": [
+          516,
+          69,
+          12,
+          3
+        ],
+        "phase": "decode"
+      },
+      "validated": true,
+      "exit_code": 0,
+      "stdout_sha256": "87510f3ef3704ebad204207b07cc5ed94980c940932c4d5dae87df033c4a132e"
+    }
+  ],
   "binaries": {
     "mix": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build/cpu_decode_mix",
@@ -51,7 +1533,7 @@
     }
   },
   "owned_commands": {
-    "count": 5,
+    "count": 56,
     "all_closed": true,
     "all_exit_zero": true
   },

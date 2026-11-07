@@ -1530,7 +1530,12 @@ All634actual compiler inputs are covered,with22pinned external link inputs;
 both C/C++math/ISA checks pass and neither executable links a GPU runtime or
 has a missing dynamic library. Mix ELF`c18208a5`and scan ELF`19721811`are the
 new calibration fixtures,not a new inference engine. All15retained engine/
-fixture hashes remain unchanged. Real numerical checks and timing remain pending.
+fixture hashes remain unchanged. All56same-build numerical cases now close
+normally0with closed owners:seven formats,workers1/2/3/5 andgroups6/28.
+Every loaded real expert passes NT1..4 and mixed-NT pool/serial bit equality,
+finite outputs,untouched inactive lanes,canaries and actual affinity checks.
+This is same-route consistency,not an independent model/task oracle. Commit
+the numerical closure before timing;no speed or saturation result yet.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
