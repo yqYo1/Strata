@@ -18,8 +18,8 @@ import check_q6_native_half_model as half
 import decode_service_evidence as caller
 
 P, B, RESULT, base = coverage.P, coverage.B, coverage.RESULT, coverage.base
-ROOT = B / 'payload-decode-device-service-v2'
-KEY = 'adaptive_payload96_device_service_v2'
+ROOT = B / 'payload-decode-device-service-v3'
+KEY = 'adaptive_payload96_device_service_v3'
 SELF = Path(__file__).resolve()
 require, digest = coverage.require, coverage.digest
 HEADER = 'include/strata/sycl/decode_service_profile.hpp'
@@ -148,6 +148,7 @@ def context():
 def prepare(ctx):
     _, prior, _, assets, cohort = basis()
     config, env = clean_inputs(cohort)
+    old = base.committed(RESULT)['decode_iq3_device_service_v1']
     ctx.prepare()
     row = json.loads((ROOT / 'record.json').read_text())
     row['configuration'], row['environment'] = config, env
@@ -157,7 +158,6 @@ def prepare(ctx):
     base.write(ROOT / 'plan.json', dict(binary=row['binary'],
         native_validation_probe=row['native_validation_probe'], native_profile=row['native_profile']))
     row['generated'].update({name: digest(ROOT / name) for name in ('config.json', 'plan.json')})
-    old = base.committed(RESULT)['decode_iq3_device_service_v1']
     row.update(request_sha256=old['request_sha256'],
         observer_reference_prompt_ms=cohort['processes'][1]['samples'][0]['prompt_ms'],
         maximum_observer_ratio=1.5, whole_bytes=1024 << 20,

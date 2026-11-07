@@ -201198,5 +201198,27 @@
       "GPU_executed": false,
       "reason": "Generic generation-context compactor differs from the published adaptive-cohort compactor;the latter includes signed original environment/model/source inputs. Correct the reader before V2preparation;no model run or pin refresh."
     }
+  },
+  "adaptive_payload96_device_service_v2": {
+    "stage": "failed-prepare",
+    "source_commit": "e9f9c3be24825ce04f22e2df5600e4b54c064cea",
+    "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/build/strata",
+      "sha256": "e1b01116ccdc4adc3d59cbccb78c365ebbcc937dfa343463656263c1044e1eb2",
+      "bytes": 24518560
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "model_executed": false,
+    "GPU_executed": false,
+    "error": "Whole-file committed-evidence gate refused a read after the preparation helper wrote its new row",
+    "source_inputs": {
+      "files": 357,
+      "sha256": "23b0e0bca9de9ce8d787d7cdefe913ae730c4d787f0d7340f36f479a018db213"
+    },
+    "correction": "Read all committed prerequisites before the preparation helper writes its new plan. V3uses a fresh root;V2never launched frontend/model/GPU work."
   }
 }
