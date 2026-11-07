@@ -9,6 +9,7 @@ import importlib.util
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 sys.dont_write_bytecode = True
 import payload_gpu_coverage as coverage
@@ -18,11 +19,13 @@ import check_q6_native_half_model as half
 import decode_service_evidence as caller
 
 P, B, RESULT, base = coverage.P, coverage.B, coverage.RESULT, coverage.base
-ROOT = B / 'payload-decode-device-service-v3'
-KEY = 'adaptive_payload96_device_service_v3'
+ROOT = B / 'payload-decode-device-service-v4'
+KEY = 'adaptive_payload96_device_service_v4'
 SELF = Path(__file__).resolve()
 require, digest = coverage.require, coverage.digest
 HEADER = 'include/strata/sycl/decode_service_profile.hpp'
+# Actual bench.sh exact32769/thinking/run0 body, also observed in the current V3.
+REQUEST_SHA256 = 'e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287'
 
 
 def basis():
@@ -81,7 +84,7 @@ def clean_inputs(cohort):
     old = env['STRATA_MEASUREMENT_ROOT']
     env = {k: v.replace(old, str(ROOT)) for k, v in env.items()}
     config['log'] = str(ROOT / 'engine.stderr')
-    env.update(STRATA_DECODE_TIMING='1', STRATA_SYCL_DECODE_SERVICE_PROFILE='1',
+    env.update(STRATA_TRACE='1', STRATA_DECODE_TIMING='1', STRATA_SYCL_DECODE_SERVICE_PROFILE='1',
         STRATA_CPU_SERVICE='0', STRATA_CPU_WORK_CENSUS='0',
         UNITRACE_ChromeKernelLogging='1', UNITRACE_ChromeEventBufferSize='128')
     return config, env
@@ -91,6 +94,16 @@ def context():
     spec = importlib.util.spec_from_file_location('strata_payload_device_profile', legacy.__file__)
     run = importlib.util.module_from_spec(spec); spec.loader.exec_module(run)
     run.ROOT, run.KEY, run.SOURCE = ROOT, KEY, SELF
+    run.profile = SimpleNamespace(**vars(legacy.profile))
+
+    def clock_pair():
+        pair = legacy.profile.clock_pair()
+        with (ROOT / 'clock-pairs.jsonl').open('a') as stream:
+            stream.write(json.dumps(pair) + '\n')
+            stream.flush()
+        return pair
+
+    run.profile.clock_pair = clock_pair
     spec = importlib.util.spec_from_file_location('strata_payload_model_entry', legacy.entry.template.__file__)
     ctx = importlib.util.module_from_spec(spec); spec.loader.exec_module(ctx)
     ctx.configure('adaptive-throughput')
@@ -135,6 +148,9 @@ def context():
     def save(row):
         if 'outcome' in row:
             out = row['outcome']
+            clocks = ROOT / 'clock-pairs.jsonl'
+            if clocks.exists():
+                out['retained_clock_pairs'] = [json.loads(v) for v in clocks.read_text().splitlines()]
             if 'observer_cost_qualified' in out:
                 out['prompt_observer_cost_screen_passed'] = out.pop('observer_cost_qualified')
             out.update(decode_observer_cost_qualified=False, complete_device_coverage_qualified=False,
@@ -148,7 +164,6 @@ def context():
 def prepare(ctx):
     _, prior, _, assets, cohort = basis()
     config, env = clean_inputs(cohort)
-    old = base.committed(RESULT)['decode_iq3_device_service_v1']
     ctx.prepare()
     row = json.loads((ROOT / 'record.json').read_text())
     row['configuration'], row['environment'] = config, env
@@ -158,7 +173,7 @@ def prepare(ctx):
     base.write(ROOT / 'plan.json', dict(binary=row['binary'],
         native_validation_probe=row['native_validation_probe'], native_profile=row['native_profile']))
     row['generated'].update({name: digest(ROOT / name) for name in ('config.json', 'plan.json')})
-    row.update(request_sha256=old['request_sha256'],
+    row.update(request_sha256=REQUEST_SHA256,
         observer_reference_prompt_ms=cohort['processes'][1]['samples'][0]['prompt_ms'],
         maximum_observer_ratio=1.5, whole_bytes=1024 << 20,
         budgets=dict(wall=1200, cpu=7200, rss_cap=104 << 30,
@@ -166,10 +181,10 @@ def prepare(ctx):
     row['profile_plan'] = dict(
         question='Current e1b011 observed GPU intervals versus exactly conserved main-thread caller/waits;which concrete source path merits the next optimization?',
         order='Commit this source and plan;two current frontend probes and existing guarded-window tests;commit host results;one active-from-exec benchmark process,one short warmup and one thinking-on32769-input/1..24-output diagnostic. No pause,retry,environment mutation or native rebuild.',
-        constants='Exact bbd345/e1b011 and six ELFs;closed regular-code96configuration and immutable environment,131072resident INT8,1256slots,5workers,20ms spin,8192chunk,spec4/maxT4,native-half1,throughput BF16/GDN16/MTP16. Only caller/decode clocks and active collector are added;leaf/census remain off.',
+        constants='Exact bbd345/e1b011 and six ELFs;closed regular-code96configuration and immutable environment,131072resident INT8,1256slots,5workers,20ms spin,8192chunk,spec4/maxT4,native-half1,throughput BF16/GDN16/MTP16. Add STRATA_TRACE1progress/actual-window records,caller/decode clocks and active collector;leaf/census remain off.',
         acceptance='Committed native/controller/generated/runtime/model identities;both frontend probes and window controls;request/body/count/reuse/route/IQ3/Q6/native0/journal/validation/driver/fault/owner gates. All observed GPU IDs must join unique native host flows with finite contained RAW clocks;do not infer unobserved work is idle. Caller schema2 must exactly conserve regions and nested waits for requests1/2,with no open scopes or exceptions.',
         observer='Prompt1.5screen only versus the closed96long-code first-use prompt;different body/count makes this an admission sanity check,not a matched observer estimate. Decode observer overhead requires a separate matched on/off comparison and remains unqualified. No clean PP/TG from this process.',
-        clocks='Existing four RAW/MONOTONIC pairs,<=1ms brackets,<=50ms offset envelope and BOOTTIME continuity. Interior client decode uses first-output+maxOffset+100ms to end+minOffset-100ms,at least100ms. Sampled clock envelopes do not prove unsampled error bounds.',
+        clocks='Existing four RAW/MONOTONIC pairs,persisted as sampled even if later reduction fails;<=1ms brackets,<=50ms offset envelope and BOOTTIME continuity. Interior client decode uses first-output+maxOffset+100ms to end+minOffset-100ms,at least100ms. Sampled clock envelopes do not prove unsampled error bounds.',
         limits='Short diagnostic,not sustained generation,MTP-friendly/weak classification,full device coverage,critical path or compute/RAM/VRAM/PCIe saturation,task/agent,physical262144/RESTORE,ordinary provider teardown or adoption. Native caller CPU includes polling during waits;worker CPU is separate. Never add overlapping services.',
         stopping='First identity,body,count,route,clock,validation,fault,owner,output or prompt-admission failure ends the attempt;preserve its status. No pin refresh or in-place retry.',
         retention='512MiB/file,768MiBjob,1GiBwhole and1200s/104GiBRSS. Full trace temporarily needed for graph IDs and post-flush guarded reduction. Keep compact source/count/interval/caller/request/fault evidence,retire successful raw output after verification.')

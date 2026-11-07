@@ -201222,7 +201222,7 @@
     "correction": "Read all committed prerequisites before the preparation helper writes its new plan. V3uses a fresh root;V2never launched frontend/model/GPU work."
   },
   "adaptive_payload96_device_service_v3": {
-    "stage": "frontend-qualified",
+    "stage": "failed",
     "source_commit": "0965af0a0c1a3ee8e60e57849dc0f9339c2aca1a",
     "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
     "binary": {
@@ -201548,7 +201548,7 @@
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "inference_adopted": false,
     "criteria": "Committed native/controller/generated/runtime/model identities;both frontend probes and window controls;request/body/count/reuse/route/IQ3/Q6/native0/journal/validation/driver/fault/owner gates. All observed GPU IDs must join unique native host flows with finite contained RAW clocks;do not infer unobserved work is idle. Caller schema2 must exactly conserve regions and nested waits for requests1/2,with no open scopes or exceptions.",
     "retention": "512MiB/file,768MiBjob,1GiBwhole and1200s/104GiBRSS. Full trace temporarily needed for graph IDs and post-flush guarded reduction. Keep compact source/count/interval/caller/request/fault evidence,retire successful raw output after verification.",
@@ -201622,9 +201622,154 @@
         "elapsed_seconds": 0.9406362483277917
       }
     },
+    "outcome": {
+      "complete": false,
+      "passed": false,
+      "host_probe_accepted": false,
+      "model_executed": true,
+      "native_identity": {
+        "pid": 1647335,
+        "start_ticks": 242996605,
+        "sid": 1647277
+      },
+      "error": "RuntimeError('missing/duplicate actual prefill policy record')",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "decode_observer_cost_qualified": false,
+      "complete_device_coverage_qualified": false,
+      "physical_traffic_qualified": false,
+      "critical_path_qualified": false
+    },
     "source_inputs": {
       "files": 357,
       "aggregate_sha256": "5e9e67bd6203d939351519fa58e5b22c7f1e6a95d978bf27ffce6a1a00035412"
+    },
+    "post_failure_caller_evidence": {
+      "source_scope": "OriginalV3native0 request2only;original route-check failure unchanged.",
+      "native_exit_code": 0,
+      "caller": {
+        "request": 2,
+        "wall_ns": 3398397022,
+        "caller_cpu_ns": 3024395816,
+        "accounting_passed": true,
+        "native_wait_wall_ns": 1447195905,
+        "native_wait_caller_cpu_ns": 1405380579,
+        "unclassified": {
+          "wall_ns": 480689034,
+          "caller_cpu_ns": 435480019,
+          "native_wait_calls": 413,
+          "native_wait_wall_ns": 324224906,
+          "native_wait_caller_cpu_ns": 289060080
+        },
+        "regions": {
+          "capture": {
+            "calls": 8,
+            "wall_ns": 681495134,
+            "caller_cpu_ns": 580292251,
+            "native_wait_calls": 0,
+            "native_wait_wall_ns": 0,
+            "native_wait_caller_cpu_ns": 0
+          },
+          "stage": {
+            "calls": 8,
+            "wall_ns": 211689021,
+            "caller_cpu_ns": 1240952,
+            "native_wait_calls": 0,
+            "native_wait_wall_ns": 0,
+            "native_wait_caller_cpu_ns": 0
+          },
+          "layer_wait": {
+            "calls": 384,
+            "wall_ns": 1040628884,
+            "caller_cpu_ns": 1033863312,
+            "native_wait_calls": 384,
+            "native_wait_wall_ns": 1039629591,
+            "native_wait_caller_cpu_ns": 1032992904
+          },
+          "pool": {
+            "calls": 384,
+            "wall_ns": 741235795,
+            "caller_cpu_ns": 737561868,
+            "native_wait_calls": 1,
+            "native_wait_wall_ns": 3417,
+            "native_wait_caller_cpu_ns": 3146
+          },
+          "copy_retire": {
+            "calls": 384,
+            "wall_ns": 3334360,
+            "caller_cpu_ns": 3327083,
+            "native_wait_calls": 384,
+            "native_wait_wall_ns": 2473895,
+            "native_wait_caller_cpu_ns": 2476578
+          },
+          "submit": {
+            "calls": 392,
+            "wall_ns": 158423367,
+            "caller_cpu_ns": 151747816,
+            "native_wait_calls": 0,
+            "native_wait_wall_ns": 0,
+            "native_wait_caller_cpu_ns": 0
+          },
+          "final_compute_wait": {
+            "calls": 8,
+            "wall_ns": 80862352,
+            "caller_cpu_ns": 80843532,
+            "native_wait_calls": 8,
+            "native_wait_wall_ns": 80840400,
+            "native_wait_caller_cpu_ns": 80823957
+          },
+          "final_copy_wait": {
+            "calls": 8,
+            "wall_ns": 39075,
+            "caller_cpu_ns": 38983,
+            "native_wait_calls": 8,
+            "native_wait_wall_ns": 23696,
+            "native_wait_caller_cpu_ns": 23914
+          },
+          "sampling_wait": {
+            "calls": 0,
+            "wall_ns": 0,
+            "caller_cpu_ns": 0,
+            "native_wait_calls": 0,
+            "native_wait_wall_ns": 0,
+            "native_wait_caller_cpu_ns": 0
+          }
+        }
+      },
+      "sample": {
+        "actual_read_tokens": 32769,
+        "generated_tokens": 24,
+        "decode_ms": 3395.0,
+        "drafts_accepted": 16,
+        "drafts_offered": 21,
+        "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
+        "thinking_requested": true,
+        "reasoning_observed": true
+      },
+      "decode_observer_cost_qualified": false,
+      "complete_device_coverage_qualified": false,
+      "critical_path_qualified": false,
+      "limits": "Short cold24-output diagnostic;capture/setup and request shape differ from sustained regular-code generation. Caller conservation is independent evidence only;no speed,route,full device coverage,saturation or adoption qualification."
+    },
+    "reduction_failure": {
+      "cause": "Clean-speed environment omitted STRATA_TRACE;required actual prefill policy/window markers were absent.",
+      "correction": "FreshV4explicitly enables STRATA_TRACE1and persists all four clock pairs at sampling;do not rerun or relabel V3.",
+      "timeline": {
+        "bytes": 348397336,
+        "sha256": "0f54a4b349658db8dc5957202d066bc6de222f9d9df337f7be000d565a67dda9"
+      },
+      "raw_consumer": "None after compact caller/source/failure evidence is committed;timeline cannot restore missing gate-clock samples and is scheduled for retirement."
     }
   }
 }

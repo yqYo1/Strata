@@ -1587,9 +1587,20 @@ parameter validation is quiet,owners/session close,boot/driver are unchanged
 and no fresh fault is recorded. The read-only host readiness check also closes
 with no failures. This qualifies only the small compatibility-graph control.
 
-Next obtain a separately planned bounded thinking-on MTP4 model window on this
-exact generation,qualifying event coverage and observer cost before interpreting
-its dependency/critical path. Prior b310/429b/cb7model evidence does not qualify
+The current-payload V3model diagnostic exits native0with closed owners and no
+fresh fault,but remains **failed**:the clean-speed environment omitted
+`STRATA_TRACE`,so the required actual prefill-policy marker is absent. Its
+post-failure caller evidence independently conserves request2:3.39840s wall,
+3.02440s main-thread CPU,1.44720s nested native waits consuming1.40538s CPU.
+Disjoint capture/layer-wait/pool regions take0.68150/1.04063/0.74124s. These
+short24-output cold-request observations do not qualify sustained attribution,
+observer cost,complete device coverage,critical path or a new speed result.
+The original failure is retained under `adaptive_payload96_device_service_v3`.
+
+The fresh V4plan explicitly enables actual-window/progress records and persists
+RAW/MONOTONIC pairs as sampled,including on later reduction failure. Qualify
+its bounded thinking-on MTP4 window and observer cost before interpreting the
+dependency/critical path. Prior b310/429b/cb7model evidence does not qualify
 this ELF. Join host work/waits/submission and GPU events without adding
 overlapping services. Physical RAM/VRAM/PCIe traffic and saturation remain
 unknown;existing Luna-reviewed references cover the method,so no duplicate
