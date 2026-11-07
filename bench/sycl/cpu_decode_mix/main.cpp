@@ -1,6 +1,8 @@
 // Main-authored workload calibration; all inference math links production code.
 #include "strata/kernels/cpu/pool.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
+#include "strata/kernels/cpu/iq_avx2.hpp"
+#include "compact_iq3xxs.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -124,6 +126,42 @@ struct Work {
             pool.run_split_multi_native(fmt,jobs.data()+offset,group,cpu::NativeGuPhase::Decode);
         }
     }
+    void validate_compact() {
+        namespace view=compact_iq3xxs;
+        need(fmt.gu_type==18 && fmt.gu_row==980 && fmt.n_embd==2560 && fmt.n_ff==640,
+            "compact IQ3_XXS geometry");
+        constexpr size_t n=view::projection_blocks;
+        std::vector<view::Block> storage(2*n+2);
+        std::memset(storage.data(),0xA7,storage.size()*sizeof(view::Block));
+        const auto guard=storage.front();
+        auto gate=std::span(storage).subspan(1,n),up=std::span(storage).subspan(1+n,n);
+        Buffer expected(cpu::FF*sizeof(float)),actual(cpu::FF*sizeof(float));
+        auto* want=reinterpret_cast<float*>(expected.data());
+        auto* got=reinterpret_cast<float*>(actual.data());
+        for(int e=0;e<count;++e) {
+            const auto* raw=weights[e]->data();
+            for(size_t b=0;b<n;++b) {
+                need(view::encode_block(std::span<const uint8_t>(raw+98*b,98),gate[b]),"encode gate");
+                need(view::encode_block(std::span<const uint8_t>(raw+fmt.up_off+98*b,98),up[b]),"encode up");
+            }
+            for(int t=0;t<4;++t) {
+                const auto* act=activations[t]->data();
+                need(cpu::iq3xxs_pair_gu_rows(fmt,raw,act,want,0,cpu::FF),"native paired GU reference");
+                need(view::gu_rows(gate,up,std::span<const uint8_t>(act,fmt.act_bytes),
+                    std::span<float>(got,cpu::FF),0,cpu::FF),"compact paired GU");
+                need(std::memcmp(want,got,cpu::FF*sizeof(float))==0,"compact/native GU bits");
+                for(int r=0;r<cpu::FF;++r)need(std::isfinite(got[r]),"nonfinite compact GU");
+                expected.check();actual.check();
+            }
+            need(std::memcmp(&storage.front(),&guard,sizeof guard)==0 &&
+                std::memcmp(&storage.back(),&guard,sizeof guard)==0,"compact storage guards");
+            weights[e]->check();
+        }
+        for(auto& a:activations)a->check();
+        std::cout<<"{\"kind\":\"compact_validation\",\"format\":18,\"nt\":1,\"activation_cases\":4,\"experts\":"<<count
+            <<",\"native_pair_bits_equal\":true,\"finite\":true,\"canaries\":true,\"compact_GU_bytes_per_expert\":"<<2*n*sizeof(view::Block)
+            <<",\"raw_plus_compact_bytes_per_expert\":"<<fmt.bytes+2*n*sizeof(view::Block)<<"}"<<std::endl;
+    }
     void serial(const cpu::ExpertJobMulti& j,float* out) {
         std::array<float,4*cpu::FF> ff{};
         std::array<std::unique_ptr<Buffer>,4> hq;
@@ -177,12 +215,13 @@ struct Work {
 };
 int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
-    need(argc==16,"shard gu dn gate up down bytes workers group check|measure n1 n2 n3 n4 version");
+    need(argc==16,"shard gu dn gate up down bytes workers group check|measure|compact-check n1 n2 n3 n4 version");
     need(std::string(argv[15])=="20261022","protocol version");
     const auto requested_workers=number(argv[8]),requested_group=number(argv[9]);
     const std::string mode=argv[10];
     need(requested_workers>=1 && requested_workers<=5 && requested_group>=6 && requested_group<=32 &&
-        (mode=="check"||mode=="measure"),"mode/shape");
+        (mode=="check"||mode=="measure"||mode=="compact-check"),"mode/shape");
+    need(mode!="compact-check" || number(argv[2])==18,"compact IQ3_XXS only");
     // Intermediate worker counts expose the scaling curve. Five workers also
     // enable the production host compute thread; smaller counts leave it waiting.
     const int workers=static_cast<int>(requested_workers),group=static_cast<int>(requested_group);
@@ -193,6 +232,10 @@ int main(int argc,char** argv) try {
     cpu::ExpertPool pool(workers,true,workers==5);
     cpu_set_t mask;CPU_ZERO(&mask);CPU_SET(topology.host_core,&mask);need(sched_setaffinity(0,sizeof mask,&mask)==0,"host affinity");
     Work work(argv,group,nt);
+    if(mode=="compact-check") {
+        work.validate_compact();verify_affinity(topology,workers);
+        std::cout<<"{\"kind\":\"closed\",\"passed\":true}"<<std::endl;return 0;
+    }
     std::cout<<"{\"kind\":\"work\",\"workers\":"<<workers<<",\"host_works\":"<<(workers==5?"true":"false")
         <<",\"group\":"<<group<<",\"batches\":"<<batches<<",\"unique_stream_experts\":"<<work.count<<",\"blob_bytes\":"<<work.fmt.bytes
         <<",\"jobs_NT\":["<<actual[0]<<","<<actual[1]<<","<<actual[2]<<","<<actual[3]<<"],\"phase\":\"decode\"}"<<std::endl;

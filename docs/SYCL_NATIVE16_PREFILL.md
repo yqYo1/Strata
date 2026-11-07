@@ -1536,6 +1536,25 @@ production selection. Current-model GPU counters,physical traffic and critical
 path remain unqualified. No new model speedup,adoption or device execution
 follows from this calibration.
 
+The benchmark-only `bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp` and its
+`compact-check` entry are source-prepared. A134-byte block stores the exact
+signed magnitude indices plus unchanged half scale/eight sub-scales;the AVX2
+consumer reconstructs signed bytes through a register shuffle. Its integer
+lanes,per-block FP32 FMA order,final reduction/0.25 factor and SwiGLU match the
+compiled native IQ3_XXS pair contract. The candidate view adds1715200bytes per
+expert for both GU projections while the raw blob remains. It does not change
+production/prefill,NT2+selection or model ownership. The prepared real-weight
+check compares all loaded distinct experts with four quantized NT1 activations
+against the native paired entry,with finite-output,allocation and view guards.
+No build or numerical/performance execution has occurred. Before timing,also
+prepare codec coverage of all grid/sign/scale cases,span/range/alias refusals
+and unchanged inactive rows. Use a fresh committed plan/build against the
+retained native CPU source and2026.2toolchain;the closed V4 controller/paths
+must not be retried. Charge setup and full raw-plus-view footprint,and compare
+both reuse/stream and multicore/current NT mixtures before model selection.
+Luna-max's post-calibration review agrees this bounded comparison is the next
+question;existing references suffice and no new Orca survey is selected.
+
 Both closed auxiliary CPU builds and their output are retired after recovering
 original261/V4 262controller inputs,568native inputs,GGML source/recipes and
 checking all634/627actual compiler inputs. Deletion covers404files/33199588B;
