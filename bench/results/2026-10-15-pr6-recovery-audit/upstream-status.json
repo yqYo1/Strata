@@ -1582,9 +1582,9 @@
       }
     },
     "native_feature_build": {
-      "stage": "build_failed",
-      "source_commit": "c22ea2441c0e0d52d573d70f6e57f23d4b44f590",
-      "project_source_sha256": "43a60c21936d49d369e30c226fb75eebc1045c0d57aca572f2365e3873cee89f",
+      "stage": "prepared",
+      "source_commit": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
+      "project_source_sha256": "b7635d8b36cdf33fb14ec90a78ee047eb4471635162b5d7bf4d1db4a3eebb799",
       "dependency_revisions": {
         "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
         "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f": "87f6850680a580654b9ea2c80dbc01aeb36ad231"
@@ -1699,29 +1699,24 @@
       },
       "record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
-        "sha256": "0f2305fce97d8afc7a4bd3e05ada39104620497ef6012501ca78c74e39771219"
+        "sha256": "50f7545b688b5a3d6f9cc6f811eebb4c344c5d11d6e4a23c78ad56147915ec85"
       },
       "binaries": {},
       "passed": false,
       "ownership_closed": true,
-      "error": "RuntimeError('compile failed; read bounded diagnostics in the owned output')",
-      "commands": [
-        {
-          "label": "configure",
-          "exit_code": 0,
-          "ownership_closed": true,
-          "errors": [],
-          "cleanup": []
-        },
-        {
-          "label": "compile",
-          "exit_code": 1,
-          "ownership_closed": true,
-          "errors": [],
-          "cleanup": []
-        }
-      ],
-      "retention": "Temporary third generation: preserve552b prefill and e1b011 decode. This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. Retire it if qualification fails; at the feature comparison boundary select validated outputs and retire superseded generations after original-source/recipe recovery. No adoption from build success."
+      "error": null,
+      "commands": [],
+      "retention": "Temporary third generation: preserve552b prefill and e1b011 decode. This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. Retire it if qualification fails; at the feature comparison boundary select validated outputs and retire superseded generations after original-source/recipe recovery. No adoption from build success.",
+      "attempt": 2,
+      "previous_attempt": {
+        "source_commit": "c22ea2441c0e0d52d573d70f6e57f23d4b44f590",
+        "stage": "build_failed",
+        "record_sha256": "0f2305fce97d8afc7a4bd3e05ada39104620497ef6012501ca78c74e39771219",
+        "error": "RuntimeError('compile failed; read bounded diagnostics in the owned output')",
+        "ownership_closed": true,
+        "evidence_commit": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
+        "reason": "Reuse the closed unqualified build cache; exact source/recipe/failure remain in Git. Preserve both validated phase references."
+      }
     }
   }
 }
