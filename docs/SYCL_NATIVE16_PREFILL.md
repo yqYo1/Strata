@@ -51,6 +51,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.984159/0.990145/1.016449fail both independent nonregression gates.
   This qualifies the repeated focused decode gain,not phase preservation,
   adoption,a fixed4weak-MTP class or70TG. Preserve the552b prefill fallback.
+  The subsequent regular-code32/96cohort also closes all six processes with
+  normal0,quiet validation,no fresh fault and15final asset hashes. Median TG
+  improves12.61363->13.40847;all three paired ratios are favorable,with geometric
+  mean1.051973. Prompt/TTFTnonregression gates fail independently. Select96only
+  for the focused CPU leaf resource comparison,not prefill or whole-route
+  adoption;preserve the552b fallback. Varied-prose32/96remains unprepared.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -1036,95 +1042,39 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   host/device publication. The full-RAM Arena route does not use the separate
   RAM-complement victim-exchange path. These source checks permit the bounded
   diagnostic,not actual96qualification or a new lifetime/performance claim.
-  The separately source-prepared
-  `tools/sycl/compare_adaptive_payload96_generation.py`uses32as the speed
-  reference after its repeated code gain,with32/96,96/32,32/96process pairs
-  on the same executable. It retains exact and printed TG decisions and
-  independent prompt/TTFT gates. Both current8/32cohorts and the actual96
-  positive/refusal pair must close before preparation;each workload also
-  requires its own repeated32over8TGgain before selecting32as reference.
-  Its revised CPU controls now pass at`8f9636060`with129source inputs,four immutable
-  configuration cases,small exact gain,slower-pair retention and independent
-  phase decisions;follow`adaptive_payload96_generation_reader_host_v2`.
-  The earlier equivalent control result is archived at`8380579f7`rather than
-  duplicated in the active result. The preparation now fully hashes shared
-  model assets once against the96positive;all other receipts retain source/
-  runtime/configuration/stat checks and must name identical asset inventories.
-  The regular-code speed cohort is now prepared at`a9d072acf`,with the
-  actual96positive/refusal receipts pinned and all15shared model assets fully
-  verified. Its six fresh-process order is32/96,96/32,32/96;the CPU controls
-  pass and both arms preserve the same invariant configuration. Follow
-  `adaptive_payload96_generation_regular_code_v1`. Fresh benchmark/server
-  frontend probes both pass with empty stderr and closed owners. Process0,
-  the32reference,now closes normally0with quiet validation,closed owners,
-  unchanged boot/driver and no fresh fault. Its33208fresh-input/3477generated
-  sample has prompt60331.1ms,decode276940.0ms,client TTFT60.500s and exact
-  PP/TG550.429215/12.555066. Cache hits are729753/1951200(37.4%)and draft
-  acceptance2462/3048. This is one current-cohort reference sample;its body
-  differs from the old8/32cohort. It establishes no cross-cohort regression,
-  96speed,repeatable gain or adoption. The varied-prose32/96cohort is not yet
-  prepared;final full asset hashing remains due at cohort closure.
-  Process0's69raw/JIT files/13097250bytes are retired after recovery of350Git
-  inputs,with all15ELFs and six immutable receipts unchanged. Full continued
-  admission passes before/after deletion;only its generated config/plan remain.
-  Manifest:`adaptive-payload96-generation-regular-code-v1-process0-output-retirement-20261107.json`,
-  SHA256`e8e6e76bd232cd8e960e2e806f613c427e9690875616ba2891272a0ee35495ff`.
-  Process1,the96candidate,also closes normally0with quiet validation,closed
-  owners,unchanged boot/driver and no fresh fault. The same33208-token input
-  generates3111tokens,with prompt59857.5ms,decode231899.8ms,client TTFT60.023s
-  and exact PP/TG554.784279/13.415277. Cache hits are753606/1692000(44.5%)and
-  draft acceptance2231/2643. The first paired TG ratio is1.068515;prompt/TTFT
-  time ratios are0.992150/0.992116. All five request bodies match process0.
-  Different output lengths/acceptance preclude fixed-work hardware attribution.
-  This is one pair,not a repeated-gain decision or adoption;finish the remaining
-  96/32and32/96pairs and the final15asset hashes.
-  Under the frozen first-T1/then-T4 schedule,drafts offered and cache lookups
-  consistently imply1017/882verifier windows for32/96. Whole decode interval
-  per inferred window is272.311/262.925ms;output per window is3.419/3.527.
-  These source/count-derived aggregates are not traced kernel service or
-  physical saturation,and do not assign all6.85%TGgain to weight placement.
-  Process1's69raw/JIT files/13094827bytes are retired after350-input Git
-  recovery. All15ELFs and six immutable receipts stay unchanged;full admission
-  passes before/after deletion. Manifest:
-  `adaptive-payload96-generation-regular-code-v1-process1-output-retirement-20261107.json`,
-  SHA256`3a2cf2d81621308ea31384eaa8c786b3633afbdd4d555f7bb6a1399ec88af91a`.
-  Process2,the second96candidate,now closes normally0with quiet validation,
-  closed owners,unchanged boot/driver and no fresh fault. Its33208fresh-input/
-  3111generated sample has prompt61651.1ms,decode239790.4ms,client TTFT61.868s
-  and exact PP/TG538.644079/12.973830. All five request bodies,long output/
-  reasoning hashes,draft acceptance2231/2643and cache753606/1692000match
-  process1,but its times differ. Retain both samples;the matching32reference
-  and independent phase decisions are recorded below.
-  Process2's69raw/JIT files/13095254bytes are retired after350-input Git
-  recovery,with all15ELFs and six immutable receipts unchanged. Full admission
-  passes before/after deletion;only config/plan remain. Manifest:
-  `adaptive-payload96-generation-regular-code-v1-process2-output-retirement-20261107.json`,
-  SHA256`f64ebef6a1d8c78332cb6da65ae57990568325a05dcd1554ab8f8e3343124f1a`.
-  Process3,the matching32reference,now closes normally0with quiet validation,
-  closed owners,unchanged boot/driver and no fresh fault. Its33208fresh-input/
-  3477generated sample has prompt60055.3ms,decode275654.2ms,client TTFT60.233s
-  and exact PP/TG552.957025/12.613630. All five request bodies,long output/
-  reasoning hashes,draft2462/3048and cache729753/1951200match process0.
-  The second96-over32paired TG ratio is1.028556;candidate/reference prompt
-  and TTFT time ratios1.026572/1.027145are slower. Both completed pairs favor
-  decode;this does not establish independent prefill preservation or adoption.
-  Four of six processes are closed;finish32/96and final15asset hashes.
-  The second pair's source/count-derived window intervals are271.046/271.871ms
-  for32/96,and output/window remains3.419/3.527. These are whole decode averages,
-  not measured kernel intervals;TGalone does not isolate weight-placement cost.
-  Process3's69raw/JIT files/13097239bytes are retired after350-input Git recovery,
-  with all15ELFs/six immutable receipts unchanged and full before/after admission
-  passing. Manifest:`adaptive-payload96-generation-regular-code-v1-process3-output-retirement-20261107.json`,
-  SHA256`70738a7ddaab40705ba541e96046979a4b9e1408e757de8176b552b16d2550ad`.
-  Process4,the final32reference,also closes normally0with quiet validation,
-  closed owners,unchanged boot/driver and no fresh fault. Its33208fresh-input/
-  3477generated sample has prompt59681.6ms,decode274682.2ms,client TTFT59.977s
-  and exact PP/TG556.419399/12.658265. All five request bodies,long output/
-  reasoning hashes,draft2462/3048and cache729753/1951200match the other32arms.
-  Five of six processes are closed;finish the last96candidate and final15asset
-  hashes before an aggregate decision. Retire process4and5normal raw output
-  together at that serialized cohort boundary after committing their evidence;
-  retain generated config/plan for continued admission.
+  The same-ELF32/96regular-code cohort is now closed at
+  `adaptive_payload96_generation_regular_code_v1`,prepared at`a9d072acf`.
+  All six fresh processes in32/96,96/32,32/96order close normally0with quiet
+  validation,closed owners,unchanged boot/driver and no fresh fault. All15model
+  assets pass final full hashing. Each process has four official warmups then
+  one first v5thinking-on33208fresh-input long request,with16Koutput allowance.
+  Exact median TG improves12.613630->13.408466;all three paired ratios exceed
+  one(1.068515/1.028556/1.059266;geometric mean1.051973). The printed TG decision
+  is independently favorable. Within each arm,generated tokens(3477/3111),
+  draft acceptance(2462/3048and2231/2643),output/reasoning hashes and cache
+  counts agree across all three processes. Cache hits rise37.4->44.5%.
+  Different output lengths and acceptance between arms preclude fixed-work
+  attribution or assigning the entire5.20%paired TGgain to placement.
+  Prompt-time ratios0.992150/1.026572/1.003363and client-TTFT ratios
+  0.992116/1.027145/1.001150fail their independent nonregression gates.
+  Their arm medians are60.0553->59.8823s prompt and60.233->60.046s TTFT;
+  those medians do not override the predeclared paired outcomes. This qualifies
+  a focused repeated decode gain,not prefill preservation,whole-route adoption,
+  quality,agent,ordinary teardown,physical262144/RESTORE or70TG.
+  Select96for the regular-code leaf-only resource comparison;keep the552b
+  prefill fallback independently. The varied-prose32/96cohort is not prepared.
+  Under frozen first-T1/then-T4,drafts/cache lookups imply1017/882verifier
+  windows for32/96. Whole decode time per inferred window is
+  272.311/262.925,271.046/271.871and270.091/263.059ms in the three pairs;
+  output/window is3.419/3.527. These source/count-derived whole intervals are
+  not traced kernel service,physical traffic or a saturation measurement.
+  Processes0..3normal outputs are retired with350Git inputs recovered,
+  all15ELFs/six immutable receipts unchanged and full continued admission
+  passing. Detailed samples and retirement manifests remain in the linked
+  service result. Retire processes4and5normal output together at this serialized
+  cohort boundary after committing their evidence;retain generated config/plan
+  for continued admission. The qualified129-input CPU controls remain at
+  `adaptive_payload96_generation_reader_host_v2`;source is`8f9636060`.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails

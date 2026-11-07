@@ -197184,7 +197184,7 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "a9d072acf3c3c5f6739a72ea9d8fe70519d0e848",
     "configuration": {
       "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
@@ -198164,6 +198164,127 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 96,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 4183330,
+          "start_ticks": 240044246,
+          "sid": 4183281
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33208,
+            "reused_tokens": 0,
+            "generated_tokens": 3111,
+            "output_chars": 5578,
+            "reasoning_chars": 3028,
+            "prompt_ms": 59882.3,
+            "prompt_tps": 554.6,
+            "decode_ms": 232017.6,
+            "decode_tps": 13.4,
+            "ttft_s": 60.046,
+            "total_s": 291.924,
+            "drafts_offered": 2643,
+            "drafts_accepted": 2231,
+            "acceptance_rate": 0.8441165342413923,
+            "request_sha256": "4d19ed07787db7b439c5bf399a3606744ab05293dbd250a68cbe5da4812e678b",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "43c5176c0694816986745744ad0213f74afb5f33988877a22f5a70ba49b66176",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 4183330,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33208,
+            "rows": 33207,
+            "GPU_residual_rows": 33207,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20291,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33207,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 4,
+            "request": 5,
+            "IQ3_calls": 1424258,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 753606,
+            "lookups": 1692000,
+            "hit_percent": 44.5
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "f818c85bfb8021b5450c91c52a47c57832f19ded8c8121798fd04d4a1cd4f3a6",
+            "8a8f59f5ef801fcf00254559d1b08de9b61873089643a3534b5710d2b7b057ec",
+            "004021650f16cf047fba8316c80e7e890a2552345701899cb0ce9151b3c7efd6",
+            "4d19ed07787db7b439c5bf399a3606744ab05293dbd250a68cbe5da4812e678b"
+          ],
+          "valid": true,
+          "journal_sha256": "e67f9ccd7db8d2e8696b485c55d2e52a8795b753b7dfddf16c1cbcc39110690b"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35524
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_controls": {
@@ -198175,8 +198296,8 @@
       "GPU_executed": false
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "whole_bytes": 469762048,
@@ -198203,6 +198324,117 @@
         "passed": true
       }
     ],
+    "decision": {
+      "candidate_over_reference_TG": [
+        1.06851502697558,
+        1.028556474408703,
+        1.0592656945444066
+      ],
+      "geometric_mean_TG_ratio": 1.0519729223991443,
+      "repeated_TG_gain": true,
+      "minimum_gain_floor": false,
+      "arms": {
+        "reference": {
+          "median_TG": 12.613629685308622,
+          "minimum_TG": 12.555066079295154,
+          "maximum_TG": 12.658264714641138,
+          "acceptance": [
+            0.8077427821522309,
+            0.8077427821522309,
+            0.8077427821522309
+          ],
+          "generated_tokens": [
+            3477,
+            3477,
+            3477
+          ]
+        },
+        "candidate": {
+          "median_TG": 13.4084655646813,
+          "minimum_TG": 12.973830478617993,
+          "maximum_TG": 13.41527677039825,
+          "acceptance": [
+            0.8441165342413923,
+            0.8441165342413923,
+            0.8441165342413923
+          ],
+          "generated_tokens": [
+            3111,
+            3111,
+            3111
+          ]
+        }
+      },
+      "candidate_over_reference_prompt_time": [
+        0.9921499856624527,
+        1.026572175977807,
+        1.0033628455001207
+      ],
+      "candidate_over_reference_TTFT": [
+        0.9921157024793389,
+        1.0271445885146018,
+        1.0011504410023844
+      ],
+      "prompt_nonregression": false,
+      "TTFT_nonregression": false,
+      "limits": "Same-ELF adaptive32/96 focused comparison only. Exact TG is primary;printed decision retained. Judge prompt/TTFT independently. No other length,quality,agent,physical262144/RESTORE,ordinary teardown,adoption or70TG qualification.",
+      "printed_TG_decision": {
+        "candidate_over_reference_TG": [
+          1.0634920634920635,
+          1.0317460317460319,
+          1.0551181102362206
+        ],
+        "geometric_mean_TG_ratio": 1.0500324306214674,
+        "repeated_TG_gain": true,
+        "minimum_gain_floor": false,
+        "arms": {
+          "reference": {
+            "median_TG": 12.6,
+            "minimum_TG": 12.6,
+            "maximum_TG": 12.7,
+            "acceptance": [
+              0.8077427821522309,
+              0.8077427821522309,
+              0.8077427821522309
+            ],
+            "generated_tokens": [
+              3477,
+              3477,
+              3477
+            ]
+          },
+          "candidate": {
+            "median_TG": 13.4,
+            "minimum_TG": 13.0,
+            "maximum_TG": 13.4,
+            "acceptance": [
+              0.8441165342413923,
+              0.8441165342413923,
+              0.8441165342413923
+            ],
+            "generated_tokens": [
+              3111,
+              3111,
+              3111
+            ]
+          }
+        },
+        "candidate_over_reference_prompt_time": [
+          0.9921499856624527,
+          1.026572175977807,
+          1.0033628455001207
+        ],
+        "candidate_over_reference_TTFT": [
+          0.9921157024793389,
+          1.0271445885146018,
+          1.0011504410023844
+        ],
+        "prompt_nonregression": false,
+        "TTFT_nonregression": false,
+        "limits": "Matched focused workload at one context/width only. Cap2 acceptance uses its own denominator;no strong/weak relabeling,quality,agent,64K/117K preservation,physical262144/RESTORE,adoption or70TG claim."
+      },
+      "TG_expression": "generated_tokens*1000.0/decode_ms"
+    },
     "input_signatures": {
       "sources": "9e82cde9cf5a21208b5ca0ca4659016e5b4707fb5a2854a373538c47e9fab1eb",
       "environment_template": "3819ebcd7f1638791579f7d628f1c7a94a0e011734096475407b547987110082",
