@@ -198077,29 +198077,6 @@
       "model_assets": "32d552dc1fb0ad6594425e8bd39f35049f896afe5775b0f7abf751110a11333e"
     }
   },
-  "adaptive_cpu_leaf_controller_host_v1": {
-    "GPU_executed": false,
-    "changed_cache_budget_refused": true,
-    "immutable_environment_controls": 8,
-    "leaf_fixture_on_off": true,
-    "observer_presence_mismatch_refused": true,
-    "over_budget_retained": true,
-    "passed": true,
-    "reused_owner_refused": true,
-    "source_commit": "0a351bbaf23b3512ab1856bf619d788857dfb2ff",
-    "source_count": 133,
-    "source_signature_sha256": "74cfa1c71ee118c9663f28a8fe5af97f6aee21549f7cb435c790eee719b9a431",
-    "summary_conservation": true,
-    "work_mismatch_inconclusive": true,
-    "stage": "closed",
-    "complete": true,
-    "active": false,
-    "ownership_closed": true,
-    "exit_code": 0,
-    "model_executed": false,
-    "command": "/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py controls",
-    "limits": "CPU-only leaf fixture,bounded-cost decision and immutable environment/configuration controls. No model execution,resource attribution,physical traffic,saturation,observer-cost result or inference adoption."
-  },
   "adaptive_cpu_leaf_reader_host_v2": {
     "python_selected": {
       "workspace_venv": false,
@@ -198229,5 +198206,31 @@
         "stderr_bytes": 1072
       }
     ]
+  },
+  "adaptive_cpu_leaf_controller_host_v2": {
+    "GPU_executed": false,
+    "changed_cache_budget_refused": true,
+    "compiled_chunk_diagnostics": 2,
+    "immutable_environment_controls": 8,
+    "leaf_fixture_on_off": true,
+    "nonserial_configurations_refused": 7,
+    "observer_presence_mismatch_refused": true,
+    "over_budget_retained": true,
+    "passed": true,
+    "reused_owner_refused": true,
+    "source_commit": "4547d9e6e208418ef37b29a5fe7151114399dde0",
+    "source_count": 133,
+    "source_signature_sha256": "7236e5230df79f81f31e64f07b7872886d245675203cadf8273bd13894425711",
+    "summary_conservation": true,
+    "unknown_prompt_records_refused": true,
+    "work_mismatch_inconclusive": true,
+    "stage": "closed",
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "exit_code": 0,
+    "model_executed": false,
+    "command": "/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py controls",
+    "limits": "CPU-only corrected framing,serialized configuration,immutable observer and cost/conservation controls. No model profile,physical traffic,resource saturation or observer-cost qualification."
   }
 }

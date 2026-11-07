@@ -1476,11 +1476,13 @@ latency ratios<=1.05qualify the leaf observer's cost only. A work/hash mismatch
 is inconclusive for that cost,not a task-quality failure. Concurrent leaf CPU
 sums still cannot distinguish arithmetic from memory stalls or prove a critical
 path. Retain operation totals,format/NT job counts and top3GU/Down bins for the
-next named working-set calibration. At source`0a351bbaf`,the controller CPU
+next named working-set calibration. At source`4547d9e6e`,the controller CPU
 controls pass normally0with133inputs,including on/off leaf fixture binding,
 summary conservation,eight immutable environment/configuration cases,and
-refusal of changed work,cache budget or reused process ownership. Follow
-`adaptive_cpu_leaf_controller_host_v1`;no adaptive leaf model profile or
+refusal of changed work,cache budget or reused process ownership. Both compiled
+chunk diagnostics pass in each arm;unknown prompt records and seven nonserial
+configurations are refused. Follow`adaptive_cpu_leaf_controller_host_v2`;
+the superseded control is archived at`b2c37754a`. No adaptive leaf model profile or
 observer-cost result follows. The completed CPU command is:
 `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py controls`.
 The returned Orca source audit and native Luna-max review identify a legitimate
@@ -1488,13 +1490,13 @@ prompt-chunk diagnostic that both readers incorrectly counted as a prompt
 footer. The Main-authored repair accepts only the two exact compiled diagnostic
 grammars and retains malformed-footer rejection;all six reader groups pass,
 including the new positive/negative diagnostic cases. Revised on/off controller
-controls still need execution. The controller now pins
+controls also pass. The controller now pins
 parallel1,no batch/slots,one synchronous client,and all five private compiled
 producer/resolver hashes. Quiescence remains a caller assertion supported by
 that serialized path. Public generator/resolver bytes differ from the compiled
-snapshot;do not substitute them. The reader is qualified under
-`adaptive_cpu_leaf_reader_host_v2`;rerun the bounded CPU control above from the
-committed repair before preparing any model profile. No native code changes.
+snapshot;do not substitute them. The current reader/controller CPU gates pass.
+Model preparation still waits for its workload's32/96cohort to close and
+select a focused decode budget;observer cost remains unmeasured. No native code changes.
 For a later full adaptive census,the reviewed design refreshes membership on
 the request owner only after the adaptive worker joins and refill publication
 succeeds,latches a published-map epoch per window,and rejects masked/in-flight
