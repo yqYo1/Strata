@@ -2754,8 +2754,14 @@ restoration,capture preservation,and unread-pipe child control plus normal
 buffered/unbuffered child exit. Neither module is in the frozen346benchmark
 or568native inputs;the server does not import it yet. The prepared
 `upstream_nonblocking_console_module_host_v1`plan pins34source inputs at
-`df426f83c`and the qualified Python runtime for these eight cases;no tests
-have run. Both8/32cohorts are now closed. Run these checks before adapting the
+`df426f83c`and the qualified Python runtime. All eight cases now run with
+closed owners;seven pass,but the buffered unread-pipe child aborts with-6
+after emittingDONE. Its diagnostic is Python`_enter_buffered_busy`on the
+original stdout BufferedWriter during interpreter shutdown:the daemon still
+holds that object's I/O lock. The unbuffered child and blocked control behave
+as expected. This is a CPU/Python failure,not GPU execution or a device fault.
+Preserve this failed attempt and repair the writer before a new committed
+host plan;the server remains unwired. Qualify these checks before adapting the
 server's existing no-argument`main()`wrapper and its upstream
 `STRATA_BLOCKING_CONSOLE=1`bypass;then qualify actual startup and existing
 server/Responses regressions before another frontend-dependent model plan.
