@@ -1493,7 +1493,7 @@ extents is1728439500800bytes,or535.62MB per generated token. If each job reads
 its full blob once,70tok/s requires37.49GB/s. Actual cache reuse and DRAM traffic
 remain unmeasured;this is not a hard ceiling. Use the named current working-set
 calibration after
-the complete cost comparison;the legacy calibration driver uses an older
+the complete cost comparison;the previous calibration used an older
 compiler/reference and is not qualified unchanged for this engine.
 The maintained CPU mix CMake selector at`1274b0bbd` can now take
 `STRATA_CPU_SOURCE_ROOT` for the measured engine's frozen CPU composition.
@@ -1501,8 +1501,18 @@ At`fc7aad011`,the harness also accepts intermediate workers1..5;only5includes
 host computation,so the effective compute counts are1,2,3,4and6. Validate
 these cases before timing a new scaling curve. Match both the native icx2026.2
 C build of GGML quantization and icpx2026.2C++CPU build in the new plan.
-This prepares source selection only;the new calibration plan/build/check remains
-pending and no extra executable has been built during this model cohort.
+The maintained `tools/sycl/cpu_decode_mix.py` is now source-retargeted to the
+exact recovered568-file e1b011composition and its icx/icpx2026.2compilers,
+including the three matching current format/NT job distributions. It preserves
+the original native construction helpers. The prospective matrix has56checks,
+112reuse/stream timing cells and1/2/3/6-thread256MiB read references,with five
+eligible samples/cell. It pins model identities/selected expert slices and
+checks actual compiler/header/link inputs,typed work,affinity and terminal
+ownership. Only the CPU observer layout is compiled;the observer is off and
+the native IQ2/IQ3 dispatch/audit and20ms pool spin remain fixed. The auxiliary
+CPU build retires at calibration closure and never replaces either engine.
+This is source preparation:controller host controls and the new prospective
+plan/build/numerical checks/timing remain pending. No extra executable is built.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
