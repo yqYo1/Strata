@@ -1445,8 +1445,12 @@ latency ratios<=1.05qualify the leaf observer's cost only. A work/hash mismatch
 is inconclusive for that cost,not a task-quality failure. Concurrent leaf CPU
 sums still cannot distinguish arithmetic from memory stalls or prove a critical
 path. Retain operation totals,format/NT job counts and top3GU/Down bins for the
-next named working-set calibration. The controller CPU controls are prepared
-but have not run;the command is:
+next named working-set calibration. At source`0a351bbaf`,the controller CPU
+controls pass normally0with133inputs,including on/off leaf fixture binding,
+summary conservation,eight immutable environment/configuration cases,and
+refusal of changed work,cache budget or reused process ownership. Follow
+`adaptive_cpu_leaf_controller_host_v1`;no adaptive leaf model profile or
+observer-cost result follows. The completed CPU command is:
 `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py controls`.
 For a later full adaptive census,the reviewed design refreshes membership on
 the request owner only after the adaptive worker joins and refill publication
