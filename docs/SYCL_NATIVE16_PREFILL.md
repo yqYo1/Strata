@@ -3036,7 +3036,9 @@ verifies36executable mappings and has no fresh fault. This does not qualify the
 full drafter/model route,ring recovery,RESTORE,physical262144 fill or performance.
 Next:tail transition lengths2046/2047/2048 and ring/request/failed-owner fixtures,
 then bounded target-model execution and independent-phase comparisons. Default
-MTP and both fast references remain selected. See`current_sync`in the linked
+native MTP and legacy explicit-MTP configs remain selected;the imported host
+Auto policy can choose DFlash2 on a fresh supported configuration. The feature
+candidate is not installed/default-adopted. Both fast references remain. See`current_sync`in the linked
 status for exact source/build/runtime identity and remaining functional ports.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.
@@ -3102,7 +3104,7 @@ The Q6 policy source and closed CPU host result are published on
 The default remains `05069aeed`; the current branch-rule query still permits
 only squash PR merges. Default integration remains unfinished because the
 measured original commit identities must be preserved.
-Rechecked2026-11-07 07:27UTC:the actual main-branch pull-request rule still
+Rechecked2026-11-07 22:17UTC:the actual main-branch pull-request rule still
 restricts allowed methods to `squash`;PR180 remains open. Preserve measured
 source identities rather than bypassing this rule.
 
