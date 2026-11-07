@@ -808,7 +808,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   engine SHA starts`e1b01116cc`;its native source remains`bbd345c63`. Only the
   audit header changes. Fresh same-build observer0/1CPU pool checks now each
   pass28cases with identical checksums,normal0and closed owners. Component
-  reuse and actual native32positive/refusal remain pending. No GPU was executed
+  reuse now passes;actual native32positive/refusal remain pending. No GPU was executed
   by compilation or these CPU checks. It gates preparation
   on all six resource processes closing. Allow one temporary third comparison
   generation only through successor native32positive/refusal qualification:
@@ -816,13 +816,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   then prospectively migrate consumers and retire429b before clean8/32trials.
   Retire the successor instead if qualification fails. This is a bounded
   replacement window,not another retained generation per experiment.
-  Source-only`tools/sycl/adaptive_payload_admission.py`binds the successor's
+  `tools/sycl/adaptive_payload_admission.py`binds the successor's
   actual sources/recipe/header and fresh28+28CPU parity to five identical
-  fixture ELFs and the original10/32/16device checks. Reuse must first verify
-  the live429b chain;later readers pin its consumed metadata/Git inputs rather
+  fixture ELFs and the original10/32/16device checks. Reuse now passes at
+  source`a1cf63b67`,including the live429b chain and original control recovery;
+  later readers pin its consumed metadata/Git inputs rather
   than requiring retired429b ELFs. Runtime/probe bytes,boot and driver still
-  need to match. The successor is compiled;component reuse and native32execution
-  remain unexecuted. Source-only`tools/sycl/check_adaptive_payload_entry.py`now binds
+  need to match. This is unchanged-component identity qualification,not fresh
+  GPU execution. Native32execution remains unexecuted.
+  `tools/sycl/check_adaptive_payload_entry.py`now binds
   the unchanged full32copy/dispatch/occupied-loan reader and supervisor to the
   successor at a fresh`adaptive_payload32_native_entry_v1`key/root. It requires
   the new header/component proof and keeps the original64MiB trial failed.
