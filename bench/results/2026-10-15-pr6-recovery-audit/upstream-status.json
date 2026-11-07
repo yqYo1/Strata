@@ -1443,6 +1443,25 @@
         "seconds": 10.99,
         "failures": "Four multi-GPU setup assertions; new DFlash engine marker/CLI and server argument tests pending native port; app language-catalog files not yet imported; DFlash notice absent from maintained DETAILS; four Mac setup tool dependency errors. Source-only imports do not qualify route; no GPU execution.",
         "v31_specific_failure_observed": false
+      },
+      {
+        "source_commit": "d7f41d5407db565d01a207e5a16afc743bc159d7",
+        "suite": "v3.1 setup/pins/shard discovery and DFlash2 packing/vocabulary",
+        "tests_passed": 77,
+        "tests_skipped": 1,
+        "subtests_passed": 145,
+        "seconds": 1.09,
+        "exit_code": 0,
+        "meaning": "Host metadata/packing only; no native model or GPU qualification."
+      },
+      {
+        "source_commit": "d7f41d5407db565d01a207e5a16afc743bc159d7",
+        "suite": "server full host suite excluding explicit DS/35B files",
+        "exit_code": 137,
+        "state": "wall_deadline_incomplete",
+        "limit_seconds": 360,
+        "observed_failures_at_least": 4,
+        "meaning": "Large host suite exceeded finite deadline and termination grace; no complete total or pass claimed. Native/GPU was not intentionally launched. Inspect focused failures and rerun with an appropriate committed host-suite budget."
       }
     ],
     "dflash2_download_plan": {
@@ -1478,6 +1497,45 @@
         "error": "One-off acquisition wrapper called nonexistent acquisition.explicit after files finished. No model/pack failure, no GPU execution.",
         "next_command": "Use existing acquisition.require guard then drafting_fetch.ensure with the already verified source; no download repeated."
       }
-    ]
+    ],
+    "dflash2_download": {
+      "state": "verified_runtime_pack_ready",
+      "provenance": {
+        "repo": "incoai/Qwen3.8-Flash-Next-DFlash2",
+        "revision": "a22a1744e85c17364dcc54a6a420af7135d4c7f6",
+        "license": "Apache-2.0",
+        "files": [
+          {
+            "path": "config.json",
+            "bytes": 1236,
+            "sha256": "2409575986f9ea24d455343eb469c0e6940def5edab1d1be503bb8eb4cc3b1b9"
+          },
+          {
+            "path": "model.safetensors",
+            "bytes": 1206140008,
+            "sha256": "d6723f2a359eaf33ec0c95f22ae8edda896774020c552296a85e1913b4d3186f"
+          }
+        ],
+        "pack": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+        "bytes": 522458112,
+        "sha256": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
+        "source_retired_after_verified_pack": true,
+        "model_execution_qualified": false
+      },
+      "packing_command_guard": "acquisition.require then drafting_fetch.ensure; existing source reused; no second download",
+      "retired_source_bytes": 1206141244,
+      "config_copy_kept": true
+    },
+    "dflash2_native_port": {
+      "state": "source_in_progress_not_exposed_or_built",
+      "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
+      "adaptation": "Use current fork registered allocations, qualified in-order queues, eager execution without native graph capture or GPU host-flag polling. Strong CPU pack admission before any device allocation. Existing native engine and fast prefill/decode routes are not replaced.",
+      "remaining": "Commit and run metadata admission fixture; finish native tap ABI, prefill taps including BF16, request lineage and speculative proposal integration before bounded GPU qualification.",
+      "metadata_fixture_plan": {
+        "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
+        "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+        "scope": "CPU-only metadata; no source weight copies, sparse malformed files under owned temporary directory;900s build and60s test bounds; remove component executable when integrated engine fixture supersedes it."
+      }
+    }
   }
 }
