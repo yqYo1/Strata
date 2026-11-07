@@ -2061,6 +2061,102 @@
       "clean_default_mirror": "05069aeedea43f778b97dce30c729739cb3bce5c",
       "mirror_pull": "Already up to date;main clean.",
       "meaning": "Default-integration check only,not a new Niko upstream check or native/model qualification."
+    },
+    "dflash2_ring_check": {
+      "stage": "prepared",
+      "prior": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/record.json",
+        "sha256": "cebefcc388276f7c6b79b3555614601f22d60140142b9a62e44287ad6d298bc0"
+      },
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+      },
+      "environment": {
+        "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_DF2_RING_LOG": "1",
+        "STRATA_DF2_LOG_MIB": "64",
+        "STRATA_DF2_RING_STATS": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr"
+      },
+      "environment_origin": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/record.json",
+        "sha256": "ea12fbf59615ed9780083a9f70e92b9bb52256c373ac826943243eb80fce2ab9"
+      },
+      "pack": {
+        "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+        "sha256": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
+        "bytes": 522458112
+      },
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "budgets": {
+        "small": {
+          "wall": 360,
+          "cpu": 360,
+          "text_cap": 67108864,
+          "file_cap": 67108864,
+          "total_cap": 268435456,
+          "rss_cap": 8589934592
+        },
+        "full": {
+          "wall": 600,
+          "cpu": 600,
+          "text_cap": 67108864,
+          "file_cap": 67108864,
+          "total_cap": 402653184,
+          "rss_cap": 8589934592
+        }
+      },
+      "cases": {
+        "kernel": 16,
+        "small": 5,
+        "full": 5
+      },
+      "phases": {},
+      "passed": false,
+      "ownership_closed": true,
+      "meaning": "Stock draft weights with synthetic target embedding/Q8zero head;finite state equivalence and failed-owner containment only. No target model,task quality,benchmark speed,phase preservation or physical full target-context qualification.",
+      "controller_source": {
+        "commit": "08b3112038abb65979a59a2b78ca62d004f4add1",
+        "sha256": "ae62fcf79009c159d068f61595951e472489441695d29fed76aaeb994dbd1b2c"
+      },
+      "native_build": {
+        "source_commit": "f62df4999c1a56ba41d2598837d92e4d5ce705e1",
+        "project_source_sha256": "3ec701bd35d39683629eac3d206ac968fd1091f3c09b523050e669ab53c7dfa6",
+        "record": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
+          "sha256": "47ed8f8a55968a33ccabe7b9c8571afe383c88d68ca000c006437ad5745a79d7"
+        }
+      },
+      "commands": []
     }
   }
 }
