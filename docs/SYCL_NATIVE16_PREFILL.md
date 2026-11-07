@@ -1483,6 +1483,17 @@ refusal of changed work,cache budget or reused process ownership. Follow
 `adaptive_cpu_leaf_controller_host_v1`;no adaptive leaf model profile or
 observer-cost result follows. The completed CPU command is:
 `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py controls`.
+The returned Orca source audit and native Luna-max review identify a legitimate
+prompt-chunk diagnostic that both readers incorrectly counted as a prompt
+footer. The Main-authored repair accepts only the two exact compiled diagnostic
+grammars and retains malformed-footer rejection;its new sixth reader group and
+on/off controller controls still need execution. The controller now pins
+parallel1,no batch/slots,one synchronous client,and all five private compiled
+producer/resolver hashes. Quiescence remains a caller assertion supported by
+that serialized path. Public generator/resolver bytes differ from the compiled
+snapshot;do not substitute them. Requalify the reader under
+`adaptive_cpu_leaf_reader_host_v2`and rerun the bounded CPU control above from
+the committed repair before preparing any model profile. No native code changes.
 For a later full adaptive census,the reviewed design refreshes membership on
 the request owner only after the adaptive worker joins and refill publication
 succeeds,latches a published-map epoch per window,and rejects masked/in-flight

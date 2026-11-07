@@ -21,9 +21,19 @@ clean, require = speed.clean, speed.require
 SELF = Path(__file__).resolve()
 ORDER = ('reference', 'candidate', 'candidate', 'reference', 'reference', 'candidate')
 MAX_RATIO = 1.05
-PRODUCERS = ('include/strata/kernels/cpu/service_profile.hpp', 'src/kernels/cpu/pool.cpp')
+PRODUCERS = ('include/strata/kernels/cpu/service_profile.hpp',
+             'include/strata/kernels/cpu/pool.hpp', 'src/kernels/cpu/pool.cpp')
+PRIVATE_PRODUCERS = ('cmake/sycl_backend.cmake', 'src/program/generate.cpp')
+SERIAL_ADMISSION = dict(parallel=1, benchmark_clients=1, batch_selectors=False)
 POLICY = ('AGENTS.md', 'docs/ARTIFACT_RETENTION.md')
 FIXTURE = 'tools/test_adaptive_cpu_leaf_evidence.py'
+
+
+def serialized_configuration(configuration):
+    require(type(configuration.get('parallel')) is int and configuration['parallel'] == 1 and
+            type(configuration.get('args')) is list and
+            all(type(arg) is str and arg.partition('=')[0] not in ('--batch', '--slots')
+                for arg in configuration['args']), 'one serialized non-batch engine required')
 
 
 def choice(workload):
@@ -52,16 +62,21 @@ def prerequisites(workload, budget, full=False):
         require(clean.digest(clean.P / name) == build['native_sources'][name] ==
                 clean.digest(clean.B / 'adaptive-payload-audit-model-v2/source' / name),
                 'compiled CPU leaf producer changed: ' + name)
-    proof = clean.base.committed(clean.RESULT)['adaptive_cpu_leaf_reader_host_v1']
+    compiled = {name: build['native_sources'][name] for name in (*PRODUCERS, *PRIVATE_PRODUCERS)}
+    for name, sha in compiled.items():
+        require(clean.digest(clean.B / 'adaptive-payload-audit-model-v2/source' / name) == sha,
+                'private compiled CPU leaf producer changed: ' + name)
+    proof = clean.base.committed(clean.RESULT)['adaptive_cpu_leaf_reader_host_v2']
     require(proof['stage'] == 'closed' and proof['passed'] and proof['complete'] and
             proof['ownership_closed'] and not proof['active'] and not proof['GPU_executed'] and
-            len(proof['tests']) == 1 and proof['tests'][0]['tests'] == 5 and
+            len(proof['tests']) == 1 and proof['tests'][0]['tests'] == 6 and
             proof['tests'][0]['exit_code'] == 0 and proof['tests'][0]['skipped'] == 0,
             'qualified CPU leaf/footer reader required')
     for name, sha in proof['sources'].items():
         if name not in POLICY:
             require(clean.digest(clean.P / name) == sha, 'leaf reader implementation changed: ' + name)
-    refs.update(decode_budget=reference, leaf_reader=clean.signature(proof))
+    refs.update(decode_budget=reference, leaf_reader=clean.signature(proof),
+                compiled_leaf_producers=compiled)
     return normal, prior, contract, manifest, providers, refs
 
 
@@ -69,7 +84,7 @@ def evidence(text, samples, width, enabled):
     headers = list(re.finditer(leaves.footer.HEADER, text, re.M))
     copies = list(re.finditer(leaves.footer.COPY, text, re.M))
     require(len(headers) == len(copies) == len(samples) and len(samples) > 0 and
-            text.count('strata serve: prompt ') == len(headers) and
+            leaves.prompt_footer_count(text) == len(headers) and
             text.count('strata serve: SYCL_EXPERT_COPY') == len(copies), 'complete native CPU footers')
     native = []
     for i, (header, copy_, sample) in enumerate(zip(headers, copies, samples)):
@@ -148,6 +163,12 @@ def context(workload, budget, index=None):
     module.ARMS = tuple((arm, budget) for arm in ORDER)
     module.SELF, module.basis, module.controls = SELF, lambda full=False: prerequisites(workload, budget, full), controls
     original_environment = module.environment
+    original_configuration = module.configuration
+
+    def configuration(row, plan):
+        result = original_configuration(row, plan)
+        serialized_configuration(result)
+        return result
 
     def environment(row, plan):
         require((plan['kernel'], plan['adapt_swaps']) == module.ARMS[plan['index']], 'fixed cache policy required')
@@ -171,7 +192,8 @@ def context(workload, budget, index=None):
             pins[name] = clean.digest(clean.P / name)
         return pins
 
-    module.environment, module.invariant, module.source_pins = environment, invariant, source_pins
+    module.environment, module.configuration = environment, configuration
+    module.invariant, module.source_pins = invariant, source_pins
     ctx = module.context(workload)
     ctx.ROOT = clean.B / ('adaptive-cpu-leaves-' + workload + '-v1')
     ctx.KEY = 'adaptive_cpu_leaves_' + workload.replace('-', '_') + '_v1'
@@ -180,7 +202,8 @@ def context(workload, budget, index=None):
     original_current = ctx.current
 
     def current(row):
-        require(row['selected_decode_budget'] == budget, 'selected leaf-profile cache budget changed')
+        require(row['selected_decode_budget'] == budget and row['serial_admission'] == SERIAL_ADMISSION,
+                'selected leaf-profile cache budget or serial admission changed')
         return original_current(row)
 
     ctx.current = current
@@ -223,12 +246,16 @@ def prepare(module, ctx, budget):
     module.prepare(ctx)
     row = json.loads((ctx.ROOT / 'record.json').read_text())
     row['selected_decode_budget'] = budget
+    row['serial_admission'] = dict(SERIAL_ADMISSION)
     row['plan'] = ('Six fresh owned processes leaf0/1,1/0,0/1 on unchanged e1b011,fixed selected adaptive budget,'
         'every8rounds/default decay0.7. Close this workload32/96cohort;choose96only after its repeated TGgain,'
         'else32. Four official warmups then first v5thinking-on32K+/1K+generation with an answer;'
         'cap4code/cap2prose,16Koutput allowance. Only pre-exec CPU_SERVICE differs. Static census,caller,'
         'decode timing,full trace and other heavy observers stay off;all runtime safety,placement and precision '
-        'remain fixed. Qualify the CPU reader first. Bind four warmup leaf/native records before the long '
+        'remain fixed. Pin compiled private producer/resolver hashes;require parallel1,no batch/slots '
+        'and one synchronous benchmark client. Qualify the six-group CPU reader first. '
+        'Recognize only exact compiled chunk diagnostics;reject unknown prompt prefixes. '
+        'Bind four warmup leaf/native records before the long '
         'request and all five at normal exit. Keep source/body/actual route/head/clock/provider/quiet-validation/'
         'owner/no-fault gates and15asset hashes. Compare exact per-token latency;all3pairs<=1.05 with '
         'matching aggregate CPU/token/draft work and long-output hashes qualify observer cost only. '
@@ -249,6 +276,10 @@ def run(ctx, index):
     try:
         require(ctx.boundary_calls == 2 and ctx.resource_prefixes == [4], 'qualified leaf warmup prefix required')
         root = Path(row['plans'][index]['root'])
+        execution = json.loads((root / 'execution.json').read_text())
+        require(not execution['active'] and len(execution['commands']) == 1 and
+                execution['commands'][0]['exit_code'] == 0,
+                'one closed synchronous benchmark client required')
         path, = (root / 'bench').glob('*/requests.jsonl')
         samples = [e['sample'] for e in map(json.loads, path.read_text().splitlines()) if e['kind'] == 'result']
         enabled = ORDER[index] == 'candidate'
@@ -259,6 +290,7 @@ def run(ctx, index):
                          tokens=[{k: s[k] for k in leaves.FIELDS} for s in samples],
                          long_output={k: long[k] for k in ('request_sha256', 'output_sha256', 'reasoning_sha256')})
         process['resources'] = dict(passed=True, leaf_enabled=enabled, completed_requests=5, warmup_prefix=4,
+                                    benchmark_clients=1,
                                     work_signature_sha256=clean.signature(signature),
                                     long_request=summarize(parsed[-1]) if enabled else None)
         if index == 5:
@@ -280,6 +312,24 @@ def controls():
     quiet = '\n'.join(line for line in text.splitlines() if not line.startswith('strata CPU_SERVICE'))
     off_native, off_parsed = evidence(quiet, [sample], 4, False)
     require(native == off_native and not off_parsed, 'shared native work must survive observer-off parsing')
+    diagnostics = ('strata serve: prompt chunk auto: 4096 tokens',
+                   'strata serve: prompt chunk 8192 -> 4096 tokens so its buffers fit in every expert cache')
+    for diagnostic in diagnostics:
+        require(evidence(diagnostic + '\n' + text, [sample], 4, True) == (native, parsed) and
+                evidence(diagnostic + '\n' + quiet, [sample], 4, False) == (off_native, off_parsed),
+                'compiled chunk diagnostics must not change on/off request evidence')
+    for body, enabled in ((text, True), (quiet, False)):
+        try: evidence('strata serve: prompt broken record\n' + body, [sample], 4, enabled)
+        except RuntimeError: continue
+        raise RuntimeError('unknown native prompt record accepted')
+    serial = dict(parallel=1, args=['--prefill', '8192'])
+    serialized_configuration(serial)
+    nonserial = [dict(serial, parallel=value) for value in (True, 0, 2)] + [
+        dict(serial, args=[selector]) for selector in ('--batch', '--batch=2', '--slots', '--slots=2')]
+    for invalid in nonserial:
+        try: serialized_configuration(invalid)
+        except RuntimeError: continue
+        raise RuntimeError('nonserial leaf-profile configuration accepted')
     compact = summarize(parsed[0])
     require(compact['cpu_jobs'] == 5 and compact['cpu_entries'] == 14 and
             sum(v['cpu_ns'] for v in compact['operations'].values()) == compact['concurrent_cpu_ns'] == 155,
@@ -334,7 +384,8 @@ def controls():
                 over_budget_retained=True, work_mismatch_inconclusive=True,
                 reused_owner_refused=True, changed_cache_budget_refused=True,
                 leaf_fixture_on_off=True, observer_presence_mismatch_refused=True,
-                summary_conservation=True)
+                summary_conservation=True, compiled_chunk_diagnostics=2,
+                unknown_prompt_records_refused=True, nonserial_configurations_refused=len(nonserial))
 
 
 if __name__ == '__main__':

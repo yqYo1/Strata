@@ -58,6 +58,23 @@ class LeafEvidenceTests(unittest.TestCase):
         row = leaf.extract(text, [sample], 2)[0]
         self.assertEqual((row['cpu_jobs'], row['cpu_entries'], row['thread_count']), (0, 0, 0))
 
+    def test_known_prompt_chunk_diagnostics_preserve_request_framing(self):
+        text, sample = fixture()
+        expected = leaf.extract(text, [sample], 4)
+        diagnostics = ('strata serve: prompt chunk auto: 4096 tokens',
+                       'strata serve: prompt chunk 8192 -> 4096 tokens so its buffers fit in every expert cache')
+        for line in diagnostics:
+            with self.subTest(diagnostic=line):
+                self.assertEqual(leaf.extract(line + '\n' + text, [sample], 4), expected)
+        for line in ('strata serve: prompt broken 4096 tokens',
+                     diagnostics[0] + ' trailing garbage',
+                     'strata serve: prompt chunk auto: 0 tokens',
+                     'strata serve: prompt chunk auto: 9223372036854775808 tokens',
+                     diagnostics[1].replace('every expert cache', 'some cache')):
+            with self.subTest(malformed=line):
+                with self.assertRaises(RuntimeError):
+                    leaf.extract(line + '\n' + text, [sample], 4)
+
     def test_corrupt_native_evidence_is_rejected(self):
         text, sample = fixture()
         replacements = [

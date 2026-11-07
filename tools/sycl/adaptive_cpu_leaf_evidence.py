@@ -15,6 +15,24 @@ from measurement_guards import require
 MAX = (1 << 64) - 1
 FIELDS = ('prompt_tokens', 'reused_tokens', 'read_tokens', 'generated_tokens',
           'drafts_accepted', 'drafts_offered')
+PROMPT_CHUNK = (r'strata serve: prompt chunk (?:auto: ([1-9][0-9]*) tokens|'
+                r'([1-9][0-9]*) -> ([1-9][0-9]*) tokens so its buffers fit in every expert cache)')
+
+
+def prompt_footer_count(text):
+    """Reject unknown prompt records; exclude only compiled chunk diagnostics."""
+    count = 0
+    for line in text.splitlines():
+        if not line.startswith('strata serve: prompt '):
+            continue
+        if re.fullmatch(footer.HEADER, line):
+            count += 1
+        else:
+            diagnostic = re.fullmatch(PROMPT_CHUNK, line)
+            require(diagnostic is not None, 'unknown or malformed native prompt record')
+            require(all(census.integer(value) <= MAX >> 1 for value in diagnostic.groups()
+                        if value is not None), 'prompt chunk exceeds its signed native type')
+    return count
 
 
 def add(total, value):
@@ -43,7 +61,7 @@ def extract(text, samples, width, workers=5):
     copies = [(i, match) for i, line in enumerate(lines)
               if (match := re.fullmatch(footer.COPY, line))]
     require(len(headers) == len(copies) == len(samples) and
-            sum(line.startswith('strata serve: prompt ') for line in lines) == len(headers) and
+            prompt_footer_count(text) == len(headers) and
             sum(line.startswith('strata serve: SYCL_EXPERT_COPY') for line in lines) == len(copies),
             'complete native request/copy framing required')
     records, offset, previous_copy, owners, result = service.records(text), 0, -1, {}, []
