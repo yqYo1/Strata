@@ -31,14 +31,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a fixed4 weak-MTP class. Broader qualification remains pending;no inference
   adoption,new best TG or70TG follows. The e1b011 successor now passes its
   synthetic32-update positive entry and checked32-record-refusal. The new
-  clean8/32comparison has three of six regular-code processes closed:the first
+  clean8/32comparison has four of six regular-code processes closed:the first
   pair gives11.73872->13.38632TG(8->32),ratio1.140356,on33210fresh input
   tokens. Both close normally0with quiet validation and no fresh fault.
   Cache hits rise24.0->41.1%;generation is3016/3459tokens and acceptance
   83.8772/86.8056%. The second32process gives13.34774TG with the same cache
-  counts,3459generated tokens and acceptance. The remaining two pairs are
-  required before a repeated gain decision;no fixed-work attribution or
-  aggregate adoption follows.
+  counts,3459generated tokens and acceptance. The reverse pair's8process
+  gives11.79608TG,so the two TG ratios are1.140356/1.131540. Its candidate
+  prompt/TTFT ratios are1.029460/1.029290,so phase preservation is unqualified.
+  The last pair is required before a repeated gain decision;no fixed-work
+  attribution or aggregate adoption follows.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -876,7 +878,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reads succeed with the old429b paths absent. Both fresh benchmark/server
   frontend probes now pass normally0with closed owners at source`869568e8a`,
   still with the old paths absent. The held old products are now retired.
-  Three regular-code processes now close with native/benchmark0,quiet
+  Four regular-code processes now close with native/benchmark0,quiet
   validation,closed owners,unchanged boot/driver and no fresh fault. Each
   reads33210fresh tokens after four official warmups,then measures its first
   long request with thinking;this is neither engine first use nor a subsequent
@@ -887,13 +889,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | 0 | 8 | 3016 | 542.03329 | 61.446 | 11.73872 | 24.0 | 83.8772 |
   | 1 | 32 | 3459 | 546.85840 | 60.950 | 13.38632 | 41.1 | 86.8056 |
   | 2 | 32 | 3459 | 541.39795 | 61.533 | 13.34774 | 41.1 | 86.8056 |
+  | 3 | 8 | 3016 | 557.34756 | 59.782 | 11.79608 | 24.0 | 83.8772 |
 
-  The first TG ratio is1.140356;prompt/TTFT time ratios are0.991177/0.991928.
+  The two TG ratios are1.140356/1.131540. Their prompt time ratios are
+  0.991177/1.029460and client TTFT ratios0.991928/1.029290. Thus the reverse
+  pair has slower prompt/TTFT despite higher TG;judge those phases separately.
   Logical missed lookups per generated token decrease414.971->313.727;
   these are not CPU kernel jobs or physical traffic. Different generation
   lengths and acceptance preclude fixed-work attribution. Individual clocks,
   counts and routes remain in the linked compact result. Continue the frozen
-  plan with process3/4/5(8/8/32).
+  plan with process4/5(8/32).
   Processes0/1/2each have69successful raw/JIT files retired(13095666/13096255/
   13096306bytes),after recovering all346source inputs from Git and pushing their
   compact results. Keep their generated configs/plans for the ongoing cohort.
@@ -1020,7 +1025,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   diagnostic must explicitly run,commit and drain that T1 window at262143
   before suppressing output/drafts;merely setting `max_new=0` skips the final
   position. The reviewed q6 engine-entry report remains HOLD until this is
-  explicit. Keep its report/review in
+  explicit. The read-only e1b011 audit confirms the same serve gap in its
+  recorded private source:zero-output rejection at6250,`p=n-1`at6940and the
+  generation loop at7025;standalone`n_batched`at7500also excludes the last
+  token. Its generate.cpp and layer_major.inc bytes differ from the public
+  tree,so a future diagnostic patch must target the recorded compiled
+  composition. This source audit supplies no physical-fill execution.
+  Keep its report/review in
   `.cache/research/2026-11-06/full-context-engine-entry-design` only for the
   post-cohort implementation plan;ordinary API admission remains unchanged.
   The separate HC-address review accepts its static source report with the
@@ -2558,7 +2569,7 @@ The Q6 policy source and closed CPU host result are published on
 The default remains `05069aeed`; the current branch-rule query still permits
 only squash PR merges. Default integration remains unfinished because the
 measured original commit identities must be preserved.
-Rechecked2026-11-06 21:56UTC:the actual main-branch pull-request rule still
+Rechecked2026-11-07 03:51UTC:the actual main-branch pull-request rule still
 restricts allowed methods to `squash`;PR180 remains open. Preserve measured
 source identities rather than bypassing this rule.
 
