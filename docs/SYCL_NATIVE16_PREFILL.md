@@ -970,6 +970,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   bus traffic or bandwidth. Preserve the immutable positive receipt SHA256
   `83ba7a590d31533b69696ea958365fd1f061f8048f7468a1624a9bbf79b5c7cb`.
   No96speed,task quality,ordinary teardown or inference adoption follows.
+  After recovering its125inputs from pushed Git,59successful raw/JIT files/
+  13769854bytes are retired. Only the immutable positive record remains;
+  continued admission passes and all21protected receipt/build assets are
+  unchanged. Manifest:`adaptive-payload96-entry-v1-output-retirement-20261107.json`,
+  SHA256`11cd26a6c7a52d3d62525af3a7c523d2fa0c88aa12cd4cb41f2402284856a856`.
   It reuses the unchanged e1b011engine and ordered
   owned supervisor,requires both current8/32cohorts closed,and does not enable
   a performance trial. The pinned48-layer native index has max blob2662400B;
@@ -995,7 +1000,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   model's96-group maximum. Source-prepared CPU controls cover second-group
   publication,malformed status/count/order and oversized payload;these CPU cases pass.
   This separate exact96second-record refusal remains mandatory before any96
-  speed comparison. Keep the original32
+  speed comparison. Its actual plan is now prepared at`a93e4edcc`,with125
+  committed inputs,all15model assets checked and the exact positive receipt
+  pinned. Only the pre-exec failure-injection selector/private paths differ;
+  the expected native exit is1with no supervisor kill,noDONE and no second
+  publication. Execution has not run. Keep the original32
   reader and all current cohort/native inputs unchanged. Its ordered/index
   adversarial controls completed normally0after both cohorts closed:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
