@@ -781,9 +781,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   commands,exact41+16receipts and closed owners. Actual compiler/header/link
   closures cover207/204files and neither ELF links a GPU provider. Follow
   `adaptive_payload_audit_host_v1`. No successor native build or32-copy GPU
-  qualification follows from these CPU checks. Retire its two one-use CPU
-  ELFs/output after source/recipe recovery;keep the current15engine/fixture
-  outputs. After the frozen resource cohort closes,qualify the successor
+  qualification follows from these CPU checks. Its two one-use CPU ELFs and
+  successful output are retired after recovery of117original sources and all
+  four projected inputs:21files/321081bytes removed,all15engine/fixture
+  outputs preserved. Keep only its record for the imminent successor header
+  gate;regenerate the retired private inputs from Git rather than reusing them.
+  After the frozen resource cohort closes,qualify the successor
   native header,positive32publication/dispatch/occupied loan and second-record
   refusal before preparing an8/32speed comparison.
   The static resource profiler is
