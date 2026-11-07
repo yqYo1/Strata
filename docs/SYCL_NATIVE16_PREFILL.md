@@ -825,7 +825,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
   Require actual0,quiet stderr,four immutable configurations,small exact gain,
   slower-pair retention and independent phase verdicts;the CLI pins its full
-  transitive source closure before controls. Keep native build/positive/refusal
+  transitive source closure before controls. These controls now pass at source
+  `7e2177511bce6cfd975dc7b28c6b9c3585a1f781`:127inputs verified,actual0,
+  quiet stderr,four configurations and all exact/slower/phase checks. Follow
+  `adaptive_payload_generation_reader_host_v1`;no GPU/model execution occurred.
+  Keep native build/positive/refusal
   receipt bytes frozen when later gates consume their hashes:record raw-output
   retirement separately rather than rewriting those receipts or refreshing refs.
   Prospective consumer migration still needs execution qualification before

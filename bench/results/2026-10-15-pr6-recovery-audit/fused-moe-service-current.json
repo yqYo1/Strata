@@ -190736,5 +190736,94 @@
         "tests/core/adaptive_payload_budget_test.cpp": "c0b119b68ebbe794c3f82a8e11c35599a3dbfcf9e0e2fa04c383774caeb7463d"
       }
     }
+  },
+  "adaptive_payload_generation_reader_host_v1": {
+    "stage": "closed",
+    "source_commit": "7e2177511bce6cfd975dc7b28c6b9c3585a1f781",
+    "source_path": "tools/sycl/compare_adaptive_payload_generation.py",
+    "source_count": 127,
+    "source_signature_sha256": "7615fcb7aab6dca929545e299047d14736e5266650737b5d4a94c74d9d100f9b",
+    "command": [
+      "/usr/bin/timeout",
+      "-k",
+      "2s",
+      "20s",
+      "/usr/bin/prlimit",
+      "--as=1073741824",
+      "--cpu=10",
+      "--fsize=65536",
+      "/usr/bin/python3",
+      "-X",
+      "faulthandler",
+      "-B",
+      "tools/sycl/compare_adaptive_payload_generation.py",
+      "controls"
+    ],
+    "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "version": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+    },
+    "helpers": {
+      "/usr/bin/timeout": "12690a043dfd555a6c14ccc1564f5649c18f1762c0d6ff66729948130898ec52",
+      "/usr/bin/prlimit": "17064f67e650d6152a6902b013aab496b54c87587c8eea6f5023aafee6154069"
+    },
+    "external_configuration_scopes": {
+      "regular-code": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-generation-regular-code-v2/record.json",
+        "consumed_keys": [
+          "workload",
+          "configuration",
+          "environment_template"
+        ],
+        "sha256": "0ee71f31e8a48f63db30a8dc75a027e071431b9a06373b515e4705c8ad337392"
+      },
+      "varied-prose": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-generation-varied-prose-v2/record.json",
+        "consumed_keys": [
+          "workload",
+          "configuration",
+          "environment_template"
+        ],
+        "sha256": "1a33e50c2b4f018f21c14ce2da358b0f73ee735ae2e7f22e805dc50ab6e2a841"
+      }
+    },
+    "budgets": {
+      "wall_seconds": 20,
+      "cpu_seconds": 10,
+      "virtual_address_bytes": 1073741824,
+      "max_file_bytes": 65536
+    },
+    "outcome": {
+      "GPU_executed": false,
+      "immutable_configuration_controls": 4,
+      "passed": true,
+      "phase_decisions_separate": true,
+      "slower_pair_retained": true,
+      "small_exact_gain_retained": true
+    },
+    "exit_code": 0,
+    "process_terminal": true,
+    "execution_handle": "exec_command session56068;terminal0",
+    "stderr_bytes": 0,
+    "passed": true,
+    "complete": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "raw_artifacts": {
+      "stderr.log": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-budget-reader-host-v1/stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stdout.json": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-budget-reader-host-v1/stdout.json",
+        "sha256": "63a1d858ff2c11a76472dc25cbb2a02105b67c5b4b5fc4a7b6f203a0a3dc5f96",
+        "bytes": 355
+      }
+    },
+    "limits": "CPU decision and actual four-configuration reader only;no successor build,native32or model-speed qualification. Old settings scopes are consumed as metadata,not old ELF qualification.",
+    "retention": "Retain compact source/command/four-configuration/exact-and-phase outcome. Retire the two successful streams after pushed evidence/source recovery at this closed boundary."
   }
 }
