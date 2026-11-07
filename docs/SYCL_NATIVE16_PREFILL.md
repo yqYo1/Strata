@@ -1093,15 +1093,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   3111generated sample has prompt61651.1ms,decode239790.4ms,client TTFT61.868s
   and exact PP/TG538.644079/12.973830. All five request bodies,long output/
   reasoning hashes,draft acceptance2231/2643and cache753606/1692000match
-  process1,but its times differ. Retain both samples;do not infer a second
-  paired gain before the matching32reference closes. Three of six processes
-  are closed;finish process3reference32,process4reference32and process5candidate96,
-  then the final15asset hashes and independent phase decisions.
+  process1,but its times differ. Retain both samples;the matching32reference
+  and independent phase decisions are recorded below.
   Process2's69raw/JIT files/13095254bytes are retired after350-input Git
   recovery,with all15ELFs and six immutable receipts unchanged. Full admission
   passes before/after deletion;only config/plan remain. Manifest:
   `adaptive-payload96-generation-regular-code-v1-process2-output-retirement-20261107.json`,
   SHA256`f64ebef6a1d8c78332cb6da65ae57990568325a05dcd1554ab8f8e3343124f1a`.
+  Process3,the matching32reference,now closes normally0with quiet validation,
+  closed owners,unchanged boot/driver and no fresh fault. Its33208fresh-input/
+  3477generated sample has prompt60055.3ms,decode275654.2ms,client TTFT60.233s
+  and exact PP/TG552.957025/12.613630. All five request bodies,long output/
+  reasoning hashes,draft2462/3048and cache729753/1951200match process0.
+  The second96-over32paired TG ratio is1.028556;candidate/reference prompt
+  and TTFT time ratios1.026572/1.027145are slower. Both completed pairs favor
+  decode;this does not establish independent prefill preservation or adoption.
+  Four of six processes are closed;finish32/96and final15asset hashes.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
