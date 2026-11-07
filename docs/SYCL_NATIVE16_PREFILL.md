@@ -3040,10 +3040,11 @@ execution/tag state. A separate12case attention discriminator at`1aa641860`
 passes both variants and64/128-key chunks:stale epoch or wrong position gives0,
 while the same poisoned value with a live tag gives1 in all32768outputs per case
 (within2e-5),with finite scales and intact guards. Normal exit0,32qualified
-executable mappings and no fresh fault. The new source audit remains pending.
+executable mappings and no fresh fault. The source audit and native review
+find no fixture blocker;the masked mean denominator is137,the live control138.
 The target embedding/head in the stock-drafter fixture remain synthetic;
 this does not qualify target-model output,RESTORE,physical262144 fill or speed.
-Next:finish the new source-audit review,then bounded target-model execution and
+Next:finish the new current-runtime validation admission,then bounded target-model execution and
 independent-phase comparisons. Default
 native MTP and legacy explicit-MTP configs remain selected;the imported host
 Auto policy can choose DFlash2 on a fresh supported configuration. The feature
