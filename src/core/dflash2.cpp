@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -260,7 +261,9 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
     const OnDevice on_device(device_);
     if (head == nullptr || !head->loaded()) { err = "dflash2: the drafter needs the native head (--native)"; return false; }
     const WeightRef* we = wt.find("token_embd.weight");
-    if (we == nullptr) { err = "dflash2: token_embd.weight is missing"; return false; }
+    if (we == nullptr || we->ne0 != N_ || we->ne1 != vocab_) {
+        err = "dflash2: target embedding geometry does not match the draft model"; return false;
+    }
     EmbedFn embed = [we](const int32_t* tok, int n, float* out, sycl::queue* cs) {
         if (const NativeEmbed* ne = native_embed()) {
             ne->gather_dev(tok, n, out, cs);
@@ -284,6 +287,7 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
             }
             std::fclose(vf);
         }
+        if (vocab.empty()) { err = "dflash2: cannot read the requested nonempty draft vocabulary"; return false; }
     }
     if (std::any_of(vocab.begin(), vocab.end(), [&](int32_t id) { return id < 0 || id >= vocab_; })) {
         err = "dflash2: draft vocabulary token is outside the target vocabulary";
@@ -293,6 +297,8 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
     const void* hw = head->weights();
     const int64_t row_bytes = (int64_t) head->row_bytes();
     int64_t head_rows = row_bytes > 0 ? (int64_t) (head->weight_bytes() / (uint64_t) row_bytes) : 0;
+    if (head_rows != vocab_) { err = "dflash2: target head vocabulary does not match the draft model"; return false; }
+    strata::sycl_backend::validate_device_span(hw, head->weight_bytes(), *cs_);
     if (!vocab.empty()) {
         std::unique_ptr<int32_t, decltype(&release_device)> dv(owned_device<int32_t>(vocab.size(), *cs_), &release_device);
         dhead_ = owned_device<uint8_t>((size_t) ((int64_t) vocab.size() * row_bytes), *cs_);
@@ -563,7 +569,6 @@ bool Dflash2Drafter::rebuild(int64_t lo, int64_t hi, int64_t* rebuilt, int64_t* 
     if (pos.empty()) return true;
     const OnDevice on_device(device_);
     const size_t rows = pos.size();
-    const size_t cap = (size_t) kRing;   // a window is at most 2048 rows
     std::vector<int8_t> q(rows * 2560);
     std::vector<float> d(rows * 80);
     std::vector<float> tab(rows * 128);   // the rope tables of the rows, two floats [64] each, computed on the host (no device FP64)
@@ -753,8 +758,12 @@ bool Dflash2Drafter::draft(const float* taps, int n_new, int64_t pos0, int32_t a
     log_flush();
     for (int i = 0; i < kDrafts; ++i) {
         const bool made = i < ndraft_;
+        const float probability = reinterpret_cast<const float*>(h_out_)[16 + i];
+        if (made && (h_out_[i] < 0 || h_out_[i] >= vocab_ || !std::isfinite(probability) || probability < 0 || probability > 1)) {
+            err = "dflash2: invalid selector token/probability"; return false;
+        }
         drafts[i] = made ? h_out_[i] : 0;
-        if (probs) probs[i] = made ? reinterpret_cast<const float*>(h_out_)[16 + i] : 0.0f;
+        if (probs) probs[i] = made ? probability : 0.0f;
     }
     have_ctx_ = std::max<int64_t>(have_ctx_, s);
     ring_hi_ = std::max<int64_t>(ring_hi_, pos0 + n_new);

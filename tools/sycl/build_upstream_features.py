@@ -59,7 +59,7 @@ def check_inputs(row):
 
 
 def compact(row):
-    return dict(stage=row['stage'], source_commit=row['project']['revision'],
+    result = dict(stage=row['stage'], source_commit=row['project']['revision'],
         project_source_sha256=row['project']['aggregate_sha256'],
         dependency_revisions={p['root']: p['revision'] for p in row['dependencies']},
         recipe=row['recipe'], toolchain=row['toolchain'], fallbacks=row['fallbacks'],
@@ -74,6 +74,9 @@ def compact(row):
                   'This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. '
                   'Retire it if qualification fails; at the feature comparison boundary select validated outputs '
                   'and retire superseded generations after original-source/recipe recovery. No adoption from build success.')
+    for key in ['attempt', 'previous_attempt']:
+        if key in row: result[key] = row[key]
+    return result
 
 
 def publish(row):
@@ -84,9 +87,16 @@ def publish(row):
 
 
 def prepare():
-    require(not ROOT.exists(), 'one fresh feature build; close/reconcile an existing attempt before replacement')
+    previous = None
     status = json.loads(STATUS.read_text())
-    require('native_feature_build' not in status['current_sync'], 'existing feature build must close first')
+    if ROOT.exists():
+        previous = json.loads((ROOT / 'record.json').read_text())
+        require(previous['stage'] == 'build_failed' and not previous['passed'] and previous['ownership_closed'] and
+                all(ownership.closed(c) for c in previous['commands']) and
+                committed_plan() == compact(previous), 'commit and close failed compilation before a new source attempt')
+        require(source.git(P, 'rev-parse', 'HEAD').decode().strip() != previous['project']['revision'], 'new committed source required')
+    else:
+        require('native_feature_build' not in status['current_sync'], 'existing feature build must close first')
     baseline = json.loads((REFERENCE / 'record.json').read_text())
     recipe = copy.deepcopy(baseline['recipe'])
     recipe['configure'] = [v.replace(str(REFERENCE / 'source'), str(P)).replace(str(REFERENCE), str(ROOT))
@@ -118,9 +128,15 @@ def prepare():
         budgets=dict(wall=2400, cpu=7200, rss_cap=12 << 30, total_cap=4 << 30,
                      text_cap=48 << 20, file_cap=512 << 20), commands=[], passed=False, ownership_closed=True,
         qualification='Compilation only, no GPU execution, no speed, no model-route or full-context qualification.')
+    row['attempt'] = previous.get('attempt', 1) + 1 if previous else 1
+    if previous:
+        row['previous_attempt'] = dict(source_commit=previous['project']['revision'], stage=previous['stage'],
+            record_sha256=source.digest(ROOT / 'record.json'), error=previous.get('error'),
+            ownership_closed=True, evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
+            reason='Reuse the closed unqualified build cache; exact source/recipe/failure remain in Git. Preserve both validated phase references.')
     check_inputs(row)
-    ROOT.mkdir(mode=0o700)
-    for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700)
+    ROOT.mkdir(mode=0o700, exist_ok=bool(previous))
+    for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700, exist_ok=bool(previous))
     publish(row)
     print('Prepared feature compilation; commit upstream-status before build.', flush=True)
 
@@ -137,7 +153,8 @@ def build():
                         commands=monitor.commands if monitor else row['commands'])
         write(ROOT / 'active.json', snapshot)
     try:
-        monitor = ownership.Owner(ROOT / 'owned', persist)
+        output = 'owned' if row.get('attempt', 1) == 1 else 'owned-' + str(row['attempt'])
+        monitor = ownership.Owner(ROOT / output, persist)
         row['stage'] = 'building'
         for label, argv in [
             ('configure', row['recipe']['configure']),

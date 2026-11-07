@@ -9,6 +9,7 @@
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace {
@@ -25,7 +26,7 @@ struct Drain {
 void need(bool value, const char* what) { if (!value) throw std::runtime_error(what); }
 
 void gemm(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) {
-    constexpr int K = 512, M = 16, Columns = 8, Jobs = 3;
+    constexpr int K = 512, M = 64, Columns = 8, Jobs = 3;
     constexpr size_t Blocks = size_t(K) * M / 32, Packed = Blocks * 18;
     auto& q = runtime->compute();
     std::array<std::vector<uint8_t>, Jobs> weights;
@@ -121,13 +122,20 @@ void taps(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) {
 }
 } // namespace
 
-int main() try {
+int main(int argc, char** argv) try {
+    const bool supervised = argc == 2 && std::string(argv[1]) == "--supervised";
+    need(argc == 1 || supervised, "usage: sycl_dflash2_test [--supervised]");
     std::cout << "dflash2 fixture: bounded eager kernels, no model\n" << std::flush;
     auto runtime = strata::sycl_backend::runtime_for(0);
     gemm(runtime);
     taps(runtime);
     runtime->wait();
-    std::cout << "dflash2 fixture cases=9 PASS\n";
+    std::cout << "dflash2 fixture cases=9 PASS\n" << std::flush;
+    if (supervised) {
+        std::cout << "DF2_WAIT\n" << std::flush;
+        std::string command;
+        need(bool(std::getline(std::cin, command)) && command == "QUIT", "Main runtime-map retirement gate");
+    }
     return 0;
 } catch (const std::exception& error) {
     std::cerr << "dflash2 fixture FAILED: " << error.what() << '\n'; return 1;

@@ -85,7 +85,7 @@ void conv_launch(sycl::queue* q, const float* x, const float* dyn, int dyn_strid
 }
 
 // ---- norm + rope of one (row, head), 128 work-items: out = rope(rmsnorm(in) * gamma)
-inline float head_norm(const nd_item<2>& it, const sycl::local_accessor<float, 1>& red, float x, float eps) {
+inline float head_norm(const nd_item<2>& it, const sycl::local_accessor<float, 1>& red, float x, float /*eps*/) {
     const sycl::sub_group sg = it.get_sub_group();
     const int d = (int) it.get_local_id(1);
     float ss = x * x;
