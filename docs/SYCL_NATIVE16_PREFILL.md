@@ -1512,10 +1512,10 @@ SYCL grouped kernels. Q8_1 names activation arithmetic,not expanded weight
 storage. This closes the source question,not a new speedup or saturation claim.
 Varied-prose
 preparation still requires its own closed32/96cohort.
-Raw/JIT output from closed processes 0..4 and the consumed cache review are
-retired: 346 files / 65,566,715 bytes. Each closure recovered all 358 Git inputs,
+Raw/JIT output from all six closed processes and the consumed cache review are
+retired: 415 files / 78,704,633 bytes. Each closure recovered all 358 Git inputs,
 preserved all 15 ELFs/six immutable receipts and passed full continued admission.
-Only generated config/plan remain in those five process roots. Per-process
+Only generated config/plan remain in those six process roots. Per-process
 manifests/hashes and original results remain in the compact result;the current
 CPU representation retrieval review has its separate named consumer in the
 research index.
