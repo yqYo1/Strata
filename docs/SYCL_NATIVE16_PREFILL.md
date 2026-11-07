@@ -2408,8 +2408,17 @@ uses8GiB AS with the same2GiB RSS and other criteria. An owned32-thread
 snapshot shows2,512,637,952virtual bytes but65,536,000resident bytes. This
 corrects the test envelope;it does not fix the telemetry daemon lifetime or
 qualify GPU inference. Fresh frontend admission is still required before
-new model comparisons. The five reviewed server concerns,other functional
-ports,whole function ledger and vanilla performance remain incomplete.
+new model comparisons. The required stalled-SSE fix from Niko`c08fd2ec`is
+source-prepared in the shared`make_handler._sse`:socket writes time out after60s
+by default,configured by`STRATA_STREAM_WRITE_TIMEOUT_S`with0preserving
+unlimited writes. It uses the existing disconnect cancellation/turn-release
+path across all three APIs. The Main-authored`serve/test_stream_write_timeout.py`
+adds four CPU/mock real-socket cases for unread clients,next requests and
+limit0. These tests and the full server/Responses regression suites remain
+unexecuted;use the existing`tools/sycl/run_host_checks.py`after committed
+source/plan and closed native work. The other four reviewed server concerns,
+remaining functional ports,whole function ledger and vanilla performance remain
+incomplete.
 The configuration parsing helpers are ported and
 pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration

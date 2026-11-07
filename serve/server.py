@@ -93,6 +93,9 @@ ENGINE_SILENCE_S = 300.0
 PP_CHUNK_MAX = 32768
 PP_FLOOR_TOK_S = 50.0
 PP_SLACK = 3.0
+# Niko c08fd2ec (#4271): an unread SSE connection must not hold the engine's turn
+# indefinitely after its send buffer fills. Zero keeps the previous unlimited write.
+STREAM_WRITE_TIMEOUT_S = float(os.environ.get("STRATA_STREAM_WRITE_TIMEOUT_S", "60") or 0)
 
 
 # ------------------------------------------------------------------------------------------------ engines
@@ -3364,6 +3367,11 @@ def make_handler(svc: Service):
             self.send_header("X-Accel-Buffering", "no")   # nginx and similar proxies pass each event at once
             self._cors()
             self.end_headers()
+            if STREAM_WRITE_TIMEOUT_S > 0:
+                try:
+                    self.connection.settimeout(STREAM_WRITE_TIMEOUT_S)
+                except OSError:
+                    pass
 
         def _capture(self, items, api):
             """Retain bounded input/output for the monitor without changing the API response (the items as they

@@ -1143,10 +1143,23 @@
             "serve/server.py::make_handler._sse",
             "serve/test_serve_robustness.py::StalledClient"
           ],
-          "state": "selected_hunk_reviewed_unported",
-          "fork_evidence": "Current shared _sse ends after end_headers;STREAM_WRITE_TIMEOUT_S and settimeout are absent.",
+          "state": "source_prepared_validation_pending",
+          "fork_evidence": "Shared make_handler._sse now installs the Niko socket write timeout for Chat,Responses and Anthropic. Default60s;STRATA_STREAM_WRITE_TIMEOUT_S=0 preserves unlimited writes. Existing disconnect cancellation closes the stream and releases the FIFO.",
           "dependencies": "Current SSE/disconnect and Service FIFO contract;no new native inference interface.",
-          "validation": "Unread streaming client must release its turn within the configured write deadline;the next request must proceed. Cover OpenAI,Responses and Anthropic plus limit0. Use a loopback MockEngine,finite child/output budgets and confirmed closure."
+          "validation": "Unread streaming client must release its turn within the configured write deadline;the next request must proceed. Cover OpenAI,Responses and Anthropic plus limit0. Use a loopback MockEngine,finite child/output budgets and confirmed closure.",
+          "port_source_files": {
+            "serve/server.py": "a74c996e1c6b080bc8e5984e1d300af1016bbec8969fc54528496bbf0c847c5d",
+            "serve/test_stream_write_timeout.py": "dce5633d7c90c32f72bb286c4b1d59fa038aeb4fffcc4e077786106000ba8d7f"
+          },
+          "test_plan": {
+            "controller": "tools/sycl/run_host_checks.py",
+            "new_module": "serve.test_stream_write_timeout",
+            "regression_modules": [
+              "serve.test_server",
+              "serve.test_responses"
+            ],
+            "scope": "Four CPU/mock real-socket checks:unread client/cancellation/turn release/next request for each API;zero timeout waits until disconnect. Run after the native build/CPU checks,with committed source and generic finite host owner. No GPU or model-speed qualification."
+          }
         },
         {
           "feature": "Decouple server diagnostics from a blocked console",
