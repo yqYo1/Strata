@@ -1884,10 +1884,52 @@
   },
   "retention_note": "All240individual timing samples,shared work/footprint,setup/RSS,conservation and decisions retained. Repeated parser records,derivable row counts and per-process derived statistics retired after strict verification. Source41167d33b and frozen plan define gates.",
   "retained_auxiliary": {
-    "roots": [
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-timing-v1",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-packed-iq3xxs-gather-v1"
+    "roots": [],
+    "next_action": "Compile the exact activation-LUT and direct native baseline together under a new source-pinned plan;no retired binary needed. Preserve two inference generations."
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "files": 216,
+    "bytes": 28914269,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-closed-view-gather-retirement-20261108.json",
+    "manifest_sha256": "cf99752d1d6355191a7ab9ad950dbc72157d88789ec82d5c216edd900afa9175",
+    "recovered": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-timing-v1",
+        "source_commit": "313e5c4bc2d2e0c0fedb80020daf45662bec8a95",
+        "plan_commit": "c88e8e3f040000feb486d37ab8f6827bc662879b",
+        "build_commit": "1cb9c556cafac4000a92ec4f96021b60ba126238",
+        "source_files_recovered": 263,
+        "actual_compiler_inputs_verified": 636,
+        "binaries": {
+          "mix": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-timing-v1/build/cpu_decode_mix",
+            "sha256": "30e45b8589a36763f30e55f5e7e22d84e8f9d59c4db98d6074b357edb0055f15"
+          }
+        }
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-packed-iq3xxs-gather-v1",
+        "source_commit": "41167d33b2c9ce38c207075dd9bfe16448d54d6c",
+        "plan_commit": "fca3969b6d950c21c27deead4e64098c911c1265",
+        "build_commit": "45552f4e46e137ca6eebd2ffafb8f9a42557e577",
+        "source_files_recovered": 264,
+        "actual_compiler_inputs_verified": 637,
+        "binaries": {
+          "mix": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-packed-iq3xxs-gather-v1/build/cpu_decode_mix",
+            "sha256": "e374a01b4c32fef040ec89b5012d9ce407a5d8444a200129cad9c5030437b0a5"
+          }
+        }
+      }
     ],
-    "next_action": "Both comparisons are closed. Recover313e5/41167project inputs,recipes and636/637actual inputs;retire auxiliary outputs unless the pending bounded activation-LUT decision names a concrete immediate comparison. Inference generations remain unchanged."
+    "preserved_inference_binaries": 15
+  },
+  "activation_lut_next": {
+    "review_sha256": "f3f0476a17f9ead93ee1eb4100eef171f12f738b05ea55544814694f9c486702",
+    "question": "Block-local512KiB exact Q8_K partial-dot slab with generation charged per distinct activation and block.",
+    "actual_reuse_limit": "Model top_k10;expert_source.cpp groups jobs by expert but nact pointers share per token. E28 is not attainable same-activation reuse and cannot qualify this model.",
+    "first_discriminator": "Serial NT1,E1 negative and E10 optimistic upper bound;real pinned IQ3_XXS GU,exact paired-kernel lanes/FMA/reduction. Expand to actual NT1-4/multithread mix only if setup-inclusive repeated gain warrants it.",
+    "schedulable_new_research": false
   }
 }

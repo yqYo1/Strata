@@ -1537,90 +1537,40 @@ production selection. Current-model GPU counters,physical traffic and critical
 path remain unqualified. No new model speedup,adoption or device execution
 follows from this calibration.
 
-The packed98B gather candidate is now closed and **rejected for performance**.
-At source41167d33b,the CPU-only ELF`e374a01b`has637covered actual compiler
-inputs;disassembly confirms16VPGATHERDD and one VZEROUPPER in the paired dot.
-All ten controller tests,524288packed integer chunks,16FMA cases,64partial
-ranges,11refusals and eight real-weight/threaded checks pass. The latter
-include168distinct experts/four NT1 vectors plus all NT1..4/mixed jobs.
-All24timing processes and240eligible samples close normally0,quiet and owned.
-Three opposite-order pairs per shape compare1/6threads,groups6/28,reuse/stream.
-All eight raw/gather geometric-mean speed ratios are below one. Six-thread
-reuse ratios are0.82023/0.87502(group6/28),stream0.80936/0.94404;both shapes
-fail the all-three-favorable-pairs gate. One-thread ratios are0.79342..0.81557.
-Unused compact views coexist in both arms;their setup is diagnostic,not a
-required packed conversion. This proves no model speedup,hardware saturation
-or production regression. No inference code or prefill path changed.
-The compact current result preserves all samples and original failures.
+The packed98B gather experiment is closed and **rejected for performance**.
+All524288integer controls,eight real-weight/threaded checks and24timing
+processes/240samples pass execution and numerical checks,but all eight
+raw/gather geometric-mean speed ratios are below one(0.79342..0.94404).
+No production inference path changed. Exact source41167d33b,recipe and samples
+are recoverable from the [closed gather result](https://github.com/yqYo1/Strata/blob/dfe6118a12f2d946fc968b3aca8c290f84b2aedf/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
 
-Next review the existing activation-dependent partial-dot/LUT reference for a
-setup-inclusive original-quantization candidate,or select a separate GPU-cache
-placement/configuration mechanism. Do not repeat a generic LUT survey or
-advance this failed gather mechanism to a model trial. Both auxiliary
-comparisons are closed;recover their exact313e5/41167inputs and636/637actual
-compiler inputs before retirement,unless that bounded decision names an
-immediate comparison. The two inference generations remain protected.
+The earlier134B compact-view experiment preserved native integer/FMA output
+and improved one-thread GU by1.71..1.83x and six-thread reuse by1.24..1.29x.
+Neither six-thread stream cell qualified stable improvement;raw+view storage
+and0.354..0.481s allocation/encoding costs remain charged in its original
+[comparison](https://github.com/yqYo1/Strata/blob/286b4a132b960a3a633511173846b57ebef32cee/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
+This component result does not establish production critical-path benefit,
+physical RAM traffic or model adoption. Its original source is313e5c4bc.
 
-The benchmark-only `bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp` stores exact
-IQ3_XXS signed-magnitude indices in134-byte blocks,versus98raw bytes. AVX2
-register shuffles replace codebook loads while preserving native integer lanes,
-per-block FP32 FMA/reduction order and SwiGLU. Raw weights remain;the additional
-GU view is1715200B/expert. Raw-plus-view is3891200B for18/20and3430400B for18/42.
-This changes neither production/prefill nor NT2+selection. Earlier codec and
-168-expert/672-comparison numerical evidence is recoverable at6403ca995.
+Both auxiliary generations now have no binary consumer and are physically
+retired:216files/28914269B,after recovering263/264original project inputs,
+1376GGML inputs and checking636/637actual compiler inputs,recipes,link inputs
+and exact executable identities. All15inference ELFs remain unchanged.
+The compact current result records the external deletion manifest and hash;
+restore a closed candidate from its original reachable Git commits.
 
-The new CPU-only timing ELF`30e45b85`,source`313e5c4bc`,covers636actual compiler
-inputs. All ten controller tests and the repeated codec/integer/FMA/bounds
-controls pass. All eight threaded real-weight checks pass:both formats,
-groups6/28,1/6compute threads,NT1..4 and heterogeneous jobs,with finite exact
-native GU outputs,inactive rows,guards and actual affinity.
-The18/20current-NT screen closes24independent processes and240eligible timing
-samples,normal0,quiet stderr and closed ownership. Three opposite-order pairs
-per thread/group shape use a matched component-only barrier team. These are
-raw/compact geometric-mean speed ratios;each cell retains all three ratios
-and individual samples in the [closed compact timing result](https://github.com/yqYo1/Strata/blob/286b4a132b960a3a633511173846b57ebef32cee/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
+The reviewed next prototype is a512KiB block-local activation-dependent
+partial-dot LUT. Preserve original Q8_K quantization,PSIGN edge behavior,
+integer lanes,block FMA order and final reduction. Actual source groups jobs
+by expert while sharing activation pointers per token;the model routes at
+most10experts per token. A28-job cohort is not28-way activation reuse.
+First screen serial NT1 with E1 as a negative control and E10 as the optimistic
+physical upper bound,charging table generation on every distinct activation
+and block. Only a repeated setup-inclusive gain warrants the actual NT1..4,
+multithread and production-entry comparisons. Existing Luna-reviewed references
+cover this question;no duplicate research scope is selected. Keep prefill,
+physical262144/RESTORE and task-quality requirements open.
 
-| Compute threads | Expert group | Reuse | Stream |
-| --- | --- | --- | --- |
-|1|6|1.83066|1.70772|
-|1|28|1.76161|1.70872|
-|6|6|1.29047|0.95351|
-|6|28|1.24012|1.04266|
-
-All three pairs favor compact for one-thread and six-thread reuse cells.
-Both six-thread stream cells fail the all-three-pairs gate;their geometric
-means do not qualify stable improvement. Full allocation+encoding costs
-0.354..0.481s for66/84loaded experts;observed owned RSS is263720960..334970880B.
-Both arms retain raw+view storage. Setup amortization is recorded per cell,
-not converted into model TG. This isolates GU math with a shared scheduler,
-not the production ExpertPool,DRAM traffic,model critical path or hardware
-saturation. No inference implementation or model-speed adoption follows.
-
-Next prioritize a packed98B/register-decode variant or bounded hot-view
-comparison against this qualified component baseline. Other-format,pureNT1,
-production dispatch/lifecycle,actual RAM admission and setup reuse remain
-prerequisites. Keep the two inference generations and the current auxiliary
-ELF for that immediate follow-up. The old`ab274d68`numeric build is physically
-retired after original6aba/58fb/8f7Git recovery:263project/1376GGML sources,
-633actual compiler inputs,recipe,link inputs and executable identity verified.
-Together with successful successor raw output,158files/15013007B are deleted;
-all15inference ELFs and the selected auxiliary ELF remain unchanged. The new
-auxiliary root retains71files/14117390B for the named follow-up. Manifest:
-`cpu-compact-numeric-output-retirement-20261108.json`,SHA256
-`59f97723bdb668291122e420fdd3fa5784856125781dcc1f0c1ee1905a5541c3`.
-Luna-max's post-calibration review supports bounded comparison using existing
-references;no duplicate Orca survey is selected. Closed CPU calibration remains
-recoverable at8547cb65d. Physical262144/RESTORE and model/task qualification
-remain open.
-
-Both closed auxiliary CPU builds and their output are retired after recovering
-original261/V4 262controller inputs,568native inputs,GGML source/recipes and
-checking all634/627actual compiler inputs. Deletion covers404files/33199588B;
-all15inference ELFs remain unchanged. The next compact-view comparison builds
-both arms fresh from the retained native source;neither retired auxiliary ELF
-or raw tree is a live input. Manifest outside Git:
-`cpu-current-calibration-output-retirement-20261108.json`,SHA256
-`b30cccc1c81c2ae6298cf01ac4b70519f3d0c2298d3f556ef9021ce45915b115`.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
