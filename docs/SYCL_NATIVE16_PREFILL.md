@@ -2944,15 +2944,18 @@ source identities rather than bypassing this rule.
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently194
-milestone rows including the four closed e1b011adaptive8/32code/prose aggregates,
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently196
+milestone rows including the two closed e1b011adaptive32/96code aggregates,
+the four closed adaptive8/32code/prose aggregates,
 the four MTP-width,four earlier adaptive code/prose aggregates,the CPU
 read-payload calibration and the single13.94265TG resource-diagnostic sample.
 The code rows recover their exact samples from result commit
 `3fc4e9094c83029ea39b83f82a555740b5572fe2`,keeping native source`bbd345c63`
 separate. The two prose rows use result commit
 `c2e317112d6a6643d5c5d5638ced5a6d7b8e766b`and the same native identity.
-Both cohorts record repeated decode gains and failed prompt/TTFT
+The32/96code rows use result commit
+`6e964f739d3c92b2b6ed2adc911aed6d4026cdcb`and the same native identity.
+These cohorts record repeated decode gains and failed prompt/TTFT
 nonregression gates. The older resource diagnostic retains its charged
 observer envelope and failed caller-cost comparison;it is not clean speed.
 Detailed current evidence and frozen plans are in
