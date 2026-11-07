@@ -31,7 +31,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a fixed4 weak-MTP class. Broader qualification remains pending;no inference
   adoption,new best TG or70TG follows. The e1b011 successor now passes its
   synthetic32-update positive entry and checked32-record-refusal. The new
-  clean8/32comparison remains pending. Preserve the552b prefill fallback.
+  clean8/32comparison has one of six regular-code processes closed:adaptive8
+  gives11.73872TG on33210fresh input/3016generated tokens,with normal0,
+  closed owners,quiet validation and no fresh fault. This single reference
+  sample establishes no8/32gain;the candidate and repetitions remain pending.
+  Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -868,7 +872,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reads succeed with the old429b paths absent. Both fresh benchmark/server
   frontend probes now pass normally0with closed owners at source`869568e8a`,
   still with the old paths absent. The held old products are now retired.
-  Regular-code process0(adaptive8)is running;no clean sample has closed yet.
+  Regular-code process0(adaptive8)is closed with normal native/benchmark0,
+  quiet validation,closed owners,unchanged boot/driver and no fresh fault.
+  Its33210fresh input/3016generated tokens give exact542.03329PP,
+  61.2693s prompt,61.446s client TTFT and11.73872TG over256.9275s decode.
+  Draft acceptance is2159/2574(83.8772%)and the cache footer is396288/1647840
+  hits(24.0%). Four official warmups precede this first long request;it is
+  neither an engine-first-use nor a subsequent-long-request sample. The
+  six-process comparison is incomplete and no32-budget gain follows. Next
+  execute process1(adaptive32),then the remaining two opposite-order pairs.
   Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
@@ -881,8 +893,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Keep native build/positive/refusal
   receipt bytes frozen when later gates consume their hashes:record raw-output
   retirement separately rather than rewriting those receipts or refreshing refs.
-  Prospective consumer migration still needs execution qualification before
-  retiring429b;the new wrappers alone do not make its active readers qualified.
+  Actual successor preparation and both frontend probes passed with429b's
+  original paths absent before its retirement;the first clean model process
+  also now closes normally without those products.
   The positive32entry's59successful output/JIT files(13634939bytes)are retired
   after recovery of121original inputs,with21ELFs and both consumed receipt
   hashes unchanged. Keep only its immutable record. The deletion manifest is
