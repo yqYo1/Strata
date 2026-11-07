@@ -1,6 +1,6 @@
 {
   "schema": "strata-cpu-decode-mix-v4",
-  "stage": "check",
+  "stage": "measure",
   "source_commit": "d7a92b074d5b625b350936ab434e88cba2610ffe",
   "plan_sha256": "c6b6512a6dfb65ac75b33d4832346902f9d5943456c5f3a9dd32efc91ef0ecd1",
   "passed": true,
@@ -8,39 +8,6 @@
   "active": false,
   "ownership_closed": true,
   "GPU_executed": false,
-  "children": [
-    {
-      "label": "duplicate",
-      "cpus": [
-        0,
-        0
-      ],
-      "error": "duplicate scan CPU",
-      "exit_code": 1
-    },
-    {
-      "label": "negative",
-      "cpus": [
-        -1
-      ],
-      "error": "scan CPU outside allowed affinity",
-      "exit_code": 1
-    },
-    {
-      "label": "range",
-      "cpus": [
-        1024
-      ],
-      "error": "scan CPU outside allowed affinity",
-      "exit_code": 1
-    },
-    {
-      "label": "empty",
-      "cpus": [],
-      "error": "scan thread count",
-      "exit_code": 1
-    }
-  ],
   "reuse_origin": {
     "result_commit": "49b2d4821077e4aa51425c0450a8414e013cd79a",
     "stage_commits": {
@@ -98,11 +65,663 @@
       "sha256": "127ae4cc26e2dec7456bcd85edfa396e78f403d1e0a08ba23dec8b1451e75a90"
     }
   },
+  "read_reference": [
+    {
+      "threads": 1,
+      "timer": {
+        "kind": "timer_check",
+        "mode": "scan",
+        "threads": 1,
+        "query_s": 2.32879e-08,
+        "fastest_pass_s": 0.009706832
+      },
+      "samples": [
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 1,
+          "attempt": 0,
+          "rep": 0,
+          "iterations": 99,
+          "visits": 99,
+          "requested_bytes": 26575110144,
+          "wall_s": 1.306201117,
+          "cpu_s": 1.305335
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 1,
+          "attempt": 0,
+          "rep": 1,
+          "iterations": 107,
+          "visits": 107,
+          "requested_bytes": 28722593792,
+          "wall_s": 1.306282982,
+          "cpu_s": 1.305544
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 1,
+          "attempt": 0,
+          "rep": 2,
+          "iterations": 99,
+          "visits": 99,
+          "requested_bytes": 26575110144,
+          "wall_s": 1.301859297,
+          "cpu_s": 1.295436
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 1,
+          "attempt": 0,
+          "rep": 3,
+          "iterations": 106,
+          "visits": 106,
+          "requested_bytes": 28454158336,
+          "wall_s": 1.311129879,
+          "cpu_s": 1.30965
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 1,
+          "attempt": 0,
+          "rep": 4,
+          "iterations": 99,
+          "visits": 99,
+          "requested_bytes": 26575110144,
+          "wall_s": 1.303765347,
+          "cpu_s": 1.275159
+        }
+      ]
+    },
+    {
+      "threads": 2,
+      "timer": {
+        "kind": "timer_check",
+        "mode": "scan",
+        "threads": 2,
+        "query_s": 2.12029e-08,
+        "fastest_pass_s": 0.008359586
+      },
+      "samples": [
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 2,
+          "attempt": 0,
+          "rep": 0,
+          "iterations": 117,
+          "visits": 117,
+          "requested_bytes": 31406948352,
+          "wall_s": 1.302547597,
+          "cpu_s": 2.504581
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 2,
+          "attempt": 0,
+          "rep": 1,
+          "iterations": 126,
+          "visits": 126,
+          "requested_bytes": 33822867456,
+          "wall_s": 1.30640018,
+          "cpu_s": 2.528297
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 2,
+          "attempt": 0,
+          "rep": 2,
+          "iterations": 120,
+          "visits": 120,
+          "requested_bytes": 32212254720,
+          "wall_s": 1.308465718,
+          "cpu_s": 2.538344
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 2,
+          "attempt": 0,
+          "rep": 3,
+          "iterations": 128,
+          "visits": 128,
+          "requested_bytes": 34359738368,
+          "wall_s": 1.305371847,
+          "cpu_s": 2.535147
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 2,
+          "attempt": 0,
+          "rep": 4,
+          "iterations": 129,
+          "visits": 129,
+          "requested_bytes": 34628173824,
+          "wall_s": 1.303892893,
+          "cpu_s": 2.542643
+        }
+      ]
+    },
+    {
+      "threads": 3,
+      "timer": {
+        "kind": "timer_check",
+        "mode": "scan",
+        "threads": 3,
+        "query_s": 2.50842e-08,
+        "fastest_pass_s": 0.007993136
+      },
+      "samples": [
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 3,
+          "attempt": 0,
+          "rep": 0,
+          "iterations": 122,
+          "visits": 122,
+          "requested_bytes": 32749125632,
+          "wall_s": 1.309926282,
+          "cpu_s": 3.575767
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 3,
+          "attempt": 0,
+          "rep": 1,
+          "iterations": 113,
+          "visits": 113,
+          "requested_bytes": 30333206528,
+          "wall_s": 1.304261961,
+          "cpu_s": 3.484823
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 3,
+          "attempt": 0,
+          "rep": 2,
+          "iterations": 121,
+          "visits": 121,
+          "requested_bytes": 32480690176,
+          "wall_s": 1.308243297,
+          "cpu_s": 3.635673
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 3,
+          "attempt": 0,
+          "rep": 3,
+          "iterations": 115,
+          "visits": 115,
+          "requested_bytes": 30870077440,
+          "wall_s": 1.308578419,
+          "cpu_s": 3.487978
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 3,
+          "attempt": 0,
+          "rep": 4,
+          "iterations": 118,
+          "visits": 118,
+          "requested_bytes": 31675383808,
+          "wall_s": 1.303661253,
+          "cpu_s": 3.515645
+        }
+      ]
+    },
+    {
+      "threads": 6,
+      "timer": {
+        "kind": "timer_check",
+        "mode": "scan",
+        "threads": 6,
+        "query_s": 2.08502e-08,
+        "fastest_pass_s": 0.009608597
+      },
+      "samples": [
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 6,
+          "attempt": 0,
+          "rep": 0,
+          "iterations": 121,
+          "visits": 121,
+          "requested_bytes": 32480690176,
+          "wall_s": 1.303212631,
+          "cpu_s": 5.180207
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 6,
+          "attempt": 0,
+          "rep": 1,
+          "iterations": 114,
+          "visits": 114,
+          "requested_bytes": 30601641984,
+          "wall_s": 1.310004868,
+          "cpu_s": 4.92846
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 6,
+          "attempt": 0,
+          "rep": 2,
+          "iterations": 117,
+          "visits": 117,
+          "requested_bytes": 31406948352,
+          "wall_s": 1.305417113,
+          "cpu_s": 4.983557
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 6,
+          "attempt": 0,
+          "rep": 3,
+          "iterations": 117,
+          "visits": 117,
+          "requested_bytes": 31406948352,
+          "wall_s": 1.307113749,
+          "cpu_s": 5.276389
+        },
+        {
+          "kind": "sample",
+          "mode": "scan",
+          "threads": 6,
+          "attempt": 0,
+          "rep": 4,
+          "iterations": 108,
+          "visits": 108,
+          "requested_bytes": 28991029248,
+          "wall_s": 1.306790842,
+          "cpu_s": 4.562487
+        }
+      ]
+    }
+  ],
   "owned_commands": {
     "count": 4,
     "all_closed": true,
-    "all_exit_zero": false
+    "all_exit_zero": true
   },
   "hardware_saturation_qualified": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "reused_expert_evidence": {
+    "commit": "49b2d4821077e4aa51425c0450a8414e013cd79a",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+    "key": "children",
+    "children": 56,
+    "cells": 112,
+    "samples": 560,
+    "children_sha256": "e8968f30a36af4f0fe27e8d88ec43a2a622dd3576939e20f453ee04a03bba47f",
+    "retention": "Original individual expert samples stay recoverable at this immutable commit,without a second active copy."
+  },
+  "analysis": {
+    "actual_expert_timing_cells": 112,
+    "formula": "Per format/worker/group/mode choose the middle of5 wall_s/passes samples;normalize by passes*100*group jobs. Weight per-format costs by matching current CPU-job count/846250. This synthetic marginal mixture is not model critical-path latency.",
+    "individual_expert_samples": 560,
+    "individual_read_samples": 20,
+    "limits": "Same-route CPU sensitivity only. Requested blob visits and read-fixture byte rates are not physical DRAM/PCIe traffic or a hard ceiling. CPU time includes pool waiting. Marginal NT mixture,independent format processes and changed batch/group shapes are not the actual layer/access trace. No GPU saturation,critical path,model TG,task quality or inference adoption is qualified.",
+    "mixture": [
+      {
+        "group": 6,
+        "mode": "reuse",
+        "six_over_one_thread_speedup": 4.247828321522127,
+        "synthetic_marginal_mix": [
+          {
+            "compute_threads": 1,
+            "cpu_s_per_wall": 1.970652966338814,
+            "down_us": 116.8721721939594,
+            "gu_us": 335.435522608035,
+            "quant_us": 0.2671363013416755,
+            "us": 452.63025755817193,
+            "workers": 1
+          },
+          {
+            "compute_threads": 2,
+            "cpu_s_per_wall": 2.9733384581211917,
+            "down_us": 60.3742493141021,
+            "gu_us": 175.75083418408892,
+            "quant_us": 0.22162385724517333,
+            "us": 236.38560814943804,
+            "workers": 2
+          },
+          {
+            "compute_threads": 3,
+            "cpu_s_per_wall": 3.9302351097705808,
+            "down_us": 47.798972644658015,
+            "gu_us": 137.55355753190767,
+            "quant_us": 0.30933521581851003,
+            "us": 185.69931722984452,
+            "workers": 3
+          },
+          {
+            "compute_threads": 6,
+            "cpu_s_per_wall": 5.763005832753159,
+            "down_us": 27.496443444200505,
+            "gu_us": 78.82551994409896,
+            "quant_us": 0.203454824722747,
+            "us": 106.55568523446838,
+            "workers": 5
+          }
+        ]
+      },
+      {
+        "group": 6,
+        "mode": "stream",
+        "six_over_one_thread_speedup": 3.1440695533966023,
+        "synthetic_marginal_mix": [
+          {
+            "compute_threads": 1,
+            "cpu_s_per_wall": 1.9513848019326074,
+            "down_us": 114.71921135804187,
+            "gu_us": 324.61410175280287,
+            "quant_us": 0.27623003494249143,
+            "us": 439.67807954675004,
+            "workers": 1
+          },
+          {
+            "compute_threads": 2,
+            "cpu_s_per_wall": 2.963759814363766,
+            "down_us": 70.76192806031776,
+            "gu_us": 188.7035582215374,
+            "quant_us": 0.22197326975732104,
+            "us": 259.73805785848424,
+            "workers": 2
+          },
+          {
+            "compute_threads": 3,
+            "cpu_s_per_wall": 3.9298573198978084,
+            "down_us": 56.80280674290049,
+            "gu_us": 138.59550931649684,
+            "quant_us": 0.22650663469350293,
+            "us": 195.6705368193744,
+            "workers": 3
+          },
+          {
+            "compute_threads": 6,
+            "cpu_s_per_wall": 5.597348418349376,
+            "down_us": 47.76751352909218,
+            "gu_us": 91.81337550514422,
+            "quant_us": 0.2181999880869246,
+            "us": 139.84362371110933,
+            "workers": 5
+          }
+        ]
+      },
+      {
+        "group": 28,
+        "mode": "reuse",
+        "six_over_one_thread_speedup": 3.3859969777541337,
+        "synthetic_marginal_mix": [
+          {
+            "compute_threads": 1,
+            "cpu_s_per_wall": 1.9781124130009993,
+            "down_us": 119.90329237914604,
+            "gu_us": 343.1838720826588,
+            "quant_us": 0.47507427344692976,
+            "us": 463.5944396400148,
+            "workers": 1
+          },
+          {
+            "compute_threads": 2,
+            "cpu_s_per_wall": 2.970885383144753,
+            "down_us": 70.12221438781958,
+            "gu_us": 180.32655731875732,
+            "quant_us": 0.44807002862776957,
+            "us": 250.92501598982577,
+            "workers": 2
+          },
+          {
+            "compute_threads": 3,
+            "cpu_s_per_wall": 3.836968895583163,
+            "down_us": 60.06332746440515,
+            "gu_us": 146.75890588789972,
+            "quant_us": 0.4530737139383133,
+            "us": 207.33853901005423,
+            "workers": 3
+          },
+          {
+            "compute_threads": 6,
+            "cpu_s_per_wall": 5.504083900970413,
+            "down_us": 46.204040102918746,
+            "gu_us": 90.34938468342573,
+            "quant_us": 0.34372468268034745,
+            "us": 136.91519593366797,
+            "workers": 5
+          }
+        ]
+      },
+      {
+        "group": 28,
+        "mode": "stream",
+        "six_over_one_thread_speedup": 3.289193071043845,
+        "synthetic_marginal_mix": [
+          {
+            "compute_threads": 1,
+            "cpu_s_per_wall": 1.9808444787530217,
+            "down_us": 126.9480754100785,
+            "gu_us": 333.865592061548,
+            "quant_us": 0.47978917416311456,
+            "us": 461.32885786832185,
+            "workers": 1
+          },
+          {
+            "compute_threads": 2,
+            "cpu_s_per_wall": 2.964150612367329,
+            "down_us": 67.7371235954574,
+            "gu_us": 178.18237005636547,
+            "quant_us": 0.40479827389512557,
+            "us": 246.35667110351565,
+            "workers": 2
+          },
+          {
+            "compute_threads": 3,
+            "cpu_s_per_wall": 3.902784396187524,
+            "down_us": 55.11201916188487,
+            "gu_us": 136.6796309389306,
+            "quant_us": 0.42433379914447494,
+            "us": 192.2462086724307,
+            "workers": 3
+          },
+          {
+            "compute_threads": 6,
+            "cpu_s_per_wall": 5.563583748853627,
+            "down_us": 48.18375820385947,
+            "gu_us": 91.5923926919443,
+            "quant_us": 0.45710193316627984,
+            "us": 140.25593752145306,
+            "workers": 5
+          }
+        ]
+      }
+    ],
+    "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
+    "per_cell_CV_max": 0.3974016031459504,
+    "per_cell_CV_min": 0.004411573649631038,
+    "production_six_thread_formats": [
+      {
+        "job_share": 0.3156821270310192,
+        "observed_jobs": 267146,
+        "pair": [
+          22,
+          20
+        ],
+        "reuse6_us_per_job": 108.59026758333333,
+        "stream28_down_fraction": 0.4316257653805376,
+        "stream28_gu_fraction": 0.5646808597086349,
+        "stream28_quant_fraction": 0.003534510471354825,
+        "stream28_requested_blob_GB_s": 12.763870409924767,
+        "stream28_sample_CV": 0.08244493934349105,
+        "stream28_us_per_job": 154.43591455357142,
+        "stream6_over_reuse6": 1.3984847470087365,
+        "stream6_us_per_job": 151.8618328888889,
+        "weighted_stream28_us": 48.75265799625216
+      },
+      {
+        "job_share": 0.2982392909896603,
+        "observed_jobs": 252385,
+        "pair": [
+          18,
+          20
+        ],
+        "reuse6_us_per_job": 103.99174833333333,
+        "stream28_down_fraction": 0.3354100923888543,
+        "stream28_gu_fraction": 0.6625083551714133,
+        "stream28_quant_fraction": 0.0019073188435900822,
+        "stream28_requested_blob_GB_s": 17.278586791283256,
+        "stream28_sample_CV": 0.032254977980211846,
+        "stream28_us_per_job": 125.93622535714286,
+        "stream6_over_reuse6": 1.2313054010636861,
+        "stream6_us_per_job": 128.0456013888889,
+        "weighted_stream28_us": 37.559130560428365
+      },
+      {
+        "job_share": 0.1788525849335303,
+        "observed_jobs": 151354,
+        "pair": [
+          21,
+          20
+        ],
+        "reuse6_us_per_job": 116.92684745614035,
+        "stream28_down_fraction": 0.2704938552809118,
+        "stream28_gu_fraction": 0.7274438512688942,
+        "stream28_quant_fraction": 0.0019081959174821527,
+        "stream28_requested_blob_GB_s": 15.807380546258596,
+        "stream28_sample_CV": 0.047323074801695356,
+        "stream28_us_per_job": 147.37419607142857,
+        "stream6_over_reuse6": 1.2834786681539274,
+        "stream6_us_per_job": 150.07311444444446,
+        "weighted_stream28_us": 26.358255919875923
+      },
+      {
+        "job_share": 0.09988064992614476,
+        "observed_jobs": 84524,
+        "pair": [
+          22,
+          42
+        ],
+        "reuse6_us_per_job": 103.17505126984126,
+        "stream28_down_fraction": 0.284537382417911,
+        "stream28_gu_fraction": 0.7117450743633292,
+        "stream28_quant_fraction": 0.003559971889091784,
+        "stream28_requested_blob_GB_s": 12.729354289370546,
+        "stream28_sample_CV": 0.14128498373810075,
+        "stream28_us_per_job": 118.65487955357142,
+        "stream6_over_reuse6": 1.3273952231935153,
+        "stream6_us_per_job": 136.95407020833332,
+        "weighted_stream28_us": 11.851326486719138
+      },
+      {
+        "job_share": 0.06663279172821271,
+        "observed_jobs": 56388,
+        "pair": [
+          18,
+          42
+        ],
+        "reuse6_us_per_job": 93.39551201388889,
+        "stream28_down_fraction": 0.25357358853990836,
+        "stream28_gu_fraction": 0.7359109264953937,
+        "stream28_quant_fraction": 0.010351764084680623,
+        "stream28_requested_blob_GB_s": 10.979485006836928,
+        "stream28_sample_CV": 0.09520578586723384,
+        "stream28_us_per_job": 156.21862035714284,
+        "stream6_over_reuse6": 1.2924681727887344,
+        "stream6_us_per_job": 120.71072675925926,
+        "weighted_stream28_us": 10.409282794326229
+      },
+      {
+        "job_share": 0.02390192023633678,
+        "observed_jobs": 20227,
+        "pair": [
+          21,
+          42
+        ],
+        "reuse6_us_per_job": 115.64573631578948,
+        "stream28_down_fraction": 0.19290589909958877,
+        "stream28_gu_fraction": 0.8041919411431179,
+        "stream28_quant_fraction": 0.0027547975530747165,
+        "stream28_requested_blob_GB_s": 14.332324014123545,
+        "stream28_sample_CV": 0.07001287033231213,
+        "stream28_us_per_job": 130.39057714285713,
+        "stream6_over_reuse6": 1.1253435617250076,
+        "stream6_us_per_job": 130.1411848039216,
+        "weighted_stream28_us": 3.1165851744384887
+      },
+      {
+        "job_share": 0.016810635155096013,
+        "observed_jobs": 14226,
+        "pair": [
+          23,
+          20
+        ],
+        "reuse6_us_per_job": 62.819419333333336,
+        "stream28_down_fraction": 0.362441891334418,
+        "stream28_gu_fraction": 0.6354646948366941,
+        "stream28_quant_fraction": 0.0019562692060311293,
+        "stream28_requested_blob_GB_s": 20.263803875941097,
+        "stream28_sample_CV": 0.048374868060446406,
+        "stream28_us_per_job": 131.38698026785713,
+        "stream6_over_reuse6": 1.9330668689626869,
+        "stream6_us_per_job": 121.43413824074075,
+        "weighted_stream28_us": 2.2086985894127453
+      }
+    ],
+    "read_references": [
+      {
+        "CV": 0.038575442049808215,
+        "max": 21.98803336473383,
+        "min": 20.3453432998404,
+        "requested_read_fixture_GB_s_median": 20.41319688328807,
+        "threads": 1
+      },
+      {
+        "CV": 0.04228198835494946,
+        "max": 26.557529387500082,
+        "min": 24.111939114037614,
+        "requested_read_fixture_GB_s_median": 25.890127675885655,
+        "threads": 2
+      },
+      {
+        "CV": 0.03137672575158631,
+        "max": 25.000739417181954,
+        "min": 23.256989343416116,
+        "requested_read_fixture_GB_s_median": 24.297250328724772,
+        "threads": 3
+      },
+      {
+        "CV": 0.0429262059463445,
+        "max": 24.923553841767514,
+        "min": 22.184903900635078,
+        "requested_read_fixture_GB_s_median": 24.027708664244187,
+        "threads": 6
+      }
+    ],
+    "source_commit": "d7a92b074d5b625b350936ab434e88cba2610ffe"
+  },
+  "decision": {
+    "calibration_complete": true,
+    "new_model_speedup": false,
+    "hardware_saturation_qualified": false,
+    "model_adoption_qualified": false,
+    "observation": "Read-reference rate peaks at2threads in this run,while the expert mixture still responds strongly to more compute threads. Six-thread stream costs exceed small reusable groups. Arithmetic/unpack/scheduling and memory sensitivity coexist;no single limiting-resource proof.",
+    "next_action": "Bounded exact compact IQ3_XXS GU representation comparison,including reuse/stream,original source/fixture identity,numerical/FMA contract and setup/extra-memory costs;preserve production and prefill paths until measured.",
+    "limitations": "Expert sample CV spans0.0044..0.3974;keep all original samples and measure any candidate in repeated matched processes. Independent synthetic format/NT marginals do not establish actual layer/critical-path behavior. Current-model GPU counters,physical RAM/PCIe traffic and saturation remain unknown."
+  }
 }

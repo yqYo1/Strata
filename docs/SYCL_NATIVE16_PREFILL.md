@@ -1569,10 +1569,26 @@ All original expert evidence and fixture identities pass prospective reuse
 qualification. The scanner-only build now closes normally0with four owned
 commands and no GPU runtime link. All627actual compiler inputs are covered;
 the mix target is not rebuilt,and all15inference ELFs remain unchanged.
-All four bounded scanner CLI refusals now pass,with the expected exit1,
-exact diagnostics and closed owners. These negative inputs are not successful
-measurements. Commit their closure before the new read-reference timing;
-no V4 timing or device execution has occurred.
+All four bounded scanner CLI refusals pass,with the expected exit1,
+exact diagnostics and closed owners. V4 timing now completes all four new read
+references,20eligible samples and four normal0closed owners. Requested-byte
+read medians for1/2/3/6threads are20.413/25.890/24.297/24.028GB/s. These are
+achieved256MiB checksum-read rates,not physical DRAM or PCIe measurements.
+The explicitly reused expert mixture scales1->6compute threads by4.248x
+for reuse-group6,3.144x for stream-group6,and3.386/3.289x for reuse/stream
+group28. Six-thread weighted per-job wall time is106.556/139.844us for
+reuse/stream group6,and136.915/140.256us for group28. These are synthetic
+marginal mixtures,not model latency or a hardware ceiling. All112expert
+cells/560samples remain at the pinned failed V3 commit;the active result
+keeps their identity,formulas,summary and all20new read samples. Expert-cell
+CV ranges0.44..39.74%;keep every original sample and use repeated matched
+processes for candidate decisions. CPU instruction/unpack/scheduling and
+memory sensitivity remain mixed;neither early read-rate saturation nor
+expert scaling proves the actual limiting hardware resource. Next compare
+an exact compact IQ3_XXS GU view,including setup,extra footprint,NT1/current
+NT mixtures,reuse/stream and unchanged numerical/FMA contracts,before any
+production selection. Current GPU counters/physical traffic/critical path
+remain unqualified. No model speedup,adoption,70TG or device execution follows.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
