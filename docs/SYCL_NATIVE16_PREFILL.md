@@ -901,10 +901,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   lengths and acceptance preclude fixed-work attribution. Individual clocks,
   counts and routes remain in the linked compact result. Continue the frozen
   plan with process5(32),including all15final model-asset hashes.
-  Processes0/1/2/3each have69successful raw/JIT files retired(13095666/13096255/
-  13096306/13095722bytes),after recovering all346source inputs from Git and pushing their
+  Processes0/1/2/3/4each have69successful raw/JIT files retired(13095666/13096255/
+  13096306/13095722/13095457bytes),after recovering all346source inputs from Git and pushing their
   compact results. Keep their generated configs/plans for the ongoing cohort.
-  Admission passes after all four deletions;all15ELFs and four immutable native/
+  Admission passes after all five deletions;all15ELFs and four immutable native/
   control receipts are unchanged. The external deletion manifests are
   `adaptive-payload-generation-regular-code-v1-process0-output-retirement-20261107.json`,
   SHA256`0741507908c4976b8bed7b6cf1ecc5364b4fbe37a4fbc526da51522b2c5a85e7`,
@@ -912,8 +912,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   SHA256`ae43e20567d57e3c1da3e9bf5713f084642bd891fbaa35edc8dc6f94f3941258`,
   `adaptive-payload-generation-regular-code-v1-process2-output-retirement-20261107.json`,
   SHA256`0a9081498ca80b097ab20df3b9597ddaec7d0676a369283d2721697a878cb7bc`,
-  and`adaptive-payload-generation-regular-code-v1-process3-output-retirement-20261107.json`,
-  SHA256`258a63edc119b877a078d0c20f5142f85720a07ac410301752da8c9476071076`.
+  `adaptive-payload-generation-regular-code-v1-process3-output-retirement-20261107.json`,
+  SHA256`258a63edc119b877a078d0c20f5142f85720a07ac410301752da8c9476071076`,
+  and`adaptive-payload-generation-regular-code-v1-process4-output-retirement-20261107.json`,
+  SHA256`5c8e36b486e52069dea54e0332eec361a62ae2da548667e57250710f4d9cca26`.
   Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
@@ -1034,7 +1036,7 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   generation loop at7025;standalone`n_batched`at7500also excludes the last
   token. Its generate.cpp and layer_major.inc bytes differ from the public
   tree,so a future diagnostic patch must target the recorded compiled
-  composition. The current`read_windows`also reads`cur[q+t+1]`for its MTP
+  composition. After`cur=ids`at6370,the current`read_windows`reads`cur[q+t+1]`for its MTP
   next-token input. Extending its upper bound to`n`would read`cur[n]`;
   its normal bound stops at`n-1`. The private consume-only diagnostic must
   use the generation-side final T1 run/commit and checked completion,without
