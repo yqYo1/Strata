@@ -213,8 +213,123 @@ struct Work {
         std::cout<<"{\"kind\":\"validation\",\"distinct_experts\":"<<count<<",\"NT_mask\":30,\"pool_serial_bits_equal\":true,\"mixed_NT_bits_equal\":true,\"inactive_outputs_untouched\":true,\"canaries\":true}"<<std::endl;
     }
 };
+
+void compact_controls() {
+    namespace view=compact_iq3xxs;
+    std::array<uint8_t,98> raw{};view::Block packed;
+    constexpr uint16_t half=0x3c00;std::memcpy(raw.data(),&half,2);
+    uint64_t cases=0;
+    for(unsigned grid=0;grid<256;++grid)for(unsigned sign=0;sign<128;++sign)for(unsigned scale=0;scale<16;++scale) {
+        for(unsigned p=0;p<8;++p) {
+            for(unsigned j=0;j<8;++j)raw[2+8*p+j]=uint8_t(grid+8*p+j);
+            uint32_t gas=((scale+p)&15)<<28;
+            for(unsigned j=0;j<4;++j)gas|=((sign+17*p+29*j)&127)<<(7*j);
+            std::memcpy(raw.data()+66+4*p,&gas,4);
+        }
+        need(view::encode_block(raw,packed) && packed.d==half,"compact exhaustive encoding");
+        for(unsigned p=0;p<8;++p)for(unsigned j=0;j<32;++j) {
+            uint32_t gas;std::memcpy(&gas,raw.data()+66+4*p,4);
+            const unsigned magnitude=(iq3xxs_grid[raw[2+8*p+j/4]]>>(8*(j&3)))&255;
+            const bool negative=(ksigns_iq2xs[(gas>>(7*(j/8)))&127]>>(j&7))&1;
+            const unsigned code=(packed.codes[16*p+(j&15)]>>(4*(j/16)))&15;
+            const unsigned decoded=(code&7)==7?62:4+8*(code&7);
+            need(decoded==magnitude && bool(code&8)==negative &&
+                ((packed.scales[p/2]>>(4*(p&1)))&15)==(gas>>28),"compact codec value");
+        }
+        const unsigned p=(grid+sign+scale)&7;
+        alignas(32) int8_t act[32];alignas(32) int32_t got[8],want[8]{};
+        uint32_t gas;std::memcpy(&gas,raw.data()+66+4*p,4);
+        for(unsigned j=0;j<32;++j) {
+            act[j]=int8_t(int((j*17+grid+sign)&255)-128);
+            const unsigned magnitude=(iq3xxs_grid[raw[2+8*p+j/4]]>>(8*(j&3)))&255;
+            const bool negative=(ksigns_iq2xs[(gas>>(7*(j/8)))&127]>>(j&7))&1;
+            const int signed_act=negative ? (act[j]==-128?-128:-int(act[j])) : int(act[j]);
+            want[j/4]+=int(magnitude)*signed_act*int(2*(gas>>28)+1);
+        }
+        _mm256_store_si256(reinterpret_cast<__m256i*>(got),
+            view::chunk(packed,p,_mm256_load_si256(reinterpret_cast<const __m256i*>(act))));
+        need(std::memcmp(got,want,sizeof got)==0,"compact integer lanes");++cases;
+    }
+    _mm256_zeroupper();
+    const auto saved=packed;
+    need(!view::encode_block(std::span<const uint8_t>(raw).first(97),packed) &&
+         std::memcmp(&saved,&packed,sizeof packed)==0,"compact short source refusal");
+    need(!view::encode_block(std::span<const uint8_t>(reinterpret_cast<const uint8_t*>(&packed),98),packed) &&
+         std::memcmp(&saved,&packed,sizeof packed)==0,"compact encode alias refusal");
+
+    cpu::NativeFmt fmt;std::string err;
+    need(cpu::native_fmt(18,20,cpu::H,cpu::FF,fmt,err),"synthetic native geometry");
+    Buffer weights(fmt.bytes),activation(fmt.act_bytes),expected(cpu::FF*sizeof(float)),actual(cpu::FF*sizeof(float));
+    std::vector<view::Block> gate(view::projection_blocks),up(view::projection_blocks);
+    auto* want=reinterpret_cast<float*>(expected.data());auto* got=reinterpret_cast<float*>(actual.data());
+    const std::array<uint16_t,8> halves{0x0000,0x8000,0x0001,0x03ff,0x0400,0x2400,0x3c00,0x7bff};
+    const std::array<float,4> act_scales{0.f,0.0001f,1.f,-.5f};
+    for(unsigned test=0;test<16;++test) {
+        for(unsigned r=0;r<cpu::FF;++r)for(unsigned b=0;b<10;++b)for(unsigned proj=0;proj<2;++proj) {
+            auto* raw=weights.data()+proj*fmt.up_off+r*980+b*98;
+            const auto d=halves[(r+b+test+2*proj)&7];std::memcpy(raw,&d,2);
+            for(unsigned j=0;j<64;++j)raw[2+j]=uint8_t(r+11*b+7*j+13*test+17*proj);
+            for(unsigned p=0;p<8;++p) {
+                uint32_t gas=((r+b+p+test+proj)&15)<<28;
+                for(unsigned j=0;j<4;++j)gas|=((r+19*b+11*p+7*j+test+proj)&127)<<(7*j);
+                std::memcpy(raw+66+4*p,&gas,4);
+            }
+            need(view::encode_block(std::span<const uint8_t>(raw,98),(proj?up:gate)[r*10+b]),"synthetic view");
+        }
+        std::memset(activation.data(),0,fmt.act_bytes);
+        for(unsigned b=0;b<10;++b) {
+            auto* act=activation.data()+b*sizeof(block_q8_K);
+            const float d=act_scales[(b+test)&3];std::memcpy(act,&d,sizeof d);
+            for(unsigned j=0;j<256;++j) {
+                const int8_t value=int8_t(int((17*j+13*b+19*test)&255)-128);
+                std::memcpy(act+offsetof(block_q8_K,qs)+j,&value,1);
+            }
+        }
+        need(cpu::iq3xxs_pair_gu_rows(fmt,weights.data(),activation.data(),want,0,cpu::FF),"synthetic native pair");
+        need(view::gu_rows(gate,up,std::span<const uint8_t>(activation.data(),fmt.act_bytes),
+            std::span<float>(got,cpu::FF),0,cpu::FF),"synthetic compact pair");
+        need(std::memcmp(want,got,cpu::FF*sizeof(float))==0,"synthetic FP32/FMA bits");
+        for(unsigned r=0;r<cpu::FF;++r)need(std::isfinite(got[r]),"synthetic finite GU");
+        for(auto range:std::array<std::array<int,2>,4>{{{0,1},{319,321},{639,640},{640,640}}}) {
+            std::memset(actual.data(),0xA7,cpu::FF*sizeof(float));
+            std::array<uint8_t,cpu::FF*sizeof(float)> before;std::memcpy(before.data(),actual.data(),before.size());
+            need(view::gu_rows(gate,up,std::span<const uint8_t>(activation.data(),fmt.act_bytes),
+                std::span<float>(got,cpu::FF),range[0],range[1]),"partial compact range");
+            for(int r=0;r<cpu::FF;++r)
+                need(std::memcmp(actual.data()+r*4,(r>=range[0]&&r<range[1])?
+                    reinterpret_cast<const uint8_t*>(want+r):before.data()+r*4,4)==0,"inactive compact row");
+        }
+        weights.check();activation.check();expected.check();actual.check();
+    }
+    std::array<uint8_t,cpu::FF*sizeof(float)> before;std::memcpy(before.data(),actual.data(),before.size());
+    const auto g=std::span<const view::Block>(gate),u=std::span<const view::Block>(up);
+    const auto a=std::span<const uint8_t>(activation.data(),fmt.act_bytes);const auto o=std::span<float>(got,cpu::FF);
+    unsigned refusals=0;
+    auto refuse=[&](bool accepted) {
+        need(!accepted && std::memcmp(before.data(),actual.data(),before.size())==0,"compact shape/range refusal");++refusals;
+    };
+    refuse(view::gu_rows(g.first(g.size()-1),u,a,o,0,640));
+    refuse(view::gu_rows(g,u.first(u.size()-1),a,o,0,640));
+    refuse(view::gu_rows(g,u,a.first(a.size()-1),o,0,640));
+    refuse(view::gu_rows(g,u,a,o.first(639),0,640));
+    refuse(view::gu_rows(g,u,a,o,-1,1));refuse(view::gu_rows(g,u,a,o,2,1));
+    refuse(view::gu_rows(g,u,a,o,0,641));refuse(view::gu_rows(g,g,a,o,0,640));
+    refuse(view::gu_rows(g,u,std::span<const uint8_t>(reinterpret_cast<const uint8_t*>(g.data()),fmt.act_bytes),o,0,640));
+    // A byte view of a real float array is legal; no invented overlapping object lifetimes.
+    std::vector<float> alias(1024,1.f);const auto alias_before=alias;
+    need(!view::gu_rows(g,u,std::span<const uint8_t>(reinterpret_cast<const uint8_t*>(alias.data()),fmt.act_bytes),
+        std::span<float>(alias).first(640),0,640) && alias==alias_before,"compact activation/output alias");
+    ++refusals;actual.check();
+    std::cout<<"{\"kind\":\"compact_controls\",\"codec_cases\":"<<cases
+        <<",\"integer_chunks\":"<<cases<<",\"encoded_values\":"<<cases*256
+        <<",\"FMA_cases\":16,\"partial_ranges\":64,\"GU_refusals\":"<<refusals
+        <<",\"encode_refusals\":2,\"finite_canaries\":true}"<<std::endl;
+}
 int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
+    if(argc==2 && std::string(argv[1])=="--compact-controls") {
+        compact_controls();std::cout<<"{\"kind\":\"closed\",\"passed\":true}"<<std::endl;return 0;
+    }
     need(argc==16,"shard gu dn gate up down bytes workers group check|measure|compact-check n1 n2 n3 n4 version");
     need(std::string(argv[15])=="20261022","protocol version");
     const auto requested_workers=number(argv[8]),requested_group=number(argv[9]);

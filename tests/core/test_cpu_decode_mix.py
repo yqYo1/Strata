@@ -35,29 +35,27 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(mix.expected_histogram([0,0,0,7],28),[0,0,0,2800])
         self.assertEqual(mix.expected_histogram([1,1,1,0],28),[934,933,933,0])
 
-    def test_intermediate_scan_samples_and_refusals(self):
-        for threads in mix.SCANS:
-            original=[dict(kind='timer_check',mode='scan',threads=threads,query_s=2e-8,fastest_pass_s=.01)]
-            original.extend(dict(kind='sample',mode='scan',threads=threads,attempt=0,rep=i,
-                iterations=100,visits=100,requested_bytes=(256<<20)*100,wall_s=1.3,cpu_s=2)
-                for i in range(5))
-            original.append(dict(kind='closed',passed=True))
-            for variant in ('valid','missing','extra','timer','threads','rep','iterations','bytes','short','nonfinite','closure'):
-                value=copy.deepcopy(original)
-                if variant=='missing':value.pop(1)
-                if variant=='extra':value.insert(0,dict(kind='extra'))
-                if variant=='timer':value[0]['query_s']=.01
-                if variant=='threads':value[1]['threads']=12
-                if variant=='rep':value[1]['rep']=1
-                if variant=='iterations':value[1]['iterations']=True
-                if variant=='bytes':value[1]['requested_bytes']-=1
-                if variant=='short':value[1]['wall_s']=.9
-                if variant=='nonfinite':value[1]['wall_s']=float('nan')
+    def test_compact_evidence_is_complete_and_typed(self):
+        controls=dict(kind='compact_controls',codec_cases=524288,integer_chunks=524288,
+            encoded_values=134217728,FMA_cases=16,partial_ranges=64,GU_refusals=10,
+            encode_refusals=2,finite_canaries=True)
+        row=dict(experts=84,blob_bytes=2176000)
+        model=dict(kind='compact_validation',format=18,nt=1,activation_cases=4,experts=84,
+            native_pair_bits_equal=True,finite=True,canaries=True,
+            compact_GU_bytes_per_expert=1715200,raw_plus_compact_bytes_per_expert=3891200)
+        for expected,fixture in ((controls,None),(model,row)):
+            for variant in ('valid','missing','extra','count','boolean','guard','closure'):
+                value=[copy.deepcopy(expected),dict(kind='closed',passed=True)]
+                if variant=='missing':value.pop(0)
+                if variant=='extra':value[0]['unknown']=0
+                if variant=='count':value[0]['codec_cases' if fixture is None else 'experts']-=1
+                if variant=='boolean':value[0]['finite_canaries' if fixture is None else 'finite']=1
+                if variant=='guard':value[0]['finite_canaries' if fixture is None else 'canaries']=False
                 if variant=='closure':value[-1]['passed']=False
-                with self.subTest(threads=threads,variant=variant):
-                    if variant=='valid':self.assertEqual(len(mix.parse_scan(value,threads)['samples']),5)
+                with self.subTest(model=fixture is not None,variant=variant):
+                    if variant=='valid':self.assertEqual(mix.parse_compact(value,fixture),expected)
                     else:
-                        with self.assertRaises(RuntimeError):mix.parse_scan(value,threads)
+                        with self.assertRaises(RuntimeError):mix.parse_compact(value,fixture)
 
     def resource(self):
         cells=[dict(gu=gu,down=dn,nt=nt,jobs=nt) for gu,dn in sorted(mix.base.PAIRS)
@@ -120,7 +118,7 @@ class EvidenceTests(unittest.TestCase):
     def test_owner_setup_failure_is_terminal_before_any_child(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);planpath=root/'plan.json';planpath.write_text('{}')
-            plan=dict(source=dict(revision='source'),budgets=dict(stage_seconds=10))
+            plan=dict(source=dict(revision='source'),calibration=dict(commit='calibration'),budgets=dict(stage_seconds=10))
             with patch.object(mix,'ROOT',root),patch.object(mix,'PLAN',planpath),\
                  patch.object(mix,'RESULT',root/'result.json'),patch.object(mix,'load',return_value=plan),\
                  patch.object(mix.gen,'committed',return_value={}),\
@@ -140,7 +138,7 @@ class EvidenceTests(unittest.TestCase):
                 root=Path(tmp)/'run';project=Path(tmp)/'project';source=Path(tmp)/'source'
                 (root/'build').mkdir(parents=True);(root/'owned').mkdir()
                 required=[source/'src/kernels/cpu'/n for n in mix.CPU_UNITS]
-                required += [project/'bench/sycl/cpu_roofline/main.cpp']
+                required += [project/'bench/sycl/cpu_decode_mix/main.cpp']
                 cfile=Path(tmp)/'ggml-cpu/arch/x86/quants.c'
                 paths=required+[cfile]+[Path(tmp)/('header'+str(i)+'.h') for i in range(100)]
                 allowed={str(p.resolve()):'sha' for p in paths}

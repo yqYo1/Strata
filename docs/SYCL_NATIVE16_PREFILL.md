@@ -1554,6 +1554,18 @@ must not be retried. Charge setup and full raw-plus-view footprint,and compare
 both reuse/stream and multicore/current NT mixtures before model selection.
 Luna-max's post-calibration review agrees this bounded comparison is the next
 question;existing references suffice and no new Orca survey is selected.
+The Main-authored `--compact-controls` source now covers524288grid/sign/scale
+base cases,134217728encoded values and524288actual SIMD integer chunks,plus
+16synthetic full GU cases and64partial ranges. Zero/negative-zero/subnormal/
+max-finite half scales,zero/signed activation scales and-128activation lanes
+are included;ten GU and two encoder refusals check unchanged output. These
+controls are source-prepared,not executed. The maintained CPU controller is
+retargeted to a fresh `cpu-compact-iq3xxs-v1` root:commit the plan,build only
+`cpu_decode_mix`,then qualify synthetic controls before the two real-weight
+IQ3_XXS formats. It consumes the closed calibration through8547cb65d in Git,
+without depending on retired V3/V4 paths. No timing or model adoption gate is
+removed;setup,coexistence footprint and repeated multicore/current-NT
+performance remain the next comparison after correctness.
 
 Both closed auxiliary CPU builds and their output are retired after recovering
 original261/V4 262controller inputs,568native inputs,GGML source/recipes and

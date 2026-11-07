@@ -22,11 +22,8 @@ import measurement_owner as owner
 import build_adaptive_payload_model as engine
 
 P,B,A=gen.P,gen.B,gen.A
-ROOT=B/'cpu-decode-mix-v4'
-ORIGINAL_ROOT=B/'cpu-decode-mix-v3'
-ORIGINAL_RESULT='49b2d4821077e4aa51425c0450a8414e013cd79a'
-ORIGINAL_STAGES=dict(build='ce9f3aa0f9ebc7e6c6dabcb185b009d52b887f71',
-    check='6f453cc31eaca7e22687e2757bd37b5a82ac6dbe',measure=ORIGINAL_RESULT)
+ROOT=B/'cpu-compact-iq3xxs-v1'
+BASELINE_CALIBRATION='8547cb65d3119e9f86456db979332d82d7e6f870'
 PLAN=A/'cpu-roofline-plan.json'
 RESULT=A/'cpu-roofline-current.json'
 RESOURCE=engine.RESULT
@@ -36,8 +33,7 @@ CPU_SOURCE=NATIVE_ROOT/'source'
 COMPILER=Path('/opt/intel/oneapi/compiler/2026.2')
 WORKERS=(1,2,3,5)
 GROUPS=(6,28)
-SCANS=(1,2,3,6)
-SCHEMA='strata-cpu-decode-mix-v4'
+SCHEMA='strata-cpu-compact-iq3xxs-v1'
 LEAF_ORDER=(False,True,True,False,False,True)
 CPU_UNITS=('expert.cpp','pool.cpp','expert_layout.cpp','q2_avx2.cpp','native_expert.cpp',
            'iq_avx512.cpp','iq_avx2.cpp','iq_single_avx2.cpp','iq2_pair_avx2.cpp','kq_avx2.cpp')
@@ -161,121 +157,56 @@ def validate_order(order):
 
 
 
-def original_calibration():
-    """Reuse closed expert evidence, never retry or relabel the failed stage."""
-    relative=str(RESULT.relative_to(P))
-    plan_bytes=gen.git('show',ORIGINAL_RESULT+':'+str(PLAN.relative_to(P)))
-    plan=json.loads(plan_bytes);stages={}
-    for stage,revision in ORIGINAL_STAGES.items():
-        gen.git('merge-base','--is-ancestor',revision,'HEAD')
-        historical=json.loads(gen.git('show',revision+':'+relative))
-        path=ORIGINAL_ROOT/(stage+'.json');record=json.loads(path.read_text())
-        guards.require(compact_record(record,record['commands'])==historical and
-            record['schema']=='strata-cpu-decode-mix-v3' and record['stage']==stage and
-            record['plan_sha256']==hashlib.sha256(plan_bytes).hexdigest() and
-            record['source_commit']==plan['source']['revision'] and not record['GPU_executed'] and
-            record['ownership_closed'] and not record['active'],
-            'original closed evidence differs: '+stage)
-        guards.require(all(owner.closed(c) and c['environment']==plan['environment'] for c in record['commands']),
-            'original owner/environment evidence differs')
-        for command_entry in record['commands']:
-            for identity in command_entry['owners']:
-                live=owner.identity(identity['pid'])
-                guards.require(not live or live['start_ticks']!=identity['start_ticks'],
-                    'original calibration owner still live')
-        stages[stage]=record
-    built,checked,measured=(stages[s] for s in ('build','check','measure'))
-    guards.require(built['passed'] and built['complete'] and checked['passed'] and checked['complete'] and
-        measured['passed'] is False and measured['complete'] is False and
-        measured['error']=="RuntimeError('owned child failed: scan-2')" and
-        len(built['commands'])==5 and len(checked['commands'])==56 and len(measured['commands'])==58 and
-        all(c['exit_code']==0 for c in built['commands']+checked['commands']+measured['commands'][:-1]) and
-        measured['commands'][-1]['exit_code']==1 and
-        measured['commands'][-1]['label']=='measure-scan-2',
-        'only the exact closed scanner-2 failure is eligible for this continuation')
-    guards.require(checked['binaries']==measured['binaries']==built['binaries'] and
-        environment()==plan['environment'] and base.machine()==plan['machine'],
-        'original expert executable/environment/platform differs')
-    # Recover the original controller and recipe even though this continuation changes them.
-    revision=plan['source']['revision']
-    names=gen.git('ls-tree','-r','--name-only',revision,'--',*PREFIXES[:-1]).decode().splitlines()
-    hashes={n:hashlib.sha256(raw).hexdigest() for n,raw in gen.blobs(P,revision,names)}
-    guards.require(len(hashes)==plan['source']['count'] and
-        base.fingerprint(hashes)==plan['source']['aggregate_sha256'],
-        'original controller/recipe is not recoverable')
-    for asset in built['binaries'].values():
-        guards.require(base.digest(asset['path'])==asset['sha256'],'original executable bytes changed')
-    asset=built['compiled_inputs']
-    guards.require(asset['files']==634 and asset['uncovered']==0 and
-        base.digest(asset['path'])==asset['sha256'],'original compiler inventory differs')
-    actual=json.loads(Path(asset['path']).read_text())
-    guards.require(len(actual)==634 and all(base.digest(p)==h for p,h in actual.items()) and
-        all(base.digest(p)==h for p,h in built['actual_link_inputs'].items()) and
-        base.digest(ORIGINAL_ROOT/'build/compile_commands.json')==built['compile_commands_sha256'],
-        'original actual compiler/link inputs differ')
-    for tool,sha in plan['tools'].items():
-        guards.require(base.digest(tool)==sha,'original compiler/tool changed')
-    validate_order(plan['order'])
-    lookup={(r['gu'],r['down']):r for r in plan['formats']}
-    for stage in ('check','measure'):
-        record=stages[stage]
-        guards.require(len(record['children'])==56,'complete original expert matrix required')
-        for i,(gu,dn,w,g) in enumerate(plan['order']):
-            child=record['children'][i];entry=record['commands'][i]
-            stdout=ORIGINAL_ROOT/'owned'/(stage+'-cell-'+str(i)+'.stdout')
-            guards.require(entry['label']==stage+'-cell-'+str(i) and
-                entry['argv']==[built['binaries']['mix']['path'],*command(lookup[gu,dn],w,g,stage)[1:]] and
-                base.digest(stdout)==child['stdout_sha256'],'original command/output binding differs')
-            parsed=parse([json.loads(s) for s in stdout.read_text().splitlines()],lookup[gu,dn],w,g,stage)
-            guards.require(child==dict(pair=[gu,dn],workers=w,group=g,**parsed,
-                exit_code=0,stdout_sha256=base.digest(stdout)),
-                'original numerical/timing samples differ')
-    failed_stderr=ORIGINAL_ROOT/'owned/measure-scan-2.stderr'
-    guards.require(failed_stderr.read_text()=='CPU calibration failed: scan thread count\n',
-        'original scanner failure mechanism differs')
-    proof=dict(result_commit=ORIGINAL_RESULT,stage_commits=ORIGINAL_STAGES,
-        original_passed=False,original_complete=False,original_error=measured['error'],
-        original_plan_sha256=hashlib.sha256(plan_bytes).hexdigest(),
-        original_source=plan['source'],expert_binary=built['binaries']['mix'],
-        receipts={s:dict(path=str(ORIGINAL_ROOT/(s+'.json')),
-            sha256=base.digest(ORIGINAL_ROOT/(s+'.json'))) for s in ORIGINAL_STAGES},
-        compiled_inputs=asset,compile_commands_sha256=built['compile_commands_sha256'],
-        link_inputs_sha256=base.fingerprint(built['actual_link_inputs']),
-        numerical_cases=56,expert_cells=112,expert_samples=560,
-        scope='Original expert checks and samples are reused unchanged,not executed by V4. All four read references are newly measured. V3 remains failed in its pinned commit.')
-    return plan,measured,proof
+
+def calibration_origin():
+    data=gen.git('show',BASELINE_CALIBRATION+':'+str(RESULT.relative_to(P)))
+    value=json.loads(data)
+    guards.require(value['passed'] and value['complete'] and value['ownership_closed'] and
+        not value['active'] and value['decision']['calibration_complete'] and
+        value['artifact_retirement']['complete'],'closed current-source calibration required')
+    return dict(commit=BASELINE_CALIBRATION,path=str(RESULT.relative_to(P)),
+        sha256=hashlib.sha256(data).hexdigest())
 
 
 def prepare():
-    guards.require(not ROOT.exists(),'fresh single-use calibration root required')
-    old=gen.committed(RESULT)
-    previous,_,reuse=original_calibration()
-    guards.require(old==json.loads(gen.git('show',ORIGINAL_RESULT+':'+str(RESULT.relative_to(P)))),
-        'preserve the original failed result before preparing this continuation')
-    resource,proof=qualification()
-    guards.require(proof==previous['qualification'],'original native/resource qualification differs')
-    observed=observed_histograms(resource)
-    for row in previous['formats']:
-        guards.require(row['observed_jobs_NT']==observed[row['gu'],row['down']] and
-            base.identity(row['shard'])==previous['model_identity'][row['shard']] and
-            base.fixture_hash(row)==row['fixture_sha256'],'original expert/model fixture differs')
+    guards.require(not ROOT.exists(),'fresh single-use compact-view root required')
+    old=gen.committed(RESULT);origin=calibration_origin()
+    guards.require(base.digest(RESULT)==origin['sha256'],'archive the closed calibration before this prototype')
+    resource,proof=qualification();observed=observed_histograms(resource)
+    rows=[r for r in base.formats() if r['gu']==18]
+    guards.require({(r['gu'],r['down']) for r in rows}=={(18,20),(18,42)},'two current IQ3_XXS model formats')
+    for row in rows:
+        row['experts']=28*math.ceil((128<<20)/(28*row['blob_bytes']))
+        row['observed_jobs_NT']=observed[row['gu'],row['down']]
+        row['fixture_sha256']=base.fixture_hash(row)
     revision=gen.git('rev-parse','HEAD').decode().strip()
-    plan=dict(previous)
-    plan.update(schema=SCHEMA,source=base.source_pin(P,revision,PREFIXES),reuse=reuse,
-        previous_result=dict(commit=ORIGINAL_RESULT,path=str(RESULT.relative_to(P)),sha256=base.digest(RESULT)))
-    plan['configure']=[arg.replace(str(ORIGINAL_ROOT/'build'),str(ROOT/'build')) for arg in previous['configure']]
-    plan['configure'].append('-DSTRATA_CPU_SCAN_SOURCE='+str(P/'bench/sycl/cpu_roofline/main.cpp'))
-    plan['build']=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','cpu_roofline','--parallel','4']
-    plan['protocol']=dict(previous['protocol'],
-        question='Complete the 1/2/3/6-thread read-reference curve alongside explicitly reused exact-source V3 expert calibration.',
-        gates='Reuse all original56 checks/112 cells/560 samples with full source/build/fixture/environment proof. Build only the new scanner. Require four bounded negative CLI checks,then all four read references with five eligible samples each. Stop first failure;no retries or sample replacement.',
-        analysis='Per format/worker/group/mode use the median wall/pass sample and its matched GU/quant/down/cpu values. Divide by passes*100*group for per-job costs,weight formats by observed job counts;compare 1/2/3/6 threads and stream/reuse. Read rates are requested_bytes/wall with median/range/CV. Synthetic marginals and achieved read rates are not model latency,physical DRAM traffic,hardware saturation or a70TG ceiling.',
-        continuation=reuse['scope'])
+    plan=dict(schema=SCHEMA,source=base.source_pin(P,revision,PREFIXES),
+        ggml=base.source_pin(base.GGML,base.GGML_REV,('ggml',)),qualification=proof,
+        calibration=origin,environment=environment(),machine=base.machine(),formats=rows,
+        metadata_sha256=base.digest(base.METADATA),model_identity={r['shard']:base.identity(r['shard']) for r in rows},
+        tools={str(p):base.digest(p) for p in (COMPILER/'bin/icx',COMPILER/'bin/icpx','/usr/bin/cmake','/usr/bin/ninja')},
+        configure=['/usr/bin/cmake','-S',str(P/'bench/sycl/cpu_decode_mix'),'-B',str(ROOT/'build'),
+            '-G','Ninja','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_EXPORT_COMPILE_COMMANDS=ON','-DCMAKE_CXX_EXTENSIONS=OFF',
+            '-DCMAKE_C_COMPILER='+str(COMPILER/'bin/icx'),'-DCMAKE_CXX_COMPILER='+str(COMPILER/'bin/icpx'),
+            '-DCMAKE_CXX_FLAGS='+CXX_FLAGS,'-DCMAKE_C_FLAGS=-DSTRATA_CPU_SERVICE_PROFILE=1',
+            '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t','-DSTRATA_GGML_DIR='+str(base.GGML),
+            '-DSTRATA_CPU_SOURCE_ROOT='+str(CPU_SOURCE)],
+        build=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','cpu_decode_mix','--parallel','4'],
+        protocol=dict(question='Does the exact134B IQ3_XXS compact GU view preserve native integer lanes,FP32/FMA/reduction behavior and bounds before performance comparison?',
+            order=['build','controls','check18/20','check18/42'],
+            controls='All256grid/128sign/16scale base combinations,134217728 encoded values,524288 actual SIMD integer chunks;16 synthetic full GU cases with zero/subnormal/max-finite/negative-zero half scales and signed/zero activation scales/-128 lanes;64 partial ranges,10 GU and2 encoder refusals.',
+            real='Both current IQ3_XXS model-format layers,all distinct loaded experts at four quantized NT1 activations. Compare the actual native paired entry directly to compact GU;this isolates that component,not full pool/model dispatch.',
+            numerical='Require exact finite native-pair outputs,identical integer lanes,unaltered inactive rows and guards. Preserve raw98B blocks and allocate full134B views;no changed accumulation or model quantization.',
+            gate='Commit each stage before the next. Require all controls and both model children,normal0,closed owners. Stop first failure/budget;no retry/replacement/exclusion.',
+            performance='No timing/adoption claim in this correctness stage. Next measure setup/full raw-plus-view footprint,repeated matched reuse/stream and1/6-thread/current NT work before production selection.',
+            retention='Retain compact numeric/guard outcomes,source/build/environment identity. Keep this single auxiliary ELF only for the immediately following component timing preparation/qualification,then retire successful raw/build output after source recovery. Preserve the two inference generations.'),
+        budgets=dict(build_seconds=600,controls_seconds=180,check_child_seconds=120,stage_seconds=1800,
+            rss_bytes=3<<30,text_bytes=8<<20,root_bytes=256<<20))
     ROOT.mkdir(mode=0o700);write(PLAN,plan)
-    write(RESULT,dict(schema=SCHEMA,stage='prepared',source_commit=revision,reuse_origin=reuse,
+    write(RESULT,dict(schema=SCHEMA,stage='prepared',source_commit=revision,plan_sha256=base.digest(PLAN),
         passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False,
-        plan_sha256=base.digest(PLAN),hardware_saturation_qualified=False,model_adoption_qualified=False))
-    print('Prepared scanner-only continuation with560 original expert samples;commit plan before build.',flush=True)
+        calibration_origin=origin,hardware_saturation_qualified=False,model_adoption_qualified=False))
+    print('Prepared exact compact-view correctness plan;commit before build.',flush=True)
 
 
 def load():
@@ -283,26 +214,22 @@ def load():
     guards.require(plan['schema']==SCHEMA and
         base.source_pin(P,plan['source']['revision'],PREFIXES)==plan['source'] and
         base.source_pin(base.GGML,base.GGML_REV,('ggml',))==plan['ggml'] and
-        environment()==plan['environment'] and base.machine()==plan['machine'],'source/environment/platform drift')
-    for p,h in plan['tools'].items():guards.require(base.digest(p)==h,'compiler/tool drift')
-    _,_,reuse=original_calibration()
-    guards.require(reuse==plan['reuse'],'original expert reuse evidence differs')
+        plan['calibration']==calibration_origin() and environment()==plan['environment'] and
+        base.machine()==plan['machine'],'source/environment/platform/calibration drift')
+    for path,sha in plan['tools'].items():guards.require(base.digest(path)==sha,'compiler/tool drift')
     guards.require(base.digest(base.METADATA)==plan['metadata_sha256'],'format metadata drift')
-    resource,proof=qualification();guards.require(proof==plan['qualification'],'original native/resource proof changed')
-    validate_order(plan['order'])
+    resource,proof=qualification();guards.require(proof==plan['qualification'],'native/resource proof drift')
     observed=observed_histograms(resource)
-    original={(r['gu'],r['down']):r for r in base.formats()}
-    guards.require(len(plan['formats'])==len(original) and
-        {(r['gu'],r['down']) for r in plan['formats']}==set(original),
-        'complete unique current format inventory required')
+    original={(r['gu'],r['down']):r for r in base.formats() if r['gu']==18}
+    guards.require(len(plan['formats'])==2 and {(r['gu'],r['down']) for r in plan['formats']}==set(original),
+        'complete unique compact model cases')
     for row in plan['formats']:
         key=row['gu'],row['down']
         guards.require(all(row[k]==v for k,v in original[key].items() if k!='experts') and
+            row['experts']==28*math.ceil((128<<20)/(28*row['blob_bytes'])) and
             row['observed_jobs_NT']==observed[key] and
-            row['experts']==max(g*math.ceil((128<<20)/(g*row['blob_bytes'])) for g in GROUPS),
-            'format/offset/observed histogram differs')
-        guards.require(base.identity(row['shard'])==plan['model_identity'][row['shard']] and
-            base.fixture_hash(row)==row['fixture_sha256'],'selected expert input drift')
+            base.identity(row['shard'])==plan['model_identity'][row['shard']] and
+            base.fixture_hash(row)==row['fixture_sha256'],'compact fixture/work drift')
     return plan
 
 
@@ -352,30 +279,18 @@ def parse(lines,row,workers,group,stage):
     return dict(work=work[0],validated=True,timers=timers,samples=samples)
 
 
-def parse_scan(lines,threads):
-    guards.require(type(threads) is int and threads in SCANS and len(lines)==7 and
-        lines[-1]==dict(kind='closed',passed=True),'complete read-reference records required')
-    timer=lines[0];samples=lines[1:-1]
-    guards.require(timer['kind']=='timer_check' and timer['mode']=='scan' and timer['threads']==threads and
-        all(type(timer[k]) in (int,float) and math.isfinite(timer[k]) for k in ('query_s','fastest_pass_s')) and
-        timer['query_s']>=0 and timer['fastest_pass_s']>0 and
-        timer['query_s']/timer['fastest_pass_s']<.001,'read-reference timer gate')
-    for i,s in enumerate(samples):
-        guards.require(s['kind']=='sample' and s['mode']=='scan' and s['threads']==threads and
-            type(s['rep']) is int and s['rep']==i and s['attempt']==0 and
-            type(s['iterations']) is int and 0<s['iterations']<1000000 and
-            s['visits']==s['iterations'] and s['requested_bytes']==(256<<20)*s['iterations'] and
-            all(type(s[k]) in (int,float) and math.isfinite(s[k]) and s[k]>=0 for k in ('wall_s','cpu_s')) and
-            s['wall_s']>=1,'read-reference work/timing gate')
-    return dict(threads=threads,timer=timer,samples=samples)
 
-
-def scan_refusals(plan):
-    first=plan['machine']['physical_cpus'][0]
-    return [('duplicate',[first,first],'duplicate scan CPU'),
-            ('negative',[-1],'scan CPU outside allowed affinity'),
-            ('range',[1024],'scan CPU outside allowed affinity'),
-            ('empty',[],'scan thread count')]
+def parse_compact(lines,row=None):
+    value=(dict(kind='compact_controls',codec_cases=524288,integer_chunks=524288,
+        encoded_values=134217728,FMA_cases=16,partial_ranges=64,GU_refusals=10,
+        encode_refusals=2,finite_canaries=True) if row is None else
+        dict(kind='compact_validation',format=18,nt=1,activation_cases=4,experts=row['experts'],
+            native_pair_bits_equal=True,finite=True,canaries=True,compact_GU_bytes_per_expert=1715200,
+            raw_plus_compact_bytes_per_expert=row['blob_bytes']+1715200))
+    expected=[value,dict(kind='closed',passed=True)]
+    guards.require(json.dumps(lines,sort_keys=True)==json.dumps(expected,sort_keys=True),
+        'complete typed compact numerical/guard evidence required')
+    return value
 
 
 def allowed_inputs(plan):
@@ -391,7 +306,7 @@ def allowed_inputs(plan):
     for item in image['files'].values():
         if item['kind']=='file':allowed[item['realpath']]=item['sha256']
     for name,sha in proof['CPU_sources'].items():allowed[str((CPU_SOURCE/name).resolve())]=sha
-    for name in ('bench/sycl/cpu_decode_mix/main.cpp','bench/sycl/cpu_roofline/main.cpp'):
+    for name in ('bench/sycl/cpu_decode_mix/main.cpp','bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp'):
         path=P/name;allowed[str(path.resolve())]=base.digest(path)
     native=json.loads((NATIVE_ROOT/'record.json').read_text())
     original=NATIVE_ROOT/'build/ggml/src/ggml-version.h'
@@ -407,7 +322,7 @@ def attest_build(plan,output):
     paths={str((Path(line.strip()) if Path(line.strip()).is_absolute() else build/line.strip()).resolve())
         for line in output.splitlines() if line.startswith('    ') and line.strip()}
     required={str((CPU_SOURCE/'src/kernels/cpu'/n).resolve()) for n in CPU_UNITS}
-    required.add(str((P/'bench/sycl/cpu_roofline/main.cpp').resolve()))
+    required.add(str((P/'bench/sycl/cpu_decode_mix/main.cpp').resolve()))
     # Headers need not all compile in this target,but every actual input must be pinned.
     guards.require(required<=paths and len(paths)>100 and
         all(allowed.get(path)==base.digest(path) for path in paths),
@@ -472,77 +387,61 @@ def compact_record(record,commands):
     return result
 
 
+
 def run(stage):
     started=time.monotonic();plan=load();gen.committed(RESULT)
-    path=ROOT/(stage+'.json');guards.require(not path.exists(),'single-use stage;inspect existing owner,never retry')
+    path=ROOT/(stage+'.json');guards.require(not path.exists(),'single-use stage;inspect owner,never retry')
     record=dict(schema=SCHEMA,stage=stage,source_commit=plan['source']['revision'],
-        plan_sha256=base.digest(PLAN),passed=False,complete=False,active=False,
-        ownership_closed=True,GPU_executed=False,children=[])
+        plan_sha256=base.digest(PLAN),calibration_origin=plan['calibration'],
+        passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False,children=[])
     own=None;deadline=started+plan['budgets']['stage_seconds']
     with path.open('x') as marker:marker.write(json.dumps(record,indent=2)+'\n')
     def persist():
         record['active']=bool(own and own.active is not None)
         write(path,dict(record,commands=own.commands if own else []))
-    def execute(label,argv,wall,expected_exit=0):
+    def execute(label,argv,wall):
         guards.require(time.monotonic()<deadline,'whole-stage budget expired')
         entry,_,_=own.run(stage+'-'+label,argv,plan['environment'],P,
             wall=min(wall,deadline-time.monotonic()),cpu=1200,rss_cap=plan['budgets']['rss_bytes'],
             text_cap=plan['budgets']['text_bytes'],total_cap=plan['budgets']['root_bytes'],
             file_cap=plan['budgets']['root_bytes'])
-        guards.require(owner.closed(entry) and entry['exit_code']==expected_exit,'owned child failed: '+label)
+        guards.require(owner.closed(entry) and entry['exit_code']==0,'owned child failed: '+label)
         return entry
     try:
         own=owner.Owner(ROOT/'owned',persist)
-        record['reuse_origin']=plan['reuse']
         if stage=='build':
             execute('configure',plan['configure'],120)
             execute('compile',plan['build'],plan['budgets']['build_seconds'])
             execute('dependencies',['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','deps'],40)
             record.update(attest_build(plan,(ROOT/'owned/build-dependencies.stdout').read_text()))
-            scanner=ROOT/'build/reference/cpu_roofline'
-            record['binaries']=dict(mix=plan['reuse']['expert_binary'],
-                scan=dict(path=str(scanner),sha256=base.digest(scanner)))
-            for n,asset in [('scan',record['binaries']['scan'])]:
-                execute('link-'+n,['/usr/bin/ldd',asset['path']],20)
-                text=(ROOT/'owned'/('build-link-'+n+'.stdout')).read_text()
-                guards.require(not re.search('sycl|level_zero|cuda|amdhip|libze|not found',text,re.I),
-                    'GPU library linked or dynamic library missing')
+            binary=ROOT/'build/cpu_decode_mix'
+            record['binaries']=dict(mix=dict(path=str(binary),sha256=base.digest(binary)))
+            execute('link',['/usr/bin/ldd',str(binary)],20)
+            text=(ROOT/'owned/build-link.stdout').read_text()
+            guards.require(not re.search('sycl|level_zero|cuda|amdhip|libze|not found',text,re.I),
+                'GPU runtime linked or missing library')
         else:
             built=json.loads((ROOT/'build.json').read_text());verify_built(plan,built)
             record['binaries']=built['binaries']
-            if stage=='check':
-                for label,cpus,error in scan_refusals(plan):
-                    execute(label,[built['binaries']['scan']['path'],'scan',','.join(map(str,cpus))],10,1)
-                    prefix=ROOT/'owned'/('check-'+label)
-                    guards.require(prefix.with_suffix('.stdout').read_bytes()==b'' and
-                        prefix.with_suffix('.stderr').read_text()=='CPU calibration failed: '+error+'\n',
-                        'scanner refusal mechanism differs')
-                    record['children'].append(dict(label=label,cpus=cpus,error=error,exit_code=1))
-                    persist()
-            elif stage=='measure':
-                checked=json.loads((ROOT/'check.json').read_text())
-                guards.require(checked['passed'] and checked['complete'] and checked['ownership_closed'] and
-                    not checked['active'] and checked['binaries']==built['binaries'] and
-                    checked['plan_sha256']==base.digest(PLAN) and
-                    checked['children']==[dict(label=l,cpus=c,error=e,exit_code=1) for l,c,e in scan_refusals(plan)],
-                    'all four scanner refusal checks before timing')
-                _,original,_=original_calibration()
-                record['children']=original['children']
-                for n in SCANS:
-                    label='scan-'+str(n)
-                    execute(label,[built['binaries']['scan']['path'],'scan',
-                        ','.join(map(str,plan['machine']['physical_cpus'][:n]))],
-                        plan['budgets']['scan_seconds'])
-                    stdout=ROOT/'owned'/('measure-'+label+'.stdout')
-                    guards.require((ROOT/'owned'/('measure-'+label+'.stderr')).read_bytes()==b'',
-                        'unexpected scanner diagnostic')
-                    lines=[json.loads(s) for s in stdout.read_text().splitlines()]
-                    record.setdefault('read_reference',[]).append(parse_scan(lines,n))
-                    persist();print('Closed read reference '+str(n)+' threads',flush=True)
-        # Recheck the whole frozen plan,actual input bytes and owners outside timing.
+            if stage=='controls':cases=[('synthetic',[built['binaries']['mix']['path'],'--compact-controls'],None)]
+            else:
+                control=json.loads((ROOT/'controls.json').read_text())
+                guards.require(control['passed'] and control['complete'] and control['ownership_closed'] and
+                    not control['active'] and control['plan_sha256']==base.digest(PLAN) and
+                    control['binaries']==built['binaries'] and len(control['children'])==1,
+                    'closed compact controls required')
+                parse_compact([control['children'][0]['validation'],dict(kind='closed',passed=True)])
+                cases=[('format-'+str(row['down']),command(row,1,28,'compact-check'),row) for row in plan['formats']]
+            for label,argv,row in cases:
+                entry=execute(label,argv,plan['budgets']['controls_seconds' if row is None else 'check_child_seconds'])
+                stdout=ROOT/'owned'/(stage+'-'+label+'.stdout')
+                guards.require((ROOT/'owned'/(stage+'-'+label+'.stderr')).read_bytes()==b'','unexpected compact diagnostic')
+                value=parse_compact([json.loads(s) for s in stdout.read_text().splitlines()],row)
+                record['children'].append(dict(validation=value,exit_code=entry['exit_code'],stdout_sha256=base.digest(stdout)))
+                persist();print('Closed compact '+label,flush=True)
         load()
         if stage!='build':verify_built(plan,built)
-        guards.require(time.monotonic()<=deadline,'whole-stage budget expired during final checks')
+        guards.require(time.monotonic()<=deadline,'whole-stage budget expired')
         record.update(passed=True,complete=True)
     except BaseException as error:
         record['error']=repr(error)
@@ -555,7 +454,7 @@ def run(stage):
 
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=('prepare','build','check','measure'));args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('stage',choices=('prepare','build','controls','check'));args=parser.parse_args()
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
         # This bounded CPU build never overwrites the retained engine generation.
