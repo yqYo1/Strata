@@ -19,7 +19,8 @@ import measurement_guards as guards
 import measurement_owner as ownership
 
 P, B, STATUS = build.P, build.B, build.STATUS
-ROOT = B / 'dflash2-kernel-contract-v1'
+ROOT = B / 'dflash2-kernel-contract-v2'
+PREVIOUS = B / 'dflash2-kernel-contract-v1'
 REFERENCE = B / 'decode-iq3-audit-speed-v2'
 INPUTS = ['tools/sycl/check_dflash2.py', 'tools/sycl/build_upstream_features.py',
           'tools/sycl/build_engine.py', 'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py']
@@ -40,7 +41,7 @@ def compact(row):
         aggregate_sha256=row['controller']['aggregate_sha256'], files=row['controller']['count'])
     native = row['native_build']
     out['native_build'] = {k: native[k] for k in ['source_commit', 'project_source_sha256', 'record', 'passed', 'ownership_closed']}
-    out['commands'] = [dict(label=c['label'], exit_code=c.get('exit_code'), ownership_closed=ownership.closed(c),
+    out['commands'] = [dict(label=c['label'], exit_code=c.get('exit_code'), error=c.get('error'), ownership_closed=ownership.closed(c),
                             errors=c.get('errors', []), cleanup=c.get('cleanup', [])) for c in row.get('commands', [])]
     return out
 
@@ -54,6 +55,7 @@ def save(row):
 
 def verify(row):
     require(public() == compact(json.loads((ROOT / 'record.json').read_text())), 'commit exact device plan/result')
+    require(source.digest(row['previous_gate']['path']) == row['previous_gate']['sha256'], 'original failed gate changed')
     for pin in [row['controller']]:
         require(build.signature(pin['source_sha256']) == pin['aggregate_sha256'], 'controller aggregate changed')
         require({n: source.digest(P / n) for n in pin['source_sha256']} == pin['source_sha256'], 'controller changed')
@@ -75,6 +77,13 @@ def verify(row):
 
 def prepare():
     require(not ROOT.exists(), 'one fresh finite device gate; no automatic retry')
+    previous = json.loads((PREVIOUS / 'record.json').read_text())
+    prior_public = public()
+    require(previous['stage'] == prior_public['stage'] == 'failed' and not previous['passed'] and
+            prior_public['process_retirement']['actual_owned_processes_gone'] and
+            all(c['direct_child_reaped'] and c['session_empty'] and not c.get('survivors')
+                for c in previous['commands']), 'commit failed gate and establish actual process retirement first')
+    require(not json.loads((PREVIOUS / 'active.json').read_text())['active'], 'previous owner still active')
     native = json.loads((build.ROOT / 'record.json').read_text())
     require(native['passed'] and native['stage'] == 'built' and native['ownership_closed'] and
             build.committed_plan() == build.compact(native), 'commit completed feature build first')
@@ -95,6 +104,19 @@ def prepare():
         budgets=dict(wall=180, cpu=180, text_cap=64 << 20, file_cap=64 << 20, total_cap=96 << 20, rss_cap=8 << 30),
         cases=9, fixture=native['binaries']['sycl_dflash2_test'], commands=[], passed=False, ownership_closed=True,
         meaning='Eight active-column GEMMs with3matrices,exact signed integer oracle and output guards;FP32 mean/pending-GR taps. No model,BF16 tap-route,ring recovery,task quality,performance or physical full-context qualification.')
+    # libsycl may statically include UR. Requiring a separate libur_loader mapping
+    # rejects that supported linkage. Check all actual executable files plus the
+    # exact SYCL, forced adapter and GPU driver providers instead. Keep the UR
+    # tracing requirement; do not load another loader just to satisfy an observer.
+    row['required_executable_mappings'] = [str(Path(p).resolve()) for p in [
+        '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0',
+        environment['UR_ADAPTERS_FORCE_LOAD'], environment['ZE_ENABLE_ALT_DRIVERS']]]
+    require(set(row['required_executable_mappings']) <= {str(Path(p).resolve()) for p in row['runtime_files']},
+            'required provider is not in the qualified runtime pins')
+    row['previous_gate'] = dict(path=str(PREVIOUS / 'record.json'), sha256=source.digest(PREVIOUS / 'record.json'),
+        evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(), stage='failed',
+        reason='Prior separate-UR-loader presence predicate failed after9numerical markers. Preserve failure;new prospective provider gate admits pinned static UR within libsycl. Original map count/set was not recorded,so the exact absent predicate is unknown.',
+        source='https://github.com/intel/llvm/blob/sycl/sycl/source/CMakeLists.txt')
     require(row['driver'] == reference['driver'] and row['boot'] == reference['boot'], 'requalify changed boot/driver before reuse')
     require(environment['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and environment['EnableDirectSubmission'] == '0' and
             environment['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0' and environment['ZES_ENABLE_SYSMAN'] == '0', 'qualified safety settings')
@@ -141,9 +163,11 @@ def run():
             allowed[str(Path(row['fixture']['path']).resolve())] = row['fixture']['sha256']
             unknown = sorted(actual - allowed.keys())
             row['unqualified_executable_mappings'] = unknown
-            require(not unknown and len(actual) >= 8 and
-                    any('libur_loader' in p for p in actual) and any('libze_intel_gpu' in p for p in actual),
-                    'unexpected or incomplete executable mappings')
+            row['actual_executable_mappings'] = {p: source.digest(p) for p in sorted(actual)}
+            row['missing_executable_providers'] = sorted(set(row['required_executable_mappings']) - actual)
+            require(not unknown and len(actual) >= 8 and not row['missing_executable_providers'],
+                    'unexpected/incomplete executable mappings: ' + repr(dict(
+                        unknown=unknown, count=len(actual), missing=row['missing_executable_providers'])))
             require(all(source.digest(p) == allowed[p] for p in actual), 'actual mapped ELF changed')
             row['verified_executable_mappings'] = len(actual)
             io.send(b'QUIT\n'); io.exit(20)
@@ -151,7 +175,8 @@ def run():
             row['environment'], P, interaction=inspect, **row['budgets'])
         row['commands'] = monitor.commands
         text = stderr.read_text(errors='replace')
-        require(ownership.closed(entry) and entry['exit_code'] == 0, 'device process did not close normally')
+        require(ownership.closed(entry) and entry['exit_code'] == 0,
+                'device process did not close normally: ' + str(entry.get('error')))
         require('urEnqueueKernelLaunch' in text and not re.search(r'UR_RESULT_ERROR_[A-Z_]+', text),
                 'missing tracing or UR error')
         verify(row)
