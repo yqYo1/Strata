@@ -912,14 +912,17 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   prompt-verify,physical262144/RESTORE and ordinary teardown remain pending.
   All six processes each have69successful raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
-  from Git and pushing their compact results. The closed cohort's twelve
-  generated config/plan files and effective-environment/provenance records
-  remain pending exact recovery from the committed generation recipe. Compare
-  their recorded hashes with regeneration before retiring the closed root;
-  review this bounded provenance hold at the next prose-preparation boundary.
-  Each process directory now contains only config.json and plan.json.
-  Admission passes after all six deletions;
-  all15ELFs and four immutable native/
+  from Git and pushing their compact results. Admission passes after all six
+  deletions. The subsequent closed-cohort recovery reproduces all twelve
+  generated config/plan files byte-for-byte,the105-key environment and the
+  model-asset inventory from the recorded346-input source/recipe and unchanged
+  qualification records. No maintained reader needs this closed code root.
+  Its remaining17files/126927bytes,including successful frontend logs,are
+  retired;the root no longer exists. Original samples and final decisions
+  remain recoverable at`3fc4e9094`. The metadata deletion manifest is
+  `adaptive-payload-generation-regular-code-v1-metadata-retirement-20261107.json`,
+  SHA256`0213a61500f490d8aa7e3c9aec4efbfd0c228673e417ebf746c2528a6022b58d`.
+  The provenance hold is resolved;all15ELFs and four immutable native/
   control receipts are unchanged. The external deletion manifests are
   `adaptive-payload-generation-regular-code-v1-process0-output-retirement-20261107.json`,
   SHA256`0741507908c4976b8bed7b6cf1ecc5364b4fbe37a4fbc526da51522b2c5a85e7`,
