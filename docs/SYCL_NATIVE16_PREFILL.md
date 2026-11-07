@@ -1466,8 +1466,9 @@ The regular-code plan is now prepared at`ad3723d20`,with358source inputs,
 all15model assets fully hashed and focused decode budget96selected from the
 closed32/96decision. Follow`adaptive_cpu_leaves_regular_code_v1`.
 The prepared invariant,serial admission and five compiled producer/resolver
-hashes are pinned. No native code changes. Fresh frontend admission and all
-six model processes remain pending;observer cost is unmeasured. Varied-prose
+hashes are pinned. No native code changes. Fresh current-source benchmark and
+server frontend probes both pass with closed owners;all six model processes
+remain pending and observer cost is unmeasured. Varied-prose
 preparation still requires its own closed32/96cohort.
 The completed preparation command is:
 `/usr/bin/timeout -k 15s 900s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code prepare`.
