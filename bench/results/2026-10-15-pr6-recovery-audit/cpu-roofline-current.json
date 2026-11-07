@@ -1,6 +1,6 @@
 {
   "schema": "strata-cpu-activation-lut-v1",
-  "stage": "check",
+  "stage": "screen",
   "source_commit": "3406abc97bd9a84732dc4a0bf267c9c941bfb2d8",
   "plan_sha256": "c2f269066331d124722b400c30d05101fba0a748b7501fad004ce4fd712e8efa",
   "calibration_origin": {
@@ -18,101 +18,793 @@
       "case": [
         18,
         20,
-        1
+        1,
+        0,
+        "raw"
       ],
-      "validation": {
-        "work": {
-          "kind": "lut_work",
-          "arm": "check",
-          "group": 1,
-          "NT": 1,
-          "experts": 70,
-          "host_cpu": 0,
-          "affinity_verified": true,
-          "slab_bytes": 524288,
-          "accumulator_bytes": 40960,
-          "raw_blob_bytes": 152320000
-        },
-        "numerical_qualified": true
+      "samples": {
+        "reuse": [
+          [
+            4857,
+            1.300198319,
+            1.296835
+          ],
+          [
+            4679,
+            1.300211266,
+            1.299473
+          ],
+          [
+            4723,
+            1.300225955,
+            1.29805
+          ],
+          [
+            4823,
+            1.300051728,
+            1.293992
+          ],
+          [
+            4879,
+            1.300135399,
+            1.296213
+          ]
+        ],
+        "stream": [
+          [
+            4853,
+            1.300244134,
+            1.298818
+          ],
+          [
+            4843,
+            1.3001607,
+            1.299749
+          ],
+          [
+            4674,
+            1.300203432,
+            1.299284
+          ],
+          [
+            4885,
+            1.300037572,
+            1.299319
+          ],
+          [
+            4818,
+            1.300153802,
+            1.299965
+          ]
+        ]
       },
-      "exit_code": 0,
-      "peak_session_rss_bytes": 156774400,
-      "stdout_sha256": "1228406fc6240984296c682d98e571b23451d656b489fe07312182dbbb9c15fc"
+      "peak_rss_bytes": 157110272
     },
     {
       "case": [
         18,
         20,
-        10
+        1,
+        0,
+        "lut"
       ],
-      "validation": {
-        "work": {
-          "kind": "lut_work",
-          "arm": "check",
-          "group": 10,
-          "NT": 1,
-          "experts": 70,
-          "host_cpu": 0,
-          "affinity_verified": true,
-          "slab_bytes": 524288,
-          "accumulator_bytes": 409600,
-          "raw_blob_bytes": 152320000
-        },
-        "numerical_qualified": true
+      "samples": {
+        "reuse": [
+          [
+            1235,
+            1.300038128,
+            1.299492
+          ],
+          [
+            1241,
+            1.300671291,
+            1.296351
+          ],
+          [
+            1269,
+            1.300725886,
+            1.295646
+          ],
+          [
+            1200,
+            1.300550127,
+            1.299283
+          ],
+          [
+            1111,
+            1.30041801,
+            1.295343
+          ]
+        ],
+        "stream": [
+          [
+            890,
+            1.300948991,
+            1.297086
+          ],
+          [
+            891,
+            1.300741253,
+            1.30027
+          ],
+          [
+            879,
+            1.30074966,
+            1.296165
+          ],
+          [
+            895,
+            1.300045677,
+            1.297062
+          ],
+          [
+            912,
+            1.300263078,
+            1.299727
+          ]
+        ]
       },
-      "exit_code": 0,
-      "peak_session_rss_bytes": 157155328,
-      "stdout_sha256": "e6d0dca8d1bdf96448c1baff6132355d6f3d7d3090c172606b7ce8041896de44"
+      "peak_rss_bytes": 157241344
     },
     {
       "case": [
         18,
-        42,
-        1
+        20,
+        1,
+        1,
+        "lut"
       ],
-      "validation": {
-        "work": {
-          "kind": "lut_work",
-          "arm": "check",
-          "group": 1,
-          "NT": 1,
-          "experts": 80,
-          "host_cpu": 0,
-          "affinity_verified": true,
-          "slab_bytes": 524288,
-          "accumulator_bytes": 40960,
-          "raw_blob_bytes": 137216000
-        },
-        "numerical_qualified": true
+      "samples": {
+        "reuse": [
+          [
+            1117,
+            1.300537637,
+            1.298527
+          ],
+          [
+            1108,
+            1.300270897,
+            1.298351
+          ],
+          [
+            1093,
+            1.30059018,
+            1.294468
+          ],
+          [
+            1129,
+            1.300423869,
+            1.289197
+          ],
+          [
+            1072,
+            1.301396832,
+            1.300053
+          ]
+        ],
+        "stream": [
+          [
+            812,
+            1.301251961,
+            1.298181
+          ],
+          [
+            838,
+            1.300831201,
+            1.299846
+          ],
+          [
+            829,
+            1.300030485,
+            1.298417
+          ],
+          [
+            843,
+            1.300976788,
+            1.299195
+          ],
+          [
+            788,
+            1.300105671,
+            1.294204
+          ]
+        ]
       },
-      "exit_code": 0,
-      "peak_session_rss_bytes": 141623296,
-      "stdout_sha256": "703924dc7d1213b8f7af145a8d6f8b8b7cf9cd38b5dcccccccf61a142c7b349a"
+      "peak_rss_bytes": 157167616
     },
     {
       "case": [
         18,
-        42,
-        10
+        20,
+        1,
+        1,
+        "raw"
       ],
-      "validation": {
-        "work": {
-          "kind": "lut_work",
-          "arm": "check",
-          "group": 10,
-          "NT": 1,
-          "experts": 80,
-          "host_cpu": 0,
-          "affinity_verified": true,
-          "slab_bytes": 524288,
-          "accumulator_bytes": 409600,
-          "raw_blob_bytes": 137216000
-        },
-        "numerical_qualified": true
+      "samples": {
+        "reuse": [
+          [
+            4793,
+            1.300149967,
+            1.298403
+          ],
+          [
+            4854,
+            1.30012915,
+            1.294933
+          ],
+          [
+            4798,
+            1.300182542,
+            1.297751
+          ],
+          [
+            4778,
+            1.300086272,
+            1.298962
+          ],
+          [
+            4564,
+            1.300197443,
+            1.298061
+          ]
+        ],
+        "stream": [
+          [
+            4576,
+            1.300020712,
+            1.299649
+          ],
+          [
+            4452,
+            1.300019011,
+            1.296086
+          ],
+          [
+            4640,
+            1.300063717,
+            1.295765
+          ],
+          [
+            4813,
+            1.30013394,
+            1.299573
+          ],
+          [
+            4866,
+            1.300158418,
+            1.299368
+          ]
+        ]
       },
-      "exit_code": 0,
-      "peak_session_rss_bytes": 141975552,
-      "stdout_sha256": "e1b13cda825b92a7232ec7f1e0fc18b9f8e0e572894fdfa6acb5f129fd5b286d"
+      "peak_rss_bytes": 157171712
+    },
+    {
+      "case": [
+        18,
+        20,
+        1,
+        2,
+        "raw"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            4852,
+            1.300179952,
+            1.295863
+          ],
+          [
+            4933,
+            1.300175255,
+            1.299414
+          ],
+          [
+            4759,
+            1.300008002,
+            1.28034
+          ],
+          [
+            4731,
+            1.300044672,
+            1.294323
+          ],
+          [
+            4829,
+            1.300183034,
+            1.299023
+          ]
+        ],
+        "stream": [
+          [
+            4964,
+            1.30020123,
+            1.299109
+          ],
+          [
+            4832,
+            1.300090423,
+            1.296055
+          ],
+          [
+            4907,
+            1.300036123,
+            1.299294
+          ],
+          [
+            4837,
+            1.300101037,
+            1.296566
+          ],
+          [
+            4647,
+            1.300374803,
+            1.293035
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157241344
+    },
+    {
+      "case": [
+        18,
+        20,
+        1,
+        2,
+        "lut"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            1178,
+            1.300520761,
+            1.299066
+          ],
+          [
+            1214,
+            1.300761907,
+            1.300304
+          ],
+          [
+            1180,
+            1.300353239,
+            1.296757
+          ],
+          [
+            1252,
+            1.300154367,
+            1.29599
+          ],
+          [
+            1204,
+            1.300446469,
+            1.299865
+          ]
+        ],
+        "stream": [
+          [
+            889,
+            1.300951189,
+            1.297525
+          ],
+          [
+            908,
+            1.300737629,
+            1.298312
+          ],
+          [
+            870,
+            1.300429421,
+            1.299854
+          ],
+          [
+            826,
+            1.300849574,
+            1.299935
+          ],
+          [
+            870,
+            1.300337301,
+            1.298406
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157241344
+    },
+    {
+      "case": [
+        18,
+        20,
+        10,
+        0,
+        "raw"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            466,
+            1.30205115,
+            1.297714
+          ],
+          [
+            470,
+            1.302765947,
+            1.298992
+          ],
+          [
+            488,
+            1.302571011,
+            1.301531
+          ],
+          [
+            489,
+            1.300111453,
+            1.299565
+          ],
+          [
+            478,
+            1.300920919,
+            1.299809
+          ]
+        ],
+        "stream": [
+          [
+            473,
+            1.30228088,
+            1.298407
+          ],
+          [
+            487,
+            1.301930903,
+            1.295852
+          ],
+          [
+            487,
+            1.300194225,
+            1.292886
+          ],
+          [
+            480,
+            1.300173449,
+            1.299136
+          ],
+          [
+            485,
+            1.30247902,
+            1.301649
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157736960
+    },
+    {
+      "case": [
+        18,
+        20,
+        10,
+        0,
+        "lut"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            94,
+            1.308404606,
+            1.308138
+          ],
+          [
+            97,
+            1.307434291,
+            1.306953
+          ],
+          [
+            90,
+            1.304827335,
+            1.300524
+          ],
+          [
+            93,
+            1.311830149,
+            1.31156
+          ],
+          [
+            92,
+            1.300537825,
+            1.299849
+          ]
+        ],
+        "stream": [
+          [
+            89,
+            1.300990338,
+            1.299974
+          ],
+          [
+            80,
+            1.307468153,
+            1.306948
+          ],
+          [
+            90,
+            1.307262478,
+            1.303242
+          ],
+          [
+            88,
+            1.311881934,
+            1.307334
+          ],
+          [
+            89,
+            1.308907306,
+            1.308212
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157618176
+    },
+    {
+      "case": [
+        18,
+        20,
+        10,
+        1,
+        "lut"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            93,
+            1.30063592,
+            1.297566
+          ],
+          [
+            94,
+            1.306819962,
+            1.305828
+          ],
+          [
+            93,
+            1.311091895,
+            1.310588
+          ],
+          [
+            92,
+            1.308144067,
+            1.307724
+          ],
+          [
+            96,
+            1.301991098,
+            1.297261
+          ]
+        ],
+        "stream": [
+          [
+            95,
+            1.311468217,
+            1.308235
+          ],
+          [
+            98,
+            1.309377184,
+            1.30761
+          ],
+          [
+            91,
+            1.311221005,
+            1.309876
+          ],
+          [
+            94,
+            1.306911195,
+            1.302303
+          ],
+          [
+            92,
+            1.311583802,
+            1.30618
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157663232
+    },
+    {
+      "case": [
+        18,
+        20,
+        10,
+        1,
+        "raw"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            484,
+            1.300576123,
+            1.30019
+          ],
+          [
+            487,
+            1.301674783,
+            1.299766
+          ],
+          [
+            482,
+            1.300677508,
+            1.294471
+          ],
+          [
+            478,
+            1.300839103,
+            1.299073
+          ],
+          [
+            459,
+            1.301376948,
+            1.29825
+          ]
+        ],
+        "stream": [
+          [
+            486,
+            1.301017974,
+            1.297605
+          ],
+          [
+            467,
+            1.300373992,
+            1.299765
+          ],
+          [
+            485,
+            1.302319356,
+            1.298257
+          ],
+          [
+            472,
+            1.30271396,
+            1.300634
+          ],
+          [
+            483,
+            1.300555759,
+            1.300042
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157679616
+    },
+    {
+      "case": [
+        18,
+        20,
+        10,
+        2,
+        "raw"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            478,
+            1.301801507,
+            1.301143
+          ],
+          [
+            466,
+            1.300827084,
+            1.296552
+          ],
+          [
+            488,
+            1.301783165,
+            1.297239
+          ],
+          [
+            479,
+            1.301981279,
+            1.301286
+          ],
+          [
+            477,
+            1.302039841,
+            1.299055
+          ]
+        ],
+        "stream": [
+          [
+            462,
+            1.3022562,
+            1.297314
+          ],
+          [
+            471,
+            1.300238924,
+            1.299458
+          ],
+          [
+            480,
+            1.301519506,
+            1.297504
+          ],
+          [
+            479,
+            1.302971781,
+            1.300504
+          ],
+          [
+            461,
+            1.300307157,
+            1.297452
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157573120
+    },
+    {
+      "case": [
+        18,
+        20,
+        10,
+        2,
+        "lut"
+      ],
+      "samples": {
+        "reuse": [
+          [
+            93,
+            1.309603629,
+            1.308533
+          ],
+          [
+            97,
+            1.312662868,
+            1.311285
+          ],
+          [
+            90,
+            1.305226612,
+            1.302794
+          ],
+          [
+            99,
+            1.311106572,
+            1.31041
+          ],
+          [
+            92,
+            1.312767289,
+            1.311623
+          ]
+        ],
+        "stream": [
+          [
+            93,
+            1.309137618,
+            1.304971
+          ],
+          [
+            94,
+            1.30101988,
+            1.300432
+          ],
+          [
+            95,
+            1.309216049,
+            1.306638
+          ],
+          [
+            93,
+            1.308034045,
+            1.303482
+          ],
+          [
+            90,
+            1.312341114,
+            1.31163
+          ]
+        ]
+      },
+      "peak_rss_bytes": 157573120
     }
   ],
   "binaries": {
@@ -122,17 +814,141 @@
     }
   },
   "decision": {
-    "numerical_qualified": true,
-    "cases": 4,
+    "screen_complete": true,
+    "cells": [
+      {
+        "group": 1,
+        "NT": 1,
+        "stream": false,
+        "paired_raw_over_lut": [
+          0.25606736877899183,
+          0.2311489572092988,
+          0.24927647596296515
+        ],
+        "geomean": 0.2452689044877064,
+        "raw_median_seconds_per_call": 0.0002695525042504665,
+        "lut_median_seconds_per_call": 0.0010801050406976744,
+        "repeated_gain_qualified": false,
+        "followup_eligible": false
+      },
+      {
+        "group": 1,
+        "NT": 1,
+        "stream": true,
+        "paired_raw_over_lut": [
+          0.1838947604083674,
+          0.17866836019263652,
+          0.1798308715889633
+        ],
+        "geomean": 0.18078417790536438,
+        "raw_median_seconds_per_call": 0.00026878251746950585,
+        "lut_median_seconds_per_call": 0.0014946405758620687,
+        "repeated_gain_qualified": false,
+        "followup_eligible": false
+      },
+      {
+        "group": 10,
+        "NT": 1,
+        "stream": false,
+        "paired_raw_over_lut": [
+          0.19294269544192483,
+          0.1929522275661874,
+          0.19340155073809498
+        ],
+        "geomean": 0.19309870595676645,
+        "raw_median_seconds_per_call": 0.002721591880753138,
+        "lut_median_seconds_per_call": 0.014081759451612903,
+        "repeated_gain_qualified": false,
+        "followup_eligible": false
+      },
+      {
+        "group": 10,
+        "NT": 1,
+        "stream": true,
+        "paired_raw_over_lut": [
+          0.18260392686614083,
+          0.19367056575716354,
+          0.1962755290253971
+        ],
+        "geomean": 0.1907567714980813,
+        "raw_median_seconds_per_call": 0.002692662026915114,
+        "lut_median_seconds_per_call": 0.014064882204301077,
+        "repeated_gain_qualified": false,
+        "followup_eligible": false
+      }
+    ],
     "performance_qualified": false,
     "model_adoption_qualified": false,
-    "next_action": "Committed setup-inclusive E1/E10 screen;no speed measured here."
+    "interpretation": "Setup-inclusive NT1 same-activation E1negative/E10optimistic discriminator only;no model TG,actual CPU-miss reuse,production critical path or physical saturation qualification.",
+    "next_action": "Reject the current block-local512KiB LUT;retire source/build after recovery. Next qualify current e1b011GPU event coverage and source-bound dependency/critical-path attribution before selecting a production mechanism. No model trial from failed LUT screen."
   },
   "owned_commands": {
-    "count": 4,
+    "count": 12,
     "all_closed": true,
     "all_exit_zero": true
   },
   "hardware_saturation_qualified": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "build_evidence_commit": "419febf73112a990eb16350b63ec83a9cd22267c",
+  "host_evidence_commit": "5b24e6ce5211186582acc0520379d7d5984959af",
+  "controls_evidence_commit": "fc0601a67834e4e762f469d512e00c1f91e77435",
+  "real_checks_evidence_commit": "18a33e3c14d65d5d3aed7ef56e9d00e428f02958",
+  "case_columns": [
+    "GU_type",
+    "down_type",
+    "same_activation_experts",
+    "process_pair",
+    "arm"
+  ],
+  "sample_columns": [
+    "whole_calls",
+    "wall_seconds",
+    "process_CPU_seconds"
+  ],
+  "geometry": {
+    "H": 2560,
+    "FF": 640,
+    "NT": 1,
+    "blocks_per_row": 10,
+    "slab_bytes": 524288,
+    "raw_fixture_experts": 70,
+    "raw_fixture_bytes": 152320000,
+    "accumulator_bytes_per_expert": 40960
+  },
+  "verified_conservation": {
+    "normal_zero_processes": 12,
+    "quiet_stderr": true,
+    "closed_owners": true,
+    "individual_samples": 120,
+    "all_batches_wall_at_least_one_second": true,
+    "all_actual_native_pair_rows_and_LUT_build_block_output_rows_match": true,
+    "final_timed_output_native_bits_and_guards": true,
+    "actual_serial_affinity": true,
+    "max_timer_query_over_fastest_call": 8.416133695028019e-05
+  },
+  "numerical_basis": {
+    "controller_tests": 9,
+    "skipped": 0,
+    "actual_compiler_inputs": 633,
+    "table_entries_checked": 2097152,
+    "scaled_chunks_checked": 4194304,
+    "shape_alias_refusals": 14,
+    "real_checks": 4,
+    "distinct_model_experts": 150,
+    "activation_vectors_per_expert": 4,
+    "sharing_cases": [
+      1,
+      10
+    ],
+    "both_model_IQ3_XXS_formats": true,
+    "native_bits_finite_guards": true
+  },
+  "retention_format": "Keep individual whole-call/wall/CPU samples,paired decisions and conservation proof. Repeated geometry,counters derived from verified call formulas,timers and full parser output have no remaining consumer.",
+  "retained_auxiliary": {
+    "roots": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-activation-lut-v1"
+    ],
+    "consumer": "Original source/recipe/633actual-input recovery at this closed result boundary only;no future numerical or speed baseline.",
+    "next_action": "After committing useful samples,recover3406abc/f13e5eaa/419febfinputs and retire this auxiliary generation. Preserve both inference generations."
+  }
 }
