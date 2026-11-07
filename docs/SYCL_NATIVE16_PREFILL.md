@@ -1578,13 +1578,23 @@ inference ELFs remain unchanged. Rejected source,targets,controllers,fixtures
 and the obsolete plan are removed from the active tree. Restore them from the
 recorded original commits;the current result keeps compact deletion evidence.
 
-Next qualify compatibility-graph event coverage on the exact current
-bbd345/e1b011engine before a bounded source-joined decode dependency/critical-path
-measurement. Prior b310/429b/cb7collector evidence does not qualify this ELF.
-Join host work/waits/submission and GPU events without adding overlapping
-services. Physical RAM/VRAM/PCIe traffic and saturation remain unknown;existing
-Luna-reviewed references cover the method,so no duplicate survey is selected.
-Keep prefill independence,physical262144/RESTORE and task-quality gates open.
+The exact current bbd345/e1b011 generation now passes the small active-from-exec
+collector check under `adaptive_payload_collector_active_v1`,using its df574bb8
+same-build fixture and the existing indexed collector. All62expected kernels
+have names and unique native host-flow joins;the274446-byte timeline contains
+249GPU and770host events within the owned raw-clock bounds. Native exit is0,
+parameter validation is quiet,owners/session close,boot/driver are unchanged
+and no fresh fault is recorded. The read-only host readiness check also closes
+with no failures. This qualifies only the small compatibility-graph control.
+
+Next obtain a separately planned bounded thinking-on MTP4 model window on this
+exact generation,qualifying event coverage and observer cost before interpreting
+its dependency/critical path. Prior b310/429b/cb7model evidence does not qualify
+this ELF. Join host work/waits/submission and GPU events without adding
+overlapping services. Physical RAM/VRAM/PCIe traffic and saturation remain
+unknown;existing Luna-reviewed references cover the method,so no duplicate
+survey is selected. Keep prefill independence,physical262144/RESTORE and
+task-quality gates open.
 
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
@@ -3069,7 +3079,7 @@ source identities rather than bypassing this rule.
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently205
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently206
 milestone rows,including eight compact CPU-GU points,the rejected packed-gather and activation-LUT stream comparisons and the two closed e1b011adaptive32/96code aggregates,
 the four closed adaptive8/32code/prose aggregates,
 the four MTP-width,four earlier adaptive code/prose aggregates,the CPU

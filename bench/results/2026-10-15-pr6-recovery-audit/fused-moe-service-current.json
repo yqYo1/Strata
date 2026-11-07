@@ -200902,7 +200902,7 @@
     }
   },
   "adaptive_payload_collector_active_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "55e728bfecd43a10454af2863b325f6eff78077a",
     "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
     "engine": {
@@ -200966,7 +200966,53 @@
         "LD_DEBUG": "libs"
       }
     },
-    "cases": [],
+    "cases": [
+      {
+        "passed": true,
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1561674,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "trace": {
+          "expected_kernels": 62,
+          "observed_kernels": 62,
+          "native_PID": 1561674,
+          "GPU_events": 249,
+          "host_events": 770,
+          "collection_active_from_exec": true,
+          "native_host_flow_joins_unique": true,
+          "all_kernel_names_present": true,
+          "timeline_sha256": "29d02a3ee858db5861bd227d489fae5b9fbb275d39e6deb12b9fe26c1db87daa",
+          "timeline_bytes": 274446
+        },
+        "clocks": {
+          "begin": 2427979743578148,
+          "end": 2427980059379480
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "plan": {
       "question": "Does the existing active-from-exec launcher mode preserve all compatibility graph/kernel flow joins with only kernel-activity Chrome logging?",
       "native": "Exact bbd345/e1b011 generation,all six checked ELFs and its actual df574bb8 compatibility fixture. No old b310/429b/cb7 binary or observer qualification is inherited.",
@@ -200987,8 +201033,8 @@
       "total_cap": 67108864
     },
     "whole_bytes": 134217728,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "preflight": {
