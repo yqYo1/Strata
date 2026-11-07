@@ -1467,21 +1467,25 @@ all15model assets fully hashed and focused decode budget96selected from the
 closed32/96decision. Follow`adaptive_cpu_leaves_regular_code_v1`.
 The prepared invariant,serial admission and five compiled producer/resolver
 hashes are pinned. No native code changes. Fresh current-source benchmark and
-server frontend probes both pass with closed owners. The first five processes
+server frontend probes both pass with closed owners. All six processes
 now close normally0with quiet validation,closed owners,unchanged boot/driver
 and no fresh fault. Every process has33209fresh-input/3227generated tokens,
 five bound native/client records and a checked four-warmup prefix. The work and
 long-output signatures match. Processes0/3/4are leaf-off,with exact TG13.567158/
-13.338442/12.514679;processes1/2are leaf-on,with13.195703/13.028172. Their full individual
+13.338442/12.514679;processes1/2/5are leaf-on,with13.195703/13.028172/12.356003. Their full individual
 PP,time,TTFT and work samples remain in the compact result. These inputs differ
 from the earlier32/96cohort;no cross-cohort speed gain follows.
-The first two opposite-order leaf-on/off per-token latency ratios are
-1.028149645and1.023815340,both within1.05with matching work. The final
-leaf-on process remains before observer-cost qualification. The slower fifth
-sample remains included;no sample replacement or changed comparison criteria.
+All three opposite-order leaf-on/off per-token latency ratios are
+1.028149645/1.023815340/1.012841992,each within1.05with matching work;
+geometric mean1.021581972. The observer-cost gate passes. All15model assets
+pass final full hashing. The slower fifth/sixth samples remain included;no
+sample replacement or changed comparison criteria. This qualifies the charged
+leaf observer's bounded cost,not a speedup,critical path or hardware saturation.
 The first charged leaf sample totals398.843CPU seconds across six threads:
 GU265.234,HQ0.726and DOWN132.883. Of846250CPU expert jobs,728497(86.085%)
-are NT1;989999entries give1.170entries/job. The top GU bins are NT1
+are NT1;989999entries give1.170entries/job. All three leaf-on samples have
+identical format/NT job counts;GU takes65.62..66.50%of their CPU leaf time.
+The top GU bins are NT1
 IQ3_XXS/IQ4_NL,IQ2_S/IQ4_NLand IQ3_S/IQ4_NL. These concurrent CPU sums
 include memory stalls and do not establish critical path,physical traffic or
 hardware saturation. For these matched CPU jobs,the sum of original full-blob
