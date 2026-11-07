@@ -799,7 +799,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   the exact expected output with every other qualification field unchanged.
   It includes two valid and six corrupt publication controls. The build
   post-step and positive-entry preparation use the same ordering fix;no input
-  hash is refreshed. V2has not been prepared,built or executed. It gates preparation
+  hash is refreshed. V2preparation now closes normally0at source`bbd345c63`,
+  with568inputs,only header8387changed,the correct429b predecessor receipt,
+  the two/six publication controls passing,and no predecessor products in its
+  external build inputs. No compilation or GPU execution has occurred. It gates preparation
   on all six resource processes closing. Allow one temporary third comparison
   generation only through successor native32positive/refusal qualification:
   keep552b and429b's15outputs for fallback and exact five-fixture comparison,
