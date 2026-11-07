@@ -1071,9 +1071,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Processes0..3normal outputs are retired with350Git inputs recovered,
   all15ELFs/six immutable receipts unchanged and full continued admission
   passing. Detailed samples and retirement manifests remain in the linked
-  service result. Retire processes4and5normal output together at this serialized
-  cohort boundary after committing their evidence;retain generated config/plan
-  for continued admission. The qualified129-input CPU controls remain at
+  service result. Processes4and5normal output(138files/26191897bytes)and the
+  consumed scope-review body(5294bytes)are now retired after source recovery.
+  All15ELFs/six immutable receipts stay unchanged;full before/after admission
+  passes. Manifest:`adaptive-payload96-generation-regular-code-v1-final-outputs-retirement-20261107.json`,
+  SHA256`1fbfd0957bf95418443a09aa6f1baba278fff0fd77ae62f540fef97fb7861fc1`.
+  Generated config/plan remain for admission. The qualified129-input controls remain at
   `adaptive_payload96_generation_reader_host_v2`;source is`8f9636060`.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
