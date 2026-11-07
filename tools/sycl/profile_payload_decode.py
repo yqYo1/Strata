@@ -53,7 +53,7 @@ def basis():
             require(digest(P / name) == sha, 'caller reader changed: ' + name)
     selected = speed.context('regular-code')
     cohort = json.loads((selected.ROOT / 'record.json').read_text())
-    require(selected.compact(cohort) == data['adaptive_payload96_generation_regular_code_v1'],
+    require(speed.clean.compact(cohort) == data['adaptive_payload96_generation_regular_code_v1'],
         'original closed cohort inputs must match all committed signatures')
     require(cohort['stage'] == 'closed' and cohort['passed'] and cohort['complete'] and
         cohort['ownership_closed'] and not cohort['active'] and

@@ -201191,6 +201191,12 @@
       "files": 357,
       "sha256": "36ee7f115ae121990670f68aceaef9f3ce17baada14830e90877a0b557beb818"
     },
-    "correction": "V2reads the original closed96cohort and checks its compact source/environment/model signatures before constructing the diagnostic. The failedV1did not execute any frontend or GPU workload and is not retried."
+    "correction": "V2reads the original closed96cohort and checks its compact source/environment/model signatures before constructing the diagnostic. The failedV1did not execute any frontend or GPU workload and is not retried.",
+    "recovery_input_reader_audit": {
+      "source_commit": "9266de57b6fd11dc8467f33501da88ab6eb822cb",
+      "passed": false,
+      "GPU_executed": false,
+      "reason": "Generic generation-context compactor differs from the published adaptive-cohort compactor;the latter includes signed original environment/model/source inputs. Correct the reader before V2preparation;no model run or pin refresh."
+    }
   }
 }
