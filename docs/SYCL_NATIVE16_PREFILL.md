@@ -1530,12 +1530,10 @@ format/NT marginal processes,not actual layer/access-trace latency. Requested
 blob visits/read rates are not physical DRAM/PCIe traffic,hardware saturation
 or a70TG ceiling. Pool waiting,arithmetic/unpack,scheduling and memory effects
 remain mixed;early read-rate flattening and expert thread scaling alone do
-not prove the actual limiting resource. Next compare an exact compact IQ3_XXS
-GU view with setup/extra-memory costs,NT1/current NT mixtures and reuse/stream;
-use repeated matched processes and preserve numerical/FMA contracts before
-production selection. Current-model GPU counters,physical traffic and critical
-path remain unqualified. No new model speedup,adoption or device execution
-follows from this calibration.
+not prove the actual limiting resource. These observations motivated the closed
+compact,gather and activation-LUT comparisons below. Current-model GPU counters,
+physical traffic and critical path remain unqualified. The calibration is not
+a new model speedup,adoption or device execution.
 
 The packed98B gather experiment is closed and **rejected for performance**.
 All524288integer controls,eight real-weight/threaded checks and24timing
@@ -1552,24 +1550,41 @@ and0.354..0.481s allocation/encoding costs remain charged in its original
 This component result does not establish production critical-path benefit,
 physical RAM traffic or model adoption. Its original source is313e5c4bc.
 
-Both auxiliary generations now have no binary consumer and are physically
-retired:216files/28914269B,after recovering263/264original project inputs,
-1376GGML inputs and checking636/637actual compiler inputs,recipes,link inputs
-and exact executable identities. All15inference ELFs remain unchanged.
-The compact current result records the external deletion manifest and hash;
-restore a closed candidate from its original reachable Git commits.
+The block-local activation-LUT screen is also closed and **rejected**.
+Source3406abc97 and ELF6144036d passed nine controller tests,633actual compiler
+input checks,2097152table entries,4194304scaled chunks and14refusals. Both real
+IQ3_XXS formats pass bit equality/finite/guards across150experts,four activation
+vectors and E1/E10sharing. The CPU-only twelve-process screen retains120whole
+call samples,all>=1s,with native dispatch and LUT build/block/output counts
+verified. Table generation,accumulator clearing and GU output are timed.
 
-The reviewed next prototype is a512KiB block-local activation-dependent
-partial-dot LUT. Preserve original Q8_K quantization,PSIGN edge behavior,
-integer lanes,block FMA order and final reduction. Actual source groups jobs
-by expert while sharing activation pointers per token;the model routes at
-most10experts per token. A28-job cohort is not28-way activation reuse.
-First screen serial NT1 with E1 as a negative control and E10 as the optimistic
-physical upper bound,charging table generation on every distinct activation
-and block. Only a repeated setup-inclusive gain warrants the actual NT1..4,
-multithread and production-entry comparisons. Existing Luna-reviewed references
-cover this question;no duplicate research scope is selected. Keep prefill,
-physical262144/RESTORE and task-quality requirements open.
+| Same-input experts | Raw/LUT speed ratio, reuse | Raw/LUT speed ratio, stream |
+| --- | --- | --- |
+|1|0.24527|0.18078|
+|10|0.19310|0.19076|
+
+All three pairs lose in every cell. E10stream median time is2.69266ms native
+versus14.06488ms LUT;paired geometric-mean LUT/native time ratio is5.24228.
+This rejects the512KiB slab prototype;it does not establish the physical cause,
+all LUT algorithms' performance or any model regression. Samples and exact
+source/recipe references are in the [closed LUT result](https://github.com/yqYo1/Strata/blob/fe88dddb2a48922bf30140611cef9c7b92217e0d/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
+Actual routing caps same-token reuse at10experts;28jobs do not imply28-way reuse.
+NT2..4or model trials are not advanced from this failed screen.
+
+The compact,gather and LUT auxiliary generations are physically retired after
+original source/recipe and636/637/633actual compiler-input recovery. Together
+with closed output and a consumed review,333files/43379170B are removed;all15
+inference ELFs remain unchanged. Rejected source,targets,controllers,fixtures
+and the obsolete plan are removed from the active tree. Restore them from the
+recorded original commits;the current result keeps compact deletion evidence.
+
+Next qualify compatibility-graph event coverage on the exact current
+bbd345/e1b011engine before a bounded source-joined decode dependency/critical-path
+measurement. Prior b310/429b/cb7collector evidence does not qualify this ELF.
+Join host work/waits/submission and GPU events without adding overlapping
+services. Physical RAM/VRAM/PCIe traffic and saturation remain unknown;existing
+Luna-reviewed references cover the method,so no duplicate survey is selected.
+Keep prefill independence,physical262144/RESTORE and task-quality gates open.
 
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
@@ -3055,7 +3070,7 @@ source identities rather than bypassing this rule.
 
 The cumulative user-requested index is
 [`bench/performance-records.csv`](../bench/performance-records.csv),currently205
-milestone rows,including eight compact CPU-GU points,the rejected packed-gather stream comparison and the two closed e1b011adaptive32/96code aggregates,
+milestone rows,including eight compact CPU-GU points,the rejected packed-gather and activation-LUT stream comparisons and the two closed e1b011adaptive32/96code aggregates,
 the four closed adaptive8/32code/prose aggregates,
 the four MTP-width,four earlier adaptive code/prose aggregates,the CPU
 read-payload calibration and the single13.94265TG resource-diagnostic sample.
