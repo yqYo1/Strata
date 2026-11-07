@@ -940,7 +940,28 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reference sample does not establish candidate gain or a fixed4 weak-MTP
   class. Continue the frozen plan with process1(32);keep native/controller
   inputs unchanged. Follow`adaptive_payload_generation_varied_prose_v1`.
-  All six processes each have69successful raw/JIT files retired(13095666/13096255/
+  The next96-copy positive entry is source-prepared in
+  `tools/sycl/check_adaptive_payload96_entry.py`;no controls,preparation or
+  native execution have run. It reuses the unchanged e1b011engine and ordered
+  owned supervisor,requires both current8/32cohorts closed,and does not enable
+  a performance trial. The pinned48-layer native index has max blob2662400B;
+  even96maximum blobs total255590400B(243.75MiB),within the unchanged256MiB
+  diagnostic cycle cap. The new CPU parser will check all48arena offsets and
+  that bound before exec. Require two full96-copy publications,both dispatch
+  roles and occupied post-positive loan/refill. A separate exact96second-record
+  refusal remains mandatory before any96speed comparison. Keep the original32
+  reader and all current cohort/native inputs unchanged. Its ordered/index
+  adversarial controls are preregistered for the closed-cohort boundary:
+  `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
+  This source-only plan establishes no96native safety,performance or adoption.
+  Prose process0's69successful raw/JIT files(13136414bytes)are retired after
+  recovery of346Git inputs and pushing the compact result. Its generated
+  config/plan remain for the five pending processes;admission still passes
+  after deletion and all15ELFs/four immutable receipts are unchanged. Manifest:
+  `adaptive-payload-generation-varied-prose-v1-process0-output-retirement-20261107.json`,
+  SHA256`e8e7ef533b03366618eb612cc3cf7030197a8047a2152a8f4eeed705008de0cc`.
+  For the closed regular-code cohort,all six processes each have69successful
+  raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
   from Git and pushing their compact results. Admission passes after all six
   deletions. The subsequent closed-cohort recovery reproduces all twelve
