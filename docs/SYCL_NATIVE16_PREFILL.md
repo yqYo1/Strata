@@ -957,7 +957,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Follow`adaptive_payload_generation_varied_prose_v1`.
   The next96-copy positive entry is source-prepared in
   `tools/sycl/check_adaptive_payload96_entry.py`;its CPU controls now pass at
-  `df426f83c`,but preparation and native execution have not run. It reuses the unchanged e1b011engine and ordered
+  `df426f83c`. Its positive plan is now prepared at`8380579f7`,with125source
+  inputs and all15model assets verified;native execution has not run.
+  It reuses the unchanged e1b011engine and ordered
   owned supervisor,requires both current8/32cohorts closed,and does not enable
   a performance trial. The pinned48-layer native index has max blob2662400B;
   even96maximum blobs total255590400B(243.75MiB),within the unchanged256MiB
@@ -989,6 +991,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   The125-input source signature and28ordered,7index-bound,14copy-request and
   213refusal negative cases are recorded under`adaptive_payload96_reader_host_v1`.
   This CPU result establishes no96native safety,performance or adoption.
+  The compiled source audit matches the recorded private generator,cache and
+  audit header. Swaps and pending metadata are dynamic vectors;the pending
+  capacity is reserved before accepted refill copies. The audit reserves96
+  entries and bounds them by1256slots,24576map rows,per-layer identity and
+  payload size. Cache publication validates all slots before changing its
+  private map. The real refill event must complete successfully before final
+  host/device publication. The full-RAM Arena route does not use the separate
+  RAM-complement victim-exchange path. These source checks permit the bounded
+  diagnostic,not actual96qualification or a new lifetime/performance claim.
   The separately source-prepared
   `tools/sycl/compare_adaptive_payload96_generation.py`uses32as the speed
   reference after its repeated code gain,with32/96,96/32,32/96process pairs
