@@ -1088,6 +1088,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   passes before/after deletion. Manifest:
   `adaptive-payload96-generation-regular-code-v1-process1-output-retirement-20261107.json`,
   SHA256`3a2cf2d81621308ea31384eaa8c786b3633afbdd4d555f7bb6a1399ec88af91a`.
+  Process2,the second96candidate,now closes normally0with quiet validation,
+  closed owners,unchanged boot/driver and no fresh fault. Its33208fresh-input/
+  3111generated sample has prompt61651.1ms,decode239790.4ms,client TTFT61.868s
+  and exact PP/TG538.644079/12.973830. All five request bodies,long output/
+  reasoning hashes,draft acceptance2231/2643and cache753606/1692000match
+  process1,but its times differ. Retain both samples;do not infer a second
+  paired gain before the matching32reference closes. Three of six processes
+  are closed;finish process3reference32,process4reference32and process5candidate96,
+  then the final15asset hashes and independent phase decisions.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
