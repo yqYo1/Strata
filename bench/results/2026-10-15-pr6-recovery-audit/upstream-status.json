@@ -1582,9 +1582,9 @@
       }
     },
     "native_feature_build": {
-      "stage": "built",
-      "source_commit": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
-      "project_source_sha256": "b7635d8b36cdf33fb14ec90a78ee047eb4471635162b5d7bf4d1db4a3eebb799",
+      "stage": "prepared",
+      "source_commit": "689c3da346aeeb819d03ee644b27648adc241d3b",
+      "project_source_sha256": "88a9750e3a39942506e9df8bd21a49d02103ac925a3df1363a9740024bf5fe55",
       "dependency_revisions": {
         "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
         "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f": "87f6850680a580654b9ea2c80dbc01aeb36ad231"
@@ -1699,59 +1699,53 @@
       },
       "record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
-        "sha256": "531740f8c7e03a222e1b226f916c8f037d5b96e286c000ffcbd4b78aebedda11"
+        "sha256": "d5250750234d2ef4623073f3f65e638cd7fb8a2529636090c504ae393f5b0281"
       },
-      "binaries": {
-        "strata": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/strata",
-          "sha256": "1c79cd2d834a88a53859dc20fb5043a006d8b109d3e6e2315b188e2176f61069",
-          "bytes": 26262440
-        },
-        "sycl_dflash2_test": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_dflash2_test",
-          "sha256": "a9f06baa65ec1d17bcebfdb31eaa853339195e0bd477bc2ba2a64ace862783fa",
-          "bytes": 1835600
-        },
-        "dflash2_pack_test": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/dflash2_pack_test",
-          "sha256": "bdd38c4e59b977acffec391a1424065dcff97b08e0a6b10578ad43e0ab1a4fe6",
-          "bytes": 151976
-        },
-        "sycl_submission_test": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_submission_test",
-          "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
-          "bytes": 351832
-        }
-      },
-      "passed": true,
+      "binaries": {},
+      "passed": false,
       "ownership_closed": true,
       "error": null,
-      "commands": [
-        {
-          "label": "configure",
-          "exit_code": 0,
-          "ownership_closed": true,
-          "errors": [],
-          "cleanup": []
-        },
-        {
-          "label": "compile",
-          "exit_code": 0,
-          "ownership_closed": true,
-          "errors": [],
-          "cleanup": []
-        }
-      ],
+      "commands": [],
       "retention": "Temporary third generation: preserve552b prefill and e1b011 decode. This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. Retire it if qualification fails; at the feature comparison boundary select validated outputs and retire superseded generations after original-source/recipe recovery. No adoption from build success.",
-      "attempt": 2,
+      "attempt": 3,
       "previous_attempt": {
-        "source_commit": "c22ea2441c0e0d52d573d70f6e57f23d4b44f590",
-        "stage": "build_failed",
-        "record_sha256": "0f2305fce97d8afc7a4bd3e05ada39104620497ef6012501ca78c74e39771219",
-        "error": "RuntimeError('compile failed; read bounded diagnostics in the owned output')",
+        "source_commit": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
+        "stage": "built",
+        "record_sha256": "531740f8c7e03a222e1b226f916c8f037d5b96e286c000ffcbd4b78aebedda11",
+        "error": null,
         "ownership_closed": true,
-        "evidence_commit": "eada28af4b1e5b1a56e05dd0cbb73bd9d91e659c",
-        "reason": "Reuse the closed unqualified build cache; exact source/recipe/failure remain in Git. Preserve both validated phase references."
+        "evidence_commit": "689c3da346aeeb819d03ee644b27648adc241d3b",
+        "reason": "Reuse the closed unqualified candidate cache; exact source/recipe/outcome remain in Git. Preserve both validated phase references.",
+        "retirement": {
+          "qualification": "Only the closed nine-case component passed;never a validated model engine.",
+          "original_source_recovered": true,
+          "source_sha256": "b7635d8b36cdf33fb14ec90a78ee047eb4471635162b5d7bf4d1db4a3eebb799",
+          "source_files": 839,
+          "original_binaries_verified": {
+            "strata": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/strata",
+              "sha256": "1c79cd2d834a88a53859dc20fb5043a006d8b109d3e6e2315b188e2176f61069",
+              "bytes": 26262440
+            },
+            "sycl_dflash2_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_dflash2_test",
+              "sha256": "a9f06baa65ec1d17bcebfdb31eaa853339195e0bd477bc2ba2a64ace862783fa",
+              "bytes": 1835600
+            },
+            "dflash2_pack_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/dflash2_pack_test",
+              "sha256": "bdd38c4e59b977acffec391a1424065dcff97b08e0a6b10578ad43e0ab1a4fe6",
+              "bytes": 151976
+            },
+            "sycl_submission_test": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_submission_test",
+              "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
+              "bytes": 351832
+            }
+          },
+          "consumer": "Immediate sixteen-case replacement fixture;old component consumer ended after committed pass.",
+          "point": "Replace this temporary third candidate in place;keep552b/e1b011 unchanged.No fourth generation."
+        }
       }
     },
     "dflash2_device_check": {
