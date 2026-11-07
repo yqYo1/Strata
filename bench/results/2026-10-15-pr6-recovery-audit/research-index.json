@@ -25881,8 +25881,8 @@
   "implemented_dflash2_ring_fixture_audit_20261108": {
     "classification": "decision_support",
     "scope_eligibility": {
-      "schedulable_now": true,
-      "evidence": "This commit adds the finite stock-drafter small/full ring fixture and Main controller. Prior source audits did not cover this new fixture oracle,host/vector lifetime or its exact stash/rewind sequence. No model execution is prerequisite to reviewing committed fixture code."
+      "schedulable_now": false,
+      "evidence": "Finite source audit dispatched through Orca Luna;do not start a duplicate while Main compiles."
     },
     "scope": "Audit only the new ring fixture and execution admission:oracle validity,exact positions/epoch/lineage conditions,partial host exception safety,borrowed buffers and serialized stages;do not repeat production kernel survey.",
     "fixture": {
@@ -25893,6 +25893,8 @@
       "path": "tools/sycl/check_dflash2_ring.py",
       "sha256": "dae6a1cecb3d870371f1494b20f5e50aa3bec9cf5f77293d72f675ca9abba033"
     },
-    "constraints": "Orca gpt-6-luna report-only,no Git/build/test/GPU/process/product/index/policy actions,no Xe,no DeepSeek/35B;Main compiles concurrently,do not steer."
+    "constraints": "Orca gpt-6-luna report-only,no Git/build/test/GPU/process/product/index/policy actions,no Xe,no DeepSeek/35B;Main compiles concurrently,do not steer.",
+    "state": "worker_running",
+    "dispatch": "ctx_fb28459f2bad"
   }
 }
