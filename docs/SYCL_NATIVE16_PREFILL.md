@@ -31,10 +31,12 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a fixed4 weak-MTP class. Broader qualification remains pending;no inference
   adoption,new best TG or70TG follows. The e1b011 successor now passes its
   synthetic32-update positive entry and checked32-record-refusal. The new
-  clean8/32comparison has one of six regular-code processes closed:adaptive8
-  gives11.73872TG on33210fresh input/3016generated tokens,with normal0,
-  closed owners,quiet validation and no fresh fault. This single reference
-  sample establishes no8/32gain;the candidate and repetitions remain pending.
+  clean8/32comparison has two of six regular-code processes closed:the first
+  pair gives11.73872->13.38632TG(8->32),ratio1.140356,on33210fresh input
+  tokens. Both close normally0with quiet validation and no fresh fault.
+  Cache hits rise24.0->41.1%;generation is3016/3459tokens and acceptance
+  83.8772/86.8056%. The remaining two pairs are required before a repeated
+  gain decision;no fixed-work attribution or aggregate adoption follows.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -879,8 +881,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Draft acceptance is2159/2574(83.8772%)and the cache footer is396288/1647840
   hits(24.0%). Four official warmups precede this first long request;it is
   neither an engine-first-use nor a subsequent-long-request sample. The
-  six-process comparison is incomplete and no32-budget gain follows. Next
-  execute process1(adaptive32),then the remaining two opposite-order pairs.
+  six-process comparison is incomplete. Process1(adaptive32)also closes
+  normally0with quiet validation,closed owners,unchanged boot/driver and no
+  fresh fault. It reads the same33210tokens and generates3459,with exact
+  546.85840PP,60.7287s prompt,60.950s client TTFT and13.38632TG over
+  258.3982s decode. Acceptance is2500/2880(86.8056%)and cache hits are
+  758500/1843680(41.1%). The first TG ratio is1.140356;prompt/TTFT time
+  ratios are0.991177/0.991928. Logical missed lookups per generated token
+  decrease414.971->313.727;these are not CPU kernel jobs or physical traffic.
+  Different generation lengths and acceptance preclude fixed-work attribution.
+  Continue the frozen plan with process2(adaptive32),then3/4/5(8/8/32).
   Process0's69successful raw/JIT files(13095666bytes)are retired after
   recovering all346source inputs from Git and pushing its compact result.
   Keep its generated config/plan for the ongoing cohort. Admission passes
@@ -1149,6 +1159,18 @@ A changed cache can alter work,overlap and other intervals,so it needs fresh
 model samples. The independent audit-cap successor can now proceed through
 source preparation and bounded qualification;resource closure does not turn
 the failed observer-cost decision into a pass.
+The read-only capacity audit uses e1b011's recorded native inputs.
+`NativeDense::load`uploads the original packed GGUF matrices and keeps its
+optional layer-bank snapshots in owned RAM;that owner is not a second full
+FP16 expansion in VRAM. This finding covers NativeDense,not the whole process.
+`layer.cpp::kv_plan`selects streamed mode1when`--kv-resident`is below the
+configured context. Although the general layer-major path accepts mode1,
+the selected QSA16 branch in`layer_major.inc`requires mode0,INT8,all pages
+resident and no host backing. Therefore lowering only resident cells is not
+a configuration-only capacity optimization for this route. A smaller-context
+screen would be a separate workload/capacity comparison;extending QSA16 to
+streamed storage needs its own implementation and validation. Neither has
+been executed,and the current8/32cohort's context/residency remains131072.
 All six successful raw outputs are retired after source recovery and committed
 evidence. The final69files/13871094bytes and17finished configuration/frontend/
 record files/183538bytes are removed;the resource root no longer exists.
