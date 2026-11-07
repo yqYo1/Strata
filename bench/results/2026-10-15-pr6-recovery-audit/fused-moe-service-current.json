@@ -199544,6 +199544,390 @@
           "continued_admission_passed": true,
           "evidence_commit": "dcfde6ab754e559200b46b8a80581cf205a894ad"
         }
+      },
+      {
+        "index": 2,
+        "kernel": "candidate",
+        "adapt_swaps": 96,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 315069,
+          "start_ticks": 240632135,
+          "sid": 315024
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33209,
+            "reused_tokens": 0,
+            "generated_tokens": 3227,
+            "output_chars": 5578,
+            "reasoning_chars": 3644,
+            "prompt_ms": 60316.4,
+            "prompt_tps": 550.6,
+            "decode_ms": 247694.0,
+            "decode_tps": 13.0,
+            "ttft_s": 60.49,
+            "total_s": 308.038,
+            "drafts_offered": 2781,
+            "drafts_accepted": 2301,
+            "acceptance_rate": 0.8274002157497303,
+            "request_sha256": "89d5b557bde32636ffd92ee7717d4f3a9ba7b9188b5044b14dd7866dd6dd7c32",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "e8015a317ccf9888a5048550038339c98cd92c857342c36ddc93fc394486c357",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 315069,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33209,
+            "rows": 33208,
+            "GPU_residual_rows": 33208,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20291,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33208,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 4,
+            "request": 5,
+            "IQ3_calls": 1489698,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 790321,
+            "lookups": 1780320,
+            "hit_percent": 44.4
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "93e388b81296339fec23067a09b593a7be5b98e62e4c6e3f3198f2c50aac1639",
+            "9f03572fa45cd354b1466a86fb509e52a99e8f4fe5bc50f1e934ae9a39722104",
+            "4bf4bd808872277a8f0cbe28c16710c18030d2cb4464a1082fe27c9acef305bd",
+            "89d5b557bde32636ffd92ee7717d4f3a9ba7b9188b5044b14dd7866dd6dd7c32"
+          ],
+          "valid": true,
+          "journal_sha256": "f145175e934694e7b7b8e638ed82f6b0d778344fb4b45f48ad594cf60f3be47a"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35522
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "native_route_check_passed": true,
+        "resources": {
+          "passed": true,
+          "leaf_enabled": true,
+          "completed_requests": 5,
+          "warmup_prefix": 4,
+          "benchmark_clients": 1,
+          "work_signature_sha256": "59b683bac33e61062f8299cea39710953d75df8c3fb05cf95020be2861a51d08",
+          "long_request": {
+            "cpu_jobs": 846250,
+            "cpu_entries": 989999,
+            "concurrent_cpu_ns": 402150485760,
+            "concurrent_wall_ns": 416067321839,
+            "thread_count": 6,
+            "operations": {
+              "GU": {
+                "calls": 1489698,
+                "wall_ns": 275475935634,
+                "cpu_ns": 267316117867
+              },
+              "HQ": {
+                "calls": 846250,
+                "wall_ns": 1317756315,
+                "cpu_ns": 726846716
+              },
+              "DOWN": {
+                "calls": 1489698,
+                "wall_ns": 139273629890,
+                "cpu_ns": 134107521177
+              }
+            },
+            "format_nt_jobs": [
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 1,
+                "jobs": 219467
+              },
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 2,
+                "jobs": 26802
+              },
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 3,
+                "jobs": 5106
+              },
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 4,
+                "jobs": 1010
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 1,
+                "jobs": 48812
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 2,
+                "jobs": 6254
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 3,
+                "jobs": 1120
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 4,
+                "jobs": 202
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 1,
+                "jobs": 129038
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 2,
+                "jobs": 17967
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 3,
+                "jobs": 3560
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 4,
+                "jobs": 789
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 1,
+                "jobs": 17212
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 2,
+                "jobs": 2459
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 3,
+                "jobs": 472
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 4,
+                "jobs": 84
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 1,
+                "jobs": 229803
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 2,
+                "jobs": 30512
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 3,
+                "jobs": 5520
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 4,
+                "jobs": 1311
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 1,
+                "jobs": 71627
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 2,
+                "jobs": 10216
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 3,
+                "jobs": 2173
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 4,
+                "jobs": 508
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 1,
+                "jobs": 12538
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 2,
+                "jobs": 1468
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 3,
+                "jobs": 203
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 4,
+                "jobs": 17
+              }
+            ],
+            "top_cpu_bins": {
+              "GU": [
+                {
+                  "gu": 18,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 219467,
+                  "calls": 381241,
+                  "wall_ns": 72799354941,
+                  "cpu_ns": 70785992619
+                },
+                {
+                  "gu": 22,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 229803,
+                  "calls": 402266,
+                  "wall_ns": 54997175063,
+                  "cpu_ns": 53245547310
+                },
+                {
+                  "gu": 21,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 129038,
+                  "calls": 231897,
+                  "wall_ns": 54230247432,
+                  "cpu_ns": 52744887515
+                }
+              ],
+              "DOWN": [
+                {
+                  "gu": 22,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 229803,
+                  "calls": 402266,
+                  "wall_ns": 41177366562,
+                  "cpu_ns": 39762759517
+                },
+                {
+                  "gu": 18,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 219467,
+                  "calls": 381241,
+                  "wall_ns": 39188895876,
+                  "cpu_ns": 37609185820
+                },
+                {
+                  "gu": 21,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 129038,
+                  "calls": 231897,
+                  "wall_ns": 23191207947,
+                  "cpu_ns": 22385995900
+                }
+              ]
+            }
+          }
+        }
       }
     ],
     "host_controls": {
