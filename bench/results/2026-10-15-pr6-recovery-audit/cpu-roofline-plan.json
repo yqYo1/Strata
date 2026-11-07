@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-compact-iq3xxs-timing-v1",
+  "schema": "strata-cpu-packed-iq3xxs-gather-v1",
   "source": {
-    "revision": "313e5c4bc2d2e0c0fedb80020daf45662bec8a95",
-    "count": 263,
-    "aggregate_sha256": "7b2f65f9c2acc2a7020c79075e50913d0b0a7ab3dfabd18aac5a11278334ec06"
+    "revision": "41167d33b2c9ce38c207075dd9bfe16448d54d6c",
+    "count": 264,
+    "aggregate_sha256": "a7644baceb7e364c77a0540fef78494d339c68c39bb84c2c7c35a8f15ed860c0"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -111,9 +111,9 @@
     "sha256": "860127397c3d46585ad2925b1f9ae418c0392b62a3c3706c3d7fd029b3643136"
   },
   "numerical_origin": {
-    "commit": "6403ca995a8bdbfe5a13e8e0bc6767b1e195acd8",
+    "commit": "286b4a132b960a3a633511173846b57ebef32cee",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
-    "sha256": "1fdb9db5dd21b9e2f3a63e0b244d766da91a65f8e025502fd2fb46392f9fa022"
+    "sha256": "3c71fb6b9e6c1a45fb9b121b5f759b084735931a228b5c41a946e57a02e3d77e"
   },
   "environment": {
     "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
@@ -285,7 +285,7 @@
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-timing-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-packed-iq3xxs-gather-v1/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
@@ -302,14 +302,14 @@
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-timing-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-packed-iq3xxs-gather-v1/build",
     "--target",
     "cpu_decode_mix",
     "--parallel",
     "4"
   ],
   "protocol": {
-    "question": "Does exact compact IQ3_XXS NT1 GU reduce current-mixture component wall time,including matched team/bounds costs and charging setup/extra RAM separately?",
+    "question": "Does direct AVX2 gather from the original98B IQ3_XXS format reduce current-mixture GU time without per-expert expansion?",
     "check_order": [
       [
         18,
@@ -375,7 +375,7 @@
         1,
         6,
         0,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -383,7 +383,7 @@
         1,
         6,
         1,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -407,7 +407,7 @@
         1,
         6,
         2,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -423,7 +423,7 @@
         1,
         28,
         0,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -431,7 +431,7 @@
         1,
         28,
         1,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -455,7 +455,7 @@
         1,
         28,
         2,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -471,7 +471,7 @@
         5,
         6,
         0,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -479,7 +479,7 @@
         5,
         6,
         1,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -503,7 +503,7 @@
         5,
         6,
         2,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -519,7 +519,7 @@
         5,
         28,
         0,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -527,7 +527,7 @@
         5,
         28,
         1,
-        "compact"
+        "packed"
       ],
       [
         18,
@@ -551,19 +551,19 @@
         5,
         28,
         2,
-        "compact"
+        "packed"
       ]
     ],
-    "controls": "Repeat the complete codec/integer/FMA/bounds controls on this new ELF.",
-    "real": "Both formats,groups6/28,1/6compute threads;NT1..4 and heterogeneous jobs against direct serial native GU. Actual output,finite,inactive rows,guards and affinity checked before timing and after each stream mode.",
-    "scope": "Component isolation:both arms use the same bounded GuTeam barrier scheduler. NT1 calls the compiled native pair or compact entry directly;NT2+uses unchanged native_gu_rows. This is not the production ExpertPool dispatch/scheduling or model latency.",
-    "memory": "Both arms keep the original raw blobs and all compact views. Report allocation+encode wall/CPU time,logical and guarded view storage,raw bytes and owned peak RSS. No claimed RAM reduction;unvisited/inactive output storage remains guarded.",
-    "samples": "Per child,reuse then stream;one initial pass,three pilot/warmup passes,10K timer queries with query/fastest pass<0.001. Five whole-pass samples per mode,target1.3s,floor1s,passes<1000000. Validate actual total/NT1/compact/raw row counts. All samples retained;no replacement.",
-    "comparison": "Representative18/20/current measured NT mixture screen:1/6compute threads,groups6/28,three opposite-order process pairs per shape. Each child supplies both reuse/stream. Per-process median seconds/pass;paired raw/compact ratio;geometric mean and all individual ratios/spread retained.",
-    "acceptance": "A shape/stream is eligible for a separately committed follow-up only when all3paired ratios>1 and geometric mean>1;no blanket minimum speedup. Mixed/negative results stay recorded. Setup amortization uses measured setup and saved seconds/pass;no conversion to model TG.",
+    "controls": "Repeat compact controls,and independently check packed gather/sign integer lanes on524288mixed grid/sign/scale chunks;16full FMA/GU cases,64partial ranges and11packed GU refusals.",
+    "real": "Both formats,groups6/28,1/6compute threads;four NT1 activation vectors per real expert plus NT1..4/mixed threaded jobs. Validate all3raw/compact/packed variants,finite/native bits,inactive rows,guards and actual affinity.",
+    "scope": "Component isolation:both arms use the same bounded GuTeam barrier scheduler. NT1 calls the compiled native pair or packed-gather entry directly;compact is an additional numerical control. NT2+uses unchanged native_gu_rows. This is not the production ExpertPool dispatch/scheduling or model latency.",
+    "memory": "Both arms keep the original raw blobs and all compact views. Report allocation+encode wall/CPU time,logical and guarded view storage,raw bytes and owned peak RSS. Packed needs no per-expert expansion;the unused compact views intentionally coexist in both arms to match the prior component envelope. Report this diagnostic setup separately,not as required packed conversion. No measured production RSS claim.",
+    "samples": "Per child,reuse then stream;one initial pass,three pilot/warmup passes,10K timer queries with query/fastest pass<0.001. Five whole-pass samples per mode,target1.3s,floor1s,passes<1000000. Validate actual total/NT1/compact/packed/raw row counts. All samples retained;no replacement.",
+    "comparison": "Representative18/20/current measured NT mixture screen:1/6compute threads,groups6/28,three opposite-order process pairs per shape. Each child supplies both reuse/stream. Per-process median seconds/pass;paired raw/packed ratio;geometric mean and all individual ratios/spread retained.",
+    "acceptance": "A shape/stream is eligible for a separately committed follow-up only when all3paired ratios>1 and geometric mean>1;no blanket minimum speedup. Mixed/negative results stay recorded. No per-expert setup is required by packed;shared unused-view setup remains separately recorded. No conversion to model TG.",
     "gate": "Commit each stage before next. Require all8checks and synthetic controls before screen;normal0,quiet stderr,closed owners,exact source/build/work/env. Stop first execution/numerical/budget failure;no retry/exclusion. No model trial from this screen alone.",
-    "pending": "Before production selection,validate other-format and pureNT1 performance,actual production dispatch/lifecycle,setup reuse/RAM admission,task quality,prefill independence and physical262144/RESTORE. Keep the qualified prefill route.",
-    "retention": "Keep individual useful samples,setup/footprint,source/build identity and compact decisions. Old numeric ELF is the immediate fallback only until new checks pass;recover its original source then retire it. Retire successful raw timing/build output after closing the comparison. Preserve both inference generations."
+    "pending": "Before production selection,validate other-format/pureNT1 performance and actual production entry/lifecycle,then model task quality,prefill independence and physical262144/RESTORE. Keep the qualified prefill route.",
+    "retention": "Keep individual useful samples,setup/footprint,source/build identity and compact decisions. The30e45b85timing ELF is the immediate numerical fallback until new checks pass;recover its original313e5source/recipe/636inputs before retirement. Retire successful raw timing/build output after closing the comparison. Preserve both inference generations."
   },
   "budgets": {
     "build_seconds": 600,
@@ -576,13 +576,13 @@
     "root_bytes": 268435456
   },
   "host_controller_validation": {
-    "source_commit": "313e5c4bc2d2e0c0fedb80020daf45662bec8a95",
+    "source_commit": "41167d33b2c9ce38c207075dd9bfe16448d54d6c",
     "command": "/usr/bin/flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock /usr/bin/timeout -k 5s 30s /usr/bin/prlimit --as=1073741824 --cpu=20 --fsize=1048576 /usr/bin/python3 -X faulthandler -B -m unittest discover -s tests/core -p test_cpu_decode_mix.py -v",
     "tests": 10,
     "skips": 0,
     "elapsed_s": 0.137,
     "exit_code": 0,
     "passed": true,
-    "scope": "CPU-only controller refusal/coverage controls;includes intentional owner-setup failure,not a native benchmark execution."
+    "scope": "CPU controller/typed dispatch/binary-input refusal controls;intentional owner-setup refusal remains a test,not an actual build failure."
   }
 }

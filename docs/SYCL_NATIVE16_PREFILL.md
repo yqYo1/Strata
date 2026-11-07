@@ -1537,6 +1537,18 @@ production selection. Current-model GPU counters,physical traffic and critical
 path remain unqualified. No new model speedup,adoption or device execution
 follows from this calibration.
 
+The current component candidate is`packed_iq3xxs.hpp`,source41167d33b:
+AVX2 gathers read the unchanged98B blocks,with compile-time even-parity signs
+and the same native integer/FMA/reduction contract. No per-expert expansion is
+required. All ten controller tests pass,normal0and no skips. Its new committed
+plan first requires packed integer/FMA/bounds controls and eight real-weight
+threaded checks,including four NT1 activations per expert. Then24current-NT
+raw/packed processes compare1/6threads,groups6/28,reuse/stream in three
+opposite-order pairs. Both arms retain unused compact views to match the prior
+component envelope;that setup is diagnostic,not a required packed conversion.
+No packed performance or production selection is established yet. Keep the
+30e45b85auxiliary baseline until the successor's numeric checks qualify.
+
 The benchmark-only `bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp` stores exact
 IQ3_XXS signed-magnitude indices in134-byte blocks,versus98raw bytes. AVX2
 register shuffles replace codebook loads while preserving native integer lanes,
@@ -1554,7 +1566,7 @@ The18/20current-NT screen closes24independent processes and240eligible timing
 samples,normal0,quiet stderr and closed ownership. Three opposite-order pairs
 per thread/group shape use a matched component-only barrier team. These are
 raw/compact geometric-mean speed ratios;each cell retains all three ratios
-and individual samples in`cpu-roofline-current.json`.
+and individual samples in the [closed compact timing result](https://github.com/yqYo1/Strata/blob/286b4a132b960a3a633511173846b57ebef32cee/bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
 
 | Compute threads | Expert group | Reuse | Stream |
 | --- | --- | --- | --- |
