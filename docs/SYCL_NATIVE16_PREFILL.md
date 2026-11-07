@@ -1325,6 +1325,23 @@ a configuration-only capacity optimization for this route. A smaller-context
 screen would be a separate workload/capacity comparison;extending QSA16 to
 streamed storage needs its own implementation and validation. Neither has
 been executed,and the current8/32cohort's context/residency remains131072.
+For a future capacity screen,the pinned main-QSA state-arena formula gives
+an exact948699136-byte(904.75MiB)reduction from131072to65536configured cells
+under resident Mode0/K8V8. The12QSA layers have2KV heads of256elements,
+64-element INT8 scale groups,128-element pooled keys every4cells,page size4,
+and one shared64-dimension RoPE table. The change comprises792MiB KV codes/
+scales,96MiB pooled keys,0.75MiB page tables and16MiB RoPE;
+`delta_bytes=(12*(1056+128+1)+256)*65536`. Original compiled/public inputs
+agree for`layer.cpp`,`session.cpp`,`layout.hpp`,`qsa.hpp`and`kv_q8.hpp`;
+the pack confirms QSA layers3,7,...47. The pinned native index gives
+884044800bytes(843.09082MiB)of packed expert weights for nine extra slots
+per layer(432slots),whereas ten cost936.76758MiB. This is only state-arena
+and packed-weight arithmetic:other allocations,metadata,fragmentation,actual
+admission,cache hit improvement and speed remain untested. Do not use free
+memory reported during prefill owner release as decode headroom. This is a
+separate smaller-context candidate,not a new current configuration or a
+replacement for physical262144qualification. Finish the current cohort and
+96candidate gates before selecting another capacity experiment.
 The MTP residency source census is pinned to the actual e1b011 build's
 `bbd345c632e2d472e47ad3a1e36f2cdae2740d5e` inputs. Original Git bytes for
 `src/core/mtp.cpp`,its header,`expert_routing.cpp`and SYCL compatibility
