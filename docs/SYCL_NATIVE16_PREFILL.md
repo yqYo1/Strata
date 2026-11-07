@@ -1497,6 +1497,9 @@ that serialized path. Public generator/resolver bytes differ from the compiled
 snapshot;do not substitute them. The current reader/controller CPU gates pass.
 Model preparation still waits for its workload's32/96cohort to close and
 select a focused decode budget;observer cost remains unmeasured. No native code changes.
+The six consumed reader/audit/review files(30333bytes)are retired after37-input
+Git recovery and before/after source/runtime admission. Compact findings and
+the deletion manifest remain in the current host result/research index.
 For a later full adaptive census,the reviewed design refreshes membership on
 the request owner only after the adaptive worker joins and refill publication
 succeeds,latches a published-map epoch per window,and rejects masked/in-flight
