@@ -21,7 +21,8 @@ ARMS = (('reference', 32), ('candidate', 96), ('candidate', 96),
         ('reference', 32), ('reference', 32), ('candidate', 96))
 
 
-def prerequisites(full=False):
+def prerequisites(workload, full=False):
+    require(workload in clean.CAPS, 'unknown focused workload')
     ctx = entry96.refusal_context()
     entry96.prerequisite_rows(ctx.positive)
     data = clean.base.committed(clean.RESULT)
@@ -43,6 +44,14 @@ def prerequisites(full=False):
         positive['native_source_commit'] == failed['native_source_commit'] == old['native_source_commit'] and
         positive['model_assets'] == failed['model_assets'] == old['model_assets'],
         'reuse the unchanged qualified successor and model assets')
+    reference_key = 'adaptive_payload_generation_' + workload.replace('-', '_') + '_v1'
+    reference = data[reference_key]
+    require(reference['decision']['repeated_TG_gain'] and
+        reference['binary'] == positive['binary'] and
+        reference['native_source_commit'] == positive['native_source_commit'],
+        'use32as reference only after its repeated gain in this workload')
+    refs['reference_workload'] = dict(key=reference_key,
+        decision_sha256=clean.signature(reference['decision']))
     refs.update({name: dict(path=str(root / 'record.json'),
         sha256=clean.digest(root / 'record.json')) for name, root in
         (('positive96', ctx.positive.ROOT), ('record_failure96', ctx.ROOT))})
@@ -59,7 +68,8 @@ def decision(rows, printed):
 
 def context(workload):
     module = previous.template()
-    module.ARMS, module.SELF, module.prerequisites = ARMS, SELF, prerequisites
+    module.ARMS, module.SELF = ARMS, SELF
+    module.prerequisites = lambda full=False: prerequisites(workload, full=full)
     module.controls, module.prepare, module.exact_decision = controls, prepare, decision
     ctx = module.context(workload)
     ctx.ROOT = clean.B / ('adaptive-payload96-generation-' + workload + '-v1')
@@ -124,6 +134,7 @@ def prepare(module, ctx):
     row['plan'] = ('Six fresh owned processes adaptive32/96,96/32,32/96 on unchanged e1b011;'
         'every8verifier rounds,default decay0.7. Close both8/32cohorts and qualify actual96'
         'positive publication/dispatch/loan plus exact96second-record refusal before preparation. '
+        'Require a repeated32over8TGgain in this workload before selecting32as its reference. '
         'Four official warmups then one first long v5 thinking-on32K+/1K+generated request '
         'with an answer;code cap4/prose cap2 in separate cohorts,16K output allowance. '
         'Keep the existing source/body/token/route/head/clock/journal/validation/ownership/'

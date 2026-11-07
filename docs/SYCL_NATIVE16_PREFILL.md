@@ -998,7 +998,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reference after its repeated code gain,with32/96,96/32,32/96process pairs
   on the same executable. It retains exact and printed TG decisions and
   independent prompt/TTFT gates. Both current8/32cohorts and the actual96
-  positive/refusal pair must close before preparation;no controls,preparation,
+  positive/refusal pair must close before preparation;each workload also
+  requires its own repeated32over8TGgain before selecting32as reference.
+  No controls,preparation,
   model execution or96speed qualification have run. This new source is outside
   the active prose cohort's346frozen inputs. Retire it if96admission fails
   without a named follow-up consumer.
