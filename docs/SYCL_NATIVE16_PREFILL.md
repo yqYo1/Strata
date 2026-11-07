@@ -1473,7 +1473,22 @@ no fresh fault. Its33209fresh-input/3227generated sample has prompt58740.8ms,
 decode237853.8ms,TTFT58.912s and exact PP/TG565.348106/13.567158. All five
 native/client work records bind,with a checked four-warmup prefix and no leaf
 records. This input differs from the closed32/96cohort;no cross-cohort speed
-gain follows. Five processes remain;observer cost is unmeasured. Varied-prose
+gain follows. Process1,leaf-on,also closes normally0with quiet validation,
+closed owners,unchanged boot/driver and no fresh fault. Its matching33209/
+3227-token sample has prompt59991.8ms,decode244549.3ms,TTFT60.157s and exact
+PP/TG553.558986/13.195703. All five native/leaf request records bind,and the
+aggregate CPU/token/draft/long-output work signature matches process0.
+The first leaf-on/off per-token latency ratio is1.028149645,within1.05;
+four processes remain before observer-cost qualification.
+The first charged leaf sample totals398.843CPU seconds across six threads:
+GU265.234,HQ0.726and DOWN132.883. Of846250CPU expert jobs,728497(86.085%)
+are NT1;989999entries give1.170entries/job. The top GU bins are NT1
+IQ3_XXS/IQ4_NL,IQ2_S/IQ4_NLand IQ3_S/IQ4_NL. These concurrent CPU sums
+include memory stalls and do not establish critical path,physical traffic or
+hardware saturation. Use the named current working-set calibration after
+the complete cost comparison;the legacy calibration driver uses an older
+compiler/reference and is not qualified unchanged for this engine.
+Varied-prose
 preparation still requires its own closed32/96cohort.
 Process0's69normal raw/JIT files(13094842bytes)are retired after358-input Git
 recovery,with all15ELFs/six immutable receipts unchanged and full before/after
