@@ -1188,10 +1188,21 @@
             "serve/nonblocking_out.py",
             "serve/server.py::main"
           ],
-          "state": "module_and_entry_hunks_reviewed_unported",
-          "fork_evidence": "No nonblocking_out module or main/_main console wrapper in the current tree.",
+          "state": "module_source_prepared_unwired_unvalidated",
+          "fork_evidence": "The unchanged Niko module is present;the current server still has its original no-argument main with no console wrapper. No functional test has run for this slice.",
           "dependencies": "Adapt the wrapper to this fork main() signature;engine pipe and HTTP protocol output must stay independent.",
-          "validation": "Blocked-sink control,nonblocking producer,bounded queue/drop accounting,newest-line ordering,drain/restoration and actual child normal exit with unread stdout. Upstream _bytes uses len(str),so do not claim an encoded-byte bound without separate validation."
+          "validation": "Blocked-sink control,nonblocking producer,bounded queue/drop accounting,newest-line ordering,drain/restoration and actual child normal exit with unread stdout. Upstream _bytes uses len(str),so do not claim an encoded-byte bound without separate validation.",
+          "source_preparation": {
+            "source_commit": "0162033a16fd6bfdf10fe788ce91f73210a1406e",
+            "module": "serve/nonblocking_out.py",
+            "module_sha256": "05e3d46c38eeeaac4975591d4c2854d53db125f442e9fb6e5ac5529ade821c10",
+            "tests": "serve/test_nonblocking_out.py",
+            "CPU_cases_prepared": 8,
+            "tests_executed": false,
+            "current_benchmark_inputs_changed": false,
+            "next": "After both current8/32cohorts close,run the committed bounded queue/unread-pipe cases,adapt server startup/bypass and qualify existing server/Responses regressions;retain failed controls and pin repairs before new execution.",
+            "limit": "Upstream max_bytes counts Unicode characters;no encoded-byte bound is established. This is source preparation,not a port-complete or inference claim."
+          }
         },
         {
           "feature": "Lost end-event errors preserve the request engine identity",
