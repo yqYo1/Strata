@@ -3050,10 +3050,15 @@ native MTP and legacy explicit-MTP configs remain selected;the imported host
 Auto policy can choose DFlash2 on a fresh supported configuration. The feature
 candidate is not installed/default-adopted. Both fast references remain. See`current_sync`in the linked
 status for exact source/build/runtime identity and remaining functional ports.
-The legacy preload-reuse predicate refuses a changed zlib before any GPU launch.
-Six later closed model processes carry pre-main validation under the current
-84-ELF runtime;their prospective reuse admission remains to be implemented.
-See`validation_environment_reuse`;do not refresh the original canary hashes.
+The legacy preload-reuse predicate's changed-zlib refusal remains unchanged.
+A new admission recovers the probe source/recipe and six later current-runtime
+pre-main proofs. First target-model execution reaches32tokens with24/24drafts
+accepted,but aborts on host heap corruption after DONE;this gate is failed.
+Its38executable mappings,pre-main proof and owned closure pass,without a fresh
+GPU fault. Both production callers allocate4outputs at spec4 while the drafter's
+fixed contract writes7. Fix span admission/caller capacity and repeat bounded
+components and the model gate before speed work;the raw rate is not eligible.
+See`validation_environment_reuse`and`dflash2_native_port`in the status.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.
 After both frozen cohorts closed,the required streamed-tool closing-tag

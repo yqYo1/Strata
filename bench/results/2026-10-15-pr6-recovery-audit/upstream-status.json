@@ -1556,10 +1556,10 @@
       "config_copy_kept": true
     },
     "dflash2_native_port": {
-      "state": "compiled_small_q4_fp32_bf16_prompt_gate_passed_model_route_unqualified",
+      "state": "model_runtime_failed_host_draft_result_extent",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
       "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights;physical tail buffer has2047positions(104806400bytes),while capture omits the last prompt anchor and retains at most2046rows;then loads and seeds the drafter.",
-      "remaining": "Engine689c,ring fixture f62df and all original component bytes remain unchanged.New mask fixture1aa641860 passes12traced cases across variants1/2 and chunks64/128,stale epoch,wrong position and live control;all32768 outputs per case satisfy the independent0/1 mean oracle(<2e-5),finite scales and output guards. Normal0,32qualified mappings,closed owner,no fresh fault.The original26case result still describes execution/state evidence;the new gate supplies exclusion semantics at kernel level.Source audit and native review find no fixture blocker.Next:new prospective current-runtime validation admission,then bounded target-model execution using the retained qualified pre-exec validation probe and immutable safety settings.First DFlash2 diagnostics must explicitly disable MTP-only expert/head-retirement and cache-scratch-lease switches;their generalization is required before matching the fast prefill setup.Functional adapters,RESTORE/full physical262144,task quality and repeated matched independent-phase performance remain open.No default activation/model/performance adoption.",
+      "remaining": "First thinking-enabled target model completed32tokens with24of24drafts accepted,but SIGABRT(-6) during teardown makes the gate FAILED and unusable for adoption/speed.Normal pre-main validation and38qualified mappings;all owned children reaped/session empty,no fresh GPU fault.Source contract writes7draft outputs,while both serve/standalone callers allocate only S entries(spec4 gave4),corrupting host heap.Next:preserve fixed7entry output contract,validate output spans before submissions,allocate at least7only forDFlash2 in both callers;add narrow-width/guard/admission fixtures,rebuild unadopted candidate and repeat bounded component/model checks before any long benchmark.MTP/prefill fast references remain untouched.",
       "metadata_fixture_plan": {
         "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
         "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
@@ -1591,7 +1591,27 @@
         "cases": "8 active-column counts with3 Q4 matrices each,extreme signed planar codes,CPU exact integer oracle,inactive output guards; FP32 row/GR tap interleaved guards. No weights/graphs/FP64 kernels/model; this is not performance or BF16-route qualification.",
         "stop": "First error,budget stop,fresh driver fault or uncertain closure blocks progression;no automatic retry/reset."
       },
-      "ring_audit_index_key": "implemented_dflash2_ring_fixture_audit_20261108"
+      "ring_audit_index_key": "implemented_dflash2_ring_fixture_audit_20261108",
+      "host_heap_failure": {
+        "model_gate": "dflash2-target-model-v1",
+        "original_engine_source_commit": "689c3da346aeeb819d03ee644b27648adc241d3b",
+        "engine_sha256": "983c5491553456c92b73e7df43a3534ae37eb3010ee3e18e7d6d6036a757e866",
+        "signal_exit": -6,
+        "mechanism": "free(): invalid next size (fast) after complete DONE;caller allocated4entries but documented DFlash2::draft writes7even after set_max_drafts3.Inactive padding writes3tokens/3probabilities beyond the C++vectors.",
+        "diagnostics": [
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-model-v1/owned/model.stdout",
+            "sha256": "f7bb238838a62b647e741288cb046474516671b19087494ddaa7509125246d65",
+            "bytes": 685
+          },
+          {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-model-v1/owned/model.stderr",
+            "sha256": "855066b54d8669ec6e66d8a82c976012374cfaf1ae6073d09776640dc2310c37",
+            "bytes": 6963
+          }
+        ],
+        "retention": "One representative host-heap mechanism diagnostic until corrected model normal closure;no core dump(RLIMIT_CORE0).Not a GPU fault or performance sample."
+      }
     },
     "native_feature_build": {
       "stage": "built",
@@ -2363,11 +2383,20 @@
         "local_record_fields_match_committed_reference": true
       },
       "next_action": "New prospective model-controller admission must recover the probe source/recipe and validate the later closed current-runtime pre-main proofs,full84ELF pins and exact library/loader bytes.Never refresh the old canary hashes or relabel this refusal as a pass.Then bounded target-model DFlash2 test after pending mask source review.No GPU/model launched by this inspection.",
-      "prospective_controller": "tools/sycl/check_dflash2_model.py;prepared at eaef8e841,recovers original library source/compiler/header inputs and recipe,validates6later committed pre-main proofs under current84ELF runtime;preserves legacy refusal.GPU model run still pending."
+      "prospective_controller": "Current-runtime reuse admission reached actual native READY;fresh same-PID pre-main proof and38ELF mappings passed.Host heap corruption after DONE is a separate caller-buffer defect.The old canary refusal remains failed."
     },
     "dflash2_model_check": {
-      "stage": "prepared",
-      "commands": [],
+      "stage": "failed",
+      "commands": [
+        {
+          "label": "model",
+          "exit_code": -6,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ],
       "passed": false,
       "ownership_closed": true,
       "mask_reference": {
@@ -2608,6 +2637,34 @@
       "meaning": "One thinking-enabled real prompt,32output tokens,actual stock DFlash2 and target embeddings/head. Require positive offered drafts,complete GEN,normal exit,pre-main validation,qualified maps and no fresh fault. Diagnostic only;no speed,task quality,full-context,RESTORE,phase preservation or default adoption.",
       "speed_eligible": false,
       "model_adoption_qualified": false,
+      "pre_main_validation": {
+        "pid": 2174963,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "mapping": {
+        "files": 38,
+        "sha256": "8655c15c48b37dd41f11534d5ecc72814ab87448911202d2b81fb3e8e0762418"
+      },
+      "request_result": {
+        "prompt_tokens": 82,
+        "generated": 32,
+        "drafts_accepted": 24,
+        "drafts_offered": 24,
+        "finish": "length",
+        "output_ids_sha256": "59135d1d156e6fdf80a707208f4a622c06ec3eef3da7fdf246283b3d9efd624d",
+        "complete": true
+      },
+      "error": "RuntimeError('native closure failed: None')",
+      "native_launched": true,
+      "fresh_faults": [],
       "native_build": {
         "source_commit": "1aa6418604d43fd5894f14b6fec4d0ed416f1865",
         "project_source_sha256": "330154fa67ad420209b6cfdb1a8f64e957aa856395eb934f24499e6c1c76ae76",
