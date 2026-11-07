@@ -1326,6 +1326,12 @@
       "local_adaptations": [
         "Preserve MTP selection for existing run configs without an explicit drafting choice; downloading DFlash2 does not switch their drafter.",
         "Suppress deferred DeepSeek/35B setup families and refuse saved-config server/owned execution before engine launch; shared inert metadata retained to avoid dependency churn."
+      ],
+      "packaging_dependency_paths": [
+        "packaging/feed_tool.py",
+        "packaging/make_local_feed.py",
+        "packaging/binary_deps.py",
+        "packaging/acceptance_matrix.py"
       ]
     },
     "exclusions": {
@@ -1415,6 +1421,16 @@
         }
       ],
       "isolation": "Existing model/measurement venv unchanged; dedicated current host integration test consumer."
-    }
+    },
+    "validation_attempts": [
+      {
+        "source_commit": "90c8aec9b7b1239aa7b81e80601a455d6ea47677",
+        "suite": "first quantization/drafter focused suite",
+        "exit_code": 2,
+        "phase": "pytest collection",
+        "error": "tests/terminal/test_drafting_tuned.py requires upstream packaging/feed_tool.py; imported functional dependency missing. No tests passed or GPU work claimed.",
+        "fix": "Import pinned Niko feed tool and related packaging dependencies, commit before rerun."
+      }
+    ]
   }
 }
