@@ -1116,6 +1116,15 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   with all15ELFs/six immutable receipts unchanged and full before/after admission
   passing. Manifest:`adaptive-payload96-generation-regular-code-v1-process3-output-retirement-20261107.json`,
   SHA256`70738a7ddaab40705ba541e96046979a4b9e1408e757de8176b552b16d2550ad`.
+  Process4,the final32reference,also closes normally0with quiet validation,
+  closed owners,unchanged boot/driver and no fresh fault. Its33208fresh-input/
+  3477generated sample has prompt59681.6ms,decode274682.2ms,client TTFT59.977s
+  and exact PP/TG556.419399/12.658265. All five request bodies,long output/
+  reasoning hashes,draft2462/3048and cache729753/1951200match the other32arms.
+  Five of six processes are closed;finish the last96candidate and final15asset
+  hashes before an aggregate decision. Retire process4and5normal raw output
+  together at that serialized cohort boundary after committing their evidence;
+  retain generated config/plan for continued admission.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
