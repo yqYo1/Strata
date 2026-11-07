@@ -910,10 +910,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cap2/prose cohort on the same executable and fixed8-round cadence;its
   acceptance cannot establish a fixed4 weak-MTP class. Agent/task,quality,
   prompt-verify,physical262144/RESTORE and ordinary teardown remain pending.
-  Processes0/1/2/3/4each have69successful raw/JIT files retired(13095666/13096255/
-  13096306/13095722/13095457bytes),after recovering all346source inputs from Git and pushing their
-  compact results. Keep their generated configs/plans for the ongoing cohort.
-  Admission passes after all five deletions;all15ELFs and four immutable native/
+  All six processes each have69successful raw/JIT files retired(13095666/13096255/
+  13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
+  from Git and pushing their compact results. The closed cohort's twelve
+  generated config/plan files and effective-environment/provenance records
+  remain pending exact recovery from the committed generation recipe. Compare
+  their recorded hashes with regeneration before retiring the closed root;
+  review this bounded provenance hold at the next prose-preparation boundary.
+  Each process directory now contains only config.json and plan.json.
+  Admission passes after all six deletions;
+  all15ELFs and four immutable native/
   control receipts are unchanged. The external deletion manifests are
   `adaptive-payload-generation-regular-code-v1-process0-output-retirement-20261107.json`,
   SHA256`0741507908c4976b8bed7b6cf1ecc5364b4fbe37a4fbc526da51522b2c5a85e7`,
@@ -923,8 +929,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   SHA256`0a9081498ca80b097ab20df3b9597ddaec7d0676a369283d2721697a878cb7bc`,
   `adaptive-payload-generation-regular-code-v1-process3-output-retirement-20261107.json`,
   SHA256`258a63edc119b877a078d0c20f5142f85720a07ac410301752da8c9476071076`,
-  and`adaptive-payload-generation-regular-code-v1-process4-output-retirement-20261107.json`,
-  SHA256`5c8e36b486e52069dea54e0332eec361a62ae2da548667e57250710f4d9cca26`.
+  `adaptive-payload-generation-regular-code-v1-process4-output-retirement-20261107.json`,
+  SHA256`5c8e36b486e52069dea54e0332eec361a62ae2da548667e57250710f4d9cca26`,
+  and`adaptive-payload-generation-regular-code-v1-process5-output-retirement-20261107.json`,
+  SHA256`56fe7a3bf95437488a2aca75fe56fb330c7c9668f86e33cb69ea12a3cd62ad4a`.
   Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
