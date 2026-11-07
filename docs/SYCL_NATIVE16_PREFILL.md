@@ -882,6 +882,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   hashes unchanged. Keep only its immutable record. The deletion manifest is
   `adaptive-payload32-positive-output-retirement-20261107.json`,SHA256
   `c2566566c666d7d5721b621a6b9edf9726b1f2153d79d7ab4646eec818ca0b94`.
+  The expected-error32control's50output/JIT files(12567346bytes)are also
+  retired after124-input recovery,with all three receipt hashes and21ELFs
+  unchanged. Its manifest is
+  `adaptive-payload32-refusal-output-retirement-20261107.json`,SHA256
+  `8aa1d60a7c3ec44aadf4a81fe2146a0c22e252ba7b15a20c10c3491764386cf9`.
+  The ended429b generation's568native inputs,112controllers,recipe and actual
+  compiler inputs are now recovered from reachable Git. Its748files/
+  163050896bytes are reversibly quarantined,with the original paths absent
+  and its record immutable. No old bytes have been deleted yet. Use real
+  successor comparison preparation/frontend admission to verify independence;
+  restore on failure,otherwise retire the hold before clean model process0.
+  Follow`retained_builds_review_20261103.payload_successor_replacement`.
   At the closed build/CPU boundary,the failed V1preparation's568projected
   inputs,115controls and recipe are recovered;its duplicate private source is
   retired. The old64MiB entry's116inputs and the SSE tests'352inputs are also
