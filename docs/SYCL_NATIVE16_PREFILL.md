@@ -1008,10 +1008,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   model execution or96speed qualification have run. This new source is outside
   the active prose cohort's346frozen inputs. Retire it if96admission fails
   without a named follow-up consumer.
-  Prose processes0/1/2/3each have69successful raw/JIT files
-  (13136414/13122266/13122277/13136451bytes)retired after recovering346Git inputs
+  Prose processes0/1/2/3/4each have69successful raw/JIT files
+  (13136414/13122266/13122277/13136451/13136498bytes)retired after recovering346Git inputs
   and pushing the compact result. Their generated configs/plans remain for
-  the two pending processes;admission still passes
+  the last pending process;admission still passes
   after deletion and all15ELFs/four immutable receipts are unchanged. Manifest:
   `adaptive-payload-generation-varied-prose-v1-process0-output-retirement-20261107.json`,
   SHA256`e8e7ef533b03366618eb612cc3cf7030197a8047a2152a8f4eeed705008de0cc`,and
@@ -1020,7 +1020,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `adaptive-payload-generation-varied-prose-v1-process2-output-retirement-20261107.json`,
   SHA256`2def8272f5fbaba656fb67dbcbd8d3c330522dcb5b3a22bdd2d67608d9bba506`,and
   `adaptive-payload-generation-varied-prose-v1-process3-output-retirement-20261107.json`,
-  SHA256`ccde4bb997c82d2a9b1c8a56c42e262913b6da9b26957d20465726b1ebe4577b`.
+  SHA256`ccde4bb997c82d2a9b1c8a56c42e262913b6da9b26957d20465726b1ebe4577b`,and
+  `adaptive-payload-generation-varied-prose-v1-process4-output-retirement-20261107.json`,
+  SHA256`941ce371cd176ae564cdef6d61ed4dcf780e324536920e36b06947e9e079e8e0`.
   For the closed regular-code cohort,all six processes each have69successful
   raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
@@ -1320,6 +1322,16 @@ A changed cache can alter work,overlap and other intervals,so it needs fresh
 model samples. The independent audit-cap successor can now proceed through
 source preparation and bounded qualification;resource closure does not turn
 the failed observer-cost decision into a pass.
+For the current e1b011generation,the recorded profile-ON recipe and the
+recorded/private/public CPU census header,leaf-service header and pool source
+still agree exactly. This preserves existing instrumentation source,not a new
+current-engine resource profile or an observer-cost pass. The native Luna-max
+library review finds no existing current-engine evidence separating CPU
+arithmetic,cache effects and RAM service. Main consumed only its short digest;
+the review is indexed as`cpu_memory_working_set_retrieval_review_20261107`.
+Before selecting a CPU working-set optimization,obtain current operation/format/
+NT attribution with a qualified observer-cost comparison. The unchanged static
+census still rejects adaptive residency changes;do not suppress that guard.
 The selected e1b011 path multiplies usage counts by 0.7 after each adaptation;
 neither arm overrides this default. At every eight verifier rounds, the score
 half-life is about 15.55 rounds. The generated-token interval varies with
@@ -2763,7 +2775,7 @@ The Q6 policy source and closed CPU host result are published on
 The default remains `05069aeed`; the current branch-rule query still permits
 only squash PR merges. Default integration remains unfinished because the
 measured original commit identities must be preserved.
-Rechecked2026-11-07 03:51UTC:the actual main-branch pull-request rule still
+Rechecked2026-11-07 07:27UTC:the actual main-branch pull-request rule still
 restricts allowed methods to `squash`;PR180 remains open. Preserve measured
 source identities rather than bypassing this rule.
 
