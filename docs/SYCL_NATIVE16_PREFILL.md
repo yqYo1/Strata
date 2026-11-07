@@ -867,8 +867,8 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   configurations8/32,32/8,8/32on e1b011. All native/runtime/header/qualification
   reads succeed with the old429b paths absent. Both fresh benchmark/server
   frontend probes now pass normally0with closed owners at source`869568e8a`,
-  still with the old paths absent. Retire the held old products before model
-  process0;no clean model process has run.
+  still with the old paths absent. The held old products are now retired;
+  no clean model process has run.
   Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
@@ -894,11 +894,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `adaptive-payload32-refusal-output-retirement-20261107.json`,SHA256
   `8aa1d60a7c3ec44aadf4a81fe2146a0c22e252ba7b15a20c10c3491764386cf9`.
   The ended429b generation's568native inputs,112controllers,recipe and actual
-  compiler inputs are now recovered from reachable Git. Its748files/
-  163050896bytes are reversibly quarantined,with the original paths absent
-  and its record immutable. No old bytes have been deleted yet. Use real
-  successor comparison preparation/frontend admission to verify independence;
-  restore on failure,otherwise retire the hold before clean model process0.
+  compiler inputs are recovered from reachable Git. After real successor
+  preparation and both frontend probes passed with the original paths absent,
+  its748files/163050896bytes are deleted and the temporary hold no longer
+  exists. All four receipt hashes and15fallback/successor ELFs are unchanged.
+  Keep429b's immutable record for scoped provenance;its compiled tree is gone.
   Follow`retained_builds_review_20261103.payload_successor_replacement`.
   At the closed build/CPU boundary,the failed V1preparation's568projected
   inputs,115controls and recipe are recovered;its duplicate private source is
@@ -2436,11 +2436,12 @@ retains nine ELF artifacts. The closed a1b0 generation,its disposable CMake
 probe binaries and the two schema2 host fixtures are retired after original-input
 recovery. The ended519e diagnostic and all its five component outputs are also
 retired after closed native-gate evidence and source recovery;the current
-comparison retains the552b fallback's nine ELF outputs,the429b candidate's six,
-and the new e1b011 payload successor's six through native32positive/refusal
-qualification. This temporary three-generation window ends before clean8/32
-trials:retire429b after consumer migration,or retire the successor on failure.
-Other configured
+comparison now retains the552b fallback's nine ELF outputs and the e1b011
+payload successor's six. The temporary third429b generation is physically
+retired after source/recipe recovery and actual successor preparation/frontend
+admission without its original paths. Its immutable metadata record remains
+consumed;no old compiled tree or quarantine is retained. This is the two-build
+window for the immediate clean8/32comparison. Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
 numerical/IL choice;successful host/device/build output and superseded source
