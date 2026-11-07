@@ -10,6 +10,7 @@
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/decode_service_profile.hpp"
 #include "strata/core/expert_cache.hpp"
+#include "strata/kernels/dflash2.hpp"
 #include <optional>
 #endif
 #include "strata/core/on_device.hpp"
@@ -479,6 +480,23 @@ Verifier::~Verifier() {
         if (h) cudaFreeHost(h);
 }
 
+#ifdef STRATA_ENABLE_SYCL
+bool Verifier::set_taps(const std::vector<int>& layers, std::string& err) {
+    if (released_.load() || wt_ || g_ || arena_ || cs_ || copy_) {
+        err = "verify taps: configure a fresh owner before init"; return false;
+    }
+    std::vector<int> seen;
+    for (int layer : layers) {
+        if (layer < 0 || std::find(seen.begin(), seen.end(), layer) != seen.end()) {
+            err = "verify taps: negative or duplicate layer"; return false;
+        }
+        seen.push_back(layer);
+    }
+    tap_req_ = layers;
+    return true;
+}
+#endif
+
 bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
                     const NativeHead* head, int max_t, std::string& err) {
     if(released_.load()){err="verify: failed or released verifier; restart the engine";return false;}
@@ -486,6 +504,17 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
 #ifdef STRATA_ENABLE_SYCL
     if (wt_ || g_ || cs_ || copy_) {
         err = "verify: init requires a fresh owner"; return false;
+    }
+    if (!tap_req_.empty()) {
+        if (g.n_layers <= 0 || g.n_embd <= 0 || lb_ != 0 || (le_ >= 0 && le_ != g.n_layers)) {
+            err = "verify taps: require the complete target on one device"; return false;
+        }
+        tap_slot_.assign(size_t(g.n_layers), -1);
+        for (size_t slot = 0; slot < tap_req_.size(); ++slot) {
+            const int layer = tap_req_[slot];
+            if (layer >= g.n_layers) { err = "verify taps: layer outside target"; return false; }
+            tap_slot_[size_t(layer)] = int(slot);
+        }
     }
     if (hits.cache_owner && (!hits.cache_owner->scratch_tracking_enabled() || !hits.cache_owner->decode_ready() ||
         hits.cache_base != hits.cache_owner->device_slot(0) || hits.n_slots != hits.cache_owner->slots() ||
@@ -669,6 +698,9 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         sh_up_ = b.take<float>(T * (uint64_t) g.n_ff); sh_g_ = b.take<float>(T + 4);
         head_logits_ = b.take<float>(T * (uint64_t) n_vocab_);
         hist_snap_ = b.take<float>(T * HS);
+#ifdef STRATA_ENABLE_SYCL
+        if (!tap_req_.empty()) tap_dev_ = b.take<float>(T * tap_req_.size() * N);
+#endif
     };
     Bump count;
     carve(count);
@@ -1283,6 +1315,17 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
         } else if (cvec().covers(l)) {
             cvec_apply(Rt(tb), l, n, HC * N, bo_ + tb * N, N, inj2_ + tb * HC, HC, true, cs);
         }
+#ifdef STRATA_ENABLE_SYCL
+        if (tap_dev_ && tap_slot_[size_t(l)] >= 0) {
+            const int64_t stride = int64_t(tap_req_.size()) * N;
+            float* destination = tap_dev_ + int64_t(tb) * stride + int64_t(tap_slot_[size_t(l)]) * N;
+            if (l == g.n_layers - 1)
+                df2_tap_rows(Rt(tb), destination, stride, N, int(HC), n, cs);
+            else
+                df2_tap_gr(Rt(tb), HC * N, bo_ + tb * N, N, inj2_ + tb * HC, HC,
+                           destination, stride, n, N, int(HC), cs);
+        }
+#endif
         return true;
     };
 

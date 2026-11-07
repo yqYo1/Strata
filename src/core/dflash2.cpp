@@ -50,6 +50,22 @@ void release_host(void* p) {
         strata::sycl_backend::cleanup_fail_stop("DFlash2 host release");
 }
 
+// A partial operation cannot publish reusable host state. Drain while its
+// borrowed host inputs are still alive; unknown completion is process-fatal.
+struct Operation {
+    sycl::queue* queue;
+    bool& failed;
+    int64_t* pending = nullptr;
+    bool complete = false;
+    ~Operation() noexcept {
+        if (complete) return;
+        failed = true;
+        if (pending) *pending = -1;
+        try { if (queue) queue->wait_and_throw(); }
+        catch (...) { strata::sycl_backend::cleanup_fail_stop("DFlash2 partial operation completion"); }
+    }
+};
+
 }  // namespace
 
 Dflash2Drafter::~Dflash2Drafter() try {
@@ -100,6 +116,7 @@ bool Dflash2Drafter::load(const std::string& path, int device, std::string& err)
     uint8_t* tmp = owned_device<uint8_t>(max_bytes, *cs_);
     if (tmp == nullptr) { err = "dflash2: upload scratch"; return false; }
     struct TmpFree { uint8_t* p; sycl::queue* q; ~TmpFree() { release_device(p); } } tmp_free{tmp, cs_};
+    Operation operation{cs_, failed_}; // destroyed before tmp and the host stage
     for (const Tensor& t : tensors_) {
 #if defined(_WIN32)
         _fseeki64(f, data_off + (long long) t.off, SEEK_SET);
@@ -126,7 +143,10 @@ bool Dflash2Drafter::load(const std::string& path, int device, std::string& err)
         }
     }
     if (const char* e = std::getenv("STRATA_DF2_TIMING"); e && e[0] == '1') timing_ = true;
-    return alloc(err);
+    if (!alloc(err)) return false;
+    loaded_ = true;
+    operation.complete = true;
+    return true;
 } catch (const std::exception& e) {
     err = std::string("dflash2: ") + e.what();
     return false;
@@ -205,12 +225,13 @@ bool Dflash2Drafter::alloc(std::string& err) try {
 
 bool Dflash2Drafter::bind_raw(EmbedFn embed, const void* head_w, int head_type, int64_t head_rows, const std::vector<int32_t>& vocab, std::string& err) try {
     const OnDevice on_device(device_);
-    if (!cs_ || bound_ || !embed || !head_w || head_rows <= 0 || head_rows > vocab_ ||
+    if (!loaded_ || failed_ || !cs_ || bound_ || !embed || !head_w || head_rows <= 0 || head_rows > vocab_ ||
         !kernels::native_mmvq_supported(head_type) ||
         (!vocab.empty() && head_rows != int64_t(vocab.size())) ||
         std::any_of(vocab.begin(), vocab.end(), [&](int32_t t) { return t < 0 || t >= vocab_; })) {
         err = "dflash2: invalid head, vocabulary or repeated bind"; return false;
     }
+    Operation operation{cs_, failed_};
     embed_ = std::move(embed);
     head_w_ = head_w;
     head_type_ = head_type;
@@ -227,6 +248,7 @@ bool Dflash2Drafter::bind_raw(EmbedFn embed, const void* head_w, int head_type, 
     if (logits_ == nullptr) { err = "dflash2: the draft logits do not fit"; return false; }
     vram_ += (uint64_t) kDrafts * (uint64_t) n_dvocab_ * 4;
     bound_ = true;
+    operation.complete = true;
     return true;
 } catch (const std::exception& e) {
     err = std::string("dflash2: ") + e.what();
@@ -234,6 +256,7 @@ bool Dflash2Drafter::bind_raw(EmbedFn embed, const void* head_w, int head_type, 
 }
 
 bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const std::string& vocab_file, std::string& err) try {
+    if (!loaded_ || failed_ || bound_) { err = "dflash2: bind requires a fresh loaded owner"; return false; }
     const OnDevice on_device(device_);
     if (head == nullptr || !head->loaded()) { err = "dflash2: the drafter needs the native head (--native)"; return false; }
     const WeightRef* we = wt.find("token_embd.weight");
@@ -266,21 +289,21 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
         err = "dflash2: draft vocabulary token is outside the target vocabulary";
         return false;
     }
+    Operation operation{cs_, failed_}; // the local vocabulary outlives this drain
     const void* hw = head->weights();
     const int64_t row_bytes = (int64_t) head->row_bytes();
     int64_t head_rows = row_bytes > 0 ? (int64_t) (head->weight_bytes() / (uint64_t) row_bytes) : 0;
     if (!vocab.empty()) {
-        int32_t* dv = owned_device<int32_t>(vocab.size(), *cs_);
+        std::unique_ptr<int32_t, decltype(&release_device)> dv(owned_device<int32_t>(vocab.size(), *cs_), &release_device);
         dhead_ = owned_device<uint8_t>((size_t) ((int64_t) vocab.size() * row_bytes), *cs_);
-        if (dv == nullptr || dhead_ == nullptr) {
-            if (dv) release_device(dv);
+        if (!dv || dhead_ == nullptr) {
             err = "dflash2: the draft vocabulary's head rows do not fit";
             return false;
         }
-        cs_->memcpy(dv, vocab.data(), vocab.size() * 4).wait_and_throw();
-        kernels::gather_rows((const uint8_t*) hw, row_bytes, dv, (int64_t) vocab.size(), dhead_, cs_);
+        cs_->memcpy(dv.get(), vocab.data(), vocab.size() * 4).wait_and_throw();
+        kernels::gather_rows((const uint8_t*) hw, row_bytes, dv.get(), (int64_t) vocab.size(), dhead_, cs_);
         cs_->wait_and_throw();
-        release_device(dv);
+        dv.reset();
         vram_ += (uint64_t) ((int64_t) vocab.size() * row_bytes);
         hw = dhead_;
         head_rows = (int64_t) vocab.size();
@@ -288,6 +311,7 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
     if (!bind_raw(embed, hw, head->type(), head_rows, vocab, err)) return false;
     std::fprintf(stderr, "strata dflash2: %lld-token draft head (%.1f MiB), drafter %.0f MiB of VRAM (Q4_0 weights)\n", (long long) n_dvocab_,
                  (double) (n_dvocab_ * row_bytes) / 1048576.0, (double) vram_ / 1048576.0);
+    operation.complete = true;
     return true;
 } catch (const std::exception& e) {
     err = std::string("dflash2: ") + e.what();
@@ -401,14 +425,14 @@ bool Dflash2Drafter::record_block(std::string& err) {
 }
 
 void Dflash2Drafter::set_max_drafts(int n) {
-    if (n < 1 || n > kDrafts) throw std::invalid_argument("DFlash2 draft count out of range");
+    if (!loaded_ || failed_ || n < 1 || n > kDrafts) throw std::invalid_argument("DFlash2 draft count/owner out of range");
     const OnDevice on_device(device_);
     if (cs_) cs_->wait_and_throw();
     ndraft_ = n;
 }
 
 bool Dflash2Drafter::prepare(const float* taps, std::string& err) try {
-    if (!bound_ || !cs_) { err = "dflash2: not bound"; return false; }
+    if (!bound_ || failed_ || !cs_) { err = "dflash2: not bound or failed owner"; return false; }
     strata::sycl_backend::validate_device_span(taps, taps_.size() * size_t(N_) * sizeof(float), *cs_);
     ms_capture = 0; // eager mode: no native graph recording
     return true;
@@ -469,6 +493,7 @@ uint64_t Dflash2Drafter::ring_stash_bytes() const {
 }
 
 void Dflash2Drafter::reset() {
+    if (!loaded_ || failed_) throw std::runtime_error("DFlash2 reset requires a healthy loaded owner");
     have_ctx_ = 0;
     cur_ = Lineage{};
     stash_.clear();
@@ -499,7 +524,6 @@ void Dflash2Drafter::log_stage(int64_t pos0, int n) {
     if (!log_on_) return;
     pend_pos0_ = pos0;
     pend_n_ = n;
-    for (int i = 0; i < n; ++i) slot_pos_[(size_t) ((pos0 + i) % kRing)] = ((int64_t) epoch_ << 32) | (pos0 + i);
 }
 
 // The update's quantized rows are still in xqc_ / xdc_ when its queue has run (nothing writes them afterwards): copy them to the host behind the update.
@@ -518,6 +542,9 @@ void Dflash2Drafter::log_flush() {
         std::memcpy(&ch.q[r * 2560], h_logq_ + (size_t) i * 2560, 2560);
         std::memcpy(&ch.d[r * 80], h_logd_ + (size_t) i * 80, 80 * sizeof(float));
         ch.ok[r] = 1;
+        // Publish only after the full update and its copies passed the checked
+        // queue wait. A later request must never trust a merely submitted row.
+        slot_pos_[size_t(pos % kRing)] = (int64_t(epoch_) << 32) | pos;
     }
     pend_pos0_ = -1;
 }
@@ -549,6 +576,7 @@ bool Dflash2Drafter::rebuild(int64_t lo, int64_t hi, int64_t* rebuilt, int64_t* 
     }
     for (size_t r0 = 0; r0 < rows; r0 += kRows)
         kernels::df2_rope_table_cpu(pos.data() + r0, (int) std::min<size_t>(kRows, rows - r0), theta_, tab.data() + r0 * 128);
+    Operation operation{cs_, failed_}; // drain before q,d,tab can be destroyed
     h_meta_[18] = epoch_;
     cs_->memcpy(d_meta_, h_meta_, kMetaInts * 4);
     cs_->memcpy(rb_q_, q.data(), q.size());
@@ -564,6 +592,7 @@ bool Dflash2Drafter::rebuild(int64_t lo, int64_t hi, int64_t* rebuilt, int64_t* 
     if (!ok) return false;
     for (int32_t p : pos) slot_pos_[(size_t) (p % kRing)] = ((int64_t) epoch_ << 32) | p;
     *rebuilt = (int64_t) rows;
+    operation.complete = true;
     return true;
 } catch (const std::exception& e) {
     err = std::string("dflash2: ring rebuild: ") + e.what();
@@ -571,7 +600,7 @@ bool Dflash2Drafter::rebuild(int64_t lo, int64_t hi, int64_t* rebuilt, int64_t* 
 }
 
 bool Dflash2Drafter::begin_request(const int32_t* ids, int64_t n, int64_t resume, bool* cold) {
-    if (!bound_ || !ids || n < 0 || n > 262144 || resume < 0 || resume > n) {
+    if (!bound_ || failed_ || !ids || n < 0 || n > 262144 || resume < 0 || resume > n) {
         if (cold) *cold = true;
         return false;
     }
@@ -630,10 +659,9 @@ bool Dflash2Drafter::begin_request(const int32_t* ids, int64_t n, int64_t resume
     const int64_t lo = std::max<int64_t>(0, n - (window_ - 1)), hi = resume;
     if (hi > lo) {
         if (!rebuild(lo, hi, &rebuilt, &missing, err)) {
-            std::fprintf(stderr, "strata dflash2: %s: the ring starts over for this request\n", err.c_str());
-            invalidate_ring();
-            missing = hi - lo;
-            rebuilt = 0;
+            std::fprintf(stderr, "strata dflash2: %s: failed owner cannot resume another request\n", err.c_str());
+            failed_ = true;
+            return false;
         }
     }
     static const bool verbose = std::getenv("STRATA_DF2_RING_STATS") != nullptr;
@@ -656,7 +684,7 @@ bool Dflash2Drafter::begin_request(const int32_t* ids, int64_t n, int64_t resume
 }
 
 void Dflash2Drafter::note_rows(const int32_t* toks, int64_t n, int64_t pos0) {
-    if (!bound_ || !toks || n < 0 || pos0 < 0 || pos0 > 262144 || n > 262144 - pos0)
+    if (!bound_ || failed_ || !toks || n < 0 || pos0 < 0 || pos0 > 262144 || n > 262144 - pos0)
         throw std::invalid_argument("DFlash2 committed row extent");
     if ((int64_t) cur_.hist.size() > pos0) { cur_.hist.resize((size_t) pos0); if (log_on_) cur_.truncate(pos0); }
     if ((int64_t) cur_.hist.size() < pos0) return;   // a gap: the history stops being a prefix, so it stays where it is (the next begin_request starts over)
@@ -664,6 +692,7 @@ void Dflash2Drafter::note_rows(const int32_t* toks, int64_t n, int64_t pos0) {
 }
 
 bool Dflash2Drafter::debug_ring(std::vector<float>& kv, std::vector<int64_t>& tags, std::string& err) try {
+    if (!loaded_ || failed_) { err = "dflash2: debug requires a healthy loaded owner"; return false; }
     const OnDevice on_device(device_);
     const size_t per = (size_t) kRing * NKV_ * HD_;
     kv.resize((size_t) L_ * 2 * per);
@@ -682,11 +711,12 @@ bool Dflash2Drafter::debug_ring(std::vector<float>& kv, std::vector<int64_t>& ta
 }
 
 bool Dflash2Drafter::context(const float* taps, int64_t n, int64_t pos0, std::string& err) try {
-    if (!bound_ || n < 0 || pos0 < 0 || n > INT32_MAX - pos0 || pos0 > INT32_MAX - kRows) {
+    if (!bound_ || failed_ || n < 0 || pos0 < 0 || pos0 > 262144 || n > 262144 - pos0) {
         err = "dflash2: invalid context extent"; return false;
     }
     if (n) strata::sycl_backend::validate_device_span(taps, size_t(n) * taps_.size() * N_ * sizeof(float), *cs_);
     const OnDevice on_device(device_);
+    Operation operation{cs_, failed_, &pend_pos0_};
     const int tap_n = (int) taps_.size() * N_;
     for (int64_t r0 = 0; r0 < n; r0 += kRows) {
         const int m = (int) std::min<int64_t>(kRows, n - r0);
@@ -699,6 +729,7 @@ bool Dflash2Drafter::context(const float* taps, int64_t n, int64_t pos0, std::st
     }
     have_ctx_ = std::max<int64_t>(have_ctx_, pos0 + n);
     ring_hi_ = std::max<int64_t>(ring_hi_, pos0 + n);
+    operation.complete = true;
     return true;
 } catch (const std::exception& e) {
     err = std::string("dflash2: ") + e.what();
@@ -706,11 +737,12 @@ bool Dflash2Drafter::context(const float* taps, int64_t n, int64_t pos0, std::st
 }
 
 bool Dflash2Drafter::draft(const float* taps, int n_new, int64_t pos0, int32_t anchor, int32_t* drafts, float* probs, std::string& err) try {
-    if (!bound_) { err = "dflash2: not bound"; return false; }
-    if (!drafts || anchor < 0 || anchor >= vocab_ || pos0 < 0 || pos0 > INT32_MAX - 2*kRows || n_new < 1 || n_new > kRows) { err = "dflash2: draft rows out of range"; return false; }
+    if (!bound_ || failed_) { err = "dflash2: not bound or failed owner"; return false; }
+    if (!drafts || anchor < 0 || anchor >= vocab_ || pos0 < 0 || pos0 >= 262144 || n_new < 1 || n_new > kRows || n_new >= 262144 - pos0) { err = "dflash2: draft rows out of range"; return false; }
     const OnDevice on_device(device_);
     const Clock::time_point t0 = Clock::now();
     strata::sycl_backend::validate_device_span(taps, size_t(n_new) * taps_.size() * N_ * sizeof(float), *cs_);
+    Operation operation{cs_, failed_, &pend_pos0_};
     const int64_t s = pos0 + n_new;
     stage(n_new, pos0, kRows, s, anchor);
     log_stage(pos0, n_new);
@@ -728,6 +760,7 @@ bool Dflash2Drafter::draft(const float* taps, int n_new, int64_t pos0, int32_t a
     ring_hi_ = std::max<int64_t>(ring_hi_, pos0 + n_new);
     ms_draft += ms_since(t0);
     ++rounds;
+    operation.complete = true;
     return true;
 } catch (const std::exception& e) {
     err = std::string("dflash2 draft: ") + e.what();

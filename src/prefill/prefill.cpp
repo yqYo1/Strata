@@ -3968,6 +3968,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 }
                 if (half == 1 && strata::kernels::cvec().covers(l))   // --control-vector-scaled
                     strata::kernels::cvec_apply(m.R, l, T, D, nullptr, 0, nullptr, 0, false, m.cs);
+                if (half == 1 && on_layer && !on_layer(l, p0, T,
+#if defined(STRATA_ENABLE_SYCL)
+                        m.native16_active ? nullptr : m.R, m.native16_active ? m.R16 : nullptr,
+#else
+                        m.R, nullptr,
+#endif
+                        m.cs, err)) return false;
                 if (m.layer26_phase_audit && !m.layer26_phase_audit->capture(
                         half == 0 ? detail::Layer26PhaseAudit::attn_R : detail::Layer26PhaseAudit::final_R,
                         l, c0, T, m.R, m.layer_major_audit_copy)) {

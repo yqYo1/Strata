@@ -124,6 +124,7 @@ private:
     int32_t* dvocab_ = nullptr;
     uint8_t* dhead_ = nullptr;      ///< the draft vocabulary's head rows (owned), or null with head_w_ the whole head
     bool bound_ = false;
+    bool loaded_ = false, failed_ = false; // failed mutations require a new owner
 
     // device buffers
     int32_t* d_meta_ = nullptr;     ///< ints [0..7] context positions, [8..15] block positions, [16] anchor token, [17] anchor position, [18] epoch, [24..31] block tokens; then 16 rope tables of 128 floats

@@ -942,7 +942,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         cursor = {n, m.T};
         if (window_context) window_context->complete_piece = [&](int64_t row, int64_t count, std::string& error) {
             cursor.accept(row, count);
-            if (layer + 1 != g.n_layers) return true; // bank already written; no self-copy
+            if (layer + 1 != g.n_layers && !on_layer) return true; // bank already written; no self-copy
             const auto span = plan.span(row, count);
             if (!span.device || span.offset_bytes > window_context->bank_bytes ||
                 span.bytes > window_context->bank_bytes - span.offset_bytes) {
@@ -950,6 +950,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             const auto* packed = reinterpret_cast<const uint16_t*>(
                 reinterpret_cast<const uint8_t*>(window_context->bank) + span.offset_bytes);
+            if (on_layer && !on_layer(layer, pos0 + row, count, nullptr, packed, m.cs, error)) return false;
+            if (layer + 1 != g.n_layers) return true;
             native16::restore(packed, m.R, count * D, m.cs);
             if (!drain()) { error = "prefill MoE window: final callback bridge drain"; return false; }
             ++logical_chunks;

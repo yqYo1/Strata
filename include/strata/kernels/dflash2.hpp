@@ -26,10 +26,6 @@ constexpr int kDf2TopBlocks = 64;      ///< partial top-k blocks per row (a bloc
 void df2_conv(const float* x, const float* dyn, int dyn_stride, const float* base, const float* resid, float* out, int rows, int H,
               int group, void* stream);
 
-/// table[r][0][i], table[r][1][i] = cos, sin of pos[r] * theta^(-2 i / 128) for i < 64 (the angle reduced in double first, so a large
-/// position keeps its precision under fast math).  table: [rows][2][64].
-void df2_rope_table(const int32_t* pos, int rows, float theta, float* table, void* stream);
-
 /// Per (row, head): out = rope(rmsnorm(in) * gamma).  `in` rows are `in_stride` floats apart (heads * 128 contiguous per row).  The
 /// rotation is the neox/rotate_half one over the whole head dim with row r's entry of `rope_table` (null: the norm only).  The result of row r goes to
 /// out + slot(r) * heads * 128 with slot(r) = (slot_mod > 0 ? pos[r] % slot_mod : r).  `rope` false: the norm only.
@@ -51,9 +47,6 @@ void df2_attention(const float* q, const float* kring, const float* vring, const
 /// xq is int8 [col][n_in] (8 columns of n_in bytes), xd float [col][n_in / 32].  Up to 3 matrices that share the input run in one launch; y (matrix i)
 /// is [ncols][n_out].  n_in a multiple of 512, n_out of 16, ncols 1..8 (the other columns of xq are read and dropped).
 /// Bench only: pick a GEMM kernel variant (0 = the default).
-/// df2_rope_table with the inverse frequencies computed once (df2_rope_inv: the same double-precision pow per i), so a round pays no pow: the same table, bitwise.
-void df2_rope_inv(float theta, double* inv, void* stream);
-void df2_rope_table_inv(const int32_t* pos, int rows, const double* inv, float* table, void* stream);
 /// The same table computed on the host (double precision, bitwise the CUDA kernel up to sincosf): table [rows][2][64].  The SYCL port uses this one: a kernel with FP64 operations on an Arc Alchemist (IGC DP emulation) slows every later kernel of the process by 2x or more, so the drafter has no device FP64.
 void df2_rope_table_cpu(const int32_t* pos, int rows, float theta, float* table);
 void df2_gemm_variant(int v);

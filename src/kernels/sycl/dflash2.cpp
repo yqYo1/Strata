@@ -84,14 +84,6 @@ void conv_launch(sycl::queue* q, const float* x, const float* dyn, int dyn_strid
     });
 }
 
-inline void rope_cs(double inv, int32_t pos, float& c, float& s) {
-    double ang = (double) pos * inv;
-    const double two_pi = 6.283185307179586476925286766559;
-    ang -= two_pi * sycl::rint(ang / two_pi);   // [-pi, pi]
-    s = sycl::sin((float) ang);
-    c = sycl::cos((float) ang);
-}
-
 // ---- norm + rope of one (row, head), 128 work-items: out = rope(rmsnorm(in) * gamma)
 inline float head_norm(const nd_item<2>& it, const sycl::local_accessor<float, 1>& red, float x, float eps) {
     const sycl::sub_group sg = it.get_sub_group();
@@ -110,34 +102,8 @@ void df2_conv(const float* x, const float* dyn, int dyn_stride, const float* bas
     conv_launch((&strata::sycl_backend::queue_for(stream)), x, dyn, dyn_stride, base, resid, out, rows, H, group);
 }
 
-void df2_rope_inv(float theta, double* inv, void* stream) {
-    (&strata::sycl_backend::queue_for(stream))->parallel_for(sycl::nd_range<1>(64, 64), [=](nd_item<1> it) {
-        const int i = (int) it.get_local_id(0);
-        inv[i] = sycl::pow((double) theta, -(double) (2 * i) / (double) HD);
-    });
-}
-
-void df2_rope_table(const int32_t* pos, int rows, float theta, float* table, void* stream) {
-    (&strata::sycl_backend::queue_for(stream))->parallel_for(sycl::nd_range<1>((size_t) rows * 64, 64), [=](nd_item<1> it) {
-        const int r = (int) it.get_group(0), i = (int) it.get_local_id(0);
-        const double inv = sycl::pow((double) theta, -(double) (2 * i) / (double) HD);
-        float c, s;
-        rope_cs(inv, pos[r], c, s);
-        table[(r * 2 + 0) * 64 + i] = c;
-        table[(r * 2 + 1) * 64 + i] = s;
-    });
-}
-
-void df2_rope_table_inv(const int32_t* pos, int rows, const double* inv_tab, float* table, void* stream) {
-    (&strata::sycl_backend::queue_for(stream))->parallel_for(sycl::nd_range<1>((size_t) rows * 64, 64), [=](nd_item<1> it) {
-        const int r = (int) it.get_group(0), i = (int) it.get_local_id(0);
-        float c, s;
-        rope_cs(inv_tab[i], pos[r], c, s);
-        table[(r * 2 + 0) * 64 + i] = c;
-        table[(r * 2 + 1) * 64 + i] = s;
-    });
-}
-
+// Keep the used host-table implementation only. This GPU has no native FP64;
+// uncalled experimental device-FP64 rope exports have no current consumer.
 void df2_rope_table_cpu(const int32_t* pos, int rows, float theta, float* table) {
     const double two_pi = 6.283185307179586476925286766559;
     for (int i = 0; i < 64; ++i) {

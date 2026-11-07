@@ -99,6 +99,9 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/native_iq_esimd.cpp)
+target_sources(strata_kernels PRIVATE src/kernels/sycl/dflash2.cpp)
+set_source_files_properties(src/kernels/sycl/dflash2.cpp PROPERTIES
+  COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 target_sources(strata_kernels PRIVATE src/kernels/sycl/native_mmq_xmx.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention_late_flags.cpp)
@@ -122,6 +125,11 @@ target_link_libraries(sycl_q6_columns_bench PRIVATE strata_kernels)
 target_compile_options(sycl_q6_columns_bench PRIVATE -fno-fast-math -ffp-contract=off)
 add_executable(sycl_submission_test EXCLUDE_FROM_ALL tests/sycl/compat.cpp)
 target_link_libraries(sycl_submission_test PRIVATE strata_sycl_runtime)
+add_executable(sycl_dflash2_test EXCLUDE_FROM_ALL tests/sycl/dflash2.cpp)
+target_link_libraries(sycl_dflash2_test PRIVATE strata_kernels)
+target_compile_options(sycl_dflash2_test PRIVATE -fno-fast-math -ffp-contract=off)
+add_executable(dflash2_pack_test EXCLUDE_FROM_ALL tests/core/dflash2_pack_test.cpp src/core/dflash2_pack.cpp)
+target_include_directories(dflash2_pack_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 add_executable(sycl_graph_envelope_test EXCLUDE_FROM_ALL tests/sycl/graph_envelope.cpp)
 target_link_libraries(sycl_graph_envelope_test PRIVATE strata_sycl_runtime)
 add_executable(iq2_phase_host_test EXCLUDE_FROM_ALL tests/cpu/iq2_phase.cpp)
@@ -144,6 +152,7 @@ set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl
 add_library(strata_engine STATIC src/core/layer.cpp src/core/session.cpp src/core/expert_source.cpp src/core/remote_experts.cpp
   src/core/expert_cache.cpp src/core/native_head.cpp src/core/native_dense.cpp src/core/verify.cpp src/core/mtp.cpp
   src/core/conversation_snapshot.cpp src/core/conversation_state.cpp src/core/conversation_memory.cpp src/core/peer_experts.cpp)
+target_sources(strata_engine PRIVATE src/core/dflash2.cpp src/core/dflash2_pack.cpp)
 target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_kernels_cpu)
 
 # Explicitly invoked production-verifier lifetime checks; never automatic GPU work.
@@ -160,6 +169,7 @@ set(MKL_THREADING sequential)
 find_package(MKL CONFIG REQUIRED)
 add_library(strata_prefill STATIC src/prefill/prefill.cpp src/prefill/sycl/gemm.cpp src/prefill/sycl/qsa_score_gemm.cpp src/prefill/sycl/gemm16.cpp src/prefill/sycl/native16.cpp src/prefill/sycl/qsa_native16.cpp src/prefill/sycl/gdn_chunk64.cpp src/prefill/sycl/postops.cpp src/prefill/sycl/blob.cpp src/prefill/sycl/moe_mmq.cpp src/prefill/sycl/moe_fused.cpp)
 target_link_libraries(strata_prefill PUBLIC strata_engine MKL::MKL_SYCL::BLAS)
+target_sources(strata_prefill PRIVATE src/prefill/sycl/dflash2_taps.cpp)
 target_compile_definitions(strata_prefill PRIVATE STRATA_PREFILL_MMQ=1 STRATA_PREFILL_FUSED=1)
 target_compile_options(strata_prefill PRIVATE -fno-fast-math -ffp-contract=off)
 if(STRATA_SYCL_VLLM_XE2_NATIVE16)

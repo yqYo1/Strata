@@ -82,6 +82,15 @@ public:
     bool init(const WeightTable& wt, const ModelGeometry& g, SessionState& ss, const VerifyHits& hits,
               const NativeHead* head, int max_t, std::string& err);
 
+#ifdef STRATA_ENABLE_SYCL
+    /// Optional target-layer outputs for DFlash2. Configure only before init;
+    /// run() completes [T][layers.size()][n_embd] on this verifier's device.
+    /// The view remains live until the next run or owner retirement. No tap
+    /// storage or launches are added to the default MTP path.
+    bool set_taps(const std::vector<int>& layers, std::string& err);
+    const float* tap_dev() const { return released_.load() ? nullptr : tap_dev_; }
+#endif
+
     // Head-only retirement. Own the serialized request boundary; this preserves
     // all arenas, commit graph, session/KV/GDN/PLE and sampling state.
     // Dedicated native projection retirement. Individual methods reject a
@@ -275,6 +284,10 @@ private:
     VerifyHits hits_;
     const NativeHead* head_ = nullptr;
     int max_t_ = 0;
+#ifdef STRATA_ENABLE_SYCL
+    std::vector<int> tap_req_, tap_slot_;
+    float* tap_dev_ = nullptr; // part of arena_; same reader retirement lifetime
+#endif
     VerifyWindowSnapshot diag_window_;
     int last_t_ = 0;
     int64_t last_pos0_ = 0;

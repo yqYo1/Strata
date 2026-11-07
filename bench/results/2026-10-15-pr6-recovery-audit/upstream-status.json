@@ -1527,10 +1527,10 @@
       "config_copy_kept": true
     },
     "dflash2_native_port": {
-      "state": "source_in_progress_not_exposed_or_built",
+      "state": "source_wired_uncompiled_unqualified",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
-      "adaptation": "Use current fork registered allocations, qualified in-order queues, eager execution without native graph capture or GPU host-flag polling. Strong CPU pack admission before any device allocation. Existing native engine and fast prefill/decode routes are not replaced.",
-      "remaining": "Finish native taps, BF16 prefill taps, request lineage and speculative proposal integration; then compile and bound GPU qualification. Metadata gate passed19cases, not a native model run.",
+      "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights; retains at most2047positions of five narrow means(104806400bytes),then loads and seeds the drafter.",
+      "remaining": "Compile committed source/recipe; run bounded traced kernel contract checks before any new model execution. Then qualify tap precision,ring failure/lineage,request cancellation/RESTORE,full physical context,and repeated performance against independent prefill/decode references. No feature/model/performance adoption from source wiring.",
       "metadata_fixture_plan": {
         "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
         "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
@@ -1545,6 +1545,22 @@
         "cases_passed": 19,
         "executable_sha256": "4abfea53e0c258e9ba21ebeaef08bfe7a4b9421ca104ac46530dc66ea7a0d161",
         "meaning": "CPU metadata only; no payload tensor accuracy, GPU or model-route qualification."
+      },
+      "source_safety_fixes": "Publish host ring tags after checked completion. Latch partial-operation failure and refuse owner reuse; drain borrowed host inputs before retirement. Bound context/draft to262144 target positions. Remove unused device-FP64 rope exports; host table remains. Target verifier/sampler owns acceptance and accepted-row commit.",
+      "request_limitations": "First route is single-card text,one request at a time,no coupled MTP/suffix/vision/layer split. Releasing DFlash weights for long prefill also retires its activation log; a reused target prefix without captured/logged draft context is explicitly cold,never filled with invented taps. Task quality,agent/reuse/RESTORE and physical full-context qualification remain open.",
+      "eager_source_audit": {
+        "source_commit": "07328b06a43d43a55d75e7f8920bb2e83ab1adec",
+        "review_path": ".cache/research/2026-11-08/upstream-146df3c4/eager-audits-review.md",
+        "review_sha256": "9786704f46d9e016db2d1737c694159e75c7802eb6260549d85aa757575704a0",
+        "decision": "Two concrete owner defects contained in the next source proposal: premature shadow tags/retry and missing physical bound. Kernel audit found no definite collective/bounds bug for fixed internal geometry; runtime/numerical checks remain necessary. Moving tap/CLI integration was not reviewed or qualified by these reports."
+      },
+      "first_device_plan": {
+        "target": "sycl_dflash2_test",
+        "wall_seconds": 180,
+        "combined_log_cap_bytes": 67108864,
+        "environment": "Qualified measurement_environment.json safety and LevelZero tracing/parameter validation,immutable before exec; verify actual runtime ELF pins and health before launch.",
+        "cases": "8 active-column counts with3 Q4 matrices each,extreme signed planar codes,CPU exact integer oracle,inactive output guards; FP32 row/GR tap interleaved guards. No weights/graphs/FP64 kernels/model; this is not performance or BF16-route qualification.",
+        "stop": "First error,budget stop,fresh driver fault or uncertain closure blocks progression;no automatic retry/reset."
       }
     }
   }
