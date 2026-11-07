@@ -867,6 +867,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   retirement separately rather than rewriting those receipts or refreshing refs.
   Prospective consumer migration still needs execution qualification before
   retiring429b;the new wrappers alone do not make its active readers qualified.
+  The positive32entry's59successful output/JIT files(13634939bytes)are retired
+  after recovery of121original inputs,with21ELFs and both consumed receipt
+  hashes unchanged. Keep only its immutable record. The deletion manifest is
+  `adaptive-payload32-positive-output-retirement-20261107.json`,SHA256
+  `c2566566c666d7d5721b621a6b9edf9726b1f2153d79d7ab4646eec818ca0b94`.
   At the closed build/CPU boundary,the failed V1preparation's568projected
   inputs,115controls and recipe are recovered;its duplicate private source is
   retired. The old64MiB entry's116inputs and the SSE tests'352inputs are also
