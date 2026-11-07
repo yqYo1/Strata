@@ -1430,12 +1430,10 @@ and closed owners;the host plan pins37inputs and the qualified interpreter.
 Follow`adaptive_cpu_leaf_reader_host_v2`. The superseded five-group proof and
 its raw-output retirement are archived at`8327c62f8`;no maintained reader uses
 that old result. No leaf-only adaptive model profile or cost comparison has run.
-Both new files
-are outside the frozen speed/qualification import closures,which continue
-to pass after the first process's raw retirement.
-The Main-authored`tools/sycl/profile_adaptive_cpu_leaves.py`source-prepares
-separate leaf-off/on,on/off,off/on cohorts on the same native engine. It must
-wait for its workload's32/96cohort to close,then uses96only with a repeated
+These tools introduce no new native engine.
+The Main-authored`tools/sycl/profile_adaptive_cpu_leaves.py`implements
+separate leaf-off/on,on/off,off/on cohorts on the same native engine. Each
+workload requires its closed32/96cohort,then uses96only with a repeated
 TGgain,otherwise32. That is a focused decode choice,not route adoption.
 Only the pre-exec CPU leaf flag differs;static census,caller/full trace and
 decode timing remain off,with runtime safety unchanged. Bind the four warmup
@@ -1464,8 +1462,19 @@ parallel1,no batch/slots,one synchronous client,and all five private compiled
 producer/resolver hashes. Quiescence remains a caller assertion supported by
 that serialized path. Public generator/resolver bytes differ from the compiled
 snapshot;do not substitute them. The current reader/controller CPU gates pass.
-Model preparation still waits for its workload's32/96cohort to close and
-select a focused decode budget;observer cost remains unmeasured. No native code changes.
+The regular-code plan is now prepared at`ad3723d20`,with358source inputs,
+all15model assets fully hashed and focused decode budget96selected from the
+closed32/96decision. Follow`adaptive_cpu_leaves_regular_code_v1`.
+The prepared invariant,serial admission and five compiled producer/resolver
+hashes are pinned. No native code changes. Fresh frontend admission and all
+six model processes remain pending;observer cost is unmeasured. Varied-prose
+preparation still requires its own closed32/96cohort.
+The completed preparation command is:
+`/usr/bin/timeout -k 15s 900s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code prepare`.
+After committing the plan,run the same command with`host`instead of`prepare`.
+After committing normal frontend closure,run indices0..5in declared order,
+each using`/usr/bin/timeout -k 15s 3600s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code INDEX`.
+Commit each closed process before the next;stop on the first failed gate.
 The six consumed reader/audit/review files(30333bytes)are retired after37-input
 Git recovery and before/after source/runtime admission. Compact findings and
 the deletion manifest remain in the current host result/research index.
