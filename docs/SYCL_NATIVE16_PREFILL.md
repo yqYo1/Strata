@@ -993,17 +993,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   adversarial controls are preregistered for the closed-cohort boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/check_adaptive_payload96_entry.py controls`.
   This source-only plan establishes no96native safety,performance or adoption.
-  Prose processes0/1/2each have69successful raw/JIT files
-  (13136414/13122266/13122277bytes)retired after recovery of346Git inputs and pushing
-  the compact result. Their generated
-  configs/plans remain for the two pending processes;admission still passes
+  Prose processes0/1/2/3each have69successful raw/JIT files
+  (13136414/13122266/13122277/13136451bytes)retired after recovering346Git inputs
+  and pushing the compact result. Their generated configs/plans remain for
+  the two pending processes;admission still passes
   after deletion and all15ELFs/four immutable receipts are unchanged. Manifest:
   `adaptive-payload-generation-varied-prose-v1-process0-output-retirement-20261107.json`,
   SHA256`e8e7ef533b03366618eb612cc3cf7030197a8047a2152a8f4eeed705008de0cc`,and
   `adaptive-payload-generation-varied-prose-v1-process1-output-retirement-20261107.json`,
   SHA256`376194f62f6bd5335fa022a8a1a354584d06b587f01b60d177f5f4ae9505dfa8`,and
   `adaptive-payload-generation-varied-prose-v1-process2-output-retirement-20261107.json`,
-  SHA256`2def8272f5fbaba656fb67dbcbd8d3c330522dcb5b3a22bdd2d67608d9bba506`.
+  SHA256`2def8272f5fbaba656fb67dbcbd8d3c330522dcb5b3a22bdd2d67608d9bba506`,and
+  `adaptive-payload-generation-varied-prose-v1-process3-output-retirement-20261107.json`,
+  SHA256`ccde4bb997c82d2a9b1c8a56c42e262913b6da9b26957d20465726b1ebe4577b`.
   For the closed regular-code cohort,all six processes each have69successful
   raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
