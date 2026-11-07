@@ -1755,7 +1755,7 @@
       }
     },
     "dflash2_device_check": {
-      "stage": "failed",
+      "stage": "prepared",
       "runtime_manifest": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
         "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
@@ -1778,8 +1778,8 @@
         "SYCL_CACHE_PERSISTENT": "0",
         "ZES_ENABLE_SYSMAN": "0",
         "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v2/cache",
         "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
         "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
         "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
@@ -1814,16 +1814,24 @@
         "bytes": 1835600
       },
       "passed": false,
-      "ownership_closed": false,
+      "ownership_closed": true,
       "meaning": "Eight active-column GEMMs with3matrices,exact signed integer oracle and output guards;FP32 mean/pending-GR taps. No model,BF16 tap-route,ring recovery,task quality,performance or physical full-context qualification.",
-      "unqualified_executable_mappings": [],
-      "error": "RuntimeError('device process did not close normally')",
-      "fresh_faults": [],
-      "boot_unchanged": true,
-      "fault_probe_successful": true,
+      "required_executable_mappings": [
+        "/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0",
+        "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+      ],
+      "previous_gate": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v1/record.json",
+        "sha256": "93249612b5be4d61373fc759d8eb8103b14c9974dece24cb439c88dce0af7bf4",
+        "evidence_commit": "c900ec0cc87b9f665beef32146e0c3f05f74a08f",
+        "stage": "failed",
+        "reason": "Prior separate-UR-loader presence predicate failed after9numerical markers. Preserve failure;new prospective provider gate admits pinned static UR within libsycl. Original map count/set was not recorded,so the exact absent predicate is unknown.",
+        "source": "https://github.com/intel/llvm/blob/sycl/sycl/source/CMakeLists.txt"
+      },
       "controller_source": {
-        "commit": "b5f0584d31218a95fa733895a68107a2bb4138b5",
-        "aggregate_sha256": "2b7b6e0ff8294415d3c3856766ff0eab38d208112c92259848013bc0845858b0",
+        "commit": "c900ec0cc87b9f665beef32146e0c3f05f74a08f",
+        "aggregate_sha256": "e5971e28dc7faa31e5b191b30666c9047421a0b68303b70473a6d0e8717ee9f2",
         "files": 5
       },
       "native_build": {
@@ -1836,38 +1844,7 @@
         "passed": true,
         "ownership_closed": true
       },
-      "commands": [
-        {
-          "label": "dflash2",
-          "exit_code": -15,
-          "ownership_closed": false,
-          "errors": [],
-          "cleanup": [
-            {
-              "pid": 1938916,
-              "start_ticks": 243689986,
-              "signal": "SIGTERM",
-              "result": "sent"
-            }
-          ],
-          "error": "RuntimeError('unexpected or incomplete executable mappings')"
-        }
-      ],
-      "process_retirement": {
-        "direct_child_reaped": true,
-        "session_empty": true,
-        "survivors": [],
-        "actual_owned_processes_gone": true,
-        "meaning": "Supervisor SIGTERM after failed mapping admission;not a normal-exit qualification. ownership_closed stays false."
-      },
-      "component_observation": {
-        "numerical_markers_passed": 9,
-        "kernel_launch_entries": 14,
-        "ur_error_codes": [],
-        "stdout_sha256": "fa348a412ef9736eb91730619155b0d042d2429b88ccae84c056fe948b0a74e5",
-        "stderr_sha256": "17c529c4ed854ebb7b8ae3bd8b0ff162b71d760092ca1645e02ab977e228ba15",
-        "meaning": "Observed GPU numerical markers only;final ELF gate failed before QUIT,so whole gate failed. Actual map set/count was not retained by this controller;do not infer which presence predicate failed."
-      }
+      "commands": []
     }
   }
 }
