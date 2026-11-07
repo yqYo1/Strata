@@ -43,8 +43,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   gain in this workload,not phase preservation,fixed-work attribution,full
   model adoption or70TG. The separate cap2/prose comparison is prepared at
   source`c632a0421`,with346inputs,all15model assets checked and six immutable
-  8/32,32/8,8/32configurations on the same e1b011 executable. No prose model
-  process has run;fresh benchmark/server frontend probes are next.
+  8/32,32/8,8/32configurations on the same e1b011 executable. Both fresh
+  benchmark/server frontend probes pass normally0at source`d79bd3448`,with
+  quiet stderr and closed owners. No prose model process has run.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -918,8 +919,9 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   configuration controls,small exact gain,slower-pair retention and independent
   phase decisions pass. Its six fixed8/32,32/8,8/32processes retain the same
   e1b011engine,8192chunk,placement,runtime safety and observer settings.
-  Commit this plan before fresh benchmark/server frontend probes;no prose
-  model execution or performance decision yet. Follow
+  Both fresh benchmark/server frontend probes now pass at`d79bd3448`,with
+  normal0,quiet stderr and closed owners. No prose model execution or
+  performance decision yet. Commit these outcomes before process0. Follow
   `adaptive_payload_generation_varied_prose_v1`.
   All six processes each have69successful raw/JIT files retired(13095666/13096255/
   13096306/13095722/13095457/13096142bytes),after recovering all346source inputs
