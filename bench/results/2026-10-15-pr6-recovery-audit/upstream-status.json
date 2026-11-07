@@ -1290,7 +1290,12 @@
       "functional": "Import current Python setup/catalog/control/CLI/server/UI without replacing native kernels. Preserve local console shutdown fix and native setup adapter. Commit source before host tests. Run upstream v3.1 fixture/pin/download tests, DFlash pack/selection tests and full isolated server/CLI suites; record all failures.",
       "engine": "Keep existing native inference unchanged until each port passes bounds/lifetime/precision checks. DFlash2 opt-in, original MTP retained. Commit recipe/source before builds; bounded traced fixture then clean matched repeated PP/TG/TTFT with long input, agent and thinking generation.",
       "performance": "Existing faster prefill and independent decode references retained with original source identities. No performance claim from import or host tests. Latest unmodified upstream SYCL comparison uses clean pinned evaluation checkout and tuned configuration.",
-      "deprecation": "No automatic deletion in this initial import."
+      "deprecation": "No automatic deletion in this initial import.",
+      "host_commands": [
+        "python -B -m pytest -q tools/test_setup_unsloth_v31.py tools/test_setup_unsloth.py tools/test_setup_pins.py tools/test_setup_shard_check.py tools/test_dflash2_pack.py tools/test_dflash2_vocab.py tests/terminal/test_drafting.py tests/terminal/test_drafting_single.py tests/terminal/test_drafting_tuned.py",
+        "python -B -m pytest -q serve (excluding explicit DeepSeek/35B execution tests, with original failures retained)",
+        "python -B -m pytest -q tests/terminal (excluding explicit DeepSeek/35B execution tests and platform-only checks)"
+      ]
     },
     "functional_import": {
       "source": "146df3c468739147f520ac3816de806f71232571",
@@ -1316,7 +1321,100 @@
       ],
       "v31_revision": "d96201194f103c906994f283f504209dc8d2a10c",
       "qualification": "Source import only; native v3.1 support and DFlash2 are not yet qualified. Source must be committed before tests.",
-      "text_adaptations": "Normalize10CRLF text inputs to LF and six upstream trailing-blank/EOF whitespace cases; preserve local console owned-fd shutdown fix. Native inputs unchanged."
+      "text_adaptations": "Normalize10CRLF text inputs to LF and six upstream trailing-blank/EOF whitespace cases; preserve local console owned-fd shutdown fix. Native inputs unchanged.",
+      "source_before_scope_filter": "97e9c984703efb842fe2c1b24b6e712ce334cc26",
+      "local_adaptations": [
+        "Preserve MTP selection for existing run configs without an explicit drafting choice; downloading DFlash2 does not switch their drafter.",
+        "Suppress deferred DeepSeek/35B setup families and refuse saved-config server/owned execution before engine launch; shared inert metadata retained to avoid dependency churn."
+      ]
+    },
+    "exclusions": {
+      "DeepSeek_execution": "User explicitly defers current and future execution imports until a new request. No native DS engine imported. Suppress catalog/installation and reject saved direct-server/owned launches. Shared nonexecuting helpers may remain when removal would introduce unnecessary dependency churn.",
+      "35B_execution": "Same explicit user hold. No native qwen35 engine imported; suppress own-path catalog/installation and reject launches."
+    },
+    "host_test_environment": {
+      "path": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4",
+      "python": "3.12.3",
+      "recipe": "uv venv --python existing3.12.3; uv pip install -r requirements.txt pytest",
+      "installed": [
+        {
+          "name": "certifi",
+          "version": "2026.10.19"
+        },
+        {
+          "name": "charset-normalizer",
+          "version": "3.5.1"
+        },
+        {
+          "name": "idna",
+          "version": "3.20"
+        },
+        {
+          "name": "iniconfig",
+          "version": "2.3.1"
+        },
+        {
+          "name": "jinja2",
+          "version": "3.1.6"
+        },
+        {
+          "name": "markupsafe",
+          "version": "3.0.3"
+        },
+        {
+          "name": "numpy",
+          "version": "2.5.3"
+        },
+        {
+          "name": "packaging",
+          "version": "26.3"
+        },
+        {
+          "name": "pillow",
+          "version": "13.0.0"
+        },
+        {
+          "name": "pluggy",
+          "version": "1.7.0"
+        },
+        {
+          "name": "psutil",
+          "version": "7.2.2"
+        },
+        {
+          "name": "pygments",
+          "version": "2.21.0"
+        },
+        {
+          "name": "pytest",
+          "version": "9.2.0"
+        },
+        {
+          "name": "pyyaml",
+          "version": "6.0.3"
+        },
+        {
+          "name": "regex",
+          "version": "2026.9.10"
+        },
+        {
+          "name": "requests",
+          "version": "2.34.2"
+        },
+        {
+          "name": "tqdm",
+          "version": "4.70.1"
+        },
+        {
+          "name": "truststore",
+          "version": "0.10.5"
+        },
+        {
+          "name": "urllib3",
+          "version": "2.8.0"
+        }
+      ],
+      "isolation": "Existing model/measurement venv unchanged; dedicated current host integration test consumer."
     }
   }
 }

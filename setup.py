@@ -1036,6 +1036,14 @@ REPO_PINS = {
 }
 # the files of a repository at a commit other than HF_REVISIONS' (UNSLOTH_V31_REVISION): (repository, commit) -> name -> (bytes, sha256); file_pin looks here first
 REV_PINS = {(UNSLOTH_REPO, UNSLOTH_V31_REVISION): {**UNSLOTH_V31_SHARDS, **UNSLOTH_Q4_V31_SHARDS}}
+
+# AGENTS.md defers these engines. Shared metadata/helpers remain inexpensive to
+# keep, but installation menus and explicit --family choices must not offer them.
+from strata_control.model_scope import deferred as _deferred_model
+for _family_table in (OWN_PATH_FAMILIES, MULTI_FILE_FAMILIES):
+    for _family in tuple(_family_table):
+        if _deferred_model(_family):
+            del _family_table[_family]
 # EXPERIMENTAL, off by default (setup asks): a control vector shipped with the repository, see its README
 ESP_VECTOR = ROOT / "data" / "experimental-speed-projection" / "Qwen3.8-Flash-Next-experimental-speed-projection.gguf"
 # the image encoder on the GPU (~1.2 GB at 1024 image tokens) warms up before the engine starts, so the engine

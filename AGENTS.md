@@ -28,6 +28,10 @@ do not introduce another license through a copied header or template. Hold an
 uncertain proposal out of the active implementation until its origin is resolved.
 Upstream contributions are not currently planned. CUDA/HIP implementation and
 validation are outside this work's scope.
+DeepSeek and 35B-model execution support are also outside scope until the user
+explicitly requests them. Exclude their model choices, installation and launch
+paths from upstream imports; adapt shared functional changes without enabling
+these models. This exception applies to future sync rounds too.
 
 ## Installing Strata for a user
 

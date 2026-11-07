@@ -484,6 +484,11 @@ def _engine_preflight(plan: dict) -> None:
         return
     if not isinstance(cfg, dict):
         return
+    from strata_control.model_scope import require_config
+    try:
+        require_config(cfg)
+    except ValueError as exc:
+        raise ProfileError(str(exc), 6) from None
     from strata_control import engine_component
     if not engine_component.is_reference(cfg.get("exe")):
         return

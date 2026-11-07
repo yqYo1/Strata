@@ -3795,6 +3795,10 @@ def engine_args(cfg: dict, exe: str | None = None, *, announce: bool = True) -> 
     # has it, on one card and on a layer split over several cards. A choice that cannot be applied (no drafter file yet, several requests at once) starts the other one if it is on this computer,
     # else none, and says why in the engine's /metrics ("drafting_note"). The start never downloads.
     shaped = {**cfg, "args": args}
+    # Existing fork run configs predate Drafting. Preserve their chosen native
+    # arguments; merely fetching a DFlash2 pack must not switch an MTP run.
+    if "drafting" not in cfg and "--mtp" in args:
+        shaped["drafting"] = "mtp"
     backend, archs = drafting.detect_hardware()
     parallel_n = cfg.get("parallel")
     decision = drafting.apply(shaped, klass=drafting_card_class(), data_dir=drafting.data_dir_of(args), backend=backend, archs=archs,
@@ -10026,6 +10030,12 @@ def _main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> i
     config_bytes = Path(a.config).read_bytes() if a.config else b""
     cfg = parse_config_text(config_bytes.decode("utf-8-sig"), a.config) if a.config else {}   # Notepad adds a BOM
     split_joined_args(cfg)
+    if a.engine == "strata":
+        from strata_control.model_scope import require_config as require_model_scope
+        try:
+            require_model_scope(cfg)
+        except ValueError as exc:
+            ap.error(str(exc))
     if a.config and a.engine == "strata":
         cfg = apply_saved_tuning(cfg)
     attestation_key = os.environ.pop("STRATA_OWNER_ATTEST_KEY", None)
