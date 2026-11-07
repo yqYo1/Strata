@@ -1576,8 +1576,14 @@ Next prioritize a packed98B/register-decode variant or bounded hot-view
 comparison against this qualified component baseline. Other-format,pureNT1,
 production dispatch/lifecycle,actual RAM admission and setup reuse remain
 prerequisites. Keep the two inference generations and the current auxiliary
-ELF for that immediate follow-up. The old`ab274d68`numeric consumer has ended;
-recover its original6aba/58fb/8f7inputs before retiring its build.
+ELF for that immediate follow-up. The old`ab274d68`numeric build is physically
+retired after original6aba/58fb/8f7Git recovery:263project/1376GGML sources,
+633actual compiler inputs,recipe,link inputs and executable identity verified.
+Together with successful successor raw output,158files/15013007B are deleted;
+all15inference ELFs and the selected auxiliary ELF remain unchanged. The new
+auxiliary root retains71files/14117390B for the named follow-up. Manifest:
+`cpu-compact-numeric-output-retirement-20261108.json`,SHA256
+`59f97723bdb668291122e420fdd3fa5784856125781dcc1f0c1ee1905a5541c3`.
 Luna-max's post-calibration review supports bounded comparison using existing
 references;no duplicate Orca survey is selected. Closed CPU calibration remains
 recoverable at8547cb65d. Physical262144/RESTORE and model/task qualification
