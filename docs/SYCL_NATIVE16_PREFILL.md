@@ -3035,9 +3035,12 @@ Three GPU processes pass16kernel/prompt cases,5small stock-drafter cases and
 no fresh fault. These cover signed Q4 GEMM,mixed FP32/BF16 prompt means,the
 104806400-byte tail allocation,2046/2047/2048transitions,stock block forward,
 wrap/rewind/parked-branch restoration,fresh replay equivalence,masked missing
-context and failed-owner refusal. The target embedding/head remain synthetic;
+context and failed-owner refusal. The missing-row case currently proves only
+execution/tag state;the source review requires a direct poisoned-value attention
+discriminator before mask correctness or model-route advancement. The target
+embedding/head remain synthetic;
 this does not qualify target-model output,RESTORE,physical262144 fill or speed.
-Next:complete the source-audit review,then bounded target-model execution and
+Next:run the12case stale-tag/live-control discriminator,then bounded target-model execution and
 independent-phase comparisons. Default
 native MTP and legacy explicit-MTP configs remain selected;the imported host
 Auto policy can choose DFlash2 on a fresh supported configuration. The feature

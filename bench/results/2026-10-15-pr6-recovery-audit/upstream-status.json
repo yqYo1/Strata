@@ -1559,7 +1559,7 @@
       "state": "compiled_small_q4_fp32_bf16_prompt_gate_passed_model_route_unqualified",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
       "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights;physical tail buffer has2047positions(104806400bytes),while capture omits the last prompt anchor and retains at most2046rows;then loads and seeds the drafter.",
-      "remaining": "Engine689c and ring fixture f62df compile with existing engine/fixture bytes unchanged. Sixteen kernel/prompt cases plus five small stock-drafter cases and five ring/lineage cases pass across three normal0 processes,each with36qualified executable mappings,closed ownership and no fresh fault. Ring tests check tail transitions2046/2047/2048,real stock block forward,final physical drafter row,failed-owner refusal,wrap,rewind,parked-branch restore,fresh replay equivalence and masked missing context. Synthetic target embedding/head do not qualify the target model. Next:finish source-audit review,then bounded target-model route and functional adapters,RESTORE/full physical262144 and repeated matched independent-phase performance. No default activation or model/performance adoption.",
+      "remaining": "Engine689c and ring fixture f62df preserve original bytes.16kernel/prompt plus5small and5ring/lineage execution cases pass normally,with36qualified mappings each,closed ownership and no fresh fault.Source-audit review finds no production safety defect,but missing_context_mask has no discriminating oracle;its original PASS qualifies execution/tag state only.New direct attention fixture must prove a wrong epoch/position discards a poisoned value while a live control contributes,before advancing to a bounded target-model route.Functional adapters,RESTORE/full physical262144,task quality and matched independent-phase performance remain open.No default activation or model/performance adoption.",
       "metadata_fixture_plan": {
         "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
         "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
@@ -1590,7 +1590,8 @@
         "environment": "Qualified measurement_environment.json safety and LevelZero tracing/parameter validation,immutable before exec; verify actual runtime ELF pins and health before launch.",
         "cases": "8 active-column counts with3 Q4 matrices each,extreme signed planar codes,CPU exact integer oracle,inactive output guards; FP32 row/GR tap interleaved guards. No weights/graphs/FP64 kernels/model; this is not performance or BF16-route qualification.",
         "stop": "First error,budget stop,fresh driver fault or uncertain closure blocks progression;no automatic retry/reset."
-      }
+      },
+      "ring_audit_index_key": "implemented_dflash2_ring_fixture_audit_20261108"
     },
     "native_feature_build": {
       "stage": "built",
@@ -1982,7 +1983,7 @@
       ]
     },
     "closed_diagnostic_retirement": {
-      "state": "planned",
+      "state": "retired",
       "evidence_commit": "53dd189744fa0bcbdfa1369d5ead42daf5aa492c",
       "files": 26,
       "bytes": 15725757,
@@ -2119,7 +2120,9 @@
         }
       ],
       "retained": "Native build tree/executables,ring record/active closure,stock pack,both fast phase references and pending report/review remain.No engine/model source or fixture deletion.",
-      "reason_for_all_entries": "Closed successful build/API progress or disposable private JIT cache;compact26case source/runtime/normal-closure/fault outcomes committed at53dd189744fa0bcbdfa1369d5ead42daf5aa492c. No remaining raw-trace question."
+      "reason_for_all_entries": "Closed successful build/API progress or disposable private JIT cache;compact26case source/runtime/normal-closure/fault outcomes committed at53dd189744fa0bcbdfa1369d5ead42daf5aa492c. No remaining raw-trace question.",
+      "deleted_files": 26,
+      "deleted_bytes": 15725757
     },
     "default_integration": {
       "checked_utc": "2026-11-07T22:17:11Z",

@@ -21,7 +21,7 @@ P, B = source.P, source.B
 ROOT = B / 'upstream-features-146df3c4'
 REFERENCE = B / 'adaptive-payload-audit-model-v2'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json'
-TARGETS = ['strata', 'sycl_dflash2_test', 'sycl_dflash2_ring_test', 'dflash2_pack_test', 'sycl_submission_test']
+TARGETS = ['strata', 'sycl_dflash2_test', 'sycl_dflash2_ring_test', 'sycl_dflash2_mask_test', 'dflash2_pack_test', 'sycl_submission_test']
 PREFIXES = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests', 'bench/sycl',
             'tools/sycl/build_upstream_features.py', 'tools/sycl/build_engine.py',
             'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py']
@@ -93,11 +93,18 @@ def prepare():
         previous = json.loads((ROOT / 'record.json').read_text())
         failed_compile = previous['stage'] == 'build_failed' and not previous['passed']
         gate = status['current_sync'].get('dflash2_device_check', {})
-        superseded_component = (previous['stage'] == 'built' and previous['passed'] and
-            gate.get('stage') == 'passed' and gate.get('passed') and gate.get('ownership_closed') and
+        ring = status['current_sync'].get('dflash2_ring_check', {})
+        public = json.loads(source.git(P, 'show', 'HEAD:' + str(STATUS.relative_to(P))))['current_sync']
+        for key in ['dflash2_device_check', 'dflash2_ring_check', 'dflash2_native_port']:
+            require(status['current_sync'].get(key) == public.get(key), 'commit component evidence before build reuse')
+        superseded_component = (previous['stage'] == 'built' and previous['passed'] and (
+            (ring.get('stage') == 'full_passed' and ring.get('passed') and ring.get('ownership_closed') and
+            ring.get('native_build', {}).get('source_commit') == previous['project']['revision'] and
+            ring.get('native_build', {}).get('record') == compact(previous)['record']) or
+            (gate.get('stage') == 'passed' and gate.get('passed') and gate.get('ownership_closed') and
             gate.get('numerical_cases_passed') == 16 and
             gate.get('native_build', {}).get('source_commit') == previous['project']['revision'] and
-            gate.get('fixture') == previous['binaries']['sycl_dflash2_test'] and
+            gate.get('fixture') == previous['binaries']['sycl_dflash2_test'])) and
             status['current_sync']['dflash2_native_port']['state'] ==
                 'compiled_small_q4_fp32_bf16_prompt_gate_passed_model_route_unqualified')
         require((failed_compile or superseded_component) and previous['ownership_closed'] and
@@ -105,7 +112,7 @@ def prepare():
                 committed_plan() == compact(previous), 'commit and close failed compilation before a new source attempt')
         if superseded_component:
             # This candidate has no model-route consumer or adoption. Its closed
-            # sixteen-case check is now joined by the stock-drafter ring fixture.
+            # component checks are now joined by a discriminating mask fixture.
             # Recover original inputs before adding to its disposable output path;
             # both validated phase engines remain hash-checked fallbacks.
             for pin in [previous['project'], *previous['dependencies']]:
@@ -125,7 +132,7 @@ def prepare():
                            for v in recipe['configure']]
     recipe['environment'] = {k: v.replace(str(REFERENCE), str(ROOT)) for k, v in recipe['environment'].items()}
     recipe['targets'] = TARGETS
-    recipe['build_targets'] = ['sycl_dflash2_ring_test']
+    recipe['build_targets'] = ['sycl_dflash2_mask_test']
     recipe.pop('retention', None)
     project = source.pin(P, PREFIXES)
     dependencies = []
@@ -164,10 +171,10 @@ def prepare():
                 value.get('origin_source_commit', previous['project']['revision']))
                 for name, value in previous['binaries'].items()}
             row['previous_attempt']['retirement'] = dict(
-                qualification='Only the closed sixteen-case component passed;never a validated model engine.',
+                qualification='Only closed kernel/prompt/ring components passed;never a validated model engine.',
                 original_source_recovered=True, source_sha256=previous['project']['aggregate_sha256'],
                 source_files=previous['project']['count'], original_binaries_verified=previous['binaries'],
-                consumer='Immediate stock-drafter ring fixture;retain current engine and sixteen-case fixture bytes unchanged.',
+                consumer='Immediate attention-mask discriminator;retain current engine and all existing fixture bytes unchanged.',
                 point='Add only the new fixture within this temporary third candidate;keep552b/e1b011 unchanged.No fourth generation.')
     check_inputs(row)
     ROOT.mkdir(mode=0o700, exist_ok=bool(previous))
