@@ -136,8 +136,11 @@ class ConsoleChildExit(unittest.TestCase):
                 with self.assertRaises(subprocess.TimeoutExpired):
                     proc.wait(timeout=.2)
             else:
-                self.assertEqual(proc.wait(timeout=8), 0, "console child must exit normally")
-                self.assertIn(b"DONE\n", proc.stderr.read(8192))
+                code = proc.wait(timeout=8)
+                diagnostics = proc.stderr.read(8192)
+                self.assertEqual(code, 0, "console child must exit normally: "
+                                 + diagnostics.decode(errors="replace"))
+                self.assertIn(b"DONE\n", diagnostics)
         finally:
             if proc.poll() is None:
                 proc.kill()
