@@ -26004,9 +26004,11 @@
     "scope": "Decision support. Audit the committed seven-output span API, both serve and standalone caller sizing, active count/inactive padding and optional probability handling, new guard/admission fixture, and prospective V2 model admission. Identify concrete remaining host extent/lifetime/state issues or weak oracles affecting this corrective retry. Review in particular whether original failed V1 source/outcome/request are preserved and INFO/file-backed-only map claims are honest. Do not repeat the original defect as unresolved if this source fixes it. No broad kernel/runtime audit. Prior short review: .cache/research/2026-11-08/dflash2-model/controller-audit-review.md plus mask and ring short reviews in adjacent dirs. Report budget8KiB.",
     "startup_permissions": "Existing registered workspace writable report dir;normal previously successful Orca launch;worker must prove Orca IPC with status first.",
     "constraints": "Report only,no Git/build/test/GPU/process/profiler/product/index/policy actions,no Xe derivation/DeepSeek35B;Main works concurrently,no steering.",
-    "state": "worker_ready",
+    "state": "worker_succeeded_native_review_running",
     "report": {
-      "path": ".cache/research/2026-11-08/dflash2-output-contract/audit-report.md"
+      "path": ".cache/research/2026-11-08/dflash2-output-contract/audit-report.md",
+      "sha256": "1585cd0650d8d0315672d8dbabc4b850379b60eb0879378ec7edb4701db518ac",
+      "bytes": 8072
     },
     "spec": {
       "path": ".cache/research/2026-11-08/dflash2-output-contract/spec.md",
@@ -26014,7 +26016,18 @@
     },
     "dispatch": "ctx_aed194a05a9e",
     "task": "task_e31a4faded8a",
-    "terminal": "term_d4200680-8689-4f3d-83c8-29d5f5471e0a"
+    "terminal": "term_d4200680-8689-4f3d-83c8-29d5f5471e0a",
+    "worker_closure": {
+      "task": "succeeded",
+      "terminal": "released",
+      "action": "closed_agent_terminal"
+    },
+    "native_review": {
+      "agent": "/root/review_dflash2_corrected_outputs_20261108",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "path": ".cache/research/2026-11-08/dflash2-output-contract/audit-review.md"
+    }
   },
   "dflash2_eager_head_gemm_research_20261108": {
     "classification": "knowledge_collection",
@@ -26026,9 +26039,11 @@
     "scope": "Knowledge collection, not an immediate optimization/adoption decision. Investigate safe eager execution optimizations for small-block speculative drafters: Q4 linear projections, head/vocabulary reduction, host launch/synchronization overhead and fusion/batching, particularly transfer of SGLang/vLLM or Intel implementations to Arc SYCL. Read current src/core/dflash2.cpp and src/kernels/sycl/dflash2.cpp (locate actual maintained kernel path if needed); compare3..5 substantive alternatives and counterevidence using primary code/docs/papers and author blogs. No unsafe graphs/GPU polling of host flags; do not import XeStrata. The first diagnostic draft stage averaged80ms but includes observers/cold work and ended in a now-corrected host buffer defect; it is NOT clean speed or a measured hardware ceiling. Specify required clean profiling/bytes/shapes and conditions before deciding. Search previous index for DFlash/head/smallGEMM/vocabulary to avoid duplicates. Report budget10KiB.",
     "startup_permissions": "Existing registered workspace writable report dir;normal previously successful Orca launch;worker must prove Orca IPC with status first.",
     "constraints": "Report only,no Git/build/test/GPU/process/profiler/product/index/policy actions,no Xe derivation/DeepSeek35B;Main works concurrently,no steering.",
-    "state": "worker_ready",
+    "state": "worker_succeeded_native_review_running",
     "report": {
-      "path": ".cache/research/2026-11-08/dflash2-eager-head-gemm/research-report.md"
+      "path": ".cache/research/2026-11-08/dflash2-eager-head-gemm/research-report.md",
+      "sha256": "93166c1e12943cd469b5da851fd5631fb37f4cc0cf19ff0ca75a1314922ab04f",
+      "bytes": 9996
     },
     "spec": {
       "path": ".cache/research/2026-11-08/dflash2-eager-head-gemm/spec.md",
@@ -26036,6 +26051,17 @@
     },
     "dispatch": "ctx_230d3e9f2d1a",
     "task": "task_365f9d12acfb",
-    "terminal": "term_76151e3b-570a-4b82-b76c-13640fdc21ef"
+    "terminal": "term_76151e3b-570a-4b82-b76c-13640fdc21ef",
+    "worker_closure": {
+      "task": "succeeded",
+      "terminal": "released",
+      "action": "closed_agent_terminal"
+    },
+    "native_review": {
+      "agent": "/root/review_dflash2_eager_knowledge_20261108",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "path": ".cache/research/2026-11-08/dflash2-eager-head-gemm/research-review.md"
+    }
   }
 }
