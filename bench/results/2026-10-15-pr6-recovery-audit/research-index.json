@@ -25925,16 +25925,31 @@
     "classification": "decision_support",
     "scope_eligibility": {
       "schedulable_now": false,
-      "evidence": "New source-pinned Orca Luna audit ready;Main compiles/tests in parallel.Do not duplicate or steer."
+      "evidence": "Orca audit completed;native Luna-max review running.The12case GPU discriminator passes normally.No duplicate audit."
     },
     "source_commit": "1aa6418604d43fd5894f14b6fec4d0ed416f1865",
     "scope": "Uniform-attention semantic oracle,tag exclusion/live control,quantization/layout/lifetime and exact prior-state reuse admission.",
     "constraints": "Orca gpt-6-luna report-only,no Git/build/test/GPU/process/product/index/policy actions,no Xe/DeepSeek35B;Main compiles/tests serially in parallel;no steering.",
     "startup_permissions": "Same registered writable workspace/report directory as successful ctx_fb28459f2bad;require worker-side orca status before research.",
-    "state": "worker_running",
-    "report": ".cache/research/2026-11-08/dflash2-mask/fixture-audit-report.md",
+    "state": "worker_succeeded_native_review_running",
+    "report": {
+      "path": ".cache/research/2026-11-08/dflash2-mask/fixture-audit-report.md",
+      "sha256": "6454bc5f971f86905fb7566b00c9708f6d5397e0e2b9cbfbac87a27600cb4fbb",
+      "bytes": 7011
+    },
     "dispatch": "ctx_fd2a73b3e96a",
     "task": "task_8e91b02a4f1f",
-    "terminal": "term_0ea131c1-50ac-49c9-8d87-c2d41a6674a4"
+    "terminal": "term_0ea131c1-50ac-49c9-8d87-c2d41a6674a4",
+    "worker_closure": {
+      "task": "succeeded",
+      "terminal": "released",
+      "action": "closed_agent_terminal"
+    },
+    "native_review": {
+      "agent": "/root/review_dflash2_mask_fixture_20261108",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "path": ".cache/research/2026-11-08/dflash2-mask/fixture-audit-review.md"
+    }
   }
 }
