@@ -1594,7 +1594,7 @@
       "ring_audit_index_key": "implemented_dflash2_ring_fixture_audit_20261108"
     },
     "native_feature_build": {
-      "stage": "prepared",
+      "stage": "built",
       "source_commit": "1aa6418604d43fd5894f14b6fec4d0ed416f1865",
       "project_source_sha256": "330154fa67ad420209b6cfdb1a8f64e957aa856395eb934f24499e6c1c76ae76",
       "dependency_revisions": {
@@ -1716,13 +1716,65 @@
       },
       "record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
-        "sha256": "2f470ece7ef670385d485ee5f6a77a0836c2bf5bd8c8ab797dfb504e4497cbdb"
+        "sha256": "f8c1c46922ca4cf20de179314d1449bfa0c239a5aa0b5ee8eca096c9bcd3a4c6"
       },
-      "binaries": {},
-      "passed": false,
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/strata",
+          "sha256": "983c5491553456c92b73e7df43a3534ae37eb3010ee3e18e7d6d6036a757e866",
+          "bytes": 26271632,
+          "origin_source_commit": "689c3da346aeeb819d03ee644b27648adc241d3b"
+        },
+        "sycl_dflash2_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_dflash2_test",
+          "sha256": "cd93ee0aa3c8429b04621379827913b0c3a188ec18093a8256b764faf748ab83",
+          "bytes": 15942120,
+          "origin_source_commit": "689c3da346aeeb819d03ee644b27648adc241d3b"
+        },
+        "sycl_dflash2_ring_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_dflash2_ring_test",
+          "sha256": "9a34672d630140cf0a911d638610ab43c10c9b22985ae16fde66e1301f3ddcc1",
+          "bytes": 15939272,
+          "origin_source_commit": "f62df4999c1a56ba41d2598837d92e4d5ce705e1"
+        },
+        "sycl_dflash2_mask_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_dflash2_mask_test",
+          "sha256": "88921f3ccb94930b4a08b3e456f343e7cd016313575dc65037dd97ca47226df6",
+          "bytes": 1827472,
+          "origin_source_commit": "1aa6418604d43fd5894f14b6fec4d0ed416f1865"
+        },
+        "dflash2_pack_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/dflash2_pack_test",
+          "sha256": "bdd38c4e59b977acffec391a1424065dcff97b08e0a6b10578ad43e0ab1a4fe6",
+          "bytes": 151976,
+          "origin_source_commit": "689c3da346aeeb819d03ee644b27648adc241d3b"
+        },
+        "sycl_submission_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/sycl_submission_test",
+          "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
+          "bytes": 351832,
+          "origin_source_commit": "689c3da346aeeb819d03ee644b27648adc241d3b"
+        }
+      },
+      "passed": true,
       "ownership_closed": true,
       "error": null,
-      "commands": [],
+      "commands": [
+        {
+          "label": "configure",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "compile",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ],
       "retention": "Temporary third generation: preserve552b prefill and e1b011 decode. This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. Retire it if qualification fails; at the feature comparison boundary select validated outputs and retire superseded generations after original-source/recipe recovery. No adoption from build success.",
       "attempt": 5,
       "previous_attempt": {
