@@ -20,8 +20,8 @@ import measurement_guards as guards
 import measurement_owner as ownership
 
 P, B, STATUS = build.P, build.B, build.STATUS
-ROOT = B / 'dflash2-ring-contract-v1'
-PRIOR = B / 'dflash2-kernel-contract-v3'
+ROOT = B / 'dflash2-ring-contract-v2'
+PRIOR = B / 'dflash2-kernel-contract-v4'
 REFERENCE = device.REFERENCE
 PACK = Path('/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack')
 PACK_SHA = 'cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1'
@@ -101,8 +101,8 @@ def prepare():
         driver=guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         budgets=dict(small=dict(wall=360, cpu=360, text_cap=64 << 20, file_cap=64 << 20, total_cap=256 << 20, rss_cap=8 << 30),
                      full=dict(wall=600, cpu=600, text_cap=64 << 20, file_cap=64 << 20, total_cap=384 << 20, rss_cap=8 << 30)),
-        cases=dict(kernel=16, small=5, full=5), commands=[], phases={}, passed=False, ownership_closed=True,
-        meaning='Stock draft weights with synthetic target embedding/Q8zero head;finite state equivalence and failed-owner containment only. No target model,task quality,benchmark speed,phase preservation or physical full target-context qualification.')
+        cases=dict(kernel=16, small=7, full=5), commands=[], phases={}, passed=False, ownership_closed=True,
+        meaning='Stock draft weights with synthetic target embedding/Q8zero head;finite state equivalence,failed-owner containment,all13undersized token/probability span refusals before block submission with unchanged ring,all7draft widths with output guards and inactive zeros,optional probabilities.No target model,task quality,benchmark speed,phase preservation or physical full target-context qualification.')
     require(row['controller']['count'] == len(INPUTS), 'commit all controller inputs')
     require(row['driver'] == reference['driver'] and row['boot'] == reference['boot'], 'requalify changed runtime boot/driver first')
     require(env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and env['EnableDirectSubmission'] == '0' and
@@ -133,10 +133,11 @@ def execute(phase):
             env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
             env['STRATA_TRACE'] = '1' # API path already traced by small;bound larger history to useful stage output
         cases = ['tail_transitions_2046_2047_2048', 'stock_pack_context', 'stock_block_forward',
+                 'draft_output_span_admission', 'narrow_draft_output_guards',
                  'physical_drafter_tail', 'failed_owner_containment'] if phase == 'small' else [
                  'wrapped_context', 'prefix_rebuild', 'parked_branch_restore', 'fresh_replay_equivalence', 'missing_context_mask']
         steps = [('ring_' + phase, 'sycl_dflash2_ring_test', ['--' + phase, str(PACK), '--supervised'],
-                  [f'dflash2 ring {name} PASS' for name in cases] + [f'dflash2 ring {phase} cases=5 PASS'], 'DF2_RING_WAIT', 5)]
+                  [f'dflash2 ring {name} PASS' for name in cases] + [f'dflash2 ring {phase} cases={len(cases)} PASS'], 'DF2_RING_WAIT', len(cases))]
         if phase == 'small':
             steps.insert(0, ('kernel', 'sycl_dflash2_test', ['--supervised'], ['dflash2 fixture cases=16 PASS'], 'DF2_WAIT', 16))
         for label, name, args, markers, wait_line, count in steps:

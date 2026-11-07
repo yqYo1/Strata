@@ -19,8 +19,8 @@ import measurement_guards as guards
 import measurement_owner as ownership
 
 P, B, STATUS = build.P, build.B, build.STATUS
-ROOT = B / 'dflash2-kernel-contract-v3'
-PREVIOUS = B / 'dflash2-kernel-contract-v2'
+ROOT = B / 'dflash2-kernel-contract-v4'
+PREVIOUS = B / 'dflash2-kernel-contract-v3'
 REFERENCE = B / 'decode-iq3-audit-speed-v2'
 INPUTS = ['tools/sycl/check_dflash2.py', 'tools/sycl/build_upstream_features.py',
           'tools/sycl/build_engine.py', 'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py']
@@ -55,7 +55,7 @@ def save(row):
 
 def verify(row):
     require(public() == compact(json.loads((ROOT / 'record.json').read_text())), 'commit exact device plan/result')
-    require(source.digest(row['previous_gate']['path']) == row['previous_gate']['sha256'], 'original failed gate changed')
+    require(source.digest(row['previous_gate']['path']) == row['previous_gate']['sha256'], 'original component gate changed')
     for pin in [row['controller']]:
         require(build.signature(pin['source_sha256']) == pin['aggregate_sha256'], 'controller aggregate changed')
         require({n: source.digest(P / n) for n in pin['source_sha256']} == pin['source_sha256'], 'controller changed')
@@ -115,7 +115,7 @@ def prepare():
             'required provider is not in the qualified runtime pins')
     row['previous_gate'] = dict(path=str(PREVIOUS / 'record.json'), sha256=source.digest(PREVIOUS / 'record.json'),
         evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(), stage='passed',
-        reason='Original nine-case kernel gate passed normally. This is a new native sixteen-case fixture,not reuse of prior qualification. Retain pinned SYCL/staticUR,forced adapter and GPU driver checks.',
+        reason='Original sixteen-case gate passed normally.This rebuild includes the corrected drafter output API;repeat all16cases,not reuse of prior qualification.Retain pinned SYCL/staticUR,forced adapter and GPU driver checks.',
         source='https://github.com/intel/llvm/blob/sycl/sycl/source/CMakeLists.txt')
     require(row['driver'] == reference['driver'] and row['boot'] == reference['boot'], 'requalify changed boot/driver before reuse')
     require(environment['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and environment['EnableDirectSubmission'] == '0' and

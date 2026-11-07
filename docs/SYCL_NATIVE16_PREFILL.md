@@ -3055,9 +3055,17 @@ A new admission recovers the probe source/recipe and six later current-runtime
 pre-main proofs. First target-model execution reaches32tokens with24/24drafts
 accepted,but aborts on host heap corruption after DONE;this gate is failed.
 Its38executable mappings,pre-main proof and owned closure pass,without a fresh
-GPU fault. Both production callers allocate4outputs at spec4 while the drafter's
-fixed contract writes7. Fix span admission/caller capacity and repeat bounded
-components and the model gate before speed work;the raw rate is not eligible.
+GPU fault. Both production callers allocated4outputs at spec4 while the drafter's
+fixed contract writes7. The corrective source adds output spans with pre-submission
+capacity admission and at least7slots in both DFlash2 callers,keeping MTP sizes
+and kernels unchanged. The new stock fixture checks13undersized spans without
+output/ring mutation,all7active widths with guards/inactive zeros,and omitted
+probabilities. Rebuild the unadopted candidate and repeat16kernel,7small,5ring
+and12mask cases,then the identical82ID/32output model diagnostic before speed
+work;no corrective result exists yet. V1 remains failed and its raw rate ineligible.
+The38checked mappings mean file-backed host executable ELF at READY,not all
+executable VMAs. The new plan records other executable VMAs separately and
+checks actual INFO placement;no full executable-address-space closure claim.
 See`validation_environment_reuse`and`dflash2_native_port`in the status.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.

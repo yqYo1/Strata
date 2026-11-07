@@ -94,8 +94,10 @@ def prepare():
         failed_compile = previous['stage'] == 'build_failed' and not previous['passed']
         gate = status['current_sync'].get('dflash2_device_check', {})
         ring = status['current_sync'].get('dflash2_ring_check', {})
+        model = status['current_sync'].get('dflash2_model_check', {})
         public = json.loads(source.git(P, 'show', 'HEAD:' + str(STATUS.relative_to(P))))['current_sync']
-        for key in ['dflash2_device_check', 'dflash2_ring_check', 'dflash2_native_port']:
+        for key in ['dflash2_device_check', 'dflash2_ring_check', 'dflash2_mask_check',
+                    'dflash2_model_check', 'dflash2_native_port']:
             require(status['current_sync'].get(key) == public.get(key), 'commit component evidence before build reuse')
         superseded_component = (previous['stage'] == 'built' and previous['passed'] and (
             (ring.get('stage') == 'full_passed' and ring.get('passed') and ring.get('ownership_closed') and
@@ -107,13 +109,18 @@ def prepare():
             gate.get('fixture') == previous['binaries']['sycl_dflash2_test'])) and
             status['current_sync']['dflash2_native_port']['state'] ==
                 'compiled_small_q4_fp32_bf16_prompt_gate_passed_model_route_unqualified')
-        require((failed_compile or superseded_component) and previous['ownership_closed'] and
+        failed_model = (previous['stage'] == 'built' and previous['passed'] and
+            model.get('stage') == 'failed' and not model.get('passed') and model.get('ownership_closed') and
+            len(model.get('commands', [])) == 1 and model['commands'][0]['exit_code'] == -6 and
+            model['commands'][0]['ownership_closed'] and not model.get('fresh_faults') and
+            model.get('native_build', {}).get('record') == compact(previous)['record'] and
+            status['current_sync']['dflash2_native_port']['state'] == 'model_runtime_failed_host_draft_result_extent')
+        require((failed_compile or superseded_component or failed_model) and previous['ownership_closed'] and
                 all(ownership.closed(c) for c in previous['commands']) and
                 committed_plan() == compact(previous), 'commit and close failed compilation before a new source attempt')
-        if superseded_component:
-            # This candidate has no model-route consumer or adoption. Its closed
-            # component checks are now joined by a discriminating mask fixture.
-            # Recover original inputs before adding to its disposable output path;
+        if superseded_component or failed_model:
+            # This candidate has no qualified model route or adoption. Recover
+            # its original inputs before replacing its disposable output path;
             # both validated phase engines remain hash-checked fallbacks.
             for pin in [previous['project'], *previous['dependencies']]:
                 recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
@@ -132,7 +139,7 @@ def prepare():
                            for v in recipe['configure']]
     recipe['environment'] = {k: v.replace(str(REFERENCE), str(ROOT)) for k, v in recipe['environment'].items()}
     recipe['targets'] = TARGETS
-    recipe['build_targets'] = ['sycl_dflash2_mask_test']
+    recipe['build_targets'] = ['strata', 'sycl_dflash2_test', 'sycl_dflash2_ring_test']
     recipe.pop('retention', None)
     project = source.pin(P, PREFIXES)
     dependencies = []
@@ -161,21 +168,22 @@ def prepare():
     row['attempt'] = previous.get('attempt', 1) + 1 if previous else 1
     if previous:
         if previous.get('unchanged_outputs'):
-            row['unchanged_outputs'] = previous['unchanged_outputs']
+            row['unchanged_outputs'] = {n: v for n, v in previous['unchanged_outputs'].items()
+                                        if n not in recipe['build_targets']}
         row['previous_attempt'] = dict(source_commit=previous['project']['revision'], stage=previous['stage'],
             record_sha256=source.digest(ROOT / 'record.json'), error=previous.get('error'),
             ownership_closed=True, evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
             reason='Reuse the closed unqualified candidate cache; exact source/recipe/outcome remain in Git. Preserve both validated phase references.')
-        if superseded_component:
+        if superseded_component or failed_model:
             row['unchanged_outputs'] = {name: dict(value, origin_source_commit=
                 value.get('origin_source_commit', previous['project']['revision']))
-                for name, value in previous['binaries'].items()}
+                for name, value in previous['binaries'].items() if name not in recipe['build_targets']}
             row['previous_attempt']['retirement'] = dict(
-                qualification='Only closed kernel/prompt/ring components passed;never a validated model engine.',
+                qualification='Only bounded components qualified;target-model V1 failed host heap closure.Never an adopted model engine.',
                 original_source_recovered=True, source_sha256=previous['project']['aggregate_sha256'],
                 source_files=previous['project']['count'], original_binaries_verified=previous['binaries'],
-                consumer='Immediate attention-mask discriminator;retain current engine and all existing fixture bytes unchanged.',
-                point='Add only the new fixture within this temporary third candidate;keep552b/e1b011 unchanged.No fourth generation.')
+                consumer='Correct the fixed7entry DFlash2 host output contract;rebuild engine/kernel/ring fixtures and preserve the other3outputs.',
+                point='Repeat bounded components and matched target-model diagnostic within the temporary candidate;keep552b/e1b011.No fourth generation.')
     check_inputs(row)
     ROOT.mkdir(mode=0o700, exist_ok=bool(previous))
     for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700, exist_ok=bool(previous))
@@ -216,7 +224,7 @@ def build():
             prior = row.get('unchanged_outputs', {}).get(name)
             if prior:
                 require(binary['sha256'] == prior['sha256'] and binary['bytes'] == prior['bytes'],
-                        'adding the ring fixture must not replace an existing native output: ' + name)
+                        'preserved native output changed: ' + name)
             binary['origin_source_commit'] = (prior.get('origin_source_commit',
                 row['previous_attempt']['source_commit']) if prior else row['project']['revision'])
         row.update(stage='built', passed=True)

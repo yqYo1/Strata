@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main-only first target-model DFlash2 diagnostic, not a speed benchmark.
+"""Main-only corrected-output target-model DFlash2 diagnostic, not a speed benchmark.
 
 Reuse the later closed native-child validation evidence under its exact current
 runtime. Preserve the older canary's runtime mismatch; never refresh its pins.
@@ -19,7 +19,8 @@ import ur_validation as validation
 
 build, source, guards, ownership = mask.build, mask.source, mask.guards, mask.ownership
 P, B, STATUS = mask.P, mask.B, mask.STATUS
-ROOT = B / 'dflash2-target-model-v1'
+ROOT = B / 'dflash2-target-model-v2'
+PREVIOUS = B / 'dflash2-target-model-v1'
 REFERENCE = mask.ring.REFERENCE
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 REFERENCE_KEY = 'decode_iq3_audit_speed_v2'
@@ -174,6 +175,16 @@ def verify(row):
     for p, h in row['runtime_files'].items(): require(digest(p) == h, 'runtime ELF changed: ' + p)
     require(guards.driver_guard() == row['driver'] and Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'boot/driver changed')
     require(hashlib.sha256(wire(row['request']['ids'], row['request']['generated'])).hexdigest() == row['request']['wire_sha256'], 'request wire changed')
+    require(digest(row['previous_failure']['record']['path']) == row['previous_failure']['record']['sha256'], 'original failed model outcome changed')
+    previous = json.loads(Path(row['previous_failure']['record']['path']).read_text())
+    original = json.loads(source.git(P, 'show', row['previous_failure']['evidence_commit'] + ':' +
+        str(STATUS.relative_to(P))))['current_sync']['dflash2_model_check']
+    require(original == compact(previous) and row['request'] == previous['request'], 'preserve original failed outcome and matched request')
+    require(row['native_build']['binaries']['strata']['sha256'] != previous['native_build']['binaries']['strata']['sha256'],
+            'corrective run requires rebuilt engine')
+    ring = json.loads((mask.ring.ROOT / 'record.json').read_text())
+    require(ring['cases']['small'] == 7 and ring['phases']['small']['cases'] == 23 and
+            ring['stage'] == 'full_passed' and ring['passed'], 'corrected output-span state gates required')
     model_pins(row); guards.no_model_owners([])
 
 
@@ -183,6 +194,16 @@ def prepare():
     row = dict(stage='preparing', commands=[], passed=False, ownership_closed=True)
     try:
         row['controller'] = source.pin(P, INPUTS); require(row['controller']['count'] == len(INPUTS), 'commit controller inputs')
+        previous = json.loads((PREVIOUS / 'record.json').read_text())
+        require(validation.committed(STATUS, ('current_sync', 'dflash2_model_check')) == compact(previous) and
+            previous['stage'] == 'failed' and not previous['passed'] and previous['ownership_closed'] and
+            len(previous['commands']) == 1 and ownership.closed(previous['commands'][0]) and
+            previous['commands'][0]['exit_code'] == -6 and not previous['fresh_faults'] and
+            previous['request_result']['complete'] and previous['request_result']['generated'] == 32,
+            'commit and close original host-heap failure before corrective recheck')
+        row['previous_failure'] = dict(record=dict(path=str(PREVIOUS / 'record.json'), sha256=digest(PREVIOUS / 'record.json')),
+            evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(), stage='failed', exit_code=-6,
+            reason='V1 completed GEN then corrupted host heap:four-slot callers for fixed seven outputs.Keep failure unchanged;new source/new gates and same exact request.No text identity criterion.')
         native = json.loads((build.ROOT / 'record.json').read_text()); require(build.committed_plan() == build.compact(native), 'commit feature build')
         m = json.loads((mask.ROOT / 'record.json').read_text()); mask.verify(m)
         require(m['passed'] and m['ownership_closed'] and m['cases_passed'] == 12 and not m['fresh_faults'], 'mask component must pass')
@@ -217,10 +238,17 @@ def prepare():
             argv=[native['binaries']['strata']['path'], '--serve', *args],
             request=request_ids(Path(reference['configuration']['tokenizer'])), budgets=dict(wall=600, cpu=7200,
                 text_cap=64 << 20, file_cap=64 << 20, total_cap=256 << 20, rss_cap=104 << 30),
-            meaning='One thinking-enabled real prompt,32output tokens,actual stock DFlash2 and target embeddings/head. Require positive offered drafts,complete GEN,normal exit,pre-main validation,qualified maps and no fresh fault. Diagnostic only;no speed,task quality,full-context,RESTORE,phase preservation or default adoption.',
+            reported_placement_required=dict(context='4096', kv='int8', kv_resident='0', expert_slots='1256',
+                spec='4', mtp_max='0', lookup='0', pool_workers='5', pcie_frac='0.00', conversation_cache_mib='0'),
+            mapping_scope='Check every file-backed host executable ELF mapping at READY.Anonymous and bracketed executable VMAs are counted separately,not qualified as pinned files.No full executable-address-space closure claim.',
+            meaning='Same thinking-enabled real82ID prompt and32output budget as failed V1,actual stock DFlash2 and target embeddings/head.Require actual INFO placement,positive offered drafts,complete GEN,normal exit,pre-main validation,file-backed executable ELF checks and no fresh fault.Diagnostic only;no speed,task quality,full-context,RESTORE,phase preservation or default adoption.',
             speed_eligible=False, model_adoption_qualified=False, stage='prepared')
+        require(row['request'] == previous['request'], 'corrective request must match original committed IDs/wire')
+        changing = {'TMPDIR', 'XDG_CACHE_HOME', 'STRATA_MEASUREMENT_ROOT'}
+        require({k: v for k, v in env.items() if k not in changing} ==
+                {k: v for k, v in previous['environment'].items() if k not in changing}, 'corrective environment changed beyond private paths')
         for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700)
-        save(row); print('Prepared first native target-model diagnostic;commit before launch.', flush=True)
+        save(row); print('Prepared corrected-output matched target-model diagnostic;commit before launch.', flush=True)
     except BaseException as error:
         row.update(stage='preparation_failed', error=repr(error)); save(row); raise
 
@@ -240,13 +268,22 @@ def run():
                 line = io.line(seconds=480); lines.append(line); require(len(lines) <= 32, 'startup stdout cap')
                 if line.startswith('READY '): break
             require(line == 'READY 4096 stop', 'unexpected native READY')
+            info = [s[5:] for s in lines if s.startswith('INFO ')]
+            require(len(info) == 1, 'one actual native INFO required')
+            placement = dict(s.split('=', 1) for s in info[0].split())
+            require(all(placement.get(k) == v for k, v in row['reported_placement_required'].items()), 'actual INFO placement differs')
+            row['reported_placement'] = placement
             stderr = ROOT / 'owned/model.stderr'; proof = validation.preload_evidence(stderr.read_text(errors='replace'), entry['pid'])
             require(Path(proof['loader']).resolve() == Path(row['probe']['loader']['path']).resolve(), 'actual pre-main loader differs')
-            actual = set()
+            actual = set(); other_executable = {}
             for line in Path('/proc', str(entry['pid']), 'maps').read_text().splitlines():
                 fields = line.split(maxsplit=5)
-                if len(fields) == 6 and 'x' in fields[1] and fields[5].startswith('/'):
+                if 'x' not in fields[1]: continue
+                if len(fields) == 6 and fields[5].startswith('/'):
                     require(not fields[5].endswith(' (deleted)'), 'mapped code removed'); actual.add(str(Path(fields[5]).resolve()))
+                else:
+                    name = fields[5] if len(fields) == 6 else 'anonymous'
+                    other_executable[name] = other_executable.get(name, 0) + 1
             allowed = {str(Path(p).resolve()): h for p, h in row['runtime_files'].items()}
             for p, h in [(row['argv'][0], row['native_build']['binaries']['strata']['sha256']),
                          (row['probe']['library']['path'], row['probe']['library']['sha256'])]: allowed[str(Path(p).resolve())] = h
@@ -255,8 +292,10 @@ def run():
                 '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0']}
             require(len(actual) >= 8 and actual <= allowed.keys() and required <= actual, 'actual executable maps unqualified')
             require(all(digest(p) == allowed[p] for p in actual), 'mapped ELF bytes changed')
-            row['pre_main_validation'] = proof; row['mapping'] = dict(files=len(actual), sha256=build.signature({p: allowed[p] for p in sorted(actual)}))
-            print('Native READY with actual pre-main validation and executable mappings.', flush=True)
+            row['pre_main_validation'] = proof; row['mapping'] = dict(files=len(actual), sha256=build.signature({p: allowed[p] for p in sorted(actual)}),
+                scope='file-backed executable ELF mappings at READY', other_executable_vmas=other_executable,
+                full_executable_address_space_qualified=False)
+            print('Native READY with pre-main validation,actual INFO placement and file-backed executable ELF checks.', flush=True)
             request = row['request']; parser = protocol.RequestProtocol(request['prompt_tokens'], request['generated'])
             io.send(wire(request['ids'], request['generated']))
             while parser.done is None: parser.feed(io.line(seconds=480))
@@ -284,7 +323,7 @@ def run():
         except BaseException as error: row.update(passed=False, fault_error=repr(error))
         row['passed'] = bool(row['passed'] and row['ownership_closed']); row['stage'] = 'passed' if row['passed'] else 'failed'; save(row)
     require(row['passed'], row.get('error', row.get('fault_error', 'model gate failed')))
-    print('First target-model DFlash2 diagnostic passed;no speed/task/full-context qualification.', flush=True)
+    print('Corrected-output target-model diagnostic passed;no speed/task/full-context qualification.', flush=True)
 
 
 if __name__ == '__main__':

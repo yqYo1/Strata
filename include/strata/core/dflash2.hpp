@@ -18,6 +18,7 @@
 #include <functional>
 #include <initializer_list>
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -72,9 +73,11 @@ public:
     /// Context rows without a draft: `n` rows of taps (device, [n][5 * n_embd]) for positions pos0 ... pos0 + n - 1.
     bool context(const float* taps_dev, int64_t n, int64_t pos0, std::string& err);
     /// One round: the new context rows (n_new in 1..8: the committed window rows, taps device [n_new][5 * n_embd], positions pos0 ...),
-    /// then the block for `anchor` (the last committed token, at pos0 + n_new).  `drafts` / `probs` get kDrafts entries.  The taps pointer must be the
+    /// then the block for `anchor` (the last committed token, at pos0 + n_new). `drafts` / nonempty `probs` must hold at least kDrafts entries,
+    /// including the zeroed inactive entries after set_max_drafts(). Undersized outputs are refused before submission. The taps pointer must be
     /// a live device buffer in this drafter's context through completion.
-    bool draft(const float* taps_dev, int n_new, int64_t pos0, int32_t anchor, int32_t* drafts, float* probs, std::string& err);
+    bool draft(const float* taps_dev, int n_new, int64_t pos0, int32_t anchor,
+               std::span<int32_t> drafts, std::span<float> probs, std::string& err);
 
     /// Checks the bound target and live tap buffer; eager mode captures no graph.
     bool prepare(const float* taps_dev, std::string& err);

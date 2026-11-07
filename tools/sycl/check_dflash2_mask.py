@@ -12,7 +12,7 @@ import check_dflash2_ring as ring
 
 build, source, guards, ownership = ring.build, ring.source, ring.guards, ring.ownership
 P, B, STATUS = ring.P, ring.B, ring.STATUS
-ROOT = B / 'dflash2-mask-discriminator-v1'
+ROOT = B / 'dflash2-mask-discriminator-v2'
 INPUTS = [*ring.INPUTS, 'tools/sycl/check_dflash2_mask.py']
 require, write = guards.require, build.write
 
@@ -77,7 +77,7 @@ def prepare():
         driver=prior['driver'], boot=prior['boot'], budgets=dict(wall=180, cpu=180, text_cap=64 << 20,
             file_cap=64 << 20, total_cap=128 << 20, rss_cap=4 << 30),
         oracle='Q=K=0;130 context plus8 block keys,only V[row64]=138. A live tag must give dequantized1 in all32768 elements;stale epoch or wrong absolute position must give0. Absolute error<2e-5,finite nonnegative scales and output guards. Four explicit variant/chunk combinations,12cases. No target model,text identity or speed claim.',
-        original_ring_limit='The original missing_context_mask case proves execution/tag state only,not exclusion semantics.Its original26case PASS stays unchanged.',
+        original_ring_limit='The original missing_context_mask case proves execution/tag state only,not exclusion semantics.Original26case V1 PASS stays unchanged;corrected-output V2 repeats28state cases and this12case discriminator.',
         commands=[], passed=False, ownership_closed=True)
     require(row['controller']['count'] == len(INPUTS), 'commit controller closure')
     ROOT.mkdir(mode=0o700)

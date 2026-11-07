@@ -741,9 +741,13 @@ bool Dflash2Drafter::context(const float* taps, int64_t n, int64_t pos0, std::st
     return false;
 }
 
-bool Dflash2Drafter::draft(const float* taps, int n_new, int64_t pos0, int32_t anchor, int32_t* drafts, float* probs, std::string& err) try {
+bool Dflash2Drafter::draft(const float* taps, int n_new, int64_t pos0, int32_t anchor,
+                         std::span<int32_t> drafts, std::span<float> probs, std::string& err) try {
     if (!bound_ || failed_) { err = "dflash2: not bound or failed owner"; return false; }
-    if (!drafts || anchor < 0 || anchor >= vocab_ || pos0 < 0 || pos0 >= 262144 || n_new < 1 || n_new > kRows || n_new >= 262144 - pos0) { err = "dflash2: draft rows out of range"; return false; }
+    if (drafts.size() < kDrafts || (!probs.empty() && probs.size() < kDrafts)) {
+        err = "dflash2: draft outputs require seven entries"; return false;
+    }
+    if (anchor < 0 || anchor >= vocab_ || pos0 < 0 || pos0 >= 262144 || n_new < 1 || n_new > kRows || n_new >= 262144 - pos0) { err = "dflash2: draft rows out of range"; return false; }
     const OnDevice on_device(device_);
     const Clock::time_point t0 = Clock::now();
     strata::sycl_backend::validate_device_span(taps, size_t(n_new) * taps_.size() * N_ * sizeof(float), *cs_);
@@ -763,7 +767,7 @@ bool Dflash2Drafter::draft(const float* taps, int n_new, int64_t pos0, int32_t a
             err = "dflash2: invalid selector token/probability"; return false;
         }
         drafts[i] = made ? h_out_[i] : 0;
-        if (probs) probs[i] = made ? probability : 0.0f;
+        if (!probs.empty()) probs[i] = made ? probability : 0.0f;
     }
     have_ctx_ = std::max<int64_t>(have_ctx_, s);
     ring_hi_ = std::max<int64_t>(ring_hi_, pos0 + n_new);

@@ -1896,6 +1896,11 @@ int main(int argc, char** argv) {
         }
     }
     const bool use_df2 = o.draft == "dflash2";
+#ifdef STRATA_ENABLE_SYCL
+    const size_t draft_output_floor = use_df2 ? strata::core::Dflash2Drafter::kDrafts : 0;
+#else
+    const size_t draft_output_floor = 0;
+#endif
     if (o.draft != "mtp" && !use_df2) { std::fprintf(stderr, "--draft takes mtp or dflash2\n"); return 2; }
     if (use_df2) {
 #ifdef STRATA_ENABLE_SYCL
@@ -3627,7 +3632,7 @@ int main(int argc, char** argv) {
     };
     auto df2_after_window = [&](strata::core::Verifier& verifier, const int32_t* window,
                                 int kept, int64_t pos0, int32_t anchor, bool propose,
-                                int32_t* drafts, float* probabilities, std::string& why) {
+                                std::span<int32_t> drafts, std::span<float> probabilities, std::string& why) {
         df2->note_rows(window, kept, pos0);
         return propose ? df2->draft(verifier.tap_dev(), kept, pos0, anchor, drafts, probabilities, why)
                        : df2->context(verifier.tap_dev(), kept, pos0, why);
@@ -6840,8 +6845,8 @@ int main(int argc, char** argv) {
             // the verify windows: the first holds the last prompt token alone
             int64_t p = n - 1;
             int32_t x = (int32_t) ids[(size_t) (n - 1)];
-            std::vector<int32_t> drafts((size_t) S, 0), window((size_t) S), outv((size_t) S);
-            std::vector<float> dprob((size_t) S, 0.0f);
+            std::vector<int32_t> drafts(std::max(size_t(S), draft_output_floor), 0), window((size_t) S), outv((size_t) S);
+            std::vector<float> dprob(drafts.size(), 0.0f);
             std::vector<int32_t> sbuf((size_t) S, 0);
             if (o.suffix_draft > 0) {
                 sfx.reset();
@@ -7033,7 +7038,7 @@ int main(int argc, char** argv) {
                 if (use_df2)
                     drafted = df2_after_window(ver, window.data(), a + 1, p, outv[size_t(a)],
                         !eos && produced_n < max_new && p + a + 1 < o.max_context,
-                        drafts.data(), dprob.data(), err);
+                        drafts, dprob, err);
                 else
 #endif
                     drafted = eos || produced_n >= max_new ||
@@ -8097,8 +8102,8 @@ int main(int argc, char** argv) {
         };
         int64_t p = spec_pos;
         int32_t x = (int32_t) tok;
-        std::vector<int32_t> drafts((size_t) o.spec, 0);
-        std::vector<float> dprob((size_t) o.spec, 1.0f);
+        std::vector<int32_t> drafts(std::max(size_t(o.spec), draft_output_floor), 0);
+        std::vector<float> dprob(drafts.size(), 1.0f);
         std::vector<int64_t> window_hist((size_t) o.spec + 1, 0);
         // plan v0.3 P6: with a native pack the first window is the last prompt token alone (it produces the first
         // generated token and the MTP's first cell); otherwise the token loop already did that.
@@ -8280,7 +8285,7 @@ int main(int argc, char** argv) {
             if (use_df2)
                 drafted = df2_after_window(ver, window.data(), a + 1, p, outv[size_t(a)],
                     (int64_t) produced.size() < o.max_new && p + a + 1 < o.max_context,
-                    drafts.data(), dprob.data(), err);
+                    drafts, dprob, err);
             else
 #endif
                 drafted = !use_mtp || (int64_t) produced.size() >= o.max_new ||

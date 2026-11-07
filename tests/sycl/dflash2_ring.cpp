@@ -7,6 +7,7 @@
 #include "strata/sycl/checked_cleanup.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstring>
 #include <iostream>
@@ -118,13 +119,26 @@ struct Harness {
         need(std::all_of(out.kv.begin(), out.kv.end(), [](float v) { return std::isfinite(v); }), "finite ring state");
         return out;
     }
-    void forward(int p) {
-        int32_t ids[Drafter::kDrafts] = {};
-        float probs[Drafter::kDrafts] = {};
-        ok(df.draft(at(p), 1, p, 42, ids, probs, error));
+    void forward(int p, int count = Drafter::kDrafts, bool probabilities = true) {
+        std::array<int32_t, Drafter::kDrafts + 2> ids;
+        std::array<float, Drafter::kDrafts + 2> probs;
+        ids.fill(-1234567);
+        probs.fill(-12345.0f);
+        df.set_max_drafts(count);
+        ok(df.draft(at(p), 1, p, 42, std::span(ids).subspan(1, Drafter::kDrafts),
+            probabilities ? std::span(probs).subspan(1, Drafter::kDrafts) : std::span<float>{}, error));
+        need(ids.front() == -1234567 && ids.back() == -1234567 &&
+             probs.front() == -12345.0f && probs.back() == -12345.0f, "draft output guards");
         for (int i = 0; i < Drafter::kDrafts; ++i) {
-            need(std::find(vocab.begin(), vocab.end(), ids[i]) != vocab.end(), "draft token in synthetic target vocabulary");
-            need(std::isfinite(probs[i]) && probs[i] >= 0 && probs[i] <= 1, "finite draft probability");
+            if (i < count) {
+                need(std::find(vocab.begin(), vocab.end(), ids[i + 1]) != vocab.end(), "draft token in synthetic target vocabulary");
+                if (probabilities) need(std::isfinite(probs[i + 1]) && probs[i + 1] >= 0 && probs[i + 1] <= 1,
+                                        "finite draft probability");
+            } else {
+                need(ids[i + 1] == 0, "inactive draft token is zero");
+                if (probabilities) need(probs[i + 1] == 0, "inactive draft probability is zero");
+            }
+            if (!probabilities) need(probs[i + 1] == -12345.0f, "omitted probabilities untouched");
         }
     }
 };
@@ -166,11 +180,35 @@ void small(const std::shared_ptr<Runtime>& rt, const std::string& pack) {
         h.forward(7);
         need(h.embed_calls == 1 && h.df.rounds == 1, "one completed block forward");
         pass("stock_block_forward");
+        const auto before = h.read();
+        for (int kind = 0; kind < 2; ++kind) {
+            for (int length = kind; length < Drafter::kDrafts; ++length) {
+                std::array<int32_t, Drafter::kDrafts> ids;
+                std::array<float, Drafter::kDrafts> probs;
+                ids.fill(-1234567); probs.fill(-12345.0f);
+                const auto tokens_out = std::span(ids).first(kind ? Drafter::kDrafts : length);
+                const auto probs_out = std::span(probs).first(kind ? length : Drafter::kDrafts);
+                h.error.clear();
+                need(!h.df.draft(h.at(7), 1, 7, 42, tokens_out, probs_out, h.error), "undersized draft output refused");
+                need(h.error == "dflash2: draft outputs require seven entries", "output extent refusal mechanism");
+                need(std::all_of(ids.begin(), ids.end(), [](int32_t v) { return v == -1234567; }) &&
+                     std::all_of(probs.begin(), probs.end(), [](float v) { return v == -12345.0f; }), "refused output untouched");
+                need(h.embed_calls == 1 && h.df.rounds == 1, "output refusal before block submission");
+            }
+        }
+        const auto after = h.read();
+        need(before.epoch == after.epoch && before.tags == after.tags && before.kv == after.kv,
+             "output refusal preserves ring state and owner");
+        pass("draft_output_span_admission");
+        for (int count = 1; count <= Drafter::kDrafts; ++count) h.forward(7, count);
+        h.forward(7, 3, false);
+        need(h.embed_calls == 9 && h.df.rounds == 9, "narrow forwards and optional probabilities complete");
+        pass("narrow_draft_output_guards");
         h.ok(h.df.context(nullptr, 0, 262144, h.error));
         need(!h.df.context(h.at(0), 1, 262144, h.error), "positive one-past context");
         h.ok(h.df.context(h.at(0), 1, 262143, h.error));
         int32_t proposals[7] = {};
-        need(!h.df.draft(h.at(0), 1, 262143, 42, proposals, nullptr, h.error), "no anchor beyond capacity");
+        need(!h.df.draft(h.at(0), 1, 262143, 42, proposals, {}, h.error), "no anchor beyond capacity");
         snapshot = h.read();
         need(snapshot.tags[size_t(262143 % Drafter::kRing)] == tag(snapshot.epoch, 262143), "final physical drafter row");
         pass("physical_drafter_tail"); // does not fill the target's physical context
@@ -179,7 +217,7 @@ void small(const std::shared_ptr<Runtime>& rt, const std::string& pack) {
         Harness h(rt, pack, 8);
         h.fail_embed = true;
         int32_t proposals[7] = {};
-        need(!h.df.draft(h.at(0), 1, 0, 42, proposals, nullptr, h.error) && h.embed_calls == 1, "controlled partial operation failure");
+        need(!h.df.draft(h.at(0), 1, 0, 42, proposals, {}, h.error) && h.embed_calls == 1, "controlled partial operation failure");
         need(h.error.find("intentional host embedding refusal") != std::string::npos, "expected injected mechanism");
         need(!h.df.context(h.at(0), 1, 0, h.error), "failed context owner cannot retry");
         need(!h.df.prepare(h.at(0), h.error), "failed owner cannot prepare");
@@ -188,7 +226,7 @@ void small(const std::shared_ptr<Runtime>& rt, const std::string& pack) {
         bool refused = false;
         try { h.df.reset(); } catch (const std::runtime_error&) { refused = true; }
         need(refused, "failed owner cannot reset");
-        need(!h.df.draft(h.at(0), 1, 0, 42, proposals, nullptr, h.error) && h.embed_calls == 1 && h.df.rounds == 0,
+        need(!h.df.draft(h.at(0), 1, 0, 42, proposals, {}, h.error) && h.embed_calls == 1 && h.df.rounds == 0,
              "failed owner cannot submit another block");
         pass("failed_owner_containment");
     }
@@ -265,7 +303,7 @@ int main(int argc, char** argv) try {
     auto runtime = strata::sycl_backend::runtime_for(0);
     if (is_small) small(runtime, argv[2]); else full(runtime, argv[2]);
     runtime->wait();
-    std::cout << "dflash2 ring " << (is_small ? "small" : "full") << " cases=5 PASS\nDF2_RING_WAIT\n" << std::flush;
+    std::cout << "dflash2 ring " << (is_small ? "small" : "full") << " cases=" << (is_small ? 7 : 5) << " PASS\nDF2_RING_WAIT\n" << std::flush;
     if (supervised) {
         std::string command;
         need(bool(std::getline(std::cin, command)) && command == "QUIT", "Main runtime-map retirement gate");
