@@ -1109,6 +1109,13 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   and TTFT time ratios1.026572/1.027145are slower. Both completed pairs favor
   decode;this does not establish independent prefill preservation or adoption.
   Four of six processes are closed;finish32/96and final15asset hashes.
+  The second pair's source/count-derived window intervals are271.046/271.871ms
+  for32/96,and output/window remains3.419/3.527. These are whole decode averages,
+  not measured kernel intervals;TGalone does not isolate weight-placement cost.
+  Process3's69raw/JIT files/13097239bytes are retired after350-input Git recovery,
+  with all15ELFs/six immutable receipts unchanged and full before/after admission
+  passing. Manifest:`adaptive-payload96-generation-regular-code-v1-process3-output-retirement-20261107.json`,
+  SHA256`70738a7ddaab40705ba541e96046979a4b9e1408e757de8176b552b16d2550ad`.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
