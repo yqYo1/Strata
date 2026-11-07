@@ -41,18 +41,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   0.991177/1.029460/1.007754and TTFT ratios0.991928/1.029290/1.008306fail
   their independent nonregression gates. This qualifies a repeated decode
   gain in this workload,not phase preservation,fixed-work attribution,full
-  model adoption or70TG. The separate cap2/prose comparison is prepared at
-  source`c632a0421`,with346inputs,all15model assets checked and six immutable
-  8/32,32/8,8/32configurations on the same e1b011 executable. Both fresh
-  benchmark/server frontend probes pass normally0at source`d79bd3448`,with
-  quiet stderr and closed owners. Five prose processes now close normally0
-  with quiet validation,closed owners,unchanged boot/driver and no fresh fault.
-  Each reads33278fresh tokens. Adaptive8TG is10.46625/10.48170/10.45067and32TG is
-  10.75104/10.72590;paired ratios are1.027211/1.023297. Prompt-time ratios
-  are0.983862/0.990009and client-TTFT ratios0.984159/0.990145. The final32
-  process and final15asset hashes remain. These two pairs do not satisfy the
-  preregistered three-pair decision or establish adoption/a fixed4weak-MTP class.
-  Preserve the552b prefill fallback.
+  model adoption or70TG. The separate cap2/prose cohort now also closes all
+  six processes normally0with quiet validation,closed owners,unchanged boot/
+  driver,no fresh fault and all15final model-asset hashes. On33278fresh input
+  tokens,exact median TG improves10.46625->10.72590;the three paired ratios
+  are1.027211/1.023297/1.022849(geometric mean1.024450). Cache hits rise47.6->53.5%;
+  generation is9854/7433tokens and acceptance63.1997/62.3062%at cap2.
+  Prompt-time ratios0.983862/0.990009/1.016017and client-TTFT ratios
+  0.984159/0.990145/1.016449fail both independent nonregression gates.
+  This qualifies the repeated focused decode gain,not phase preservation,
+  adoption,a fixed4weak-MTP class or70TG. Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
   code median TG **13.2594 -> 13.5052** tok/s and weak-MTP prose
@@ -920,29 +918,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   cap2/prose cohort uses the same executable and fixed8-round cadence;its
   acceptance cannot establish a fixed4 weak-MTP class. Agent/task,quality,
   prompt-verify,physical262144/RESTORE and ordinary teardown remain pending.
-  The cap2/prose plan is now prepared at`c632a0421`,after the separate code
-  cohort closed. All15model assets and346source inputs pass;the four immutable
-  configuration controls,small exact gain,slower-pair retention and independent
-  phase decisions pass. Its six fixed8/32,32/8,8/32processes retain the same
+  The cap2/prose cohort prepared at`c632a0421`now closes all six processes.
+  Its346source inputs,four immutable configuration controls,small exact gain,
+  slower-pair retention and independent phase decisions pass. Fresh frontend
+  probes pass at`d79bd3448`. The fixed8/32,32/8,8/32process order uses the same
   e1b011engine,8192chunk,placement,runtime safety and observer settings.
-  Both fresh benchmark/server frontend probes now pass at`d79bd3448`,with
-  normal0,quiet stderr and closed owners. Their outcomes are committed before
-  process0,launched from`f2de2cd6d`. That first adaptive8process is now closed
-  with native/benchmark0,quiet validation,closed owners,unchanged boot/driver
-  and no fresh fault. Its first long request after four official warmups reads
-  33278fresh tokens,generates9854including thinking,and returns7217answer
-  characters. Native16/GDN3,384slots,non-split,T1/T2head captures and MTP
-  mode2with5callbacks are observed;this is not an engine-first-use sample.
-  Process1(32)also closes with native/benchmark0,quiet validation,closed owners,
-  unchanged boot/driver and no fresh fault. It uses the same33278-token body
-  and observed route,then generates7433tokens with6940answer characters.
-  Process2(32)also closes normally0with the same body,route,generated length,
-  cache counts and acceptance;validation stays quiet,owners close,and boot/
-  driver are unchanged with no fresh fault. Process3(8)also closes normally0
-  with quiet validation,closed owners,unchanged boot/driver and no fresh fault;
-  its body,route,length,cache counts and acceptance match the first8sample.
-  Process4(8)passes the same gates with matching body,route,length,cache counts
-  and acceptance;native/benchmark exit0and all owned processes are closed.
+  Every measured first long request follows four official warmups and reads
+  33278fresh tokens;these are not engine-first-use or subsequent-long samples.
+  Native16/GDN3,384slots,non-split,T1/T2head captures and MTP mode2with5callbacks
+  are observed. All six native/benchmark exits are0with quiet validation,
+  closed owners,unchanged boot/driver and no fresh fault. All15model assets
+  pass final full hashing. Each8arm generates9854tokens including thinking
+  with7217answer characters;each32arm generates7433with6940answer characters.
 
   | Prose process | Swaps | Generated | PP tok/s | Client TTFT s | TG tok/s | Cache hit % | Draft acceptance % |
   | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -951,19 +938,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   | 2 | 32 | 7433 | 571.33929 | 58.474 | 10.72590 | 53.5 | 62.3062 |
   | 3 | 8 | 9854 | 565.63109 | 59.056 | 10.48170 | 47.6 | 63.1997 |
   | 4 | 8 | 9854 | 557.66611 | 59.820 | 10.45067 | 47.6 | 63.1997 |
+  | 5 | 32 | 7433 | 548.87472 | 60.804 | 10.68946 | 53.5 | 62.3062 |
 
-  Exact TG uses9854*1000/941502.8ms and7433*1000/691374.9ms;prompt times are
-  60448.4/59472.9ms. First-pair TG ratio is1.027211;prompt and client-TTFT
-  ratios are0.983862/0.984159. Logical missed lookups per generated token
-  decrease308.137->275.271;these are not CPU jobs or physical RAM/PCIe bytes.
-  Generation lengths and MTP acceptance differ,so no fixed-work attribution
-  follows. Process2uses58245.6ms prompt and692995.5ms decode;process3uses
-  58833.4ms prompt and940114.3ms decode. The reverse-pair TG ratio is1.023297,
-  prompt ratio0.990009and TTFT ratio0.990145. Process4uses59673.7ms prompt
-  and942905.7ms decode. The last32process and final15asset hashes remain;
-  two favorable pairs do not satisfy the preregistered decision
-  or establish a fixed4weak-MTP class. Continue with process5(32);
-  keep native/controller inputs unchanged.
+  Exact TG is generated_tokens*1000/decode_ms. Three-process medians are
+  10.466246/10.725899for8/32;ranges are10.450674..10.481704and
+  10.689458..10.751041. The paired TG ratios1.027211/1.023297/1.022849
+  have geometric mean1.024450and pass the repeated-gain gate without a gain
+  floor. Prompt-time ratios0.983862/0.990009/1.016017and client-TTFT ratios
+  0.984159/0.990145/1.016449fail their independent nonregression gates.
+  Median PP is557.666108/559.548971and client TTFT59.820/59.644s;these
+  aggregates do not override the preregistered pair decisions. Logical missed
+  lookups per generated token decrease308.137->275.271;these are not CPU jobs
+  or physical RAM/PCIe bytes. Different generation lengths and acceptance
+  preclude fixed-work attribution. This closes the focused decode comparison,
+  not phase preservation,adoption or a fixed4weak-MTP class. Both workloads'
+  repeated32over8TGgains support the separately gated96candidate;preserve
+  the552b prefill fallback and independent phase selection.
   Follow`adaptive_payload_generation_varied_prose_v1`.
   The next96-copy positive entry is source-prepared in
   `tools/sycl/check_adaptive_payload96_entry.py`;no controls,preparation or
