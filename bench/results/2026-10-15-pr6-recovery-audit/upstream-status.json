@@ -2063,7 +2063,7 @@
       "meaning": "Default-integration check only,not a new Niko upstream check or native/model qualification."
     },
     "dflash2_ring_check": {
-      "stage": "prepared",
+      "stage": "small_passed",
       "prior": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/record.json",
         "sha256": "cebefcc388276f7c6b79b3555614601f22d60140142b9a62e44287ad6d298bc0"
@@ -2140,7 +2140,35 @@
         "small": 5,
         "full": 5
       },
-      "phases": {},
+      "phases": {
+        "small": {
+          "passed": true,
+          "cases": 21,
+          "results": [
+            {
+              "label": "kernel",
+              "passed": true,
+              "mapped_files": 36,
+              "unknown": [],
+              "missing": [],
+              "actual_mapping_sha256": "3fbe6d83517902368c7f62e409b977bf8971d7ae1e00e80027d2cb208fba5bee",
+              "cases": 16
+            },
+            {
+              "label": "ring_small",
+              "passed": true,
+              "mapped_files": 36,
+              "unknown": [],
+              "missing": [],
+              "actual_mapping_sha256": "65a64ff7bb48fbab5946ad967b803835bef12aa7b3f9b4a43d11a1539ffd7386",
+              "cases": 5
+            }
+          ],
+          "fresh_faults": [],
+          "fault_probe_successful": true,
+          "boot_unchanged": true
+        }
+      },
       "passed": false,
       "ownership_closed": true,
       "meaning": "Stock draft weights with synthetic target embedding/Q8zero head;finite state equivalence and failed-owner containment only. No target model,task quality,benchmark speed,phase preservation or physical full target-context qualification.",
@@ -2156,7 +2184,28 @@
           "sha256": "47ed8f8a55968a33ccabe7b9c8571afe383c88d68ca000c006437ad5745a79d7"
         }
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "kernel",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": [],
+          "direct_child_reaped": true,
+          "session_empty": true
+        },
+        {
+          "label": "ring_small",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": [],
+          "direct_child_reaped": true,
+          "session_empty": true
+        }
+      ]
     }
   }
 }
