@@ -1064,6 +1064,11 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   differs from the old8/32cohort. It establishes no cross-cohort regression,
   96speed,repeatable gain or adoption. The varied-prose32/96cohort is not yet
   prepared;final full asset hashing remains due at cohort closure.
+  Process0's69raw/JIT files/13097250bytes are retired after recovery of350Git
+  inputs,with all15ELFs and six immutable receipts unchanged. Full continued
+  admission passes before/after deletion;only its generated config/plan remain.
+  Manifest:`adaptive-payload96-generation-regular-code-v1-process0-output-retirement-20261107.json`,
+  SHA256`e8e6e76bd232cd8e960e2e806f613c427e9690875616ba2891272a0ee35495ff`.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
@@ -1405,6 +1410,15 @@ the engine or enabling the incompatible static census. It must declare its
 limited scope and compare observers off/on in immutable pre-exec environments;
 this is not a way to disable a census failure or claim dynamic residency
 conservation. No such current-engine profile or cost comparison has run.
+The source-prepared`tools/sycl/adaptive_cpu_leaf_evidence.py`reuses the existing
+version2record grammar and joins each completed request to its independent
+native CPU-job/entry footer. HQ calls derive final-job counts;GU/HQ/DOWN rows,
+NT-weighted entries and thread/bin clocks must conserve them. This does not
+independently identify each format bin or prove published-map identity,physical
+traffic,saturation or observer cost. Five CPU test groups are source-prepared
+in`tools/test_adaptive_cpu_leaf_evidence.py`;they have not run. Both new files
+are outside the frozen speed/qualification import closures,which continue
+to pass after the first process's raw retirement.
 For a later full adaptive census,the reviewed design refreshes membership on
 the request owner only after the adaptive worker joins and refill publication
 succeeds,latches a published-map epoch per window,and rejects masked/in-flight
