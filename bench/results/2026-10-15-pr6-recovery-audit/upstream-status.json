@@ -2331,6 +2331,80 @@
           "session_empty": true
         }
       ]
+    },
+    "dflash2_mask_check": {
+      "stage": "prepared",
+      "ring_reference": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/record.json",
+        "sha256": "889617d223617c09039c2dae414ca5e1aedae8cba6bfb39b2799988e8589a97c"
+      },
+      "runtime_manifest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+        "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+      },
+      "environment": {
+        "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+        "STRATA_DF2_RING_LOG": "1",
+        "STRATA_DF2_LOG_MIB": "64",
+        "STRATA_DF2_RING_STATS": "1",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-mask-discriminator-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-mask-discriminator-v1/cache"
+      },
+      "driver": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "budgets": {
+        "wall": 180,
+        "cpu": 180,
+        "text_cap": 67108864,
+        "file_cap": 67108864,
+        "total_cap": 134217728,
+        "rss_cap": 4294967296
+      },
+      "oracle": "Q=K=0;130 context plus8 block keys,only V[row64]=138. A live tag must give dequantized1 in all32768 elements;stale epoch or wrong absolute position must give0. Absolute error<2e-5,finite nonnegative scales and output guards. Four explicit variant/chunk combinations,12cases. No target model,text identity or speed claim.",
+      "original_ring_limit": "The original missing_context_mask case proves execution/tag state only,not exclusion semantics.Its original26case PASS stays unchanged.",
+      "passed": false,
+      "ownership_closed": true,
+      "controller_source": {
+        "commit": "01e79db20e1a11bcde5fd3e96d259b695a227d52",
+        "sha256": "6f5813d777efb78dbee1a58035e2723cd85a46f8ecad5a48f1a00dfb51027380"
+      },
+      "native_build": {
+        "source_commit": "1aa6418604d43fd5894f14b6fec4d0ed416f1865",
+        "project_source_sha256": "330154fa67ad420209b6cfdb1a8f64e957aa856395eb934f24499e6c1c76ae76",
+        "record": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
+          "sha256": "f8c1c46922ca4cf20de179314d1449bfa0c239a5aa0b5ee8eca096c9bcd3a4c6"
+        }
+      },
+      "commands": []
     }
   }
 }
