@@ -179,8 +179,13 @@ int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
     need(argc==16,"shard gu dn gate up down bytes workers group check|measure n1 n2 n3 n4 version");
     need(std::string(argv[15])=="20261022","protocol version");
-    const int workers=number(argv[8]),group=number(argv[9]);const std::string mode=argv[10];
-    need((workers==1||workers==5) && group>=6 && group<=32 && (mode=="check"||mode=="measure"),"mode/shape");
+    const auto requested_workers=number(argv[8]),requested_group=number(argv[9]);
+    const std::string mode=argv[10];
+    need(requested_workers>=1 && requested_workers<=5 && requested_group>=6 && requested_group<=32 &&
+        (mode=="check"||mode=="measure"),"mode/shape");
+    // Intermediate worker counts expose the scaling curve. Five workers also
+    // enable the production host compute thread; smaller counts leave it waiting.
+    const int workers=static_cast<int>(requested_workers),group=static_cast<int>(requested_group);
     std::array<uint64_t,4> observed{};for(int i=0;i<4;++i){observed[i]=number(argv[11+i]);need(observed[i]<=1000000000ull,"histogram count");}
     const auto nt=schedule(group,observed);std::array<int,4> actual{};for(int n:nt)++actual[n-1];
     const auto topology=cpu::detect_cpu_topology(true);
