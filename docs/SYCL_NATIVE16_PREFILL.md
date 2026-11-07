@@ -1495,100 +1495,55 @@ remain unmeasured;this is not a hard ceiling. Use the named current working-set
 calibration after
 the complete cost comparison;the previous calibration used an older
 compiler/reference and is not qualified unchanged for this engine.
-The maintained CPU mix CMake selector at`1274b0bbd` can now take
-`STRATA_CPU_SOURCE_ROOT` for the measured engine's frozen CPU composition.
-At`fc7aad011`,the harness also accepts intermediate workers1..5;only5includes
-host computation,so the effective compute counts are1,2,3,4and6. Validate
-these cases before timing a new scaling curve. Match both the native icx2026.2
-C build of GGML quantization and icpx2026.2C++CPU build in the new plan.
-The maintained `tools/sycl/cpu_decode_mix.py` is now source-retargeted to the
-exact recovered568-file e1b011composition and its icx/icpx2026.2compilers,
-including the three matching current format/NT job distributions. It preserves
-the original native construction helpers. The prospective matrix has56checks,
-112reuse/stream timing cells and1/2/3/6-thread256MiB read references,with five
-eligible samples/cell. It pins model identities/selected expert slices and
-checks actual compiler/header/link inputs,typed work,affinity and terminal
-ownership. The recipe keeps the CPU observer layout enabled,with the observer
-off;native IQ2/IQ3 dispatch/audit and20ms pool spin remain fixed. The auxiliary
-CPU build retires at calibration closure and never replaces either engine.
-At source`233f3081e`,all nine controller CPU tests pass without skips,normal0,
-under the shared measurement lock. They cover intermediate placement/work,
-typed histogram/matrix refusals,actual compile/link input refusals and terminal
-owner-setup failure with no child or retry. The command is
-`/usr/bin/timeout -k 5s 30s /usr/bin/prlimit --as=1073741824 --cpu=20 --fsize=1048576 /usr/bin/python3 -X faulthandler -B -m unittest discover -s tests/core -p test_cpu_decode_mix.py -v`.
-This qualifies controller controls only. The new plan is now prepared at
-`893e7cebb`,with261current controller inputs,1376official GGML inputs and29
-CPU-source hashes recovered from the568-file native composition. All846250
-observed CPU jobs are bound to the three matching current histograms and the
-original15-asset signature. Both actual compiler bytes match the original
-native toolchain image. The prior calibration remains recoverable through the
-plan's pinned previous-result commit/hash;its original two binaries are retired.
-Commit this plan before `cpu_decode_mix.py build`,then commit the build before
-`check`,then commit all56normal numerical closures before `measure`.
-The auxiliary CPU build now closes normally0with five closed owned commands.
-All634actual compiler inputs are covered,with22pinned external link inputs;
-both C/C++math/ISA checks pass and neither executable links a GPU runtime or
-has a missing dynamic library. Mix ELF`c18208a5`and scan ELF`19721811`are the
-new calibration fixtures,not a new inference engine. All15retained engine/
-fixture hashes remain unchanged. All56same-build numerical cases now close
-normally0with closed owners:seven formats,workers1/2/3/5 andgroups6/28.
-Every loaded real expert passes NT1..4 and mixed-NT pool/serial bit equality,
-finite outputs,untouched inactive lanes,canaries and actual affinity checks.
-This is same-route consistency,not an independent model/task oracle. Commit
-the numerical closure before timing. The first timing stage is now failed,
-with closed owners:all56expert shapes finish both five-sample reuse/stream
-cells(560eligible samples),and the one-thread read reference finishes,but
-`scan-2`exits1with`CPU calibration failed: scan thread count`. The frozen
-reference main accepts only1/6/12threads;the new plan asked for1/2/3/6without
-extending that CLI. This is a controller/fixture mismatch,no GPU execution.
-The original failure remains failed;no whole-calibration or saturation verdict.
-Extend only the read fixture's thread-count contract in a new committed plan,
-keeping1/2/3/6references. Reusing the completed expert cells requires exact
-expert ELF/input/environment identity and explicit prospective reuse;otherwise
-collect a new complete cohort. Do not retry the failed single-use stage.
-The public read-reference source now source-prepares1..6/12threads,with
-allowed-affinity/range and duplicate-CPU checks before spawning workers.
-Its scan/checksum/partition math is unchanged. The maintained mix CMake target
-can explicitly select this updated scanner while keeping the frozen native
-CPU kernels and private source intact. The expert ELF and all634original
-compiler inputs remain unchanged. The new scanner is unbuilt/unexecuted;
-prospective continuation/reuse qualification is still required. Keep the
-current auxiliary build solely for that immediate identity/reuse check,then
-retire it when the reference continuation closes.
-The V4 controller is source-prepared for a scanner-only continuation. It pins
-the failed V3 result at49b2d4821,recovers its original261controller/recipe
-inputs,and rechecks all634actual compiler inputs,the original links,expert
-ELF,56numerical/560timing samples,model slices and environment. Reused expert
-samples remain identified as V3 evidence;V4 newly builds only the public
-scanner,checks four bounded invalid-CLI refusals,and measures all1/2/3/6read
-references with five eligible samples each. At source d7a92b074,all eight
-host controller tests pass without skips,normal0under the measurement lock;
-they include intermediate scan counts and malformed/short/work-drift refusals.
-The V4 plan is now prepared at that source,with262controller/scanner inputs.
-All original expert evidence and fixture identities pass prospective reuse
-qualification. The scanner-only build now closes normally0with four owned
-commands and no GPU runtime link. All627actual compiler inputs are covered;
-the mix target is not rebuilt,and all15inference ELFs remain unchanged.
-All four bounded scanner CLI refusals pass,with the expected exit1,
-exact diagnostics and closed owners. V4 timing now completes all four new read
-references,20eligible samples and four normal0closed owners. Requested-byte
-read medians for1/2/3/6threads are20.413/25.890/24.297/24.028GB/s. These are
-achieved256MiB checksum-read rates,not physical DRAM or PCIe measurements.
-The explicitly reused expert mixture scales1->6compute threads by4.248x
-for reuse-group6,3.144x for stream-group6,and3.386/3.289x for reuse/stream
-group28. Six-thread weighted per-job wall time is106.556/139.844us for
-reuse/stream group6,and136.915/140.256us for group28. These are synthetic
-marginal mixtures,not model latency or a hardware ceiling. All112expert
-cells/560samples remain at the pinned failed V3 commit;the active result
-keeps their identity,formulas,summary and all20new read samples. Expert-cell
-CV ranges0.44..39.74%;keep every original sample and use repeated matched
-processes for candidate decisions. CPU instruction/unpack/scheduling and
-memory sensitivity remain mixed;neither early read-rate saturation nor
-expert scaling proves the actual limiting hardware resource. Next compare
-an exact compact IQ3_XXS GU view,including setup,extra footprint,NT1/current
-NT mixtures,reuse/stream and unchanged numerical/FMA contracts,before any
-production selection. Current GPU counters/physical traffic/critical path
-remain unqualified. No model speedup,adoption,70TG or device execution follows.
+The current CPU calibration in `cpu-roofline-current.json` is closed. It uses
+the recovered568-file e1b011native composition and its actual icx/icpx2026.2
+C/C++recipe,with service/census observers off,IQ2/IQ3pairs enabled,the IQ3
+audit and20ms pool spin. Three matching current NT/format distributions bind
+all846250jobs. The matrix covers seven formats,groups6/28 and1/2/3/6compute
+threads. All56real-weight numerical cases pass NT1..4 and mixed-NT pool/serial
+bit equality,finite outputs,inactive lanes,canaries and actual affinity. This
+is same-route consistency,not independent model/task quality.
+
+The original V3 timing at49b2d4821 remains failed:all112expert cells finish
+560eligible samples,but its old scanner rejects2threads before allocation.
+The separately planned V4 continuation reuses exactly those expert samples
+and56checks after recovering261original controller/recipe inputs and checking
+all634actual compiler inputs,link inputs,ELF,model slices and environment.
+The original individual samples remain recoverable at that immutable commit;
+the active result keeps their identity and compact analysis. V4 newly builds
+only the public scanner. It supports1..6/12threads with allowed-affinity,
+range and duplicate checks;scan/checksum/partition math stays unchanged.
+At source d7a92b074,all eight host controller tests pass without skips. Its
+262-input plan builds with627covered actual compiler inputs and no GPU runtime
+link. Four bounded invalid-CLI cases pass with the expected1and exact errors.
+All four new timing children close normally0with20eligible samples.
+
+Requested-byte256MiB checksum-read medians for1/2/3/6threads are
+20.413/25.890/24.297/24.028GB/s. The expert synthetic marginal mixture scales
+1->6compute threads by4.248x for reuse-group6,3.144x for stream-group6,and
+3.386/3.289x for reuse/stream group28. Six-thread weighted per-job wall time
+is106.556/139.844us for reuse/stream group6,and136.915/140.256us for group28.
+The plan records the exact weighting/median formulas. Expert-cell CV spans
+0.44..39.74%;all samples remain included. These are independent synthetic
+format/NT marginal processes,not actual layer/access-trace latency. Requested
+blob visits/read rates are not physical DRAM/PCIe traffic,hardware saturation
+or a70TG ceiling. Pool waiting,arithmetic/unpack,scheduling and memory effects
+remain mixed;early read-rate flattening and expert thread scaling alone do
+not prove the actual limiting resource. Next compare an exact compact IQ3_XXS
+GU view with setup/extra-memory costs,NT1/current NT mixtures and reuse/stream;
+use repeated matched processes and preserve numerical/FMA contracts before
+production selection. Current-model GPU counters,physical traffic and critical
+path remain unqualified. No new model speedup,adoption or device execution
+follows from this calibration.
+
+Both closed auxiliary CPU builds and their output are retired after recovering
+original261/V4 262controller inputs,568native inputs,GGML source/recipes and
+checking all634/627actual compiler inputs. Deletion covers404files/33199588B;
+all15inference ELFs remain unchanged. The next compact-view comparison builds
+both arms fresh from the retained native source;neither retired auxiliary ELF
+or raw tree is a live input. Manifest outside Git:
+`cpu-current-calibration-output-retirement-20261108.json`,SHA256
+`b30cccc1c81c2ae6298cf01ac4b70519f3d0c2298d3f556ef9021ce45915b115`.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
