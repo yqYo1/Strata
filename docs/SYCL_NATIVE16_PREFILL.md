@@ -798,6 +798,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   then prospectively migrate consumers and retire429b before clean8/32trials.
   Retire the successor instead if qualification fails. This is a bounded
   replacement window,not another retained generation per experiment.
+  Source-only`tools/sycl/adaptive_payload_admission.py`binds the successor's
+  actual sources/recipe/header and fresh28+28CPU parity to five identical
+  fixture ELFs and the original10/32/16device checks. Reuse must first verify
+  the live429b chain;later readers pin its consumed metadata/Git inputs rather
+  than requiring retired429b ELFs. Runtime/probe bytes,boot and driver still
+  need to match. No successor build,component reuse or native32execution has
+  occurred. Prospective32positive/refusal and clean-speed consumers still need
+  migration before429bcan be retired.
   The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
