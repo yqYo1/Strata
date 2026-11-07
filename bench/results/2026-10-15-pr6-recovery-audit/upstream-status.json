@@ -1558,8 +1558,8 @@
     "dflash2_native_port": {
       "state": "compiled_small_q4_fp32_bf16_prompt_gate_passed_model_route_unqualified",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
-      "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights; retains at most2047positions of five narrow means(104806400bytes),then loads and seeds the drafter.",
-      "remaining": "Committed689c source compiles;new sixteen-case GPU fixture passes normally0 with36qualified ELF mappings,closed owner and no fresh fault. Production prompt-tail tests admit104806400-byte GPU allocation and check mixed FP32/BF16 means,exact complete row positions,sparse holes,clipping,rejected spans and release/rebegin. Next:kTail transitions2046/2047/2048 and ring wrap/rewind/stash/failed-owner components;then first bounded target-model route,RESTORE/full physical262144 and repeated matched independent-phase performance. No default activation or model/performance adoption.",
+      "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights;physical tail buffer has2047positions(104806400bytes),while capture omits the last prompt anchor and retains at most2046rows;then loads and seeds the drafter.",
+      "remaining": "Engine689c and ring fixture f62df compile with existing engine/fixture bytes unchanged. Sixteen kernel/prompt cases plus five small stock-drafter cases and five ring/lineage cases pass across three normal0 processes,each with36qualified executable mappings,closed ownership and no fresh fault. Ring tests check tail transitions2046/2047/2048,real stock block forward,final physical drafter row,failed-owner refusal,wrap,rewind,parked-branch restore,fresh replay equivalence and masked missing context. Synthetic target embedding/head do not qualify the target model. Next:finish source-audit review,then bounded target-model route and functional adapters,RESTORE/full physical262144 and repeated matched independent-phase performance. No default activation or model/performance adoption.",
       "metadata_fixture_plan": {
         "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
         "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
@@ -2063,7 +2063,7 @@
       "meaning": "Default-integration check only,not a new Niko upstream check or native/model qualification."
     },
     "dflash2_ring_check": {
-      "stage": "small_passed",
+      "stage": "full_passed",
       "prior": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-kernel-contract-v3/record.json",
         "sha256": "cebefcc388276f7c6b79b3555614601f22d60140142b9a62e44287ad6d298bc0"
@@ -2167,9 +2167,27 @@
           "fresh_faults": [],
           "fault_probe_successful": true,
           "boot_unchanged": true
+        },
+        "full": {
+          "passed": true,
+          "cases": 5,
+          "results": [
+            {
+              "label": "ring_full",
+              "passed": true,
+              "mapped_files": 36,
+              "unknown": [],
+              "missing": [],
+              "actual_mapping_sha256": "65a64ff7bb48fbab5946ad967b803835bef12aa7b3f9b4a43d11a1539ffd7386",
+              "cases": 5
+            }
+          ],
+          "fresh_faults": [],
+          "fault_probe_successful": true,
+          "boot_unchanged": true
         }
       },
-      "passed": false,
+      "passed": true,
       "ownership_closed": true,
       "meaning": "Stock draft weights with synthetic target embedding/Q8zero head;finite state equivalence and failed-owner containment only. No target model,task quality,benchmark speed,phase preservation or physical full target-context qualification.",
       "controller_source": {
@@ -2197,6 +2215,16 @@
         },
         {
           "label": "ring_small",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": [],
+          "direct_child_reaped": true,
+          "session_empty": true
+        },
+        {
+          "label": "ring_full",
           "exit_code": 0,
           "error": null,
           "ownership_closed": true,

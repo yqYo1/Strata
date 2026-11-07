@@ -3028,14 +3028,17 @@ that timestamp. **DeepSeek and35B execution support remain excluded until the
 user explicitly requests them, including future syncs.**
 
 Unsloth v3.1 catalog/pinned metadata and the stock DFlash2 Q4 pack are present.
-The native optional DFlash2 route is compiled at`689c3da346aeeb819d03ee644b27648adc241d3b`;
-its16-case GPU fixture passes signed Q4 GEMM,FP32 taps and production mixed
-FP32/BF16 prompt-tail means,complete/sparse row positions,clipping,span admission
-and release/rebegin. It admits the104806400-byte tail allocation,exits normally0,
-verifies36executable mappings and has no fresh fault. This does not qualify the
-full drafter/model route,ring recovery,RESTORE,physical262144 fill or performance.
-Next:tail transition lengths2046/2047/2048 and ring/request/failed-owner fixtures,
-then bounded target-model execution and independent-phase comparisons. Default
+The native optional DFlash2 engine remains compiled at`689c3da346aeeb819d03ee644b27648adc241d3b`;
+ring fixture source`f62df4999c1a56ba41d2598837d92e4d5ce705e1`adds no engine change.
+Three GPU processes pass16kernel/prompt cases,5small stock-drafter cases and
+5ring/lineage cases,all normal exit0 with36qualified executable mappings and
+no fresh fault. These cover signed Q4 GEMM,mixed FP32/BF16 prompt means,the
+104806400-byte tail allocation,2046/2047/2048transitions,stock block forward,
+wrap/rewind/parked-branch restoration,fresh replay equivalence,masked missing
+context and failed-owner refusal. The target embedding/head remain synthetic;
+this does not qualify target-model output,RESTORE,physical262144 fill or speed.
+Next:complete the source-audit review,then bounded target-model execution and
+independent-phase comparisons. Default
 native MTP and legacy explicit-MTP configs remain selected;the imported host
 Auto policy can choose DFlash2 on a fresh supported configuration. The feature
 candidate is not installed/default-adopted. Both fast references remain. See`current_sync`in the linked
