@@ -377,6 +377,37 @@ PARAM_END = "</parameter>"
 FUNC_END = "</function>"
 
 
+# Niko1221/Strata 3bbf0f39: bounded literal closing-tag disambiguation.
+CLOSE_LOOKAHEAD_CHARS = 1500
+
+
+def _close_verdict(after: str, final: bool) -> str:
+    """`after` starts with `</function>` and/or `</tool_call>` right after a `</parameter>`.  A file that documents the call format has those
+    three tags on lines of its own inside a value (#4701), so the sequence only ends the value when what follows is the end of the turn, another
+    call, or prose with no closing tag after it.  "end": the value ends here; "continue": it goes on to the next `</parameter>`; "hold": not
+    decidable yet (streaming): wait for more text.  Bounded: the end of the turn (`final`), a new `<tool_call>`, or CLOSE_LOOKAHEAD_CHARS of
+    text decide, so a call is never held longer than that."""
+    m = re.match(r"(?:</function>)?\s*</tool_call>", after)
+    if not m:
+        tail = after[len(FUNC_END):].lstrip() if after.startswith(FUNC_END) else after
+        if not final and CALL_END.startswith(tail):
+            return "hold"                                  # #5040: `</tool_call>` is still arriving: a streamed view must not end the value yet
+        return "end"                                       # the call is cut, or it has no wrapper: as before
+    rest = after[m.end():].lstrip()
+    if not rest:
+        return "end" if final else "hold"                  # the usual call: the turn ends right after it
+    if rest.startswith(CALL_START):
+        return "end"
+    if not final and CALL_START.startswith(rest):
+        return "hold"                                      # `<tool_c` of a second call is arriving
+    if CALL_START in rest:
+        return "end"                                       # prose, then another call: this one is complete
+    if PARAM_END in rest or CALL_END in rest or FUNC_END in rest:
+        return "continue"                                  # prose, then closing tags again: the text was part of the value
+    if final or len(rest) > CLOSE_LOOKAHEAD_CHARS:
+        return "end"
+    return "hold"
+
 def param_end(text: str, final: bool = False) -> int:
     """Where a parameter value in `text` ends: the first `</parameter>` followed (after whitespace) by the next
     `<parameter=` or `</function>` - the same text inside a value (a file that documents the call format, #210) is
@@ -384,15 +415,21 @@ def param_end(text: str, final: bool = False) -> int:
     at = text.find(PARAM_END)
     while at >= 0:
         after = text[at + len(PARAM_END):].lstrip()
-        if after.startswith(("<parameter=", FUNC_END)):
+        if after.startswith("<parameter="):
             return at
+        if after.startswith(FUNC_END):
+            verdict = _close_verdict(after, final)
+            if verdict == "end":
+                return at
+            if verdict == "hold":
+                return -2
         if not after or "<parameter=".startswith(after) or FUNC_END.startswith(after):
             return at if final else -2
         at = text.find(PARAM_END, at + 1)
     return -1
 
 
-def call_end(text: str) -> int:
+def call_end(text: str, final: bool = False) -> int:
     """Where a tool call's body ends (#210): the `</tool_call>` after the call's own `</function>`, found by walking
     its parameters with param_end, so a value may contain either tag.  -1: not complete yet.  A body that is not in
     the call format ends at the first `</tool_call>`, as before."""
@@ -412,7 +449,7 @@ def call_end(text: str) -> int:
             gt = text.find(">", pos)
             if gt < 0:
                 return -1
-            end = param_end(text[gt + 1:])
+            end = param_end(text[gt + 1:], final)
             if end < 0:
                 return -1
             pos = gt + 1 + end + len(PARAM_END)
@@ -475,15 +512,29 @@ class OutputParser:
         # character; other types whole, once complete) - before the final "tool_call".  Without it, a client sees
         # nothing until the call is complete, which for a large file write can be many minutes.
         self.stream_tools = stream_tools
+        self._final = False
         self._reset_scan()
 
     def _reset_scan(self):
+        self._call_end_checked = 0   # closing-tag search progress for the current wrapped call
         self.sp = 0                  # how much of self.buf (the call body) the scanner has consumed
         self.ss = "name"             # name -> between -> str|raw -> ... -> done
         self.scall = None            # the ToolCall being streamed (its id is reused by the final event)
         self.sfirst = True
         self.sval_started = False
         self.sdeclared = {}
+
+    def _wrapped_call_end(self) -> int:
+        # Niko1221/Strata 46c152a: inspect only new text plus a split-tag overlap
+        # until the first possible closing tag. A tag inside a parameter still
+        # needs the unchanged structural walk, for the rest of this call.
+        if self._call_end_checked >= 0:
+            start = max(0, self._call_end_checked - len(CALL_END) + 1)
+            if self.buf.find(CALL_END, start) < 0:
+                self._call_end_checked = len(self.buf)
+                return -1
+            self._call_end_checked = -1
+        return call_end(self.buf, final=self._final)
 
     def _scan(self) -> list[Event]:
         """Advance the streaming view of the call body in self.buf (see stream_tools)."""
@@ -537,7 +588,7 @@ class OutputParser:
                         self.sp += 1
                         rest = rest[1:]
                     self.sval_started = True
-                end = param_end(rest)
+                end = param_end(rest, final=self._final)
                 if end >= 0:
                     value = rest[:end]
                     if value.endswith("\n"):
@@ -555,7 +606,7 @@ class OutputParser:
                     self.sp += safe
                 return out
             elif self.ss == "raw":
-                end = param_end(rest)
+                end = param_end(rest, final=self._final)
                 if end < 0:
                     return out
                 value = rest[:end]
@@ -591,10 +642,19 @@ class OutputParser:
     def _hold(self, text: str, tags: tuple[str, ...]) -> int:
         """Length of the longest suffix of `text` that is a proper prefix of one of `tags`."""
         best = 0
+        size = len(text)
         for tag in tags:
-            for n in range(1, len(tag)):
-                if text.endswith(tag[:n]):
-                    best = max(best, n)
+            if len(tag) <= 1:
+                continue
+            # Only a suffix beginning with the tag's first character can match.
+            # Ordinary token deltas contain no '<': one C-level search replaces
+            # checking every possible prefix. Earliest candidate is the longest.
+            start = text.find(tag[0], max(0, size - len(tag) + 1))
+            while start >= 0 and size - start > best:
+                if tag.startswith(text[start:]):
+                    best = size - start
+                    break
+                start = text.find(tag[0], start + 1)
         return best
 
     def feed(self, delta: str) -> list[Event]:
@@ -636,13 +696,16 @@ class OutputParser:
                 self.buf = self.buf[i + len(CALL_START):]
                 self.state = "call"
             else:
-                i = call_end(self.buf)
+                i = self._wrapped_call_end()
                 if self.stream_tools:
                     if i >= 0:
-                        whole, self.buf = self.buf, self.buf[:i]     # scan only the body
-                        out += self._scan()
-                        out += self._close_scan()
-                        self.buf = whole
+                        whole, final = self.buf, self._final
+                        self.buf, self._final = self.buf[:i], True   # this body's end is known
+                        try:
+                            out += self._scan()
+                            out += self._close_scan()
+                        finally:
+                            self.buf, self._final = whole, final
                     else:
                         out += self._scan()
                 if i < 0:
@@ -660,17 +723,21 @@ class OutputParser:
     def finish(self) -> list[Event]:
         """End of generation: flush whatever is held (an unterminated tool call is returned as content; one that was
         already announced stays unfinished: its JSON is not closed and no "tool_call" follows it, #211)."""
-        out = []
-        if self.state == "call" and self.stream_tools and self.scall is not None:
-            out += self._scan()                 # the output ended inside a call that was already announced
-            if self.ss == "done":               # only its </tool_call> is missing: the call itself is whole
-                out.append(Event("tool_call", call=self.scall))
-            self.buf = ""
-            self._reset_scan()
+        self._final = True
+        try:
+            out = self.feed("")
+            if self.state == "call" and self.stream_tools and self.scall is not None:
+                out += self._scan()                 # the output ended inside a call that was already announced
+                if self.ss == "done":               # only its </tool_call> is missing: the call itself is whole
+                    out.append(Event("tool_call", call=self.scall))
+                self.buf = ""
+                self._reset_scan()
+                return out
+            if self.buf:
+                kind = {"reasoning": "reasoning", "content": "content"}.get(self.state, "content")
+                text = self.buf if self.state != "call" else CALL_START + self.buf
+                out.append(Event(kind, text))
+                self.buf = ""
             return out
-        if self.buf:
-            kind = {"reasoning": "reasoning", "content": "content"}.get(self.state, "content")
-            text = self.buf if self.state != "call" else CALL_START + self.buf
-            out.append(Event(kind, text))
-            self.buf = ""
-        return out
+        finally:
+            self._final = False

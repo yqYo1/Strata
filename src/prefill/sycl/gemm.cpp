@@ -105,6 +105,33 @@ void Gemm::f16(const uint16_t *x, const uint16_t *w, float *y, int64_t T,
     throw std::invalid_argument("uninitialized SYCL GEMM");
   multiply<sycl::half>(x, w, y, T, N, K, ld > 0 ? ld : N, beta, stream_);
 }
+void Gemm::f16_vendor_out16(const uint16_t *x, const uint16_t *w, uint16_t *y,
+                           int64_t T, int64_t N, int64_t K, int64_t ld) {
+  if (!handle_)
+    throw std::invalid_argument("uninitialized SYCL GEMM");
+  if (ld == 0) ld = N;
+  if (T <= 0 || N <= 0 || K <= 0 || ld < N ||
+      checked_count(T, ld) > SIZE_MAX / 2 ||
+      checked_count(T, K) > SIZE_MAX / 2 || checked_count(N, K) > SIZE_MAX / 2)
+    throw std::invalid_argument("invalid SYCL vendor FP16 GEMM geometry");
+  const Span output{y, (size_t(T - 1) * size_t(ld) + size_t(N)) * 2};
+  const Span input{x, size_t(T) * size_t(K) * 2};
+  const Span weight{w, size_t(N) * size_t(K) * 2};
+  validate_spans({output}, {input, weight}, 2);
+  auto &queue = queue_for(stream_);
+  if (!queue.get_device().has(sycl::aspect::fp16))
+    throw std::invalid_argument("vendor FP16 GEMM requires GPU half support");
+  for (auto span : {input, weight, output})
+    validate_device_span(span.pointer, span.bytes, queue);
+  cpu_wait_profile::Host submit_profile(cpu_wait_profile::gemm_submit);
+  auto event = oneapi::mkl::blas::row_major::gemm(
+      queue, oneapi::mkl::transpose::nontrans, oneapi::mkl::transpose::trans,
+      T, N, K, sycl::half(1), reinterpret_cast<const sycl::half *>(x), K,
+      reinterpret_cast<const sycl::half *>(w), K, sycl::half(0),
+      reinterpret_cast<sycl::half *>(y), ld);
+  submit_profile.finish();
+  finish(stream_, event);
+}
 void Gemm::native(const uint16_t *x, int type, const void *w, float *y,
                   int64_t T, int64_t N, int64_t K, int64_t ld, float beta) {
   if (!handle_)

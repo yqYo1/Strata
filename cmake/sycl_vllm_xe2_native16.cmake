@@ -41,7 +41,15 @@ target_compile_options(strata_vllm_xe2_native16 PRIVATE
 # directly. No relocatable native device IR reaches the generic engine link.
 # Intel LLVM UsersManual "Link options" and sycl-offload-old-model.cpp cover
 # -fsycl-link for spir64_gen. Exact mixed-image acceptance requires Main tests.
-get_filename_component(_strata_sycl_bin "${CMAKE_CXX_COMPILER}" DIRECTORY)
+# Installed Intel SDKs place the bundler below bin/compiler; standalone LLVM
+# installs place it beside clang. Use this compiler's own tool lookup.
+execute_process(COMMAND "${CMAKE_CXX_COMPILER}" -print-prog-name=clang-offload-bundler
+  OUTPUT_VARIABLE _strata_offload_bundler OUTPUT_STRIP_TRAILING_WHITESPACE
+  COMMAND_ERROR_IS_FATAL ANY)
+if(NOT IS_ABSOLUTE "${_strata_offload_bundler}" OR NOT EXISTS "${_strata_offload_bundler}" OR
+   IS_DIRECTORY "${_strata_offload_bundler}")
+  message(FATAL_ERROR "SYCL compiler did not resolve an installed clang-offload-bundler: ${_strata_offload_bundler}")
+endif()
 execute_process(COMMAND "${CMAKE_CXX_COMPILER}" -dumpmachine
   OUTPUT_VARIABLE _strata_host_triple OUTPUT_STRIP_TRAILING_WHITESPACE
   COMMAND_ERROR_IS_FATAL ANY)
@@ -53,7 +61,7 @@ add_custom_command(OUTPUT "${_strata_native_image}" "${_strata_native_host}"
     -Xspirv-translator -spirv-ext=+SPV_INTEL_split_barrier,+SPV_INTEL_2d_block_io,+SPV_INTEL_subgroup_matrix_multiply_accumulate
     -Xsycl-target-backend=spir64_gen "-device bmg-g21-a0 -internal_options -cl-intel-256-GRF-per-thread"
     $<TARGET_OBJECTS:strata_vllm_xe2_native16> -o "${_strata_native_image}"
-  COMMAND "${_strata_sycl_bin}/clang-offload-bundler" -unbundle -type=o
+  COMMAND "${_strata_offload_bundler}" -unbundle -type=o
     "-targets=host-${_strata_host_triple}"
     "-input=$<TARGET_OBJECTS:strata_vllm_xe2_native16>"
     "-output=${_strata_native_host}"
@@ -67,9 +75,6 @@ message(STATUS "Strata: opt-in vLLM Xe2 native16; isolated BMG G21 AOT object; e
 
 function(strata_add_vllm_native16_tests)
   add_executable(sycl_moe_accum_test EXCLUDE_FROM_ALL tests/sycl/moe_accum.cpp)
-  add_executable(sycl_expert_bank_test EXCLUDE_FROM_ALL tests/sycl/expert_bank.cpp)
-  target_link_libraries(sycl_expert_bank_test PRIVATE strata_prefill)
-  target_compile_options(sycl_expert_bank_test PRIVATE -fno-fast-math -ffp-contract=off)
   target_link_libraries(sycl_moe_accum_test PRIVATE strata_prefill)
   target_compile_options(sycl_moe_accum_test PRIVATE -fno-fast-math -ffp-contract=off)
   add_executable(sycl_vllm_native16_test EXCLUDE_FROM_ALL tests/sycl/vllm_native16.cpp)

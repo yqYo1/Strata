@@ -1,0 +1,318 @@
+{
+  "schema": "strata-resident-mtp-model-closed-v1",
+  "stage": "closed",
+  "archive": {
+    "commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-serve-current.json"
+  },
+  "controller_source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
+  "base_native_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+  "native_controller_source_commit": "26d48498529f8bc38327a9b9e4ebbbe610ae5b1d",
+  "binary": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-resident-control-v3/build/strata",
+    "bytes": 22194216,
+    "sha256": "81393573f25be5cdc44f1ac13cb06d6c280a387e0ee9142d5ebe01e9d82f9307"
+  },
+  "native_build_reference": {
+    "commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-control-current.json",
+    "sha256": "69c1b85330196c4ac8dbff191a2fd7402739022d6498d2fe5b64983b29dfd941"
+  },
+  "native_device_gate_reference": {
+    "commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/mtp-resident-check-current.json",
+    "sha256": "c70d080cc563c8e107fe6d4f1241f9988f8850a0c056b9a2a1a5afd894a6dcc0"
+  },
+  "record": {
+    "sha256": "a77552ac3c0b22c1cfca0ee19426867f1970dcd0fff7708ceb876630b19db034",
+    "retired": true,
+    "files": 1,
+    "bytes": 44687,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-short-receipt-20261024.jsonl",
+    "manifest_sha256": "cf9618aacdab236d566d7caebdec13a8ecf4d8ead21f3208e65ac9c624a33a3c",
+    "consumer_completed": "Imminent official comparison prepared and sealed these fields;no remaining full-record reader."
+  },
+  "input_fingerprint": "5cecf4ea6fde3db9f90efaa893d5e510f1bc8c699fba17100b889f049dedf741",
+  "input_files": 19,
+  "private_inputs_sha256": "271f2857ccc7acc91a9a5bd04ca72906cf7eddac8322a529c95eb31259e7dc7d",
+  "model_reference": {
+    "decode_archive": {
+      "commit": "a8af3d7fa96a7713f2e516d2da3d7410956be015",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/canonical-restore-decode-current.json",
+      "sha256": "7dda2bcefa6f7e54d568e6aa3d5226d5e0a7383f0b41efd7584093854d9547ca"
+    },
+    "decode_compact_sha256": "7a7276cf70e8507838aa62246b0f4a6d858c7f390318bd5f9a23f555cd4712ec",
+    "model": {
+      "commit": "64efe12f005b6a518daa2ee1d0f0d2712baa325f",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/prefill-recovery-current.json",
+      "sha256": "9945b8234465e0c963732086eac0b10b081fb63ca3eb16db3daae27899eab7f2"
+    },
+    "build_compact_sha256": "3e6f266eabc13b94178e96a4d0cf6b5de2909dcd8927a760ead2c92248f0d1da"
+  },
+  "configuration": {
+    "context": 131072,
+    "kv": "int8",
+    "kv_requested_resident": 131072,
+    "actual_main_mode": 0,
+    "INFO_kv_resident": 0,
+    "expert_slots": 1256,
+    "pool_workers": 5,
+    "pcie_frac": 0,
+    "caches": 0,
+    "prefill": 8192,
+    "order": [
+      0,
+      1
+    ],
+    "max_new": 32,
+    "eos_ids": [
+      248044,
+      248046
+    ],
+    "speed_eligible": false
+  },
+  "requests": [
+    {
+      "prompt_tokens": 33,
+      "max_new": 32,
+      "wire_bytes": 96,
+      "wire_sha256": "843fe4f76e8de497afb3f9fdbe2c3af53ab7791cf3dc3fe7057c1cbfc0271529"
+    },
+    {
+      "prompt_tokens": 257,
+      "max_new": 32,
+      "wire_bytes": 925,
+      "wire_sha256": "9f8125e4fcf3b270b08d3638230b524c15a4e7fb735ecd439da9e608cfca91d9"
+    }
+  ],
+  "controller_host_tests": {
+    "source_commit": "c0801edad121cf30d1dd7388dd7b2fd9c1f13fc9",
+    "command": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/sycl/test_mtp_resident_serve.py"
+    ],
+    "tests": 5,
+    "exit_code": 0,
+    "passed": true,
+    "scope": "Checked EOS/false-stop,INFO reporting,short token/batched prompt dispatch,wire and verifier/round conservation controls. No model/device execution."
+  },
+  "prior_transcript_CPU_replay": {
+    "passed": true,
+    "original_model_outcome_unchanged": "failed",
+    "stdout_sha256": "910e88105b1835ba97d0a3e3645b7af1618389176c371e57e61bb3f4030bfb92",
+    "stderr_sha256": "b9c0fa091890364586b7bce1513bd6c99c5e5ca82c1346d3ec9685810989ad28",
+    "generated_tokens": [
+      32,
+      2
+    ],
+    "finish": [
+      "length",
+      "stop"
+    ],
+    "prompt_paths": [
+      "token",
+      "batched"
+    ],
+    "target_windows": [
+      17,
+      2
+    ],
+    "draft_rounds_delta": [
+      16,
+      1
+    ],
+    "limits": "Parser qualification only;does not retroactively qualify terminated v2 or authorize model/performance adoption."
+  },
+  "processes": [
+    {
+      "cap": 0,
+      "pid": 3194967,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "validation_warning_bytes": 0,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_unchanged": true,
+      "preload_activated": true,
+      "requests": [
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 18,
+          "drafts_offered": 48,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 2,
+          "prompt_tokens": 257,
+          "finish": "stop",
+          "drafts_accepted": 0,
+          "drafts_offered": 3,
+          "reused_tokens": 0,
+          "read_tokens": 257,
+          "output_ids_sha256": "8c90ba1d76cfa262e2fffe37ddeac5e7c83667b518186a21fea159542af32828",
+          "publications": 1
+        }
+      ],
+      "routes": [
+        {
+          "target_windows": 17,
+          "first_T": 1,
+          "subsequent_T": 4,
+          "draft_rounds_delta": 16,
+          "cumulative_draft_rounds": 16,
+          "prompt_draft": {
+            "read_tokens": 33,
+            "draft_cells": 32,
+            "batch_count": 1,
+            "path": "token",
+            "mode": 2
+          }
+        },
+        {
+          "target_windows": 2,
+          "first_T": 1,
+          "subsequent_T": 4,
+          "draft_rounds_delta": 1,
+          "cumulative_draft_rounds": 17,
+          "prompt_draft": {
+            "read_tokens": 257,
+            "draft_cells": 256,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        }
+      ]
+    },
+    {
+      "cap": 1,
+      "pid": 3202002,
+      "passed": true,
+      "exit_code": 0,
+      "ownership_closed": true,
+      "validation_warning_bytes": 0,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_unchanged": true,
+      "preload_activated": true,
+      "requests": [
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 33,
+          "finish": "length",
+          "drafts_accepted": 0,
+          "drafts_offered": 0,
+          "reused_tokens": 0,
+          "read_tokens": 33,
+          "output_ids_sha256": "265a4e66ed226ffd9a38f38d5e514697be455eb7cf4f70adbefb355e37471275",
+          "publications": 1
+        },
+        {
+          "generated_tokens": 32,
+          "prompt_tokens": 257,
+          "finish": "length",
+          "drafts_accepted": 0,
+          "drafts_offered": 0,
+          "reused_tokens": 0,
+          "read_tokens": 257,
+          "output_ids_sha256": "09b902743d301eb10b00840d70b02dc648f84cb70428e069c0240e94dc0f9d2d",
+          "publications": 1
+        }
+      ],
+      "routes": [
+        {
+          "target_windows": 32,
+          "first_T": 1,
+          "subsequent_T": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_draft": {
+            "read_tokens": 33,
+            "draft_cells": 32,
+            "batch_count": 1,
+            "path": "token",
+            "mode": 2
+          }
+        },
+        {
+          "target_windows": 32,
+          "first_T": 1,
+          "subsequent_T": 1,
+          "draft_rounds_delta": 0,
+          "cumulative_draft_rounds": 0,
+          "prompt_draft": {
+            "read_tokens": 257,
+            "draft_cells": 256,
+            "batch_count": 1,
+            "path": "batched",
+            "mode": 2
+          }
+        }
+      ]
+    }
+  ],
+  "runtime": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "preload": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "sha256": "bb6e1311850e4b1a924e42acae80c2b3610934625a4985aaa67967abe31356fc"
+      },
+      "component_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
+      "component_original_plan": {
+        "commit": "550c75f5fc954ee38b70230e32d2a48e12100d8a",
+        "path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+        "sha256": "d12866b93c51e76a83e95638e66b6f6f4e0e33d779516a5fddecc178a6f8e10a"
+      },
+      "retained_reference_until_exit": true,
+      "runtime_teardown_qualified": false
+    }
+  },
+  "passed": true,
+  "complete": true,
+  "active": false,
+  "ownership_closed": true,
+  "final_full_model_hashes": 15,
+  "production_selected": false,
+  "model_adoption_qualified": false,
+  "speed_eligible": false,
+  "limits": "Resident no-decode-draft retains MTP weights/KV/prompt precompute but omits generation KV catchup and proposals. Target verifier geometry also changesT4 toT1. This is a private attribution control,not full-MTP-off or an adopted decoder. State hashing of future MTP cells is disabled because this arm intentionally does not maintain them.",
+  "prior_failures": {
+    "INFO": "a0d0bdaab",
+    "fixed_output": "2e46bd5e7",
+    "unexecuted_short_prompt_parser": "42107a807",
+    "outcome": "All original failures/ineligible model receipts remain unchanged in Git;only freshv4 is qualified."
+  },
+  "artifact_retirement": {
+    "complete": true,
+    "files": 167,
+    "bytes": 40835188,
+    "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-mtp-short-serve-20261024.jsonl",
+    "manifest_sha256": "30f451d9776326b4fe183dd9ad16475041c939ebe03a5655c975c665b18f7b54",
+    "archive_commit": "426c270c65011f5393c5356d0363173156a4f872",
+    "replay": "All4 actual protocol/EOS/ID/request/route vectors,closed ownership,exact owned launch argv/environment maps,preload,stdout/stderr digests replay identically. Original9853 source/recipe and private source/compiler/SDK/MKL/1410 actual compiled inputs verified;all26 current native assets verify before/after.15 model full hashes passed after cohort and identities still match.",
+    "retained": "Selected original13 plus private13 for imminent official long MTP-net comparison. Full short-model record is now retired after the official comparison reconstructed/sealed its model/environment fields;new admission checks the committed short-proof scope. Private source/compiled-input record remain live. No failed old outcome is promoted.",
+    "post_retirement_admission_passed": true,
+    "post_retirement_admission_scope": "Read-only next-consumer gate verifies exact short-model receipt hash,original/private build inputs/assets and prior native/device qualification after deletion. Not a new GPU/model or speed result."
+  },
+  "next_gate": "Only after both fresh model arms pass,freeze matched official bench.sh thinking-on long strong/weak MTP,agent-session and independent prefill-preservation timing with prospective clock screens. Selected original decode remains unchanged. Bind every actual prompt chunk,including token fallback below64 cells;do not blindly reuse an all-batched long-only parser. Reconstruct/seal model/environment fields in the new plan before retiring the full short-model receipt."
+}

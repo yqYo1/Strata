@@ -12,6 +12,7 @@ from unittest.mock import patch
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'bench/sycl'))
 import client_resources as r
+import hardware_conditions as h
 
 PCI = '0000:05:00.0'
 
@@ -72,6 +73,24 @@ class ClientResourceTests(unittest.TestCase):
                 if variant=='cpu_rollback':rows[6]['process']['cpu_ticks']=0
                 if variant=='count':rows[-1]['eligible_samples']+=1
                 with self.assertRaises(ValueError):r.summarize_capture(rows,identity,'synthetic-boot',span)
+
+    def test_prefill_scope_does_not_qualify_short_decode_or_relax_capture_checks(self):
+        records,target,window=self.capture()
+        window['first_output_monotonic_ns']=6500000000
+        with self.assertRaises(ValueError):r.summarize_capture(records,target,'synthetic-boot',window)
+        result=r.summarize_capture(records,target,'synthetic-boot',window,before_only=True)
+        self.assertTrue(result['request_coverage_verified'])
+        self.assertIsNone(result['after_first_output'])
+        self.assertEqual(result['before_first_output']['contained_CPU_wall_seconds'],5.)
+        for variant in ('identity','terminal','coverage','counter','cpu_after_output'):
+            with self.subTest(variant=variant):
+                rows=copy.deepcopy(records);span=dict(window)
+                if variant=='identity':rows[0]['target']['start_ticks']+=1
+                if variant=='terminal':rows.pop()
+                if variant=='coverage':span['request_end_monotonic_ns']=11*10**9
+                if variant=='counter':rows[3]['engine_intervals'][0]['busy_fraction']=.9
+                if variant=='cpu_after_output':rows[-2]['process']['cpu_ticks']=0
+                with self.assertRaises(ValueError):r.summarize_capture(rows,target,'synthetic-boot',span,before_only=True)
 
     def test_pci_selector_is_validated_and_canonicalized(self):
         upper = '0000:AB:1F.0'
@@ -223,6 +242,83 @@ class ClientResourceTests(unittest.TestCase):
                 r.snapshot(target,PCI,proc)
             fields[0]='Z';(root/'stat').write_text('101 (zombie) '+' '.join(fields))
             with self.assertRaises(r.TargetExited):r.snapshot(target,PCI,proc)
+
+
+class HardwareConditionTests(unittest.TestCase):
+    def source_tree(self,base):
+        gpu=base/'sys/bus/pci/devices'/PCI
+        fields={'vendor':'0x8086','device':'0xe20c','tile0/gt0/freq0/act_freq':'2750',
+                'tile0/gt0/freq0/cur_freq':'2750','tile0/gt0/freq0/throttle/status':'0',
+                'tile0/gt0/freq0/throttle/reasons':'none','hwmon/hwmon1/name':'xe',
+                'hwmon/hwmon1/energy1_input':'1000000','hwmon/hwmon1/energy1_label':'card'}
+        for name,value in fields.items():
+            path=gpu/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(value)
+        proc=base/'proc';proc.mkdir()
+        for name,value in {'stat':'cpu 10 0 5 85 0 0 0 0 0 0\n','vmstat':'pswpin 0\npswpout 0\npgmajfault 4\n',
+                'meminfo':'MemAvailable: 123 kB\n','pressure/cpu':'some avg10=0.00 avg60=0.00 avg300=0.00 total=42\n'}.items():
+            path=proc/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_text(value)
+        return gpu,h.Conditions(PCI,base/'sys',proc)
+
+    def test_discovery_binds_gpu_and_reports_missing_or_malformed_sources(self):
+        with tempfile.TemporaryDirectory() as directory:
+            gpu,c=self.source_tree(Path(directory));row=c.capture()
+            self.assertEqual(row['values']['tile0/gt0/act_freq'],2750)
+            self.assertEqual(row['host']['vmstat']['pgmajfault'],4)
+            self.assertIn('host/pressure/io',row['errors'])
+            (gpu/'tile0/gt0/freq0/act_freq').write_text('-1')
+            bad=c.capture();self.assertNotIn('tile0/gt0/act_freq',bad['values'])
+            self.assertEqual(bad['errors']['tile0/gt0/act_freq'],'ValueError')
+            (gpu/'device').write_text('0xffff')
+            with self.assertRaises(ValueError):c.capture()
+
+    def test_signed_and_reset_counters_are_not_eligible_zeroes(self):
+        for value in ('-1','+1','1.0','1 MHz',''):
+            with self.assertRaises(ValueError):h.natural(value)
+        for a,b in ((None,1),(4,None),(5,4),(True,1)):
+            self.assertIsNone(h.interval_delta(a,b))
+        self.assertEqual(h.interval_delta(4,4),0)
+
+    def capture(self):
+        sources={'tile0/gt0/act_freq':dict(kind='uint'),'gpu/energy1/card/input':dict(kind='uint'),
+                 'tile0/gt0/throttle/reasons':dict(kind='text')}
+        rows=[dict(kind='header',conditions=dict(schema=1,sources=sources))]
+        for i in range(15):
+            rows.append(dict(kind='sample',begin_monotonic_ns=i*10**9,end_monotonic_ns=i*10**9+1,
+                process=dict(minor_faults=10+i,major_faults=2),
+                conditions=dict(begin_monotonic_ns=i*10**9+2,end_monotonic_ns=i*10**9+3,
+                    values={'tile0/gt0/act_freq':0 if i==3 else 2750,'gpu/energy1/card/input':100000000*i,
+                            'tile0/gt0/throttle/reasons':'none'},
+                    host={'stat':[10*i,0,5*i,85*i,0,0,0,0],'vmstat':dict(pswpin=i)},errors={})))
+        rows.append(dict(kind='terminal',collection_complete=True))
+        return rows
+
+    def test_window_is_contained_energy_units_and_zero_frequency_are_preserved(self):
+        result=h.summarize(self.capture(),1,14*10**9+3)
+        self.assertEqual(result['contained_samples'],14)
+        self.assertEqual(result['energy']['gpu/energy1/card/input']['average_watts'],100)
+        self.assertEqual(result['gauges']['tile0/gt0/act_freq']['zero_samples'],1)
+        self.assertEqual(result['gauges']['tile0/gt0/act_freq']['nonzero_median'],2750)
+        self.assertAlmostEqual(result['host_counters']['CPU']['busy_fraction'],.15)
+        self.assertEqual(result['host_counters']['native_faults']['major_faults']['sum'],0)
+        self.assertFalse(result['cpu_effective_frequency_qualified'])
+
+    def test_counter_reset_and_missing_gauge_are_not_discarded_as_idle(self):
+        rows=self.capture();rows[7]['conditions']['values']['gpu/energy1/card/input']=0
+        result=h.summarize(rows,0,15*10**9)
+        self.assertEqual(result['energy']['gpu/energy1/card/input']['invalid_intervals'],1)
+        self.assertIsNone(result['energy']['gpu/energy1/card/input']['average_watts'])
+        for row in rows[1:4]:del row['conditions']['values']['tile0/gt0/act_freq']
+        with self.assertRaises(ValueError):h.summarize(rows,0,15*10**9)
+
+    def test_header_missing_samples_bad_clock_and_incomplete_capture_refused(self):
+        for mode in ('header','missing','clock','terminal','window'):
+            rows=self.capture()
+            if mode=='header':del rows[0]['conditions']
+            if mode=='missing':del rows[4]['conditions']
+            if mode=='clock':rows[5]['conditions']['begin_monotonic_ns']=0
+            if mode=='terminal':rows[-1]['collection_complete']=False
+            with self.subTest(mode=mode),self.assertRaises(ValueError):
+                h.summarize(rows,0,5*10**9 if mode=='window' else 15*10**9)
 
 
 if __name__=='__main__':

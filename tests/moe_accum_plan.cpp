@@ -97,6 +97,47 @@ int main() {
         rejects([] { (void)Plan::make_scratch_borrowed(81920, 0, Region); });
         need(borrowed_cases == 6 && negative_checks == 36);
         std::printf("borrowed_cases=%zu borrowed_negative_checks=2 PASS\n", borrowed_cases);
+        const size_t previous_negatives = negative_checks;
+        size_t split_cases = 0;
+        for (int64_t rows : {81921, 90112, 98304, 106496, 114688, 117488}) {
+            const auto p = Plan::make_split_scratch(rows, Legacy, Region);
+            need(p.accumulator_primary_rows == 65536 &&
+                 p.accumulator_tail_rows == rows - 65536);
+            need(p.span(Plan::Plane::accumulator).bytes == 671088640);
+            need(p.region_bytes + p.tail_bytes <= Region);
+            need(p.accumulator_tail_bytes() == uint64_t(rows - 65536) * 10240);
+            need(p.accumulator_tail_allocation_bytes() >= p.accumulator_tail_bytes() + 256);
+            uint64_t mixed_primary = 0, mixed_tail = 0, acc_primary = 0, acc_tail = 0;
+            for (int64_t at = 0; at < rows; at += Plan::chunk) {
+                const int64_t count = std::min(Plan::chunk, rows - at);
+                const auto mix = p.mixed_piece(at, count), acc = p.accumulator_piece(at, count);
+                auto& mix_cursor = mix.tail ? mixed_tail : mixed_primary;
+                auto& acc_cursor = acc.tail ? acc_tail : acc_primary;
+                need(mix.offset == mix_cursor && acc.offset == acc_cursor);
+                mix_cursor += mix.bytes; acc_cursor += acc.bytes;
+                need(acc.tail == (at >= 65536));
+            }
+            need(mixed_primary == p.primary_bytes && mixed_tail == p.tail_bytes);
+            need(acc_primary == 671088640 && acc_tail == p.accumulator_tail_bytes());
+            // An exact fit is valid; one byte less must be refused, not aliased.
+            const auto exact = p.region_bytes + p.tail_bytes;
+            (void)Plan::make_split_scratch(rows, Legacy, exact);
+            rejects([&] { (void)Plan::make_split_scratch(rows, Legacy, exact - 1); });
+            rejects([&] { (void)Plan::make_scratch_borrowed(rows, Legacy, Region); });
+            rejects([&] { (void)p.accumulator_piece(1, 8192); });
+            rejects([&] { (void)p.accumulator_piece(rows, 1); });
+            ++split_cases;
+        }
+        const auto split = Plan::make_split_scratch(117488, Legacy, Region);
+        need(split.region_bytes + split.tail_bytes == 1163756800);
+        need(split.accumulator_tail_allocation_bytes() == 531988736);
+        rejects([] { (void)Plan::make_split_scratch(81920, Legacy, Region); });
+        rejects([] { (void)Plan::make_split_scratch(117489, Legacy, Region); });
+        rejects([] { (void)Plan::make_split_scratch(262144, Legacy, Region); });
+        rejects([] { (void)Plan::make_split_scratch(117488, 0, Region); });
+        need(split_cases == 6 && negative_checks - previous_negatives == 28);
+        std::printf("split_cases=%zu split_negative_checks=%zu PASS\n",
+                    split_cases, negative_checks - previous_negatives);
         std::puts("moe_accum_plan PASS GPU=UNRUN numeric=UNQUALIFIED lifetime=EXTERNAL_REQUIRED");
         return 0;
     } catch (const std::exception& error) {

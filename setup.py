@@ -412,7 +412,14 @@ def cpu_info():
     else:
         try:
             txt = open("/proc/cpuinfo").read()
-            flags = set(re.search(r"^flags\s*:\s*(.*)$", txt, re.M).group(1).split())
+            mflags = re.search(r"^flags\s*:\s*(.*)$", txt, re.M)
+            if mflags is None:
+                # ARM lists Features instead of x86 flags. Name heterogeneous
+                # cores without claiming AVX or an available ARM engine.
+                cores = re.findall(r"^\s*Model name:\s*(.+)$", out(["lscpu"]), re.M)
+                name = " + ".join(dict.fromkeys(c.strip() for c in cores)) or (platform.processor() or "arm64 CPU")
+                return name, False, False
+            flags = set(mflags.group(1).split())
             avx2 = "avx2" in flags
             avx512 = {"avx512f", "avx512bw", "avx512vl", "avx512_vnni", "avx512vbmi"} <= flags
             m = re.search(r"^model name\s*:\s*(.*)$", txt, re.M)

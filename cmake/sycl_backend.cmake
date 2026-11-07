@@ -35,6 +35,12 @@ add_executable(sycl_transfer_ceiling EXCLUDE_FROM_ALL
   ${PROJECT_SOURCE_DIR}/bench/sycl/transfer_ceiling.cpp)
 target_link_libraries(sycl_transfer_ceiling PRIVATE strata_sycl_runtime)
 target_compile_features(sycl_transfer_ceiling PRIVATE cxx_std_17)
+add_executable(sycl_mapped_row_copy_component EXCLUDE_FROM_ALL
+  tests/sycl/mapped_row_copy.cpp src/kernels/sycl/elementwise.cpp)
+target_include_directories(sycl_mapped_row_copy_component PRIVATE src/kernels/sycl)
+target_link_libraries(sycl_mapped_row_copy_component PRIVATE strata_sycl_runtime strata_warnings)
+target_compile_features(sycl_mapped_row_copy_component PRIVATE cxx_std_20)
+target_compile_options(sycl_mapped_row_copy_component PRIVATE -fno-fast-math -ffp-contract=off)
 
 target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/include/strata/sycl/compat)
 # The compiler's default asserts every global range fits in signed int. Large
@@ -97,6 +103,9 @@ target_sources(strata_kernels PRIVATE src/kernels/sycl/native_mmq_xmx.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_attention_late_flags.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_bf16_packed.cpp src/kernels/sycl/qsa_bf16_prefix.cpp)
+target_sources(strata_kernels PRIVATE src/kernels/sycl/qsa_topk_prefill_early.cpp)
+set_source_files_properties(src/kernels/sycl/qsa_topk_prefill_early.cpp PROPERTIES
+  COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 set_source_files_properties(src/kernels/sycl/qsa_bf16_attention.cpp
   src/kernels/sycl/qsa_bf16_attention_late_flags.cpp
   src/kernels/sycl/qsa_bf16_packed.cpp src/kernels/sycl/qsa_bf16_prefix.cpp PROPERTIES
@@ -108,16 +117,27 @@ set_source_files_properties(src/kernels/sycl/fused_gdn.cpp PROPERTIES
   COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 
 # Manual component targets: no automatic GPU execution in CTest.
+add_executable(sycl_q6_columns_bench EXCLUDE_FROM_ALL bench/sycl/q6_columns.cpp)
+target_link_libraries(sycl_q6_columns_bench PRIVATE strata_kernels)
+target_compile_options(sycl_q6_columns_bench PRIVATE -fno-fast-math -ffp-contract=off)
 add_executable(sycl_submission_test EXCLUDE_FROM_ALL tests/sycl/compat.cpp)
 target_link_libraries(sycl_submission_test PRIVATE strata_sycl_runtime)
+add_executable(sycl_graph_envelope_test EXCLUDE_FROM_ALL tests/sycl/graph_envelope.cpp)
+target_link_libraries(sycl_graph_envelope_test PRIVATE strata_sycl_runtime)
+add_executable(iq2_phase_host_test EXCLUDE_FROM_ALL tests/cpu/iq2_phase.cpp)
+target_include_directories(iq2_phase_host_test PRIVATE ${PROJECT_SOURCE_DIR}/third_party/ggml)
+target_link_libraries(iq2_phase_host_test PRIVATE strata_kernels_cpu)
 add_executable(kv_copy_groups_host_fixture EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_host.cpp)
 target_compile_features(kv_copy_groups_host_fixture PRIVATE cxx_std_17)
 target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_DIR}/include)
 add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_bench.cpp)
 target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_kernels)
 target_compile_options(sycl_kv_copy_groups_bench PRIVATE -fno-fast-math -ffp-contract=off)
-add_executable(sycl_gdn_columns_bench EXCLUDE_FROM_ALL bench/sycl/gdn_columns.cpp)
-target_link_libraries(sycl_gdn_columns_bench PRIVATE strata_kernels)
+# Compile the production GDN source directly for this bounded component fixture;
+# other engine kernels are not dependencies of this target.
+add_executable(sycl_gdn_columns_bench EXCLUDE_FROM_ALL
+  bench/sycl/gdn_columns.cpp src/kernels/sycl/fused_gdn.cpp)
+target_link_libraries(sycl_gdn_columns_bench PRIVATE strata_sycl_runtime)
 target_compile_options(sycl_gdn_columns_bench PRIVATE -fno-fast-math -ffp-contract=off)
 set_source_files_properties(src/kernels/sycl/native_q5_head.cpp src/kernels/sycl/native_q3_esimd.cpp src/kernels/sycl/native_q4_esimd.cpp src/kernels/sycl/native_q2_esimd.cpp src/kernels/sycl/native_iq4xs_esimd.cpp src/kernels/sycl/native_q2.cpp src/kernels/sycl/rope.cpp src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/ple.cpp src/kernels/sycl/s2_experts.cpp PROPERTIES COMPILE_OPTIONS "-fno-fast-math")
 
@@ -174,6 +194,22 @@ target_link_libraries(strata PRIVATE strata_prefill strata_spec)
 
 option(STRATA_SYCL_TESTS "Build GPU parity and runtime tests for SYCL" ON)
 if(STRATA_SYCL_TESTS)
+  # Explicit component target: exercises private expert-bank upload and its
+  # bounded host-USM staging without loading a model or building an engine.
+  add_executable(sycl_expert_bank_test EXCLUDE_FROM_ALL
+    tests/sycl/expert_bank.cpp src/core/expert_cache.cpp)
+  target_link_libraries(sycl_expert_bank_test PRIVATE strata_sycl_runtime)
+  target_compile_features(sycl_expert_bank_test PRIVATE cxx_std_20)
+
+  # Explicit diagnostic entrypoint: the normal strata target keeps its original
+  # admission/decode path. Building this does not qualify physical context fill.
+  add_executable(strata_full_context_diagnostic EXCLUDE_FROM_ALL src/program/generate.cpp src/program/dense_prefill_nll.cpp)
+  target_link_libraries(strata_full_context_diagnostic PRIVATE strata_prefill strata_spec)
+  target_compile_definitions(strata_full_context_diagnostic PRIVATE STRATA_SYCL_FULL_CONTEXT_DIAGNOSTIC=1)
+  # CPU-only request/final-slot and independent KV hash-order bounds controls.
+  add_executable(full_context_diagnostic_host_test EXCLUDE_FROM_ALL tests/core/full_context_diagnostic_test.cpp)
+  target_include_directories(full_context_diagnostic_host_test PRIVATE include)
+  target_compile_features(full_context_diagnostic_host_test PRIVATE cxx_std_17)
   add_executable(sycl_command_profile_test EXCLUDE_FROM_ALL tests/sycl/command_profile.cpp)
   target_link_libraries(sycl_command_profile_test PRIVATE strata_sycl_runtime)
   target_compile_features(sycl_command_profile_test PRIVATE cxx_std_20)
@@ -441,6 +477,11 @@ if(STRATA_SYCL_TESTS)
   add_executable(sycl_qsa_select_radix_test EXCLUDE_FROM_ALL tests/sycl/qsa_select_radix.cpp)
   target_link_libraries(sycl_qsa_select_radix_test PRIVATE strata_kernels)
   target_compile_options(sycl_qsa_select_radix_test PRIVATE -fno-fast-math -ffp-contract=off)
+  # Supervised manual fixture: immutable pre-exec policy and three owner gates.
+  add_executable(sycl_qsa_topk_prefill_entry_test EXCLUDE_FROM_ALL tests/sycl/qsa_topk_prefill_entry.cpp)
+  target_link_libraries(sycl_qsa_topk_prefill_entry_test PRIVATE strata_kernels ${CMAKE_DL_LIBS})
+  target_compile_features(sycl_qsa_topk_prefill_entry_test PRIVATE cxx_std_20)
+  target_compile_options(sycl_qsa_topk_prefill_entry_test PRIVATE -fno-fast-math -ffp-contract=off)
 
   add_executable(sycl_qsa_score_prefill_test EXCLUDE_FROM_ALL tests/sycl/qsa_score_prefill.cpp)
   target_link_libraries(sycl_qsa_score_prefill_test PRIVATE strata_kernels)
@@ -460,6 +501,13 @@ if(STRATA_SYCL_TESTS)
   add_executable(sycl_native16_qsa_test EXCLUDE_FROM_ALL tests/sycl/qsa_native16.cpp)
   target_link_libraries(sycl_native16_qsa_test PRIVATE strata_prefill)
   target_compile_options(sycl_native16_qsa_test PRIVATE -fno-fast-math -ffp-contract=off)
+  # Original selected planner's capacity/overflow checks, without the retired
+  # prefix fallback. Main invokes this in the restoration host preflight.
+  add_executable(prefill_expert_bank_plan_test EXCLUDE_FROM_ALL tests/expert_bank_plan.cpp)
+  target_include_directories(prefill_expert_bank_plan_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  target_compile_features(prefill_expert_bank_plan_test PRIVATE cxx_std_20)
+  add_executable(sycl_conversation_snapshot_test EXCLUDE_FROM_ALL src/core/conversation_snapshot_test.cpp)
+  target_link_libraries(sycl_conversation_snapshot_test PRIVATE strata_engine)
   add_executable(sycl_prompt_native16_test EXCLUDE_FROM_ALL tests/sycl/prompt_native16.cpp)
   target_link_libraries(sycl_prompt_native16_test PRIVATE strata_kernels)
   target_compile_options(sycl_prompt_native16_test PRIVATE -fno-fast-math -ffp-contract=off)
@@ -569,3 +617,8 @@ if(STRATA_SYCL_TESTS)
   add_test(NAME sycl_moe COMMAND sycl_moe_test)
   set_tests_properties(sycl_moe PROPERTIES TIMEOUT 90)
 endif()
+
+# Main-owned production-wrapper GDN storage qualification (repository LICENSE).
+add_executable(sycl_gdn_storage_pipeline_bench EXCLUDE_FROM_ALL bench/sycl/gdn_storage_pipeline.cpp)
+target_link_libraries(sycl_gdn_storage_pipeline_bench PRIVATE strata_prefill)
+target_compile_options(sycl_gdn_storage_pipeline_bench PRIVATE -fno-fast-math -ffp-contract=off)

@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.22)
+project(strata_cpu_decode_mix LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Reuse the measured engine's frozen CPU sources when its composition differs
+# from the public worktree. The controller pins this root and its inputs.
+set(STRATA_CPU_SOURCE_ROOT "" CACHE PATH "Frozen Strata source root for CPU calibration")
+if(STRATA_CPU_SOURCE_ROOT)
+  set(cpu_reference "${STRATA_CPU_SOURCE_ROOT}/bench/sycl/cpu_roofline")
+else()
+  set(cpu_reference "${CMAKE_CURRENT_LIST_DIR}/../cpu_roofline")
+endif()
+add_subdirectory("${cpu_reference}" reference EXCLUDE_FROM_ALL)
+add_executable(cpu_decode_mix main.cpp)
+target_compile_options(cpu_decode_mix PRIVATE -march=znver3 -mtune=znver3)
+target_link_libraries(cpu_decode_mix PRIVATE expert_cpu)

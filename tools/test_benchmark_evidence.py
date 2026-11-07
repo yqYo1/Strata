@@ -41,6 +41,9 @@ class EvidenceTests(unittest.TestCase):
         proof = generation.warmup_reconciliation(entries)
         self.assertEqual(proof['successful_warmups'],4)
         self.assertEqual(proof['successful_long_requests'],1)
+        larger=copy.deepcopy(entries);larger[-2]['max_tokens']=32768
+        with self.assertRaises(RuntimeError):generation.warmup_reconciliation(larger)
+        self.assertEqual(generation.warmup_reconciliation(larger,maximum_output=32768)['successful_long_requests'],1)
         for variant in ('missing','extra','reordered','failed','thinking','hash','request_index'):
             with self.subTest(variant=variant):
                 rows = copy.deepcopy(entries)

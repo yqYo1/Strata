@@ -1,0 +1,140 @@
+{
+  "source_commit": "05223b55965c98fc82be660dbde3a5215027b5d9",
+  "build_record_sha256": "fdc12c154be51752e09545e5df1e022c62ec0a619d1ad8005e0f40fec47fbbc8",
+  "fixture": {
+    "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+    "sha256": "e5b0a849430591402f29dc14bd09c5305b216c4f4e0a42692feec6c125416ed8"
+  },
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/yayoi",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "LD_LIBRARY_PATH": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+    "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+    "UR_ADAPTERS_FORCE_LOAD": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_adapter_level_zero_v2.so.0",
+    "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+    "NEOReadDebugKeys": "1",
+    "EnableDirectSubmission": "0",
+    "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+    "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+    "SYCL_CACHE_PERSISTENT": "0",
+    "ZES_ENABLE_SYSMAN": "0",
+    "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+    "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+    "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+    "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+    "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-graph-support-v1/tmp",
+    "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mtp-graph-support-v1/cache",
+    "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+    "STRATA_UR_PROBE_EXPECTED_LOADER": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0"
+  },
+  "runtime_asset_delta": {
+    "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39395": {
+      "qualified_sha256": "dfa844e5afd8e8f74bf5ce9da3ea2837706d9116bc8efeaed90efba5acaf7b1c",
+      "candidate_sha256": "50adb6b727d027309039803033d41efeae4b248589ee363f321c0d538c7de3ff"
+    },
+    "/usr/lib/x86_64-linux-gnu/libudev.so.1.7.8": {
+      "qualified_sha256": "4298228175fa62a36af88b1afd4406cdd8b1bf166621f957d0dbbde45a698fe5",
+      "candidate_sha256": "0d6934adafb2ef3c640382440c14d6bd60f391e688c000796ffcea0c72849269"
+    }
+  },
+  "checks": [
+    {
+      "profile": 0,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+        "--profile=0"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "stdout_sha256": "8ead80115559fba31453d1e57d8d58ed2b1bc7536407992b51986dd09c54e2f5",
+      "stderr_sha256": "0236bafaf0be842e45426872c876a9a84832c623c8d5d4ac0820a0b9c835defc",
+      "validation": {
+        "pid": 3272960,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "passed": true,
+      "support": "NOT_ENABLED",
+      "samples": []
+    },
+    {
+      "profile": 1,
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/sycl_graph_envelope_test",
+        "--profile=1"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "stdout_sha256": "298a46e097d6dc00096344017a587b75658aaebddbc472f9a302f8d6b0b41a3e",
+      "stderr_sha256": "28ddff87a4c4f6f5463256fd07bc1c0091dde35c0c8716d302f031242f8f8a1e",
+      "validation": {
+        "pid": 3272979,
+        "loader": "/home/yayoi/ghq/github.com/MistVVK/XeStrata/.worktree/fix-xestrata-e32-host-handoff-20261011/.tools/intel-llvm-v711/install/lib/libur_loader.so.0.12.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "passed": true,
+      "support": "SUPPORTED",
+      "samples": [
+        {
+          "replay": 0,
+          "status": 0,
+          "fields": 7,
+          "submit": 954577260811448,
+          "start": 954577261852604,
+          "end": 954577261863958,
+          "timer_resolution": 52,
+          "query_ns": 135485,
+          "envelope_qualified": 1,
+          "queue_delay_qualified": 1
+        },
+        {
+          "replay": 1,
+          "status": 0,
+          "fields": 7,
+          "submit": 954577263292260,
+          "start": 954577263359270,
+          "end": 954577263370000,
+          "timer_resolution": 52,
+          "query_ns": 118804,
+          "envelope_qualified": 1,
+          "queue_delay_qualified": 1
+        }
+      ]
+    }
+  ],
+  "complete": true,
+  "passed": true,
+  "active": false,
+  "consumer": "Immediate graph-support decision before MTP model attribution; retire successful full traces after recording the decision.",
+  "prospective_gate": "Separate profile-off/on processes pass numerical guards, event provenance, two replay clocks and checked teardown with no fresh faults. Exit77 is UNKNOWN, not a pass; no retry.",
+  "limits": "Tiny fixture only; no engine/model qualification, observer overhead, arithmetic service, hardware saturation or speed claim.",
+  "ownership_closed": true,
+  "fresh_faults": [],
+  "driver_after": {
+    "pci": "/sys/bus/pci/devices/0000:05:00.0",
+    "driver": "xe",
+    "vendor": "0x8086",
+    "device": "0xe20c",
+    "kernel": "7.0.0-38-generic",
+    "devcoredump": false
+  },
+  "boot_unchanged": true
+}

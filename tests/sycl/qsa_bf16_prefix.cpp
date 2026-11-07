@@ -20,6 +20,7 @@
 using namespace strata;
 using namespace strata::kernels;
 namespace {
+constexpr auto prefix_attention=qsa_bf16_prefix_batch;
 std::shared_ptr<sycl_backend::Runtime> rt;
 void require(bool x, const char *message) { if (!x) throw std::runtime_error(message); }
 void drain() noexcept {
@@ -63,7 +64,11 @@ void gate(bool enabled,const char *phase) {
 }
 
 void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=0) {
-  constexpr int Heads=24,KV=2,Dim=256,Page=16;
+#ifndef STRATA_QSA_TEST_PAGE_SIZE
+#define STRATA_QSA_TEST_PAGE_SIZE 16
+#endif
+  constexpr int Heads=24,KV=2,Dim=256,Page=STRATA_QSA_TEST_PAGE_SIZE;
+  static_assert(Page==4 || Page==16);
 #ifdef STRATA_QSA_PACKED_GUARD
   constexpr int PackedGuard=STRATA_QSA_PACKED_GUARD;
 #else
@@ -128,7 +133,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   auto attention=[&](const uint16_t *qin,const QsaAttnPools &p,const int32_t *ii,const int32_t *ss,
                      int64_t c,const QsaShapes &sh,uint16_t *o,int64_t nq,
                      const QsaPromptBf16Bounds &b,void *stream) {
-    return qsa_bf16_prefix_batch(qin,p,ii,ss,c,sh,o,nq,b,live_cells,scratch,stream);
+    return prefix_attention(qin,p,ii,ss,c,sh,o,nq,b,live_cells,scratch,stream);
   };
   auto packed_guards=[&] {
     auto a=packed_k.get(),b=packed_v.get();auto bad=packed_bad.get();
@@ -148,10 +153,16 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
         out.data()+16,queries,{pages,pages},live_cells,scratch,&rt->compute()),"prefix33 reference unavailable");
     rt->wait();require(out.get()==candidate,"complete prefix33 bit identity");
 #if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
-    // Capture both real and padded rows. The diagnostic specialization must
+    // Capture real heads (or representative real/padded rows) as selected below.
+    // The diagnostic specialization must
     // preserve the corresponding normal output, including NaNs and guards.
     // Compare raw FP32 bits before final BF16 output could hide a difference.
-    for (int kv_head : {0,1}) for (int head : {0,15}) {
+    for (int kv_head : {0,1})
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
+    for (int head=0;head<Heads/KV;++head) {
+#else
+    for (int head : {0,15}) {
+#endif
       std::vector<float> serial;
       for (bool ordered : {false,true}) {
         state.put(state_initial);out.put(sentinel);
@@ -291,6 +302,18 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     const auto saved_table=table;std::fill(table.begin(),table.end(),-1);dt.put(table);invoke();
     auto z=guarded();for (size_t i=16;i<z.size()-16;++i) require(z[i]==0,"all missing pages zero");immutable();
     table=saved_table;dt.put(table);
+    // Positive IDs beyond the logical page table must be masked before its
+    // lookup. Include the exact boundary, a later page and the largest int32
+    // ID; all-invalid selections must produce zero without touching guards.
+    const auto valid_ids=ids;
+    for (int32_t cell : {int32_t(pages*Page),int32_t((pages+1)*Page),
+                         std::numeric_limits<int32_t>::max()}) {
+      std::fill(ids.begin(),ids.end(),cell);di.put(ids);invoke();z=guarded();
+      for (size_t i=16;i<z.size()-16;++i) require(z[i]==0,"positive logical-page overflow zero");
+      immutable();
+    }
+    ids=valid_ids;di.put(ids);invoke();require(guarded()==y,"restore after logical-page overflow");immutable();
+    std::cout<<"case positive_logical_page_overflow=PASS status=PASS\n";
     const auto saved_steps=steps;
     for (int width : {0,-1,cap+1}) {
       for (int b=0;b<queries;++b) steps[b*kStepCount+kStepWidth]=width;
@@ -313,7 +336,13 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     for (int invalid=0;invalid<8;++invalid) {
       QsaPrefixStateProbe probe{0,0,0,state.data()+16};
       if (invalid==0) probe.query=queries;
-      if (invalid==1) probe.head=16;
+      if (invalid==1) {
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
+        probe.head=12;
+#else
+        probe.head=16;
+#endif
+      }
       if (invalid==2) probe.kv_head=2;
       if (invalid==3) probe.states=nullptr;
       if (invalid==4) probe.states=reinterpret_cast<float *>(out.data()+16); // Actual output, after the guard.
@@ -349,7 +378,7 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       if (variant==2) bad.bad_rows=reinterpret_cast<int32_t *>(bad.k);
       if (variant==3) bad.bad_rows=table.data(); // Host memory is not a device allocation.
       bool refused=false;
-      try { (void)qsa_bf16_prefix_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)prefix_attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},live_cells,bad,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"scratch overlap/domain rejected before either kernel");
@@ -357,16 +386,16 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
     }
     { Buffer<uint16_t> tiny(1); Drain pending_tiny;auto bad=scratch;bad.k=tiny.data();
       bool refused=false;
-      try { (void)qsa_bf16_prefix_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)prefix_attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},live_cells,bad,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"complete scratch extent rejected before either kernel");
       require(guarded()==y,"short scratch rejection preserves output");
     }
-    require(qsa_bf16_prefix_batch(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{}, 0,{},&rt->compute()),"zero-query no-op");
+    require(prefix_attention(nullptr,{},nullptr,nullptr,0,{},nullptr,0,{}, 0,{},&rt->compute()),"zero-query no-op");
     for (int64_t bad_live : {int64_t(0),int64_t(-1),int64_t(pages*Page+1)}) {
       bool refused=false;
-      try { (void)qsa_bf16_prefix_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,
+      try { (void)prefix_attention(dq.data(),pools,di.data(),ds.data(),cap,shape,
           out.data()+16,queries,{pages,pages},bad_live,scratch,&rt->compute()); }
       catch (const std::invalid_argument &) { refused=true; }
       require(refused,"invalid live prefix rejected before either submission");
@@ -380,7 +409,11 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
            <<" packed_guard_elements="<<PackedGuard<<" packed_k_mod8="<<reinterpret_cast<uintptr_t>(scratch.k)%8
            <<" packed_logical_prefix=PASS packed_guards=PASS guards=PASS inputs=PASS status=PASS\n";
 #if defined(STRATA_QSA_COMPARE_PREFIX_STATE)
+#if defined(STRATA_QSA_REAL_HEAD_STATE)
+  std::cout<<"case exact_FP32_online_state=PASS all12real_heads=PASS state_guards=PASS cells="<<cells<<" cap="<<cap<<'\n';
+#else
   std::cout<<"case exact_FP32_online_state=PASS real_padded_heads=PASS state_guards=PASS cells="<<cells<<" cap="<<cap<<'\n';
+#endif
 #endif
 #if defined(STRATA_QSA_COMPARE_PREFIX33)
   std::cout<<"case exact_prefix33_bits=PASS cells="<<cells<<" cap="<<cap<<" queries="<<queries<<'\n';

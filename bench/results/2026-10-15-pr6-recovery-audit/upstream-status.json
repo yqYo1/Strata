@@ -1,44 +1,55 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-10-19T21:24:52.909428+00:00",
+  "queried_utc": "2026-11-06T20:27:33+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "revision": "84e864c577951d5c51d25103c0ba7c1e334b9b4d",
+    "revision": "5943022da76d6ee75b6b9af6cf5dd71dd73c40ff",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
-    "observed_sha": "477ac13cbe8e582c20484871ce459d20d82df09d",
-    "queried_utc": "2026-10-17T21:18:59.594534+00:00",
-    "sha256": "4992eecdad91822d7650763bf7a2389e9a4ee64b8a8bcfba9b64aa3168d3f2f8"
+    "observed_sha": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "queried_utc": "2026-11-04T21:34:43.645370+00:00",
+    "sha256": "52e29f9c2c172dd1578cc5b874b64cac16c0e7a5d0226d2949e2f4572bad73e5"
   },
-  "observed_sha": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+  "observed_sha": "54828c7efbcdf9474697e70922d851f6707f4b32",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
     "git",
+    "-C",
+    "/home/yayoi/ghq/github.com/Niko1221/Strata",
+    "-c",
+    "url.https://github.com/.insteadOf=git@github.com:",
+    "-c",
+    "credential.https://github.com.helper=!gh auth git-credential",
     "fetch",
-    "--no-tags",
-    "origin",
-    "refs/heads/main:refs/remotes/origin/main"
+    "origin"
   ],
   "remote_check": [
-    "e88ee39d1d6be6e3364183af3b39b62a7ed6f211\tHEAD",
-    "e88ee39d1d6be6e3364183af3b39b62a7ed6f211\trefs/heads/main"
+    "54828c7efbcdf9474697e70922d851f6707f4b32\tHEAD",
+    "54828c7efbcdf9474697e70922d851f6707f4b32\trefs/heads/main"
   ],
   "new_interval": {
-    "commits": 789,
-    "changed_paths": 1284,
-    "shortstat": "1284 files changed, 220159 insertions(+), 3181 deletions(-)"
+    "start": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
+    "commits": 209,
+    "changed_paths": 338,
+    "tags_at_target": [],
+    "release_tag": "v0.2.11",
+    "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
+    "describe": "v0.2.11-4-g54828c7e",
+    "source_access": "Immutable fetched Git objects via git show/diff;no additional branch,checkout or build created.",
+    "inspection": "Fetched origin/main and actual ls-remote HEAD/main agree. Previous target is an ancestor. Source-delta review,functional integration and unmodified hardware-tuned performance evaluation remain pending;no inference change from this check."
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
   "whole_function_ledger_complete": false,
   "required_function_port_complete": false,
   "new_inference_components_adopted": [],
-  "current_engine_source_commit": "246415bfc3f8d68242b067ca49723c23c3e96be7",
-  "current_engine_sha256": "1c84da96dfcbcb35efaaef8ce4bccc1d078f58bc36e697dd82b3485fcdab6d11",
+  "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
+  "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-10-21T21:24:52.909428+00:00",
-  "pending": "Review the new477ac13c..e88ee39d interval and the existing7695859..477ac13c obligations. Port required non-inference functionality; select inference per component and prefill/decode separately. Unmodified hardware-tuned upstream official-bench performance remains unmeasured; current diagnostic does not qualify a model or complete synchronization.",
+  "next_check_utc": "2026-11-08T20:27:33+00:00",
+  "pending": "Review ffa80d73..54828c7e(v0.2.11+4) and continue v0.2.10 and earlier required functional ports/whole-ledger obligations. Complete unmodified hardware-tuned upstream long,agent-session and thinking-on generation evaluation. Fetch/source review is not integration or inference adoption. Preserve the maintained independent prefill/decode selections;current tuning and qualification are recorded in docs/SYCL_NATIVE16_PREFILL.md.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -335,13 +346,170 @@
       },
       {
         "feature": "benchmark_readiness_configured_host",
-        "status": "required_pending",
+        "status": "ported_focused_and_caller_tests_passed",
         "meaning": "Add one new shared tooling row, only once despite appearing in both reports. Local readiness polling must use the configured bind host, map wildcard binds to loopback, bracket IPv6 literals, and leave explicit --url to its caller.",
         "target_tests": [
           "tools/test_bench_host.py::ServerBase"
         ],
         "complement_source": "tools/strata_bench.py::server_base and local readiness call, diff around lines 40456-40471",
-        "claim_limit": "Unit coverage validates URL construction, not whether a running server is reachable."
+        "claim_limit": "Unit coverage validates URL construction, not whether a running server is reachable.",
+        "port_source": {
+          "upstream": "Niko1221/Strata",
+          "revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+          "license": "Root LICENSE identical MIT SHA256949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+          "files": [
+            "tools/strata_bench.py::server_base and local readiness base",
+            "tools/test_bench_host.py"
+          ],
+          "local_complement": "Keep all local scaling/long-generation/eligibility extensions and --url precedence;add main-path mocked probes without HTTP/server/model execution. No native inference or XeStrata source."
+        },
+        "validation_plan": [
+          "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /usr/bin/python3.12 -I -S -B -c 'import sys,unittest; sys.path[:0]=[\"/home/yayoi/orca/workspaces/Strata/sycl\",\"/home/yayoi/orca/workspaces/Strata/sycl/tools\"]; unittest.main(module=None,argv=[\"unittest\",\"tools.test_bench_host\",\"tools.test_strata_bench\",\"tools.test_benchmark_evidence\"])'"
+        ],
+        "implementation_source_commit": "9b58c7671f75c4dee391377d7bca5187f69b1f17",
+        "validation": {
+          "tests": 43,
+          "exit_code": 0,
+          "seconds": 0.544,
+          "scope": "7 host-helper/caller cases plus21benchmark and15evidence regression tests. Mocked main probes verify configured LAN/IPv6/port override and explicitURL precedence;no HTTP/server/model/GPU execution or reachability qualification. Existing expected negative-test FAILED diagnostic is not a suite failure."
+        }
+      },
+      {
+        "feature": "responses_codex_v027_compatibility",
+        "status": "partial_additional_tools_port_passed",
+        "meaning": "Accept additional_tools input items and merge their tools; optionally answer Codex thread-title turns without loading the engine; retain the prompt's tool definitions for the same conversation's compaction request; accept 0/-1 as uncapped output; correct tool-call item/final-turn event status handling.",
+        "existing_fork_baseline": "The fork already serves stateless POST /v1/responses, maps input/tool items, and assembles stream/nonstream events. Its pinned responses.py lacks the 5e8a additional_tools, thread-title, and prompt-tool compaction helpers; its request validator still rejects zero/negative max_output_tokens.",
+        "upstream_revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+        "source_pointers": [
+          "serve/responses.py::input_messages, request_tools, thread_title_events, prompt_tools, prompt_made, check_request, Assembler",
+          "serve/server.py:7693-7848 (_responses preparation, opt-in title/compaction handling, tool-aware format call)",
+          "serve/test_responses.py::test_additional_tools_input_items_are_accepted and compaction/thread-title coverage"
+        ],
+        "next_action": "Port remaining Codex thread-title/compaction/output-limit and tool-final event semantics with their own callers/tests;additional_tools slice now passes20Responses tests.",
+        "dependencies": "Existing server request context and stream assembler only. Thread-title and compaction behavior are configuration-gated upstream; preserve the fork's own prompt-cache and cancellation semantics.",
+        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2",
+        "additional_tools_slice": {
+          "source_commit": "61a893cee4f0ae69b2bc0f3b2175b434cf153cd3",
+          "provenance": {
+            "upstream": "Niko1221/Strata",
+            "revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+            "license": "MIT,root LICENSE identical949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+            "upstream_files_sha256": {
+              "serve/responses.py": "aba98b4aba933fe55cf699985add2e1014a66dacb55ed768ca9aa404c3fcb29b",
+              "serve/test_responses.py": "49e54abcce9fc0521597abf742b579ad3f7eb9a5f20f648e9020d95b2d16fb89"
+            },
+            "scope": "Exact input_messages/request_tools additions and upstream Parsing test only;existing fork functionality retained. No engine/GPU changes."
+          },
+          "attempts": [
+            {
+              "command": "/usr/bin/python3.12 -B -m unittest serve.test_responses",
+              "tests": 20,
+              "errors": 11,
+              "exit_code": 1,
+              "seconds": 0.051,
+              "ownership_closed": true,
+              "error": "System interpreter lacks existing regex dependency;HTTP setup failed. Original failure remains failed;9 parsing tests ran including new additional_tools case."
+            },
+            {
+              "command": "/home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_responses",
+              "source_commit": "61a893cee4f0ae69b2bc0f3b2175b434cf153cd3",
+              "tests": 20,
+              "seconds": 5.811,
+              "exit_code": 0,
+              "ownership_closed": true,
+              "scope": "Parsing plus mock HTTP/nonstream/stream/tool round-trip tests. Existing telemetry proc-file ResourceWarnings remain;no native engine/GPU execution or model performance claim."
+            }
+          ],
+          "validation_plan": {
+            "command": "/home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_responses",
+            "wall_seconds": 90,
+            "cpu_seconds": 90,
+            "rss_bytes": 2147483648,
+            "text_bytes": 2097152,
+            "scope": "Existing project environment with regex2026.9.29;full Responses parsing/HTTP/stream/tool tests. Mock engine only,no native performance claim."
+          }
+        }
+      },
+      {
+        "feature": "structured_json_v027_compatibility",
+        "status": "partial_root_union_port_focused_and_caller_tests_passed",
+        "meaning": "Accept root unions that only produce objects; optionally repair invalid LaTeX backslashes after strict parsing fails; extract the first JSON object/fenced JSON before validation; for Responses, allow tool turns and apply the schema to the final answer only. Invalid/incomplete final output remains an error.",
+        "existing_fork_baseline": "Fork already imports serve.structured and validates json_object/json_schema output, but requires type=object at the schema root, rejects structured Responses requests with tools, and has no opt-in LaTeX escape repair or extraction of a JSON object from a fenced/prefaced answer.",
+        "upstream_revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+        "source_pointers": [
+          "serve/structured.py::_only_objects, prepare_format(with_tools), repair_latex_escapes, extract_json, validated_json",
+          "serve/server.py:7803 (Responses passes with_tools=bool(tools)); serve/structured.py:258 (opt-in repair after strict parse failure)",
+          "serve/test_structured.py::test_root_unions_of_object_shapes_are_accepted, test_latex_escape_repair_is_opt_in_and_only_after_a_strict_failure, test_invalid_generation_is_an_error_and_never_streams_content"
+        ],
+        "next_action": "Port the remaining opt-in escape repair,JSON extraction and Responses final-answer-with-tools deltas;repeat affected schema tests with the optional dependency before claiming its full validation contract.",
+        "dependencies": "The new with_tools behavior is Responses-specific. Keep chat-route tool restrictions and streaming buffering/errors unchanged unless its own upstream delta requires change.",
+        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2",
+        "port_source": {
+          "upstream": "Niko1221/Strata",
+          "revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+          "license": "Root MIT identity matches SHA256949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+          "slice": "serve/structured.py::_only_objects and root-format check;two upstream HTTP-boundary tests in serve/test_structured.py. Existing format handling/server/native paths retained. Upstream serve/test_responses.py::OverHttp.test_json_schema_text_format optional-dependency guard;preserve valid/nonstream/stream checks.",
+          "upstream_file_sha256": {
+            "serve/structured.py": "80b272499fe6264bb818c5bc68cece27cfb495c1279f236558641b67f56a5f5c",
+            "serve/test_structured.py": "b7d41653794f21cd806d658384f16e6a05b0bb1888d0ab7fb5d1e46d7e013bf4"
+          },
+          "local_source_sha256": {
+            "serve/structured.py": "31365bfaffe8bcc99c24f57d34c28016852b761331e2188d1d656ea69a696f98",
+            "serve/test_structured.py": "dc145d6b6786d91327bf7d990940670b293f04d9a241a42fe462b5739b88a623",
+            "serve/test_responses.py": "000dca1bfc672b0ee05f532f6306ab5b788850afd5261922634f0d3616da979b"
+          }
+        },
+        "validation_plan": [
+          "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_structured serve.test_responses",
+          "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 180s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_server"
+        ],
+        "remaining": "Opt-in LaTeX repair,JSON extraction and Responses final-answer-with-tools remain pending;this slice only accepts object-only root unions/local refs and still rejects mixed/nonobject/cyclic schemas before load.",
+        "implementation_source_commit": "421b8b876",
+        "validation_attempts": [
+          {
+            "source_commit": "421b8b876",
+            "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_structured serve.test_responses",
+            "tests": 29,
+            "seconds": 10.168,
+            "exit_code": 1,
+            "errors": 1,
+            "skipped": 2,
+            "failure": "Existing Responses schema-violation assertion assumes optional jsonschema is installed;without it,documented fallback validates only object shape and returns200,error=None. Root type-object path is unchanged by this port.",
+            "next_action": "Port exact5e8a optional-dependency guard in that existing test;retain this failure and rerun. Schema-specific branches remain explicitly unqualified without the dependency."
+          },
+          {
+            "source_commit": "a2db638757e2da3a19f8e70c09856e2cb2f69067",
+            "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 120s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_structured serve.test_responses",
+            "tests": 29,
+            "seconds": 10.191,
+            "exit_code": 0,
+            "skipped": 2,
+            "limits": "Optional jsonschema is absent. Root-only union acceptance,rejection of nonobjects/mixed types/cycles before engine load,and existing object-mode/Responses delivery run. Two schema-dependent tests are skipped;Responses schema-violation branch also does not run,matching upstream optional contract. No full JSON Schema semantics qualification."
+          },
+          {
+            "source_commit": "a2db638757e2da3a19f8e70c09856e2cb2f69067",
+            "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout 180s /home/yayoi/.local/share/strata-sycl/venv/bin/python -B -m unittest serve.test_server",
+            "tests": 145,
+            "seconds": 54.688,
+            "exit_code": 0,
+            "scope": "Existing server mock-engine regression suite;no native/GPU/model execution. Injected error/fault lines are expected mock tests. Existing telemetry unclosed-/proc ResourceWarnings remain unrelated."
+          }
+        ],
+        "test_guard_source_commit": "a2db638757e2da3a19f8e70c09856e2cb2f69067"
+      },
+      {
+        "feature": "download_v027_integrity",
+        "status": "required_delta_pending",
+        "meaning": "Use repository/ModelScope size and SHA-256 metadata; fall back to a one-byte ranged GET when HEAD omits length; verify resumed Content-Range start/total and reject excess or wrong bytes; verify completed files by hash and preserve resumable partials after bounded failures.",
+        "existing_fork_baseline": "setup.py::download uses HEAD Content-Length, resumes with Range, and rejects a final partial whose size differs from that header. The pinned fork has no file_pin/REPO_PINS, Content-Range validation, or range_total fallback.",
+        "upstream_revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+        "source_pointers": [
+          "setup.py::download, download_single, range_total, file_pin, verify_sha256",
+          "tools/test_setup_download_length.py::test_pin_size_recovers_clean_early_eof, test_exhausted_transfer_keeps_resumable_partial, test_transport_size_conflict_is_still_refused_before_transfer, test_fallback_size_does_not_bypass_hash_verification"
+        ],
+        "next_action": "Port only the bounded integrity/resume contract against the fork's downloader, adapting its fixture and pin sources; run the focused download-length tests and relevant setup regressions after committing inputs.",
+        "dependencies": "Preserve existing Hugging Face pin fallback, file:// mirror/test path, local model setup, and the fork's download mark behavior. Do not transplant upstream parallel downloader wholesale without separate provenance and scope review.",
+        "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2"
       }
     ],
     "port_order": [
@@ -364,12 +532,12 @@
       "license_gate": "Niko-only source evidence; check applicable per-file licensing before copying source/tests. No XeStrata source."
     }
   },
-  "validated_reference_source_commit": "396d0c91f301e0ac99b81d6641fdc435b95b4da9",
+  "validated_reference_source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
   "unmodified_evaluation_source": {
-    "root": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-e88ee39d",
-    "revision": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+    "root": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-5e8a4cca",
+    "revision": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
     "modified": false,
-    "consumer": "Current read-only functionality/component review and next unchanged upstream benchmark after closing the native-gate comparison cache; no upstream build generation exists yet."
+    "consumer": "Current v0.2.7 source/function review and next unmodified hardware-tuned Niko benchmark after source/runtime admission. No vanilla build or performance qualification."
   },
   "current_review": {
     "target": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
@@ -387,5 +555,706 @@
       "meaning": "Actual e88 SYCL --prefill CHUNK needs an admitted --native route; first recover model/config/build/runtime and confirm tiny API compatibility before freezing hardware-tuned arms. Source planning is not performance evaluation."
     }
   },
-  "current_comparison_build_source_commit": "44253b63b0583d85f7fb1df87e4b4a08bfbf6862"
+  "current_comparison_build_source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
+  "new_release_review": {
+    "target": "011c9e600a93bbc9fd451c563501b5831c32bbca",
+    "scopes": [
+      "upstream_011c_server_contract_scope",
+      "upstream_011c_control_setup_scope",
+      "upstream_011c_native_interface_scope"
+    ],
+    "state": "Three source-only feature reviews closed and curated;feature-ledger reconciliation and functional ports remain pending after frozen model comparison.",
+    "whole_function_ledger_complete": false,
+    "performance_evaluation_complete": false,
+    "code_imported": false,
+    "review_sha256": "db665586220191d8a948a1db0331f74d87d88947c1772f96e30a0eff9980239b",
+    "coverage": "Complementary server/API,setup/Control and native interface maps;not all392 commits/575 paths covered. No implementation or new remote query by this review.",
+    "next_scope_eligibility": "All followups conditional on closing the frozen model comparison and selecting an actual feature port;no fresh researcher dispatch yet."
+  },
+  "current_comparison_build_sha256": "b310353872d29bd7fdd8ad7ba67ad75a0700edaa284a6f3460d4df9549cbfbb6",
+  "latest_interval_review": {
+    "target": "5e8a4cca7d690ac60ca37eb09e7d0e010099ad6d",
+    "state": "Two bounded non-inference scopes curated;270/534 interval paths named,264 outside these manifests. Host readiness port passed43 tests;other required deltas and vanilla measurement remain pending.",
+    "code_imported": true,
+    "whole_function_ledger_complete": false,
+    "performance_evaluation_complete": false,
+    "review_sha256": "b9581a40588dba381c3ab7b778b31c927b7e04feb0593830c2c9b1510ab2e6e2",
+    "coverage": {
+      "interval_changed_paths": 534,
+      "review_manifest_union": 270,
+      "manifest_overlap": 0,
+      "paths_not_named_in_these_two_manifests": 264,
+      "correction": "The host report's 373-path remainder is relative to its 161-path scope alone; the two review scopes together name 270 unique paths, leaving 264 of the 534 interval paths outside these manifests. Neither report claims full coverage. Preserve the existing upstream-status.json pending ledger, including earlier target obligations and vanilla hardware-tuned measurements."
+    },
+    "accuracy_corrections": [
+      {
+        "topic": "Responses/structured baseline",
+        "finding": "Both already exist in this fork;port only the new compatibility deltas,not replacement modules."
+      },
+      {
+        "topic": "Arc native entrypoint",
+        "finding": "Configured SYCL target compiles root src/program/generate.cpp;BGEN/parallel-slot support remains unproven there."
+      }
+    ],
+    "validated_function_slices": [
+      "benchmark configured-host readiness:43tests",
+      "object-only root schema unions/local refs:29focused+145server tests,2skips and schema-specific limits recorded",
+      "Responses additional_tools input/tool merge:20tests;source61a893cee;system-Python missing-regex failure preserved"
+    ]
+  },
+  "source_worktree_retirement": {
+    "stage": "deleted",
+    "paths": [
+      {
+        "path": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-011c9e60",
+        "revision": "011c9e600a93bbc9fd451c563501b5831c32bbca",
+        "tracked_paths": 4625,
+        "bytes": 77151632,
+        "clean": true,
+        "ignored_and_untracked_files": 0,
+        "source_recoverable_from": "Niko origin/main5e8a4cca",
+        "reason": "Source-only before/after review consumers closed;superseded by current5e8apristrine source and pinned4b9e..5e8a scoped diffs. No build/toolchain/raw fixture exists in this checkout."
+      },
+      {
+        "path": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-e88ee39d",
+        "revision": "e88ee39d1d6be6e3364183af3b39b62a7ed6f211",
+        "tracked_paths": 4404,
+        "bytes": 69686976,
+        "clean": true,
+        "ignored_and_untracked_files": 0,
+        "source_recoverable_from": "Niko origin/main5e8a4cca",
+        "reason": "Source-only before/after review consumers closed;superseded by current5e8apristrine source and pinned4b9e..5e8a scoped diffs. No build/toolchain/raw fixture exists in this checkout."
+      }
+    ],
+    "policy": "Tracked pristine upstream source recovers from named original Git commits;no unique source commits,branch deletion or ignored project binaries. Delete only these ended detached checkouts,retain current5e8apristrine source and legacy divergent root/v0143comparison hold.",
+    "retired_source_paths": 9029,
+    "retired_source_bytes": 146838608,
+    "branches_created_or_removed": 0
+  },
+  "new_interval_function_slices": {
+    "target": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+    "cpu_name_and_no_x86_flags": {
+      "status": "ported_focused_tests_passed",
+      "source_commit": "0fb985ff2bd4dfb0a7216d82df44f7876ae3a748",
+      "origin": "Niko1221/Strata setup.py::cpu_info through46c152a;root LICENSE matches MIT. Includes the missing-flags guard needed by this older fork.",
+      "files": [
+        "setup.py::cpu_info",
+        "tools/test_setup_cpu_info.py"
+      ],
+      "behavior": "Report heterogeneous Linux ARM CPU names without AttributeError or AVX claims. MCP already consumes this setup function;no ARM engine support is implied. Existing x86 complete-AVX512 requirements and safe unavailable-proc fallback preserved.",
+      "validation": {
+        "command": "PYTHONDONTWRITEBYTECODE=1 flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock /usr/bin/python3 -m unittest tools.test_setup_cpu_info -v",
+        "exit_code": 0,
+        "tests": 4,
+        "GPU_or_downloads": false
+      }
+    },
+    "coverage": "Bounded host-reporting and parser-scan slices only;41-path reviewed scope is not the full132-path interval. The parser tracking/recovery/alias consumers and signed-feed/control/CLI consumers require further functional ports/interface mapping. Earlier required functions and unmodified hardware-tuned upstream performance remain pending. No upstream inference changes imported.",
+    "stream_parser_scan": {
+      "target": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+      "upstream_frontend_sha256": "2c7471e88eea202e42fa407fee759204d1226c260dd45d0077ba2cb760ebafa6",
+      "source_commit": "aa27c5571f26392cc354851d717e1015381ab47c",
+      "fork_before_sha256": "1eaedd0f69cb59366060bff7fb782b64bcbc1d3721705be4013249730c1644e9",
+      "fork_after_sha256": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
+      "ported": [
+        "OutputParser._hold suffix search",
+        "wrapped-call closing-tag negative precheck and append cursor"
+      ],
+      "preserved": "call_end structural disambiguation,streamed argument JSON and existing constructor/callers. Fork has no recover mode;its absent interface was not added. Broader tracking/recovery/alias/API functions remain required_pending.",
+      "validation": {
+        "command": "PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 -m unittest tools.test_frontend_stream_scan -v",
+        "tests": 5,
+        "passed": true,
+        "cases": "all two-chunk splits and character deltas,Unicode,two calls,partial openers,embedded closing tags,complete streamed JSON,long-body full-walk count"
+      },
+      "inference_changed": false,
+      "whole_feature_port_complete": false
+    }
+  },
+  "remote_default_ref": "refs/heads/main",
+  "pending_interval": {
+    "start": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
+    "commits": 209,
+    "changed_paths": 338,
+    "tags_at_target": [],
+    "release_tag": "v0.2.11",
+    "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
+    "describe": "v0.2.11-4-g54828c7e",
+    "source_access": "Immutable fetched Git objects via git show/diff;no additional branch,checkout or build created.",
+    "inspection": "Fetched origin/main and actual ls-remote HEAD/main agree. Previous target is an ancestor. Source-delta review,functional integration and unmodified hardware-tuned performance evaluation remain pending;no inference change from this check."
+  },
+  "current_engine_role": "Validated479a/552b worker/map fallback;clean117K warmed PP and input-length curve remain the reference. Closed05a9 decode gains are recorded,with117K PP/TTFT preservation inconclusive;its binary and the closed CPU-service observer build are retired. The new decode-only IQ3 candidate has an all-eight-cell CPU production-entry gain,exact arithmetic/pool parity and same-build small traced GPU admission. No new model speed,full-context or inference adoption follows.",
+  "web_api_key_input_port": {
+    "stage": "ported_focused_host_tests_passed",
+    "upstream": "Niko1221/Strata",
+    "upstream_commit": "2ba95cf61f3d9187ee30c0410762b112d519cfae",
+    "covered_by_fetched_target": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
+    "license": "MIT;upstream/fork root LICENSE bytes identical",
+    "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+    "scope": "Web UI edited API key is used on input before blur,including blocked/full browser storage;normal persistence and accurate success/page-only notice. No server/native inference change. Other required UI functions remain pending.",
+    "files": [
+      "serve/web/app.js"
+    ],
+    "tests": "tests/web/api-key.test.cjs;Main-authored behavior checks execute the actual page storage/header/input functions with browser stubs,no copied implementation.",
+    "input_sha256": {
+      "serve/web/app.js": "fd05fefc1a2a21fee524960fdb10393c5c75f0c35fe525ea362bafc47b2e7fe7",
+      "tests/web/api-key.test.cjs": "59c4335517c436e49bb9bd85febc332cf556707de6b0c682d77a5abaa8ba61ff",
+      "tools/sycl/measurement_owner.py": "bddd0c5e5020e882ca3404679420faec11e820dabce2ed4c72ef82b4c9c0874a"
+    },
+    "node": {
+      "path": "/nix/store/m0256z6rrjwmvxkbymm7a28n0nw2zll9-nodejs-slim-24.21.0/bin/node",
+      "version": "v24.21.0",
+      "sha256": "f89c69d163e2686ed04cae19f5680668d4c1c64a072a70c1a6e50842a7a9e433"
+    },
+    "validation_plan": {
+      "executor": "tools/sycl/measurement_owner.py::Owner(output=owner_output).run;owner_output.parent is the private plan root. Once per listed command,in order,stop on first error;Main holds owned-v0141-measurement.lock and checks actual GPU job terminal first",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v2",
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "commands": [
+        {
+          "label": "syntax",
+          "argv": [
+            "/nix/store/m0256z6rrjwmvxkbymm7a28n0nw2zll9-nodejs-slim-24.21.0/bin/node",
+            "--check",
+            "serve/web/app.js"
+          ]
+        },
+        {
+          "label": "behavior",
+          "argv": [
+            "/nix/store/m0256z6rrjwmvxkbymm7a28n0nw2zll9-nodejs-slim-24.21.0/bin/node",
+            "--test",
+            "--test-reporter=tap",
+            "tests/web/api-key.test.cjs"
+          ]
+        }
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "LC_ALL": "C",
+        "HOME": "/home/yayoi",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v2/tmp"
+      },
+      "budgets": {
+        "wall": 30,
+        "cpu": 30,
+        "rss_cap": 536870912,
+        "text_cap": 16384,
+        "file_cap": 1048576,
+        "total_cap": 8388608
+      },
+      "acceptance": "Both normal0,anchored/reaped/empty sessions,no supervisor errors/cleanup,both syntax stderr and behavior stderr empty,exactly4behavior cases pass with0failed/0skipped. Entire browser rendering is outside this focused host scope.",
+      "retention": "Commit useful result/source/commands and counts;retire normal stdout/stderr after verification. No native engine build or model speed claim.",
+      "owner_output": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v2/commands"
+    },
+    "validation_complete": true,
+    "inference_changed": false,
+    "whole_feature_ledger_complete": false,
+    "source_commit": "792d9e668d33483c2818dbd65ee2c2337cbb684f",
+    "validation_attempts": [
+      {
+        "stage": "failed_supervisor_output_scope",
+        "source_commit": "792d9e668d33483c2818dbd65ee2c2337cbb684f",
+        "execution_recipe_commit": "c15e200176043458e3b648949a9c9454c5a7ecc2",
+        "original_plan_commit": "792d9e668d33483c2818dbd65ee2c2337cbb684f",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v1",
+        "native_syntax_exit_code": 0,
+        "observation_complete": false,
+        "ownership_closed": true,
+        "behavior_executed": false,
+        "speed_or_function_qualified": false,
+        "error": "Owner output was the plan root,so its output.parent budget scanned all post-reboot-tuning state and raised RuntimeError('artifact cap') at measurement_owner.py:224. Budget remains8MiB;new plan scopes output inside its private root.",
+        "outcome_unchanged": true
+      },
+      {
+        "stage": "passed",
+        "source_commit": "792d9e668d33483c2818dbd65ee2c2337cbb684f",
+        "execution_recipe_commit": "fe5b8ee968aa75210cd8c6876d556e21e4c5c86e",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/web-api-key-port-v2",
+        "syntax_passed": true,
+        "tests": 4,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "commands": [
+          {
+            "label": "syntax",
+            "exit_code": 0,
+            "elapsed_seconds": 0.10704742278903723,
+            "observation_complete": true,
+            "session_anchored": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "errors": [],
+            "cleanup": []
+          },
+          {
+            "label": "behavior",
+            "exit_code": 0,
+            "elapsed_seconds": 0.37649773014709353,
+            "observation_complete": true,
+            "session_anchored": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "errors": [],
+            "cleanup": []
+          }
+        ],
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "limits": "Actual page functions with browser/storage stubs;not full DOM rendering,whole UI integration,model correctness or performance."
+      }
+    ],
+    "full_browser_rendering_tested": false,
+    "artifact_retirement": {
+      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-process5-and-web-api-key-host-retirement-20261104.json",
+      "manifest_sha256": "44d44dbe6b992e4b9ca7a007230d39cd76359c0a1f97abaca0d5b63cba53575c",
+      "complete": true,
+      "evidence_commit": "b215469f998d0d50af9edf576fb4454b510d2cff",
+      "files": 8,
+      "bytes": 14097,
+      "original_failure_and_passed_V2_unchanged": true
+    }
+  },
+  "pending_comparison_build": {
+    "source_commit": "9922f8a5aff9631c87cda6b31e9526f0e4e4e266",
+    "result_key": "decode_iq3_pair_model_build_v1",
+    "stage": "same_build_host_and_small_device_passed_model_pending",
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-pair-model-v1",
+    "engine_sha256": "b310353872d29bd7fdd8ad7ba67ad75a0700edaa284a6f3460d4df9549cbfbb6",
+    "host_result_key": "decode_iq3_host_v2",
+    "device_result_key": "decode_iq3_phase_device_v1",
+    "model_executed": true,
+    "model_entry_result_key": "decode_iq3_model_entry_arm0_v1",
+    "model_entry_stage": "both_selectors_short_model_passed_long_generation_pending",
+    "candidate_model_entry_result_key": "decode_iq3_model_entry_arm1_v1",
+    "matched_entry_inputs": {
+      "native_elf_identical": true,
+      "controller_source_files": 302,
+      "controller_sources_identical": true,
+      "model_assets": 15,
+      "model_assets_identical": true,
+      "normalized_configuration_identical": true,
+      "only_normalized_environment_difference": {
+        "STRATA_IQ3_PAIR": [
+          "0",
+          "1"
+        ]
+      },
+      "scope": "Preparation identity,not model performance or candidate admission;per-entry output roots and ephemeral benchmark ports differ."
+    },
+    "short_observer_note": "STRATA_DECODE_TIMING is presence-enabled in the measured generator;the admitted short0/1 value0 emits timing in both. They are diagnostics,not clean-speed evidence. The new long controller omits the variable entirely."
+  },
+  "remote_check_command": [
+    "git",
+    "-C",
+    "/home/yayoi/ghq/github.com/Niko1221/Strata",
+    "-c",
+    "url.https://github.com/.insteadOf=git@github.com:",
+    "-c",
+    "credential.https://github.com.helper=!gh auth git-credential",
+    "ls-remote",
+    "origin",
+    "HEAD",
+    "refs/heads/main"
+  ],
+  "earlier_pending_intervals": [
+    {
+      "start": "46c152a1310f77cd2f0ce2c7cd213962df14fe83",
+      "target": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
+      "commits": 239,
+      "changed_paths": 372,
+      "tags_at_target": [
+        "v0.2.9"
+      ],
+      "source_tree": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-c62d5e3a",
+      "inspection": "Fetched official main/tags and verified ls-remote HEAD/main. Clean detached source prepared for read-only component/function review and prospective unmodified hardware-tuned evaluation. Existing unfinished ports remain open;no source integration or inference adoption."
+    },
+    {
+      "start": "c62d5e3a15b40ea51c96aae9e8d36928965f53ab",
+      "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+      "commits": 708,
+      "changed_paths": 798,
+      "tags_at_target": [
+        "v0.2.10"
+      ],
+      "source_tree": "/home/yayoi/ghq/github.com/Niko1221/Strata/.worktree/eval-upstream-ffa80d73",
+      "inspection": "Actual fetched origin/main and latest ls-remote HEAD/main agree. Both detached source trees are clean;all changed checkout bytes are checked against Git blobs,with three exact CRLF-only checkout normalizations explicitly recorded. Source review/evaluation pending;no import or inference adoption from this check."
+    }
+  ],
+  "v0210_review": {
+    "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+    "scopes": [
+      {
+        "scope": "server-api",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "state": "closed_awaiting_native_review",
+        "task": "task_d07c1702ee8d",
+        "dispatch": "ctx_b3da33c7cf97",
+        "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/server-api/report.md",
+        "report_budget_bytes": 18432,
+        "report_bytes": 17348,
+        "report_sha256": "84cfab62542bdbdce3b584e1206498fa4c6d654285b3c9f0d6d69ff67e0615d7",
+        "ownership_closed": true
+      },
+      {
+        "scope": "launch-setup",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "state": "closed_awaiting_native_review",
+        "task": "task_c488bfb9a52a",
+        "dispatch": "ctx_9e49efbbbb79",
+        "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/launch-setup/report.md",
+        "report_budget_bytes": 18432,
+        "report_bytes": 13900,
+        "report_sha256": "4381c3c8c262153171fd4634048a91f8e3a76cc9be1df60ab9c08c5e39a61726",
+        "ownership_closed": true
+      },
+      {
+        "scope": "inference-admission",
+        "classification": "decision_support",
+        "schedulable_now": true,
+        "state": "closed_awaiting_native_review",
+        "task": "task_7dc2c67a778e",
+        "dispatch": "ctx_e5278492b695",
+        "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/inference-admission/report.md",
+        "report_budget_bytes": 18432,
+        "report_bytes": 13638,
+        "report_sha256": "c65db1121391d697e99632a19af13ec1364002261a966550d6392b0a520f220f",
+        "ownership_closed": true
+      }
+    ],
+    "input_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/inputs.json",
+    "input_manifest_sha256": "35cacc1f6eb95a1b05e829d34ff7cbb3f601af032bd49de889f3bda351e375af",
+    "source_only": true,
+    "whole_function_ledger_complete": false,
+    "performance_evaluation_complete": false,
+    "code_imported": false,
+    "coverage_limit": "Three coherent source-delta scopes;unrelated desktop chat/agent/artifact changes and earlier functional backlog still need coverage. Main does not steer active researchers;native Codex Luna-max reviews completed reports before indexing/integration. Per-file provenance is required;uncertain XeStrata-derived material remains excluded.",
+    "native_review": {
+      "state": "completed",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "agent": "/root/review_upstream_v0210_wave_20261105",
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-wave/review.json",
+      "consumer": "Correct source/coverage/provenance findings before indexing or selecting an import;not implementation or runtime admission.",
+      "sha256": "0ff01d1e28d59d0699e960fa43eea0320c2f0e570612d6382c80adc252ca76d8",
+      "bytes": 18647,
+      "verdict": "Useful bounded decision support, with a material scope/resolver correction in inference-admission and a path-count correction in server-api. None of the reports qualifies runtime behavior, inference adoption, model performance, or the complete 798-path interval.",
+      "corrections": [
+        "Server report covers23serve paths plus the shared generator,not24serve paths.",
+        "Niko SYCL source resolver compiles sycl/src/kernels/cuda/*.dp.cpp into its Arc target;omitted compiled kernel deltas still require review.",
+        "Current fork SYCL enters CMakeLists.txt217-219 and cmake/sycl_backend.cmake;CUDA/HIP branch392-472 is not its resolver."
+      ]
+    },
+    "existing_port_state": "Existing exact incremental prompt-encoding port4f9495d8 and bounded parser suffix/call-scan portaa27c557 remain recorded as implemented;new parser/context/history obligations require behavior-level reconciliation,not reopening the whole earlier port.",
+    "followup": {
+      "input_manifest": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/inputs.json",
+      "sha256": "d4c8ec6ff07272a3361739d6b823ad172e43880f981b2850ecdce593f1368573",
+      "scopes": [
+        {
+          "scope": "compiled-iq-moe",
+          "classification": "decision_support",
+          "schedulable_now": true,
+          "state": "closed_reviewed_source_only",
+          "task": "task_d627f9d93fbb",
+          "dispatch": "ctx_3428039bdc85",
+          "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-iq-moe/report.md",
+          "report_budget_bytes": 18432,
+          "ownership_closed": true,
+          "report_sha256": "6d42ab824a1fe8cdfe9efce011cfa26f81ecaf9ec45eee3e86cce684a66656f2",
+          "report_bytes": 12544
+        },
+        {
+          "scope": "compiled-attention-state",
+          "classification": "decision_support",
+          "schedulable_now": true,
+          "state": "closed_reviewed_source_only",
+          "task": "task_fa72fd034d60",
+          "dispatch": "ctx_a539e0a34e5f",
+          "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/compiled-attention-state/report.md",
+          "report_budget_bytes": 18432,
+          "ownership_closed": true,
+          "report_sha256": "4d01c900e0d8e07af9862c7f633b2727cf33e672b63b60a66fa095b9741a6eeb",
+          "report_bytes": 17987
+        },
+        {
+          "scope": "desktop-conversation-tools",
+          "classification": "decision_support",
+          "schedulable_now": true,
+          "state": "closed_reviewed_source_only",
+          "task": "task_e886c963f61b",
+          "dispatch": "ctx_e3d740c73410",
+          "report": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/desktop-conversation-tools/report.md",
+          "report_budget_bytes": 18432,
+          "ownership_closed": true,
+          "report_sha256": "339528c1b8bbd9ebd1a09bebc9d0392a0e89e0ac2f130d804963a2bd7e296f4c",
+          "report_bytes": 16371
+        }
+      ],
+      "coverage": "New complete-source pins for the actual Arc resolver,omitted compiled DPCT quantized-MoE and attention/state changes,and desktop conversation/tool behavior outside the first launch/API scopes. Origin checks are part of the source investigation;held/Xe-derived material remains ineligible for implementation. No runtime or whole-function qualification.",
+      "native_review": {
+        "state": "completed",
+        "model": "gpt-6-luna",
+        "reasoning_effort": "max",
+        "agent": "/root/review_upstream_v0210_followup_20261105",
+        "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/upstream-v0210-followup/review.json",
+        "sha256": "f50ee99bcb4bf83dfe98abd617962f2e02518c2e3bd2a191219221483a4c6a67",
+        "bytes": 16853,
+        "verdict": "Corrected source maps retained for component/function decisions;no implementation or runtime qualification.",
+        "corrections": [
+          "Include default-on STRATA_IQ4NL_FAST separately from default-off LUT_SWAR;origin and actual format/shape/dispatch remain gates.",
+          "Followup source revision is a67352438;Niko migrated-source resolver selection is at sycl/CMakeLists.txt119-124.",
+          "The desktop report covers Python serve/web;apps/host Chat/ApprovalDock retains per-action approve/deny and remains an open functional review."
+        ]
+      }
+    },
+    "config_args_json_help": {
+      "state": "server_entry_integrated_function_slice",
+      "upstream": "Niko1221/Strata",
+      "target": "ffa80d73133ea5c548aefe57889a16e8085a938f",
+      "origin": "serve/server.py:split_joined_args/read_config/parse_config_text;serve/test_server.py:JoinedEngineArgs",
+      "license": "Upstream and fork LICENSE bytes match,MIT,Niko1221 and Strata contributors. No XeStrata input.",
+      "destinations": [
+        "serve/config_file.py",
+        "serve/server.py",
+        "tests/core/test_config_file.py"
+      ],
+      "helper_source_sha256": "1837a55dd3d455a71ea7a504bb51e2fb3aab9fef506967d7a9ebd0c34c4a9017",
+      "behavior": "Repair joined --flag value or --flag=value entries conservatively,preserve literal value/path entries,and report JSON file/line/column with BOM support.",
+      "tested": true,
+      "server_entry_wired": true,
+      "measurement_isolation": "All six original318-source Q6 processes closed before merge4c24b6931. The exact startup frontend change is a declared delta in the prospective MTP controller;fresh frontend/model qualification is required. Native inference ELF/source/recipe are unchanged.",
+      "next": "Run the prospective benchmark/server probes and bounded fixed4/fixed2 model entries. Whole required functional ledger and hardware-tuned unmodified-upstream measurements remain separate and incomplete.",
+      "coverage_limit": "Only this configuration slice;whole required functional import ledger and unmodified hardware-tuned upstream performance remain incomplete.",
+      "validation": {
+        "source_commit": "92f7b07227bae2117087cdf270b9d03c41d5ebd8",
+        "command": "env PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 flock --nonblock /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock prlimit --as=1073741824 --cpu=60 --fsize=65536 -- timeout --signal=TERM --kill-after=5s 90s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -B -m unittest discover -s tests/core -p test_config_file.py -v",
+        "exit_code": 0,
+        "tests": 8,
+        "test_reported_seconds": 0.413,
+        "integration_qualified": true,
+        "scope": "Helper5tests plus actual main constructor arguments/BOM/literal preservation,bad config before port/native launch,and module/script CLI diagnostics. Mocked engine/port;no GPU,model,network listener or inference behavior tested. Exact tested helper/server/test bytes are integrated into feature/sycl.",
+        "serialized": "Main Q6 process2 exited0 and all4owned identities were absent before this locked CPU-only run."
+      },
+      "primary_integration": {
+        "merge_commit": "4c24b6931e9090538cb400153856704f9b33eb00",
+        "source_commits_preserved": [
+          "92f7b07227bae2117087cdf270b9d03c41d5ebd8",
+          "19b43827ae503e58123fa43aaf4492a40213f285"
+        ],
+        "pushed_and_remote_verified": true,
+        "completed_child_branch_and_worktree_retired": true,
+        "remote_child_branch_absent": true,
+        "fresh_frontend_and_model_qualification_pending": true,
+        "inference_implementation_changed_by_slice": false
+      }
+    }
+  },
+  "v0211_review": {
+    "target": "54828c7efbcdf9474697e70922d851f6707f4b32",
+    "release_tag": "v0.2.11",
+    "release_commit": "c3b3f5035506f3e966f1b4b7b188aeaabae92f1d",
+    "state": "parser_host_qualified_other_imports_pending",
+    "source_only": false,
+    "code_imported": true,
+    "whole_function_ledger_complete": false,
+    "performance_evaluation_complete": false,
+    "changed_serve_paths": 19,
+    "changed_sycl_paths": 5,
+    "pending": "Review required server,API,CLI,Control,desktop,setup and catalog deltas plus component-specific inference changes. Actual Arc resolver remains part of the review. Preserve all earlier functional obligations and origin/license checks.",
+    "research_dispatch": "New Orca workers remain conditional on supported worker transport;no substitute worker or repeated failed socket probe was started.",
+    "measurement_isolation": "Current332input static/adaptive code/prose comparison and engine are unchanged. Defer edits to frozen frontend/benchmark/native inputs and all tests/builds/GPU work until the owned comparison boundary.",
+    "next_required_slice": {
+      "feature": "Preserve literal closing tags inside streamed tool arguments and files",
+      "origin_commit": "3bbf0f399e2a1b3d38642eca4342721fc7994201",
+      "origin_path": "serve/frontend.py",
+      "fork_path": "serve/frontend.py",
+      "fork_sha256": "edc2130ca918e9c610167b5e2855f7714b1061fe60790e3499be1ff92277c423",
+      "state": "ported_host_tested",
+      "provenance": "Niko-authored upstream commit;upstream/fork MIT LICENSE bytes match. No XeStrata material used in this inspection.",
+      "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
+      "difference": "The original fork parser lacked the upstream close verdict;the behavior was adapted and tested instead of replacing unrelated parser behavior.",
+      "validation": "Whole input,pieces and every-byte split with stream_tools on/off,embedded closing tags,text after a final call,two calls and existing fork parser regressions. Source review is not functional validation.",
+      "boundary": "After the current frozen code/prose speed cohorts close,before freezing the next long benchmark inputs. Pin and qualify any frontend delta prospectively;do not edit or relabel the closed comparisons.",
+      "behavior": "Match upstream bounded disambiguation:final tool_call may wait for end of input,a later call or1500lookahead characters;tool_start and argument pieces remain early. Preserve the suffix and no-close scan optimization.",
+      "prospective_scan_cost_contract": "Keep zero structural walks while an ordinary growing body has no close,one at its first complete closing candidate,and two after end-of-input confirmation. The source proposal updates these expectations before any test is run.",
+      "planned_validation": [
+        "Focused new whole/chunk/every-byte tool-tag cases,tools.test_frontend_stream_scan,and existing serve.test_server.ToolCallTerminators/UnfinishedToolCall.",
+        "Then the complete CPU/mock serve.test_server regression suite;no GPU or performance adoption from these functional tests."
+      ],
+      "applied_source_commit": "f7784635bc8c6ab832f39bd8d13b29b1c1623c10",
+      "applied_frontend_sha256": "9b4700ca3baa484f9a05cbe15f22f992caa258cb7bed1f6256fb703a63e62907",
+      "validation_result_key": "upstream_streamed_tool_tags_host_v2",
+      "followup": {
+        "result_key": "upstream_streamed_tool_tags_host_v2",
+        "state": "passed",
+        "virtual_address_bytes": 8589934592,
+        "RSS_cap_bytes": 2147483648,
+        "reason": "Initial full suite failed thread creation under2GiB AS with only80.5MB peak RSS and no cgroup PID rejection;test the virtual-space hypothesis without changing parser/tests/runtime or correctness criteria. Keep V1 failed.",
+        "source_commit": "44ad93dfe8f6f59ef784f23ec7cecac0b259051f",
+        "changed_controls": [
+          "tools/sycl/compare_adaptive_budget_generation.py",
+          "tools/sycl/run_host_checks.py"
+        ],
+        "unchanged_original_source_files": 349,
+        "suite_tests": [
+          6,
+          11,
+          147
+        ],
+        "skipped": [
+          0,
+          0,
+          0
+        ],
+        "all_owned_processes_closed": true
+      },
+      "initial_failed_result_key": "upstream_streamed_tool_tags_host_v1",
+      "validated_source_commit": "44ad93dfe8f6f59ef784f23ec7cecac0b259051f",
+      "proposal_retirement": {
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-streamed-tool-tags-retirement-20261107.json",
+        "sha256": "934f7c18a72ad230706f500e4250f77a0d0ca4818dea3e676fea4e46d082605b",
+        "files": 36,
+        "bytes": 344439,
+        "original_sources_recovered_per_plan": 351,
+        "protected_ELF_outputs": 15,
+        "patch_sha256": "dfebadae4d39104ea26827e59bcbbf9d4ca4024364cbe8e71bd33a598c17154e",
+        "archive_commit": "ee79b73bb98c9415ed61baa0e26fd231097f4ea3",
+        "archive_key": "v0211_review.next_required_slice.proposal",
+        "applied_source_commit": "f7784635bc8c6ab832f39bd8d13b29b1c1623c10"
+      }
+    },
+    "selected_server_slices": {
+      "reviewed_utc": "2026-11-06T22:37:11.107343+00:00",
+      "fork_source_commit": "a5f09d4de5448695ea42fbd7286ad2b00a20cf72",
+      "fork_server_sha256": "ea6c4b23a15ad94532392ba6c27ae641cf73545fa9c1231312f07e2c7ac5a18d",
+      "provenance": "Niko1221/Strata only;the fetched target LICENSE equals the fork MIT LICENSE,sha256 949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0. No XeStrata source.",
+      "coverage": "Five selected server concerns in the already fetched v0.2.11 interval,besides the queued parser slice. This is not the complete209-commit/338-path function ledger. The19serve paths,remaining setup/catalog/desktop/CLI deltas,earlier obligations and unmodified tuned-upstream measurements remain pending.",
+      "rows": [
+        {
+          "feature": "Bound a stalled SSE socket write and return the engine turn",
+          "origin": [
+            "c08fd2ecc87327125dfb76de57f64a5377707242"
+          ],
+          "paths": [
+            "serve/server.py::make_handler._sse",
+            "serve/test_serve_robustness.py::StalledClient"
+          ],
+          "state": "ported_host_validated",
+          "fork_evidence": "Shared make_handler._sse now installs the Niko socket write timeout for Chat,Responses and Anthropic. Default60s;STRATA_STREAM_WRITE_TIMEOUT_S=0 preserves unlimited writes. Existing disconnect cancellation closes the stream and releases the FIFO.",
+          "dependencies": "Current SSE/disconnect and Service FIFO contract;no new native inference interface.",
+          "validation": "Unread streaming client must release its turn within the configured write deadline;the next request must proceed. Cover OpenAI,Responses and Anthropic plus limit0. Use a loopback MockEngine,finite child/output budgets and confirmed closure.",
+          "port_source_files": {
+            "serve/server.py": "a74c996e1c6b080bc8e5984e1d300af1016bbec8969fc54528496bbf0c847c5d",
+            "serve/test_stream_write_timeout.py": "dce5633d7c90c32f72bb286c4b1d59fa038aeb4fffcc4e077786106000ba8d7f"
+          },
+          "test_plan": {
+            "controller": "tools/sycl/run_host_checks.py",
+            "new_module": "serve.test_stream_write_timeout",
+            "regression_modules": [
+              "serve.test_server",
+              "serve.test_responses"
+            ],
+            "scope": "Four CPU/mock real-socket checks:unread client/cancellation/turn release/next request for each API;zero timeout waits until disconnect. Run after the native build/CPU checks,with committed source and generic finite host owner. No GPU or model-speed qualification."
+          },
+          "validated_source_commit": "1c2956b224b4b0d124b11681f3d0b7752c9f2162",
+          "qualification_key": "upstream_sse_write_timeout_host_v1",
+          "host_validation": {
+            "tests": [
+              4,
+              147,
+              20
+            ],
+            "normal_exit_codes": [
+              0,
+              0,
+              0
+            ],
+            "skipped": 0,
+            "all_owned_processes_closed": true,
+            "GPU_executed": false,
+            "model_executed": false
+          }
+        },
+        {
+          "feature": "Decouple server diagnostics from a blocked console",
+          "origin": [
+            "b776e1cd02c11e8cb0824d5dd0087fd907641091"
+          ],
+          "paths": [
+            "serve/nonblocking_out.py",
+            "serve/server.py::main"
+          ],
+          "state": "module_validated_posix_startup_port_pending",
+          "fork_evidence": "Main POSIX process-owned stdio descriptor repair passes9CPU cases,including buffered/unbuffered unread-pipe normal exit,Unicode and descriptor retirement. The server still has no console wrapper;startup and bypass integration remain pending.",
+          "dependencies": "Adapt the wrapper to this fork main() signature;engine pipe and HTTP protocol output must stay independent.",
+          "validation": "Blocked-sink control,nonblocking producer,bounded queue/drop accounting,newest-line ordering,drain/restoration and actual child normal exit with unread stdout. Upstream _bytes uses len(str),so do not claim an encoded-byte bound without separate validation.",
+          "module_validation": {
+            "source_commit": "5327c9454c13245b15ee183a0d809ada7a151d56",
+            "result_key": "upstream_nonblocking_console_module_host_v2",
+            "tests": 9,
+            "skipped": 0,
+            "exit_code": 0,
+            "ownership_closed": true,
+            "GPU_executed": false,
+            "model_executed": false,
+            "original_failed_key": "upstream_nonblocking_console_module_host_v1",
+            "original_failure": "Unchanged Niko writer aborts its buffered unread-pipe child with _enter_buffered_busy at interpreter shutdown;original failed result/source retained.",
+            "server_wired": false,
+            "next": "Adapt main() and STRATA_BLOCKING_CONSOLE bypass,then qualify actual startup and server/Responses regressions at a closed GPU boundary. This module result does not qualify the complete port or inference."
+          }
+        },
+        {
+          "feature": "Lost end-event errors preserve the request engine identity",
+          "origin": [
+            "c30aa6475485259ee77521c8162c6b0bea7eb8fa",
+            "a8767488ce57128f84545fce681202c756fe2795",
+            "74f390538cd5284acd6ae5c6cf8441943ac10288"
+          ],
+          "paths": [
+            "serve/server.py::StrataEngine.end_for_restart",
+            "serve/server.py::Service.end_engine_if_unchanged",
+            "serve/server.py::openai_chunks",
+            "serve/server.py::died_note"
+          ],
+          "state": "selected_hunks_reviewed_interface_mapping_pending",
+          "fork_evidence": "The newer lost-end/generation/turn/error-text chain is absent by its source anchors;semantic equivalence is unproved.",
+          "dependencies": "Map the actual fork generation identity,FIFO and replica/batch contracts;the follow-up fixes belong with the initial lost-end change.",
+          "validation": "Missing end event must be an error;never kill a later request/replacement process;report restart only when that process was ended. Include cancel and replica/batch exclusions."
+        },
+        {
+          "feature": "Release this server orphaned picture encoder after engine death",
+          "origin": [
+            "c30aa6475485259ee77521c8162c6b0bea7eb8fa"
+          ],
+          "paths": [
+            "serve/server.py::Service._release_orphan_encoder"
+          ],
+          "state": "selected_hunks_reviewed_interface_mapping_pending",
+          "fork_evidence": "No _release_orphan_encoder anchor in the current server.",
+          "dependencies": "Map current vision alive/unload ownership and the free-VRAM/load/unload call sites.",
+          "validation": "Own stale encoder is released on load/unload after text-engine death;live/foreign ownership is preserved;use mocks,no live service stop."
+        },
+        {
+          "feature": "Direct serve activity lease and source-install update-store defaults",
+          "origin": [
+            "c30aa6475485259ee77521c8162c6b0bea7eb8fa"
+          ],
+          "paths": [
+            "serve/server.py::main",
+            "strata_cli/update_cmd.py",
+            "tests/terminal/test_update_source_install.py"
+          ],
+          "state": "server_hunks_reviewed_cli_dependencies_pending",
+          "fork_evidence": "The current tree has no strata_control/strata_cli package paths;copying an optional import would not establish the activity lease feature.",
+          "dependencies": "Actual runtime-store/lease and CLI/Control function mapping;preserve earlier required CLI obligations.",
+          "validation": "A direct source server owns the correct shared activity lease;update uses the same engine store and refuses/waits while it is active. Complete interface and mock validation before claiming support."
+        }
+      ],
+      "next_after_parser": "The shared SSE write deadline is an independent next functional slice;pin/adapt its loopback non-reading-client regression before any test. Other interface-dependent slices remain pending. No source,tests,engine or current benchmark inputs changed by this review."
+    }
+  }
 }

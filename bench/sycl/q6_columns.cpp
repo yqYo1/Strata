@@ -1,0 +1,342 @@
+// Main-authored Q6_K component comparisons; repository LICENSE.
+#include "strata/kernels/native_mmvq.hpp"
+#include "strata/kernels/f16_bits.hpp"
+#include "strata/kernels/q6_packed_center.hpp"
+#include "strata/sycl/runtime.hpp"
+#include <sycl/ext/intel/info/device.hpp>
+#include <algorithm>
+#include <array>
+#include <chrono>
+#include <cfenv>
+#include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+namespace {
+namespace sb = strata::sycl_backend;
+namespace k = strata::kernels;
+using Clock = std::chrono::steady_clock;
+constexpr size_t Pad = 32;
+std::shared_ptr<sb::Runtime> rt;
+void need(bool value, const char *message) {
+  if (!value) throw std::runtime_error(message);
+}
+template <class T> T sentinel();
+template <> float sentinel<float>() { return -731.25f; }
+template <> uint8_t sentinel<uint8_t>() { return 0xa5; }
+template <class T> struct Buffer {
+  sb::Allocation owner;
+  size_t n;
+  explicit Buffer(size_t count)
+      : owner(rt, (count + 2 * Pad) * sizeof(T), sb::MemoryKind::Device), n(count) {
+    std::vector<T> initial(n + 2 * Pad, sentinel<T>());
+    rt->wait(rt->compute().memcpy(owner.data(), initial.data(), initial.size() * sizeof(T)));
+  }
+  T *data() { return owner.template as<T>() + Pad; }
+  void set(const std::vector<T> &values) {
+    need(values.size() == n, "input extent");
+    rt->wait(rt->compute().memcpy(data(), values.data(), n * sizeof(T)));
+  }
+  std::vector<T> get() {
+    std::vector<T> result(n + 2 * Pad);
+    rt->wait(rt->compute().memcpy(result.data(), owner.data(), result.size() * sizeof(T)));
+    for (size_t i = 0; i < Pad; ++i)
+      need(result[i] == sentinel<T>() && result[Pad + n + i] == sentinel<T>(),
+           "buffer guard changed");
+    return result;
+  }
+  void unchanged(const std::vector<T> &expected) {
+    auto values = get();
+    need(expected.size() == n &&
+             std::memcmp(values.data() + Pad, expected.data(), n * sizeof(T)) == 0,
+         "read-only input changed");
+  }
+};
+using Kernel = void (*)(const void *, const void *, float *, int, int, int, void *);
+constexpr std::array<Kernel, 2> ColumnArms{k::native_q6_k_mmvq,
+                                         k::native_q6_k_columns_mmvq};
+constexpr std::array<Kernel, 2> CenterArms{k::native_q6_k_columns_mmvq,
+                                         k::native_q6_k_centered_columns_mmvq};
+constexpr std::array<Kernel, 2> NativeHalfArms{k::native_q6_k_columns_mmvq,
+    k::native_q6_k_native_half_columns_mmvq};
+struct Shape {
+  int ni, no, iterations;
+};
+// Actual Q6_K tensor geometries in the selected two-shard IQ3_S model.
+constexpr std::array<Shape, 7> Shapes{{{2560, 10240, 256}, {6144, 2560, 256},
+    {2560, 6144, 256}, {2560, 640, 1024}, {2560, 512, 1024},
+    {2560, 12288, 256}, {2560, 248320, 8}}};
+
+void timer_screen() {
+  std::array<double, 2048> samples{};
+  for (auto &sample : samples) {
+    const auto begin = Clock::now();
+    sample = std::chrono::duration<double>(Clock::now() - begin).count();
+  }
+  std::sort(samples.begin(), samples.end());
+  std::cout << "Q6_TIMER pairs=" << samples.size() << " median_seconds="
+            << std::setprecision(12) << samples[samples.size() / 2] << '\n'
+            << std::flush;
+}
+
+// Independent byte-wise oracle for the packed helper's six-bit precondition.
+// Vary each lane through every value with other lanes at mixed endpoints.
+constexpr bool centering_byte_contract() {
+  for (unsigned lane = 0; lane < 4; ++lane)
+    for (unsigned value = 0; value < 64; ++value) {
+      const unsigned shift = 8 * lane;
+      const uint32_t word = (0x003f201fu & ~(0xffu << shift)) | (value << shift);
+      uint32_t expected = 0;
+      for (unsigned j = 0; j < 4; ++j)
+        expected |= uint32_t(uint8_t(int((word >> (8 * j)) & 0xffu) - 32)) << (8 * j);
+      if (k::component::q6_center_bytes(word) != expected) return false;
+    }
+  return true;
+}
+static_assert(centering_byte_contract());
+
+// Check every encoded Q8_1 byte outside the timed region. The host follows
+// the quantizer's FP32 XOR-sum order and shares the tested half converter;
+// this is independent of the device scratch writer, not a half-format oracle.
+void quantized_reference(const std::vector<float> &input,
+                         const std::vector<uint8_t> &packed) {
+  need(std::fegetround() == FE_TONEAREST, "Q8 host reference rounding mode");
+  std::vector<uint8_t> expected(input.size() / 32 * 36);
+  for (size_t base = 0; base < input.size(); base += 32) {
+    std::array<float, 32> sums{}, next{};
+    float maximum = 0;
+    for (size_t lane = 0; lane < 32; ++lane) {
+      sums[lane] = input[base + lane];
+      maximum = std::fmax(maximum, std::fabs(sums[lane]));
+    }
+    for (int offset = 16; offset; offset >>= 1) {
+      for (size_t lane = 0; lane < 32; ++lane)
+        next[lane] = sums[lane] + sums[lane ^ offset];
+      sums = next;
+    }
+    const float scale = maximum / 127.f;
+    const uint16_t half_scale = k::f16_from_f32(scale);
+    const uint16_t half_sum = k::f16_from_f32(sums[0]);
+    auto *block = expected.data() + (base / 32) * 36;
+    std::memcpy(block, &half_scale, sizeof(half_scale));
+    std::memcpy(block + 2, &half_sum, sizeof(half_sum));
+    for (size_t lane = 0; lane < 32; ++lane) {
+      const int q = maximum == 0 ? 0 : int(std::round(input[base + lane] / scale));
+      block[4 + lane] = uint8_t(int8_t(q));
+    }
+  }
+  need(packed.size() == expected.size() + 2 * Pad &&
+           std::memcmp(expected.data(), packed.data() + Pad, expected.size()) == 0,
+       "Q8 encoded-byte host reference mismatch");
+}
+
+// Decode scalar Q6_K/Q8_1 values rather than reproducing the GPU's packed-dot
+// lane decomposition. Share only the already tested half-bit converter. The
+// GPU quantizer is not independently checked by this oracle.
+void scalar_reference(const Shape &shape, int columns,
+                      const std::vector<uint8_t> &weights,
+                      const std::vector<uint8_t> &packed,
+                      const std::vector<float> &output) {
+  const auto half_at = [](const uint8_t *p) {
+    return double(k::f32_from_f16(uint16_t(p[0]) | (uint16_t(p[1]) << 8)));
+  };
+  const auto signed_byte = [](uint8_t v) { return v < 128 ? int(v) : int(v) - 256; };
+  std::vector<int> rows{0, shape.no / 2, shape.no - 1};
+  std::sort(rows.begin(), rows.end());
+  rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+  for (int column = 0; column < columns; ++column) for (int row : rows) {
+    double expected = 0, magnitude = 0;
+    for (int block = 0; block < shape.ni / 256; ++block) {
+      const auto *w = weights.data() + (size_t(row) * (shape.ni / 256) + block) * 210;
+      const double scale = half_at(w + 208);
+      for (int index = 0; index < 256; ++index) {
+        const int half = index / 128, part = (index % 128) / 32, lane = index % 32;
+        const int low = (w[half * 64 + (part % 2) * 32 + lane] >> (part >= 2 ? 4 : 0)) & 15;
+        const int high = (w[128 + half * 32 + lane] >> (2 * part)) & 3;
+        const int quant = (low | (high << 4)) - 32;
+        const int subscale = signed_byte(w[192 + half * 8 + part * 2 + lane / 16]);
+        const int input_index = block * 256 + index;
+        const auto *x = packed.data() + Pad +
+            (size_t(column) * (shape.ni / 32) + input_index / 32) * 36;
+        const double term = scale * subscale * quant * half_at(x) * signed_byte(x[4 + input_index % 32]);
+        expected += term;
+        magnitude += std::abs(term);
+      }
+    }
+    const double actual = output[Pad + size_t(column) * shape.no + row];
+    need(std::isfinite(expected) && std::abs(actual - expected) <= 2e-5 + 2e-6 * magnitude,
+         "Q6 scalar dequantized-dot oracle mismatch");
+  }
+}
+
+void one_shape(Shape shape, bool smoke, const std::array<Kernel, 2> &arms,
+               bool native_half = false) {
+  const int ni = shape.ni, no = shape.no;
+  std::cout << "Q6_SHAPE_BEGIN ni=" << ni << " no=" << no << '\n' << std::flush;
+  std::vector<uint8_t> weights(k::native_mmvq_weight_bytes(14, ni, no));
+  uint32_t random = 0x173594ab;
+  for (auto &value : weights) {
+    random ^= random << 13;
+    random ^= random >> 17;
+    random ^= random << 5;
+    value = uint8_t(random);
+  }
+  for (size_t block = 0; block < weights.size() / 210; ++block) {
+    constexpr uint16_t edges[] = {0x0000, 0x8000, 0x0001, 0x8001, 0x03ff,
+        0x83ff, 0x0400, 0x8400, 0x2400, 0x9800, 0x3c00, 0xbc00, 0x7bff, 0xfbff};
+    const uint16_t scale = native_half && smoke
+        ? edges[block % (sizeof edges / sizeof edges[0])]
+        : (block % 3 ? 0x2400 : 0x9800);
+    std::memcpy(weights.data() + block * 210 + 208, &scale, sizeof(scale));
+  }
+  Buffer<uint8_t> w(weights.size());
+  w.set(weights);
+  const std::vector<int> columns = smoke ? std::vector<int>{1, 2, 3, 4, 5, 6, 7, 8}
+                                          : std::vector<int>{1, 2, 3, 4, 8};
+  for (int nc : columns) {
+    std::vector<float> input(size_t(ni) * nc);
+    for (size_t i = 0; i < input.size(); ++i)
+      input[i] = float(int((i * 37 + i / 101 + 17) % 127) - 63) / 32.f;
+    if (smoke) for (int column = 0; column < nc; ++column) {
+      const auto first = input.begin() + size_t(column) * ni;
+      std::fill(first, first + 32, 0.f);
+      std::fill(first + 32, first + 64, -0.5f);
+      if (native_half) {
+        for (int lane = 0; lane < 32; ++lane)
+          first[64 + lane] = lane % 2 ? -0x1p-17f : 0x1p-17f;
+      }
+    }
+    Buffer<float> x(input.size()), reference(size_t(no) * nc), candidate(size_t(no) * nc);
+    Buffer<uint8_t> packed(k::native_q8_1_bytes(ni, nc));
+    x.set(input);
+    k::native_quantize_q8_1(x.data(), packed.data(), ni, nc, &rt->compute());
+    rt->wait();
+    auto packed_before = packed.get();
+    quantized_reference(input, packed_before);
+    auto call = [&](int arm) {
+      arms[arm](w.data(), packed.data(), arm ? candidate.data() : reference.data(),
+                ni, no, nc, &rt->compute());
+    };
+    auto compare = [&](bool oracle = false) {
+      auto a = reference.get(), b = candidate.get();
+      need(a.size() == b.size() &&
+               std::memcmp(a.data(), b.data(), a.size() * sizeof(float)) == 0,
+           "Q6 candidate differs from the selected bitwise reference");
+      for (size_t i = 0; i < size_t(no) * nc; ++i)
+        need(std::isfinite(a[Pad + i]), "nonfinite reference output");
+      if (oracle) scalar_reference(shape, nc, weights, packed_before, a);
+    };
+    for (int arm : {0, 1}) {
+      call(arm);
+      rt->wait();
+    }
+    compare(true);
+    if (!smoke) {
+      for (int warmup = 0; warmup < 4; ++warmup) {
+        call(0);
+        call(1);
+      }
+      rt->wait();
+      for (int batch = 0; batch < 5; ++batch) {
+        for (int position = 0; position < 2; ++position) {
+          const int arm = (batch + nc + position) % 2;
+          rt->wait();
+          const auto begin = Clock::now();
+          for (int j = 0; j < shape.iterations; ++j) call(arm);
+          rt->wait();
+          const double elapsed = std::chrono::duration<double>(Clock::now() - begin).count();
+          need(elapsed >= .01, "timing batch below declared 10ms floor");
+          std::cout << "Q6_SAMPLE ni=" << ni << " no=" << no << " nc=" << nc
+                    << " arm=" << arm << " batch=" << batch << " position=" << position
+                    << " calls=" << shape.iterations << " seconds=" << std::setprecision(12)
+                    << elapsed << '\n' << std::flush;
+        }
+        compare();
+      }
+    }
+    x.unchanged(input);
+    need(packed.get() == packed_before, "quantized activation/guard changed");
+    std::cout << "Q6_CASE_PASS ni=" << ni << " no=" << no << " nc=" << nc
+              << " scalar_oracle=PASS q8_oracle=PASS" << '\n' << std::flush;
+  }
+  w.unchanged(weights);
+}
+} // namespace
+
+int main(int argc, char **argv) {
+  try {
+    need((argc == 2 || argc == 3) && (std::string(argv[1]) == "--smoke" ||
+                          std::string(argv[1]) == "--speed") &&
+             (argc == 2 || std::string(argv[2]) == "--centering" ||
+              std::string(argv[2]) == "--native-half"),
+         "expected --smoke or --speed, optionally --centering or --native-half");
+    const bool smoke = std::string(argv[1]) == "--smoke";
+    const bool centering = argc == 3 && std::string(argv[2]) == "--centering";
+    const bool native_half = argc == 3 && std::string(argv[2]) == "--native-half";
+    const auto &arms = native_half ? NativeHalfArms : (centering ? CenterArms : ColumnArms);
+    std::cout << "Q6_COMPARISON=" << (native_half ? "native-half" :
+        (centering ? "centering" : "columns")) << '\n';
+    rt = sb::runtime_for();
+    if (centering || native_half) {
+      const auto &device = rt->device();
+      need(device.get_backend() == sycl::backend::ext_oneapi_level_zero &&
+               device.get_info<sycl::info::device::vendor_id>() == 0x8086 &&
+               device.get_info<sycl::ext::intel::info::device::device_id>() == 0xe20c &&
+               device.get_info<sycl::ext::intel::info::device::pci_address>() == "0000:05:00.0",
+           "Q6 component comparison requires the exact B570");
+      need(rt->compute().has_property<sycl::property::queue::in_order>(),
+           "Q6 component comparison requires the qualified in-order queue");
+      std::cout << "Q6_TARGET_B570=1\n";
+      std::cout << "Q6_TARGET_NAME=" << device.get_info<sycl::info::device::name>() << '\n';
+      if (native_half) {
+        need(device.has(sycl::aspect::fp16), "native-half comparison requires fp16");
+        std::cout << "Q6_TARGET_FP16=1\n";
+      }
+    }
+    // Check the representation on the actual device; SYCL2020 has no
+    // info::device::endian_little query in the pinned headers.
+    {
+      Buffer<uint8_t> representation(4);
+      auto *bytes = representation.data();
+      rt->wait(rt->compute().single_task([=] {
+        const uint32_t word = 0x04030201u;
+        __builtin_memcpy(bytes, &word, sizeof(word));
+      }));
+      const auto observed = representation.get();
+      for (unsigned i = 0; i < 4; ++i)
+        need(observed[Pad + i] == i + 1, "Q6 device word representation is not little endian");
+    }
+    std::cout << "Q6_TARGET_ENDIAN_LITTLE=1\n";
+    need(k::native_mmvq_multi_exact(), "fixed exact-layout production reference");
+    if (smoke) {
+      for (auto shape : {Shape{256, 1, 0}, Shape{512, 3, 0}, Shape{1024, 13, 0},
+                          Shape{2560, 129, 0}})
+        one_shape(shape, true, arms, native_half);
+      // Refuse invalid geometry before submitting any candidate work.
+      for (int columns : {0, 9}) {
+        for (auto kernel : arms) {
+          bool rejected = false;
+          try {
+            kernel(nullptr, nullptr, nullptr, 256, 1, columns, &rt->compute());
+          } catch (const std::invalid_argument &) { rejected = true; }
+          need(rejected, "invalid column count accepted");
+        }
+      }
+    } else {
+      timer_screen();
+      for (auto shape : Shapes) one_shape(shape, false, arms, native_half);
+    }
+    rt->wait();
+    std::cout << "Q6_COLUMNS_PASS mode=" << (smoke ? "smoke" : "speed") << '\n';
+    return 0;
+  } catch (const std::exception &error) {
+    std::cerr << "Q6_COLUMNS_FAIL " << error.what() << '\n';
+    return 1;
+  }
+}

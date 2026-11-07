@@ -36,10 +36,19 @@ entire chain of stale references. Link historical evidence to a pinned Git
 revision. Keep the archive commit reachable; do not rewrite shared history.
 
 Preserve the original source commits referenced by retained measurements when
-integrating branches. Use a merge commit for such work and verify those commits
-are reachable from the fork's retained default branch before deleting their
-branches or recoverable build artifacts. A squash or rebase with equivalent
-files does not preserve the recorded commit identities.
+integrating branches. Use a merge commit for such work. Before deleting a
+finished child, verify its needed original source/report commits are reachable
+from the pushed, retained `feature/sycl` or the fork default. Continue default
+integration through its PR separately; a blocked PR does not justify retaining
+the finished child. A squash or rebase with equivalent files does not preserve
+the recorded commit identities.
+
+Build retirement does not need to wait for default-branch integration when the
+exact original source and recipe are recoverable from the pushed, retained
+`feature/sycl` branch. Verify that remote ref and the original input identities
+before deletion; keep the measured commits reachable until default integration.
+A blocked PR is not a reason to retain unused binaries or duplicate receipts.
+This does not relax source recovery, consumer checks or branch-retirement rules.
 
 Useful active content is normally:
 
@@ -69,6 +78,39 @@ does not need to be committed merely so it can subsequently be deleted.
 
 Keep current state in maintained documentation and committed decisions. Resume
 from those and Git; do not create external resume checkpoints.
+
+## Performance record CSV
+
+Maintain [bench/performance-records.csv](../bench/performance-records.csv) as the
+user-requested cumulative index of superior results and useful comparison
+milestones, in addition to detailed measurement reports. Update it at a result
+boundary when a best or materially better result appears; every routine run
+does not need a row. Keep earlier recorded milestones when they are superseded.
+This compact historical index is an explicit retention requirement, not a raw
+log or separate resume checkpoint.
+
+Use one physical CSV row per workload/configuration/result point, with the full
+commit hash containing its measurement evidence and the tested native source
+commit separately. Several points may refer to the same evidence commit. Commit
+the measurement result first, then its CSV row; the row never needs its own
+future commit hash. Verify values with `git show <record_commit>:<evidence_path>`
+and a precise evidence key before recording them.
+
+Keep input/context/output lengths, thinking, sample scope/counts, PP and its
+spread, prefill time, client TTFT, sustained TG and MTP behavior when measured,
+plus configuration including the explicit prefill strategy when present,and
+qualification/decision. The CSV header defines the
+units. Leave an unavailable metric blank; a24-token prefill check does not
+qualify sustained TG. Component-only milestones use the explicitly named
+component interval/reference/geometric-mean-ratio columns; leave model PP,
+TTFT and TG blank rather than converting a partial kernel time into model speed. Separate first use, individual peaks, warmed-request
+medians and independent-process aggregates. Keep different models, workloads,
+runtime/observer envelopes and execution routes distinguishable. A rejected
+candidate can hold the highest measured speed without being adopted or proving
+the target; preserve that qualification. If later evidence invalidates a row,
+mark it explicitly with the correcting evidence rather than silently losing
+the original observation. Keep detailed samples and formulas in the linked
+committed report; the CSV is the cross-commit lookup.
 
 ## Rebuildable binaries
 
@@ -140,6 +182,14 @@ Controllers must check the pinned inputs, build record and actual executable
 before launch, and stop if evidence is missing or inconsistent. Scope this check
 to the complete measurement inputs; unrelated worktree edits need not be added
 to that commit. Do not update hashes to make an inconsistent run pass admission.
+Trace transitive qualification reads as well as the source fingerprint. A
+research index used for one committed qualification record must not silently
+make unrelated dispatch rows part of that record. A scoped reader must return
+only the verified subtree and reject changed, missing or type-altered evidence.
+Defer metadata edits until process closure when its reader still requires the
+whole file,including a whole-file worktree-versus-HEAD check before returning
+one row. A scoped return alone does not make edits independent. Preserve a run
+already rejected by the old gate as failed.
 
 Keep the original native-source revision separate from a later controller-only
 admission revision. Reusing qualification requires proof that the relevant

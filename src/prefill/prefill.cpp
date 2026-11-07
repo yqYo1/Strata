@@ -50,6 +50,7 @@
 #include "strata/sycl/command_profile.hpp"
 #include "strata/kernels/qsa_bf16_attention_late_flags.hpp"
 #include "strata/kernels/qsa_bf16_prefix.hpp"
+#include "strata/kernels/qsa_topk_prefill_early.hpp"
 #include "strata/kernels/mrope.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
@@ -118,6 +119,27 @@ constexpr float EPS = 1e-6f;
 constexpr int64_t N = 2560, HC = 4, D = N * HC, LR = 320, K = 10, NE = 512;
 constexpr int64_t C = 10240, ZV = 6144, HV = 48;
 #if defined(STRATA_ENABLE_SYCL)
+bool gdn_fp16_storage_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_FP16");
+        if (!value || std::strcmp(value,"0") == 0) return false;
+        if (std::strcmp(value,"1") != 0)
+            throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_FP16 must be0 or1");
+        if (strata::gdn_chunk64::requested())
+            throw std::invalid_argument("FP16 GDN3 storage and chunk64 are independent alternatives");
+        return true;
+    }();
+    return enabled;
+}
+bool gdn_three_barriers() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_BARRIERS3");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_GDN_BARRIERS3 must be0 or1");
+    }();
+    return enabled;
+}
 int gdn_column_partitions() {
     static const int partitions = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_GDN_COLUMNS");
@@ -260,6 +282,21 @@ GdnChunkBuffers take_gdn_chunk(Alloc& a,size_t T,bool& ok) {
     const size_t bytes=gc::arena_bytes(int(T));
     auto *base=a.take<uint8_t>(bytes,ok);
     return base?gc::bind_arena(base,bytes,int(T)):GdnChunkBuffers{};
+}
+struct GdnHalfBuffers {
+    uint16_t *qkv=nullptr,*z=nullptr,*h=nullptr,*output=nullptr;
+    float *ab=nullptr,*gate=nullptr,*beta=nullptr,*raw=nullptr;
+};
+GdnHalfBuffers take_gdn_half(Alloc& a,size_t T,bool& ok) {
+    // Reservation also serves the inactive FP32/TTFT layout. Execution's
+    // <=8192-row limit belongs to the typed kernels, not this shared capacity.
+    if(T==0 || T>SIZE_MAX/(size_t(C)*sizeof(float)))
+        throw std::invalid_argument("FP16 GDN3 scratch capacity overflow");
+    GdnHalfBuffers b;
+    b.qkv=a.take<uint16_t>(T*C,ok);b.z=a.take<uint16_t>(T*ZV,ok);
+    b.ab=a.take<float>(T*2*HV,ok);b.gate=a.take<float>(T*HV,ok);b.beta=a.take<float>(T*HV,ok);
+    b.h=a.take<uint16_t>(T*C,ok);b.raw=a.take<float>(T*ZV,ok);b.output=a.take<uint16_t>(T*ZV,ok);
+    return b;
 }
 #endif
 
@@ -478,6 +515,8 @@ struct PeerPrefill {
 // while this object and all raw upload pointers remain alive.
 struct MoeWindowContext {
     std::unique_ptr<detail::ExpertBankSlots> expert_slots;
+    std::unique_ptr<detail::PrivateExpertBank> private_expert_bank;
+    std::unique_ptr<detail::ExpertUploadStaging> expert_upload_staging;
     core::ExpertCache* expert_cache = nullptr; // outer-owned mutable upload target
     const uint8_t* expert_slab = nullptr;
     uint64_t expert_slab_bytes = 0, expert_stride = 0, expert_source_stride = 0;
@@ -488,6 +527,9 @@ struct MoeWindowContext {
     uint64_t mixed_bytes = 0;
     uint16_t* mixed_tail = nullptr;
     uint64_t mixed_tail_bytes = 0, mixed_tail_offset = 0;
+    float* accumulator_tail = nullptr;
+    uint64_t accumulator_tail_bytes = 0;
+    int64_t accumulator_primary_rows = 0; // zero retains the ordinary route
     bool scratch_mixed = false;
     int64_t maximum_rows = 16384;
     bool accumulation = false;
@@ -508,6 +550,24 @@ int moe_window_requested() {
         if (std::strcmp(v, "8") == 0) return 8;
         if (std::strcmp(v, "10") == 0) return 10;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_WINDOW must be 0, 2, 8 or 10");
+    }();
+    return enabled;
+}
+bool moe_split_accumulator_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR must be0 or1");
+    }();
+    return enabled;
+}
+bool expert_upload_staging_requested() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_EXPERT_UPLOAD_STAGING must be0 or1");
     }();
     return enabled;
 }
@@ -623,6 +683,7 @@ struct Prefill::Impl {
     MoeWindowContext* moe_window = nullptr; // borrowed through checked layer-major lease
     bool native16_active = false;
     GdnChunkBuffers gdn_chunk;
+    GdnHalfBuffers gdn_half; // alternate views, used only by the long native16 lease
     strata::kernels::QsaBf16PackedScratch qsa_prefix; // borrowed only during the long-prefill lease
     qsa_score_gemm::Scratch score_gemm; // attn_h arena + independent sticky status, long lease only
     // Disjoint typed subviews of existing QSA reservations; no new allocation.
@@ -819,6 +880,11 @@ uint64_t gdn_set_bytes(size_t T) {
     a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<float>(T * 2 * HV, ok); a.take<float>(T * HV, ok);
     a.take<float>(T * HV, ok); a.take<float>(T * C, ok); a.take<float>(T * ZV, ok); a.take<uint16_t>(T * ZV, ok);
 #if defined(STRATA_ENABLE_SYCL)
+    if(gdn_fp16_storage_requested()) {
+        Alloc native;native.count_only=true;
+        (void)take_gdn_half(native,T,ok);
+        return std::max(a.used,native.used);
+    }
     if(strata::gdn_chunk64::requested()) {
         Alloc native;native.count_only=true;
         (void)take_gdn_chunk(native,T,ok);
@@ -1202,6 +1268,10 @@ bool Prefill::carve(size_t T, void* alloc) {
         m.gate = a.take<float>(T * HV, ok); m.beta = a.take<float>(T * HV, ok); m.hbuf = a.take<float>(T * C, ok);
         m.y = a.take<float>(T * ZV, ok); m.y_h = a.take<uint16_t>(T * ZV, ok);
 #if defined(STRATA_ENABLE_SYCL)
+        if(gdn_fp16_storage_requested()) {
+            Alloc native;native.base=base;native.cap=region;native.owned=&m.owned;
+            m.gdn_half=take_gdn_half(native,T,ok);
+        }
         if(strata::gdn_chunk64::requested()) {
             Alloc native;native.base=base;native.cap=region;native.owned=&m.owned;
             m.gdn_chunk=take_gdn_chunk(native,T,ok);
@@ -1741,6 +1811,23 @@ bool bf16_proj(Gemm& gm, const core::WeightRef* w, const uint16_t* X, float* Y, 
     return true;
 }
 #if defined(STRATA_ENABLE_SYCL)
+bool native_proj_vendor16(Gemm& gm, const core::WeightRef* w, const uint16_t* x, uint16_t* y,
+                          int64_t rows, const std::string& name, std::string& err) {
+    if (!w->native_data || w->ne0 <= 0 || w->ne1 <= 0 ||
+        !strata::kernels::iq_row_bytes(w->native_type,w->ne0) || gm.scratch_elems() < w->ne0) {
+        err="prefill vendor FP16: unsupported native weight "+name;return false;
+    }
+    const int64_t k=w->ne0,n=w->ne1,block=gm.scratch_elems()/k;
+    const size_t bytes=strata::kernels::iq_row_bytes(w->native_type,k);
+    for(int64_t r=0;r<n;r+=block) {
+        const int64_t count=std::min(block,n-r);
+        strata::kernels::iq_dequant_f16(w->native_type,
+            static_cast<const uint8_t*>(w->native_data)+size_t(r)*bytes,
+            count*k,gm.scratch(),gm.stream());
+        gm.f16_vendor_out16(x,gm.scratch(),y+r,rows,count,k,n);
+    }
+    return true;
+}
 bool bf16_proj16(Gemm& gm, const core::WeightRef* w, const uint16_t* x, uint16_t* y,
                  int64_t rows, const std::string& name, std::string& err) {
     if (w->kind != core::WeightKind::Bf16InF32 || !w->data) {
@@ -2657,7 +2744,25 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     float* state = ss.gdn_state + (size_t) (gdn_index - ss.gdn_ord0) * gdn_floats;
                     float* conv = state + (uint64_t) g.ssm_state_size * g.ssm_v_heads * g.ssm_state_size;
 #if defined(STRATA_ENABLE_SYCL)
-                    if(m.layer_major_active && m.native16_active && strata::gdn_chunk64::requested()) {
+                    if(m.layer_major_active && m.native16_active && gdn_fp16_storage_requested()) {
+                        auto& b=m.gdn_half;
+                        if(!native_proj_vendor16(m.gemm,wqkv,m.mixed_h,b.qkv,T,v.name("attn_qkv.weight"),err) ||
+                           !native_proj_vendor16(m.gemm,wg,m.mixed_h,b.z,T,v.name("attn_gate.weight"),err))return false;
+                        if(!bf16_proj(m.gemm,wa,m.mixed_bf,b.ab,T,v.name("ssm_alpha.weight"),err,2*HV,m.mixed_bf_lo) ||
+                           !bf16_proj(m.gemm,wb,m.mixed_bf,b.ab+HV,T,v.name("ssm_beta.weight"),err,2*HV,m.mixed_bf_lo))return false;
+                        if (gp) { gp->end(GdnProfile::gdn_projections, m.cs); gp->begin(GdnProfile::gdn_conv_gates, m.cs); }
+                        pt.mark(kPfGdnConv,m.cs);
+                        gdn_gates(b.ab,static_cast<const float*>(wdt->data),static_cast<const float*>(wsa->data),
+                                  b.gate,b.beta,T,m.cs);
+                        gdn_conv_f16(conv,b.qkv,static_cast<const float*>(wc->data),b.h,T,EPS,m.cs);
+                        if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
+                        pt.mark(kPfGdnRec,m.cs);
+                        gdn_recurrence_barriers3_f16(state,b.h,b.gate,b.beta,b.z,
+                            static_cast<const float*>(wnm->data),EPS,b.raw,b.output,T,m.cs);
+                        if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
+                        pt.mark(kPfGdnOut,m.cs);
+                        if(!native_proj16(m.gemm,wo,b.output,m.bo_b16,T,v.name("ssm_out.weight"),err))return false;
+                    } else if(m.layer_major_active && m.native16_active && strata::gdn_chunk64::requested()) {
                         auto& b=m.gdn_chunk;
                         strata::gdn_chunk64::validate_run(state,b.normalized,b.gate,b.beta,b.z,
                             static_cast<const float*>(wnm->data),EPS,b.output,int(T),b.workspace,m.cs);
@@ -2691,11 +2796,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (gp) { gp->end(GdnProfile::gdn_conv_gates, m.cs); gp->begin(GdnProfile::gdn_recurrence, m.cs); }
                     pt.mark(kPfGdnRec, cs);
 #if defined(STRATA_ENABLE_SYCL)
-                    if (m.layer_major_active && gdn_column_partitions())
-                        gdn_recurrence_partitioned(state, m.hbuf, m.gate, m.beta, m.z,
-                            static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T,
-                            gdn_column_partitions(), m.cs);
-                    else
+                    if (m.layer_major_active && gdn_column_partitions()) {
+                        if (gdn_three_barriers())
+                            gdn_recurrence_barriers3(state, m.hbuf, m.gate, m.beta, m.z,
+                                static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T, m.cs);
+                        else
+                            gdn_recurrence_partitioned(state, m.hbuf, m.gate, m.beta, m.z,
+                                static_cast<const float*>(wnm->data), EPS, m.y, m.y_h, T,
+                                gdn_column_partitions(), m.cs);
+                    } else
 #endif
                         gdn_recurrence(state, m.hbuf, m.gate, m.beta, m.z, (const float*) wnm->data, EPS, m.y, m.y_h, T, m.cs);
                     if (gp) { gp->end(GdnProfile::gdn_recurrence, m.cs); gp->begin(GdnProfile::gdn_output, m.cs); }
@@ -2877,9 +2986,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                                                               m.max_blocks, s, m.sel_scores, m.cs, active);
                         }
 #if defined(STRATA_ENABLE_SYCL)
-                        if (m.layer_major_active)
-                            strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
-                                                            m.sel_ids + t0 * m.cap, m.cs, active);
+                        if (m.layer_major_active) {
+                            const auto topk = strata::kernels::qsa_prefill_topk_early_enabled()
+                                ? strata::kernels::qsa_block_topk_prefill_early
+                                : strata::kernels::qsa_block_topk_prefill;
+                            topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                 m.sel_ids + t0 * m.cap, m.cs, active);
+                        }
                         else
 #endif
                         strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
@@ -2930,9 +3043,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             strata::kernels::qsa_block_scores(pooled16, dead16, m.q_idx + t0 * 512, steps0, nb,
                                                               m.max_blocks, s, m.sel_scores, m.cs);
 #if defined(STRATA_ENABLE_SYCL)
-                            if (m.layer_major_active)
-                                strata::kernels::qsa_block_topk_prefill(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
-                                                                ids16 + t0 * m.cap, m.cs);
+                            if (m.layer_major_active) {
+                                const auto topk = strata::kernels::qsa_prefill_topk_early_enabled()
+                                    ? strata::kernels::qsa_block_topk_prefill_early
+                                    : strata::kernels::qsa_block_topk_prefill;
+                                topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,
+                                     ids16 + t0 * m.cap, m.cs, -1);
+                            }
                             else
 #endif
                             strata::kernels::qsa_block_topk(m.sel_scores, steps0, nb, m.max_blocks, m.cap, s,

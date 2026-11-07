@@ -54,6 +54,27 @@ void gdn_recurrence(float* state, const float* h, const float* gate, const float
 void gdn_recurrence_partitioned(float* state, const float* h, const float* gate, const float* beta,
                                const float* z, const float* gamma, float eps, float* y, uint16_t* y16,
                                int64_t T, int partitions, void* stream);
+/// Experimental four-partition recurrence with three barriers/token, T<=8192.
+/// Separate KV/output local scratch; explicit prefill
+/// entrypoint; unchanged separate RMS/gating stage and FP32 arithmetic order.
+/// Component qualification only: no model dispatch or decode selection.
+void gdn_recurrence_barriers3(float* state, const float* h, const float* gate, const float* beta,
+                            const float* z, const float* gamma, float eps, float* y, uint16_t* y16,
+                            int64_t T, void* stream);
+/// Prefill-only packed FP16 QKV -> FP16 normalized Q/K and SiLU V. T=1..8192.
+/// History stays FP32 [10240,3]; ordered update handles T<3. Float weights,
+/// accumulation and head reductions, one RNE storage rounding. Registered
+/// device spans on the in-order stream,4-byte aligned and mutually disjoint.
+void gdn_conv_f16(float* history, const uint16_t* qkv, const float* conv_w,
+                  uint16_t* h, int64_t T, float eps, void* stream);
+/// Same three-barrier recurrence with packed FP16 h/z loads and FP32 state,
+/// gates, local accumulation and raw scratch. raw is [T,6144] FP32 recurrence
+/// output,not normalized output; only y16 receives final RMS/gating. All spans
+/// are caller-owned,registered device allocations and disjoint through drain.
+/// No model dispatch or decode selection changes are implied by this API.
+void gdn_recurrence_barriers3_f16(float* state, const uint16_t* h, const float* gate,
+                                const float* beta, const uint16_t* z, const float* gamma,
+                                float eps, float* raw, uint16_t* y16, int64_t T, void* stream);
 #endif
 
 // ---- MoE

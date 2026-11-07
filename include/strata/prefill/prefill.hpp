@@ -15,6 +15,7 @@
 #include "strata/core/layer.hpp"
 #include "strata/core/session.hpp"
 #include "strata/core/weights.hpp"
+#include "strata/prefill/strategy.hpp"
 
 #include <cstdint>
 #include <functional>
@@ -94,8 +95,10 @@ public:
     static uint64_t bytes_needed(const core::ModelGeometry& g, const core::SessionState& ss, int64_t chunk);
 
     /// Positions [pos0, pos0 + n) holding `tokens`; `ss.ple_prev` must be the two tokens before pos0 (oldest
-    /// first, -1 for none) and is advanced to the last two of these.
-    bool run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
+    /// first, -1 for none) and is advanced to the last two of these. The caller
+    /// passes its resolved prefill strategy; decode configuration is independent.
+    bool run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err,
+             Strategy strategy = Strategy::ttft);
 
     const PrefillStats& stats() const { return stats_; }
 

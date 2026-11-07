@@ -54,6 +54,7 @@ sys.path.insert(0, str(ROOT))   # run as a script (run-<model>.bat) as well as a
 from serve.frontend import (ChatTemplate, Event, OutputParser, anthropic_to_messages,  # noqa: E402
                             images_of, mark_think_literals, openai_to_messages, unmark_think_literals)
 from serve.mcp import McpCancelled, hub_from_config  # noqa: E402
+from serve.config_file import read_config, split_joined_args  # noqa: E402
 from serve import runconfig  # noqa: E402
 from serve.winjob import contain  # noqa: E402
 from serve.structured import StructuredOutputError, prepare_format, validated_json  # noqa: E402
@@ -92,6 +93,9 @@ ENGINE_SILENCE_S = 300.0
 PP_CHUNK_MAX = 32768
 PP_FLOOR_TOK_S = 50.0
 PP_SLACK = 3.0
+# Niko c08fd2ec (#4271): an unread SSE connection must not hold the engine's turn
+# indefinitely after its send buffer fills. Zero keeps the previous unlimited write.
+STREAM_WRITE_TIMEOUT_S = float(os.environ.get("STRATA_STREAM_WRITE_TIMEOUT_S", "60") or 0)
 
 
 # ------------------------------------------------------------------------------------------------ engines
@@ -3203,6 +3207,8 @@ def make_handler(svc: Service):
                     self._anthropic(req)
                 elif path == "/v1/messages/count_tokens":
                     self._count_tokens(req)
+                elif path == "/v1/chat/completions/count_tokens":
+                    self._count_tokens(req, "openai")
                 else:
                     self._json(404, {"error": {"message": "not found"}})
             except ValueError as e:
@@ -3361,6 +3367,11 @@ def make_handler(svc: Service):
             self.send_header("X-Accel-Buffering", "no")   # nginx and similar proxies pass each event at once
             self._cors()
             self.end_headers()
+            if STREAM_WRITE_TIMEOUT_S > 0:
+                try:
+                    self.connection.settimeout(STREAM_WRITE_TIMEOUT_S)
+                except OSError:
+                    pass
 
         def _capture(self, items, api):
             """Retain bounded input/output for the monitor without changing the API response (the items as they
@@ -3578,11 +3589,25 @@ def make_handler(svc: Service):
             # the request is also the sampling dict, as on the chat path (temperature, top_p, top_k, seed, ...)
             return ids, thinking, tools, max_new, asm, validator, req
 
-        def _count_tokens(self, req):
-            """Anthropic's token count, which Claude Code asks for its context figures: the prompt this server would
-            read for the same request, rendered and tokenized - the model does not run."""
-            req = svc.with_shared(req, "anthropic")
-            messages, tools, kw = anthropic_to_messages(req, svc.anthropic_think_unasked)
+        def _count_tokens(self, req, dialect="anthropic"):
+            """Count the rendered prompt without model execution or prompt-cache insertion.
+
+            The OpenAI extension supports text/tool schemas, with the same
+            normalization and structured-format prompt as chat completions.
+            Tokenizer piece caches may warm; this is not context admission.
+            """
+            req = svc.with_shared(req, dialect)
+            if dialect == "openai":
+                if req.get("strata_mcp"):
+                    raise ValueError("count_tokens does not expand dynamic MCP tools")
+                messages, tools, kw = openai_to_messages(req)
+                messages, validator = prepare_format(req.get("response_format"), messages)
+                if validator is not None and tools:
+                    raise ValueError("structured response_format with tools/MCP is not supported")
+                if images_of(messages):
+                    raise ValueError("count_tokens supports text prompts, not vision token expansion")
+            else:
+                messages, tools, kw = anthropic_to_messages(req, svc.anthropic_think_unasked)
             self._json(200, {"input_tokens": len(svc.encode_prompt(messages, tools, kw, store=False))})
 
         def _anthropic(self, req):
@@ -3977,7 +4002,8 @@ def main() -> int:
     ap.add_argument("--before-load", help="a command run before the model is loaded again (e.g. to unload another "
                                           "server's model; also \"before_load\" in the config, a string or a list)")
     a = ap.parse_args()
-    cfg = json.loads(Path(a.config).read_text(encoding="utf-8-sig")) if a.config else {}   # Notepad adds a BOM
+    cfg = read_config(a.config) if a.config else {}
+    split_joined_args(cfg)
     if a.gpu is not None:
         cfg["gpu"] = int(a.gpu) if a.gpu.strip().isdigit() else a.gpu
     a.host = a.host or cfg.get("host") or "127.0.0.1"   # issue #26: the run scripts pass no --host, the config can

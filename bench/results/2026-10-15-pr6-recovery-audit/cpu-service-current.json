@@ -1,0 +1,620 @@
+{
+  "schema": "strata-closed-cpu-service-overhead-v1",
+  "archive": {
+    "commit": "ef52642d6",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-service-current.json",
+    "scope": "Full source/build/device/host/model receipts,original immutable nine-process plan,all per-format/NT service tables and prior deletion manifests. Closed one-shot launchers recover atc7da83f55. Current working result keeps useful individual measurements and the unchanged failed decision."
+  },
+  "observer_overhead": {
+    "stage": "closed",
+    "source_commit": "c90938140711f6f3e3a0819685ec8cff2cc2cc70",
+    "native_source": {
+      "original": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "observer_base": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "observer_patches": [
+        "35f3683bc",
+        "f26979a65",
+        "44b520e30",
+        "589ff46aa"
+      ]
+    },
+    "binaries": {
+      "original": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/build/strata",
+        "bytes": 22190000,
+        "sha256": "22182f1a5e62e5f4259ce49a75ae44afbd988166ec79324816e499ff37ef60e4"
+      },
+      "observer": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2/build/strata",
+        "bytes": 22199168,
+        "sha256": "7791bf8b6da7f94095c5ef5cefb852dab8852a54f39181e22add81892eaf15bd"
+      }
+    },
+    "order": [
+      "original",
+      "off",
+      "on",
+      "on",
+      "original",
+      "off",
+      "off",
+      "on",
+      "original"
+    ],
+    "configuration": "Original6e40 versus its four scoped observer/test patches only;same selected math/configuration,1256slots,131072residentINT8,8192chunks,spec4,five workers+host. Common parameter validation,retained UR reference,stage trace,CPU census and nested decode clocks;only CPU_SERVICE0/1 and declared binary differ. Environment fixed before exec.",
+    "processes": [
+      {
+        "index": 0,
+        "arm": "original",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 72606.3,
+          "decode_ms": 283038.5,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 89.88,
+          "CPU_pool_run": 127.18,
+          "draft": 33.61
+        }
+      },
+      {
+        "index": 1,
+        "arm": "off",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 55789.1,
+          "decode_ms": 286093.1,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.45,
+          "CPU_pool_run": 128.62,
+          "draft": 33.66
+        }
+      },
+      {
+        "index": 2,
+        "arm": "on",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 55522.4,
+          "decode_ms": 287961.2,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.02,
+          "CPU_pool_run": 132.01,
+          "draft": 33.59
+        },
+        "service": {
+          "calls": 5560494,
+          "wall_ns": 649336117571,
+          "cpu_ns": 622722045535,
+          "leaf_cpu_ns": {
+            "GU": 426942236518,
+            "HQ": 1347681743,
+            "DOWN": 194432127274
+          }
+        }
+      },
+      {
+        "index": 3,
+        "arm": "on",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 55299.0,
+          "decode_ms": 291048.8,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.43,
+          "CPU_pool_run": 133.75,
+          "draft": 33.6
+        },
+        "service": {
+          "calls": 5560494,
+          "wall_ns": 654284303794,
+          "cpu_ns": 626381417980,
+          "leaf_cpu_ns": {
+            "GU": 430330390154,
+            "HQ": 1338556688,
+            "DOWN": 194712471138
+          }
+        }
+      },
+      {
+        "index": 4,
+        "arm": "original",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 55177.2,
+          "decode_ms": 285650.8,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.11,
+          "CPU_pool_run": 128.31,
+          "draft": 33.61
+        }
+      },
+      {
+        "index": 5,
+        "arm": "off",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 55294.8,
+          "decode_ms": 285021.4,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.34,
+          "CPU_pool_run": 128.39,
+          "draft": 33.63
+        }
+      },
+      {
+        "index": 6,
+        "arm": "off",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 65073.3,
+          "decode_ms": 284622.1,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.13,
+          "CPU_pool_run": 127.9,
+          "draft": 33.63
+        }
+      },
+      {
+        "index": 7,
+        "arm": "on",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 56555.2,
+          "decode_ms": 289761.5,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.56,
+          "CPU_pool_run": 132.39,
+          "draft": 33.58
+        },
+        "service": {
+          "calls": 5560494,
+          "wall_ns": 648891987004,
+          "cpu_ns": 621632874422,
+          "leaf_cpu_ns": {
+            "GU": 425867652490,
+            "HQ": 1350157455,
+            "DOWN": 194415064477
+          }
+        }
+      },
+      {
+        "index": 8,
+        "arm": "original",
+        "passed": true,
+        "ownership_closed": true,
+        "native_exit_code": 0,
+        "sample": {
+          "read_tokens": 33214,
+          "reused_tokens": 0,
+          "generated_tokens": 3611,
+          "prompt_ms": 55813.6,
+          "decode_ms": 286432.2,
+          "drafts_offered": 3102,
+          "drafts_accepted": 2578,
+          "finish_reason": "stop",
+          "speed_eligible": true
+        },
+        "decode_regions_ms_per_window": {
+          "GPU_reach_wait": 90.42,
+          "CPU_pool_run": 129.25,
+          "draft": 33.58
+        }
+      }
+    ],
+    "common_sample": {
+      "request_sha256": "b0a065720a5eb86fa2d3f84d6371e35da774b4ea144d022608d49b80c227cba1",
+      "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+      "reasoning_sha256": "8daeec41f22d90c32c1c1c5c3cfe4486a9ee6d65fa7ffe8857bfe980c02d411e",
+      "output_chars": 5496,
+      "reasoning_chars": 4368,
+      "completion_includes_thinking": true
+    },
+    "common_work": {
+      "cpu_jobs": 1370846,
+      "cpu_entries": 1771839,
+      "format_nt_jobs": [
+        {
+          "gu": 18,
+          "down": 20,
+          "jobs_NT": [
+            312670,
+            65168,
+            16541,
+            5226
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 42,
+          "jobs_NT": [
+            105622,
+            28237,
+            6804,
+            1693
+          ]
+        },
+        {
+          "gu": 22,
+          "down": 20,
+          "jobs_NT": [
+            339214,
+            78601,
+            17357,
+            4878
+          ]
+        },
+        {
+          "gu": 18,
+          "down": 42,
+          "jobs_NT": [
+            70375,
+            15934,
+            3320,
+            654
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 20,
+          "jobs_NT": [
+            187015,
+            42554,
+            10760,
+            3429
+          ]
+        },
+        {
+          "gu": 21,
+          "down": 42,
+          "jobs_NT": [
+            24201,
+            5344,
+            1146,
+            180
+          ]
+        },
+        {
+          "gu": 23,
+          "down": 20,
+          "jobs_NT": [
+            19700,
+            3442,
+            666,
+            115
+          ]
+        }
+      ],
+      "target_windows": 1035,
+      "target_rows": 4137,
+      "expert_copy_requested_bytes": 0
+    },
+    "common_actual_route": {
+      "BF16_GPU_rows": 33213,
+      "MoE_mode": 10,
+      "restored_dense_layers": 48,
+      "restored_cache_membership_verified": true,
+      "cache_payload_hash_verified": false
+    },
+    "checks": {
+      "independent_native_processes": 9,
+      "normal_owned_closures": 9,
+      "same_actual_work_route_and_request_verified": 9,
+      "same_request_service_census_conserved": 3,
+      "final_model_hashes_matched": 15,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "effective_environment_verified": 9,
+      "cache_payload_hash_verified": false
+    },
+    "decision": {
+      "comparisons": {
+        "off_vs_original": {
+          "work_comparable": true,
+          "prefill": {
+            "ratios": [
+              1.3014423964537876,
+              0.9978732177347598,
+              0.8577035435424359
+            ],
+            "geomean": 1.036603109174285,
+            "minimum": 0.8577035435424359,
+            "maximum": 1.3014423964537876,
+            "accepted": false
+          },
+          "decode": {
+            "ratios": [
+              0.9893230560261678,
+              1.002208255239782,
+              1.0063596607571936
+            ],
+            "geomean": 0.9992705969919011,
+            "minimum": 0.9893230560261678,
+            "maximum": 1.0063596607571936,
+            "accepted": true
+          },
+          "accepted": false
+        },
+        "on_vs_off": {
+          "work_comparable": true,
+          "prefill": {
+            "ratios": [
+              1.0048034667089318,
+              0.9999240492594804,
+              1.1506156816702975
+            ],
+            "geomean": 1.0495250507766376,
+            "minimum": 0.9999240492594804,
+            "maximum": 1.1506156816702975,
+            "accepted": true
+          },
+          "decode": {
+            "ratios": [
+              0.99351266767884,
+              0.9792907581134161,
+              0.9822633441640797
+            ],
+            "geomean": 0.9850032590571951,
+            "minimum": 0.9792907581134161,
+            "maximum": 0.99351266767884,
+            "accepted": true
+          },
+          "accepted": true
+        }
+      },
+      "overhead_qualified": false,
+      "observed_strong_MTP": true,
+      "inference_adopted": false,
+      "clean_speed_qualified": false,
+      "hardware_saturation_qualified": false
+    },
+    "active": false,
+    "ownership_closed": true,
+    "passed": true,
+    "complete": true,
+    "inference_adopted": false,
+    "limits": "Observed workload-specific overhead and attribution only;not clean speed,physical RAM/PCIe traffic,CPU arithmetic saturation,inference adoption,task quality,weak-MTP,agent-session,262144-context,RESTORE or ordinary runtime destruction qualification."
+  },
+  "observer_overhead_interpretation": {
+    "execution": "All nine ordered independent processes close normally;four warmups and one33214-fresh-input/3611-output thinking-on code request each. Same format/NT work and MTP2578/3102. All15 final model hashes match;no fresh faults;updated NEO/boot unchanged.",
+    "decision": "Frozen overall overhead qualification fails:off/original prefill ratios1.3014424,0.9978732,0.8577035;the third misses0.95 despite geomean1.0366031. Preserve first original72606.3ms and third off65073.3ms;their causes are unestablished. No retroactive phase-only adoption or changed thresholds.",
+    "decode": "Off/original geomean0.9992706 and on/off0.9850033 meet their prospective decode screens. This does not override the failed whole-comparison gate or qualify clean speed,hardware saturation or inference adoption.",
+    "next": "Retire this closed observer generation/launchers after exact source and recipe recovery. Keep original6e40 fallback and selected decode. Restore the reviewed prefill source independently;new model/phase evidence needs its own committed plan.",
+    "thread_followup": "Final on-arm six-thread summed CPU ranges102.094797405..105.284417412s,total621.632874422s. Cumulative balance does not establish per-batch critical-path balance,arithmetic/RAM saturation or a scheduling improvement."
+  },
+  "thread_service_followup": {
+    "planned_on_index": 7,
+    "question": "Check cumulative per-thread CPU leaf distribution before choosing a decode-pool scheduling calibration. run_split_multi_native uses3*(five workers+host)=18 equal-row tasks,while conserved format/NT service shows different work cost per row.",
+    "collection": "Retain the six already-emitted CPU_SERVICE_THREAD rows for request5 of the final on arm;no new instrumentation,source,environment,workload,cohort order,overhead criteria or stopping change. Do not repeat retired samples.",
+    "columns": [
+      "slot",
+      "calls",
+      "wall_ns",
+      "cpu_ns"
+    ],
+    "validation": "Bind to that native owner and the existing same-request service/census;require distinct six slots/owners and totals equal retained calls/wall_ns/cpu_ns. Existing reader has already checked stable TIDs across the five requests.",
+    "limits": "One cumulative diagnostic can reveal skew,but cannot prove per-batch critical-path imbalance or arithmetic/RAM saturation. Leaf clocks omit pool/barrier/sleep/submission work and include memory stalls and charged clock costs.",
+    "consumer": "Diagnostic cumulative skew reference only. Failed overall overhead prevents selecting a CPU scheduling candidate from these clocks;fresh phase-specific qualification would be required. Main resumes independent prefill restoration.",
+    "observation": {
+      "index": 7,
+      "request": 5,
+      "rows": [
+        [
+          0,
+          707032,
+          106872481409,
+          102094797405
+        ],
+        [
+          1,
+          702325,
+          107484807399,
+          102228070137
+        ],
+        [
+          2,
+          701410,
+          107626452298,
+          103176165339
+        ],
+        [
+          3,
+          700166,
+          108167747299,
+          103699821361
+        ],
+        [
+          4,
+          698361,
+          108607403665,
+          105149602768
+        ],
+        [
+          64,
+          2051200,
+          110133094934,
+          105284417412
+        ]
+      ],
+      "six_distinct_stable_owners_verified": true,
+      "thread_bin_totals_conserved": true
+    }
+  },
+  "observer_generation_retirement": {
+    "stage": "retired",
+    "complete": true,
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-original-v2",
+    "cohort_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-service-overhead-v1",
+    "source_recovery_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/observer-source-recovery-20261025",
+    "manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/closed-cpu-service-generation-and-cohort-20261025.jsonl",
+      "sha256": "243ed5e5dee2745dea5c83ee3023d48e5c7b45a8f11ba622176b7c896eca274a"
+    },
+    "files": 833,
+    "bytes": 126201281,
+    "selected_fallback": {
+      "source_commit": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+      "inputs_recovered": 9853,
+      "assets_verified": 13,
+      "receipt": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/main-native-gdn-engine/record.json",
+        "sha256": "a38f477670fafcd1a931be2e20d90d6d9718df75b61954b421f361af9f6881b2"
+      },
+      "limits": "Original build remains selected; this source-only diagnostic is not adoption."
+    },
+    "selected_source": "6e40afc1beddd059ee518617f6c1efce1da14aca",
+    "observer_project_inputs_recovered": 554,
+    "observer_compiled_inputs_checked": 1402,
+    "cohort_source_inputs_recovered": 193,
+    "original_native_inputs_recovered": 9853,
+    "source_patch_commits": [
+      "35f3683bc",
+      "f26979a65",
+      "44b520e30",
+      "589ff46aa"
+    ],
+    "recipe_source_commits": [
+      "e42ae21ac82ea00772569299a07b35f0448a48ac",
+      "0d434a573baeabb57e4849adea4286badbf87dbb"
+    ],
+    "outcomes_unchanged": true,
+    "consumer": "No execution consumer after retiring the five one-shot CPU-service launchers and their decision test. Optional collector/real-pool fixture source remains for a separately planned future attribution;failed overall overhead is not qualification.",
+    "next_action": "Build only the committed selected-prefill restoration as the single extra generation;original6e40/13assets remain the validated fallback. No retained observer executable/controller/generated input remains.",
+    "research_review_root": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/strata-research/20261025/prefill-restoration-build-review",
+    "launchers_retirement": {
+      "archive_commit": "c7da83f55",
+      "files": 6,
+      "bytes": 82724,
+      "paths": [
+        "tools/sycl/cpu_service_engine.py",
+        "tools/sycl/cpu_service_native.py",
+        "tools/sycl/cpu_service_device.py",
+        "tools/sycl/cpu_service_model.py",
+        "tools/sycl/cpu_service_overhead.py",
+        "tests/core/test_cpu_service_overhead.py"
+      ],
+      "reason": "Closed single-use observers/build/model comparison;no imports remain outside this retired chain. Git deletion diff records original blobs;retain reusable collector and real-pool source only."
+    },
+    "roots_verified_absent": true,
+    "categories": {
+      "observer_generation": {
+        "files": 726,
+        "bytes": 110975937
+      },
+      "cohort": {
+        "files": 96,
+        "bytes": 14535639
+      },
+      "source_recovery": {
+        "files": 7,
+        "bytes": 677296
+      },
+      "research_review": {
+        "files": 4,
+        "bytes": 12409
+      }
+    }
+  },
+  "observer_overhead_retirement": {
+    "processes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "host_output_retired": true,
+    "files": 643,
+    "bytes": 116624698,
+    "source_inputs_recovered": 193,
+    "original_frozen_plan_commit": "1004c67b2",
+    "original_native_inputs_recovered": 9853,
+    "outcomes_unchanged": true,
+    "remaining_generated_inputs": 0,
+    "consumer": "Closed comparison;no remaining raw/generated admission inputs. Individual samples/failed overall decision remain in Git;selected original fallback retained for prefill restoration.",
+    "cohort_root_deleted": true
+  }
+}

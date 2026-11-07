@@ -5,6 +5,7 @@
 #include "strata/kernels/cpu/expert.hpp"
 #include "strata/kernels/cpu/iq_avx512.hpp"
 #include "strata/kernels/cpu/iq_avx2.hpp"
+#include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #include "strata/kernels/cpu/kq_avx2.hpp"
 #include "strata/kernels/cpu/expert_layout.hpp"
 
@@ -12,11 +13,78 @@
 #include "ggml-cpu.h"
 
 #include <cmath>
+#include <atomic>
 #include <cstdlib>
 #include <mutex>
+#if defined(__linux__)
+#include <sched.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+#endif
 
 namespace strata::kernels::cpu {
 namespace {
+
+// Each thread writes a separate cache line. Snapshot fields are atomic so a
+// diagnostic read cannot race; full conservation requires the drained pool.
+struct alignas(64) GuAuditSlot {
+    std::atomic<uint64_t> tid{0}, calls{0}, rows{0}, nt1{0}, pair{0};
+    std::atomic<uint64_t> iq3_nt1{0}, iq3_pair{0};
+    std::atomic<int> cpu{-1};
+    std::atomic<bool> pinned{false};
+};
+GuAuditSlot gu_audit_slots[64];
+std::atomic<unsigned> gu_audit_size{0};
+std::atomic<bool> gu_audit_overflow{false};
+bool iq2_gu_audit_enabled() noexcept {
+#if defined(__linux__)
+    static const bool enabled=[] {const char* v=std::getenv("STRATA_IQ2_PAIR_AUDIT");return v&&v[0]=='1'&&v[1]=='\0';}();
+    return enabled;
+#else
+    return false;
+#endif
+}
+bool iq3_gu_audit_enabled() noexcept {
+#if defined(__linux__)
+    static const bool enabled=[] {const char* v=std::getenv("STRATA_IQ3_PAIR_AUDIT");return v&&v[0]=='1'&&v[1]=='\0';}();
+    return enabled;
+#else
+    return false;
+#endif
+}
+struct GuAuditScope {
+    GuAuditSlot* slot=nullptr;
+    uint64_t rows=0, ops=0, nt1=0, iq3_nt1=0;
+    bool paired=false, iq3_paired=false;
+    GuAuditScope(const NativeFmt& f,int nt,int r0,int r1) noexcept {
+        if(!iq2_gu_audit_enabled()&&!iq3_gu_audit_enabled())return;
+        if(nt<1||nt>8||r0<0||r1<r0||r1>640){gu_audit_overflow.store(true);return;}
+        static thread_local const unsigned index=gu_audit_size.fetch_add(1,std::memory_order_relaxed);
+        if(index>=64){gu_audit_overflow.store(true);return;}
+        slot=&gu_audit_slots[index];
+#if defined(__linux__)
+        if(!slot->tid.load(std::memory_order_relaxed)) {
+            const int core=sched_getcpu();cpu_set_t affinity;CPU_ZERO(&affinity);
+            slot->pinned.store(core>=0&&core<CPU_SETSIZE&&sched_getaffinity(0,sizeof affinity,&affinity)==0&&
+                CPU_COUNT(&affinity)==1&&CPU_ISSET(core,&affinity),std::memory_order_relaxed);
+            slot->cpu.store(core,std::memory_order_relaxed);
+            slot->tid.store(static_cast<uint64_t>(syscall(SYS_gettid)),std::memory_order_relaxed);
+        }
+#endif
+        rows=static_cast<uint64_t>(r1-r0);ops=rows*static_cast<uint64_t>(nt);
+        nt1=f.gu_type==22&&nt==1?rows:0;
+        iq3_nt1=f.gu_type==18&&nt==1?rows:0;
+    }
+    ~GuAuditScope() {
+        if(!slot)return;
+        slot->calls.fetch_add(1,std::memory_order_relaxed);
+        slot->rows.fetch_add(ops,std::memory_order_relaxed);
+        slot->nt1.fetch_add(nt1,std::memory_order_relaxed);
+        slot->pair.fetch_add(paired?rows:0,std::memory_order_relaxed);
+        slot->iq3_nt1.fetch_add(iq3_nt1,std::memory_order_relaxed);
+        slot->iq3_pair.fetch_add(iq3_paired?rows:0,std::memory_order_relaxed);
+    }
+};
 
 const ggml_type_traits_cpu* traits(int type) { return ggml_get_type_traits_cpu((ggml_type) type); }
 
@@ -26,6 +94,36 @@ void init_once() {
 }
 
 }  // namespace
+
+Iq2GuAudit iq2_gu_audit_snapshot() noexcept {
+    Iq2GuAudit out;out.enabled=iq2_gu_audit_enabled();
+    out.overflow=gu_audit_overflow.load(std::memory_order_relaxed);
+    const unsigned size=gu_audit_size.load(std::memory_order_relaxed);
+    out.size=size<64?size:64;
+    for(unsigned i=0;i<out.size;++i) {
+        const auto& s=gu_audit_slots[i];auto& d=out.threads[i];
+        d.tid=s.tid.load(std::memory_order_relaxed);d.cpu=s.cpu.load(std::memory_order_relaxed);
+        d.pinned=s.pinned.load(std::memory_order_relaxed);
+        d.calls=s.calls.load(std::memory_order_relaxed);d.row_ops=s.rows.load(std::memory_order_relaxed);
+        d.nt1_rows=s.nt1.load(std::memory_order_relaxed);d.pair_rows=s.pair.load(std::memory_order_relaxed);
+    }
+    return out;
+}
+
+Iq3GuAudit iq3_gu_audit_snapshot() noexcept {
+    Iq3GuAudit out;
+    out.enabled=iq3_gu_audit_enabled();
+    out.overflow=gu_audit_overflow.load(std::memory_order_relaxed);
+    const unsigned size=gu_audit_size.load(std::memory_order_relaxed);
+    out.threads=size<64?size:64;
+    for(unsigned i=0;i<out.threads;++i) {
+        const auto& slot=gu_audit_slots[i];
+        out.calls+=slot.calls.load(std::memory_order_relaxed);
+        out.nt1_rows+=slot.iq3_nt1.load(std::memory_order_relaxed);
+        out.pair_rows+=slot.iq3_pair.load(std::memory_order_relaxed);
+    }
+    return out;
+}
 
 bool native_experts_available() noexcept { return true; }
 
@@ -77,7 +175,8 @@ void native_quant_h(const NativeFmt& f, const float* h, void* dst) {
 }
 
 void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* act, int nt, float* const* ff,
-                    int r0, int r1) {
+                    int r0, int r1, NativeGuPhase phase) {
+    GuAuditScope audit(f,nt,r0,r1);
     // the multi-token kernels decode the weights once for all tokens: 2.0-2.4x ggml-cpu at three tokens, no faster
     // at one (all are bound by the codebook lookups, ~5 GB/s per core), measured by native_expert_parity.  AVX-512
     // first, then the AVX-2 one (Zen 2/3, Intel 12th-14th gen).  STRATA_NO_IQ512 drops an AVX-512 CPU to the
@@ -112,13 +211,30 @@ void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* 
             return;
         }
     }
+    // The default-off direct pair producer only replaces IQ2_S NT1.
+    // Environment remains immutable after startup; existing MT dispatch above
+    // and STRATA_NO_IQ256 retain their precedence.
+    static const bool iq2_pair=[] {const char* v=std::getenv("STRATA_IQ2_PAIR");return v&&v[0]=='1'&&v[1]=='\0';}();
+    if(phase==NativeGuPhase::Decode&&iq2_pair&&avx2&&!cpu512&&nt==1&&iq2_pair_gu_rows(f,blob,act[0],ff[0],r0,r1)) {
+        audit.paired=true;
+        return;
+    }
+    // Independent decode-only selection. Keep prompt and NT2+ dispatch above
+    // unchanged; the helper refuses unsupported formats, shapes and builds.
+    static const bool iq3_pair=[] {const char* v=std::getenv("STRATA_IQ3_PAIR");return v&&v[0]=='1'&&v[1]=='\0';}();
+    if(phase==NativeGuPhase::Decode&&iq3_pair&&avx2&&!cpu512&&nt==1&&
+       iq3xxs_pair_gu_rows(f,blob,act[0],ff[0],r0,r1)) {
+        audit.iq3_paired=true;
+        return;
+    }
     // Opt-in Zen 3 single-token kernels retain GGML's float reduction order.
+    // Select them only for decode; prefill keeps its independent dispatch.
     // Multi-token selection above and STRATA_NO_IQ256 keep their existing roles.
     static const bool single_exact = [] {
         const char* v = std::getenv("STRATA_IQ_SINGLE_EXACT");
         return v && std::atoi(v) != 0;
     }();
-    if (single_exact && avx2 && !cpu512 && nt == 1 &&
+    if (phase == NativeGuPhase::Decode && single_exact && avx2 && !cpu512 && nt == 1 &&
         iq256_single_gu_rows(f.gu_type, blob, f.gu_row, f.up_off, (int) f.n_embd, act[0], ff[0], r0, r1))
         return;
     const ggml_vec_dot_t dot = traits(f.gu_type)->vec_dot;
