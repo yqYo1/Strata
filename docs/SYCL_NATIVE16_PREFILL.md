@@ -31,12 +31,14 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   a fixed4 weak-MTP class. Broader qualification remains pending;no inference
   adoption,new best TG or70TG follows. The e1b011 successor now passes its
   synthetic32-update positive entry and checked32-record-refusal. The new
-  clean8/32comparison has two of six regular-code processes closed:the first
+  clean8/32comparison has three of six regular-code processes closed:the first
   pair gives11.73872->13.38632TG(8->32),ratio1.140356,on33210fresh input
   tokens. Both close normally0with quiet validation and no fresh fault.
   Cache hits rise24.0->41.1%;generation is3016/3459tokens and acceptance
-  83.8772/86.8056%. The remaining two pairs are required before a repeated
-  gain decision;no fixed-work attribution or aggregate adoption follows.
+  83.8772/86.8056%. The second32process gives13.34774TG with the same cache
+  counts,3459generated tokens and acceptance. The remaining two pairs are
+  required before a repeated gain decision;no fixed-work attribution or
+  aggregate adoption follows.
   Preserve the552b prefill fallback.
 - The earlier **05a9 (`05a9b45c0a3a266779d4757a855b45a3bb42a62e`) / engine a99aa1**
   decode comparison is closed with six processes and three pairs:
@@ -874,23 +876,24 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   reads succeed with the old429b paths absent. Both fresh benchmark/server
   frontend probes now pass normally0with closed owners at source`869568e8a`,
   still with the old paths absent. The held old products are now retired.
-  Regular-code process0(adaptive8)is closed with normal native/benchmark0,
-  quiet validation,closed owners,unchanged boot/driver and no fresh fault.
-  Its33210fresh input/3016generated tokens give exact542.03329PP,
-  61.2693s prompt,61.446s client TTFT and11.73872TG over256.9275s decode.
-  Draft acceptance is2159/2574(83.8772%)and the cache footer is396288/1647840
-  hits(24.0%). Four official warmups precede this first long request;it is
-  neither an engine-first-use nor a subsequent-long-request sample. The
-  six-process comparison is incomplete. Process1(adaptive32)also closes
-  normally0with quiet validation,closed owners,unchanged boot/driver and no
-  fresh fault. It reads the same33210tokens and generates3459,with exact
-  546.85840PP,60.7287s prompt,60.950s client TTFT and13.38632TG over
-  258.3982s decode. Acceptance is2500/2880(86.8056%)and cache hits are
-  758500/1843680(41.1%). The first TG ratio is1.140356;prompt/TTFT time
-  ratios are0.991177/0.991928. Logical missed lookups per generated token
-  decrease414.971->313.727;these are not CPU kernel jobs or physical traffic.
-  Different generation lengths and acceptance preclude fixed-work attribution.
-  Continue the frozen plan with process2(adaptive32),then3/4/5(8/8/32).
+  Three regular-code processes now close with native/benchmark0,quiet
+  validation,closed owners,unchanged boot/driver and no fresh fault. Each
+  reads33210fresh tokens after four official warmups,then measures its first
+  long request with thinking;this is neither engine first use nor a subsequent
+  long request. The six-process cohort remains incomplete.
+
+  | Process | Swaps | Generated | PP tok/s | Client TTFT s | TG tok/s | Cache hit % | Draft acceptance % |
+  | --- | --- | --- | --- | --- | --- | --- | --- |
+  | 0 | 8 | 3016 | 542.03329 | 61.446 | 11.73872 | 24.0 | 83.8772 |
+  | 1 | 32 | 3459 | 546.85840 | 60.950 | 13.38632 | 41.1 | 86.8056 |
+  | 2 | 32 | 3459 | 541.39795 | 61.533 | 13.34774 | 41.1 | 86.8056 |
+
+  The first TG ratio is1.140356;prompt/TTFT time ratios are0.991177/0.991928.
+  Logical missed lookups per generated token decrease414.971->313.727;
+  these are not CPU kernel jobs or physical traffic. Different generation
+  lengths and acceptance preclude fixed-work attribution. Individual clocks,
+  counts and routes remain in the linked compact result. Continue the frozen
+  plan with process3/4/5(8/8/32).
   Processes0/1each have69successful raw/JIT files retired(13095666/13096255
   bytes),after recovering all346source inputs from Git and pushing their
   compact results. Keep their generated configs/plans for the ongoing cohort.
@@ -1161,7 +1164,18 @@ A changed cache can alter work,overlap and other intervals,so it needs fresh
 model samples. The independent audit-cap successor can now proceed through
 source preparation and bounded qualification;resource closure does not turn
 the failed observer-cost decision into a pass.
-The read-only capacity audit uses e1b011's recorded native inputs.
+The selected e1b011 path multiplies usage counts by 0.7 after each adaptation;
+neither arm overrides this default. At every eight verifier rounds, the score
+half-life is about 15.55 rounds. The generated-token interval varies with
+acceptance. The minimum candidate count is 2 and replacement advantage is 1.5.
+Changing cadence also changes recency and count scaling, so it needs a new
+policy comparison. This full-RAM ArenaExpertSource route leaves
+FileExpertSource's complement exchange inactive. Normal adaptive payload
+copies are incoming H2D; victim D2H belongs to the separate RAM-complement
+path, and audit readbacks are observers. The clean SYCL_EXPERT_COPY footer
+excludes adaptive uploads, so its zero submitted bytes do not establish zero
+bus traffic. Physical traffic and saturation remain unmeasured.
+The read-only capacity audit uses the same recorded native inputs.
 `NativeDense::load`uploads the original packed GGUF matrices and keeps its
 optional layer-bank snapshots in owned RAM;that owner is not a second full
 FP16 expansion in VRAM. This finding covers NativeDense,not the whole process.
