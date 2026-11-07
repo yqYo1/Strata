@@ -1013,7 +1013,7 @@ hidden quantization1.146. Of1207577CPU jobs,78.13%haveNT1. Logical blob
 visits total2.463TB,not measured physical RAM traffic. Process1also closes
 normally0with five complete caller/leaf/census records and no fresh GPU fault.
 Its3157-token decode takes292.2301s;logical work matches process0and the
-first caller-on/off per-output latency ratio is0.977564. Two pairs remain.
+first caller-on/off per-output latency ratio is0.977564. One pair remains.
 The caller ledger records292.233wall/284.067CPU seconds;native waits consume
 141.240wall/139.525CPU seconds. Its own leaf slot64has the same TID as the
 native PID and consumes99.442CPU seconds. This is inside caller time:adding
@@ -1023,13 +1023,15 @@ and other runtime threads. The actual pool source confirms host participation
 with`drain(-1)`;the main thread performs useful work as well as completion
 waiting. Keep these observer results separate from clean speed;incremental
 caller cost and the complete six-process decision remain pending.
-Process2(the next caller-on arm)also closes normally0with all five records
-and no fault. Identical logical work/3157output tokens now take241.867s,
-with112.717s native waits and541.929aggregate leaf CPU seconds. This differs
-materially from process1on the same code/settings;retain both samples and
-the observed variability without attributing it to a hardware clock or a code
-change. Process3is its predefined caller-off partner;do not decide from the
-fast single sample. Three of six processes are closed.
+Processes2/3also close normally0with all five records and no fault. The
+caller-on/off partners have identical logical work/3157outputs but take
+241.867/226.4275s. Their latency ratio1.068187exceeds the predefined1.05
+incremental-cost bound;keep that failure and finish the final pair. Thus the
+six-process cost qualification cannot pass,even if the last pair is favorable.
+Across four same-code samples,the observed variability remains unattributed;
+the ratio alone does not assign6.8%causal overhead to the caller observer.
+Use these clocks within their diagnostic envelope,with physical traffic and
+saturation still unknown. Four of six processes are closed.
 A fixed-work sensitivity model for process0is
 `T_hyp[s]=130.006616/r_pool+101.988/r_reach+31.428/r_draft+35.514584`,
 where each`r`reduces only that measured interval and all logical work/other

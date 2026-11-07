@@ -189705,6 +189705,399 @@
           "original_sources_recovered": 341,
           "protected_ELF_outputs": 15
         }
+      },
+      {
+        "index": 3,
+        "kernel": "reference",
+        "adapt_swaps": 0,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 2276064,
+          "start_ticks": 236075311,
+          "sid": 2275986
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33211,
+            "reused_tokens": 0,
+            "generated_tokens": 3157,
+            "output_chars": 5578,
+            "reasoning_chars": 3232,
+            "prompt_ms": 49572.7,
+            "prompt_tps": 669.9,
+            "decode_ms": 226427.5,
+            "decode_tps": 13.9,
+            "ttft_s": 49.715,
+            "total_s": 276.024,
+            "drafts_offered": 2697,
+            "drafts_accepted": 2259,
+            "acceptance_rate": 0.8375973303670745,
+            "request_sha256": "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "0ec6a61d8f53a0fedb3cd298da139a354e265086e3927e563af9dcd87f256427",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2276064,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33211,
+            "rows": 33210,
+            "GPU_residual_rows": 33210,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20301,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33210,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed native16/GDN3 headers and MTP mode2 callbacks with frozen native branch,immutable GDN16/MTP16 selectors. Typed GDN per-launch counts and dense phase logs stay disabled;prior traced same-ELF check supplies that bounded qualification.",
+            "physical_resource_saturation_qualified": false,
+            "actual_width_cap": 4,
+            "request": 5,
+            "IQ3_calls": 1835806,
+            "completed_head_captures": 2
+          }
+        ],
+        "cache": [
+          {
+            "hits": 182054,
+            "lookups": 1726560,
+            "hit_percent": 10.5
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "54817db510f0ebbc1407d28d01ec0312cdad1b1c10b4cb5a03b343efc25b1f8d",
+            "15a0079edbae73115ff0ed4ccc5941fd660e6d29146f785908adb03d132c8234",
+            "4a7cc92d88a51add90116a61c87790df965ac4d4a536746fd37c2a8aa6c83ff4",
+            "f144f2506e6e2621096ce59541ef64252d8a17d04a11462403a428d527a9e033"
+          ],
+          "valid": true,
+          "journal_sha256": "90209b1a26e36e15184521c3d9d3d6d5ffa16b8ca38de64ce17caf25a5c39f7a"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35520
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "native_route_check_passed": true,
+        "resources": {
+          "passed": true,
+          "completed_requests": 5,
+          "warmup_prefix": 4,
+          "caller_enabled": false,
+          "caller_records": 0,
+          "long_request": {
+            "workload": "regular-code",
+            "work": {
+              "request": 5,
+              "windows": 900,
+              "rows": 3597,
+              "cpu_jobs": 1207577,
+              "cpu_entries": 1544506,
+              "vram_entries": 182054,
+              "jobs_NT": [
+                943454,
+                204646,
+                46148,
+                13329,
+                0,
+                0,
+                0,
+                0
+              ],
+              "NT1_fraction": 0.7812785437284745,
+              "pool_ms": 106059.764983,
+              "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+              "logical_job_blob_bytes": 2463082624000
+            },
+            "format_jobs_NT": [
+              {
+                "gu": 18,
+                "down": 20,
+                "jobs_NT": [
+                  277851,
+                  56232,
+                  13439,
+                  4306,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "jobs_NT": [
+                  62821,
+                  13392,
+                  2780,
+                  507,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "jobs_NT": [
+                  166780,
+                  36433,
+                  8784,
+                  2772,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "jobs_NT": [
+                  22029,
+                  4487,
+                  897,
+                  116,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "jobs_NT": [
+                  302275,
+                  66948,
+                  14232,
+                  3990,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "jobs_NT": [
+                  94143,
+                  24165,
+                  5520,
+                  1532,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "jobs_NT": [
+                  17555,
+                  2989,
+                  496,
+                  106,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "clock_binding": {
+              "absolute_total_difference_ms": 3.5,
+              "rounding_bound_ms": 4.55
+            },
+            "work_signature_sha256": "4f2f8e774cca18b687822feda1751d26f6140978b19016277c7678e9b365c175",
+            "service_enabled": true,
+            "same_request_census": true,
+            "service": {
+              "record_version": 2,
+              "completion_checked": true,
+              "thread_count": 6,
+              "calls": 4879189,
+              "wall_ns": 529479990682,
+              "cpu_ns": 516431531555
+            },
+            "operations": {
+              "GU": {
+                "calls": 1835806,
+                "rows": 772849280,
+                "token_rows": 988483840,
+                "wall_ns": 360679139584,
+                "cpu_ns": 353022172245
+              },
+              "HQ": {
+                "calls": 1207577,
+                "rows": 772849280,
+                "token_rows": 988483840,
+                "wall_ns": 1800880049,
+                "cpu_ns": 1016390482
+              },
+              "DOWN": {
+                "calls": 1835806,
+                "rows": 3091397120,
+                "token_rows": 3953935360,
+                "wall_ns": 166999971049,
+                "cpu_ns": 162392968828
+              }
+            },
+            "dominant_CPU_bins": {
+              "GU": [
+                {
+                  "gu": 18,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 277851,
+                  "calls": 419122,
+                  "rows": 177824640,
+                  "token_rows": 177824640,
+                  "wall_ns": 82754387758,
+                  "cpu_ns": 81068788664
+                },
+                {
+                  "gu": 22,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 302275,
+                  "calls": 450552,
+                  "rows": 193456000,
+                  "token_rows": 193456000,
+                  "wall_ns": 64619179387,
+                  "cpu_ns": 63094396069
+                },
+                {
+                  "gu": 21,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 166780,
+                  "calls": 255446,
+                  "rows": 106739200,
+                  "token_rows": 106739200,
+                  "wall_ns": 63096084940,
+                  "cpu_ns": 61916705059
+                }
+              ],
+              "DOWN": [
+                {
+                  "gu": 22,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 302275,
+                  "calls": 450552,
+                  "rows": 773824000,
+                  "token_rows": 773824000,
+                  "wall_ns": 44452437453,
+                  "cpu_ns": 43402960417
+                },
+                {
+                  "gu": 18,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 277851,
+                  "calls": 419122,
+                  "rows": 711298560,
+                  "token_rows": 711298560,
+                  "wall_ns": 41027337549,
+                  "cpu_ns": 39779275286
+                },
+                {
+                  "gu": 21,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 166780,
+                  "calls": 255446,
+                  "rows": 426956800,
+                  "token_rows": 426956800,
+                  "wall_ns": 24253103305,
+                  "cpu_ns": 23614115546
+                }
+              ]
+            },
+            "decode_timing": {
+              "windows": 900,
+              "ms_per_window": {
+                "average_T": 4.0,
+                "tokens_per_window": 3.51,
+                "total": 251.59,
+                "verify": 217.91,
+                "GPU_reach_wait": 75.65,
+                "per_layer_host": 122.97,
+                "plan": 3.84,
+                "activation_quant": 0.38,
+                "jobs": 0.11,
+                "CPU_pool_run": 117.84,
+                "stage": 2.69,
+                "commit_emit": 0.1,
+                "draft": 33.55,
+                "CPU_experts": 27.95,
+                "CPU_entries": 35.75,
+                "VRAM_hits": 4.21,
+                "PCIe": 0.0
+              },
+              "outer_residual_ms_per_window": 0.030000000000001137,
+              "host_nested_residual_ms_per_window": 0.7999999999999972,
+              "verify_residual_ms_per_window": 16.599999999999994
+            }
+          },
+          "physical_traffic_qualified": false,
+          "hardware_saturation_qualified": false,
+          "total_observer_overhead_qualified": false,
+          "clean_speed_qualified": false
+        }
       }
     ],
     "host_controls": {
