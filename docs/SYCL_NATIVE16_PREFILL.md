@@ -1012,8 +1012,8 @@ in`record`,and its Python reader requires the initial profile membership.
 The429b compiled/current header hashes match. Enabling these existing checks
 on adaptive8/32does not qualify dynamic attribution;that needs a prospective
 membership-aware contract rather than suppressing the rejection.
-The Main-authored`tools/sycl/profile_decode_resources.py`now provides that
-source-only static plan on the same429b engine,with cap4/code and cap2/prose
+The Main-authored`tools/sycl/profile_decode_resources.py`provides that
+static plan on the same429b engine,with cap4/code and cap2/prose
 in separate off/on,on/off,off/on cohorts. CPU leaf/census/decode/trace remain
 common;only caller profiling changes. Its new T1/Tcap reader binds traces,
 work and rounded clocks directly,without changing the frozen T1/T4 reader.
@@ -1024,48 +1024,38 @@ actual0 in0.577s. Follow`decode_resource_reader_host_v1`. Both clean speed
 cohorts are now closed. The regular-code resource plan is prepared at source
 `afdf7c96670ecbfaf5b761dd6017afc1e9cf040b`,with all15model-asset hashes and
 341committed source inputs checked. Follow`decode_resource_regular_code_v1`.
-Fresh benchmark/server frontend probes now pass at source`54802134745c35f35c8df144edad3e562f5d2227`,
-with normal closed owners. Next run
-`python3 -X faulthandler -B tools/sycl/profile_decode_resources.py regular-code INDEX`
-for indices0..5 in order,committing each closed process. Process0now closes
-normally0,with all five resource records,quiet validation,closed owners and no
-fresh GPU fault. It reads33211fresh tokens and generates3157in298.9372s.
-Its pool clock is130.0066s and rounded GPU-reach wait is101.988s;the latter
-includes the measured wrapper and does not establish GPU arithmetic saturation.
-Six leaf threads accumulate604.549CPU seconds:GU402.373,DOWN201.030and
-hidden quantization1.146. Of1207577CPU jobs,78.13%haveNT1. Logical blob
-visits total2.463TB,not measured physical RAM traffic. Process1also closes
-normally0with five complete caller/leaf/census records and no fresh GPU fault.
-Its3157-token decode takes292.2301s;logical work matches process0and the
-first caller-on/off per-output latency ratio is0.977564. One pair remains.
-The caller ledger records292.233wall/284.067CPU seconds;native waits consume
-141.240wall/139.525CPU seconds. Its own leaf slot64has the same TID as the
-native PID and consumes99.442CPU seconds. This is inside caller time:adding
-all590.631leaf CPU seconds again would double count it. Caller plus the five
-worker leaves accounts for775.256CPU seconds,excluding parked-worker spins
-and other runtime threads. The actual pool source confirms host participation
-with`drain(-1)`;the main thread performs useful work as well as completion
-waiting. Keep these observer results separate from clean speed;incremental
-caller cost and the complete six-process decision remain pending.
-Processes2/3also close normally0with all five records and no fault. The
-caller-on/off partners have identical logical work/3157outputs but take
-241.867/226.4275s. Their latency ratio1.068187exceeds the predefined1.05
-incremental-cost bound;keep that failure and finish the final pair. Thus the
-six-process cost qualification cannot pass,even if the last pair is favorable.
-Across four same-code samples,the observed variability remains unattributed;
-the ratio alone does not assign6.8%causal overhead to the caller observer.
-Use these clocks within their diagnostic envelope,with physical traffic and
-saturation still unknown. Process4also closes normally0with the same logical
-work/3157outputs,no fault and all five resource records. Its decode time is
-227.937s,pool107.565s and aggregate leaf CPU516.441s. Five of six processes
-are closed;the last caller-on process remains.
-A fixed-work sensitivity model for process0is
-`T_hyp[s]=130.006616/r_pool+101.988/r_reach+31.428/r_draft+35.514584`,
-where each`r`reduces only that measured interval and all logical work/other
-intervals stay fixed. Hypothetical2x pool reduction gives13.495tok/s;
-zero pool time gives18.688tok/s. These are conditional diagnostic arithmetic,
-not measured gains or physical hardware ceilings. A changed cache can also
-change work,overlap and the other intervals,so it needs its own model samples.
+Fresh benchmark/server frontend probes pass at source`54802134745c35f35c8df144edad3e562f5d2227`.
+All six regular-code processes now close normally0,with five joined resource
+records each,quiet validation,closed owners,no fresh GPU fault and all15final
+model-asset hashes matching. Every long request reads33211fresh tokens and
+generates3157,with matching aggregate logical work across all three pairs.
+Decode times span225.6214..298.9372s on unchanged code. Caller-on/off latency
+ratios are0.977564/1.068187/0.989841,geometric mean1.011081. The second pair
+exceeds the predefined1.05bound,so incremental caller-cost qualification fails.
+Keep all samples;these data do not assign6.8%causal overhead or qualify total
+observer cost,clean speed or hardware saturation. The cap2/prose resource plan
+has not been prepared or run.
+
+Every request performs1207577CPU expert jobs,78.13%atNT1,and2.463TB logical
+blob visits;these are not measured RAM traffic. Process5's3157-token decode
+takes225.6214s. Its rounded stage clocks are105.147s CPU pool,67.914s GPU-reach
+wait and30.231s draft;the GPU wait includes its wrapper and does not establish
+GPU arithmetic saturation. Six leaf threads accumulate512.287CPU seconds.
+The main leaf slot64has the native PID and86.617CPU seconds,inside the
+caller's220.132CPU seconds. Caller plus the five worker leaves accounts for
+645.802CPU seconds after removing that overlap;it excludes parked-worker spins
+and other runtime threads. The pool source confirms host participation with
+`drain(-1)`. The main thread performs useful work and completion waiting.
+
+A fixed-work sensitivity model for this last process is
+`T_hyp[s]=105.147/r_pool+67.914/r_reach+30.231/r_draft+22.3294`.
+Each`r`reduces only that interval with all work and other intervals fixed.
+Halving pool time gives18.244tok/s;zero pool time gives26.205tok/s. These are
+conditional arithmetic,not measured gains or physical hardware ceilings.
+A changed cache can alter work,overlap and other intervals,so it needs fresh
+model samples. The independent audit-cap successor can now proceed through
+source preparation and bounded qualification;resource closure does not turn
+the failed observer-cost decision into a pass.
 The earlier caller V3 failed its third pair,so it does not qualify current
 long-generation overhead. Current `perf_event_paranoid=4` remains a collection
 constraint;no permission change or PMU collection was made. Preserve unknown
