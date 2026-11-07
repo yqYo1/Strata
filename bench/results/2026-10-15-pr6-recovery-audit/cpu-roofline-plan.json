@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-compact-iq3xxs-v1",
+  "schema": "strata-cpu-compact-iq3xxs-timing-v1",
   "source": {
-    "revision": "6aba988291bba93764c4fb5e84c2215b8b12d597",
+    "revision": "313e5c4bc2d2e0c0fedb80020daf45662bec8a95",
     "count": 263,
-    "aggregate_sha256": "de5870eabd9e7698c9afbe197c15588bd89717eb54445999f2619c216d1d96c4"
+    "aggregate_sha256": "7b2f65f9c2acc2a7020c79075e50913d0b0a7ab3dfabd18aac5a11278334ec06"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -109,6 +109,11 @@
     "commit": "8547cb65d3119e9f86456db979332d82d7e6f870",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
     "sha256": "860127397c3d46585ad2925b1f9ae418c0392b62a3c3706c3d7fd029b3643136"
+  },
+  "numerical_origin": {
+    "commit": "6403ca995a8bdbfe5a13e8e0bc6767b1e195acd8",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+    "sha256": "1fdb9db5dd21b9e2f3a63e0b244d766da91a65f8e025502fd2fb46392f9fa022"
   },
   "environment": {
     "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
@@ -280,7 +285,7 @@
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-timing-v1/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
@@ -297,34 +302,287 @@
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-v1/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-timing-v1/build",
     "--target",
     "cpu_decode_mix",
     "--parallel",
     "4"
   ],
   "protocol": {
-    "question": "Does the exact134B IQ3_XXS compact GU view preserve native integer lanes,FP32/FMA/reduction behavior and bounds before performance comparison?",
-    "order": [
-      "build",
-      "controls",
-      "check18/20",
-      "check18/42"
+    "question": "Does exact compact IQ3_XXS NT1 GU reduce current-mixture component wall time,including matched team/bounds costs and charging setup/extra RAM separately?",
+    "check_order": [
+      [
+        18,
+        20,
+        1,
+        6
+      ],
+      [
+        18,
+        20,
+        1,
+        28
+      ],
+      [
+        18,
+        20,
+        5,
+        6
+      ],
+      [
+        18,
+        20,
+        5,
+        28
+      ],
+      [
+        18,
+        42,
+        1,
+        6
+      ],
+      [
+        18,
+        42,
+        1,
+        28
+      ],
+      [
+        18,
+        42,
+        5,
+        6
+      ],
+      [
+        18,
+        42,
+        5,
+        28
+      ]
     ],
-    "controls": "All256grid/128sign/16scale base combinations,134217728 encoded values,524288 actual SIMD integer chunks;16 synthetic full GU cases with zero/subnormal/max-finite/negative-zero half scales and signed/zero activation scales/-128 lanes;64 partial ranges,10 GU and2 encoder refusals.",
-    "real": "Both current IQ3_XXS model-format layers,all distinct loaded experts at four quantized NT1 activations. Compare the actual native paired entry directly to compact GU;this isolates that component,not full pool/model dispatch.",
-    "numerical": "Require exact finite native-pair outputs,identical integer lanes,unaltered inactive rows and guards. Preserve raw98B blocks and allocate full134B views;no changed accumulation or model quantization.",
-    "gate": "Commit each stage before the next. Require all controls and both model children,normal0,closed owners. Stop first failure/budget;no retry/replacement/exclusion.",
-    "performance": "No timing/adoption claim in this correctness stage. Next measure setup/full raw-plus-view footprint,repeated matched reuse/stream and1/6-thread/current NT work before production selection.",
-    "retention": "Retain compact numeric/guard outcomes,source/build/environment identity. Keep this single auxiliary ELF only for the immediately following component timing preparation/qualification,then retire successful raw/build output after source recovery. Preserve the two inference generations."
+    "screen_order": [
+      [
+        18,
+        20,
+        1,
+        6,
+        0,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        1,
+        6,
+        0,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        1,
+        6,
+        1,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        1,
+        6,
+        1,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        1,
+        6,
+        2,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        1,
+        6,
+        2,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        1,
+        28,
+        0,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        1,
+        28,
+        0,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        1,
+        28,
+        1,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        1,
+        28,
+        1,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        1,
+        28,
+        2,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        1,
+        28,
+        2,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        5,
+        6,
+        0,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        5,
+        6,
+        0,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        5,
+        6,
+        1,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        5,
+        6,
+        1,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        5,
+        6,
+        2,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        5,
+        6,
+        2,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        5,
+        28,
+        0,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        5,
+        28,
+        0,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        5,
+        28,
+        1,
+        "compact"
+      ],
+      [
+        18,
+        20,
+        5,
+        28,
+        1,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        5,
+        28,
+        2,
+        "raw"
+      ],
+      [
+        18,
+        20,
+        5,
+        28,
+        2,
+        "compact"
+      ]
+    ],
+    "controls": "Repeat the complete codec/integer/FMA/bounds controls on this new ELF.",
+    "real": "Both formats,groups6/28,1/6compute threads;NT1..4 and heterogeneous jobs against direct serial native GU. Actual output,finite,inactive rows,guards and affinity checked before timing and after each stream mode.",
+    "scope": "Component isolation:both arms use the same bounded GuTeam barrier scheduler. NT1 calls the compiled native pair or compact entry directly;NT2+uses unchanged native_gu_rows. This is not the production ExpertPool dispatch/scheduling or model latency.",
+    "memory": "Both arms keep the original raw blobs and all compact views. Report allocation+encode wall/CPU time,logical and guarded view storage,raw bytes and owned peak RSS. No claimed RAM reduction;unvisited/inactive output storage remains guarded.",
+    "samples": "Per child,reuse then stream;one initial pass,three pilot/warmup passes,10K timer queries with query/fastest pass<0.001. Five whole-pass samples per mode,target1.3s,floor1s,passes<1000000. Validate actual total/NT1/compact/raw row counts. All samples retained;no replacement.",
+    "comparison": "Representative18/20/current measured NT mixture screen:1/6compute threads,groups6/28,three opposite-order process pairs per shape. Each child supplies both reuse/stream. Per-process median seconds/pass;paired raw/compact ratio;geometric mean and all individual ratios/spread retained.",
+    "acceptance": "A shape/stream is eligible for a separately committed follow-up only when all3paired ratios>1 and geometric mean>1;no blanket minimum speedup. Mixed/negative results stay recorded. Setup amortization uses measured setup and saved seconds/pass;no conversion to model TG.",
+    "gate": "Commit each stage before next. Require all8checks and synthetic controls before screen;normal0,quiet stderr,closed owners,exact source/build/work/env. Stop first execution/numerical/budget failure;no retry/exclusion. No model trial from this screen alone.",
+    "pending": "Before production selection,validate other-format and pureNT1 performance,actual production dispatch/lifecycle,setup reuse/RAM admission,task quality,prefill independence and physical262144/RESTORE. Keep the qualified prefill route.",
+    "retention": "Keep individual useful samples,setup/footprint,source/build identity and compact decisions. Old numeric ELF is the immediate fallback only until new checks pass;recover its original source then retire it. Retire successful raw timing/build output after closing the comparison. Preserve both inference generations."
   },
   "budgets": {
     "build_seconds": 600,
     "controls_seconds": 180,
     "check_child_seconds": 120,
+    "screen_child_seconds": 180,
     "stage_seconds": 1800,
     "rss_bytes": 3221225472,
     "text_bytes": 8388608,
     "root_bytes": 268435456
+  },
+  "host_controller_validation": {
+    "source_commit": "313e5c4bc2d2e0c0fedb80020daf45662bec8a95",
+    "command": "/usr/bin/flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock /usr/bin/timeout -k 5s 30s /usr/bin/prlimit --as=1073741824 --cpu=20 --fsize=1048576 /usr/bin/python3 -X faulthandler -B -m unittest discover -s tests/core -p test_cpu_decode_mix.py -v",
+    "tests": 10,
+    "skips": 0,
+    "elapsed_s": 0.137,
+    "exit_code": 0,
+    "passed": true,
+    "scope": "CPU-only controller refusal/coverage controls;includes intentional owner-setup failure,not a native benchmark execution."
   }
 }

@@ -1,84 +1,18 @@
 {
-  "schema": "strata-cpu-compact-iq3xxs-v1",
-  "stage": "check",
-  "source_commit": "6aba988291bba93764c4fb5e84c2215b8b12d597",
-  "plan_sha256": "887f3ad1842701502987fb64b0e3fe1e62ec15b7176673b1642f33975d2fbb43",
+  "schema": "strata-cpu-compact-iq3xxs-timing-v1",
+  "stage": "prepared",
+  "source_commit": "313e5c4bc2d2e0c0fedb80020daf45662bec8a95",
+  "plan_sha256": "3ee977a24f18b26677eb9e3aaee58470ff7fd5c0c07fdac0f95be623b1ea4159",
+  "passed": false,
+  "complete": false,
+  "active": false,
+  "ownership_closed": true,
+  "GPU_executed": false,
   "calibration_origin": {
     "commit": "8547cb65d3119e9f86456db979332d82d7e6f870",
     "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
     "sha256": "860127397c3d46585ad2925b1f9ae418c0392b62a3c3706c3d7fd029b3643136"
   },
-  "passed": true,
-  "complete": true,
-  "active": false,
-  "ownership_closed": true,
-  "GPU_executed": false,
-  "children": [
-    {
-      "validation": {
-        "kind": "compact_validation",
-        "format": 18,
-        "nt": 1,
-        "activation_cases": 4,
-        "experts": 84,
-        "native_pair_bits_equal": true,
-        "finite": true,
-        "canaries": true,
-        "compact_GU_bytes_per_expert": 1715200,
-        "raw_plus_compact_bytes_per_expert": 3891200
-      },
-      "exit_code": 0,
-      "stdout_sha256": "f0b810debe70c921371be109b4f7e360857dc90f6ad3c7f1135c367a1baa84a6"
-    },
-    {
-      "validation": {
-        "kind": "compact_validation",
-        "format": 18,
-        "nt": 1,
-        "activation_cases": 4,
-        "experts": 84,
-        "native_pair_bits_equal": true,
-        "finite": true,
-        "canaries": true,
-        "compact_GU_bytes_per_expert": 1715200,
-        "raw_plus_compact_bytes_per_expert": 3430400
-      },
-      "exit_code": 0,
-      "stdout_sha256": "17881889144ce5240d44f526fbde5099e570455665a98ced306b34b3813f0ca6"
-    }
-  ],
-  "binaries": {
-    "mix": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-v1/build/cpu_decode_mix",
-      "sha256": "ab274d68d8caac52d1317099482bf7fab67c07a5ca8bc1c3000090f8a107deeb"
-    }
-  },
-  "owned_commands": {
-    "count": 2,
-    "all_closed": true,
-    "all_exit_zero": true
-  },
   "hardware_saturation_qualified": false,
-  "model_adoption_qualified": false,
-  "decision": {
-    "compact_GU_numerical_qualified": true,
-    "controls_evidence_commit": "4f9bbf12c31ae80531beabfff9406c89fe1c5fd6",
-    "build_evidence_commit": "8f7f178dd4b4137d7edb1864794bcf826141af94",
-    "real_experts": 168,
-    "real_GU_comparisons": 672,
-    "performance_qualified": false,
-    "model_adoption_qualified": false,
-    "next_action": "Fresh committed component timing plan:include conversion/setup,full raw-plus-view footprint,matched repeated reuse/stream and1/6-thread/current NT work before production selection.",
-    "retained_auxiliary_consumer": "This one CPU-only ELF/required build proof is the immediate numerical fallback for component timing preparation/qualification. Retire successful raw/build output once that consumer closes and its original inputs are recovered.",
-    "limitations": "Same native-pair numerical contract only;not independent model/task quality,full production dispatch,sustained TG,prefill preservation,physical262144context/RESTORE or hardware saturation."
-  },
-  "retained_auxiliary": {
-    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-v1",
-    "files": 84,
-    "bytes": 14372168,
-    "consumer": "Immediate component timing preparation/qualification numerical fallback;retire at that consumer closure after original-input recovery. Only this CPU auxiliary generation;two inference generations remain unchanged.",
-    "benchmark_executable_count": 1,
-    "compiler_probe_executable_count": 4,
-    "total_executable_ELF_count": 5
-  }
+  "model_adoption_qualified": false
 }

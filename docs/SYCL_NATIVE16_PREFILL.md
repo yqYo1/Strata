@@ -1561,12 +1561,21 @@ with exact finite native-pair bits and guards. The retained auxiliary ELF is
 `ab274d68`,built from6aba98829. This qualifies the isolated native-pair GU
 contract,not independent task quality,full production dispatch or model speed.
 
-The next committed component plan must measure setup and full coexistence
-footprint,then repeated matched reuse/stream and1/6-thread/current-NT cases.
-No compact performance result exists yet. Keep this single auxiliary ELF and
-required build proof as the immediate numerical fallback for that timing
-preparation/qualification;retire successful raw/build output when the consumer
-closes after original-input recovery. The two inference generations remain.
+The new timing source at`313e5c4bc`adds a component-only matched barrier team,
+actual row-dispatch counts,setup cost and full raw-plus-view storage. All ten
+controller tests pass without skips,normal0. The committed timing plan first
+requires eight threaded checks:both formats,groups6/28 and1/6compute threads,
+including NT1..4 and heterogeneous jobs. Then24independent timing children
+screen18/20with the measured NT mixture in three opposite-order pairs per
+thread/group shape. Each child measures reuse and stream with five eligible
+samples each;all samples and negative shapes remain. This isolates GU math,
+not the production ExpertPool or model critical path. Other-format and pure
+NT1 performance,production dispatch/lifecycle,RAM admission and model gates
+remain prerequisites for production selection. No compact performance result
+exists yet. The new build root is`cpu-compact-iq3xxs-timing-v1`;keep the old
+`ab274d68`auxiliary ELF only as its immediate numerical fallback until the new
+checks pass,then recover its original inputs and retire it. The two inference
+generations remain.
 Luna-max's post-calibration review agrees this bounded comparison is the next
 question;existing references suffice and no new Orca survey is selected.
 The closed calibration is recovered from8547cb65d in Git;retired V3/V4 paths
