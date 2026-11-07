@@ -1455,13 +1455,13 @@ version2record grammar and joins each completed request to its independent
 native CPU-job/entry footer. HQ calls derive final-job counts;GU/HQ/DOWN rows,
 NT-weighted entries and thread/bin clocks must conserve them. This does not
 independently identify each format bin or prove published-map identity,physical
-traffic,saturation or observer cost. At source`34b86ca1d`,all five CPU test
+traffic,saturation or observer cost. At source`b71fdacaf`,all six CPU test
 groups in`tools/test_adaptive_cpu_leaf_evidence.py`pass with zero skips,normal0
 and closed owners;the host plan pins37inputs and the qualified interpreter.
-Follow`adaptive_cpu_leaf_reader_host_v1`. This is reader-fixture evidence;
-its three successful raw files/3951bytes are retired after37-input Git recovery;
-the shared runtime remains. The compact result holds the deletion manifest.
-no leaf-only adaptive model profile or observer-cost comparison has run. Both new files
+Follow`adaptive_cpu_leaf_reader_host_v2`. The superseded five-group proof and
+its raw-output retirement are archived at`8327c62f8`;no maintained reader uses
+that old result. No leaf-only adaptive model profile or cost comparison has run.
+Both new files
 are outside the frozen speed/qualification import closures,which continue
 to pass after the first process's raw retirement.
 The Main-authored`tools/sycl/profile_adaptive_cpu_leaves.py`source-prepares
@@ -1486,14 +1486,15 @@ observer-cost result follows. The completed CPU command is:
 The returned Orca source audit and native Luna-max review identify a legitimate
 prompt-chunk diagnostic that both readers incorrectly counted as a prompt
 footer. The Main-authored repair accepts only the two exact compiled diagnostic
-grammars and retains malformed-footer rejection;its new sixth reader group and
-on/off controller controls still need execution. The controller now pins
+grammars and retains malformed-footer rejection;all six reader groups pass,
+including the new positive/negative diagnostic cases. Revised on/off controller
+controls still need execution. The controller now pins
 parallel1,no batch/slots,one synchronous client,and all five private compiled
 producer/resolver hashes. Quiescence remains a caller assertion supported by
 that serialized path. Public generator/resolver bytes differ from the compiled
-snapshot;do not substitute them. Requalify the reader under
-`adaptive_cpu_leaf_reader_host_v2`and rerun the bounded CPU control above from
-the committed repair before preparing any model profile. No native code changes.
+snapshot;do not substitute them. The reader is qualified under
+`adaptive_cpu_leaf_reader_host_v2`;rerun the bounded CPU control above from the
+committed repair before preparing any model profile. No native code changes.
 For a later full adaptive census,the reviewed design refreshes membership on
 the request owner only after the adaptive worker joins and refill publication
 succeeds,latches a published-map epoch per window,and rejects masked/in-flight
