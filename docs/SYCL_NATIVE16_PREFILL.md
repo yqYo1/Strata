@@ -1467,17 +1467,18 @@ all15model assets fully hashed and focused decode budget96selected from the
 closed32/96decision. Follow`adaptive_cpu_leaves_regular_code_v1`.
 The prepared invariant,serial admission and five compiled producer/resolver
 hashes are pinned. No native code changes. Fresh current-source benchmark and
-server frontend probes both pass with closed owners. The first four processes
+server frontend probes both pass with closed owners. The first five processes
 now close normally0with quiet validation,closed owners,unchanged boot/driver
 and no fresh fault. Every process has33209fresh-input/3227generated tokens,
 five bound native/client records and a checked four-warmup prefix. The work and
-long-output signatures match. Processes0/3are leaf-off,with exact TG13.567158/
-13.338442;processes1/2are leaf-on,with13.195703/13.028172. Their full individual
+long-output signatures match. Processes0/3/4are leaf-off,with exact TG13.567158/
+13.338442/12.514679;processes1/2are leaf-on,with13.195703/13.028172. Their full individual
 PP,time,TTFT and work samples remain in the compact result. These inputs differ
 from the earlier32/96cohort;no cross-cohort speed gain follows.
 The first two opposite-order leaf-on/off per-token latency ratios are
-1.028149645and1.023815340,both within1.05with matching work. The final two
-processes remain before observer-cost qualification.
+1.028149645and1.023815340,both within1.05with matching work. The final
+leaf-on process remains before observer-cost qualification. The slower fifth
+sample remains included;no sample replacement or changed comparison criteria.
 The first charged leaf sample totals398.843CPU seconds across six threads:
 GU265.234,HQ0.726and DOWN132.883. Of846250CPU expert jobs,728497(86.085%)
 are NT1;989999entries give1.170entries/job. The top GU bins are NT1
