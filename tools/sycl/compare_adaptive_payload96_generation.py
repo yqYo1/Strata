@@ -37,9 +37,12 @@ def prerequisites(workload, full=False):
         failed['outcome']['adaptive']['queued_second_swaps'] == 96 and
         failed['outcome']['adaptive']['stale_event_not_published'],
         'closed actual96positive and exact96second-record refusal required')
+    # Hash the shared model assets once. Every other receipt still rechecks
+    # source/runtime/configuration/stat identities; identical inventories are
+    # required below, so their duplicate full reads add no distinct evidence.
     ctx.positive.current(positive, full=full)
-    ctx.current(failed, full=full)
-    old, prior, contract, manifest, providers, refs = previous.prerequisites(full=full)
+    ctx.current(failed)
+    old, prior, contract, manifest, providers, refs = previous.prerequisites()
     require(positive['binary'] == failed['binary'] == old['binary'] and
         positive['native_source_commit'] == failed['native_source_commit'] == old['native_source_commit'] and
         positive['model_assets'] == failed['model_assets'] == old['model_assets'],
