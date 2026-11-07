@@ -1559,7 +1559,7 @@
       "state": "compiled_small_q4_fp32_bf16_prompt_gate_passed_model_route_unqualified",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
       "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights;physical tail buffer has2047positions(104806400bytes),while capture omits the last prompt anchor and retains at most2046rows;then loads and seeds the drafter.",
-      "remaining": "Engine689c and ring fixture f62df preserve original bytes.16kernel/prompt plus5small and5ring/lineage execution cases pass normally,with36qualified mappings each,closed ownership and no fresh fault.Source-audit review finds no production safety defect,but missing_context_mask has no discriminating oracle;its original PASS qualifies execution/tag state only.New direct attention fixture must prove a wrong epoch/position discards a poisoned value while a live control contributes,before advancing to a bounded target-model route.Functional adapters,RESTORE/full physical262144,task quality and matched independent-phase performance remain open.No default activation or model/performance adoption.",
+      "remaining": "Engine689c,ring fixture f62df and all original component bytes remain unchanged.New mask fixture1aa641860 passes12traced cases across variants1/2 and chunks64/128,stale epoch,wrong position and live control;all32768 outputs per case satisfy the independent0/1 mean oracle(<2e-5),finite scales and output guards. Normal0,32qualified mappings,closed owner,no fresh fault.The original26case result still describes execution/state evidence;the new gate supplies exclusion semantics at kernel level.Next:finish new fixture/controller source-audit review,then bounded target-model execution using the retained qualified pre-exec validation probe and immutable safety settings.First DFlash2 diagnostics must explicitly disable MTP-only expert/head-retirement and cache-scratch-lease switches;their generalization is required before matching the fast prefill setup.Functional adapters,RESTORE/full physical262144,task quality and repeated matched independent-phase performance remain open.No default activation/model/performance adoption.",
       "metadata_fixture_plan": {
         "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
         "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
@@ -2333,7 +2333,7 @@
       ]
     },
     "dflash2_mask_check": {
-      "stage": "prepared",
+      "stage": "passed",
       "ring_reference": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-ring-contract-v1/record.json",
         "sha256": "889617d223617c09039c2dae414ca5e1aedae8cba6bfb39b2799988e8589a97c"
@@ -2390,8 +2390,14 @@
       },
       "oracle": "Q=K=0;130 context plus8 block keys,only V[row64]=138. A live tag must give dequantized1 in all32768 elements;stale epoch or wrong absolute position must give0. Absolute error<2e-5,finite nonnegative scales and output guards. Four explicit variant/chunk combinations,12cases. No target model,text identity or speed claim.",
       "original_ring_limit": "The original missing_context_mask case proves execution/tag state only,not exclusion semantics.Its original26case PASS stays unchanged.",
-      "passed": false,
+      "passed": true,
       "ownership_closed": true,
+      "mapping": {
+        "files": 32,
+        "sha256": "0381807e414ad2a416b1c464f1bc520b607af858f06158011ee1c0519f5f792c"
+      },
+      "cases_passed": 12,
+      "fresh_faults": [],
       "controller_source": {
         "commit": "01e79db20e1a11bcde5fd3e96d259b695a227d52",
         "sha256": "6f5813d777efb78dbee1a58035e2723cd85a46f8ecad5a48f1a00dfb51027380"
@@ -2404,7 +2410,16 @@
           "sha256": "f8c1c46922ca4cf20de179314d1449bfa0c239a5aa0b5ee8eca096c9bcd3a4c6"
         }
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "mask",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ]
     }
   }
 }
