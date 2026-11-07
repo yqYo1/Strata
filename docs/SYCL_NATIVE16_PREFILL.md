@@ -982,9 +982,19 @@ Its pool clock is130.0066s and rounded GPU-reach wait is101.988s;the latter
 includes the measured wrapper and does not establish GPU arithmetic saturation.
 Six leaf threads accumulate604.549CPU seconds:GU402.373,DOWN201.030and
 hidden quantization1.146. Of1207577CPU jobs,78.13%haveNT1. Logical blob
-visits total2.463TB,not measured physical RAM traffic. Next process1enables
-the disjoint caller ledger. Keep these observer results separate from clean
-speed;incremental caller cost and the complete six-process decision are pending.
+visits total2.463TB,not measured physical RAM traffic. Process1also closes
+normally0with five complete caller/leaf/census records and no fresh GPU fault.
+Its3157-token decode takes292.2301s;logical work matches process0and the
+first caller-on/off per-output latency ratio is0.977564. Two pairs remain.
+The caller ledger records292.233wall/284.067CPU seconds;native waits consume
+141.240wall/139.525CPU seconds. Its own leaf slot64has the same TID as the
+native PID and consumes99.442CPU seconds. This is inside caller time:adding
+all590.631leaf CPU seconds again would double count it. Caller plus the five
+worker leaves accounts for775.256CPU seconds,excluding parked-worker spins
+and other runtime threads. The actual pool source confirms host participation
+with`drain(-1)`;the main thread performs useful work as well as completion
+waiting. Keep these observer results separate from clean speed;incremental
+caller cost and the complete six-process decision remain pending.
 A fixed-work sensitivity model for process0is
 `T_hyp[s]=130.006616/r_pool+101.988/r_reach+31.428/r_draft+35.514584`,
 where each`r`reduces only that measured interval and all logical work/other
