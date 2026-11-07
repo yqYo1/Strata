@@ -865,8 +865,10 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   TG is primary,and prompt/TTFT remain independent. Its regular-code plan is
   now prepared at source`bc1413ec2`,with all15assets checked and six actual
   configurations8/32,32/8,8/32on e1b011. All native/runtime/header/qualification
-  reads succeed with the old429b paths absent. Fresh frontend probes and model
-  processes remain pending;old bytes stay held until frontend admission.
+  reads succeed with the old429b paths absent. Both fresh benchmark/server
+  frontend probes now pass normally0with closed owners at source`869568e8a`,
+  still with the old paths absent. Retire the held old products before model
+  process0;no clean model process has run.
   Before its preparation,the following CPU-only control is
   preregistered at a closed GPU boundary:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
