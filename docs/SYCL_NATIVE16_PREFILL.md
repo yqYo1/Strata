@@ -1467,8 +1467,13 @@ all15model assets fully hashed and focused decode budget96selected from the
 closed32/96decision. Follow`adaptive_cpu_leaves_regular_code_v1`.
 The prepared invariant,serial admission and five compiled producer/resolver
 hashes are pinned. No native code changes. Fresh current-source benchmark and
-server frontend probes both pass with closed owners;all six model processes
-remain pending and observer cost is unmeasured. Varied-prose
+server frontend probes both pass with closed owners. Process0,leaf-off,now
+closes normally0with quiet validation,closed owners,unchanged boot/driver and
+no fresh fault. Its33209fresh-input/3227generated sample has prompt58740.8ms,
+decode237853.8ms,TTFT58.912s and exact PP/TG565.348106/13.567158. All five
+native/client work records bind,with a checked four-warmup prefix and no leaf
+records. This input differs from the closed32/96cohort;no cross-cohort speed
+gain follows. Five processes remain;observer cost is unmeasured. Varied-prose
 preparation still requires its own closed32/96cohort.
 The completed preparation command is:
 `/usr/bin/timeout -k 15s 900s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code prepare`.
