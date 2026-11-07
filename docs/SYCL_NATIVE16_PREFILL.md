@@ -2767,9 +2767,10 @@ and partial-write-safe encoded output,so the daemon avoids the original
 BufferedWriter lock. Other sinks/platforms retain the upstream stream path.
 The worker closes its descriptor at retirement;thread-start failure also closes
 it. A ninth case checks Unicode output and descriptor retirement. These
-modified sources have not run. The new
-`upstream_nonblocking_console_module_host_v2`plan pins34inputs at`5327c9454`
-and requires all nine cases without skips,normal0and closed ownership.
+modified sources now pass all nine cases without skips,normal0and closed
+ownership. Follow`upstream_nonblocking_console_module_host_v2`,with34inputs
+pinned at`5327c9454`. This qualifies the POSIX module repair,not server wiring,
+other-platform behavior,native execution or inference performance.
 Qualify these checks before adapting the
 server's existing no-argument`main()`wrapper and its upstream
 `STRATA_BLOCKING_CONSOLE=1`bypass;then qualify actual startup and existing

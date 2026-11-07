@@ -195869,7 +195869,7 @@
     "error": "RuntimeError('host suite failed: console-module\\ntest_unwrapped_unread_pipe_blocks_control (serve.test_nonblocking_out.ConsoleChildExit.test_unwrapped_unread_pipe_blocks_control) ... ok\\ntest_wrapped_unread_pipe_exits_buffered (serve.test_nonblocking_out.ConsoleChildExit.test_wrapped_unread_pipe_exits_buffered) ... FAIL\\ntest_wrapped_unread_pipe_exits_unbuffered (serve.test_nonblocking_out.ConsoleChildExit.test_wrapped_unread_pipe_exits_unbuffered) ... ok\\ntest_blocked_sink_keeps_latest_chunks_in_order (serve.test_nonblocking_out.ConsoleQueue.test_blocked_sink_keeps_latest_chunks_in_order) ... ok\\ntest_broken_sink_does_not_stop_later_diagnostics (serve.test_nonblocking_out.ConsoleQueue.test_broken_sink_does_not_stop_later_diagnostics) ... ok\\ntest_close_does_not_wait_forever_for_console (serve.test_nonblocking_out.ConsoleQueue.test_close_does_not_wait_forever_for_console) ... ok\\ntest_context_preserves_replaced_capture_streams (serve.test_nonblocking_out.ConsoleQueue.test_context_preserves_replaced_capture_streams) ... ok\\ntest_context_wraps_owned_streams_and_restores_them (serve.test_nonblocking_out.ConsoleQueue.test_context_wraps_owned_streams_and_restores_them) ... ok\\n\\n======================================================================\\nFAIL: test_wrapped_unread_pipe_exits_buffered (serve.test_nonblocking_out.ConsoleChildExit.test_wrapped_unread_pipe_exits_buffered)\\n----------------------------------------------------------------------\\nTraceback (most recent call last):\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/serve/test_nonblocking_out.py\", line 155, in test_wrapped_unread_pipe_exits_buffered\\n    self.child(True)\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/serve/test_nonblocking_out.py\", line 141, in child\\n    self.assertEqual(code, 0, \"console child must exit normally: \"\\nAssertionError: -6 != 0 : console child must exit normally: DONE\\nFatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedWriter name=\\'<stdout>\\'> at interpreter shutdown, possibly due to daemon threads\\nPython runtime state: finalizing (tstate=0x0000000000ba6748)\\n\\nCurrent thread 0x0000794eeb5ac080 (most recent call first):\\n  <no Python frame>\\n\\n\\n----------------------------------------------------------------------\\nRan 8 tests in 6.589s\\n\\nFAILED (failures=1)\\n')"
   },
   "upstream_nonblocking_console_module_host_v2": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "5327c9454c13245b15ee183a0d809ada7a151d56",
     "sources": {
       "tools/sycl/run_host_checks.py": "1acfb012f1852466bdaabb67b090a6b842161eb7ad1beeda9243c724ad149343",
@@ -195979,13 +195979,24 @@
     "criteria": "All9CPU cases,no skips,normal0 and closed owners. Preserve all8original assertions,including buffered and unbuffered unread-pipe normal exits,and add Unicode output/owned-descriptor retirement. Source/runtime/command guards unchanged. No server wiring,native engine,GPU or inference-speed qualification. Preserve originalv1failure;no rerun or hash refresh.",
     "retention": "Keep compact sources/commands,suite counts,outcome and correction linked to the original failedv1. Retire verbose successful output after pushing;retain one bounded distinct unresolved diagnostic only. Server wiring remains a separate qualified step.",
     "server_wired": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
     "model_executed": false,
-    "tests": [],
+    "tests": [
+      {
+        "role": "console-module",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 9,
+        "skipped": 0,
+        "skip_reasons": [],
+        "stdout_bytes": 0,
+        "stderr_bytes": 1399
+      }
+    ],
     "parent_failure_key": "upstream_nonblocking_console_module_host_v1"
   }
 }
