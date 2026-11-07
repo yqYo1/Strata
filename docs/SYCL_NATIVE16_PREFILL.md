@@ -1078,6 +1078,16 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   Different output lengths/acceptance preclude fixed-work hardware attribution.
   This is one pair,not a repeated-gain decision or adoption;finish the remaining
   96/32and32/96pairs and the final15asset hashes.
+  Under the frozen first-T1/then-T4 schedule,drafts offered and cache lookups
+  consistently imply1017/882verifier windows for32/96. Whole decode interval
+  per inferred window is272.311/262.925ms;output per window is3.419/3.527.
+  These source/count-derived aggregates are not traced kernel service or
+  physical saturation,and do not assign all6.85%TGgain to weight placement.
+  Process1's69raw/JIT files/13094827bytes are retired after350-input Git
+  recovery. All15ELFs and six immutable receipts stay unchanged;full admission
+  passes before/after deletion. Manifest:
+  `adaptive-payload96-generation-regular-code-v1-process1-output-retirement-20261107.json`,
+  SHA256`3a2cf2d81621308ea31384eaa8c786b3633afbdd4d555f7bb6a1399ec88af91a`.
   The completed CPU command is:
   `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload96_generation.py controls`.
   This source is outside the closed prose cohort's346inputs. Retire it if96admission fails
