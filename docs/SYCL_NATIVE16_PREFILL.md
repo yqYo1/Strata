@@ -1502,6 +1502,10 @@ recovery,with all15ELFs/six immutable receipts unchanged and full before/after
 admission passing. Only its generated config/plan remain. Manifest:
 `adaptive-cpu-leaves-regular-code-v1-process0-output-retirement-20261107.json`,
 SHA256`fd6a6f7d74e0f6494dae0c4a936faa2b159900354486d478e3e4b61b92c1c5b6`.
+Process1's69normal raw/JIT files and the consumed6493-byte cache-scope review
+are also retired:70files/13143564bytes,358Git inputs recovered,all15ELFs/six
+receipts preserved and full continued admission passed. Its retirement manifest
+is`adaptive-cpu-leaves-regular-code-v1-process1-output-retirement-20261107.json`.
 The completed preparation command is:
 `/usr/bin/timeout -k 15s 900s /usr/bin/python3 -X faulthandler -B tools/sycl/profile_adaptive_cpu_leaves.py regular-code prepare`.
 After committing the plan,run the same command with`host`instead of`prepare`.
