@@ -1430,7 +1430,44 @@
         "phase": "pytest collection",
         "error": "tests/terminal/test_drafting_tuned.py requires upstream packaging/feed_tool.py; imported functional dependency missing. No tests passed or GPU work claimed.",
         "fix": "Import pinned Niko feed tool and related packaging dependencies, commit before rerun."
+      },
+      {
+        "source_commit": "4ea7789f8ea37563ebf847d44b37ce680a3dfc29",
+        "suite": "quantization/drafter focused suite",
+        "exit_code": 1,
+        "tests_passed": 316,
+        "tests_failed": 18,
+        "tests_errors": 4,
+        "tests_skipped": 1,
+        "subtests_passed": 164,
+        "seconds": 10.99,
+        "failures": "Four multi-GPU setup assertions; new DFlash engine marker/CLI and server argument tests pending native port; app language-catalog files not yet imported; DFlash notice absent from maintained DETAILS; four Mac setup tool dependency errors. Source-only imports do not qualify route; no GPU execution.",
+        "v31_specific_failure_observed": false
       }
-    ]
+    ],
+    "dflash2_download_plan": {
+      "repo": "incoai/Qwen3.8-Flash-Next-DFlash2",
+      "revision": "a22a1744e85c17364dcc54a6a420af7135d4c7f6",
+      "destination": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/dflash2",
+      "auth": "Existing HF_TOKEN, then existing HF token file; secret values never logged. requests removes Authorization on cross-host redirects.",
+      "source_files": [
+        {
+          "path": "config.json",
+          "bytes": 1236,
+          "sha256": "2409575986f9ea24d455343eb469c0e6940def5edab1d1be503bb8eb4cc3b1b9"
+        },
+        {
+          "path": "model.safetensors",
+          "bytes": 1206140008,
+          "sha256": "d6723f2a359eaf33ec0c95f22ae8edda896774020c552296a85e1913b4d3186f"
+        }
+      ],
+      "pack_tool": "tools/dflash2_pack.py from97e9c984703efb842fe2c1b24b6e712ce334cc26, Niko146df3c4 source; q4=True",
+      "pack_bytes": 522458112,
+      "pack_sha256": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
+      "bounds": "One owned process;900s wall,4GiB total files,16GiB address space;1MiB streaming chunks; no automatic retry on a hash/size failure.",
+      "consumer": "Upcoming opt-in DFlash2 SYCL component and paired model comparison. No current model/config overwritten; no GPU launch.",
+      "retention": "Keep runtime pack, config/provenance and Apache notice; retire safetensors source only after exact packed hash verification."
+    }
   }
 }
