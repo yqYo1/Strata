@@ -23,9 +23,9 @@ import measurement_owner as owner
 import build_adaptive_payload_model as engine
 
 P,B,A=gen.P,gen.B,gen.A
-ROOT=B/'cpu-compact-iq3xxs-timing-v1'
+ROOT=B/'cpu-packed-iq3xxs-gather-v1'
 BASELINE_CALIBRATION='8547cb65d3119e9f86456db979332d82d7e6f870'
-NUMERICAL_ORIGIN='6403ca995a8bdbfe5a13e8e0bc6767b1e195acd8'
+NUMERICAL_ORIGIN='286b4a132b960a3a633511173846b57ebef32cee'
 PLAN=A/'cpu-roofline-plan.json'
 RESULT=A/'cpu-roofline-current.json'
 RESOURCE=engine.RESULT
@@ -35,7 +35,7 @@ CPU_SOURCE=NATIVE_ROOT/'source'
 COMPILER=Path('/opt/intel/oneapi/compiler/2026.2')
 WORKERS=(1,2,3,5)
 GROUPS=(6,28)
-SCHEMA='strata-cpu-compact-iq3xxs-timing-v1'
+SCHEMA='strata-cpu-packed-iq3xxs-gather-v1'
 LEAF_ORDER=(False,True,True,False,False,True)
 CPU_UNITS=('expert.cpp','pool.cpp','expert_layout.cpp','q2_avx2.cpp','native_expert.cpp',
            'iq_avx512.cpp','iq_avx2.cpp','iq_single_avx2.cpp','iq2_pair_avx2.cpp','kq_avx2.cpp')
@@ -174,8 +174,9 @@ def numerical_origin():
     data=gen.git('show',NUMERICAL_ORIGIN+':'+str(RESULT.relative_to(P)))
     value=json.loads(data)
     guards.require(value['passed'] and value['complete'] and value['ownership_closed'] and
-        not value['active'] and value['decision']['compact_GU_numerical_qualified'] and
-        not value['decision']['performance_qualified'],'closed compact numerical predecessor required')
+        not value['active'] and value['decision']['screen_complete'] and
+        value['verified_conservation']['timing_samples']==240 and value['artifact_retirement']['complete'],
+        'closed compact timing/numerical predecessor required')
     return dict(commit=NUMERICAL_ORIGIN,path=str(RESULT.relative_to(P)),
         sha256=hashlib.sha256(data).hexdigest())
 
@@ -188,7 +189,7 @@ def screen_order():
     # One representative format/current NT mixture first; other formats and
     # pure NT1 timing remain future questions,not implicit model qualification.
     return [[18,20,w,g,pair,arm] for w in (1,5) for g in GROUPS for pair in range(3)
-            for arm in (('raw','compact') if pair!=1 else ('compact','raw'))]
+            for arm in (('raw','packed') if pair!=1 else ('packed','raw'))]
 
 
 def prepare():
@@ -215,25 +216,25 @@ def prepare():
             '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t','-DSTRATA_GGML_DIR='+str(base.GGML),
             '-DSTRATA_CPU_SOURCE_ROOT='+str(CPU_SOURCE)],
         build=['/usr/bin/cmake','--build',str(ROOT/'build'),'--target','cpu_decode_mix','--parallel','4'],
-        protocol=dict(question='Does exact compact IQ3_XXS NT1 GU reduce current-mixture component wall time,including matched team/bounds costs and charging setup/extra RAM separately?',
+        protocol=dict(question='Does direct AVX2 gather from the original98B IQ3_XXS format reduce current-mixture GU time without per-expert expansion?',
             check_order=check_order(rows),screen_order=screen_order(),
-            controls='Repeat the complete codec/integer/FMA/bounds controls on this new ELF.',
-            real='Both formats,groups6/28,1/6compute threads;NT1..4 and heterogeneous jobs against direct serial native GU. Actual output,finite,inactive rows,guards and affinity checked before timing and after each stream mode.',
-            scope='Component isolation:both arms use the same bounded GuTeam barrier scheduler. NT1 calls the compiled native pair or compact entry directly;NT2+uses unchanged native_gu_rows. This is not the production ExpertPool dispatch/scheduling or model latency.',
-            memory='Both arms keep the original raw blobs and all compact views. Report allocation+encode wall/CPU time,logical and guarded view storage,raw bytes and owned peak RSS. No claimed RAM reduction;unvisited/inactive output storage remains guarded.',
-            samples='Per child,reuse then stream;one initial pass,three pilot/warmup passes,10K timer queries with query/fastest pass<0.001. Five whole-pass samples per mode,target1.3s,floor1s,passes<1000000. Validate actual total/NT1/compact/raw row counts. All samples retained;no replacement.',
-            comparison='Representative18/20/current measured NT mixture screen:1/6compute threads,groups6/28,three opposite-order process pairs per shape. Each child supplies both reuse/stream. Per-process median seconds/pass;paired raw/compact ratio;geometric mean and all individual ratios/spread retained.',
-            acceptance='A shape/stream is eligible for a separately committed follow-up only when all3paired ratios>1 and geometric mean>1;no blanket minimum speedup. Mixed/negative results stay recorded. Setup amortization uses measured setup and saved seconds/pass;no conversion to model TG.',
+            controls='Repeat compact controls,and independently check packed gather/sign integer lanes on524288mixed grid/sign/scale chunks;16full FMA/GU cases,64partial ranges and11packed GU refusals.',
+            real='Both formats,groups6/28,1/6compute threads;four NT1 activation vectors per real expert plus NT1..4/mixed threaded jobs. Validate all3raw/compact/packed variants,finite/native bits,inactive rows,guards and actual affinity.',
+            scope='Component isolation:both arms use the same bounded GuTeam barrier scheduler. NT1 calls the compiled native pair or packed-gather entry directly;compact is an additional numerical control. NT2+uses unchanged native_gu_rows. This is not the production ExpertPool dispatch/scheduling or model latency.',
+            memory='Both arms keep the original raw blobs and all compact views. Report allocation+encode wall/CPU time,logical and guarded view storage,raw bytes and owned peak RSS. Packed needs no per-expert expansion;the unused compact views intentionally coexist in both arms to match the prior component envelope. Report this diagnostic setup separately,not as required packed conversion. No measured production RSS claim.',
+            samples='Per child,reuse then stream;one initial pass,three pilot/warmup passes,10K timer queries with query/fastest pass<0.001. Five whole-pass samples per mode,target1.3s,floor1s,passes<1000000. Validate actual total/NT1/compact/packed/raw row counts. All samples retained;no replacement.',
+            comparison='Representative18/20/current measured NT mixture screen:1/6compute threads,groups6/28,three opposite-order process pairs per shape. Each child supplies both reuse/stream. Per-process median seconds/pass;paired raw/packed ratio;geometric mean and all individual ratios/spread retained.',
+            acceptance='A shape/stream is eligible for a separately committed follow-up only when all3paired ratios>1 and geometric mean>1;no blanket minimum speedup. Mixed/negative results stay recorded. No per-expert setup is required by packed;shared unused-view setup remains separately recorded. No conversion to model TG.',
             gate='Commit each stage before next. Require all8checks and synthetic controls before screen;normal0,quiet stderr,closed owners,exact source/build/work/env. Stop first execution/numerical/budget failure;no retry/exclusion. No model trial from this screen alone.',
-            pending='Before production selection,validate other-format and pureNT1 performance,actual production dispatch/lifecycle,setup reuse/RAM admission,task quality,prefill independence and physical262144/RESTORE. Keep the qualified prefill route.',
-            retention='Keep individual useful samples,setup/footprint,source/build identity and compact decisions. Old numeric ELF is the immediate fallback only until new checks pass;recover its original source then retire it. Retire successful raw timing/build output after closing the comparison. Preserve both inference generations.'),
+            pending='Before production selection,validate other-format/pureNT1 performance and actual production entry/lifecycle,then model task quality,prefill independence and physical262144/RESTORE. Keep the qualified prefill route.',
+            retention='Keep individual useful samples,setup/footprint,source/build identity and compact decisions. The30e45b85timing ELF is the immediate numerical fallback until new checks pass;recover its original313e5source/recipe/636inputs before retirement. Retire successful raw timing/build output after closing the comparison. Preserve both inference generations.'),
         budgets=dict(build_seconds=600,controls_seconds=180,check_child_seconds=120,screen_child_seconds=180,stage_seconds=1800,
             rss_bytes=3<<30,text_bytes=8<<20,root_bytes=256<<20))
     ROOT.mkdir(mode=0o700);write(PLAN,plan)
     write(RESULT,dict(schema=SCHEMA,stage='prepared',source_commit=revision,plan_sha256=base.digest(PLAN),
         passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False,
         calibration_origin=origin,hardware_saturation_qualified=False,model_adoption_qualified=False))
-    print('Prepared compact GU timing plan;commit before build.',flush=True)
+    print('Prepared packed98B gather timing plan;commit before build.',flush=True)
 
 
 def load():
@@ -312,9 +313,10 @@ def parse(lines,row,workers,group,stage):
 def parse_compact(lines,row=None):
     value=(dict(kind='compact_controls',codec_cases=524288,integer_chunks=524288,
         encoded_values=134217728,FMA_cases=16,partial_ranges=64,GU_refusals=10,
-        encode_refusals=2,finite_canaries=True) if row is None else
+        encode_refusals=2,packed_integer_chunks=524288,packed_FMA_cases=16,
+        packed_partial_ranges=64,packed_GU_refusals=11,finite_canaries=True) if row is None else
         dict(kind='compact_validation',format=18,nt=1,activation_cases=4,experts=row['experts'],
-            native_pair_bits_equal=True,finite=True,canaries=True,compact_GU_bytes_per_expert=1715200,
+            native_pair_bits_equal=True,packed_native_pair_bits_equal=True,finite=True,canaries=True,compact_GU_bytes_per_expert=1715200,
             raw_plus_compact_bytes_per_expert=row['blob_bytes']+1715200))
     expected=[value,dict(kind='closed',passed=True)]
     guards.require(json.dumps(lines,sort_keys=True)==json.dumps(expected,sort_keys=True),
@@ -324,8 +326,10 @@ def parse_compact(lines,row=None):
 
 def parse_gu(lines,row,workers,group,arm):
     guards.require(type(workers) is int and workers in (1,5) and type(group) is int and
-        group in GROUPS and arm in ('gu-check','gu-raw','gu-compact'),'planned GU shape/arm required')
+        group in GROUPS and arm in ('gu-check','gu-raw','gu-compact','gu-packed'),'planned GU shape/arm required')
     timed=arm!='gu-check';count=group*math.ceil((128<<20)/(group*row['blob_bytes']))
+    if not timed:
+        parse_compact(lines[:1]+[dict(kind='closed',passed=True)],dict(row,experts=count));lines=lines[1:]
     kinds=['gu_setup','gu_validation','gu_work']
     if timed:
         for _ in range(2):kinds+=['gu_timer']+['gu_sample']*5+['gu_result','gu_validation']
@@ -346,7 +350,7 @@ def parse_gu(lines,row,workers,group,arm):
         'finite positive setup costs required')
     histogram=expected_histogram(row['observed_jobs_NT'],group)
     valid=dict(kind='gu_validation',compute_threads=6 if workers==5 else 1,group=group,experts=count,
-        NT_mask=30,mixed_NT=True,bits=True,inactive=True,canaries=True)
+        NT_mask=30,variants=3,mixed_NT=True,bits=True,inactive=True,canaries=True)
     work=dict(kind='gu_work',arm=arm,compute_threads=6 if workers==5 else 1,group=group,experts=count,
         batches=100,jobs_NT=histogram,host_cpu=base.machine()['physical_cpus'][0],affinity_verified=True)
     result=dict(kind='gu_result',experts=count,active_values_equal=True,finite_guards=True)
@@ -365,14 +369,14 @@ def parse_gu(lines,row,workers,group,arm):
                 r['query_s']/r['fastest_pass_s']<.001,'GU timer overhead gate')
         for s in samples:
             guards.require(set(s)=={'kind','stream','rep','passes','wall_s','cpu_s',
-                'rows','NT1_rows','compact_rows','raw_rows'} and type(s['stream']) is bool and
+                'rows','NT1_rows','compact_rows','raw_rows','packed_rows'} and type(s['stream']) is bool and
                 type(s['rep']) is int and type(s['passes']) is int and 0<s['passes']<1000000 and
                 positive(s['wall_s']) and s['wall_s']>=1 and positive(s['cpu_s'],True),
                 'eligible typed GU timing batch required')
             total=s['passes']*100*group*640;one=s['passes']*histogram[0]*640
-            compact=one if arm=='gu-compact' else 0
-            equal({k:s[k] for k in ('rows','NT1_rows','compact_rows','raw_rows')},
-                dict(rows=total,NT1_rows=one,compact_rows=compact,raw_rows=total-compact))
+            compact=one if arm=='gu-compact' else 0;packed=one if arm=='gu-packed' else 0
+            equal({k:s[k] for k in ('rows','NT1_rows','compact_rows','raw_rows','packed_rows')},
+                dict(rows=total,NT1_rows=one,compact_rows=compact,raw_rows=total-compact-packed,packed_rows=packed))
     return dict(setup=setup,work=work,validated=True,timers=timers,samples=samples)
 
 
@@ -385,7 +389,7 @@ def screen_decision(children):
         for group in GROUPS:
             for stream in (False,True):
                 arms={}
-                for arm in ('raw','compact'):
+                for arm in ('raw','packed'):
                     values=[]
                     for pair in range(3):
                         selected=[c for c in children if c['case']==[18,20,workers,group,pair,arm]]
@@ -398,18 +402,17 @@ def screen_decision(children):
                             CV=statistics.stdev(rates)/statistics.mean(rates),
                             setup_s=child['validation']['setup']['allocation_encode_wall_s']))
                     arms[arm]=values
-                ratios=[a['seconds_per_pass']/b['seconds_per_pass'] for a,b in zip(arms['raw'],arms['compact'])]
+                ratios=[a['seconds_per_pass']/b['seconds_per_pass'] for a,b in zip(arms['raw'],arms['packed'])]
                 saved=statistics.median([a['seconds_per_pass']-b['seconds_per_pass']
-                    for a,b in zip(arms['raw'],arms['compact'])])
+                    for a,b in zip(arms['raw'],arms['packed'])])
                 gm=math.exp(sum(math.log(r) for r in ratios)/3)
                 cells.append(dict(compute_threads=6 if workers==5 else 1,group=group,stream=stream,
-                    processes=arms,paired_raw_over_compact=ratios,geomean=gm,
+                    processes=arms,paired_raw_over_packed=ratios,geomean=gm,
                     median_saved_seconds_per_pass=saved,
-                    setup_amortization_passes=(statistics.median([v['setup_s'] for v in arms['compact']])/saved
-                        if saved>0 else None),followup_eligible=all(r>1 for r in ratios) and gm>1))
+                    per_expert_expansion_required=False,followup_eligible=all(r>1 for r in ratios) and gm>1))
     return dict(screen_complete=True,cells=cells,
         performance_qualified=any(c['followup_eligible'] for c in cells),model_adoption_qualified=False,
-        next_action='Use eligible shapes for separately planned other-format/NT1/production comparisons;preserve mixed/negative results. No model trial or throughput claim from this component screen.')
+        next_action='Use eligible packed-gather shapes for other-format/NT1 and actual production comparisons;preserve negative cells. No model trial or throughput claim from this component screen.')
 
 
 def allowed_inputs(plan):
@@ -425,7 +428,8 @@ def allowed_inputs(plan):
     for item in image['files'].values():
         if item['kind']=='file':allowed[item['realpath']]=item['sha256']
     for name,sha in proof['CPU_sources'].items():allowed[str((CPU_SOURCE/name).resolve())]=sha
-    for name in ('bench/sycl/cpu_decode_mix/main.cpp','bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp'):
+    for name in ('bench/sycl/cpu_decode_mix/main.cpp','bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp',
+                 'bench/sycl/cpu_decode_mix/packed_iq3xxs.hpp'):
         path=P/name;allowed[str(path.resolve())]=base.digest(path)
     native=json.loads((NATIVE_ROOT/'record.json').read_text())
     original=NATIVE_ROOT/'build/ggml/src/ggml-version.h'

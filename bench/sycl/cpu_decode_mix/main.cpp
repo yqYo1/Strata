@@ -3,6 +3,7 @@
 #include "strata/kernels/cpu/expert_layout.hpp"
 #include "strata/kernels/cpu/iq_avx2.hpp"
 #include "compact_iq3xxs.hpp"
+#include "packed_iq3xxs.hpp"
 #include <algorithm>
 #include <atomic>
 #include <barrier>
@@ -127,10 +128,10 @@ public:
     }
 };
 struct Work {
-    struct alignas(64) GuCounts { std::array<uint64_t,4> values{}; };
+    struct alignas(64) GuCounts { std::array<uint64_t,5> values{}; };
     std::array<GuCounts,6> gu_counts{};
     std::vector<std::vector<compact_iq3xxs::Block>> gu_views;
-    int gu_offset=0;bool gu_compact=false;
+    int gu_offset=0,gu_variant=0;
     cpu::NativeFmt fmt;
     int group,count;
     std::vector<std::unique_ptr<Buffer>> weights,outputs;
@@ -191,9 +192,9 @@ struct Work {
             <<",\"raw_blob_bytes\":"<<uint64_t(count)*fmt.bytes
             <<",\"allocation_encode_wall_s\":"<<seconds(begin)<<",\"allocation_encode_cpu_s\":"<<process_cpu()-c0<<"}"<<std::endl;
     }
-    std::array<uint64_t,4> gu_totals() const {
-        std::array<uint64_t,4> result{};
-        for(const auto& c:gu_counts)for(int k=0;k<4;++k)result[k]+=c.values[k];
+    std::array<uint64_t,5> gu_totals() const {
+        std::array<uint64_t,5> result{};
+        for(const auto& c:gu_counts)for(int k=0;k<5;++k)result[k]+=c.values[k];
         return result;
     }
     void gu_part(int id,int participants) {
@@ -204,13 +205,18 @@ struct Work {
             const int j=gu_offset+at/cpu::FF,r0=at%cpu::FF,r1=std::min(cpu::FF,r0+end-at);
             const int nt=jobs[j].nt;const int nr=r1-r0;
             auto& c=gu_counts[id].values;c[0]+=nr;if(nt==1)c[1]+=nr;
-            if(gu_compact && nt==1) {
+            if(gu_variant==1 && nt==1) {
                 constexpr size_t n=compact_iq3xxs::projection_blocks;
                 const auto all=std::span<const compact_iq3xxs::Block>(gu_views[j]);
                 need(compact_iq3xxs::gu_rows(all.subspan(1,n),all.subspan(1+n,n),
                     std::span<const uint8_t>(activations[0]->data(),fmt.act_bytes),
                     std::span<float>(jobs[j].out[0],cpu::FF),r0,r1),"GU compact dispatch");
                 c[2]+=nr;
+            } else if(gu_variant==2 && nt==1) {
+                need(packed_iq3xxs::gu_rows(std::span<const uint8_t>(weights[j]->data(),fmt.bytes),
+                    fmt.up_off,std::span<const uint8_t>(activations[0]->data(),fmt.act_bytes),
+                    std::span<float>(jobs[j].out[0],cpu::FF),r0,r1),"GU packed dispatch");
+                c[4]+=nr;
             } else {
                 if(nt==1)need(cpu::iq3xxs_pair_gu_rows(fmt,weights[j]->data(),activations[0]->data(),
                     jobs[j].out[0],r0,r1),"GU raw pair dispatch");
@@ -253,8 +259,8 @@ struct Work {
     }
     void gu_validate(GuTeam& team,int participants) {
         Buffer reference(4*cpu::H*sizeof(float));
-        for(int test=0;test<=4;++test)for(int offset=0;offset<count;offset+=group)for(bool compact:{false,true}) {
-            gu_offset=offset;gu_compact=compact;
+        for(int test=0;test<=4;++test)for(int offset=0;offset<count;offset+=group)for(int variant=0;variant<3;++variant) {
+            gu_offset=offset;gu_variant=variant;
             for(int j=0;j<group;++j) {
                 jobs[offset+j].nt=test?test:(j<4?j+1:nt[(offset+j)%nt.size()]);
                 std::memset(outputs[offset+j]->data(),0xA7,4*cpu::H*sizeof(float));
@@ -281,7 +287,7 @@ struct Work {
         for(const auto& a:activations)a->check();
         std::cout<<"{\"kind\":\"gu_validation\",\"compute_threads\":"<<participants
             <<",\"group\":"<<group<<",\"experts\":"<<count
-            <<",\"NT_mask\":30,\"mixed_NT\":true,\"bits\":true,\"inactive\":true,\"canaries\":true}"<<std::endl;
+            <<",\"NT_mask\":30,\"variants\":3,\"mixed_NT\":true,\"bits\":true,\"inactive\":true,\"canaries\":true}"<<std::endl;
     }
     void validate_compact() {
         namespace view=compact_iq3xxs;
@@ -308,6 +314,10 @@ struct Work {
                     std::span<float>(got,cpu::FF),0,cpu::FF),"compact paired GU");
                 need(std::memcmp(want,got,cpu::FF*sizeof(float))==0,"compact/native GU bits");
                 for(int r=0;r<cpu::FF;++r)need(std::isfinite(got[r]),"nonfinite compact GU");
+                need(packed_iq3xxs::gu_rows(std::span<const uint8_t>(raw,fmt.bytes),fmt.up_off,
+                    std::span<const uint8_t>(act,fmt.act_bytes),std::span<float>(got,cpu::FF),0,cpu::FF),"packed real GU");
+                need(std::memcmp(want,got,cpu::FF*sizeof(float))==0,"packed/native real GU bits");
+                for(int r=0;r<cpu::FF;++r)need(std::isfinite(got[r]),"nonfinite packed GU");
                 expected.check();actual.check();
             }
             need(std::memcmp(&storage.front(),&guard,sizeof guard)==0 &&
@@ -316,7 +326,7 @@ struct Work {
         }
         for(auto& a:activations)a->check();
         std::cout<<"{\"kind\":\"compact_validation\",\"format\":18,\"nt\":1,\"activation_cases\":4,\"experts\":"<<count
-            <<",\"native_pair_bits_equal\":true,\"finite\":true,\"canaries\":true,\"compact_GU_bytes_per_expert\":"<<2*n*sizeof(view::Block)
+            <<",\"native_pair_bits_equal\":true,\"packed_native_pair_bits_equal\":true,\"finite\":true,\"canaries\":true,\"compact_GU_bytes_per_expert\":"<<2*n*sizeof(view::Block)
             <<",\"raw_plus_compact_bytes_per_expert\":"<<fmt.bytes+2*n*sizeof(view::Block)<<"}"<<std::endl;
     }
     void serial(const cpu::ExpertJobMulti& j,float* out) {
@@ -405,7 +415,10 @@ void compact_controls() {
         }
         _mm256_store_si256(reinterpret_cast<__m256i*>(got),
             view::chunk(packed,p,_mm256_load_si256(reinterpret_cast<const __m256i*>(act))));
-        need(std::memcmp(got,want,sizeof got)==0,"compact integer lanes");++cases;
+        need(std::memcmp(got,want,sizeof got)==0,"compact integer lanes");
+        _mm256_store_si256(reinterpret_cast<__m256i*>(got),
+            packed_iq3xxs::chunk(raw.data(),p,_mm256_load_si256(reinterpret_cast<const __m256i*>(act))));
+        need(std::memcmp(got,want,sizeof got)==0,"packed gather/sign integer lanes");++cases;
     }
     _mm256_zeroupper();
     const auto saved=packed;
@@ -447,11 +460,16 @@ void compact_controls() {
             std::span<float>(got,cpu::FF),0,cpu::FF),"synthetic compact pair");
         need(std::memcmp(want,got,cpu::FF*sizeof(float))==0,"synthetic FP32/FMA bits");
         for(unsigned r=0;r<cpu::FF;++r)need(std::isfinite(got[r]),"synthetic finite GU");
-        for(auto range:std::array<std::array<int,2>,4>{{{0,1},{319,321},{639,640},{640,640}}}) {
+        need(packed_iq3xxs::gu_rows(std::span<const uint8_t>(weights.data(),fmt.bytes),fmt.up_off,
+            std::span<const uint8_t>(activation.data(),fmt.act_bytes),std::span<float>(got,cpu::FF),0,cpu::FF),"synthetic packed GU");
+        need(std::memcmp(want,got,cpu::FF*sizeof(float))==0,"synthetic packed FP32/FMA bits");
+        for(unsigned r=0;r<cpu::FF;++r)need(std::isfinite(got[r]),"synthetic finite packed GU");
+        for(bool use_packed:{false,true})for(auto range:std::array<std::array<int,2>,4>{{{0,1},{319,321},{639,640},{640,640}}}) {
             std::memset(actual.data(),0xA7,cpu::FF*sizeof(float));
             std::array<uint8_t,cpu::FF*sizeof(float)> before;std::memcpy(before.data(),actual.data(),before.size());
-            need(view::gu_rows(gate,up,std::span<const uint8_t>(activation.data(),fmt.act_bytes),
-                std::span<float>(got,cpu::FF),range[0],range[1]),"partial compact range");
+            const auto a=std::span<const uint8_t>(activation.data(),fmt.act_bytes);const auto o=std::span<float>(got,cpu::FF);
+            need(use_packed?packed_iq3xxs::gu_rows(std::span<const uint8_t>(weights.data(),fmt.bytes),fmt.up_off,a,o,range[0],range[1]):
+                view::gu_rows(gate,up,a,o,range[0],range[1]),"partial GU range");
             for(int r=0;r<cpu::FF;++r)
                 need(std::memcmp(actual.data()+r*4,(r>=range[0]&&r<range[1])?
                     reinterpret_cast<const uint8_t*>(want+r):before.data()+r*4,4)==0,"inactive compact row");
@@ -477,10 +495,32 @@ void compact_controls() {
     need(!view::gu_rows(g,u,std::span<const uint8_t>(reinterpret_cast<const uint8_t*>(alias.data()),fmt.act_bytes),
         std::span<float>(alias).first(640),0,640) && alias==alias_before,"compact activation/output alias");
     ++refusals;actual.check();
+    unsigned packed_refusals=0;
+    const auto raw_span=std::span<const uint8_t>(weights.data(),fmt.bytes);
+    auto packed_refuse=[&](bool accepted) {
+        need(!accepted && std::memcmp(before.data(),actual.data(),before.size())==0,"packed refusal/output guard");++packed_refusals;
+    };
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span.first(2*fmt.up_off-1),fmt.up_off,a,o,0,640));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,fmt.up_off-1,a,o,0,640));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,raw_span.size()+1,a,o,0,640));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,fmt.up_off,a.first(a.size()-1),o,0,640));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,fmt.up_off,a,o.first(639),0,640));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,fmt.up_off,a,o,-1,1));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,fmt.up_off,a,o,2,1));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,fmt.up_off,a,o,0,641));
+    packed_refuse(packed_iq3xxs::gu_rows(raw_span,fmt.up_off,raw_span.first(a.size()),o,0,640));
+    need(!packed_iq3xxs::gu_rows(raw_span,fmt.up_off,
+        std::span<const uint8_t>(reinterpret_cast<const uint8_t*>(alias.data()),fmt.act_bytes),
+        std::span<float>(alias).first(640),0,640) && alias==alias_before,"packed activation/output alias");++packed_refusals;
+    std::vector<float> weight_alias(fmt.bytes/sizeof(float),1.f);const auto weight_before=weight_alias;
+    need(!packed_iq3xxs::gu_rows(std::span<const uint8_t>(reinterpret_cast<const uint8_t*>(weight_alias.data()),fmt.bytes),
+        fmt.up_off,a,std::span<float>(weight_alias).first(640),0,640) && weight_alias==weight_before,"packed raw/output alias");++packed_refusals;
     std::cout<<"{\"kind\":\"compact_controls\",\"codec_cases\":"<<cases
         <<",\"integer_chunks\":"<<cases<<",\"encoded_values\":"<<cases*256
         <<",\"FMA_cases\":16,\"partial_ranges\":64,\"GU_refusals\":"<<refusals
-        <<",\"encode_refusals\":2,\"finite_canaries\":true}"<<std::endl;
+        <<",\"encode_refusals\":2,\"packed_integer_chunks\":"<<cases
+        <<",\"packed_FMA_cases\":16,\"packed_partial_ranges\":64,\"packed_GU_refusals\":"<<packed_refusals
+        <<",\"finite_canaries\":true}"<<std::endl;
 }
 int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
@@ -491,7 +531,7 @@ int main(int argc,char** argv) try {
     need(std::string(argv[15])=="20261022","protocol version");
     const auto requested_workers=number(argv[8]),requested_group=number(argv[9]);
     const std::string mode=argv[10];
-    const bool gu_mode=mode=="gu-check" || mode=="gu-raw" || mode=="gu-compact";
+    const bool gu_mode=mode=="gu-check" || mode=="gu-raw" || mode=="gu-compact" || mode=="gu-packed";
     need(requested_workers>=1 && requested_workers<=5 && requested_group>=6 && requested_group<=32 &&
         (mode=="check"||mode=="measure"||mode=="compact-check"||gu_mode),"mode/shape");
     need((mode!="compact-check" && !gu_mode) || number(argv[2])==18,"compact IQ3_XXS only");
@@ -507,7 +547,7 @@ int main(int argc,char** argv) try {
         need(workers==1 || workers==5,"GU planned worker count");
         cpu_set_t mask;CPU_ZERO(&mask);CPU_SET(topology.host_core,&mask);
         need(sched_setaffinity(0,sizeof mask,&mask)==0,"GU host affinity");
-        Work work(argv,group,nt);work.gu_setup();
+        Work work(argv,group,nt);if(mode=="gu-check")work.validate_compact();work.gu_setup();
         const int participants=workers==5?6:1;
         GuTeam team(participants,topology,[&](int id,int n){work.gu_part(id,n);});
         work.gu_validate(team,participants);verify_affinity(topology,workers);
@@ -516,7 +556,7 @@ int main(int argc,char** argv) try {
             <<actual[0]<<","<<actual[1]<<","<<actual[2]<<","<<actual[3]
             <<"],\"host_cpu\":"<<topology.host_core<<",\"affinity_verified\":true}"<<std::endl;
         if(mode!="gu-check")for(bool stream:{false,true}) {
-            work.gu_compact=mode=="gu-compact";
+            work.gu_variant=mode=="gu-compact"?1:mode=="gu-packed"?2:0;
             auto pass=[&]{work.gu_pass(team,stream);};pass();
             double fastest=1e9;for(int i=0;i<3;++i){const auto begin=Clock::now();pass();fastest=std::min(fastest,seconds(begin));}
             const auto timer=Clock::now();for(int i=0;i<10000;++i){const auto query=Clock::now();(void)query;}
@@ -528,14 +568,15 @@ int main(int argc,char** argv) try {
                 int passes=0;do{pass();++passes;}while(seconds(begin)<1.3 && passes<1000000);
                 const double wall=seconds(begin),cpu_time=process_cpu()-c0;
                 need(wall>=1 && passes<1000000,"GU timing floor/budget");
-                auto total=work.gu_totals();for(int k=0;k<4;++k)total[k]-=before[k];
+                auto total=work.gu_totals();for(int k=0;k<5;++k)total[k]-=before[k];
                 need(total[0]==uint64_t(passes)*100*group*cpu::FF &&
                     total[1]==uint64_t(passes)*actual[0]*cpu::FF &&
-                    total[2]==(work.gu_compact?total[1]:0) && total[3]==total[0]-total[2],"GU timed dispatch rows");
+                    total[2]==(work.gu_variant==1?total[1]:0) && total[4]==(work.gu_variant==2?total[1]:0) &&
+                    total[3]==total[0]-total[2]-total[4],"GU timed dispatch rows");
                 std::cout<<"{\"kind\":\"gu_sample\",\"stream\":"<<(stream?"true":"false")<<",\"rep\":"<<rep
                     <<",\"passes\":"<<passes<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<cpu_time
                     <<",\"rows\":"<<total[0]<<",\"NT1_rows\":"<<total[1]<<",\"compact_rows\":"<<total[2]
-                    <<",\"raw_rows\":"<<total[3]<<"}"<<std::endl;
+                    <<",\"raw_rows\":"<<total[3]<<",\"packed_rows\":"<<total[4]<<"}"<<std::endl;
             }
             work.gu_check_current();work.gu_validate(team,participants);
         }
