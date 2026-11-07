@@ -814,7 +814,22 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   `adaptive_payload32_record_failure_v1`key/root. It requires a real first
   publication,32queued second copies and checked refusal with no second
   publication,normal expected1/closed owners/no fault. It has not been prepared
-  or executed. Clean-speed consumers still need migration before429bretirement.
+  or executed. Source-only`tools/sycl/compare_adaptive_payload_generation.py`
+  now reuses the original same-ELF8/32decision/benchmark runner with successor
+  positive/refusal qualifications. Prior settings/frontend selection supply no
+  old-engine qualification;refs bind only the successor controls and tested
+  Niko frontend. Code cap4/prose cap2 remain separate three-pair cohorts,exact
+  TG is primary,and prompt/TTFT remain independent. No model comparison is
+  prepared or run. Before its preparation,the following CPU-only control is
+  preregistered at a closed GPU boundary:
+  `/usr/bin/timeout -k 2s 20s /usr/bin/prlimit --as=1073741824 --cpu=10 --fsize=65536 /usr/bin/python3 -X faulthandler -B tools/sycl/compare_adaptive_payload_generation.py controls`.
+  Require actual0,quiet stderr,four immutable configurations,small exact gain,
+  slower-pair retention and independent phase verdicts;the CLI pins its full
+  transitive source closure before controls. Keep native build/positive/refusal
+  receipt bytes frozen when later gates consume their hashes:record raw-output
+  retirement separately rather than rewriting those receipts or refreshing refs.
+  Prospective consumer migration still needs execution qualification before
+  retiring429b;the new wrappers alone do not make its active readers qualified.
   The static resource profiler is
   independently eligible on unchanged429b;its census disables adaptation.
   Vectors are dynamic/reserved before submission and publication waits for
