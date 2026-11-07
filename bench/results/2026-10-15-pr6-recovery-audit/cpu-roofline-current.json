@@ -1,6 +1,6 @@
 {
   "schema": "strata-cpu-compact-iq3xxs-v1",
-  "stage": "controls",
+  "stage": "check",
   "source_commit": "6aba988291bba93764c4fb5e84c2215b8b12d597",
   "plan_sha256": "887f3ad1842701502987fb64b0e3fe1e62ec15b7176673b1642f33975d2fbb43",
   "calibration_origin": {
@@ -16,18 +16,35 @@
   "children": [
     {
       "validation": {
-        "kind": "compact_controls",
-        "codec_cases": 524288,
-        "integer_chunks": 524288,
-        "encoded_values": 134217728,
-        "FMA_cases": 16,
-        "partial_ranges": 64,
-        "GU_refusals": 10,
-        "encode_refusals": 2,
-        "finite_canaries": true
+        "kind": "compact_validation",
+        "format": 18,
+        "nt": 1,
+        "activation_cases": 4,
+        "experts": 84,
+        "native_pair_bits_equal": true,
+        "finite": true,
+        "canaries": true,
+        "compact_GU_bytes_per_expert": 1715200,
+        "raw_plus_compact_bytes_per_expert": 3891200
       },
       "exit_code": 0,
-      "stdout_sha256": "faff2f957ed8211fdd6202c61da94bf2f0f83e3cf4a8f064d5a4d70245e93b2c"
+      "stdout_sha256": "f0b810debe70c921371be109b4f7e360857dc90f6ad3c7f1135c367a1baa84a6"
+    },
+    {
+      "validation": {
+        "kind": "compact_validation",
+        "format": 18,
+        "nt": 1,
+        "activation_cases": 4,
+        "experts": 84,
+        "native_pair_bits_equal": true,
+        "finite": true,
+        "canaries": true,
+        "compact_GU_bytes_per_expert": 1715200,
+        "raw_plus_compact_bytes_per_expert": 3430400
+      },
+      "exit_code": 0,
+      "stdout_sha256": "17881889144ce5240d44f526fbde5099e570455665a98ced306b34b3813f0ca6"
     }
   ],
   "binaries": {
@@ -37,10 +54,29 @@
     }
   },
   "owned_commands": {
-    "count": 1,
+    "count": 2,
     "all_closed": true,
     "all_exit_zero": true
   },
   "hardware_saturation_qualified": false,
-  "model_adoption_qualified": false
+  "model_adoption_qualified": false,
+  "decision": {
+    "compact_GU_numerical_qualified": true,
+    "controls_evidence_commit": "4f9bbf12c31ae80531beabfff9406c89fe1c5fd6",
+    "build_evidence_commit": "8f7f178dd4b4137d7edb1864794bcf826141af94",
+    "real_experts": 168,
+    "real_GU_comparisons": 672,
+    "performance_qualified": false,
+    "model_adoption_qualified": false,
+    "next_action": "Fresh committed component timing plan:include conversion/setup,full raw-plus-view footprint,matched repeated reuse/stream and1/6-thread/current NT work before production selection.",
+    "retained_auxiliary_consumer": "This one CPU-only ELF/required build proof is the immediate numerical fallback for component timing preparation/qualification. Retire successful raw/build output once that consumer closes and its original inputs are recovered.",
+    "limitations": "Same native-pair numerical contract only;not independent model/task quality,full production dispatch,sustained TG,prefill preservation,physical262144context/RESTORE or hardware saturation."
+  },
+  "retained_auxiliary": {
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-v1",
+    "files": 84,
+    "bytes": 14372168,
+    "executable_count": 1,
+    "consumer": "Immediate component timing preparation/qualification numerical fallback;retire at that consumer closure after original-input recovery. Only this CPU auxiliary generation;two inference generations remain unchanged."
+  }
 }

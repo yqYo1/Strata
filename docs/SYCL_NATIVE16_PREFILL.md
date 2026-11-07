@@ -1537,48 +1537,41 @@ production selection. Current-model GPU counters,physical traffic and critical
 path remain unqualified. No new model speedup,adoption or device execution
 follows from this calibration.
 
-The benchmark-only `bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp` and its
-`compact-check` entry are source-prepared. A134-byte block stores the exact
-signed magnitude indices plus unchanged half scale/eight sub-scales;the AVX2
-consumer reconstructs signed bytes through a register shuffle. Its integer
-lanes,per-block FP32 FMA order,final reduction/0.25 factor and SwiGLU match the
-compiled native IQ3_XXS pair contract. The candidate view adds1715200bytes per
-expert for both GU projections while the raw blob remains. It does not change
-production/prefill,NT2+selection or model ownership. The prepared real-weight
-check compares all loaded distinct experts with four quantized NT1 activations
-against the native paired entry,with finite-output,allocation and view guards.
-No build or numerical/performance execution has occurred. Before timing,also
-prepare codec coverage of all grid/sign/scale cases,span/range/alias refusals
-and unchanged inactive rows. Use a fresh committed plan/build against the
-retained native CPU source and2026.2toolchain;the closed V4 controller/paths
-must not be retried. Charge setup and full raw-plus-view footprint,and compare
-both reuse/stream and multicore/current NT mixtures before model selection.
+The benchmark-only `bench/sycl/cpu_decode_mix/compact_iq3xxs.hpp` stores exact
+IQ3_XXS signed magnitude indices in134-byte blocks,with unchanged half scale
+and eight sub-scales. AVX2 register shuffles replace runtime codebook loads;
+integer lanes,per-block FP32 FMA order,final reduction/0.25 factor and SwiGLU
+preserve the compiled native pair contract. The full added GU view is1715200B
+per expert;raw weights remain. Raw-plus-view footprint is3891200B for18/20
+and3430400B for18/42. This does not change production/prefill,NT2+selection or
+model ownership. Numerical consistency does not prove performance or adoption.
+
+At source6aba98829,all eight host controller tests pass,without skips. The
+263-input correctness plan uses1376GGML inputs and the recovered568-file
+native composition/actual2026.2CPU recipe;all633actual compiler inputs are
+covered and the CPU-only ELF links no GPU runtime. All15inference ELFs remain
+unchanged. Synthetic controls close normally0with quiet stderr and closed
+ownership:524288grid/sign/scale base cases,134217728encoded values and524288
+actual SIMD integer chunks,16full GU/FMA cases,64partial ranges and12refusals.
+Zero/negative-zero/subnormal/max-finite half scales,zero/signed activation
+scales and-128activation lanes are included. Outputs,integer lanes,inactive
+rows and guards pass. Both real-weight IQ3_XXS formats also close normally0:
+84distinct experts each,four quantized NT1 activations each,672GU comparisons
+with exact finite native-pair bits and guards. The retained auxiliary ELF is
+`ab274d68`,built from6aba98829. This qualifies the isolated native-pair GU
+contract,not independent task quality,full production dispatch or model speed.
+
+The next committed component plan must measure setup and full coexistence
+footprint,then repeated matched reuse/stream and1/6-thread/current-NT cases.
+No compact performance result exists yet. Keep this single auxiliary ELF and
+required build proof as the immediate numerical fallback for that timing
+preparation/qualification;retire successful raw/build output when the consumer
+closes after original-input recovery. The two inference generations remain.
 Luna-max's post-calibration review agrees this bounded comparison is the next
 question;existing references suffice and no new Orca survey is selected.
-The Main-authored `--compact-controls` source now covers524288grid/sign/scale
-base cases,134217728encoded values and524288actual SIMD integer chunks,plus
-16synthetic full GU cases and64partial ranges. Zero/negative-zero/subnormal/
-max-finite half scales,zero/signed activation scales and-128activation lanes
-are included;ten GU and two encoder refusals check unchanged output. These
-controls are source-prepared,not executed. The maintained CPU controller is
-retargeted to a fresh `cpu-compact-iq3xxs-v1` root:commit the plan,build only
-`cpu_decode_mix`,then qualify synthetic controls before the two real-weight
-IQ3_XXS formats. It consumes the closed calibration through8547cb65d in Git,
-without depending on retired V3/V4 paths. No timing or model adoption gate is
-removed;setup,coexistence footprint and repeated multicore/current-NT
-performance remain the next comparison after correctness.
-At source6aba98829,all eight host controller tests pass without skips,normal0
-under the measurement lock. The compact-view correctness plan is prepared at
-that source with263controller/fixture inputs,1376GGML inputs and the same
-recovered native CPU recipe. Each of the two real formats pins84distinct
-experts and their model slices. The compact-view CPU build now closes
-normally0with four owned commands and633covered actual compiler inputs;it
-links no GPU runtime. All15inference ELFs remain unchanged. Commit this build
-before executing the synthetic controls. Those controls now close normally0
-with quiet stderr and closed ownership:all524288codec/integer cases,16full
-synthetic GU cases,64partial ranges and12refusals pass,with exact native-pair
-bits and guards. Commit this result before the two real-weight children;
-no compact real-model or performance result exists yet.
+The closed calibration is recovered from8547cb65d in Git;retired V3/V4 paths
+are not current inputs. No full model adoption or physical262144/RESTORE
+qualification follows from these CPU checks.
 
 Both closed auxiliary CPU builds and their output are retired after recovering
 original261/V4 262controller inputs,568native inputs,GGML source/recipes and
