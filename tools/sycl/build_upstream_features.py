@@ -21,7 +21,7 @@ P, B = source.P, source.B
 ROOT = B / 'upstream-features-146df3c4'
 REFERENCE = B / 'adaptive-payload-audit-model-v2'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json'
-TARGETS = ['strata', 'sycl_dflash2_test', 'dflash2_pack_test', 'sycl_submission_test']
+TARGETS = ['strata', 'sycl_dflash2_test', 'sycl_dflash2_ring_test', 'dflash2_pack_test', 'sycl_submission_test']
 PREFIXES = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests', 'bench/sycl',
             'tools/sycl/build_upstream_features.py', 'tools/sycl/build_engine.py',
             'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py']
@@ -74,7 +74,7 @@ def compact(row):
                   'This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. '
                   'Retire it if qualification fails; at the feature comparison boundary select validated outputs '
                   'and retire superseded generations after original-source/recipe recovery. No adoption from build success.')
-    for key in ['attempt', 'previous_attempt']:
+    for key in ['attempt', 'previous_attempt', 'unchanged_outputs']:
         if key in row: result[key] = row[key]
     return result
 
@@ -95,18 +95,18 @@ def prepare():
         gate = status['current_sync'].get('dflash2_device_check', {})
         superseded_component = (previous['stage'] == 'built' and previous['passed'] and
             gate.get('stage') == 'passed' and gate.get('passed') and gate.get('ownership_closed') and
-            gate.get('numerical_cases_passed') == 9 and
+            gate.get('numerical_cases_passed') == 16 and
             gate.get('native_build', {}).get('source_commit') == previous['project']['revision'] and
             gate.get('fixture') == previous['binaries']['sycl_dflash2_test'] and
             status['current_sync']['dflash2_native_port']['state'] ==
-                'compiled_small_q4_fp32_kernel_gate_passed_model_route_unqualified')
+                'compiled_small_q4_fp32_bf16_prompt_gate_passed_model_route_unqualified')
         require((failed_compile or superseded_component) and previous['ownership_closed'] and
                 all(ownership.closed(c) for c in previous['commands']) and
                 committed_plan() == compact(previous), 'commit and close failed compilation before a new source attempt')
         if superseded_component:
             # This candidate has no model-route consumer or adoption. Its closed
-            # nine-case check is superseded by the new sixteen-case fixture.
-            # Recover original inputs before reusing its disposable output path;
+            # sixteen-case check is now joined by the stock-drafter ring fixture.
+            # Recover original inputs before adding to its disposable output path;
             # both validated phase engines remain hash-checked fallbacks.
             for pin in [previous['project'], *previous['dependencies']]:
                 recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
@@ -125,6 +125,7 @@ def prepare():
                            for v in recipe['configure']]
     recipe['environment'] = {k: v.replace(str(REFERENCE), str(ROOT)) for k, v in recipe['environment'].items()}
     recipe['targets'] = TARGETS
+    recipe['build_targets'] = ['sycl_dflash2_ring_test']
     recipe.pop('retention', None)
     project = source.pin(P, PREFIXES)
     dependencies = []
@@ -152,17 +153,22 @@ def prepare():
         qualification='Compilation only, no GPU execution, no speed, no model-route or full-context qualification.')
     row['attempt'] = previous.get('attempt', 1) + 1 if previous else 1
     if previous:
+        if previous.get('unchanged_outputs'):
+            row['unchanged_outputs'] = previous['unchanged_outputs']
         row['previous_attempt'] = dict(source_commit=previous['project']['revision'], stage=previous['stage'],
             record_sha256=source.digest(ROOT / 'record.json'), error=previous.get('error'),
             ownership_closed=True, evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
             reason='Reuse the closed unqualified candidate cache; exact source/recipe/outcome remain in Git. Preserve both validated phase references.')
         if superseded_component:
+            row['unchanged_outputs'] = {name: dict(value, origin_source_commit=
+                value.get('origin_source_commit', previous['project']['revision']))
+                for name, value in previous['binaries'].items()}
             row['previous_attempt']['retirement'] = dict(
-                qualification='Only the closed nine-case component passed;never a validated model engine.',
+                qualification='Only the closed sixteen-case component passed;never a validated model engine.',
                 original_source_recovered=True, source_sha256=previous['project']['aggregate_sha256'],
                 source_files=previous['project']['count'], original_binaries_verified=previous['binaries'],
-                consumer='Immediate sixteen-case replacement fixture;old component consumer ended after committed pass.',
-                point='Replace this temporary third candidate in place;keep552b/e1b011 unchanged.No fourth generation.')
+                consumer='Immediate stock-drafter ring fixture;retain current engine and sixteen-case fixture bytes unchanged.',
+                point='Add only the new fixture within this temporary third candidate;keep552b/e1b011 unchanged.No fourth generation.')
     check_inputs(row)
     ROOT.mkdir(mode=0o700, exist_ok=bool(previous))
     for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700, exist_ok=bool(previous))
@@ -187,7 +193,7 @@ def build():
         row['stage'] = 'building'
         for label, argv in [
             ('configure', row['recipe']['configure']),
-            ('compile', ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', *TARGETS, '-j', '4'])]:
+            ('compile', ['/usr/bin/cmake', '--build', str(ROOT / 'build'), '--target', *row['recipe']['build_targets'], '-j', '4'])]:
             require(committed_plan() == frozen, 'frozen build plan changed')
             check_inputs(row); guards.no_model_owners([])
             entry, stdout, stderr = monitor.run(label, argv, row['recipe']['environment'], P, **row['budgets'])
@@ -199,6 +205,13 @@ def build():
         check_inputs(row)
         row['binaries'] = {n: dict(path=str(ROOT / 'build' / n), sha256=source.digest(ROOT / 'build' / n),
                                   bytes=(ROOT / 'build' / n).stat().st_size) for n in TARGETS}
+        for name, binary in row['binaries'].items():
+            prior = row.get('unchanged_outputs', {}).get(name)
+            if prior:
+                require(binary['sha256'] == prior['sha256'] and binary['bytes'] == prior['bytes'],
+                        'adding the ring fixture must not replace an existing native output: ' + name)
+            binary['origin_source_commit'] = (prior.get('origin_source_commit',
+                row['previous_attempt']['source_commit']) if prior else row['project']['revision'])
         row.update(stage='built', passed=True)
     except BaseException as error:
         row.update(stage='build_failed', error=repr(error))
