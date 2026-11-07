@@ -1508,11 +1508,16 @@ the original native construction helpers. The prospective matrix has56checks,
 112reuse/stream timing cells and1/2/3/6-thread256MiB read references,with five
 eligible samples/cell. It pins model identities/selected expert slices and
 checks actual compiler/header/link inputs,typed work,affinity and terminal
-ownership. Only the CPU observer layout is compiled;the observer is off and
-the native IQ2/IQ3 dispatch/audit and20ms pool spin remain fixed. The auxiliary
+ownership. The recipe keeps the CPU observer layout enabled,with the observer
+off;native IQ2/IQ3 dispatch/audit and20ms pool spin remain fixed. The auxiliary
 CPU build retires at calibration closure and never replaces either engine.
-This is source preparation:controller host controls and the new prospective
-plan/build/numerical checks/timing remain pending. No extra executable is built.
+At source`233f3081e`,all nine controller CPU tests pass without skips,normal0,
+under the shared measurement lock. They cover intermediate placement/work,
+typed histogram/matrix refusals,actual compile/link input refusals and terminal
+owner-setup failure with no child or retry. The command is
+`/usr/bin/timeout -k 5s 30s /usr/bin/prlimit --as=1073741824 --cpu=20 --fsize=1048576 /usr/bin/python3 -X faulthandler -B -m unittest discover -s tests/core -p test_cpu_decode_mix.py -v`.
+This qualifies controller controls only;the prospective plan/build/numerical
+checks/timing remain pending. No extra executable is built.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
