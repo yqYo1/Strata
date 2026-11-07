@@ -1495,7 +1495,8 @@ remain unmeasured;this is not a hard ceiling. Use the named current working-set
 calibration after
 the complete cost comparison;the previous calibration used an older
 compiler/reference and is not qualified unchanged for this engine.
-The current CPU calibration in `cpu-roofline-current.json` is closed. It uses
+The CPU calibration closed at`8547cb65d`;recover`cpu-roofline-current.json`
+from that commit. It uses
 the recovered568-file e1b011native composition and its actual icx/icpx2026.2
 C/C++recipe,with service/census observers off,IQ2/IQ3pairs enabled,the IQ3
 audit and20ms pool spin. Three matching current NT/format distributions bind
@@ -1510,7 +1511,7 @@ The separately planned V4 continuation reuses exactly those expert samples
 and56checks after recovering261original controller/recipe inputs and checking
 all634actual compiler inputs,link inputs,ELF,model slices and environment.
 The original individual samples remain recoverable at that immutable commit;
-the active result keeps their identity and compact analysis. V4 newly builds
+that closed result keeps their identity and compact analysis. V4 newly builds
 only the public scanner. It supports1..6/12threads with allowed-affinity,
 range and duplicate checks;scan/checksum/partition math stays unchanged.
 At source d7a92b074,all eight host controller tests pass without skips. Its
@@ -1566,6 +1567,12 @@ IQ3_XXS formats. It consumes the closed calibration through8547cb65d in Git,
 without depending on retired V3/V4 paths. No timing or model adoption gate is
 removed;setup,coexistence footprint and repeated multicore/current-NT
 performance remain the next comparison after correctness.
+At source6aba98829,all eight host controller tests pass without skips,normal0
+under the measurement lock. The compact-view correctness plan is prepared at
+that source with263controller/fixture inputs,1376GGML inputs and the same
+recovered native CPU recipe. Each of the two real formats pins84distinct
+experts and their model slices. Commit this plan before build;no compact
+executable or numerical result exists yet.
 
 Both closed auxiliary CPU builds and their output are retired after recovering
 original261/V4 262controller inputs,568native inputs,GGML source/recipes and

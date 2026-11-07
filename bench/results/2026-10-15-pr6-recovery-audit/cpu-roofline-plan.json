@@ -1,9 +1,9 @@
 {
-  "schema": "strata-cpu-decode-mix-v4",
+  "schema": "strata-cpu-compact-iq3xxs-v1",
   "source": {
-    "revision": "d7a92b074d5b625b350936ab434e88cba2610ffe",
-    "count": 262,
-    "aggregate_sha256": "fb7d4908e8ae217b34a1ac32974699e559f5709750e915da658232a1175077b1"
+    "revision": "6aba988291bba93764c4fb5e84c2215b8b12d597",
+    "count": 263,
+    "aggregate_sha256": "de5870eabd9e7698c9afbe197c15588bd89717eb54445999f2619c216d1d96c4"
   },
   "ggml": {
     "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -104,6 +104,11 @@
       "leaf_observer_cost_qualified": true,
       "limits": "Logical aggregate and long-output hashes constrain this cost comparison,not task quality. Concurrent CPU leaf sums include memory stalls;not additive critical path,physical RAM/PCIe traffic,arithmetic saturation,clean speed,dynamic-map conservation or inference adoption."
     }
+  },
+  "calibration": {
+    "commit": "8547cb65d3119e9f86456db979332d82d7e6f870",
+    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
+    "sha256": "860127397c3d46585ad2925b1f9ae418c0392b62a3c3706c3d7fd029b3643136"
   },
   "environment": {
     "PATH": "/opt/intel/oneapi/compiler/2026.2/bin:/usr/bin:/bin",
@@ -251,452 +256,8 @@
         202
       ],
       "fixture_sha256": "b106ea4fc2490b3c2e294d8d82fc7746c9863a92c1006c902818e7591c8afd38"
-    },
-    {
-      "layer": 17,
-      "gu": 21,
-      "down": 20,
-      "blob_bytes": 2329600,
-      "gate": 19192385920,
-      "up": 19556330880,
-      "down_offset": 18719605120,
-      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 84,
-      "gu_bytes": 704000,
-      "down_bytes": 921600,
-      "observed_jobs_NT": [
-        129038,
-        17967,
-        3560,
-        789
-      ],
-      "fixture_sha256": "e96e073ca66cf71175e540f9e4a4212f2b77db8aeb576d97e4afc54a40969edc"
-    },
-    {
-      "layer": 21,
-      "gu": 21,
-      "down": 42,
-      "blob_bytes": 1868800,
-      "gate": 23456363520,
-      "up": 23820359680,
-      "down_offset": 23219512320,
-      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 84,
-      "gu_bytes": 704000,
-      "down_bytes": 460800,
-      "observed_jobs_NT": [
-        17212,
-        2459,
-        472,
-        84
-      ],
-      "fixture_sha256": "dad6430f10fdff4eeb1dc891ab691a10cc6a3cadcb1b3ee1e32c9a2484996bb6"
-    },
-    {
-      "layer": 2,
-      "gu": 22,
-      "down": 20,
-      "blob_bytes": 1971200,
-      "gate": 3491172096,
-      "up": 3763417856,
-      "down_offset": 3018391296,
-      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 84,
-      "gu_bytes": 524800,
-      "down_bytes": 921600,
-      "observed_jobs_NT": [
-        229803,
-        30512,
-        5520,
-        1311
-      ],
-      "fixture_sha256": "284725c0ce17550253cb85c8003c75c0bf6f638cf4b510e69d11197ac6e8ac8f"
-    },
-    {
-      "layer": 1,
-      "gu": 22,
-      "down": 42,
-      "blob_bytes": 1510400,
-      "gate": 2340958080,
-      "up": 2613152640,
-      "down_offset": 2104106880,
-      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 112,
-      "gu_bytes": 524800,
-      "down_bytes": 460800,
-      "observed_jobs_NT": [
-        71627,
-        10216,
-        2173,
-        508
-      ],
-      "fixture_sha256": "74c9cc4647896e505dd10bb42d24fbee5fc1f63dc0eda167346d173930849b63"
-    },
-    {
-      "layer": 47,
-      "gu": 23,
-      "down": 20,
-      "blob_bytes": 2662400,
-      "gate": 53891822080,
-      "up": 54341015040,
-      "down_offset": 53418222080,
-      "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "experts": 56,
-      "gu_bytes": 870400,
-      "down_bytes": 921600,
-      "observed_jobs_NT": [
-        12538,
-        1468,
-        203,
-        17
-      ],
-      "fixture_sha256": "9358f1942e6ad86e00e73981baa81b5cb6029f9bf1c9103a9dda3bb541893b40"
     }
   ],
-  "order": [
-    [
-      21,
-      42,
-      2,
-      6
-    ],
-    [
-      21,
-      42,
-      2,
-      28
-    ],
-    [
-      22,
-      20,
-      1,
-      6
-    ],
-    [
-      18,
-      20,
-      2,
-      28
-    ],
-    [
-      22,
-      20,
-      2,
-      6
-    ],
-    [
-      23,
-      20,
-      5,
-      28
-    ],
-    [
-      21,
-      42,
-      5,
-      28
-    ],
-    [
-      18,
-      42,
-      5,
-      6
-    ],
-    [
-      21,
-      20,
-      5,
-      28
-    ],
-    [
-      18,
-      42,
-      3,
-      6
-    ],
-    [
-      23,
-      20,
-      5,
-      6
-    ],
-    [
-      23,
-      20,
-      3,
-      6
-    ],
-    [
-      18,
-      42,
-      1,
-      6
-    ],
-    [
-      18,
-      20,
-      5,
-      6
-    ],
-    [
-      21,
-      42,
-      5,
-      6
-    ],
-    [
-      18,
-      20,
-      1,
-      28
-    ],
-    [
-      21,
-      20,
-      1,
-      28
-    ],
-    [
-      18,
-      20,
-      5,
-      28
-    ],
-    [
-      21,
-      20,
-      5,
-      6
-    ],
-    [
-      21,
-      20,
-      1,
-      6
-    ],
-    [
-      23,
-      20,
-      2,
-      6
-    ],
-    [
-      18,
-      20,
-      1,
-      6
-    ],
-    [
-      22,
-      42,
-      1,
-      28
-    ],
-    [
-      23,
-      20,
-      3,
-      28
-    ],
-    [
-      21,
-      20,
-      3,
-      6
-    ],
-    [
-      22,
-      42,
-      5,
-      28
-    ],
-    [
-      18,
-      20,
-      3,
-      28
-    ],
-    [
-      22,
-      20,
-      3,
-      28
-    ],
-    [
-      22,
-      20,
-      1,
-      28
-    ],
-    [
-      22,
-      20,
-      5,
-      28
-    ],
-    [
-      21,
-      42,
-      3,
-      28
-    ],
-    [
-      22,
-      42,
-      3,
-      28
-    ],
-    [
-      18,
-      42,
-      2,
-      6
-    ],
-    [
-      21,
-      20,
-      3,
-      28
-    ],
-    [
-      18,
-      42,
-      2,
-      28
-    ],
-    [
-      21,
-      20,
-      2,
-      6
-    ],
-    [
-      22,
-      42,
-      1,
-      6
-    ],
-    [
-      21,
-      42,
-      1,
-      28
-    ],
-    [
-      22,
-      42,
-      3,
-      6
-    ],
-    [
-      23,
-      20,
-      1,
-      28
-    ],
-    [
-      22,
-      42,
-      2,
-      28
-    ],
-    [
-      23,
-      20,
-      1,
-      6
-    ],
-    [
-      22,
-      20,
-      2,
-      28
-    ],
-    [
-      18,
-      20,
-      3,
-      6
-    ],
-    [
-      18,
-      42,
-      3,
-      28
-    ],
-    [
-      18,
-      42,
-      5,
-      28
-    ],
-    [
-      21,
-      20,
-      2,
-      28
-    ],
-    [
-      22,
-      20,
-      5,
-      6
-    ],
-    [
-      22,
-      42,
-      5,
-      6
-    ],
-    [
-      18,
-      42,
-      1,
-      28
-    ],
-    [
-      18,
-      20,
-      2,
-      6
-    ],
-    [
-      23,
-      20,
-      2,
-      28
-    ],
-    [
-      21,
-      42,
-      3,
-      6
-    ],
-    [
-      21,
-      42,
-      1,
-      6
-    ],
-    [
-      22,
-      42,
-      2,
-      6
-    ],
-    [
-      22,
-      20,
-      3,
-      6
-    ]
-  ],
-  "tools": {
-    "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
-    "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
-    "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
-    "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
-  },
   "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
   "model_identity": {
     "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf": {
@@ -708,17 +269,18 @@
       "ctime_ns": 1791009083692077878
     }
   },
-  "previous_result": {
-    "commit": "49b2d4821077e4aa51425c0450a8414e013cd79a",
-    "path": "bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json",
-    "sha256": "55292fd22ddc6231e7d8bad70eb865542539d8e6f3e195665ce00ea649fbd243"
+  "tools": {
+    "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+    "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+    "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+    "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
   },
   "configure": [
     "/usr/bin/cmake",
     "-S",
     "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_decode_mix",
     "-B",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v4/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-v1/build",
     "-G",
     "Ninja",
     "-DCMAKE_BUILD_TYPE=Release",
@@ -730,115 +292,39 @@
     "-DCMAKE_C_FLAGS=-DSTRATA_CPU_SERVICE_PROFILE=1",
     "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
     "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
-    "-DSTRATA_CPU_SOURCE_ROOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/source",
-    "-DSTRATA_CPU_SCAN_SOURCE=/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/cpu_roofline/main.cpp"
+    "-DSTRATA_CPU_SOURCE_ROOT=/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/source"
   ],
   "build": [
     "/usr/bin/cmake",
     "--build",
-    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v4/build",
+    "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-compact-iq3xxs-v1/build",
     "--target",
-    "cpu_roofline",
+    "cpu_decode_mix",
     "--parallel",
     "4"
   ],
   "protocol": {
-    "question": "Complete the 1/2/3/6-thread read-reference curve alongside explicitly reused exact-source V3 expert calibration.",
-    "groups": [
-      6,
-      28
+    "question": "Does the exact134B IQ3_XXS compact GU view preserve native integer lanes,FP32/FMA/reduction behavior and bounds before performance comparison?",
+    "order": [
+      "build",
+      "controls",
+      "check18/20",
+      "check18/42"
     ],
-    "workers": [
-      1,
-      2,
-      3,
-      5
-    ],
-    "computed_threads": [
-      1,
-      2,
-      3,
-      6
-    ],
-    "scan_threads": [
-      1,
-      2,
-      3,
-      6
-    ],
-    "batches_per_pass": 100,
-    "repetitions": 5,
-    "sample_floor_seconds": 1.0,
-    "target_seconds": 1.3,
-    "timer_fraction_cap": 0.001,
-    "NT": "Three matching leaf samples provide per-format NT1..4 job counts. Largest-remainder rounding to100*group jobs and a fixed shuffled schedule approximate those marginals,not the full layer/activation/access trace.",
-    "reuse": "Same distinct group of6 or28 real expert blobs;28 weights can exceed32MiB L3.",
-    "stream": "Rotate distinct groups through at least128MiB.100 batches/pass can revisit the extent. Requested blob visits are not measured physical RAM traffic.",
-    "scan": "Read-only256MiB persistent1/2/3/6-thread checksum reference;five>=1s samples. Achieved reference,not a DRAM or arithmetic ceiling.",
-    "validation": "All loaded distinct experts at NT1..4 and heterogeneous-NT timed-size groups:production pool bit-exact to serial production GU/quant/down,finite outputs,untouched inactive lanes and external canaries. This is route consistency,not independent task quality.",
-    "observers": "Same native IQ2/IQ3 pairs and IQ3 audit,CPU service/census off,20ms pool spin. Profile-enabled CPU layout and actual icx/icpx2026.2 sources;no GPU runtime.",
-    "gates": "Reuse all original56 checks/112 cells/560 samples with full source/build/fixture/environment proof. Build only the new scanner. Require four bounded negative CLI checks,then all four read references with five eligible samples each. Stop first failure;no retries or sample replacement.",
-    "interpretation": "Thread and reuse sensitivity guide CPU optimization. Pool waiting,quantization,scheduling and memory effects remain mixed. Neither concurrent CPU time nor requested bytes/read reference proves physical traffic,saturation,critical path,model speed or70tok/s.",
-    "retention": "Keep compact individual timing/work/validation samples and exact provenance. Retire successful raw/compiler output and this auxiliary CPU build after the calibration decision and original-source recovery. Preserve the two current engine generations.",
-    "analysis": "Per format/worker/group/mode use the median wall/pass sample and its matched GU/quant/down/cpu values. Divide by passes*100*group for per-job costs,weight formats by observed job counts;compare 1/2/3/6 threads and stream/reuse. Read rates are requested_bytes/wall with median/range/CV. Synthetic marginals and achieved read rates are not model latency,physical DRAM traffic,hardware saturation or a70TG ceiling.",
-    "continuation": "Original expert checks and samples are reused unchanged,not executed by V4. All four read references are newly measured. V3 remains failed in its pinned commit."
+    "controls": "All256grid/128sign/16scale base combinations,134217728 encoded values,524288 actual SIMD integer chunks;16 synthetic full GU cases with zero/subnormal/max-finite/negative-zero half scales and signed/zero activation scales/-128 lanes;64 partial ranges,10 GU and2 encoder refusals.",
+    "real": "Both current IQ3_XXS model-format layers,all distinct loaded experts at four quantized NT1 activations. Compare the actual native paired entry directly to compact GU;this isolates that component,not full pool/model dispatch.",
+    "numerical": "Require exact finite native-pair outputs,identical integer lanes,unaltered inactive rows and guards. Preserve raw98B blocks and allocate full134B views;no changed accumulation or model quantization.",
+    "gate": "Commit each stage before the next. Require all controls and both model children,normal0,closed owners. Stop first failure/budget;no retry/replacement/exclusion.",
+    "performance": "No timing/adoption claim in this correctness stage. Next measure setup/full raw-plus-view footprint,repeated matched reuse/stream and1/6-thread/current NT work before production selection.",
+    "retention": "Retain compact numeric/guard outcomes,source/build/environment identity. Keep this single auxiliary ELF only for the immediately following component timing preparation/qualification,then retire successful raw/build output after source recovery. Preserve the two inference generations."
   },
-  "retained_generation": "Auxiliary CPU-only calibration;does not overwrite either of the two current engine/fixture generations. Retire it at calibration closure.",
   "budgets": {
     "build_seconds": 600,
+    "controls_seconds": 180,
     "check_child_seconds": 120,
-    "measure_child_seconds": 180,
-    "scan_seconds": 40,
-    "stage_seconds": 3600,
+    "stage_seconds": 1800,
     "rss_bytes": 3221225472,
     "text_bytes": 8388608,
     "root_bytes": 268435456
-  },
-  "reuse": {
-    "result_commit": "49b2d4821077e4aa51425c0450a8414e013cd79a",
-    "stage_commits": {
-      "build": "ce9f3aa0f9ebc7e6c6dabcb185b009d52b887f71",
-      "check": "6f453cc31eaca7e22687e2757bd37b5a82ac6dbe",
-      "measure": "49b2d4821077e4aa51425c0450a8414e013cd79a"
-    },
-    "original_passed": false,
-    "original_complete": false,
-    "original_error": "RuntimeError('owned child failed: scan-2')",
-    "original_plan_sha256": "e3e22be414eaba33d19a864367634e85e750f707a6f8e66d400110d4d138b4de",
-    "original_source": {
-      "revision": "893e7cebb689078edd6b5f7744befdcc33ea6a2a",
-      "count": 261,
-      "aggregate_sha256": "815906bfadc3907506da7cc14efe51d0f6d7a210042dfac6f52979664020825f"
-    },
-    "expert_binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build/cpu_decode_mix",
-      "sha256": "c18208a5d012592fb29f871cea899d912a02654b07dd3e9b260869e6b002ad12"
-    },
-    "receipts": {
-      "build": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/build.json",
-        "sha256": "71ba86d85d831e743b23a495ce2de713b913394a9c6eab9566b775dcd1accfe3"
-      },
-      "check": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/check.json",
-        "sha256": "aef7aabfc62b56a63a5579f75852a12807c5591827fa574383a79219bad411d1"
-      },
-      "measure": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/measure.json",
-        "sha256": "49c916dc962efcc51c2a51ccd1112e9c341d6036c0be15420eee897e849769fe"
-      }
-    },
-    "compiled_inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-decode-mix-v3/compiler-inputs.json",
-      "files": 634,
-      "sha256": "3ca4580036f3d9655c7789e12d9b546553f9d90f53fdf194dc166020c4c17012",
-      "uncovered": 0
-    },
-    "compile_commands_sha256": "6b1ba44437a0886ec76c7e4b2c60b63d3acce7d7e3b2387c5dc41277ccb85b92",
-    "link_inputs_sha256": "a6e9e45c731a7dd4bc1752a1eb6065fcf54c8a5151820afff9b9a9781466e9f5",
-    "numerical_cases": 56,
-    "expert_cells": 112,
-    "expert_samples": 560,
-    "scope": "Original expert checks and samples are reused unchanged,not executed by V4. All four read references are newly measured. V3 remains failed in its pinned commit."
   }
 }
