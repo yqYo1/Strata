@@ -200900,5 +200900,137 @@
       "plan_commit": "9256be028e4105e551b1a43003918f0e55852297",
       "reason": "Committed useful result/source/runtime;closed owners;successful raw output has no remaining consumer."
     }
+  },
+  "adaptive_payload_collector_active_v1": {
+    "stage": "prepared",
+    "source_commit": "55e728bfecd43a10454af2863b325f6eff78077a",
+    "native_source_commit": "bbd345c632e2d472e47ad3a1e36f2cdae2740d5e",
+    "engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/build/strata",
+      "sha256": "e1b01116ccdc4adc3d59cbccb78c365ebbcc937dfa343463656263c1044e1eb2",
+      "bytes": 24518560
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/build/sycl_submission_test",
+      "sha256": "df574bb80ecb20bc5a9e461d01e71fa0dce73d7d4dd3f4f3816ffe5c769abc80",
+      "bytes": 347624
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "profile": {
+      "mode": "aggregate",
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      },
+      "session": "StrataPrefill98fb1e23ddfbe2f6f6870d67",
+      "environment": {
+        "UNITRACE_SystemTime": "1",
+        "UNITRACE_FollowChildProcess": "1",
+        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/payload-gpu-coverage-v1/trace",
+        "LD_DEBUG": "libs"
+      }
+    },
+    "cases": [],
+    "plan": {
+      "question": "Does the existing active-from-exec launcher mode preserve all compatibility graph/kernel flow joins with only kernel-activity Chrome logging?",
+      "native": "Exact bbd345/e1b011 generation,all six checked ELFs and its actual df574bb8 compatibility fixture. No old b310/429b/cb7 binary or observer qualification is inherited.",
+      "order": "Commit source and fresh plan;run bounded installed read-only host preflight;commit its outcome;then one active-from-exec current compatibility fixture with Sysman0,native-capture0,128-event buffer and immutable runtime safety.",
+      "acceptance": "Original numerical/events/graph/copy/lifetime pass;native0,closed owners,quiet parameter validation,no fresh driver fault,exact current provider/collector bytes. All62named kernel events must have unique native host-flow joins and contained raw-clock intervals. Both gates observe active collection;normal exit flushes trace and removes named session.",
+      "limits": "Host readiness and small compatibility/collector admission only;no model coverage,CPU work attribution,interior paused window,observer overhead,clean speed,physical RAM/VRAM/PCIe traffic,saturation,physical262144/RESTORE or inference adoption.",
+      "next": "Only this current-ELF control may support a separately committed bounded thinking-on MTP4 model-window coverage/critical-path diagnostic. Qualify model event joins and observer cost separately;do not add overlapping service times.",
+      "stopping": "Stop first source,ownership,provider,validation,fault,budget,numerical,count or join failure. No retry,hash refresh or changed criteria.",
+      "retention": "Keep compact actual-source/provider/clock/count/outcome evidence. Successful readiness logs,full UR trace,timeline,JIT and transaction bookkeeping retire after useful joins and source/input recovery;keep a diagnostic only for a distinct unresolved failure. No new native build generation.",
+      "fixture": "No-argument frozen tests/sycl/compat.cpp. Audited257-element buffers,cross-queue completion,host handoff,retained recording resources,late replay and draining frees. Inventory1direct+12first+24host-handoff+24cross-queue+1late=62kernels. No in-process environment changes."
+    },
+    "budgets": {
+      "wall": 180,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 134217728,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "preflight": {
+      "script": "/home/yayoi/.agents/skills/xpu-runtime-preflight/scripts/check_runtime_preflight.sh",
+      "script_sha256": "b26a3167f05035713c198c87e7f8add80627709ab558dd654fdb57ac8b55c97c",
+      "command": [
+        "/bin/bash",
+        "/home/yayoi/.agents/skills/xpu-runtime-preflight/scripts/check_runtime_preflight.sh",
+        "--target-gpu",
+        "0",
+        "--out-dir",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/payload-gpu-coverage-v1/preflight"
+      ],
+      "tools": {
+        "/usr/bin/bash": "bc5945feb8bd26203ebfafea5ce1878bb2e32cb8fb50ab7ae395cfb1e1aaaef1",
+        "/usr/bin/python3": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+        "/usr/bin/timeout": "12690a043dfd555a6c14ccc1564f5649c18f1762c0d6ff66729948130898ec52",
+        "/usr/bin/xpu-smi": "54fe166ba0eb9b8aa40e57cb643cd58143fee6558b418ba0f9b9d4b5fa19fb26"
+      },
+      "environment": {
+        "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "ZES_ENABLE_SYSMAN": "0",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1"
+      },
+      "budgets": {
+        "wall": 120,
+        "cpu": 120,
+        "rss_cap": 2147483648,
+        "text_cap": 4194304,
+        "file_cap": 8388608,
+        "total_cap": 16777216
+      },
+      "passed": false,
+      "complete": false,
+      "ownership_closed": true
+    },
+    "sources_sha256": "8bd5815261a8a7e18282d1b4f6b408c078a7ef67b867ba4d1db574553ad3b779",
+    "environment_template_sha256": "847c773c715fe11eb870039c652bdb366fae39a49fc5ca09564e50978623337b"
   }
 }
