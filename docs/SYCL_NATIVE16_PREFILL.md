@@ -1419,6 +1419,8 @@ traffic,saturation or observer cost. At source`34b86ca1d`,all five CPU test
 groups in`tools/test_adaptive_cpu_leaf_evidence.py`pass with zero skips,normal0
 and closed owners;the host plan pins37inputs and the qualified interpreter.
 Follow`adaptive_cpu_leaf_reader_host_v1`. This is reader-fixture evidence;
+its three successful raw files/3951bytes are retired after37-input Git recovery;
+the shared runtime remains. The compact result holds the deletion manifest.
 no leaf-only adaptive model profile or observer-cost comparison has run. Both new files
 are outside the frozen speed/qualification import closures,which continue
 to pass after the first process's raw retirement.
