@@ -1566,8 +1566,12 @@ host controller tests pass without skips,normal0under the measurement lock;
 they include intermediate scan counts and malformed/short/work-drift refusals.
 The V4 plan is now prepared at that source,with262controller/scanner inputs.
 All original expert evidence and fixture identities pass prospective reuse
-qualification. Commit this plan before building the new scanner;no V4 build
-or device execution has occurred.
+qualification. The scanner-only build now closes normally0with four owned
+commands and no GPU runtime link. All627actual compiler inputs are covered;
+the mix target is not rebuilt,and all15inference ELFs remain unchanged.
+Commit this build before the four bounded CLI refusals,then commit those
+checks before the new read-reference timing. No V4 timing or device execution
+has occurred.
 The selected GPU cache already retains original packed native expert weights.
 The immutable48-layer pack and compiled per-layer plan give1256slots and
 2575206400bytes(2.39835GiB),matching the runtime2.40GiB header;47layers own
