@@ -191881,7 +191881,7 @@
     }
   },
   "upstream_sse_write_timeout_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "1c2956b224b4b0d124b11681f3d0b7752c9f2162",
     "sources": {
       "LICENSE": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
@@ -192355,8 +192355,8 @@
     "virtual_address_bytes": 8589934592,
     "criteria": "Normal0and closed owners for all three suites,zero skips. Four actual unread-client controls:Chat/Responses/Anthropic must cancel generation,release FIFO and serve another request without the first client reading;limit0 holds until disconnect. No GPU/model or speed qualification. Stop first failure;no retry or criteria/pin refresh.",
     "retention": "Keep compact source/command/env/interpreter/count/closure/outcome. After committed results and Git source recovery,retire successful output/root;keep at most a minimal distinct failure diagnostic.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -192366,6 +192366,38 @@
       "evidence_key": "upstream_streamed_tool_tags_host_v2.sources",
       "original_files": 351,
       "scope": "Recover full original inventory from Git and repin every current source before execution;the three-file retained summary is not the complete test-input inventory."
-    }
+    },
+    "tests": [
+      {
+        "role": "unread-three-api-and-zero",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 4,
+        "skipped": 0,
+        "skip_reasons": [],
+        "stdout_bytes": 575,
+        "stderr_bytes": 492
+      },
+      {
+        "role": "server-mock-regression",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 147,
+        "skipped": 0,
+        "skip_reasons": [],
+        "stdout_bytes": 15539,
+        "stderr_bytes": 17405
+      },
+      {
+        "role": "responses-mock-regression",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 20,
+        "skipped": 0,
+        "skip_reasons": [],
+        "stdout_bytes": 0,
+        "stderr_bytes": 3561
+      }
+    ]
   }
 }

@@ -2411,14 +2411,16 @@ snapshot shows2,512,637,952virtual bytes but65,536,000resident bytes. This
 corrects the test envelope;it does not fix the telemetry daemon lifetime or
 qualify GPU inference. Fresh frontend admission is still required before
 new model comparisons. The required stalled-SSE fix from Niko`c08fd2ec`is
-source-prepared in the shared`make_handler._sse`:socket writes time out after60s
+ported in the shared`make_handler._sse`:socket writes time out after60s
 by default,configured by`STRATA_STREAM_WRITE_TIMEOUT_S`with0preserving
 unlimited writes. It uses the existing disconnect cancellation/turn-release
 path across all three APIs. The Main-authored`serve/test_stream_write_timeout.py`
 adds four CPU/mock real-socket cases for unread clients,next requests and
-limit0. These tests and the full server/Responses regression suites remain
-unexecuted;use the existing`tools/sycl/run_host_checks.py`after committed
-source/plan and closed native work. The other four reviewed server concerns,
+limit0. At source`1c2956b22`,these four tests,the147server and20Responses
+regression tests all pass with zero skips,normal0and closed owners. Follow
+`upstream_sse_write_timeout_host_v1`;the existing shared host owner pinned352
+source inputs and the qualified interpreter manifest. This is transport/CPU
+validation,not GPU or inference qualification. The other four reviewed server concerns,
 remaining functional ports,whole function ledger and vanilla performance remain
 incomplete.
 The configuration parsing helpers are ported and

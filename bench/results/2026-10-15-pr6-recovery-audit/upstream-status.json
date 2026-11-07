@@ -1143,7 +1143,7 @@
             "serve/server.py::make_handler._sse",
             "serve/test_serve_robustness.py::StalledClient"
           ],
-          "state": "source_prepared_validation_pending",
+          "state": "ported_host_validated",
           "fork_evidence": "Shared make_handler._sse now installs the Niko socket write timeout for Chat,Responses and Anthropic. Default60s;STRATA_STREAM_WRITE_TIMEOUT_S=0 preserves unlimited writes. Existing disconnect cancellation closes the stream and releases the FIFO.",
           "dependencies": "Current SSE/disconnect and Service FIFO contract;no new native inference interface.",
           "validation": "Unread streaming client must release its turn within the configured write deadline;the next request must proceed. Cover OpenAI,Responses and Anthropic plus limit0. Use a loopback MockEngine,finite child/output budgets and confirmed closure.",
@@ -1159,6 +1159,24 @@
               "serve.test_responses"
             ],
             "scope": "Four CPU/mock real-socket checks:unread client/cancellation/turn release/next request for each API;zero timeout waits until disconnect. Run after the native build/CPU checks,with committed source and generic finite host owner. No GPU or model-speed qualification."
+          },
+          "validated_source_commit": "1c2956b224b4b0d124b11681f3d0b7752c9f2162",
+          "qualification_key": "upstream_sse_write_timeout_host_v1",
+          "host_validation": {
+            "tests": [
+              4,
+              147,
+              20
+            ],
+            "normal_exit_codes": [
+              0,
+              0,
+              0
+            ],
+            "skipped": 0,
+            "all_owned_processes_closed": true,
+            "GPU_executed": false,
+            "model_executed": false
           }
         },
         {
