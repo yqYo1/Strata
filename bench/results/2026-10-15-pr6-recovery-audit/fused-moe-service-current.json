@@ -206569,5 +206569,30 @@
       "canonical_sha256": "48346588b8090175c6d025793de473584575d084d04d7a20b0b1de8f9b6b6171",
       "evidence": "e73050a42f9f07ffcec33f3df2d14d473478fdd9"
     }
+  },
+  "dflash2_checked_cache_loan_candidate_v1": {
+    "state": "source_committed_validation_pending",
+    "branch": "tune/dflash2-checked-lease",
+    "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease",
+    "source_commit": "969e4891df629957bec89cc4ea863e338d0c431b",
+    "base_commit": "437c13c6f999de4f658cb7d9f03159ef6f956dc3",
+    "source_files": {
+      "include/strata/core/cache_scratch_lease.hpp": "fd20165b5605e55a84c855e1181de1d8fd06738051ef07382df63462720f2122",
+      "src/program/generate.cpp": "d515cca133732b5c0cb616b12846f54b9a0d3fa81bffac4a33966752709fba3a",
+      "tests/sycl/prefill_head_scope.cpp": "5332d618633a6d80742e472c7cb7af962624ab83300b24eb24ef2c02aa7482ab"
+    },
+    "provenance": "Main-authored narrow optional-MTP policy using original owned cache lifecycle and reviewed aa5df5bd snapshot;all6auxiliary original-source pins verified. No external/XeStrata source used.",
+    "question": "Can checked expert-cache borrowing replace dedicated owned prompt buffers for absent-MTP DFlash2 and allow larger decode expert residency,with lower complete request time?",
+    "scope": "Default lease remains off. Only spec4 single-GPU serve/native/no-token-graph/borrowed buffers;MTP expert release remains forbidden. Existing mask/lease/reader retirement/drain/exact-refill/publish code is unchanged.",
+    "validation": {
+      "build_executed": false,
+      "host_executed": false,
+      "GPU_executed": false,
+      "speed_qualified": false,
+      "adopted": false,
+      "next": "After the primary MTP/DFlash2 generation cohort closes,commit host/build/runtime recipe and run scoped38-case854-check host fixture plus pre-GPU refusals,then same-build small traced native and short-long-short/resumed-prefix borrowed-vs-owned model gates. Full physical262144/tails/handoff/RESTORE remain required separately."
+    },
+    "isolation": "Primary12cache-loan and7generation-audit source hashes remain unchanged;the primary614-input generation comparison stays frozen. No parallel tests/builds/GPU/cleanup.",
+    "retirement": "At this finite borrowed-path implementation/validation decision,integrate accepted code and original compact evidence into pushed feature/sycl,retire rejected active code via reachable history,and delete this finished child/worktree. No child native build exists yet."
   }
 }
