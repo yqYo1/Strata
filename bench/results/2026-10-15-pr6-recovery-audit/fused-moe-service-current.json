@@ -204080,9 +204080,9 @@
       "file_cap": 8388608,
       "total_cap": 16777216
     },
-    "stage": "prepared",
-    "passed": false,
-    "complete": false,
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v1",
@@ -204714,8 +204714,8 @@
     },
     "commands": [
       {
-        "role": "count-api-and-benchmark",
-        "command": [
+        "label": "count-api-and-benchmark",
+        "argv": [
           "/usr/bin/timeout",
           "-k",
           "5s",
@@ -204736,12 +204736,70 @@
           "serve.test_anthropic_base_url",
           "tools.test_strata_bench"
         ],
-        "modules": [
-          "serve.test_server.MaxTokens",
-          "serve.test_request_hardening",
-          "serve.test_anthropic_base_url",
-          "tools.test_strata_bench"
-        ]
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "PYTHONNOUSERSITE": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LANG": "C.UTF-8",
+          "HOME": "/home/yayoi",
+          "LC_ALL": "C.UTF-8",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v1/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v1/cache",
+          "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v1/pycache",
+          "STRATA_BENCH_REAL_PACK": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "STRATA_BENCH_REAL_PACK_SHA256": "d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6"
+        },
+        "started_utc": "2026-11-08T03:32:09.713427+00:00",
+        "wall_seconds": 315,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2787917,
+            "start_ticks": 245749383,
+            "sid": 2787917,
+            "pgid": 2787917
+          },
+          {
+            "pid": 2787918,
+            "start_ticks": 245749383,
+            "sid": 2787917,
+            "pgid": 2787917
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 2457493.835103341,
+        "pid": 2787917,
+        "spawn_return_monotonic": 2457493.83846561,
+        "direct_identity": {
+          "pid": 2787917,
+          "state": "R",
+          "ppid": 2787698,
+          "pgid": 2787917,
+          "sid": 2787917,
+          "start_ticks": 245749383,
+          "rss_bytes": 589824
+        },
+        "peak_live_owned_identities": 2,
+        "peak_session_rss_bytes": 241504256,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-08T03:32:21.912689+00:00",
+        "elapsed_seconds": 12.198905318975449,
+        "logs": {
+          "count-api-and-benchmark.stdout": {
+            "bytes": 12963,
+            "sha256": "4c1a1c6847d7312af36c815bdb9998c6c3d85030697ddbac0e5ab1f15c25f284"
+          },
+          "count-api-and-benchmark.stderr": {
+            "bytes": 11539,
+            "sha256": "4f99addaeba4018de8f7cdc119189864140eacda95f1d7cbbb56cf2a4ba8fe43"
+          }
+        }
       }
     ],
     "criteria": "All listed CPU/mock suites normal owned exit0,zero skips. Enable the real pinned tokenizer case: four EXACT_REAL_PACK bodies must render to73729,73730,81921,81922 tokens without engine.generate. Three restored OpenAI count API cases must pass without loading/inference:thinking count parity,structured/shared serialization,and invalid/dynamic/vision refusal. Existing count/admission/request-hardening/Anthropic alias and benchmark controls preserved. No native,GPU,download or performance qualification.",
@@ -204756,6 +204814,86 @@
       "token_type.json": "5088c8c298fc06af8382ddb3b76c888703ac2634e82263b97eedcc2ad202738b",
       "tokenizer.json": "c0bd435efbc6c3b28964b47999afe16c4ad268c7c7c4e8cb3af410796a6f30bf",
       "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "tests": [
+      {
+        "role": "count-api-and-benchmark",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 72,
+        "skipped": 3,
+        "skip_reasons": [
+          "test_sdk_streaming_through_the_alias (serve.test_anthropic_base_url.AnthropicBase.test_sdk_streaming_through_the_alias) ... skipped 'the anthropic package is not installed'",
+          "test_sdk_with_the_old_v1_address_works_through_the_alias (serve.test_anthropic_base_url.AnthropicBase.test_sdk_with_the_old_v1_address_works_through_the_alias) ... skipped 'the anthropic package is not installed'",
+          "test_sdk_with_the_root_address_works (serve.test_anthropic_base_url.AnthropicBase.test_sdk_with_the_root_address_works) ... skipped 'the anthropic package is not installed'"
+        ],
+        "stdout_bytes": 12963,
+        "stderr_bytes": 11539
+      }
+    ],
+    "criteria_passed": false,
+    "performance_eligible": false,
+    "decision": "Failed predeclared zero-skip acceptance:69 tests passed,three optional Anthropic-SDK cases skipped because the pinned benchmark interpreter has no anthropic package. Original runner passed=true and normal owned exit0 preserved;this is not full SDK qualification. Restored count route and four real-tokenizer counts passed. Do not use this cohort as the zero-skip admission gate.",
+    "real_pack_exact_counts": [
+      {
+        "target_input_tokens": 73729,
+        "rendered_input_tokens": 73729,
+        "count_requests": 20,
+        "construction_seconds": 0.5952206668443978,
+        "body_sha256": "2147ee1952e5de3677430ef56dc7b9cb3bb4df24f7827bd92b4570040133c9b2",
+        "token_ids_sha256": "6144a3a087c4fef39d1804f0e6d7a42cf1b4b3335bf26371a9f5f03514a04b56",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      },
+      {
+        "target_input_tokens": 73730,
+        "rendered_input_tokens": 73730,
+        "count_requests": 19,
+        "construction_seconds": 0.5723346690647304,
+        "body_sha256": "d1b7ef1e9184c65740486699695a010043e1ea616167985303445887c8345905",
+        "token_ids_sha256": "5019bc4c47fdc5a9a25ed474acfb36e5ef3e7fc4c0c550d075aa1a760fcf819a",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      },
+      {
+        "target_input_tokens": 81921,
+        "rendered_input_tokens": 81921,
+        "count_requests": 20,
+        "construction_seconds": 0.6837111301720142,
+        "body_sha256": "5cecc6fd52c65a0c4fa79d9bad3dd5bce0760cda4aee9f0356a2a9f847aa654d",
+        "token_ids_sha256": "edd14a75ef8fa7a83ffe76fd722b904e91cf9a8372d644a59a2989b65b0fd62f",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      },
+      {
+        "target_input_tokens": 81922,
+        "rendered_input_tokens": 81922,
+        "count_requests": 18,
+        "construction_seconds": 0.5954591874033213,
+        "body_sha256": "9e11c7e0d73d207370b65cb6d38430550c5997bd04e29edb18a0f4ad42d4d82c",
+        "token_ids_sha256": "aebfe47bef099781f62a49900ecdd9cd778cb6394cdc773988f9054f42d782a0",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      }
+    ],
+    "count_api_new_cases_passed": 3,
+    "original_prepared_plan_commit": "1bcb5fb240e241a2b5268b3f8fa92c422d296a7d",
+    "diagnostic_outputs": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v1/owned/count-api-and-benchmark.stdout": {
+        "sha256": "4c1a1c6847d7312af36c815bdb9998c6c3d85030697ddbac0e5ab1f15c25f284",
+        "bytes": 12963,
+        "reason": "Normal closed CPU test output;compact status,skip reasons and exact tokenizer proofs retained. Delete after evidence commit."
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v1/owned/count-api-and-benchmark.stderr": {
+        "sha256": "4f99addaeba4018de8f7cdc119189864140eacda95f1d7cbbb56cf2a4ba8fe43",
+        "bytes": 11539,
+        "reason": "Normal closed CPU test output;compact status,skip reasons and exact tokenizer proofs retained. Delete after evidence commit."
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v1/record.json": {
+        "sha256": "5867368d43117ff5db87307055f387a92677331ee686bfa6d881dc9f3afc73a7",
+        "bytes": 3961,
+        "reason": "Normal closed CPU test output;compact status,skip reasons and exact tokenizer proofs retained. Delete after evidence commit."
+      }
     }
   }
 }
