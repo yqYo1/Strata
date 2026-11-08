@@ -4796,7 +4796,7 @@
       }
     },
     "dflash2_cache_loan_native_build": {
-      "stage": "prepared",
+      "stage": "built",
       "source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
       "project_source_sha256": "6f1842f22d578526fdf47c5f6733c6a24298aeff59296f11be660827808bc5d6",
       "dependency_revisions": {
@@ -4959,13 +4959,65 @@
       },
       "record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/record.json",
-        "sha256": "7aaec3ec00e78fcc0c9c060b26c938621eb2497b53760d38ae413480dd5daad9"
+        "sha256": "327957e294935d8f71e9e0ca31fe20a5252456ed3d08894c5823615154d99985"
       },
-      "binaries": {},
-      "passed": false,
+      "binaries": {
+        "strata": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
+          "sha256": "90f7e1588640f8293d372888d78abae7f2958579175332ebec83aa64974003ce",
+          "bytes": 26272056,
+          "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+        },
+        "sycl_dflash2_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/sycl_dflash2_test",
+          "sha256": "8a4f16a7657f9cb32486366d6290476d26f9d124bad6094acf5499b295ab3ef9",
+          "bytes": 15942248,
+          "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+        },
+        "sycl_dflash2_ring_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/sycl_dflash2_ring_test",
+          "sha256": "e756d523554b64718ff04463ad31f93ddc0e4801797d54ec078a1350d8efb606",
+          "bytes": 15939520,
+          "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+        },
+        "sycl_dflash2_mask_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/sycl_dflash2_mask_test",
+          "sha256": "88921f3ccb94930b4a08b3e456f343e7cd016313575dc65037dd97ca47226df6",
+          "bytes": 1827472,
+          "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+        },
+        "dflash2_pack_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/dflash2_pack_test",
+          "sha256": "bdd38c4e59b977acffec391a1424065dcff97b08e0a6b10578ad43e0ab1a4fe6",
+          "bytes": 151976,
+          "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+        },
+        "sycl_submission_test": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/sycl_submission_test",
+          "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
+          "bytes": 351832,
+          "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+        }
+      },
+      "passed": true,
       "ownership_closed": true,
       "error": null,
-      "commands": [],
+      "commands": [
+        {
+          "label": "configure",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "compile",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ],
       "retention": "One isolated candidate for the imminent borrowed-vs-owned DFlash2 gate. Preserve f633 and all5fixtures until same-build small/model admission selects a replacement;then retire the superseded feature engine,or retire this candidate on failure,after exact source/recipe recovery. Keep552b/e1b phase references;this finite transition temporarily has four engine generations,not a new quota. Legacy56ELF provenance holds remain separate and unresolved;review their current consumers at closure. No speed,device/model qualification or adoption follows from compilation.",
       "attempt": 2,
       "previous_attempt": {
