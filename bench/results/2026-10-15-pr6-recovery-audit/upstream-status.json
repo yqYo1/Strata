@@ -9186,6 +9186,268 @@
               "cleanup": []
             }
           ]
+        },
+        {
+          "label": "3-owned256",
+          "passed": true,
+          "complete": true,
+          "model_executed": true,
+          "pre_main_validation": {
+            "pid": 3914699,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "76cb9d37f49f3aeb8f12fb4dcf4602b0420bcc634155cd0549cee51b63355bae",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          },
+          "native_identity": {
+            "pid": 3914699,
+            "start_ticks": 248707894,
+            "sid": 3914636
+          },
+          "startup_admission": {
+            "chunk": 8192,
+            "expert_slots": 256,
+            "free_MiB": 1579,
+            "borrowed": false
+          },
+          "samples": [
+            {
+              "ok": true,
+              "err": null,
+              "ttft_s": 57.51,
+              "total_s": 378.908,
+              "prompt_tokens": 33213,
+              "reused_tokens": 0,
+              "read_tokens": 33213,
+              "generated_tokens": 3905,
+              "prompt_tps": 579.3,
+              "prompt_tps_source": "engine",
+              "decode_tps": 12.1,
+              "decode_tps_source": "engine",
+              "prompt_ms": 57336.9,
+              "decode_ms": 321549.1,
+              "drafts_offered": 3300,
+              "drafts_accepted": 2805,
+              "finish_reason": "stop",
+              "request_sha256": "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976",
+              "stream_complete": true,
+              "truncated": false,
+              "generated_tokens_source": "usage",
+              "client_interval": {
+                "request_begin_monotonic_ns": 2487218212957373,
+                "first_output_monotonic_ns": 2487275722846418,
+                "request_end_monotonic_ns": 2487597121359660
+              },
+              "eligible": true,
+              "agreement_eligible": true,
+              "speed_eligible": true,
+              "speed_ineligible_reasons": [],
+              "ineligible_reasons": [],
+              "acceptance_rate": 0.85,
+              "usage_generated_tokens": 3905,
+              "completion_includes_thinking": true,
+              "run": 0,
+              "order": 0,
+              "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+              "reasoning_sha256": "f78ec18a7265e9a6171c89d7e94cbc6c7473aed8f2494e1466327dd3ef943448",
+              "output_chars": 5496,
+              "reasoning_chars": 4728,
+              "reasoning_tokens": null,
+              "workload": "regular-code",
+              "controller_eligible": true
+            },
+            {
+              "ok": true,
+              "err": null,
+              "ttft_s": 50.008,
+              "total_s": 1453.38,
+              "prompt_tokens": 33283,
+              "reused_tokens": 0,
+              "read_tokens": 33283,
+              "generated_tokens": 9870,
+              "prompt_tps": 668.0,
+              "prompt_tps_source": "engine",
+              "decode_tps": 7.0,
+              "decode_tps_source": "engine",
+              "prompt_ms": 49826.9,
+              "decode_ms": 1403528.6,
+              "drafts_offered": 14994,
+              "drafts_accepted": 4871,
+              "finish_reason": "stop",
+              "request_sha256": "7f7919cf23e0281b7b677c52e82cbbce8081a71017adad91669347b61833608d",
+              "stream_complete": true,
+              "truncated": false,
+              "generated_tokens_source": "usage",
+              "client_interval": {
+                "request_begin_monotonic_ns": 2487601426568351,
+                "first_output_monotonic_ns": 2487651434696785,
+                "request_end_monotonic_ns": 2489054807026671
+              },
+              "eligible": true,
+              "agreement_eligible": true,
+              "speed_eligible": true,
+              "speed_ineligible_reasons": [],
+              "ineligible_reasons": [],
+              "acceptance_rate": 0.32486327864479125,
+              "usage_generated_tokens": 9870,
+              "completion_includes_thinking": true,
+              "run": 0,
+              "order": 1,
+              "output_sha256": "81024a2fd27f7b825b2e4aae3869d30eeedfb7b38b29ba16e5fb81f6ec7d379b",
+              "reasoning_sha256": "76dece747b3657cc82cbeba40371923331d9f72f18fc14303cad8cc123d45139",
+              "output_chars": 5389,
+              "reasoning_chars": 23951,
+              "reasoning_tokens": null,
+              "workload": "varied-prose",
+              "controller_eligible": true
+            }
+          ],
+          "routes": [
+            {
+              "rows": 33212,
+              "chunk": 8192,
+              "residual_gpu_bytes": 680181760,
+              "prefill_slots": 384,
+              "window_mode": 10,
+              "split_active": false,
+              "target_detached_bytes": 521472000,
+              "reader": "absent-dflash2",
+              "MTP_callback_cells": 0,
+              "DFlash2_tail_rows": 2046,
+              "native_prompt_ms": 57337.0,
+              "native_decode_ms": 321549.0,
+              "physical_resource_saturation_qualified": false,
+              "loan": {
+                "pairs": 0
+              },
+              "decode_work": {
+                "target_windows": 1101,
+                "target_rows": 4401,
+                "emitted_tokens": 3905,
+                "target_rows_per_emitted": 1.1270166453265045,
+                "cpu_unique_jobs": 1567836,
+                "cpu_entries": 2033608,
+                "cpu_unique_jobs_per_emitted": 401.4944942381562,
+                "minimum_NT1_jobs": 1102064,
+                "minimum_NT1_job_fraction": 0.702920458517345,
+                "expert_copy_requested_bytes": 0,
+                "mathematical_dot_equivalent_ops": 19991180083200,
+                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+              }
+            },
+            {
+              "rows": 33282,
+              "chunk": 8192,
+              "residual_gpu_bytes": 681615360,
+              "prefill_slots": 384,
+              "window_mode": 10,
+              "split_active": false,
+              "target_detached_bytes": 521472000,
+              "reader": "absent-dflash2",
+              "MTP_callback_cells": 0,
+              "DFlash2_tail_rows": 2046,
+              "native_prompt_ms": 49827.0,
+              "native_decode_ms": 1403529.0,
+              "physical_resource_saturation_qualified": false,
+              "loan": {
+                "pairs": 0
+              },
+              "decode_work": {
+                "target_windows": 4999,
+                "target_rows": 19993,
+                "emitted_tokens": 9870,
+                "target_rows_per_emitted": 2.0256332320162107,
+                "cpu_unique_jobs": 6013998,
+                "cpu_entries": 9448267,
+                "cpu_unique_jobs_per_emitted": 609.3209726443769,
+                "minimum_NT1_jobs": 2579729,
+                "minimum_NT1_job_fraction": 0.428954083456629,
+                "expert_copy_requested_bytes": 0,
+                "mathematical_dot_equivalent_ops": 92880243916800,
+                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+              }
+            }
+          ],
+          "warmups": {
+            "successful_warmups": 4,
+            "successful_long_requests": 2,
+            "phase_order": [
+              "warm-up/chat",
+              "calibration",
+              "calibration",
+              "warm-up/prompt",
+              "long-generation/regular-code",
+              "long-generation/varied-prose"
+            ],
+            "request_sha256": [
+              "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+              "33adadb1aa40b794eab251f4c7a4bd05e151a65233d5ca16c7f1215a88684dae",
+              "e3181e3501ce75cb9621bae63b9ff839aa40427ac2b80baf71e4dc5f5b8018f8",
+              "84408590b4ce4ee906461b2d38983047aff9a366c3ee73e0150f052d426d654a",
+              "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976",
+              "7f7919cf23e0281b7b677c52e82cbbce8081a71017adad91669347b61833608d"
+            ]
+          },
+          "speed_adoption_qualified": false,
+          "native_exit_code": 0,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "cache_work_observation": {
+            "native_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+            "basis": "Post-run native footer counts on each matched long request;CPU entries from the already closed work census. Lookups == target_rows*48layers*10experts == GPU hits+CPU entries;pcie0/no peer. Normalize by actual emitted tokens,including thinking.",
+            "samples": [
+              {
+                "workload": "regular-code",
+                "gpu_cached_expert_token_entries": 78872,
+                "cpu_fallback_expert_token_entries": 2033608,
+                "expert_lookups": 2112480,
+                "target_rows": 4401,
+                "emitted_tokens": 3905,
+                "gpu_entries_per_emitted": 20.197695262483993,
+                "cpu_entries_per_emitted": 520.7702944942381,
+                "gpu_cached_entry_fraction": 0.03733621146709081,
+                "lookup_conservation_passed": true
+              },
+              {
+                "workload": "varied-prose",
+                "gpu_cached_expert_token_entries": 148373,
+                "cpu_fallback_expert_token_entries": 9448267,
+                "expert_lookups": 9596640,
+                "target_rows": 19993,
+                "emitted_tokens": 9870,
+                "gpu_entries_per_emitted": 15.032725430597772,
+                "cpu_entries_per_emitted": 957.2712259371834,
+                "gpu_cached_entry_fraction": 0.01546093215958919,
+                "lookup_conservation_passed": true
+              }
+            ],
+            "limits": "Expert-token entries are logical work,not unique jobs,physical RAM/PCIe traffic,issued instructions,occupancy or saturation. Excludes attention,shared FFN and draft work. Generated paths differ by placement;this is not a teacher-forced identical-work comparison."
+          },
+          "commands": [
+            {
+              "label": "bench",
+              "exit_code": 0,
+              "error": null,
+              "ownership_closed": true,
+              "errors": [],
+              "cleanup": []
+            }
+          ]
         }
       ],
       "passed": false,
