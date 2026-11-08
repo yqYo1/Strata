@@ -220324,7 +220324,7 @@
     }
   },
   "q6_dpas_component_v7": {
-    "stage": "small-checked",
+    "stage": "checked",
     "source_commit": "f97893576704e6679c89ea6c4613d912665a0824",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "32d846740cd13cefe769e9f8115f3990abcc7710c1e93ed2809b8f6d172012fb",
@@ -220746,6 +220746,90 @@
           "C1_CONTROL passed=1 dpas_launched=0",
           "NUMERIC passed=1 k=512 n=33 columns=4 outputs=132 oracle_rows=33 max_abs_error=3.81469726562e-06 guards=1",
           "NUMERIC passed=1 k=512 n=33 columns=4 outputs=132 oracle_rows=33 max_abs_error=3.81469726562e-06 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0"
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "check",
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "8be1aa74ec3647d8f1b7b9e4572fe113a8d832e745a97a2de5cb6ec41190e6e3",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "c8c869d5bf018fcb6767e7e45e57d3da564a56126b03f4ec7736dc162498f32e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          }
+        ],
+        "native_identity": {
+          "pid": 901756,
+          "state": "S",
+          "ppid": 901236,
+          "pgid": 901756,
+          "sid": 901756,
+          "start_ticks": 251930415,
+          "rss_bytes": 61460480
+        },
+        "mapped_provider_count": 34,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 901756,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "setup": [
+          "SETUP k=2560 n=640 seed=7 pack_wall_ns=317367 pack_cpu_ns=316834 upload_wall_ns=892211 upload_cpu_ns=896762",
+          "ADMISSION k=2560 n=640 canonical_bytes=1344000 packed_bytes=1344000 device_payload_bytes=2720000 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=2560 n=640 seed=7 pack_wall_ns=376489 pack_cpu_ns=375925 upload_wall_ns=1787838 upload_cpu_ns=1779647",
+          "SETUP k=2560 n=640 seed=19 pack_wall_ns=307980 pack_cpu_ns=307386 upload_wall_ns=845252 upload_cpu_ns=838692",
+          "SETUP k=2560 n=248320 seed=7 pack_wall_ns=154521122 pack_cpu_ns=154051207 upload_wall_ns=293905747 upload_cpu_ns=180047428",
+          "ADMISSION k=2560 n=248320 canonical_bytes=521472000 packed_bytes=521472000 device_payload_bytes=1050901760 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=2560 n=248320 seed=7 pack_wall_ns=146938802 pack_cpu_ns=146894897 upload_wall_ns=270545961 upload_cpu_ns=174052002",
+          "SETUP k=2560 n=248320 seed=19 pack_wall_ns=144655872 pack_cpu_ns=144603079 upload_wall_ns=242727679 upload_cpu_ns=150831587"
+        ],
+        "numerical": [
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=3.81469726562e-05 guards=1",
           "C1_CONTROL passed=1 dpas_launched=0"
         ],
         "ownership_closed": true,
