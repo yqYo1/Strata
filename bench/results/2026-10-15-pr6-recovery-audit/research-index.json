@@ -26665,7 +26665,7 @@
         "digest": "Fresh Run inbox records worker_done msg_622e33123d6e from exact terminal with Task/Dispatch IDs. Explicit-terminal lifecycle IPC is established;auto caller discovery,product write denial and physical closure are not. Source audit remains ineligible. Next capability-only Task requires actual terminal custody/readiness and updated indexed eligibility;original failure stays failed."
       }
     },
-    "ownership": "Original Task failed/settled and explicit-terminal worker_done is now independently observed/reviewed. Worker-show liveness is unverifiable and terminal retained;screen shows the same failed-task response and an idle prompt,but this is not physical closure. No stop,release,retry or duplicate launch. Verify exact-terminal custody/readiness before any distinct capability-only Task;source audit remains ineligible.",
+    "ownership": "Latest capability Task failed/settled with task-bound worker_done on the exact reused terminal;worker-show remains live/retained. This is not physical closure. Preserve the handle and guarded lifecycle;no source audit or retry launched.",
     "explicit_terminal_IPC": {
       "proved": true,
       "message_id": "msg_622e33123d6e",
@@ -26676,7 +26676,7 @@
     },
     "capability_followup": {
       "classification": "decision_support",
-      "schedulable_now": true,
+      "schedulable_now": false,
       "scope": "Distinct finite read-only capability check on the exact settled existing Luna terminal;not a source audit,not a retry of the failed caller-discovery preflight.",
       "prerequisites": {
         "original_task_failed_settled": true,
@@ -26691,7 +26691,32 @@
         "idle_wait_request_id": "130818ad-cad0-401c-8240-aee2e9bf3a04"
       },
       "question": "Does the existing report-only sandbox deny nonmutating write-open attempts on representative product files while explicit-terminal Orca lifecycle IPC works?",
-      "limits": "Write only named capability report;no product writes,Git,build,test,GPU,profiler or process inspection. Stop on missing IPC or any allowed product write-open. Original preflight remains failed;source audits stay ineligible until independently reviewed positive capability evidence."
+      "limits": "Write only named capability report;no product writes,Git,build,test,GPU,profiler or process inspection. Stop on missing IPC or any allowed product write-open. Original preflight remains failed;source audits stay ineligible until independently reviewed positive capability evidence.",
+      "state": "failed_settled_native_review_complete",
+      "worker": {
+        "task_id": "task_baae590c4256",
+        "dispatch_id": "ctx_309d36cbee48",
+        "run_id": "run_97e39bc1d555",
+        "terminal": "term_8db6c39c-d36c-4ad1-91af-4f22f16436df",
+        "state": "failed",
+        "stage": "settled",
+        "liveness": "live",
+        "terminalState": "retained",
+        "worker_done": "msg_eee10f0b600d"
+      },
+      "report": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-report-isolation-preflight-20261108/capability-v2.md",
+        "bytes": 2281,
+        "sha256": "58e3dc123065c104fc840cff0318cdbeb0f944ae6a39724f45f0d5d1ce664d21"
+      },
+      "actual_outcome": "Explicit-terminal IPC succeeded. Nonmutating O_WRONLY|O_APPEND on the primary checkout AGENTS.md was allowed;the descriptor was immediately closed and the probe stopped. This disproves report-only isolation for that path. Other named product paths remain untested;no content writes occurred.",
+      "next": "Ordinary research/source audit remains unschedulable until an enforced launch boundary denies product write-opens while preserving report writes and Orca IPC. No further start/retry/stop/release performed;physical closure remains unproved.",
+      "native_review": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-report-isolation-preflight-20261108/capability-v2-review.md",
+        "bytes": 2805,
+        "sha256": "f29ef208724ff2d21b7a788debe26431924691af56cba4be136bb4ddf3054dd4",
+        "digest": "Finite probe failed correctly:first primary-product write-open succeeded,other paths untested,no content edits. Explicit lifecycle IPC works. Configured report workspace is not effective isolation;require an enforced launch boundary before ordinary research or source audit."
+      }
     }
   }
 }
