@@ -220032,7 +220032,7 @@
     "retention": "Closed pre-native failure;retain compact error/source/recipe/deletion evidence only. Full original plan and failed commands remain in reachable Git history;V3 admission consumes only these failed/closed/retired facts."
   },
   "q6_dpas_component_v3": {
-    "stage": "cpu-controlled",
+    "stage": "failed",
     "source_commit": "cb03210f7f95936714b45abd460ada9b8487b5b7",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "11395434afacbaf60534b88e577d1f3a44888c5dbb0e2aa14eb0846b9c3ab597",
@@ -220357,6 +220357,24 @@
         "tests": 10,
         "skipped": 0,
         "native_execution_attempted": false
+      },
+      {
+        "mode": "build",
+        "passed": false,
+        "host_probe_accepted": false,
+        "build_commands": [
+          {
+            "name": "configure",
+            "exit_code": 0,
+            "ownership_closed": true
+          },
+          {
+            "name": "build",
+            "exit_code": 0,
+            "ownership_closed": true
+          }
+        ],
+        "error": "RuntimeError('codegen failed:error: IR output is not supported.\\n1 error generated.\\n')"
       }
     ],
     "timing": [],
@@ -220381,6 +220399,47 @@
     "dependency_inputs": {
       "files": 1686,
       "aggregate_sha256": "b6ea708f610c3a07158683a434b00b32829ca4ecc2834f59e2b233c5b8689f6a"
+    },
+    "build_failure": {
+      "error": "Native14-unit build/link succeeded,but direct icpx -S -emit-llvm codegen was refused:IR output is not supported. No native/GPU execution.",
+      "native_build_exit_code": 0,
+      "codegen_exit_code": 1,
+      "native_execution_attempted": false,
+      "GPU_executed": false,
+      "diagnostic_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v3/owned-build/codegen.stderr",
+      "diagnostic_sha256": "22eeb789de9d45f873336e3dcf97648a7534ad6c21f8a13fa735f8f762baafdc",
+      "next": "Fresh V4 committed recipe emits device LLVM bitcode with the documented device-object option,then uses the same installed LLVM frontend in IR-input mode;retain this failed V3 status."
+    },
+    "unexecuted_native_build": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v3/build/sycl_q6_dpas_component",
+      "sha256": "c7f3fd3d11a9d91717b16f8326de4b7d3ac4b824cb44d41ec430e61b949c0788",
+      "bytes": 11592488,
+      "actual_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v3/actual-inputs.json",
+        "sha256": "3ddf2a909ac6baac80cea73ec71234a7367688520d3674ebd0aaf55b21f867ac",
+        "compiler_files": 800,
+        "generated_files": 0,
+        "external_link_files": 24,
+        "uncovered": 0,
+        "translation_units": [
+          "src/sycl/runtime.cpp",
+          "src/sycl/compat.cpp",
+          "src/sycl/command_profile.cpp",
+          "src/kernels/sycl/native_mmvq.cpp",
+          "src/kernels/sycl/native_q5_head.cpp",
+          "src/kernels/sycl/native_q3_esimd.cpp",
+          "src/kernels/sycl/native_q4_esimd.cpp",
+          "src/kernels/sycl/native_q2_esimd.cpp",
+          "src/kernels/sycl/native_iq4xs_esimd.cpp",
+          "src/kernels/sycl/native_iq_esimd.cpp",
+          "src/kernels/sycl/native_mmq_xmx.cpp",
+          "src/kernels/sycl/iq.cpp",
+          "src/kernels/sycl/q6_dpas_component.cpp",
+          "bench/sycl/q6_dpas.cpp"
+        ],
+        "source_commit": "cb03210f7f95936714b45abd460ada9b8487b5b7"
+      },
+      "scope": "Input census for source recovery/retirement only;the failed V3 stage is not qualified and executable was not run."
     }
   }
 }
