@@ -220848,7 +220848,7 @@
       "next": "Only a winning full-head cell permits a new decode-only model proposal;placement/setup,phase preservation,task/agent and physical262144 remain unqualified."
     },
     "next_model_proposal": {
-      "state": "source_implemented_unbuilt_not_adopted",
+      "state": "source_implemented_cpu_policy_passed_native_unbuilt_not_adopted",
       "default": "off",
       "scope": "Target output head at K2560,N248320,decode C4 only;all other shapes and prefill preserve current paths.",
       "canonical_consumers": "NativeHead.run,Verifier,MTP row gathers/full/sub-vocabulary heads,and DFlash2 projection still use canonical GGUF layout;do not reorder that object in place.",
@@ -220938,6 +220938,34 @@
           "-o",
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/verify_window_policy_test"
         ]
+      },
+      "cpu_policy_result": {
+        "source_commit": "f2a9fb447400cf30e0bd9b09c1e0d07c6b627e2a",
+        "plan_commit": "cc5c03a9c8edf52c45c5a1889253f8405ba8b9d1",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": false,
+        "native_head_executed": false,
+        "model_executed": false,
+        "ownership_closed": true,
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/dependency-manifest.json",
+          "sha256": "8fd5ac9e31fd9fdab749aafa216aaafb5f0784125d6550253b872d2a5decfd7d",
+          "files": 196
+        },
+        "compile_exit_code": 0,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/verify_window_policy_test",
+          "sha256": "a78adf885bfd8e48112429de40c5a41d9a517a6869418199e230a55378fc7cae",
+          "bytes": 26792
+        },
+        "actual_compiler_inputs": 174,
+        "actual_link_inputs": 16,
+        "generated_translation_units": 1,
+        "uncovered_inputs": 0,
+        "run_exit_code": 0,
+        "stdout": "verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n",
+        "stderr": ""
       }
     },
     "retained_reader_check": {

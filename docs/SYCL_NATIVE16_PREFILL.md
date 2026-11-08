@@ -1823,7 +1823,11 @@ All-reader graph retirement precedes freeing both Device layouts. Restore
 uploads both,then publishes the owner;individual and joint Verifier resumes
 check packed bytes/readiness. A separate`Q6_DPAS_HEAD`audit joins packed calls
 with the unchanged canonical-route schema and existing replay identities.
-The first new gate is the committed CPU phase/shape/cache-control plan.
+The first new gate passes on CPU at source`f2a9fb447`,plan`cc5c03a9c`:
+only the one measured head/decode-C4 cell is selected;the previous30/18/26
+selections,phase isolation and packed-route retirement controls remain intact.
+All174actual compiler and16link inputs match their196-file manifest.
+This does not execute the NativeHead/device owner or a model.
 Fresh native build/pack-owner/device-route checks,actual model speed,
 agent/long-thinking,phase preservation and physical262144/RESTORE qualification
 remain required. The component ratio is not a model-throughput result.
