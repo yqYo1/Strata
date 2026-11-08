@@ -215086,7 +215086,7 @@
     }
   },
   "mapped_row_copy_graph_v1": {
-    "stage": "prepared",
+    "stage": "host-checked",
     "source_commit": "85f33092fb8aa308e3a5eec1fbca331dc0540753",
     "helpers": {
       "tools/sycl/mapped_row_copy_component.py": "2afd79eb12c06ccbd12cfc1883473f980fa24663fca671f21e1dc2e105420ac9",
@@ -215393,7 +215393,16 @@
       "limits": "UR parameter-validation/preload-instrumented graph component screen,not clean speed.Whole dependent-batch host wall/thread-CPU only;submission overlaps device work and wait CPU may poll.One-node throughput is not a whole model layer or its CPU expert dependency.No kernel-service,physical traffic,model gain or adoption claim."
     },
     "retention": "Keep source/recipe,compact individual samples and decisions.Retire successful logs/traces and component build after its named comparison/implementation consumer ends;no new inference engine.",
-    "results": [],
+    "results": [
+      {
+        "mode": "host",
+        "passed": true,
+        "host_probe_accepted": false,
+        "tests": 8,
+        "skipped": 0,
+        "native_execution_attempted": false
+      }
+    ],
     "timing": [],
     "active": false,
     "ownership_closed": true,
