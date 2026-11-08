@@ -102,8 +102,10 @@ in`tools/sycl/test_profile_compat.py`reject missing post-window copies,wrong
 kernel inventories,unobserved replays and ambiguous/boundary-crossing instances.
 The device controller requires all five host controls to pass without skips,
 with their original committed source/plan recoverable and unchanged. Run them
-at a serialized boundary before the device checks. Neither
-controller nor those controls have been executed yet.
+at a serialized boundary before the device checks. At source`adee8a0b2`,all five
+host controls pass with zero skips,normal0and closed ownership under
+`compat_profile_window_host_v1`. This tests the trace-admission logic on the CPU.
+The fixture build and all three device/collector cases remain pending.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction
