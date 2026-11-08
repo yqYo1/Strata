@@ -1615,6 +1615,8 @@ def parse_arguments(argv=None):
                     help='allow exact1024..32767 inputs for length diagnostics;does not qualify long-input speed')
     ap.add_argument('--profile-request-gates',action='store_true',
                     help='diagnostic only: wait for owner acknowledgement around prefill-only or long-generation-only requests')
+    ap.add_argument('--profile-startup-gate',action='store_true',
+                    help='diagnostic only: admit the initialized model before any warmup;requires --profile-request-gates')
     ap.add_argument("--think", action="store_true", help="leave thinking on (the default suite turns it off)")
     ap.add_argument("--out", help="where to write the results folder (default: bench/results)")
     ap.add_argument("--compare", metavar="DIR", help="a results folder (or its results.json) to put beside this run")
@@ -1663,6 +1665,8 @@ def parse_arguments(argv=None):
         ap.error("--prefill-tokens requires --prefill-only")
     if a.profile_request_gates and not (a.prefill_only or a.long_generation_only):
         ap.error('--profile-request-gates requires --prefill-only or --long-generation-only')
+    if a.profile_startup_gate and not a.profile_request_gates:
+        ap.error('--profile-startup-gate requires --profile-request-gates')
     if a.prefill_only and (a.clients or a.long or a.long_generation or a.long_generation_only or a.compare_only):
         ap.error("--prefill-only cannot be combined with other suite scopes or --compare-only")
     if a.prefill_only and a.runs<1:
@@ -1763,6 +1767,8 @@ def main(argv=None) -> int:
         try:
             terminal_error = None
             try:
+                if a.profile_startup_gate:
+                    profile_request_gate('ready', 'startup', -1)
                 out = suite.run()
             except EngineRequestError as error:
                 terminal_error = error

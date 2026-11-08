@@ -28,10 +28,10 @@ import decode_footer
 
 P, B = heads.P, heads.B
 RESULT = heads.model.RESULT
-ROOT = B / 'drafter-long-admission-v2'
-KEY = 'drafter_long_admission_v2'
-PREVIOUS = B / 'drafter-long-admission-v1'
-FAILURE_COMMIT = '1fa4b829af8e8d34aee0015bd238a56784101f74'
+ROOT = B / 'drafter-long-admission-v3'
+KEY = 'drafter_long_admission_v3'
+PREVIOUS = B / 'drafter-long-admission-v2'
+FAILURE_COMMIT = '1381e9a9b997115308fa2cc1dc462e73d376bfa8'
 REVIEW_KEYS = ('dflash2_tuned_long_shape_admission_20261108', 'dflash2_bench_clock_counter_contract_20261108')
 SELF = Path(__file__).resolve()
 READ, RUNS = 32769, 2
@@ -114,15 +114,18 @@ def request_route(text, drafter, sample):
 
 def previous_failure():
     raw = (PREVIOUS / 'record.json').read_bytes(); old = json.loads(raw)
-    archived = json.loads(evidence.git('show', FAILURE_COMMIT + ':' + str(RESULT.relative_to(P))))['drafter_long_admission_v1']
+    archived = json.loads(evidence.git('show', FAILURE_COMMIT + ':' + str(RESULT.relative_to(P))))['drafter_long_admission_v2']
     require(old['stage'] == archived['stage'] == 'failed' and not old['passed'] and
-        old['ownership_closed'] and old['processes'] == [] and
+        not old['ownership_closed'] and len(old['processes']) == 1 and
         old['failure_diagnosis'] == archived['failure_diagnosis'] and
-        [v['exit_code'] for v in old['host_commands']] == [0,0,0,1] and
-        all(heads.ownership.closed(v) for v in old['host_commands']), 'preserve the original host-only failure')
+        old['failure_diagnosis']['native_exit_code'] == 0 and
+        old['failure_diagnosis']['benchmark_exit_code'] == 1 and
+        old['processes'][0]['commands'][0]['direct_child_reaped'] and
+        old['processes'][0]['commands'][0]['session_empty'], 'preserve the original model/count/capacity failure')
     return dict(path=str(PREVIOUS / 'record.json'), sha256=hashlib.sha256(raw).hexdigest(),
         evidence_commit=FAILURE_COMMIT, source_commit=old['source_commit'],
-        GPU_executed=False, native_executed=False, status='failed')
+        GPU_executed=True, native_executed=True, qualified_ownership_closed=False, status='failed',
+        earlier_host_failure_evidence='1fa4b829af8e8d34aee0015bd238a56784101f74')
 
 
 def source_reviews():
@@ -209,7 +212,7 @@ def prepare():
                      file_cap=32 << 20, total_cap=64 << 20),
         plan=dict(question='Can both named drafters run the existing tuned8192 long-prefill route through the current production frontend?',
             order='Two fresh native/bench processes:MTP then DFlash2. Two exact32769-token thinking requests each,24output budget. Tiny benchmark warmup and count-only preflight are outside timed long samples;first long use and subsequent long request stay separate.',
-            constants='Same f633 native,131072 INT8 resident context,768 expert-cache budget,5workers,8192chunk,spec4,greedy,suffix0,zero caches/adaptation,throughput BF16/native16,GDN16,mode10 mixed/split scratch,384packed bank,score GEMM requested,head retirement1. Force --no-prefill-borrow so mixed scratch uses direct owners;MTP expert release and cache scratch remain0in BOTH arms. Cache budget1256->768 frees at most488largest-blob units for owned buffers;actual allocation/full-GPU/bank/drain admission must pass,with no automatic fallback. This is not best-MTP tuning or a comparison to historical fast references.',
+            constants='Same f633 native,65536 INT8 resident context,256 expert-cache budget,5workers,8192chunk,spec4,greedy,suffix0,zero caches/adaptation,throughput BF16/native16,GDN16,mode10 mixed/split scratch,384packed bank,score GEMM requested,head retirement1. Force owned buffers with --no-prefill-borrow;MTP expert release/cache scratch0in BOTH arms. V2measured8192buffers2212MiB versus1122MiB free,then automatic1536chunks. This prospectively halves context and reduces cache768->256 to fund the fixed buffers and verifier/drafter headroom. Actual8192/full-GPU/bank/drain admission must pass,without fallback. This is not best-MTP tuning,a speed comparison to retained fast references,or131072/262144capacity qualification.',
             routing='Named configuration must yield exactly committed actual engine arguments at host admission and native exec. No Auto fallback,restart,benchmark-specific model renaming or forged capability markers. Verify native DFlash2 on/absent MTP versus MTP callbacks and per-request generated/accepted/offered counters.',
             acceptance='Each long sample has exactly32769actual/read tokens,zero reuse,thinking/reasoning,1..24generated,finite engine PP/prompt and client TTFT,valid complete journal. Actual BF16 layer-major8192/full-GPU residual path,quiet validation,pre-main proof,qualified live providers,normal benchmark AND native exit0,reaped empty session,unchanged models/source/runtime and no fresh driver fault are required.',
             decision='Parameter validation and STRATA_TRACE stage progress remain charged;not clean speed/adoption or sustained TG evidence. Keep first/subsequent PP/time/TTFT/counters separately. DFlash2 is reset and loaded/bound for EVERY fresh long prompt,and that cost belongs to prompt_ms;first target verify belongs to decode/TTFT. Generic draft offers=sum(T-1),accepted=leading a before final output clipping;not emitted drafted tokens. 32K does not exercise mode10 rollover or split. Next is matched >=1K-thinking-output long-generation and repeated long/agent comparisons,then physical262144/RESTORE. Hardware limiting resource remains unknown.',
@@ -231,11 +234,17 @@ def prepare():
             UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(root / 'validation.log'),
             STRATA_PREFILL_RELEASE_MTP_EXPERTS='0', STRATA_SYCL_CACHE_SCRATCH_LEASE='0',
             STRATA_POOL_SPIN_US='20000')
+        pack = Path(reference['configuration']['tokenizer']).parent
+        token_files = ('vocab.json','merges.txt','token_type.json','tokenizer.json','chat_template.jinja')
+        token_pins = {name:digest(pack/'tokenizer'/name) for name in token_files}
+        env.update(STRATA_BENCH_REAL_PACK=str(pack), STRATA_BENCH_REAL_PACK_SHA256=hashlib.sha256(
+            json.dumps(token_pins,sort_keys=True,separators=(',',':')).encode()).hexdigest())
         require(not env.get('LD_PRELOAD') and env['CUDA_MODULE_LOADING'] == 'EAGER' and
             env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and env['EnableDirectSubmission'] == '0' and
             env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1', 'qualified immutable native safety required')
         config = copy.deepcopy(reference['configuration'])
-        config['args'][config['args'].index('--expert-cache')+1] = '768'
+        for flag, value in (('--expert-cache','256'),('--max-context','65536'),('--kv-resident','65536')):
+            config['args'][config['args'].index(flag)+1] = value
         config['args'].append('--no-prefill-borrow')
         config.update(backend='sycl', family='qwen', drafting=drafter,
                       user_args=['--spec', '4', '--draft-conf', '0', '--suffix-draft', '0'],
@@ -247,6 +256,7 @@ def prepare():
             generated={n: digest(root / n) for n in ('config.json', 'plan.json')},
             command=['/bin/sh', str(P / 'bench.sh'), '--config', str(root / 'config.json'), '--port', str(port),
                 '--prefill-exact-tokens', str(READ), '--think', '--runs', str(RUNS), '--profile-request-gates',
+                '--profile-startup-gate',
                 '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600',
                 '--out', str(root / 'bench')]))
     save(row)
@@ -261,7 +271,7 @@ def route_config(path):
     args = server.engine_args(cfg, exe=cfg['exe'], announce=False)
     def value(flag): return args[args.index(flag) + 1] if flag in args else None
     require(all(value(k) == v for k, v in {'--spec':'4', '--prefill':'8192',
-        '--max-context':'131072', '--kv-resident':'131072', '--expert-cache':'768', '--suffix-draft':'0',
+        '--max-context':'65536', '--kv-resident':'65536', '--expert-cache':'256', '--suffix-draft':'0',
         '--pool-workers':'5', '--prefill-strategy':'throughput', '--short-read':'0'}.items()) and
         args.count('--no-prefill-borrow') == 1 and cfg['family'] == 'qwen' and
         cfg['model_name'] == 'qwen3.8-flash-next-iq3_s-primary',
@@ -310,6 +320,15 @@ def host():
             require(actual['backend'][0] == 'sycl', 'actual hardware backend differs')
             plan['native_args'] = actual['args']
             row['host'].append(dict(role='args-' + plan['drafter'], passed=True, exit_code=0, ownership_closed=True))
+        entry, out, err = owner.run('count-api', [row['python_selected']['path'], '-B', '-m', 'unittest', '-v',
+            'tools.test_strata_bench.RealPackExactCounts'], row['plans'][0]['environment'], P,
+            wall=300, cpu=120, rss_cap=2 << 30, text_cap=2 << 20, file_cap=4 << 20, total_cap=8 << 20)
+        require(heads.ownership.closed(entry) and entry['exit_code'] == 0 and
+            re.search(r'^Ran 1 test in ',err.read_text(),re.M) and
+            re.search(r'^OK$',err.read_text(),re.M) and out.read_text().count('EXACT_REAL_PACK ') == 4,
+            'real tokenizer/count-only HTTP preflight failed or skipped;no native run allowed')
+        row['host'].append(dict(role='count-api', passed=True, exit_code=0, ownership_closed=True,
+            real_tokenizer_exact_extents=[73729,73730,81921,81922], model_executed=False))
         current(frozen)
         row['stage'] = 'ready'
     except BaseException as error: row.update(stage='failed', error=repr(error))
@@ -359,6 +378,21 @@ def run(index):
             {v['realpath'] for v in manifest['inventory']['files'].values()}, plan['command'][2:])
         outcome.update(model_executed=True, native_identity=claim['native'], file_backed_executable_mappings=len(maps))
     def interact(io, entry):
+        while True:
+            line = io.line(900)
+            if line.startswith('STRATA_PROFILE_GATE '): break
+        require(json.loads(line.removeprefix('STRATA_PROFILE_GATE ')) ==
+            dict(stage='ready',phase='startup',run=-1), 'startup admission gate missing')
+        live(entry)
+        text = (root/'engine.stderr').read_text(errors='replace')
+        chunks = re.findall(r'^strata prefill: FP16 MoE compact .*?chunk=(\d+),',text,re.M)
+        free = re.findall(r'^strata serve: (\d+) MiB of VRAM free with everything loaded$',text,re.M)
+        require(chunks == ['8192'] and len(free) == 1 and
+            int(free[0]) >= (1536 if plan['drafter']=='dflash2' else 512) and
+            'chunk\'s prompt buffers need' not in text, 'actual startup chunk or decode/drafter VRAM headroom differs')
+        outcome['startup_admission'] = dict(actual_chunk=8192, free_MiB=int(free[0]),
+            required_free_MiB=1536 if plan['drafter']=='dflash2' else 512, before_benchmark_warmup=True)
+        print(plan['drafter']+' startup8192/headroom admitted',flush=True);io.send(b'continue\n')
         for request in range(RUNS):
             offsets = {}
             for stage in ('begin', 'end'):
