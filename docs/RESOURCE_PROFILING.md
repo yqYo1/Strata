@@ -111,8 +111,10 @@ cache-loan child changes two of those helpers,so prepare a new committed host
 plan and repeat the five controls after integration before using this device
 gate. Preserve V1's actual pass and source;do not refresh its hashes or describe
 the post-merge tree as the already tested snapshot.
-The device controller now requires`compat_profile_window_host_v2`;that new
-host plan has not yet run. The selected-native reader recovers its original841
+The device controller now requires`compat_profile_window_host_v2`. Its new
+620-input plan at`4e5d7074d`passes all five controls with zero skips,normal0
+and closed ownership at source`65b6b6349`. V1remains available in Git history;
+the active proof is V2. The selected-native reader recovers its original841
 project inputs from the pushed primary and checks the original1461-compiler/
 29-link census,SDK and same-build ELFs. It no longer needs the integrated child
 checkout or the ended f633 fallback binaries. The fixture build instead retains
