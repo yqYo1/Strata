@@ -26,9 +26,9 @@ import ur_validation as validation
 import build_compat_profile as selected
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'q6-dpas-component-v3'
+ROOT = B / 'q6-dpas-component-v4'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_dpas_component_v3'
+KEY = 'q6_dpas_component_v4'
 TARGET = 'sycl_q6_dpas_component'
 HELPERS = ('tools/sycl/q6_dpas_component.py','tools/sycl/test_q6_dpas_component.py',
     'tools/sycl/benchmark_runtime.py','tools/sycl/measurement_guards.py',
@@ -91,7 +91,7 @@ def dependency_pins(roots):
 
 def prepare():
     data = validation.committed(RESULT)
-    for key in ('q6_dpas_component_v1', 'q6_dpas_component_v2'):
+    for key in ('q6_dpas_component_v1', 'q6_dpas_component_v2', 'q6_dpas_component_v3'):
         failed = data[key]
         require(failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
             and failed['ownership_closed'] and not failed['active'] and not failed['GPU_executed']
@@ -143,10 +143,11 @@ def prepare():
         require(runtime.get(str(Path(asset['path']).resolve())) == asset['sha256'],
             'qualified validation preload/loader differs')
     tools = {name: dict(path=path, realpath=str(Path(path).resolve()), sha256=sha(path)) for name, path in
-        dict(compiler='/opt/intel/oneapi/compiler/2026.2/bin/icpx', cmake='/usr/bin/cmake',
+        dict(compiler='/opt/intel/oneapi/compiler/2026.2/bin/icpx',
+             ir_frontend='/opt/intel/oneapi/compiler/2026.2/bin/compiler/clang', cmake='/usr/bin/cmake',
              ninja='/usr/bin/ninja', assembler='/usr/bin/as', linker='/usr/bin/ld', python=sys.executable).items()}
     versions = {n: subprocess.check_output([tools[n]['path'], '--version'], env=env,
-        text=True, timeout=15).splitlines()[0] for n in ('compiler', 'cmake', 'ninja')}
+        text=True, timeout=15).splitlines()[0] for n in ('compiler', 'ir_frontend', 'cmake', 'ninja')}
     dependencies = ['/opt/intel/oneapi/compiler/2026.2/include',
         '/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl', '/usr/include/c++/13',
         '/usr/include/x86_64-linux-gnu/c++/13', '/usr/lib/gcc/x86_64-linux-gnu/13/include',
@@ -182,17 +183,25 @@ def prepare():
         '-DSTRATA_WERROR=ON',
         '-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
         '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t']
-    codegen = [tools['compiler']['path'],'-fsycl','-fsycl-device-only','-S','-emit-llvm',
+    # The installed driver refuses direct -S -emit-llvm with SYCL. Emit its
+    # documented LLVM device object,then print that bitcode through the same
+    # installed LLVM frontend's IR reader;no host/device execution is involved.
+    codegen = [tools['compiler']['path'],'-fsycl','-fsycl-device-only',
+        '-fsycl-device-obj=llvmir','-c',
         '-O3','-std=c++20','-ffp-contract=off','-fno-fast-math','-fsycl-id-queries-range=size_t',
         '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
         '-I'+str(ROOT/'source/include'),'-I'+str(ROOT/'source/include/strata/sycl/compat'),
         '-I'+str(ROOT/'source/src/kernels/sycl'),str(ROOT/'source/src/kernels/sycl/q6_dpas_component.cpp'),
+        '-o',str(ROOT/'q6-dpas.bc')]
+    ir_text = [tools['ir_frontend']['path'],'-cc1','-triple','spir64-unknown-unknown',
+        '-emit-llvm','-disable-llvm-passes','-x','ir',str(ROOT/'q6-dpas.bc'),
         '-o',str(ROOT/'q6-dpas.ll')]
     row = dict(stage='preparing',source_commit=revision,sources=sources,helpers=helpers,
         source_generation=dict(command='git archive --format=tar <source_commit> <named source paths>',
             attributes_path='.gitattributes',attributes_sha256=sources['.gitattributes']),
         provenance=dict(local_reference='src/kernels/sycl/native_mmq_xmx.cpp;existing public Q6 columns entry',
             external_reference='ggml-org/llama.cpp@34ca79122b44d43eda7efb203b82ec91db94c55c:ggml/src/ggml-sycl/esimd.hpp',
+            device_ir_reference='https://github.com/intel/llvm/blob/sycl/sycl/doc/UsersManual.md;-fsycl-device-obj=llvmir;installed icpx and matching -cc1 --help plus nonexecuting driver -### confirm the selected actions.',
             license='MIT notice retained;new pack/kernel/controller/fixture authored here under repository LICENSE;no XeStrata source.',
             distinction='Own uint16 interleave and explicit C4 entry;not upstream in-place SOA reorder or engine dispatch.'),
         dependency_roots=dependencies,dependency_pins=dependency_inputs,tools=tools,tool_versions=versions,
@@ -202,7 +211,7 @@ def prepare():
             scope='Normal current-model execution/provider/preload provenance only;failed observer screen supplies a hypothesis,not representative attribution or saturation.'),
         native_validation_probe=cohort['native_validation_probe'],environment=env,configure=configure,
         build=[tools['cmake']['path'],'--build',str(ROOT/'build'),'--target',TARGET,'--parallel','1'],
-        codegen_command=codegen,build_budget=budget(600,2400,file_cap=128<<20),
+        codegen_command=codegen,ir_text_command=ir_text,build_budget=budget(600,2400,file_cap=128<<20),
         host_budget=dict(budget(90,90,file_cap=16<<20),rss_cap=1<<30),
         host_command=[tools['python']['path'],'-B','-m','unittest','-v','tools.sycl.test_q6_dpas_component'],
         native_budget=budget(600,1200,file_cap=16<<20),
@@ -273,6 +282,8 @@ def current(row):
             'actual component compiler/link bytes changed')
     if 'codegen' in row:
         require(sha(row['codegen']['path'])==row['codegen']['sha256'],'DPAS IR drift')
+        bitcode=row['codegen']['bitcode']
+        require(sha(bitcode['path'])==bitcode['sha256'],'DPAS bitcode drift')
 
 
 def census(row, dependencies, link_text):
@@ -372,7 +383,8 @@ def execute(mode):
             outcome.update(tests=10,skipped=0,native_execution_attempted=False);row['stage']='cpu-controlled'
         elif mode=='build':
             outcome['build_commands']=[];outputs={}
-            for name,command in [('configure',row['configure']),('build',row['build']),('codegen',row['codegen_command'])]:
+            for name,command in [('configure',row['configure']),('build',row['build']),
+                    ('codegen',row['codegen_command']),('ir-text',row['ir_text_command'])]:
                 e,out,err=scope.run(name,command,row['environment'],ROOT,**row['build_budget'])
                 require(owner.closed(e) and e['exit_code']==0,
                     name+' failed:'+(out.read_text()+err.read_text())[-2500:])
@@ -380,7 +392,9 @@ def execute(mode):
             path=ROOT/'q6-dpas.ll';ir=path.read_text()
             calls=[v for v in ir.splitlines() if 'call ' in v and ('__esimd_dpas' in v or 'llvm.genx.dpas' in v)]
             require(len(calls)>=2,'device IR must retain the two DPAS half-dot intrinsics')
-            row['codegen']=dict(path=str(path),sha256=sha(path),dpas_intrinsic_calls=len(calls),scope='Compiler device IR,not final native ISA or utilization.')
+            row['codegen']=dict(path=str(path),sha256=sha(path),dpas_intrinsic_calls=len(calls),
+                bitcode=dict(path=str(ROOT/'q6-dpas.bc'),sha256=sha(ROOT/'q6-dpas.bc')),
+                scope='Compiler device IR,not final native ISA or utilization.')
             e,out,_=scope.run('dependencies',[row['tools']['ninja']['path'],'-C',str(ROOT/'build'),'-t','deps'],row['environment'],ROOT,**row['build_budget'])
             require(owner.closed(e) and e['exit_code']==0,'actual dependency listing failed')
             row['actual_inputs']=census(row,out.read_text(),outputs['build'].read_text())
