@@ -4796,9 +4796,9 @@
       }
     },
     "dflash2_cache_loan_native_build": {
-      "stage": "build_failed",
-      "source_commit": "fb38578840ddd950bb499c88259c440a593d8096",
-      "project_source_sha256": "2c06619f58f6c789de5032300e0ab6ab7806b122b218739be9be373c44640fa3",
+      "stage": "prepared",
+      "source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+      "project_source_sha256": "6f1842f22d578526fdf47c5f6733c6a24298aeff59296f11be660827808bc5d6",
       "dependency_revisions": {
         "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
         "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f": "87f6850680a580654b9ea2c80dbc01aeb36ad231"
@@ -4959,17 +4959,26 @@
       },
       "record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/record.json",
-        "sha256": "50d29c330adfd1cc78c101b57bd0934358e7e3da43c139f22ec2e0d2bce80f5a"
+        "sha256": "7aaec3ec00e78fcc0c9c060b26c938621eb2497b53760d38ae413480dd5daad9"
       },
       "binaries": {},
       "passed": false,
       "ownership_closed": true,
-      "error": "Attempt1 stopped before configure/owner construction:build() compared the loan plan to native_feature_build instead of PLAN_KEY. Native compilation and GPU execution did not start.",
+      "error": null,
       "commands": [],
       "retention": "One isolated candidate for the imminent borrowed-vs-owned DFlash2 gate. Preserve f633 and all5fixtures until same-build small/model admission selects a replacement;then retire the superseded feature engine,or retire this candidate on failure,after exact source/recipe recovery. Keep552b/e1b phase references;this finite transition temporarily has four engine generations,not a new quota. Legacy56ELF provenance holds remain separate and unresolved;review their current consumers at closure. No speed,device/model qualification or adoption follows from compilation.",
-      "attempt": 1,
+      "attempt": 2,
+      "previous_attempt": {
+        "source_commit": "fb38578840ddd950bb499c88259c440a593d8096",
+        "stage": "build_failed",
+        "record_sha256": "50d29c330adfd1cc78c101b57bd0934358e7e3da43c139f22ec2e0d2bce80f5a",
+        "error": "Attempt1 stopped before configure/owner construction:build() compared the loan plan to native_feature_build instead of PLAN_KEY. Native compilation and GPU execution did not start.",
+        "ownership_closed": true,
+        "evidence_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+        "reason": "Reuse the closed unqualified candidate cache; exact source/recipe/outcome remain in Git. Preserve both validated phase references."
+      },
       "host_policy_gate": {
-        "evidence_commit": "fb38578840ddd950bb499c88259c440a593d8096",
+        "evidence_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
         "key": "dflash2_cache_loan_heads_host_v1",
         "source_commit": "d6f7a8052846ff29c8d90fd2eb4beaa59b6f66f6",
         "result": {
