@@ -26198,7 +26198,7 @@
   },
   "dflash2_tuned_long_shape_admission_20261108": {
     "classification": "decision_support",
-    "state": "report_completed_native_review_running",
+    "state": "reviewed_conditional_bounded_admission_corrected_by_main",
     "scope": "Question:can the current native DFlash2 spec4 target-head-only route safely enter the existing tuned long-prefill profile at33K/64K/117K input,chunk8192,131072resident context,with MTP-expert/cache-scratch leases0? Inspect actual mode10 window,mixed/split scratch,384packed expert bank,score GEMM,GDN16 and target/verifier/dense/state readers. Compare the declared profile in inputs.json for MTP versus absent-DFlash2 MTP participant. Identify concrete admission failures,unsupported combinations or memory/queue lifetime/extent hazards BEFORE execution. Audit tap tail positions and chunk/full-window boundaries;do not repeat the completed generic optional-head audit or propose a new optimization. In particular MTP_BATCH_F16=1 and SNAPSHOT_VERIFY=1 are inherited tuned choices whereas short9gate used0;are they safe/applicable for DFlash2? Is.requires_prefix_checkpoints/row-callback behavior different and does it suppress the tuned path? Produce a small actual-guard matrix,what must be disabled/changed before launch,and remaining finite validation. Include256Ksource bounds limitations without claiming full-context validation. Main will not edit these9native files until you return. Read the large generator only at DF2begin/activate/tap callbacks/head boundary and setup conditions relevant to this question.",
     "scope_eligibility": {
       "schedulable_now": true,
@@ -26245,14 +26245,28 @@
     "native_review": {
       "task": "/root/review_dflash2_long_admission_20261108",
       "path": ".cache/research/2026-11-08/dflash2-long-shape-admission/review.md",
-      "state": "running",
+      "state": "completed",
       "model": "gpt-6-luna",
-      "reasoning": "max"
-    }
+      "reasoning": "max",
+      "sha256": "815aed2cf4655ccad60cc52459b788aaaf5d0ee5bd1014e7be1b6d418bc7f96a",
+      "bytes": 5867
+    },
+    "long_benchmark_admission": true,
+    "admission_corrections": {
+      "controller_path": "tools/sycl/drafter_benchmark.py",
+      "controller_sha256": "e515d35965857e0f464b652292f7d0602b4ffa79fa844d39c4f99a2e7b71ff5d",
+      "scope": "Parameter-validated observed32769input/24output route/frontend admission ONLY;actual allocation/route/clock/normal closure still must pass. No sustained TG,clean speed,rollover/split/full-context/RESTORE/adoption or hardware bottleneck qualification.",
+      "model_identity": "Existing display alias retained,family=qwen;20case CPU matrix at388eb6f18/d69950af2. Force/check exact native MTP and stock DF2/vocab paths,confidence0,spec4,suffix0,no silent fallback.",
+      "scratch_ownership": "Force --no-prefill-borrow in both arms;lease/expert-release0. Reduce expert-cache budget1256->768 for owned buffers,without assuming memory admission. Actual own-buffer startup,full GPU residuals,384bank/mode10 and checked drain required. No native code or qualified fast references changed.",
+      "geometry_and_clocks": "Fresh DF2tail2046rows from kTail2047/end n-1. Native/API prompt and decode milliseconds/rate checked with display-rounding bounds;clientTTFT separate. DF2activation/load charged to EVERY fresh prompt. Actual GDN3header required;score GEMM flag remains requested rather than observed command dispatch.",
+      "source_pin": "Executed controller must be tracked and included in exact committed612input map. Both review bytes and consumed correction fields are frozen in the plan.",
+      "observers": "STRATA_TRACE1for stage/memory progress,parameter validation and private pre-main probe;remove presence-enabled STRATA_DECODE_TIMING key. Observed rates are diagnostics,not clean speed."
+    },
+    "corrections": "Original report incorrectly said split inactive at117489;117488processed rows are source-eligible,with runtime memory deciding actual128slot split. 32769check cannot generalize to that extent or mode10rollover."
   },
   "dflash2_bench_clock_counter_contract_20261108": {
     "classification": "decision_support",
-    "state": "report_completed_native_review_running",
+    "state": "reviewed_conditional_bounded_admission_corrected_by_main",
     "scope": "Question:does current pinned bench.sh/long-generation/server/native protocol actually measure and attribute DFlash2 versus MTP correctly? Inspect draft offered/accepted accounting and meanings,source clock boundaries for prompt/decode/TTFT (including DFlash2 activation/initial context/head restoration),server rewriting/retry and output/header observability,benchmark eligibility and strong/weak classification. Point out potential silent wrong-route or clock/count interpretation (not just parameter labels). Main has independently found interpreter engine_once.py is classified unsupported by byte-scanning engine_form and is fixing that in drafting.py;do not investigate/reimplement that fix or read/edit drafting.py/engine_once.py. Your frozen files are only inputs.json.source_files. Main needs exact minimal runtime evidence to prove DF2 was used (native stderr/init/request/counters and launch args),and which existing parsers can be reused or need phase-specific handling before long comparison. Check actual native strings versus regex labels;do not claim any throughput or task quality. No broad upstream/API feature audit.",
     "scope_eligibility": {
       "schedulable_now": true,
@@ -26298,9 +26312,23 @@
     "native_review": {
       "task": "/root/review_dflash2_bench_contract_20261108",
       "path": ".cache/research/2026-11-08/dflash2-bench-clock-counters/review.md",
-      "state": "running",
+      "state": "completed",
       "model": "gpt-6-luna",
-      "reasoning": "max"
-    }
+      "reasoning": "max",
+      "sha256": "f4d79b9c2cb91b4715fa7a5d7c7e54150c68d31660c98e3eb055daa51415dda0",
+      "bytes": 5367
+    },
+    "long_benchmark_admission": true,
+    "admission_corrections": {
+      "controller_path": "tools/sycl/drafter_benchmark.py",
+      "controller_sha256": "e515d35965857e0f464b652292f7d0602b4ffa79fa844d39c4f99a2e7b71ff5d",
+      "scope": "Parameter-validated observed32769input/24output route/frontend admission ONLY;actual allocation/route/clock/normal closure still must pass. No sustained TG,clean speed,rollover/split/full-context/RESTORE/adoption or hardware bottleneck qualification.",
+      "model_identity": "Existing display alias retained,family=qwen;20case CPU matrix at388eb6f18/d69950af2. Force/check exact native MTP and stock DF2/vocab paths,confidence0,spec4,suffix0,no silent fallback.",
+      "scratch_ownership": "Force --no-prefill-borrow in both arms;lease/expert-release0. Reduce expert-cache budget1256->768 for owned buffers,without assuming memory admission. Actual own-buffer startup,full GPU residuals,384bank/mode10 and checked drain required. No native code or qualified fast references changed.",
+      "geometry_and_clocks": "Fresh DF2tail2046rows from kTail2047/end n-1. Native/API prompt and decode milliseconds/rate checked with display-rounding bounds;clientTTFT separate. DF2activation/load charged to EVERY fresh prompt. Actual GDN3header required;score GEMM flag remains requested rather than observed command dispatch.",
+      "source_pin": "Executed controller must be tracked and included in exact committed612input map. Both review bytes and consumed correction fields are frozen in the plan.",
+      "observers": "STRATA_TRACE1for stage/memory progress,parameter validation and private pre-main probe;remove presence-enabled STRATA_DECODE_TIMING key. Observed rates are diagnostics,not clean speed."
+    },
+    "corrections": "Reference config already contained suffix-draft0;Main strengthened explicit user_args and effective-argv verification. There was no native/GPU V1measurement or observed suffix contamination. Generic offers/acceptance are verifier counters before output clipping,not emitted draft tokens or MTP labels for DF2."
   }
 }

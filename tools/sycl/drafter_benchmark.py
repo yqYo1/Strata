@@ -28,8 +28,12 @@ import decode_footer
 
 P, B = heads.P, heads.B
 RESULT = heads.model.RESULT
-ROOT = B / 'drafter-long-admission-v1'
-KEY = 'drafter_long_admission_v1'
+ROOT = B / 'drafter-long-admission-v2'
+KEY = 'drafter_long_admission_v2'
+PREVIOUS = B / 'drafter-long-admission-v1'
+FAILURE_COMMIT = '1fa4b829af8e8d34aee0015bd238a56784101f74'
+REVIEW_KEYS = ('dflash2_tuned_long_shape_admission_20261108', 'dflash2_bench_clock_counter_contract_20261108')
+SELF = Path(__file__).resolve()
 READ, RUNS = 32769, 2
 ORDER = ('mtp', 'dflash2')
 require, digest, write = heads.require, heads.digest, heads.write
@@ -76,7 +80,7 @@ def request_route(text, drafter, sample):
     if drafter == 'mtp':
         require(callbacks == [('batched', '2', '8192')]*4 and not activations, 'MTP prompt callbacks differ')
     else:
-        require(not callbacks and len(activations) == 1 and activations[0][:2] == ('2048', '1') and
+        require(not callbacks and len(activations) == 1 and activations[0][:2] == ('2046', '1') and
             0 < int(activations[0][2]) <= 2 << 30, 'DFlash2 actual tail/activation differs')
     header = re.findall(decode_footer.HEADER, text, re.M)
     require(len(header) == 1 and tuple(map(int, header[0])) == tuple(sample[k] for k in
@@ -84,12 +88,51 @@ def request_route(text, drafter, sample):
         type(sample['drafts_offered']) is int and type(sample['drafts_accepted']) is int and
         0 <= sample['drafts_accepted'] <= sample['drafts_offered'] and sample['drafts_offered'] > 0,
         'actual native/client request and draft counters differ')
+    clocks = re.findall(r'^strata serve: prompt \d+ tokens = \d+ reused \+ \d+ read in (\d+) ms '
+        r'\((\d+(?:\.\d+)?) tok/s\), \d+ generated in (\d+) ms \((\d+(?:\.\d+)?) tok/s\), drafts accepted ', text, re.M)
+    require(len(clocks) == 1, 'one completed native phase clock required')
+    prompt_ms, prompt_pp, decode_ms, _ = map(float, clocks[0])
+    api_ms = sample['prompt_ms']; require(api_ms > .05, 'invalid native/API prompt clock')
+    rate = 1000*READ/api_ms
+    require(abs(prompt_ms-api_ms) <= .550001 and abs(decode_ms-sample['decode_ms']) <= .550001 and
+        abs(sample['prompt_tps']-rate) <= .050001 and
+        abs(prompt_pp-rate) <= .050001+1000*READ*.05/(api_ms*(api_ms-.05)),
+        'native/API rounded phase clocks or rate differ')
+    gdn = [v for v in text.splitlines() if v.startswith('strata prefill: GDN columns=')]
+    require(gdn == ['strata prefill: GDN columns=4 workgroups=192 lanes=128 barriers=3'
+        ' epilogue=GPU_FP32_same_order scratch=existing_y'], 'actual GDN schedule differs')
     return dict(rows=n, residual_gpu_bytes=n*20480, residual_host_bytes=0, chunk=8192,
         prefill_slots=384, window_mode=10, windows=48, staged_bank_checked_drain=True,
         target_detached_bytes=521472000, MTP_detached_bytes=223227900 if drafter=='mtp' else 0,
         draft_reader='mtp4' if drafter=='mtp' else 'absent-dflash2',
-        DFlash2_tail_rows=2048 if activations else 0, nominal_MTP_callback_cells=n if callbacks else 0,
+        DFlash2_tail_rows=2046 if activations else 0, nominal_MTP_callback_cells=n if callbacks else 0,
+        native_prompt_ms_rounded=prompt_ms, native_prompt_pp_rounded=prompt_pp,
+        prompt_includes_repeated_DFlash2_activation=bool(activations), GDN_columns=4, GDN_barriers=3,
+        score_GEMM_requested=True, score_GEMM_command_dispatch_observed=False,
         physical_resource_saturation_qualified=False)
+
+
+def previous_failure():
+    raw = (PREVIOUS / 'record.json').read_bytes(); old = json.loads(raw)
+    archived = json.loads(evidence.git('show', FAILURE_COMMIT + ':' + str(RESULT.relative_to(P))))['drafter_long_admission_v1']
+    require(old['stage'] == archived['stage'] == 'failed' and not old['passed'] and
+        old['ownership_closed'] and old['processes'] == [] and
+        old['failure_diagnosis'] == archived['failure_diagnosis'] and
+        [v['exit_code'] for v in old['host_commands']] == [0,0,0,1] and
+        all(heads.ownership.closed(v) for v in old['host_commands']), 'preserve the original host-only failure')
+    return dict(path=str(PREVIOUS / 'record.json'), sha256=hashlib.sha256(raw).hexdigest(),
+        evidence_commit=FAILURE_COMMIT, source_commit=old['source_commit'],
+        GPU_executed=False, native_executed=False, status='failed')
+
+
+def source_reviews():
+    result = {}
+    for key in REVIEW_KEYS:
+        row = heads.model.validation.committed(heads.model.validation.INDEX, (key,))
+        require(row.get('long_benchmark_admission') is True, 'source/counter review corrections not admitted:' + key)
+        pin = row['native_review']; require(digest(pin['path']) == pin['sha256'], 'review digest changed')
+        result[key] = {k:row[k] for k in ('native_review', 'long_benchmark_admission', 'admission_corrections')}
+    return result
 
 
 def committed():
@@ -116,7 +159,8 @@ def sources(revision):
     names = [n for n in names if n in ('bench.sh', 'data/expert-profile.bin') or
              n.endswith('.py') and '/hip/' not in n and '/cuda/' not in n]
     values = {n: hashlib.sha256(raw).hexdigest() for n, raw in heads.source.blobs(P, revision, names)}
-    require(all(digest(P / n) == h for n, h in values.items()), 'uncommitted benchmark/controller input')
+    require(str(SELF.relative_to(P)) in values and all(digest(P / n) == h for n, h in values.items()),
+            'uncommitted or untracked executed benchmark/controller input')
     return values
 
 
@@ -126,6 +170,8 @@ def current(row):
     heads.verify(row['qualification'])
     require(row['qualification']['passed'] and row['qualification']['ownership_closed'] and
             not row['qualification'].get('fresh_faults'), 'closed native ownership qualification required')
+    require(previous_failure() == row['previous_failure'] and source_reviews() == row['source_reviews'],
+            'failed original plan or source/counter review changed')
     alias = row['asset_alias']
     require(Path(alias['path']).is_symlink() and os.readlink(alias['path']) == alias['link'] and
             str(Path(alias['path']).resolve()) == alias['target'], 'drafter asset alias changed')
@@ -141,6 +187,7 @@ def current(row):
 
 def prepare():
     require(not ROOT.exists(), 'fresh prospective cohort only;no retry')
+    previous = previous_failure(); reviews = source_reviews()
     qualified = json.loads((heads.ROOT / 'record.json').read_text())
     heads.verify(qualified, full=True)
     reference = json.loads((heads.model.REFERENCE / 'record.json').read_text())
@@ -149,6 +196,7 @@ def prepare():
     alias = Path.home() / '.local/share/strata-sycl/dflash2'
     require(alias.is_symlink(), 'explicit existing stock-drafter asset alias required')
     row = dict(stage='prepared', source_commit=revision, sources=pins, qualification=qualified,
+        previous_failure=previous, source_reviews=reviews,
         binary=qualified['native_build']['binaries']['strata'],
         native_source_commit=qualified['native_build']['source_commit'],
         native_validation_probe=qualified['probe'], boot=qualified['boot'], driver=qualified['driver'],
@@ -161,10 +209,10 @@ def prepare():
                      file_cap=32 << 20, total_cap=64 << 20),
         plan=dict(question='Can both named drafters run the existing tuned8192 long-prefill route through the current production frontend?',
             order='Two fresh native/bench processes:MTP then DFlash2. Two exact32769-token thinking requests each,24output budget. Tiny benchmark warmup and count-only preflight are outside timed long samples;first long use and subsequent long request stay separate.',
-            constants='Same f633 native,131072 INT8 resident context,1256 static experts,5workers,8192chunk,spec4,greedy,zero caches/adaptation,throughput BF16/native16,GDN16,mode10 mixed/split scratch,384packed bank,score GEMM,head retirement1. Disable MTP expert release and cache scratch in BOTH arms because DFlash2 has no such MTP lease. This common-control screen is not best-MTP tuning.',
+            constants='Same f633 native,131072 INT8 resident context,768 expert-cache budget,5workers,8192chunk,spec4,greedy,suffix0,zero caches/adaptation,throughput BF16/native16,GDN16,mode10 mixed/split scratch,384packed bank,score GEMM requested,head retirement1. Force --no-prefill-borrow so mixed scratch uses direct owners;MTP expert release and cache scratch remain0in BOTH arms. Cache budget1256->768 frees at most488largest-blob units for owned buffers;actual allocation/full-GPU/bank/drain admission must pass,with no automatic fallback. This is not best-MTP tuning or a comparison to historical fast references.',
             routing='Named configuration must yield exactly committed actual engine arguments at host admission and native exec. No Auto fallback,restart,benchmark-specific model renaming or forged capability markers. Verify native DFlash2 on/absent MTP versus MTP callbacks and per-request generated/accepted/offered counters.',
             acceptance='Each long sample has exactly32769actual/read tokens,zero reuse,thinking/reasoning,1..24generated,finite engine PP/prompt and client TTFT,valid complete journal. Actual BF16 layer-major8192/full-GPU residual path,quiet validation,pre-main proof,qualified live providers,normal benchmark AND native exit0,reaped empty session,unchanged models/source/runtime and no fresh driver fault are required.',
-            decision='This is tuned-route/production-frontend admission,not adoption or sustained TG evidence. Keep all individual first/subsequent PP/time/TTFT/counters. Do not infer a limiting resource or saturation from stage timing. Next is matched >=1K-thinking-output long-generation regular-code/varied-prose and repeated long/agent comparisons,then physical262144/RESTORE.',
+            decision='Parameter validation and STRATA_TRACE stage progress remain charged;not clean speed/adoption or sustained TG evidence. Keep first/subsequent PP/time/TTFT/counters separately. DFlash2 is reset and loaded/bound for EVERY fresh long prompt,and that cost belongs to prompt_ms;first target verify belongs to decode/TTFT. Generic draft offers=sum(T-1),accepted=leading a before final output clipping;not emitted drafted tokens. 32K does not exercise mode10 rollover or split. Next is matched >=1K-thinking-output long-generation and repeated long/agent comparisons,then physical262144/RESTORE. Hardware limiting resource remains unknown.',
             stopping='Stop at first input,ownership,route,counter,clock,validation,fault or budget failure;no retry,replacement,speed-based stop,hash refresh or relaxed gate. Commit each closed process before the next.',
             retention='Keep compact samples/actual arguments/source/config/limits. Retire successful raw logs/journals/caches after evidence verification;no new native engine copy.'))
     ROOT.mkdir(mode=0o700)
@@ -173,8 +221,9 @@ def prepare():
         root = ROOT / drafter; root.mkdir(mode=0o700)
         for name in ('tmp', 'cache'): (root / name).mkdir(mode=0o700)
         env = {k: v.replace(original['STRATA_MEASUREMENT_ROOT'], str(root)) for k, v in original.items()}
-        # Presence of STRATA_TRACE, even "0", enables tracing in native code.
-        env.pop('STRATA_TRACE', None)
+        # This admission is observed, not clean speed. Presence enables tracing.
+        env['STRATA_TRACE'] = '1'
+        env.pop('STRATA_DECODE_TIMING', None)
         for k in env:
             if '_PROFILE' in k or '_AUDIT' in k: env[k] = '0'
         env.update(STRATA_MEASUREMENT_ROOT=str(root), TMPDIR=str(root / 'tmp'),
@@ -186,7 +235,10 @@ def prepare():
             env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and env['EnableDirectSubmission'] == '0' and
             env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1', 'qualified immutable native safety required')
         config = copy.deepcopy(reference['configuration'])
-        config.update(backend='sycl', drafting=drafter, user_args=['--spec', '4', '--draft-conf', '0'],
+        config['args'][config['args'].index('--expert-cache')+1] = '768'
+        config['args'].append('--no-prefill-borrow')
+        config.update(backend='sycl', family='qwen', drafting=drafter,
+                      user_args=['--spec', '4', '--draft-conf', '0', '--suffix-draft', '0'],
                       log=str(root / 'engine.stderr'))
         write(root / 'config.json', config)
         write(root / 'plan.json', dict(binary=row['binary'], native_validation_probe=row['native_validation_probe']))
@@ -209,14 +261,20 @@ def route_config(path):
     args = server.engine_args(cfg, exe=cfg['exe'], announce=False)
     def value(flag): return args[args.index(flag) + 1] if flag in args else None
     require(all(value(k) == v for k, v in {'--spec':'4', '--prefill':'8192',
-        '--max-context':'131072', '--kv-resident':'131072', '--expert-cache':'1256',
-        '--pool-workers':'5', '--prefill-strategy':'throughput', '--short-read':'0'}.items()),
+        '--max-context':'131072', '--kv-resident':'131072', '--expert-cache':'768', '--suffix-draft':'0',
+        '--pool-workers':'5', '--prefill-strategy':'throughput', '--short-read':'0'}.items()) and
+        args.count('--no-prefill-borrow') == 1 and cfg['family'] == 'qwen' and
+        cfg['model_name'] == 'qwen3.8-flash-next-iq3_s-primary',
         'frontend changed frozen placement/shape')
     if cfg['drafting'] == 'dflash2':
         require(value('--draft') == 'dflash2' and value('--draft-fallback') == 'none' and
-                value('--draft-conf') == '0' and '--mtp-draft-vocab' in args and '--mtp' not in args,
+                value('--draft-conf') == '0' and value('--draft-model') is not None and
+                Path(value('--draft-model')).resolve() == heads.model.mask.ring.PACK.resolve() and
+                value('--mtp-draft-vocab') == str(Path.home()/'.local/share/strata-sycl/mtp/rt/draft_vocab.bin') and
+                '--mtp' not in args,
                 'named DFlash2 did not survive production configuration')
-    else: require('--mtp' in args and '--draft' not in args, 'named MTP changed')
+    else: require(value('--mtp') == str(Path.home()/'.local/share/strata-sycl/mtp/rt') and
+                  '--draft' not in args, 'named MTP changed')
     print(json.dumps(dict(args=args, backend=server.drafting.detect_hardware())), flush=True)
 
 
@@ -266,10 +324,6 @@ def run(index):
     row = json.loads((ROOT / 'record.json').read_text()); manifest = current(row)
     require(row['stage'] in ('ready', 'running') and len(row['processes']) == index < len(ORDER) and
             all(p['passed'] for p in row['processes']), 'fresh frozen process order required')
-    # These scoped decision-support reviews are required before tuned execution.
-    for key in ('dflash2_tuned_long_shape_admission_20261108', 'dflash2_bench_clock_counter_contract_20261108'):
-        review = heads.model.validation.committed(heads.model.validation.INDEX, (key,))
-        require(review.get('long_benchmark_admission') is True, 'long source/counter review not yet admitted:' + key)
     plan = row['plans'][index]; root = Path(plan['root']); env = plan['environment']
     require(not (root / 'execution.json').exists(), 'no repeat of an existing process')
     kernel = heads.model.mask.ring.device.kernel_log
@@ -340,6 +394,8 @@ def run(index):
         require(client.verify_request_journal(outputs[0].parent)['valid'], 'invalid request journal')
         end = evidence.native_end(root, row, dict(config=dict(args=plan['native_args'])), row['boot'], entry['pid'])
         raw = (root / 'engine.stderr').read_bytes(); text = raw.decode()
+        require(text.count('strata serve: the prompt path allocates its own buffers ') == 1 and
+                'prompt path borrows' not in text, 'owned prompt buffer admission differs')
         heads.model.validation.preload_evidence(text, end['native']['pid'])
         require(not any(s in text for s in ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'terminate called', 'teardown uncertain')),
                 'native runtime failure')
