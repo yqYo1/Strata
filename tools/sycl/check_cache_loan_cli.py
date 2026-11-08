@@ -22,10 +22,10 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = source.P, source.B
-ROOT = B / 'dflash2-cache-loan-cli-v1'
+ROOT = B / 'dflash2-cache-loan-cli-v2'
 NATIVE = B / 'dflash2-cache-loan-native-v1'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'dflash2_cache_loan_cli_v1'
+KEY = 'dflash2_cache_loan_cli_v2'
 EVIDENCE = 'f2d679316bf454158ed99c2cc12276bbfac7ad41'
 BUILD_KEY = 'dflash2_cache_loan_native_build'
 INPUTS = ['tools/sycl/' + name for name in (
@@ -170,7 +170,10 @@ def prepare():
         dependency_command=['/usr/bin/ninja', '-C', str(NATIVE / 'build'), '-t', 'deps'],
         cases=cases(n['binaries']['strata']['path']), driver=guards.driver_guard(),
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
-        budgets=dict(wall=25, cpu=20, rss_cap=2 << 30, text_cap=2 << 20, file_cap=2 << 20, total_cap=16 << 20),
+        budgets=dict(wall=25, cpu=20, rss_cap=2 << 30, text_cap=2 << 20, file_cap=2 << 20, total_cap=64 << 20),
+        dependency_budgets=dict(wall=25, cpu=20, rss_cap=2 << 30, text_cap=32 << 20, file_cap=32 << 20, total_cap=64 << 20),
+        previous_metadata_failure=dict(key='dflash2_cache_loan_cli_v1',
+            reason='Original2MiB metadata envelope terminated Ninja via owned SIGTERM/reap before native execution. Preserve failed census;only metadata output budget grows to32MiB.'),
         criteria='First audit actual Ninja compiler deps/GNU ld -t inputs against original prebuild pins;'
             'only original owned generated outputs may be outside external pins. Then twelve separate immutable'
             'processes in listed order;all normal exit2 with the exact expected rejection and same-PID qualified'
@@ -249,7 +252,7 @@ def run():
             commands=owner.commands if owner else []))
     try:
         owner = ownership.Owner(ROOT / 'owned', persist)
-        entry, stdout, _ = owner.run('dependencies', row['dependency_command'], row['environment'], P, **row['budgets'])
+        entry, stdout, _ = owner.run('dependencies', row['dependency_command'], row['environment'], P, **row['dependency_budgets'])
         require(ownership.closed(entry) and entry['exit_code'] == 0, 'dependency metadata query failed')
         audit(row, stdout)
         row['case_results'] = []
