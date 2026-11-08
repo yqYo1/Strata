@@ -3185,9 +3185,13 @@ compiler/linker census covers 1461 frozen inputs, one owned generated header and
 calls: eight policy refusals and four CPU-only missing-pack inspections. V1's
 metadata budget stop and V2's incorrect expectation about SYCL's default
 no-token-graph flag remain failed. All five fixture ELFs match f633 bytes;this
-alone does not reuse native qualification. No GPU test has run on 90f. Next
-commit and execute small traced native checks and short-long-short/resumed-prefix
-borrowed-versus-owned model checks. These do not replace separate clean
+alone does not reuse native qualification. The same-build DFlash2 GEMM/tap
+fixture now passes all16cases at controller source `54c8b4f99` and plan
+`d4b373923`,with38actual executable mappings verified,normal exit0,reaped/empty
+ownership and no fresh GPU fault. Pre-main parameter validation and full API
+tracing remain enabled. This does not execute the changed main cache-loan policy
+or qualify all five fixtures. Next commit applicable remaining fixture evidence
+and bounded short-long-short/resumed-prefix borrowed-versus-owned model checks. These do not replace separate clean
 repeated speed, agent/task, physical 262144, tail, handoff, or RESTORE gates. Preserve the
 479a/552b validated fallback; the physical limiting resource remains unknown.
 Standard long/agent comparisons and independent prefill/decode selection remain
