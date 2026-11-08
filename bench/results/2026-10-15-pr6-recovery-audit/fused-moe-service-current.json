@@ -204774,9 +204774,9 @@
       "chat_template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
     },
     "provenance": "Main restoration adapted from original owned479a6fd OpenAI count route and current Niko-derived serializers; startup diagnostic gate is Main-authored. No XeStrata or new external implementation.",
-    "stage": "prepared",
-    "passed": false,
-    "complete": false,
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v2",
@@ -204833,6 +204833,172 @@
     "GPU_executed": false,
     "model_executed": false,
     "SDK_client_compatibility_qualified": false,
-    "retention": "Fresh V3 count/startup consumer. Exact source map and commands in prepared Git plan;preserve counts,skips,closure and decision,then retire normal test text."
+    "retention": "Fresh V3 count/startup consumer. Exact source map and commands in prepared Git plan;preserve counts,skips,closure and decision,then retire normal test text.",
+    "tests": [
+      {
+        "role": "count-api-and-benchmark",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 69,
+        "skipped": 0,
+        "skip_reasons": [],
+        "stdout_bytes": 12963,
+        "stderr_bytes": 10968
+      }
+    ],
+    "owned_commands": [
+      {
+        "label": "count-api-and-benchmark",
+        "argv": [
+          "/usr/bin/timeout",
+          "-k",
+          "5s",
+          "300s",
+          "/usr/bin/prlimit",
+          "--as=8589934592",
+          "--cpu=120",
+          "--fsize=8388608",
+          "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+          "-X",
+          "faulthandler",
+          "-B",
+          "-m",
+          "unittest",
+          "-v",
+          "serve.test_server.MaxTokens",
+          "serve.test_request_hardening",
+          "serve.test_anthropic_base_url.AnthropicBase.test_count_tokens_alias",
+          "serve.test_anthropic_base_url.AnthropicBase.test_only_the_two_messages_paths_are_aliased",
+          "tools.test_strata_bench"
+        ],
+        "environment": {
+          "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+          "PYTHONNOUSERSITE": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "LANG": "C.UTF-8",
+          "HOME": "/home/yayoi",
+          "LC_ALL": "C.UTF-8",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v2/tmp",
+          "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v2/cache",
+          "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v2/pycache",
+          "STRATA_BENCH_REAL_PACK": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+          "STRATA_BENCH_REAL_PACK_SHA256": "d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6"
+        },
+        "started_utc": "2026-11-08T03:34:35.676028+00:00",
+        "wall_seconds": 315,
+        "errors": [],
+        "owners": [
+          {
+            "pid": 2794490,
+            "start_ticks": 245763979,
+            "sid": 2794490,
+            "pgid": 2794490
+          },
+          {
+            "pid": 2794491,
+            "start_ticks": 245763980,
+            "sid": 2794490,
+            "pgid": 2794490
+          }
+        ],
+        "cleanup": [],
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "spawn_begin_monotonic": 2457639.797541116,
+        "pid": 2794490,
+        "spawn_return_monotonic": 2457639.801392816,
+        "direct_identity": {
+          "pid": 2794490,
+          "state": "R",
+          "ppid": 2794306,
+          "pgid": 2794490,
+          "sid": 2794490,
+          "start_ticks": 245763979,
+          "rss_bytes": 471040
+        },
+        "peak_live_owned_identities": 2,
+        "peak_session_rss_bytes": 237584384,
+        "survivors": [],
+        "ownership_status": "observed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-08T03:34:47.929499+00:00",
+        "elapsed_seconds": 12.253229484893382,
+        "logs": {
+          "count-api-and-benchmark.stdout": {
+            "bytes": 12963,
+            "sha256": "0d0160100fd41284ce258ddd710dfabc884d9807af866ad611c140b2145f3ab6"
+          },
+          "count-api-and-benchmark.stderr": {
+            "bytes": 10968,
+            "sha256": "aacd60b1b1494308f2b902390bb92bfd3715e7d9adcbcea03c0fafa3863d33f8"
+          }
+        }
+      }
+    ],
+    "criteria_passed": true,
+    "real_pack_exact_counts": [
+      {
+        "target_input_tokens": 73729,
+        "rendered_input_tokens": 73729,
+        "count_requests": 20,
+        "construction_seconds": 0.6255243429914117,
+        "body_sha256": "2147ee1952e5de3677430ef56dc7b9cb3bb4df24f7827bd92b4570040133c9b2",
+        "token_ids_sha256": "6144a3a087c4fef39d1804f0e6d7a42cf1b4b3335bf26371a9f5f03514a04b56",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      },
+      {
+        "target_input_tokens": 73730,
+        "rendered_input_tokens": 73730,
+        "count_requests": 19,
+        "construction_seconds": 0.5707369074225426,
+        "body_sha256": "d1b7ef1e9184c65740486699695a010043e1ea616167985303445887c8345905",
+        "token_ids_sha256": "5019bc4c47fdc5a9a25ed474acfb36e5ef3e7fc4c0c550d075aa1a760fcf819a",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      },
+      {
+        "target_input_tokens": 81921,
+        "rendered_input_tokens": 81921,
+        "count_requests": 20,
+        "construction_seconds": 0.6644798587076366,
+        "body_sha256": "5cecc6fd52c65a0c4fa79d9bad3dd5bce0760cda4aee9f0356a2a9f847aa654d",
+        "token_ids_sha256": "edd14a75ef8fa7a83ffe76fd722b904e91cf9a8372d644a59a2989b65b0fd62f",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      },
+      {
+        "target_input_tokens": 81922,
+        "rendered_input_tokens": 81922,
+        "count_requests": 18,
+        "construction_seconds": 0.5941682821139693,
+        "body_sha256": "9e11c7e0d73d207370b65cb6d38430550c5997bd04e29edb18a0f4ad42d4d82c",
+        "token_ids_sha256": "aebfe47bef099781f62a49900ecdd9cd778cb6394cdc773988f9054f42d782a0",
+        "native_engine_executed": false,
+        "physical_engine_rows_qualified": false
+      }
+    ],
+    "count_api_new_cases_passed": 3,
+    "decision": "69 CPU/mock HTTP/benchmark/count tests passed,no skips,normal0,reaped empty session. Four exact real-tokenizer bodies verified with inference disabled. Qualifies only the restored count/API and host benchmark controls at c9f4ce45d source. Optional SDK compatibility and native/performance/full-context qualification remain open.",
+    "original_prepared_plan_commit": "5266859bca5d28384653e1f67983f6ed2f3b95f2",
+    "diagnostic_outputs": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v2/owned/count-api-and-benchmark.stdout": {
+        "sha256": "0d0160100fd41284ce258ddd710dfabc884d9807af866ad611c140b2145f3ab6",
+        "bytes": 12963,
+        "reason": "Normal closed successful host output;compact cases/count proofs/ownership retained. Delete after evidence commit."
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v2/owned/count-api-and-benchmark.stderr": {
+        "sha256": "aacd60b1b1494308f2b902390bb92bfd3715e7d9adcbcea03c0fafa3863d33f8",
+        "bytes": 10968,
+        "reason": "Normal closed successful host output;compact cases/count proofs/ownership retained. Delete after evidence commit."
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-count-api-host-v2/record.json": {
+        "sha256": "616b33bb8001a8275a6393b88320d1a681a9cc27a8706d0320b0bfa78c9782b5",
+        "bytes": 3502,
+        "reason": "Normal closed successful host output;compact cases/count proofs/ownership retained. Delete after evidence commit."
+      }
+    }
   }
 }
