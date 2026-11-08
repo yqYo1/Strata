@@ -3110,8 +3110,15 @@ or explicit`--vision`and uses available MTP/off;named DFlash2 fails with a
 text-only reason before either encoder or model starts. Explicit MTP/off and
 legacy configs retain their selection,and text Auto remains available.
 The V2fixture's empty merge entry remains failed at`11e43b8f`;V3changes only
-that test tokenizer. No new native build,GPU execution or speed qualification
-follows from these host tests. Disk sessions,BGEN/capabilities,native v3.1 model
+that test tokenizer. The launcher capability correction at`77f33d93e`passes
+18CPU/mock cases with no skips and normal closed ownership at`6a4472bae`.
+An interpreter script without capability markers is unknown rather than proven
+unsupported;the actual`engine_once.py`retains named DFlash2/file-vocab arguments.
+An inspectable opaque native without drafter flags still selects MTP.
+The shared asset lookup now has a local`dflash2`symlink to the already verified
+stock pack beside the current model;no weights moved or duplicated. The planned
+production argument and native launch gates must verify this selection.
+No new native build,GPU execution or speed qualification follows from these host tests. Disk sessions,BGEN/capabilities,native v3.1 model
 behavior and the full bulk-import suite remain open.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.
