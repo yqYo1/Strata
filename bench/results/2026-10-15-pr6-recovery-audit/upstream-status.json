@@ -3460,7 +3460,7 @@
       }
     },
     "dflash2_prefill_heads": {
-      "stage": "source_added_unbuilt",
+      "stage": "host_policy_passed_native_build_pending",
       "adopted": false,
       "scope": "Optional target-head retirement during long layer-major prefill,single-card native spec4;MTP duplicate-head participant preserved or absent only when the DFlash2 owner is null after checked teardown. No new kernel math or default selection.",
       "resource_evidence": "Native target head is unused during layer-major prefill;its actual released bytes/free-memory delta and end-to-end benefit are to be measured.Hardware saturation remains unknown;this is an ownership gate,not a claimed bottleneck fix.",
@@ -3478,7 +3478,20 @@
         "error": "AttributeError: official_joint_sources has no attribute build;stale host-controller Git helper before root/plan creation",
         "native_launched": false,
         "correction": "Use build_upstream_features.source.git;commit corrected controller before preparing a fresh host plan."
-      }
+      },
+      "host_policy": {
+        "key": "optional_mtp_prefill_heads_host_v3",
+        "source_commit": "930bab9a7c842daf80243b3f7e41e0d0e40a634f",
+        "cases": 29,
+        "checks": 845,
+        "ASan_UBSan": "no diagnostics",
+        "ownership_closed": true,
+        "native_GPU_executed": false,
+        "compiler_input_files": 214,
+        "link_input_files": 28,
+        "uncovered": 0
+      },
+      "pending": "Source audit in parallel;recover/replace the closed unadopted f50candidate in place,build engine only,then prepare bounded real ownership/handoff cases."
     }
   }
 }

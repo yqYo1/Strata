@@ -3062,8 +3062,10 @@ already works with release controls0;expert release is inapplicable and cache
 scratch remains gated. The new source separates optional MTP weights/readers
 from the target head and checks that no DFlash2 owner is live before admitting
 release. It retains the MTP transition order and refuses `--mtp-max-t1` before
-pack/GPU initialization. It is unbuilt/unvalidated at this source boundary;
-29host ownership/failure cases and a new committed model plan precede execution.
+pack/GPU initialization. The host fixture passes29cases/845checks at controller
+source`930bab9a7`with214compiler and28link inputs covered,no sanitizer output
+and closed children. This proves host policy only;native rebuild and a new
+committed model plan still precede GPU ownership/handoff validation.
 Measure actual head bytes/free-memory and restore cost before claiming a gain.
 Then collect pinned bench.sh long/agent and
 thinking long-generation evidence. The short diagnostic keeps those three

@@ -201787,7 +201787,7 @@
     }
   },
   "optional_mtp_prefill_heads_host_v3": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "930bab9a7c842daf80243b3f7e41e0d0e40a634f",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -201873,11 +201873,32 @@
       "total_cap": 67108864
     },
     "criteria": "Twenty-nine host-only cases:the previous15 boundary/cache controls plus128admission rows (single/spec1..8/MTP/DFlash2/live-owner),optional MTP weight transitions for prompt success/false/throw and repeat request,target preparation false/throw,prepared cancellation,and MTP preflight refusal. The previous15 include two actual CacheScratchState poison reproductions,two preparation-before-activation failures,prepared cancellation on stale activation preflight,and joint prompt success/false/throw with checked retirement/refill. At least500checks. Exact committed inputs,actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
+    "compiled_inputs": {
+      "files": 214,
+      "uncovered": 0,
+      "aggregate_sha256": "4a347537e71ac6f218c165d924ea5b42abb0e847bfb2dd5193fc1fae2f55f84c"
+    },
+    "link_inputs": {
+      "files": 28,
+      "uncovered": 0,
+      "aggregate_sha256": "e18d3c44f1098200721911b3eadb1e75b606aad82da43a56f4f4fac39ea6cd17"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-head-scope-v3/prefill_head_scope",
+      "sha256": "58c1c6077aab9845fd9abb239e55667a733b3c15e1e3b0e0b75bf20c95d6877e",
+      "bytes": 1862536
+    },
+    "result": {
+      "kind": "prefill_head_scope",
+      "cases": 29,
+      "checks": 845,
+      "status": "PASS"
+    },
     "source_inputs": {
       "files": 265,
       "aggregate_sha256": "58fb39ec019652a761878c0ab6f5a31a348567899ca54ea2f3d6dc99073319fa"
