@@ -207776,5 +207776,42 @@
     },
     "environment_sha256": "a7f5782c61de5ccd79c3840659eed983f8575681be7e5fc1afc7ff9b2288c47b",
     "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51"
+  },
+  "dflash2_device_service_v1": {
+    "stage": "refused_before_host",
+    "source_commit": "a41f9b8db80859c7eb7bf6d8503aec2c9522eb92",
+    "source_inputs": {
+      "files": 624,
+      "sha256": "c0573977c0384d89a27927db8a6572971d156ceb88a4a0dff961a66eeb440131"
+    },
+    "intended_native_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+    "intended_binary_sha256": "90f7e1588640f8293d372888d78abae7f2958579175332ebec83aa64974003ce",
+    "recipe": {
+      "commit": "c730aeb9ddc3c385840af0171c1f76ec88037cd6",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json",
+      "key": "current_sync.dflash2_cache_loan_long_v1.plans[0]"
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "host_executed": false,
+    "model_executed": false,
+    "GPU_executed": false,
+    "input_coverage_defect": {
+      "path": "tests/core/test_decode_window_trace.py",
+      "sha256": "87752e2b336aaf9d43dc00f6207f8b06e30f33d76ff67013a71ccb341813b213",
+      "detection": "Main source review before host/model execution",
+      "reason": "The host command invokes this existing test outside the serve/tools source inventory;it must be explicitly pinned. No hash refresh or retrofit of a measured run.",
+      "CPU_tests_executed": false,
+      "model_executed": false,
+      "GPU_executed": false,
+      "next_action": "Commit this refused plan,then a new source/attempt with complete host-test/settings pins."
+    },
+    "closed_plan_record": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-device-service-v1/record.json",
+      "sha256": "c63e3c13b2c98cd6d2cab4a987a120fbd44b35687c5f09b53cb9a7c67ab30dc6"
+    },
+    "retention": "Unexecuted config/environment snapshots have no comparison consumer. Recover source/recipe,record their deletion hashes and retire this closed root;keep the compact preflight refusal. No measurement or native-fault result."
   }
 }
