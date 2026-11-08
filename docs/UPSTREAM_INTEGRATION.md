@@ -16,30 +16,29 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check and fetch | 2026-11-02 21:17:40 UTC / November 3 06:17 JST |
-| Observed upstream | `c62d5e3a15b40ea51c96aae9e8d36928965f53ab`, tagged `v0.2.9` |
-| Preceding actual check | 2026-10-31 21:13:43 UTC; the observed revision was unchanged |
-| Next check at the approximate 48-hour cadence | 2026-11-04 21:17 UTC / November 5 06:17 JST |
-| Complete feature ledger | Incomplete |
-| All required non-inference functions ported | Incomplete |
+| Last actual check and fetch | 2026-11-07 20:27:59 UTC / November 8 05:27:59 JST |
+| Observed upstream | `146df3c468739147f520ac3816de806f71232571`, `v0.2.11-98-g146df3c4` |
+| Next check at the approximate 48-hour cadence | 2026-11-09 20:27:59 UTC / November 10 05:27:59 JST |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Present as a partial functional import from `146df3c4`; full validation remains open |
+| Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
-| New inference adoption from the last check | None; that check did not change the engine |
+| New inference adoption from this check | None |
 
-These dates describe the last actual observations, not a new remote check on
-November 4. Fetching a release does not mean that all its functions were ported.
+The import record covers 630 changed paths in its named scope, including the
+current setup/model catalog, Python control and server/API/Web code, CLI
+integrations, packing/tokenizer helpers and upstream host tests. It preserves
+the local owned-file console shutdown repair and existing setup/benchmark
+adaptations. Focused configuration, streaming, API and CLI changes have their
+own host evidence; that does not complete the native function ledger or full
+host validation. The interval's changed source and partial status are recorded
+under `current_sync.functional_import` in the status file.
 
-The current bounded functional port is Niko commit `2ba95cf61f3d9187ee30c0410762b112d519cfae`:
-the web page uses an edited API key immediately, including when browser storage
-is blocked or full, and distinguishes saved from page-only keys. Source
-`792d9e668` passes Node syntax and all four focused behavior cases: immediate
-edits, blocked storage, failed writes with an older key, and clearing a key.
-Both commands exit normally with complete ownership observation. Full browser
-rendering is outside this host check. The original supervisor output-scope
-failure remains recorded separately; the passing plan keeps the same 8 MiB
-budget inside its private root.
-The exact source/runtime pins, commands and budgets are in
-`web_api_key_input_port` in the status file. This changes no inference path and
-does not complete the other UI or server imports.
+The current Unsloth v3.1 catalog/pinned metadata and stock DFlash2 pack are
+present. The native DFlash2 candidate is opt-in and its corrected 32,769-token
+route admission passed, but sustained thinking generation, clean paired speed,
+task quality, physical 262144/RESTORE and default adoption remain open. MTP
+selection for existing configs is preserved. These component and route checks
+do not qualify a model route or a new inference adoption.
 
 ## Remaining integration work
 
@@ -49,12 +48,14 @@ source identities, feature decisions and unfinished deltas. They are partial
 reviews, not a certified complete feature ledger. Preserve the original ported
 and tested records without converting pending functions into completed imports.
 
-Outstanding work includes sampling/configuration precedence and UI migration,
-thinking-budget/answer-room behavior, stream parsing and recovery, native
-batch/cache/restore protocol dependencies, CLI policies and subsequent API,
-setup and download changes. Reconcile each applicable function through the
-observed target. Required server/API/CLI/UI/setup functions must be preserved or
-adapted to this SYCL engine even when inference components are retained locally.
+Outstanding work includes the complete native function ledger and actual Arc
+entrypoint review; disk-session, BGEN/capability, tracking/recovery/alias and
+remaining API/CLI behaviors; complete host validation; and the unmodified
+upstream's hardware-tuned comparison. Reconcile each applicable function
+through the observed target. Required server/API/CLI/UI/setup functions must be
+preserved or adapted to this SYCL engine even when inference components are
+retained locally. Keep DeepSeek and 35B execution paths excluded unless the user
+explicitly requests them.
 
 Evaluate unmodified upstream with hardware-tuned settings and the maintained
 `bench.sh` workloads: long input, agent session, and thinking-enabled long
