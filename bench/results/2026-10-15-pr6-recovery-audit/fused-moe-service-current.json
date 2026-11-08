@@ -206046,5 +206046,104 @@
     },
     "isolation": "Primary12cache-loan and7generation-audit source hashes remain unchanged;the primary614-input generation comparison stays frozen. No parallel tests/builds/GPU/cleanup.",
     "retirement": "At this finite borrowed-path implementation/validation decision,integrate accepted code and original compact evidence into pushed feature/sycl,retire rejected active code via reachable history,and delete this finished child/worktree. No child native build exists yet."
+  },
+  "dflash2_cache_loan_heads_host_v1": {
+    "stage": "prepared",
+    "source_commit": "d6f7a8052846ff29c8d90fd2eb4beaa59b6f66f6",
+    "compiler": {
+      "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "sdk": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "native_build_source": "5ecb4435f8ac3bc5067554f368d0fa7424ec193f",
+    "sanitizer_link_inputs": {
+      "files": {
+        "/usr/lib/x86_64-linux-gnu/librt.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libresolv.so.2": "1d730ea434da5a5595bc6a961d7a9ace83e03703205df9644044b3dca79c362f"
+      },
+      "compiler_queries": [
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=librt.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/librt.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/librt.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libresolv.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libresolv.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libresolv.so.2"
+        }
+      ],
+      "packages": [
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libc6-dev:amd64 2.39-0ubuntu8.9"
+      ]
+    },
+    "environment_overrides": {
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/cache",
+      "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+    },
+    "environment_sha256": "b171f97c79be2ea0a8aad0bd9b1589520bd82811972303309323cd1220983bbc",
+    "commands": [
+      [
+        "compile",
+        [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-std=c++17",
+          "-O1",
+          "-g0",
+          "-fno-omit-frame-pointer",
+          "-fsanitize=address,undefined",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease/include",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/policy.d",
+          "-save-temps=obj",
+          "-v",
+          "-Wl,-t",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease/tests/sycl/prefill_head_scope.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope"
+        ]
+      ],
+      [
+        "policy",
+        [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope"
+        ]
+      ]
+    ],
+    "budgets": {
+      "wall": 90,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 1048576,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "expected_cases": 38,
+    "expected_checks": 854,
+    "criteria": "Host-only cases:the previous15 boundary/cache controls plus128admission rows (single/spec1..8/MTP/DFlash2/live-owner),optional MTP weight transitions for prompt success/false/throw and repeat request,target preparation false/throw,prepared cancellation,and MTP preflight refusal. The previous15 include two actual CacheScratchState poison reproductions,two preparation-before-activation failures,prepared cancellation on stale activation preflight,and joint prompt success/false/throw with checked retirement/refill. Nine additional draft-owner/width admission cases cover optional MTP cache loans; require the exact recorded case/check totals. Exact committed inputs,actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "source_inputs": {
+      "files": 268,
+      "aggregate_sha256": "3c384f973e00d5a9c1bb0dee848f83846c777c53956660b33a3d1008e12dfc25"
+    }
   }
 }
