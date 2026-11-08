@@ -6077,7 +6077,7 @@
       }
     },
     "dflash2_cache_loan_long_v1": {
-      "stage": "prepared",
+      "stage": "ready",
       "source_commit": "7b4425b22715c4f8b2febf7ec90c5b8034a653e4",
       "binary": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
@@ -6408,6 +6408,62 @@
             "--out",
             "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-long-v1/owned256/bench"
           ],
+          "native_args": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "65536",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "65536",
+            "--expert-cache",
+            "256",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "0",
+            "--prompt-cache",
+            "0",
+            "--turn-token",
+            "-1",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "0",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "700",
+            "--no-coupled-draft",
+            "--no-token-graph",
+            "--prefill-strategy",
+            "throughput",
+            "--no-prefill-borrow",
+            "--spec",
+            "4",
+            "--suffix-draft",
+            "0",
+            "--draft",
+            "dflash2",
+            "--draft-model",
+            "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+            "--draft-fallback",
+            "none",
+            "--mtp-draft-vocab",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+            "--draft-conf",
+            "0"
+          ],
           "environment_sha256": "fb67326a75d13b5be835e1fa62ba2b05a0fa25f0e901c5bb17cf1f42ff9a6197"
         },
         {
@@ -6621,10 +6677,82 @@
             "--out",
             "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-long-v1/borrowed1536/bench"
           ],
+          "native_args": [
+            "--pack",
+            "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+            "--native",
+            "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+            "--max-context",
+            "65536",
+            "--kv",
+            "int8",
+            "--kv-resident",
+            "65536",
+            "--expert-cache",
+            "1536",
+            "--expert-profile",
+            "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+            "--expert-cache-per-layer",
+            "--pool-workers",
+            "5",
+            "--pcie-frac",
+            "0",
+            "--adapt-swaps",
+            "0",
+            "--conversation-cache-mib",
+            "0",
+            "--prompt-cache",
+            "0",
+            "--turn-token",
+            "-1",
+            "--greedy",
+            "--no-spec-split",
+            "--short-read",
+            "0",
+            "--prefill",
+            "8192",
+            "--vram-reserve-mib",
+            "700",
+            "--no-coupled-draft",
+            "--no-token-graph",
+            "--prefill-strategy",
+            "throughput",
+            "--spec",
+            "4",
+            "--suffix-draft",
+            "0",
+            "--draft",
+            "dflash2",
+            "--draft-model",
+            "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+            "--draft-fallback",
+            "none",
+            "--mtp-draft-vocab",
+            "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+            "--draft-conf",
+            "0"
+          ],
           "environment_sha256": "914c0aa69b3a6b8d52a6c36a80114979075e8fd45e85abc3eb617852c4b07012"
         }
       ],
-      "host": [],
+      "host": [
+        {
+          "role": "tools/strata_bench.py",
+          "passed": true
+        },
+        {
+          "role": "serve/server.py",
+          "passed": true
+        },
+        {
+          "role": "owned256",
+          "passed": true
+        },
+        {
+          "role": "borrowed1536",
+          "passed": true
+        }
+      ],
       "processes": [],
       "passed": false,
       "complete": false,
@@ -6653,6 +6781,51 @@
         "decision": "Qualify capacity and first/subsequent observed PP/TTFT only. Record phase differences separately;24output is not sustained TG.A decode-side capacity gain does not adopt a slower prefill path. Preserve552b/e1b/f633 and choose feature generation after this gate.Next eligible screen uses>=1Kthinking outputs and matched repeats;agent/task/physical262144/tails/RESTORE stay pending.",
         "retention": "Keep compact samples,actual route/lease/capacity identities and decisions;normal raw logs/JIT/journals retire after verification.No new native generation. At long-model decision select the retained feature generation,then recover original source and retire extra build."
       },
+      "identity_host_gate": {
+        "passed": true,
+        "cases": 7,
+        "actual_status_fields": [
+          "pgid",
+          "pid",
+          "ppid",
+          "rss_bytes",
+          "sid",
+          "start_ticks",
+          "state"
+        ],
+        "identity_fields": [
+          "pid",
+          "sid",
+          "start_ticks"
+        ],
+        "source": "Current real /proc process,plus missing/foreign/stale identity negative cases;no GPU."
+      },
+      "host_commands": [
+        {
+          "label": "strata_bench",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null
+        },
+        {
+          "label": "server",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null
+        },
+        {
+          "label": "owned256",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null
+        },
+        {
+          "label": "borrowed1536",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null
+        }
+      ],
       "source_inputs": {
         "files": 617,
         "sha256": "d094b42dec3ee1f2b4d08ded601d2f6473b1fbeda3e9a93322cd690f305f2353"
