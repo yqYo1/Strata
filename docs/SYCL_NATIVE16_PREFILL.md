@@ -3343,8 +3343,9 @@ verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently208
-milestone rows,including eight compact CPU-GU points,the rejected packed-gather and activation-LUT stream comparisons and the two closed e1b011adaptive32/96code aggregates,
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently216
+milestone rows,including the first owned/borrowed DFlash2 thinking pair's four
+workload points,eight compact CPU-GU points,the rejected packed-gather and activation-LUT stream comparisons and the two closed e1b011adaptive32/96code aggregates,
 the four closed adaptive8/32code/prose aggregates,
 the four MTP-width,four earlier adaptive code/prose aggregates,the CPU
 read-payload calibration and the single13.94265TG resource-diagnostic sample.

@@ -132,6 +132,8 @@ add_executable(dflash2_pack_test EXCLUDE_FROM_ALL tests/core/dflash2_pack_test.c
 target_include_directories(dflash2_pack_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 add_executable(sycl_graph_envelope_test EXCLUDE_FROM_ALL tests/sycl/graph_envelope.cpp)
 target_link_libraries(sycl_graph_envelope_test PRIVATE strata_sycl_runtime)
+add_executable(sycl_profile_compat_window EXCLUDE_FROM_ALL tests/sycl/profile_compat_window.cpp)
+target_link_libraries(sycl_profile_compat_window PRIVATE strata_sycl_runtime)
 add_executable(iq2_phase_host_test EXCLUDE_FROM_ALL tests/cpu/iq2_phase.cpp)
 target_include_directories(iq2_phase_host_test PRIVATE ${PROJECT_SOURCE_DIR}/third_party/ggml)
 target_link_libraries(iq2_phase_host_test PRIVATE strata_kernels_cpu)

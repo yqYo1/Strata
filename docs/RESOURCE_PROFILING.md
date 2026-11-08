@@ -84,6 +84,10 @@ An SDK-only `command_graph` collection pass does not cover these wrappers.
 that adapter, its kernel submission hooks and checked completion/retirement,
 with two named integer kernels and guarded allocations. It requires an external
 owner to acknowledge each gate; its source alone establishes no collector result.
+The manual `sycl_profile_compat_window` CMake target links the production
+`strata_sycl_runtime`; it is excluded from the default build and from CTest.
+Its controlled build recipe, compiler-input census and execution owner must be
+committed before running it. Do not reuse an older SDK fixture's qualification.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction
