@@ -3056,8 +3056,10 @@ checks six later current-runtime pre-main proofs.
 Native default MTP and legacy explicit-MTP configs remain selected. The host
 Auto policy can choose DFlash2 on a fresh supported configuration;this candidate
 is not installed/default-adopted. Both fast phase references remain. Next:
-audit/adapt the long-prefill resource boundary's remaining MTP dependencies after its
-active read-only audit/review,then collect pinned bench.sh long/agent and
+split target-head/verifier retirement from optional MTP-head ownership,initially
+max_t4,as selected by the completed audit/review. Ordinary DFlash2 long-prefill
+already works with release controls0;expert release is inapplicable and cache
+scratch remains gated. Then collect pinned bench.sh long/agent and
 thinking long-generation evidence. The short diagnostic keeps those three
 resource controls0and proves no speed,task quality,physical262144/RESTORE or
 ordinary-provider-teardown qualification. `--mtp-max-t1`is an unqualified option
