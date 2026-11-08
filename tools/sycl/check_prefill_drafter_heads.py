@@ -18,7 +18,9 @@ import check_dflash2_model as model
 
 P, B, STATUS = model.P, model.B, model.STATUS
 build, source, guards, ownership = model.build, model.source, model.guards, model.ownership
-ROOT = B / 'prefill-drafter-heads-model-v1'
+ROOT = B / 'prefill-drafter-heads-model-v2'
+PREVIOUS = B / 'prefill-drafter-heads-model-v1'
+FAILURE_COMMIT = '8868b857cf52f733b82ce74c20318792948db873'
 KEY = 'dflash2_prefill_heads_check'
 HOST_KEY = 'optional_mtp_prefill_heads_host_v3'
 REVIEW_KEY = 'optional_mtp_prefill_heads_source_audit_20261108'
@@ -75,6 +77,23 @@ def generator_runtime():
         input_files=len(files), sha256=build.signature(files), inputs=files)
 
 
+def previous_failure():
+    path = PREVIOUS / 'record.json'; old = json.loads(path.read_text())
+    original = json.loads(source.git(P, 'show', FAILURE_COMMIT + ':' + str(STATUS.relative_to(P))))['current_sync'][KEY]
+    require(original == compact(old) and old['stage'] == 'failed' and not old['passed'] and
+        not old['ownership_closed'] and not old['fresh_faults'] and len(old['commands']) == 4 and
+        all(ownership.closed(c) and c['exit_code'] == 2 for c in old['commands'][:3]), 'preserve original refused cohort')
+    last = old['commands'][-1]
+    require(last['direct_child_reaped'] and last['session_empty'] and not last['survivors'] and
+        last['exit_code'] == -15 and 'prefill mixed scratch:' in old['error'] and
+        not json.loads((PREVIOUS / 'active.json').read_text())['active'] and
+        all(not Path('/proc', str(c['pid'])).exists() for c in old['commands']), 'prior physical owner remains')
+    return dict(record=dict(path=str(path), sha256=digest(path)), evidence_commit=FAILURE_COMMIT,
+        original_passed=False, original_ownership_qualified=False, physical_child_reaped=True,
+        physical_session_empty=True, no_survivors=True,
+        reason='V1inherited8192-only options into256chunk;native shape guard refused. Keep its failed/-15/cleanup outcome unchanged. New explicit small-shape configuration,new committed plan,same native binary.')
+
+
 def prior_contract(native):
     """Scope old arithmetic/ring evidence separately from NEW ownership code."""
     previous = json.loads((model.ROOT / 'record.json').read_text())
@@ -121,6 +140,7 @@ def verify(row, full=False):
     build.check_inputs(native)
     for artifact in native['binaries'].values(): require(digest(artifact['path']) == artifact['sha256'], 'native output changed')
     require(prior_contract(native) == row['component_reuse'], 'original component contract changed')
+    require(previous_failure() == row['previous_failure'], 'original refused cohort changed')
     host = model.validation.committed(model.RESULT, (HOST_KEY,))
     require(host == row['host_policy'] and host['passed'] and host['ownership_closed'] and
         host['result']['cases'] == 29 and host['result']['checks'] == 845, 'host ownership gate changed')
@@ -159,10 +179,13 @@ def prepare():
     args = list(previous['argv'][2:])  # after engine,--serve;keep exact target/placement/draft assets
     for flag, value in [('--prefill', '256'), ('--short-read', '128')]: args[args.index(flag) + 1] = value
     environment = dict(previous['environment'], STRATA_PREFILL_RELEASE_MTP_EXPERTS='0',
-        STRATA_SYCL_CACHE_SCRATCH_LEASE='0', STRATA_MTP_BATCH_F16='0', STRATA_SNAPSHOT_VERIFY='0')
+        STRATA_SYCL_CACHE_SCRATCH_LEASE='0', STRATA_MTP_BATCH_F16='0', STRATA_SNAPSHOT_VERIFY='0',
+        STRATA_SYCL_PREFILL_MOE_WINDOW='0', STRATA_SYCL_PREFILL_MIXED_SCRATCH='0',
+        STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR='0', STRATA_SYCL_PREFILL_SCORE_GEMM='0',
+        STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS='0', STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED='0')
     row = dict(stage='prepared', passed=False, ownership_closed=True, commands=[], cases=[],
         controller=source.pin(P, ['tools/sycl', 'tools/strata_tokenizer.py', 'data/expert-profile.bin']),
-        native_build=build.compact(native), component_reuse=prior_contract(native),
+        native_build=build.compact(native), component_reuse=prior_contract(native), previous_failure=previous_failure(),
         host_policy=host, host_record=dict(path=str(B / 'prefill-drafter-head-scope-v3/record.json'),
             sha256=digest(B / 'prefill-drafter-head-scope-v3/record.json')),
         source_review=review['native_review'], probe=probe, runtime_reuse=reuse,
@@ -184,6 +207,8 @@ def prepare():
         budgets=dict(wall=900, cpu=10800, text_cap=64 << 20, file_cap=64 << 20, total_cap=256 << 20, rss_cap=104 << 30),
         criteria='One source/binary,three owned processes in declared order,long/short/long32output requests in each.'
             'Thinking enabled,short-read128/chunk256:long layer-major twice and short windows once.'
+            'Explicitly disable8192-only MoE window,mixed/split scratch,score GEMM and smaller/packed expert bank;'
+            'ordinary full512bank/native16 remains. This is ownership diagnosis,not the tuned8192performance route.'
             'Each request starts RESUME0,completes extent,offers drafts and accepts at least one;no output equality requirement.'
             'Release1 emits two target detaches and expected optional draft reader;DF2 never detaches MTP weights.'
             'MTP release1 retains original duplicate-head ordering.Verifier/dense/canonical restored before decode;'
@@ -259,7 +284,13 @@ def run():
                 for kind in row['request_order']:
                     request = row['requests'][kind]; parser = model.protocol.RequestProtocol(request['prompt_tokens'], request['generated'])
                     io.send(model.wire(request['ids'], request['generated']))
-                    while parser.done is None: parser.feed(io.line(seconds=480))
+                    while parser.done is None:
+                        line = io.line(seconds=480)
+                        if line.startswith('ERR '):
+                            observed['native_error'] = line
+                            io.exit(60)  # let a normal native refusal close;success still requires exit0 below
+                            return
+                        parser.feed(line)
                     require(int(parser.done[7]) > 0, 'no draft offered')
                     observed['requests'].append(dict(kind=kind, prompt_tokens=request['prompt_tokens'],
                         generated=len(parser.tokens), accepted=int(parser.done[6]), offered=int(parser.done[7]),
