@@ -26466,5 +26466,80 @@
       "schedulable_now": false,
       "prerequisite": "Verify isolated report-only writable scope and actual bounded Task submission/resume before retrying the same failed Task in a fresh owned worker;never resume the failed Main-style activity. Follow current AGENTS.md."
     }
+  },
+  "implemented_dflash2_cache_loan_candidate_audit_20261108": {
+    "classification": "decision_support",
+    "state": "isolated_launch_preflight_passed_not_dispatched",
+    "scope": "Audit the new optional-MTP DFlash2 target-cache-loan implementation,actual admission/reader retirement/refill publication on cold/short/reused prompts,and the bounded CLI/model gates. This is changed-source verification after969e,not a duplicate pre-change feasibility survey.",
+    "scope_eligibility": {
+      "schedulable_now": true,
+      "evidence": "Candidate969e and15native inputs at591c are committed;host38/854passes at3c7;the prior short review aa5df5bd is available. Kernel/source metrics are unnecessary for this finite correctness/admission question."
+    },
+    "source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+    "source_root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease",
+    "source_files": {
+      "src/program/generate.cpp": "d515cca133732b5c0cb616b12846f54b9a0d3fa81bffac4a33966752709fba3a",
+      "src/prefill/prefill.cpp": "9a2b1f31efda8939bf9cfcd006e7ae398d9b7fb32e6c466a4c8a507e8e13a836",
+      "src/prefill/layer_major.inc": "c19f863417f0f96bd5e542050b646677aa94d5412dfa302f8bf9fd1a59a4109b",
+      "include/strata/core/cache_scratch_lease.hpp": "fd20165b5605e55a84c855e1181de1d8fd06738051ef07382df63462720f2122",
+      "include/strata/core/expert_cache.hpp": "168a1d2c3bddda4e2a2313bb51f0450b9634a4802039528992119ca5f926926f",
+      "src/core/expert_cache.cpp": "4330db0592bf7d860647fda5a7db9a7d2a2d2d35fcb28800bd2f918912abaf6e",
+      "include/strata/prefill/prefill.hpp": "1306f71204f34bdaae96794e8f5c4bfa22e133a7e52771d342f0a1055439a0f1",
+      "include/strata/prefill/scratch_allocation.hpp": "b7001b50bbf9576f750133047762f0dcf6a28c8b601a472a4503c3f2bf9290bd",
+      "include/strata/prefill/moe_accum_plan.hpp": "4f9d10a25a0d14ffe34ddceed064c2b60119c8bb8b5f2780818de77f4e71b3d7",
+      "include/strata/core/prefill_head_scope.hpp": "916bcf6ae377295c73747f0a05b4d4b06a41d0c74ff8779600c8d8b45bd6189d",
+      "src/core/verify.cpp": "bc884890d56263ba32ca653acd4c01aeb395113247d26a849b73fbcc5c27261e",
+      "include/strata/core/mtp.hpp": "ca2c05cf85b245c4cde2670d6ebe38b92ce2bc19607cd33e45af034821881ee8",
+      "src/core/dflash2.cpp": "a78dbd7f9f3c29d57be183273d4fe6e7f63ad76a9adb8a64dc57b7f008eca8d5",
+      "src/prefill/sycl/dflash2_taps.cpp": "377761dc6fa0c90dab9e114676317f34a5689d6068685dfe5041f0e44f2e6646",
+      "include/strata/prefill/draft_uploads.hpp": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908"
+    },
+    "inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-cache-loan-candidate-audit-20261108/inputs.json",
+      "sha256": "53d32cd9ecd4573a18c3fd4291f4821767c966d902f7ef26d04c0da02c5d9fad"
+    },
+    "spec": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-cache-loan-candidate-audit-20261108/TASK.md",
+      "sha256": "bcbbb4fc5762ad05cf56059926c20abd6da9eaec5fdaf996cf58aba15a1ab237"
+    },
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-cache-loan-candidate-audit-20261108/report.md"
+    },
+    "report_budget_bytes": 12288,
+    "previous_report_index": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
+    "previous_review": {
+      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-08/dflash2-cache-scratch-ownership/review.md",
+      "sha256": "aa5df5bd5627ebb287eb6cae00142d0dc492a7da38bfe0758ea649c7b973e443"
+    },
+    "launch_guard": {
+      "kind": "private bwrap namespace;report-only writable workspace and private application state;no shared daemon",
+      "namespace_preflight": {
+        "product_read_only": [
+          {
+            "path": "/home/yayoi/orca/workspaces/Strata/sycl/AGENTS.md",
+            "write_open_errno": 30
+          },
+          {
+            "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease/src/program/generate.cpp",
+            "write_open_errno": 30
+          }
+        ],
+        "report_writable": true,
+        "gpu_device_hidden": true,
+        "namespace_orca_status_exit": 0
+      },
+      "worker_side_orca_status": "Required before research;not yet proven by worker."
+    },
+    "worker": {
+      "state": "not_dispatched",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "medium"
+    },
+    "native_input_hold": {
+      "state": "hold_for_finite_readonly_candidate_audit",
+      "files": 15,
+      "release_point": "Actual worker closure and completed native gpt-6-luna-max review;Main keeps implementation/testing ownership."
+    },
+    "retention": "Task/inputs/patch/launch/runtime state are temporary until worker closure and native review. Keep substantive findings only if they support this current decision or a realistic retrieval;otherwise preserve compact outcome in this index and recover source via its commits. Delete private application/auth copies at closure without publishing their contents. Main does not read report bodies on arrival."
   }
 }
