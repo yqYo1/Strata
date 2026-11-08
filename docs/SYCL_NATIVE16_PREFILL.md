@@ -1776,8 +1776,8 @@ stores a separate uint16 interleave with padded output-row tails. The canonical
 weights and C1/prefill paths remain untouched. Its original reference is pinned
 MIT-licensed GGML`34ca79122`,not XeStrata;the local packing/kernel integration
 is authored here. Earlier compile/LLVM-text recipe failures remain failed in Git;
-ended partial builds are retired. The V5 native build at`44715a991`and recipe
-`3db30d920`is held only as the next fresh attempt's source/recipe template.
+ended partial builds are retired. The V5 source`44715a991`and recipe`3db30d920`
+remain recoverable;its unused build is retired after V7 source materialization.
 V6 passes16CPU readers,12CPU pack/shape controls and the exact linked ELF's
 two reachable GenX DPAS calls in its C4 SPIR-V image. This binds packaged device
 calls,not final ISA/utilization. Its first device attempt is refused before
