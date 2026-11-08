@@ -222014,7 +222014,7 @@
     ]
   },
   "q6_head_owner_v2": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "afbd954c0f5abad0a1488edbb791ed4c62833d78",
     "controller_commit": "484d403e60c49361422f00a16dfdd774e4fe90d5",
     "source_generation": {
@@ -222276,7 +222276,15 @@
       "retention": "V1 native source/build is shared by this named V2 qualification;no duplicate build. Retire ended raw/source/build after V2 closure and exact Git recovery;keep phase guards and separate legacy holds.",
       "acceptance_fix": "Set host_probe_accepted only after complete parsed owner,quiet parameter validation,normal0 and full asset agreement;then call the shared fault/closure finalizer. Original V1 remains failed."
     },
-    "results": [],
+    "results": [
+      {
+        "mode": "controls",
+        "passed": true,
+        "ownership_closed": true,
+        "tests": 14,
+        "GPU_executed": false
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "passed": false,
@@ -222372,6 +222380,14 @@
       "files": 1686,
       "aggregate_sha256": "b6ea708f610c3a07158683a434b00b32829ca4ecc2834f59e2b233c5b8689f6a"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "reader-parser-controls",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
