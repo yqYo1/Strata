@@ -1775,7 +1775,10 @@ quantization,uses two integer DPAS halves for the signed per16 scales,and
 stores a separate uint16 interleave with padded output-row tails. The canonical
 weights and C1/prefill paths remain untouched. Its original reference is pinned
 MIT-licensed GGML`34ca79122`,not XeStrata;the local packing/kernel integration
-is authored here. Follow`q6_dpas_component_v1`for the prospective input/build,
+is authored here. V1 failed before GPU execution because its fixture selected
+a capture-mode constant absent from this compatibility API. Its original failed
+result and source/recipe remain recoverable;the unused partial build is retired.
+V2 selects the supported thread-local mode. Follow`q6_dpas_component_v2`for the prospective input/build,
 CPU,small traced,full-head numerical and repeated ordinary-graph comparison.
 All12existing control translation units match the retained591c/90f source.
 Successful allocation,pack/upload cost and cold/warm scope must be recorded;

@@ -26,9 +26,9 @@ import ur_validation as validation
 import build_compat_profile as selected
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'q6-dpas-component-v1'
+ROOT = B / 'q6-dpas-component-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_dpas_component_v1'
+KEY = 'q6_dpas_component_v2'
 TARGET = 'sycl_q6_dpas_component'
 HELPERS = ('tools/sycl/q6_dpas_component.py','tools/sycl/test_q6_dpas_component.py',
     'tools/sycl/benchmark_runtime.py','tools/sycl/measurement_guards.py',
@@ -91,6 +91,11 @@ def dependency_pins(roots):
 
 def prepare():
     data = validation.committed(RESULT)
+    failed = data['q6_dpas_component_v1']
+    require(failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
+        and failed['ownership_closed'] and not failed['active'] and not failed['GPU_executed']
+        and failed['artifact_retirement']['state'] == 'deleted_verified',
+        'preserve and retire the pre-native V1 capture-mode compile failure first')
     previous = data['mapped_row_copy_graph_v1']
     require(previous['stage']=='closed' and previous['passed'] and previous['complete'] and
         previous['ownership_closed'] and not previous['active'] and
@@ -238,7 +243,7 @@ def prepare():
                                'preserve the partial component root. Original error: ' +
                                repr(error)) from persist_error
         raise
-    print('Prepared committed-source copy component;commit its exact plan before build.', flush=True)
+    print('Prepared committed-source Q6 DPAS component;commit its exact plan before build.', flush=True)
 
 def current(row):
     require(validation.committed(RESULT, (KEY,)) == compact(row), 'commit exact component state')
@@ -368,7 +373,8 @@ def execute(mode):
             outcome['build_commands']=[];outputs={}
             for name,command in [('configure',row['configure']),('build',row['build']),('codegen',row['codegen_command'])]:
                 e,out,err=scope.run(name,command,row['environment'],ROOT,**row['build_budget'])
-                require(owner.closed(e) and e['exit_code']==0,name+' failed:'+err.read_text()[-2500:])
+                require(owner.closed(e) and e['exit_code']==0,
+                    name+' failed:'+(out.read_text()+err.read_text())[-2500:])
                 outputs[name]=out;outcome['build_commands'].append(dict(name=name,exit_code=0,ownership_closed=True))
             path=ROOT/'q6-dpas.ll';ir=path.read_text()
             calls=[v for v in ir.splitlines() if 'call ' in v and ('__esimd_dpas' in v or 'llvm.genx.dpas' in v)]

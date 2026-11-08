@@ -92,7 +92,7 @@ struct Fixture {
         fill(7);
         for(int arm=0;arm<2;++arm) {
             cudaGraph_t graph=nullptr;
-            check(cudaStreamBeginCapture(stream,cudaStreamCaptureModeGlobal));
+            check(cudaStreamBeginCapture(stream,cudaStreamCaptureModeThreadLocal));
             try {
                 entry(arm,4);check(cudaStreamEndCapture(stream,&graph));
                 size_t nodes=0;check(cudaGraphGetNodes(graph,nullptr,&nodes));need(nodes==1,"exact one-node graph");
