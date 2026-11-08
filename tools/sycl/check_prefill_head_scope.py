@@ -30,7 +30,7 @@ def pins(revision):
     names = feature.source.git(P, 'ls-files', '-z', '--', 'tools/sycl').decode().strip('\0').split('\0')
     values = {}
     for name in [*names, TEST, HEADER, LEASE]:
-        raw = model.source.build.git(P, 'show', revision + ':' + name)
+        raw = feature.source.git(P, 'show', revision + ':' + name)
         require(raw == (P / name).read_bytes(), 'commit exact host source: ' + name)
         values[name] = hashlib.sha256(raw).hexdigest()
     return values
@@ -86,7 +86,7 @@ def sanitizer_links(environment):
 def prepare():
     require(not ROOT.exists() and KEY not in model.committed(RESULT), 'fresh host scope only')
     native, _ = inputs()
-    revision = model.source.build.git(P, 'rev-parse', 'HEAD').decode().strip()
+    revision = feature.source.git(P, 'rev-parse', 'HEAD').decode().strip()
     sources = pins(revision)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (ROOT / name).mkdir()
