@@ -48,6 +48,7 @@ public:
     size_t row_bytes() const { return n_out_ > 0 ? (size_t) (bytes_ / (uint64_t) n_out_) : 0; }
 
 private:
+    friend struct NativeHeadDpasTestAccess; // Read-only fixture address/backing observations.
     bool head_prepared_=false,head_detached_=false,head_release_used_=false;
     std::vector<uint8_t> head_snapshot_; // exact packed bytes, request-scoped RAM
     // Retain the new immutable layout in RAM, rather than copying it back over

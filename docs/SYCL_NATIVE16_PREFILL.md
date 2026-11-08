@@ -1828,6 +1828,13 @@ only the one measured head/decode-C4 cell is selected;the previous30/18/26
 selections,phase isolation and packed-route retirement controls remain intact.
 All174actual compiler and16link inputs match their196-file manifest.
 This does not execute the NativeHead/device owner or a model.
+The next fixture,`tests/sycl/native_head_dpas.cpp`,loads the actual mapped
+GGUF head and tests its public projection/release APIs. Its supervised
+`tools/sycl/q6_head_owner.py`plan freezes15translation units and the qualified
+toolchain/runtime. It runs reference0 then packed1 in fresh processes,with
+two retire/overwrite/restore cycles,all-byte canonical/packed checks and
+registered-address retirement. Its graphs belong to the fixture;the production
+Verifier lease and complete model still need their own qualification.
 Fresh native build/pack-owner/device-route checks,actual model speed,
 agent/long-thinking,phase preservation and physical262144/RESTORE qualification
 remain required. The component ratio is not a model-throughput result.
