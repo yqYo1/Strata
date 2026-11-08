@@ -3234,6 +3234,11 @@ Both processes finish both answers above5000characters. Each borrowed long
 prompt loans/refills1092slots. The speed direction differs by workload;one pair
 does not decide placement. Strong/weak classification still requires all three
 processes per placement.
+Three of six processes are now closed. The second borrowed process also exits
+normally without a fresh fault (evidence`781ddb3f7`):code PP578.0/TG12.2 and
+prose PP679.0/TG7.3tok/s,with the same actual input/output counts and draft
+counters as the first borrowed process. Its matched owned process is still
+pending;do not treat these three observations as three completed pairs.
 Next complete the frozen matched repetitions,then select the feature generation
 and retire the extra after original-source recovery. Validation/stage observers
 remain charged;clean speed and task quality are separate gates.
