@@ -220575,7 +220575,7 @@
     }
   },
   "q6_dpas_component_v6": {
-    "stage": "cpu-controlled",
+    "stage": "built",
     "source_commit": "44715a9917abdd341da44ae2638c6c91c7401ddf",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "58c297ae26dee6178fa13322460480be1392ec8d1beea4ae8a2c4f7d592cc95e",
@@ -220887,6 +220887,17 @@
         "tests": 16,
         "skipped": 0,
         "native_execution_attempted": false
+      },
+      {
+        "mode": "build",
+        "passed": true,
+        "host_probe_accepted": false,
+        "native_recompiled": false,
+        "native_execution_attempted": false,
+        "translation_units": 14,
+        "compiler_files": 800,
+        "external_link_files": 24,
+        "dpas_static_calls": 2
       }
     ],
     "timing": [],
@@ -220953,6 +220964,20 @@
       "native_inputs_unchanged": true,
       "previous_host_device_qualification_inherited": false,
       "reason": "V5 native compile/link succeeded;only optional LLVM-text output failed. New embedded-SPIR-V gate binds actual linked device code."
+    },
+    "codegen": {
+      "image_symbol": ".sycl_offloading.1.data",
+      "image_offset": 999552,
+      "image_bytes": 16520,
+      "image_sha256": "e9f6543e839747035fab433ec3cc6f773ddd69cb9eab36f89b6493b54cb46d8d",
+      "entrypoint": "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E",
+      "reachable_functions": 17,
+      "dpas_static_calls": 2,
+      "dpas_callees": [
+        "llvm.genx.dpas2.v64i32.v64i32.v128i32.v32i32"
+      ],
+      "device_images": 14,
+      "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
     },
     "source_inputs": {
       "files": 1283,
