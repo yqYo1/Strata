@@ -207827,7 +207827,7 @@
     }
   },
   "dflash2_device_service_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "66313f4f27ecd88cb465d7effcdf683e6275a5a1",
     "qualification": {
       "native_record": {
@@ -208501,13 +208501,11 @@
               "monotonic_ns": 2504390727470642,
               "raw_after_ns": 2504370843573001
             },
-            "begin": 9517,
             "end_clock": {
               "raw_before_ns": 2504431614605457,
               "monotonic_ns": 2504451499068520,
               "raw_after_ns": 2504431614606068
-            },
-            "end": 91953
+            }
           },
           {
             "begin_clock": {
@@ -208515,37 +208513,13 @@
               "monotonic_ns": 2504453669072804,
               "raw_after_ns": 2504433784590267
             },
-            "begin": 91953,
             "end_clock": {
               "raw_before_ns": 2504483431839198,
               "monotonic_ns": 2504503316781403,
               "raw_after_ns": 2504483431840300
-            },
-            "end": 174384
+            }
           }
         ],
-        "pre_main_validation": {
-          "pid": 354454,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "mapping": {
-          "files": 38,
-          "sha256": "76cb9d37f49f3aeb8f12fb4dcf4602b0420bcc634155cd0549cee51b63355bae",
-          "scope": "file-backed executable ELF mappings at READY",
-          "other_executable_vmas": {
-            "[vdso]": 1,
-            "[vsyscall]": 1
-          },
-          "full_executable_address_space_qualified": false
-        },
         "native_identity": {
           "pid": 354454,
           "start_ticks": 250427436,
@@ -208843,264 +208817,133 @@
         "samples": [
           {
             "ok": true,
-            "err": null,
             "ttft_s": 56.337,
             "total_s": 58.608,
             "prompt_tokens": 32769,
-            "reused_tokens": 0,
             "read_tokens": 32769,
+            "reused_tokens": 0,
             "generated_tokens": 24,
-            "prompt_tps": 583.5,
-            "prompt_tps_source": "engine",
-            "decode_tps": 9.9,
-            "decode_tps_source": "engine",
             "prompt_ms": 56154.6,
             "decode_ms": 2433.5,
+            "prompt_tps": 583.5,
+            "decode_tps": 9.9,
             "drafts_offered": 24,
             "drafts_accepted": 18,
-            "finish_reason": "length",
             "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "thinking_requested": true,
+            "reasoning_observed": true,
             "stream_complete": true,
-            "truncated": true,
-            "generated_tokens_source": "usage",
             "client_interval": {
               "request_begin_monotonic_ns": 2504392890578071,
               "first_output_monotonic_ns": 2504449227929448,
               "request_end_monotonic_ns": 2504451498938695
-            },
-            "output_chars": 0,
-            "reasoning_chars": 121,
-            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-            "eligible": true,
-            "eligibility_errors": [],
-            "requested_min_tokens": 32769,
-            "actual_prompt_tokens": 32769,
-            "actual_read_tokens": 32769,
-            "actual_reused_tokens": 0,
-            "prompt_count_source": "usage.prompt_tokens",
-            "read_count_source": "timings.prompt_n",
-            "reuse_counts_reported": {
-              "usage": 0,
-              "timings": 0
-            },
-            "long_input_extent": true,
-            "thinking_requested": true,
-            "reasoning_observed": true,
-            "reasoning_tokens_reported": null,
-            "timing_frontend_state": "post-count-preflight",
-            "exact_input_tokens": 32769,
-            "run": 0
+            }
           },
           {
             "ok": true,
-            "err": null,
             "ttft_s": 45.436,
             "total_s": 47.552,
             "prompt_tokens": 32769,
-            "reused_tokens": 0,
             "read_tokens": 32769,
+            "reused_tokens": 0,
             "generated_tokens": 24,
-            "prompt_tps": 726.6,
-            "prompt_tps_source": "engine",
-            "decode_tps": 9.9,
-            "decode_tps_source": "engine",
             "prompt_ms": 45098.5,
             "decode_ms": 2434.0,
+            "prompt_tps": 726.6,
+            "decode_tps": 9.9,
             "drafts_offered": 24,
             "drafts_accepted": 18,
-            "finish_reason": "length",
             "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "thinking_requested": true,
+            "reasoning_observed": true,
             "stream_complete": true,
-            "truncated": true,
-            "generated_tokens_source": "usage",
             "client_interval": {
               "request_begin_monotonic_ns": 2504455764652547,
               "first_output_monotonic_ns": 2504501200238277,
               "request_end_monotonic_ns": 2504503316661687
-            },
-            "output_chars": 0,
-            "reasoning_chars": 121,
-            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-            "eligible": true,
-            "eligibility_errors": [],
-            "requested_min_tokens": 32769,
-            "actual_prompt_tokens": 32769,
-            "actual_read_tokens": 32769,
-            "actual_reused_tokens": 0,
-            "prompt_count_source": "usage.prompt_tokens",
-            "read_count_source": "timings.prompt_n",
-            "reuse_counts_reported": {
-              "usage": 0,
-              "timings": 0
-            },
-            "long_input_extent": true,
-            "thinking_requested": true,
-            "reasoning_observed": true,
-            "reasoning_tokens_reported": null,
-            "timing_frontend_state": "post-count-preflight",
-            "exact_input_tokens": 32769,
-            "run": 1
-          }
-        ],
-        "routes": [
-          {
-            "rows": 32768,
-            "residual_gpu_bytes": 671088640,
-            "residual_host_bytes": 0,
-            "chunk": 8192,
-            "prefill_slots": 384,
-            "window_mode": 10,
-            "windows": 48,
-            "staged_bank_checked_drain": true,
-            "target_detached_bytes": 521472000,
-            "MTP_detached_bytes": 0,
-            "draft_reader": "absent-dflash2",
-            "DFlash2_tail_rows": 2046,
-            "DFlash2_cold_prefix": 0,
-            "nominal_MTP_callback_cells": 0,
-            "native_prompt_ms_rounded": 56155.0,
-            "native_prompt_pp_rounded": 583.5,
-            "prompt_includes_repeated_DFlash2_activation": true,
-            "GDN_columns": 4,
-            "GDN_barriers": 3,
-            "score_GEMM_requested": true,
-            "score_GEMM_command_dispatch_observed": false,
-            "physical_resource_saturation_qualified": false,
-            "loan": {
-              "pairs": 0
-            },
-            "rounded_decode_timing": {
-              "windows": 9,
-              "ms_per_window": {
-                "average_T": 3.67,
-                "tokens_per_window": 2.67,
-                "total": 270.38,
-                "verify": 259.08,
-                "GPU_reach_wait": 100.61,
-                "per_layer_host": 114.43,
-                "plan": 6.55,
-                "activation_quant": 0.36,
-                "jobs": 0.12,
-                "CPU_pool_run": 106.06,
-                "stage": 3.79,
-                "commit_emit": 0.13,
-                "draft": 11.14,
-                "CPU_experts": 22.72,
-                "CPU_entries": 33.45,
-                "VRAM_hits": 3.22,
-                "PCIe": 0.0
-              },
-              "outer_residual_ms_per_window": 0.03000000000002956,
-              "host_nested_residual_ms_per_window": 1.3400000000000034,
-              "work": {
-                "target_windows": 9,
-                "target_rows": 33,
-                "emitted_tokens": 24,
-                "target_rows_per_emitted": 1.375,
-                "cpu_unique_jobs": 9817,
-                "cpu_entries": 14451,
-                "cpu_unique_jobs_per_emitted": 409.0416666666667,
-                "minimum_NT1_jobs": 5183,
-                "minimum_NT1_job_fraction": 0.5279616990934094,
-                "expert_copy_requested_bytes": 0,
-                "mathematical_dot_equivalent_ops": 142059110400,
-                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
-              },
-              "clock_binding": {
-                "absolute_total_difference_ms": 0.07999999999992724,
-                "rounding_bound_ms": 0.095,
-                "average_quantum_ms": 0.01,
-                "DONE_total_quantum_ms": 0.1
-              },
-              "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
-            }
-          },
-          {
-            "rows": 32768,
-            "residual_gpu_bytes": 671088640,
-            "residual_host_bytes": 0,
-            "chunk": 8192,
-            "prefill_slots": 384,
-            "window_mode": 10,
-            "windows": 48,
-            "staged_bank_checked_drain": true,
-            "target_detached_bytes": 521472000,
-            "MTP_detached_bytes": 0,
-            "draft_reader": "absent-dflash2",
-            "DFlash2_tail_rows": 2046,
-            "DFlash2_cold_prefix": 0,
-            "nominal_MTP_callback_cells": 0,
-            "native_prompt_ms_rounded": 45098.0,
-            "native_prompt_pp_rounded": 726.6,
-            "prompt_includes_repeated_DFlash2_activation": true,
-            "GDN_columns": 4,
-            "GDN_barriers": 3,
-            "score_GEMM_requested": true,
-            "score_GEMM_command_dispatch_observed": false,
-            "physical_resource_saturation_qualified": false,
-            "loan": {
-              "pairs": 0
-            },
-            "rounded_decode_timing": {
-              "windows": 9,
-              "ms_per_window": {
-                "average_T": 3.67,
-                "tokens_per_window": 2.67,
-                "total": 270.44,
-                "verify": 259.55,
-                "GPU_reach_wait": 108.0,
-                "per_layer_host": 110.88,
-                "plan": 7.41,
-                "activation_quant": 0.36,
-                "jobs": 0.11,
-                "CPU_pool_run": 101.7,
-                "stage": 0.02,
-                "commit_emit": 0.24,
-                "draft": 10.61,
-                "CPU_experts": 22.73,
-                "CPU_entries": 33.42,
-                "VRAM_hits": 3.24,
-                "PCIe": 0.0
-              },
-              "outer_residual_ms_per_window": 0.03999999999996362,
-              "host_nested_residual_ms_per_window": 1.2999999999999972,
-              "work": {
-                "target_windows": 9,
-                "target_rows": 33,
-                "emitted_tokens": 24,
-                "target_rows_per_emitted": 1.375,
-                "cpu_unique_jobs": 9820,
-                "cpu_entries": 14439,
-                "cpu_unique_jobs_per_emitted": 409.1666666666667,
-                "minimum_NT1_jobs": 5201,
-                "minimum_NT1_job_fraction": 0.529633401221996,
-                "expert_copy_requested_bytes": 0,
-                "mathematical_dot_equivalent_ops": 141941145600,
-                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
-              },
-              "clock_binding": {
-                "absolute_total_difference_ms": 0.03999999999996362,
-                "rounding_bound_ms": 0.095,
-                "average_quantum_ms": 0.01,
-                "DONE_total_quantum_ms": 0.1
-              },
-              "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
             }
           }
         ],
         "ownership_closed": true,
         "fresh_faults": [],
-        "commands": [
+        "route_checks": {
+          "exact_32769_input_reuse0": true,
+          "chunk8192": true,
+          "residual_gpu_bytes": 671088640,
+          "residual_host_bytes": 0,
+          "packed_bank384_checked_drain": true,
+          "target_detached_bytes": 521472000,
+          "MTP_detached_bytes": 0,
+          "draft_reader": "absent-dflash2",
+          "DFlash2_tail_rows": 2046,
+          "DFlash2_cold_prefix": 0,
+          "loan_pairs": 0,
+          "prompt_includes_DFlash2_activation": true
+        },
+        "rounded_window_timing": [
           {
-            "label": "bench",
-            "exit_code": 0,
-            "ownership_closed": true,
-            "error": null,
-            "errors": []
+            "windows": 9,
+            "ms_per_window": {
+              "average_T": 3.67,
+              "tokens_per_window": 2.67,
+              "total": 270.38,
+              "verify": 259.08,
+              "GPU_reach_wait": 100.61,
+              "per_layer_host": 114.43,
+              "CPU_pool_run": 106.06,
+              "draft": 11.14
+            },
+            "work": {
+              "target_windows": 9,
+              "target_rows": 33,
+              "emitted_tokens": 24,
+              "target_rows_per_emitted": 1.375,
+              "cpu_unique_jobs": 9817,
+              "cpu_entries": 14451,
+              "cpu_unique_jobs_per_emitted": 409.0416666666667,
+              "minimum_NT1_jobs": 5183,
+              "minimum_NT1_job_fraction": 0.5279616990934094,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 142059110400,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            }
+          },
+          {
+            "windows": 9,
+            "ms_per_window": {
+              "average_T": 3.67,
+              "tokens_per_window": 2.67,
+              "total": 270.44,
+              "verify": 259.55,
+              "GPU_reach_wait": 108.0,
+              "per_layer_host": 110.88,
+              "CPU_pool_run": 101.7,
+              "draft": 10.61
+            },
+            "work": {
+              "target_windows": 9,
+              "target_rows": 33,
+              "emitted_tokens": 24,
+              "target_rows_per_emitted": 1.375,
+              "cpu_unique_jobs": 9820,
+              "cpu_entries": 14439,
+              "cpu_unique_jobs_per_emitted": 409.1666666666667,
+              "minimum_NT1_jobs": 5201,
+              "minimum_NT1_job_fraction": 0.529633401221996,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 141941145600,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            }
           }
-        ]
+        ],
+        "runtime_validation": {
+          "before_main_parameter_validation": true,
+          "quiet": true,
+          "retained_reference_until_exit": true,
+          "ordinary_teardown_qualified": false,
+          "mapped_ELF_count": 38,
+          "mapped_ELF_sha256": "76cb9d37f49f3aeb8f12fb4dcf4602b0420bcc634155cd0549cee51b63355bae"
+        }
       },
       {
         "label": "profile",
@@ -209120,13 +208963,11 @@
               "monotonic_ns": 2505251953187923,
               "raw_after_ns": 2505232061686476
             },
-            "begin": 40188,
             "end_clock": {
               "raw_before_ns": 2505296786973860,
               "monotonic_ns": 2505316679016225,
               "raw_after_ns": 2505296786974642
-            },
-            "end": 122680
+            }
           },
           {
             "begin_clock": {
@@ -209134,37 +208975,13 @@
               "monotonic_ns": 2505319108802255,
               "raw_after_ns": 2505299216740318
             },
-            "begin": 122680,
             "end_clock": {
               "raw_before_ns": 2505353995716780,
               "monotonic_ns": 2505373888238963,
               "raw_after_ns": 2505353995717531
-            },
-            "end": 205167
+            }
           }
         ],
-        "pre_main_validation": {
-          "pid": 383195,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "mapping": {
-          "files": 39,
-          "sha256": "4d47d905c7e8b5262db7a9989ae6d616912b5b22c2ccaa1cbce5c8657f9a9975",
-          "scope": "file-backed executable ELF mappings at READY",
-          "other_executable_vmas": {
-            "[vdso]": 1,
-            "[vsyscall]": 1
-          },
-          "full_executable_address_space_qualified": false
-        },
         "native_identity": {
           "pid": 383195,
           "start_ticks": 250511703,
@@ -209462,250 +209279,50 @@
         "samples": [
           {
             "ok": true,
-            "err": null,
             "ttft_s": 59.287,
             "total_s": 62.545,
             "prompt_tokens": 32769,
-            "reused_tokens": 0,
             "read_tokens": 32769,
+            "reused_tokens": 0,
             "generated_tokens": 24,
-            "prompt_tps": 556.4,
-            "prompt_tps_source": "engine",
-            "decode_tps": 6.6,
-            "decode_tps_source": "engine",
             "prompt_ms": 58899.6,
             "decode_ms": 3625.7,
+            "prompt_tps": 556.4,
+            "decode_tps": 6.6,
             "drafts_offered": 24,
             "drafts_accepted": 18,
-            "finish_reason": "length",
             "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "thinking_requested": true,
+            "reasoning_observed": true,
             "stream_complete": true,
-            "truncated": true,
-            "generated_tokens_source": "usage",
             "client_interval": {
               "request_begin_monotonic_ns": 2505254133353017,
               "first_output_monotonic_ns": 2505313419880456,
               "request_end_monotonic_ns": 2505316678903974
-            },
-            "output_chars": 0,
-            "reasoning_chars": 121,
-            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-            "eligible": true,
-            "eligibility_errors": [],
-            "requested_min_tokens": 32769,
-            "actual_prompt_tokens": 32769,
-            "actual_read_tokens": 32769,
-            "actual_reused_tokens": 0,
-            "prompt_count_source": "usage.prompt_tokens",
-            "read_count_source": "timings.prompt_n",
-            "reuse_counts_reported": {
-              "usage": 0,
-              "timings": 0
-            },
-            "long_input_extent": true,
-            "thinking_requested": true,
-            "reasoning_observed": true,
-            "reasoning_tokens_reported": null,
-            "timing_frontend_state": "post-count-preflight",
-            "exact_input_tokens": 32769,
-            "run": 0
+            }
           },
           {
             "ok": true,
-            "err": null,
             "ttft_s": 49.482,
             "total_s": 52.63,
             "prompt_tokens": 32769,
-            "reused_tokens": 0,
             "read_tokens": 32769,
+            "reused_tokens": 0,
             "generated_tokens": 24,
-            "prompt_tps": 667.5,
-            "prompt_tps_source": "engine",
-            "decode_tps": 6.8,
-            "decode_tps_source": "engine",
             "prompt_ms": 49093.4,
             "decode_ms": 3516.5,
+            "prompt_tps": 667.5,
+            "decode_tps": 6.8,
             "drafts_offered": 24,
             "drafts_accepted": 18,
-            "finish_reason": "length",
             "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "thinking_requested": true,
+            "reasoning_observed": true,
             "stream_complete": true,
-            "truncated": true,
-            "generated_tokens_source": "usage",
             "client_interval": {
               "request_begin_monotonic_ns": 2505321257497170,
               "first_output_monotonic_ns": 2505370739068809,
               "request_end_monotonic_ns": 2505373888110862
-            },
-            "output_chars": 0,
-            "reasoning_chars": 121,
-            "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            "reasoning_sha256": "0d786145d04b965534c72ea005fcccb9fb3a7e2552f6dda1bf32578d1916b8b2",
-            "eligible": true,
-            "eligibility_errors": [],
-            "requested_min_tokens": 32769,
-            "actual_prompt_tokens": 32769,
-            "actual_read_tokens": 32769,
-            "actual_reused_tokens": 0,
-            "prompt_count_source": "usage.prompt_tokens",
-            "read_count_source": "timings.prompt_n",
-            "reuse_counts_reported": {
-              "usage": 0,
-              "timings": 0
-            },
-            "long_input_extent": true,
-            "thinking_requested": true,
-            "reasoning_observed": true,
-            "reasoning_tokens_reported": null,
-            "timing_frontend_state": "post-count-preflight",
-            "exact_input_tokens": 32769,
-            "run": 1
-          }
-        ],
-        "routes": [
-          {
-            "rows": 32768,
-            "residual_gpu_bytes": 671088640,
-            "residual_host_bytes": 0,
-            "chunk": 8192,
-            "prefill_slots": 384,
-            "window_mode": 10,
-            "windows": 48,
-            "staged_bank_checked_drain": true,
-            "target_detached_bytes": 521472000,
-            "MTP_detached_bytes": 0,
-            "draft_reader": "absent-dflash2",
-            "DFlash2_tail_rows": 2046,
-            "DFlash2_cold_prefix": 0,
-            "nominal_MTP_callback_cells": 0,
-            "native_prompt_ms_rounded": 58900.0,
-            "native_prompt_pp_rounded": 556.4,
-            "prompt_includes_repeated_DFlash2_activation": true,
-            "GDN_columns": 4,
-            "GDN_barriers": 3,
-            "score_GEMM_requested": true,
-            "score_GEMM_command_dispatch_observed": false,
-            "physical_resource_saturation_qualified": false,
-            "loan": {
-              "pairs": 0
-            },
-            "rounded_decode_timing": {
-              "windows": 9,
-              "ms_per_window": {
-                "average_T": 3.67,
-                "tokens_per_window": 2.67,
-                "total": 402.86,
-                "verify": 385.1,
-                "GPU_reach_wait": 139.54,
-                "per_layer_host": 124.42,
-                "plan": 13.46,
-                "activation_quant": 0.36,
-                "jobs": 0.12,
-                "CPU_pool_run": 98.4,
-                "stage": 4.61,
-                "commit_emit": 0.51,
-                "draft": 17.23,
-                "CPU_experts": 22.72,
-                "CPU_entries": 33.45,
-                "VRAM_hits": 3.22,
-                "PCIe": 0.0
-              },
-              "outer_residual_ms_per_window": 0.01999999999998181,
-              "host_nested_residual_ms_per_window": 12.079999999999998,
-              "work": {
-                "target_windows": 9,
-                "target_rows": 33,
-                "emitted_tokens": 24,
-                "target_rows_per_emitted": 1.375,
-                "cpu_unique_jobs": 9817,
-                "cpu_entries": 14451,
-                "cpu_unique_jobs_per_emitted": 409.0416666666667,
-                "minimum_NT1_jobs": 5183,
-                "minimum_NT1_job_fraction": 0.5279616990934094,
-                "expert_copy_requested_bytes": 0,
-                "mathematical_dot_equivalent_ops": 142059110400,
-                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
-              },
-              "clock_binding": {
-                "absolute_total_difference_ms": 0.04000000000041837,
-                "rounding_bound_ms": 0.095,
-                "average_quantum_ms": 0.01,
-                "DONE_total_quantum_ms": 0.1
-              },
-              "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
-            }
-          },
-          {
-            "rows": 32768,
-            "residual_gpu_bytes": 671088640,
-            "residual_host_bytes": 0,
-            "chunk": 8192,
-            "prefill_slots": 384,
-            "window_mode": 10,
-            "windows": 48,
-            "staged_bank_checked_drain": true,
-            "target_detached_bytes": 521472000,
-            "MTP_detached_bytes": 0,
-            "draft_reader": "absent-dflash2",
-            "DFlash2_tail_rows": 2046,
-            "DFlash2_cold_prefix": 0,
-            "nominal_MTP_callback_cells": 0,
-            "native_prompt_ms_rounded": 49093.0,
-            "native_prompt_pp_rounded": 667.5,
-            "prompt_includes_repeated_DFlash2_activation": true,
-            "GDN_columns": 4,
-            "GDN_barriers": 3,
-            "score_GEMM_requested": true,
-            "score_GEMM_command_dispatch_observed": false,
-            "physical_resource_saturation_qualified": false,
-            "loan": {
-              "pairs": 0
-            },
-            "rounded_decode_timing": {
-              "windows": 9,
-              "ms_per_window": {
-                "average_T": 3.67,
-                "tokens_per_window": 2.67,
-                "total": 390.72,
-                "verify": 373.96,
-                "GPU_reach_wait": 145.29,
-                "per_layer_host": 122.24,
-                "plan": 12.54,
-                "activation_quant": 0.36,
-                "jobs": 0.13,
-                "CPU_pool_run": 97.32,
-                "stage": 0.02,
-                "commit_emit": 0.4,
-                "draft": 16.35,
-                "CPU_experts": 22.73,
-                "CPU_entries": 33.42,
-                "VRAM_hits": 3.24,
-                "PCIe": 0.0
-              },
-              "outer_residual_ms_per_window": 0.010000000000047748,
-              "host_nested_residual_ms_per_window": 11.89,
-              "work": {
-                "target_windows": 9,
-                "target_rows": 33,
-                "emitted_tokens": 24,
-                "target_rows_per_emitted": 1.375,
-                "cpu_unique_jobs": 9820,
-                "cpu_entries": 14439,
-                "cpu_unique_jobs_per_emitted": 409.1666666666667,
-                "minimum_NT1_jobs": 5201,
-                "minimum_NT1_job_fraction": 0.529633401221996,
-                "expert_copy_requested_bytes": 0,
-                "mathematical_dot_equivalent_ops": 141941145600,
-                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
-              },
-              "clock_binding": {
-                "absolute_total_difference_ms": 0.019999999999527063,
-                "rounding_bound_ms": 0.095,
-                "average_quantum_ms": 0.01,
-                "DONE_total_quantum_ms": 0.1
-              },
-              "limits": "Existing rounded nested host wall clocks,not additive hardware costs. CPU_pool_run includes scheduling/waits;GPU_reach_wait is not device arithmetic service. No clean-speed/saturation qualification."
             }
           }
         ],
@@ -209735,10 +209352,6 @@
                   "fill": 743,
                   "copy": 8988
                 },
-                "outside_window_events": {
-                  "cpu_op": 1514048,
-                  "gpu_op": 474671
-                },
                 "boundary_crossing_counts": {},
                 "wholly_contained_requested_payload_bytes": {
                   "fill": 228249600,
@@ -209761,86 +209374,6 @@
                     "kind": "kernel",
                     "count": 371,
                     "clipped_sum_us": 186532.45361328125
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::down_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "7f2c2a7853d4059c3195cea97def45eac3b0fa1a08a89cbac1d73bfdb9099f8f",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 2976,
-                    "clipped_sum_us": 54298.962890625
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "8615747a86e9c9bd0c7a8d2561223e33b9709f2ec09e209f39ca02225de4ad92",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 369,
-                    "clipped_sum_us": 47924.32666015625
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::IQ4NLBlock, 4>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "5757762b295b1d72044742db244a7bd79e82311d573df7511ada181da5e6ffdf",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 365,
-                    "clipped_sum_us": 37839.13134765625
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::up_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "e3d15bf7ddb28cc0f94848463000adae201c65165f70ad1fd623b2bae4495406",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 2976,
-                    "clipped_sum_us": 35968.91064453125
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::IQ4XSTraits, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "16367831f583ab2a33b38953872b5da743edfc32f7dc92fc1231b1cf0d7b9eb8",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 331,
-                    "clipped_sum_us": 31410.072265625
-                  },
-                  {
-                    "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
-                    "name_sha256": "e1a798bee8aea72c65ef0ce7d8e51883726bbfae643c9bace063e24b80d7130b",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 361,
-                    "clipped_sum_us": 23079.11865234375
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ2STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
-                    "name_sha256": "913408b474b87b8c389dd30c42659019517aa231a7e89dc0f65f57a0696ac091",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 316,
-                    "clipped_sum_us": 20724.43359375
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::grouped<20>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
-                    "name_sha256": "1e225da21a072148930b80734c605c2db3a42b8c4b85d68243483601e4fc93c9",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 601,
-                    "clipped_sum_us": 20626.91162109375
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::recurrence(float*, float const*, float const*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, bool, int, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "b2470058aea8a3e9576dce0744db219f070ddc4afbf7b11471863653d91aed8a",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 531,
-                    "clipped_sum_us": 18393.12109375
-                  },
-                  {
-                    "name": "strata::kernels::native_quantize_q8_1(float const*, void*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "719e8497c59845019781d9eada531ad3da2df0d595d7e97d1898df2e476d1878",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 2617,
-                    "clipped_sum_us": 18292.97119140625
                   }
                 ],
                 "largest_observed_host_apis": [
@@ -209871,62 +209404,6 @@
                     "name_truncated": false,
                     "count": 82,
                     "clipped_sum_us": 38057.96142578125
-                  },
-                  {
-                    "name": "zeCommandListImmediateAppendCommandListsExp",
-                    "name_sha256": "ca60597c81b453f1a3c7dc9cb0c4a52c10c96a9aaac3ea1ac5537825b0ebd42d",
-                    "name_truncated": false,
-                    "count": 758,
-                    "clipped_sum_us": 27477.51904296875
-                  },
-                  {
-                    "name": "zeCommandListAppendLaunchKernelWithArguments",
-                    "name_sha256": "6486f828a0e0a3934eb9a5d49ff910eac4bdee0e9dbd8eb0d2460b3090fa44bb",
-                    "name_truncated": false,
-                    "count": 3368,
-                    "clipped_sum_us": 23918.31591796875
-                  },
-                  {
-                    "name": "zeEventQueryStatus",
-                    "name_sha256": "0446a10b55f2ba20d6e5693b057b98a6c844e055e7fde5f53e2a7a9a3ff2ab21",
-                    "name_truncated": false,
-                    "count": 743,
-                    "clipped_sum_us": 10646.93896484375
-                  },
-                  {
-                    "name": "zeCommandListAppendMemoryCopy",
-                    "name_sha256": "33e4ed26f42a7758673423296d18c049caf43a5b938b89f34a3b97d686663555",
-                    "name_truncated": false,
-                    "count": 1045,
-                    "clipped_sum_us": 4207.4931640625
-                  },
-                  {
-                    "name": "zeCommandListAppendMemoryFill",
-                    "name_sha256": "deb7dcb31151adeb610ed559d3eb4f7e92fa629c9d828d6dcec6333c0195a383",
-                    "name_truncated": false,
-                    "count": 82,
-                    "clipped_sum_us": 1047.2421875
-                  },
-                  {
-                    "name": "zeKernelSetGroupSize",
-                    "name_sha256": "fe45e80c3c5e53b94ddba14b9c26afb4d870c258a8a0f928059dfda47a209f87",
-                    "name_truncated": false,
-                    "count": 3368,
-                    "clipped_sum_us": 347.9833984375
-                  },
-                  {
-                    "name": "zeKernelSuggestGroupSize",
-                    "name_sha256": "952d93f3c7c8dfc4a0fe444916824751155efa194cb4a15a94445b908fb265f5",
-                    "name_truncated": false,
-                    "count": 616,
-                    "clipped_sum_us": 296.0146484375
-                  },
-                  {
-                    "name": "zexCounterBasedEventCreate2",
-                    "name_sha256": "eaebf6e210d22babfd1a63e63e8d3572736519bfd9777b4fef7eb74d9da3966a",
-                    "name_truncated": false,
-                    "count": 768,
-                    "clipped_sum_us": 184.29052734375
                   }
                 ],
                 "included_gpu_ids_unique": true,
@@ -209980,10 +209457,6 @@
                   "fill": 750,
                   "copy": 9084
                 },
-                "outside_window_events": {
-                  "cpu_op": 1515677,
-                  "gpu_op": 474319
-                },
                 "boundary_crossing_counts": {},
                 "wholly_contained_requested_payload_bytes": {
                   "fill": 230400000,
@@ -210006,86 +209479,6 @@
                     "kind": "kernel",
                     "count": 375,
                     "clipped_sum_us": 215580.37255859375
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::down_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "7f2c2a7853d4059c3195cea97def45eac3b0fa1a08a89cbac1d73bfdb9099f8f",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 3008,
-                    "clipped_sum_us": 54820.3828125
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::Q6KTraits, 1, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "8615747a86e9c9bd0c7a8d2561223e33b9709f2ec09e209f39ca02225de4ad92",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 374,
-                    "clipped_sum_us": 48010.37646484375
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::SmallTraits<strata::kernels::(anonymous namespace)::IQ4NLBlock, 4>, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "5757762b295b1d72044742db244a7bd79e82311d573df7511ada181da5e6ffdf",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 368,
-                    "clipped_sum_us": 38240.6787109375
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::up_esimd(strata::kernels::FusedGrArgs, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "e3d15bf7ddb28cc0f94848463000adae201c65165f70ad1fd623b2bae4495406",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 3008,
-                    "clipped_sum_us": 36433.26025390625
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::launch<strata::kernels::(anonymous namespace)::IQ4XSTraits, 4, 4>(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "16367831f583ab2a33b38953872b5da743edfc32f7dc92fc1231b1cf0d7b9eb8",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 332,
-                    "clipped_sum_us": 31727.88720703125
-                  },
-                  {
-                    "name": "strata::kernels::native_q4_k_esimd(void const*, void const*, float*, int, int, int, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
-                    "name_sha256": "e1a798bee8aea72c65ef0ce7d8e51883726bbfae643c9bace063e24b80d7130b",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 364,
-                    "clipped_sum_us": 23315.88671875
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::grouped_projection<strata::kernels::(anonymous namespace)::IQ2STraits, false>(strata::kernels::NativeExpertLayout const&, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, strata::kernels::(anonymous namespace)::Q81Block const*, float*, float*, float*, int, sycl::_V1::queue&)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<2>)#1}",
-                    "name_sha256": "913408b474b87b8c389dd30c42659019517aa231a7e89dc0f65f57a0696ac091",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 318,
-                    "clipped_sum_us": 21027.26318359375
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::grouped<20>(bool, strata::kernels::NativeExpertLayout, unsigned long long const*, int const*, int const*, int const*, int const*, int, int, void const*, float*, float*, float*, void*)::{lambda(sycl::_V1::nd_item<2>)#1}",
-                    "name_sha256": "1e225da21a072148930b80734c605c2db3a42b8c4b85d68243483601e4fc93c9",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 606,
-                    "clipped_sum_us": 20810.3330078125
-                  },
-                  {
-                    "name": "strata::kernels::native_quantize_q8_1(float const*, void*, int, int, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "719e8497c59845019781d9eada531ad3da2df0d595d7e97d1898df2e476d1878",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 2641,
-                    "clipped_sum_us": 18503.91796875
-                  },
-                  {
-                    "name": "strata::kernels::(anonymous namespace)::recurrence(float*, float const*, float const*, float const*, int, float const*, float const*, float const*, float const*, float, float*, int, int, int, int const*, bool, int, void*, unsigned short*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
-                    "name_sha256": "b2470058aea8a3e9576dce0744db219f070ddc4afbf7b11471863653d91aed8a",
-                    "name_truncated": false,
-                    "kind": "kernel",
-                    "count": 534,
-                    "clipped_sum_us": 18437.0703125
                   }
                 ],
                 "largest_observed_host_apis": [
@@ -210116,62 +209509,6 @@
                     "name_truncated": false,
                     "count": 765,
                     "clipped_sum_us": 29385.369140625
-                  },
-                  {
-                    "name": "zeCommandListReset",
-                    "name_sha256": "83eeb4c92e62314f368b15b4ab68142a4efd8870ad0bdb58224d1b52958d42bc",
-                    "name_truncated": false,
-                    "count": 68,
-                    "clipped_sum_us": 27464.61669921875
-                  },
-                  {
-                    "name": "zeCommandListAppendLaunchKernelWithArguments",
-                    "name_sha256": "6486f828a0e0a3934eb9a5d49ff910eac4bdee0e9dbd8eb0d2460b3090fa44bb",
-                    "name_truncated": false,
-                    "count": 2891,
-                    "clipped_sum_us": 20394.79931640625
-                  },
-                  {
-                    "name": "zeEventQueryStatus",
-                    "name_sha256": "0446a10b55f2ba20d6e5693b057b98a6c844e055e7fde5f53e2a7a9a3ff2ab21",
-                    "name_truncated": false,
-                    "count": 750,
-                    "clipped_sum_us": 11353.15673828125
-                  },
-                  {
-                    "name": "zeCommandListAppendMemoryCopy",
-                    "name_sha256": "33e4ed26f42a7758673423296d18c049caf43a5b938b89f34a3b97d686663555",
-                    "name_truncated": false,
-                    "count": 892,
-                    "clipped_sum_us": 3695.337890625
-                  },
-                  {
-                    "name": "zeCommandListAppendMemoryFill",
-                    "name_sha256": "deb7dcb31151adeb610ed559d3eb4f7e92fa629c9d828d6dcec6333c0195a383",
-                    "name_truncated": false,
-                    "count": 68,
-                    "clipped_sum_us": 731.18603515625
-                  },
-                  {
-                    "name": "zeKernelSetGroupSize",
-                    "name_sha256": "fe45e80c3c5e53b94ddba14b9c26afb4d870c258a8a0f928059dfda47a209f87",
-                    "name_truncated": false,
-                    "count": 2891,
-                    "clipped_sum_us": 302.42041015625
-                  },
-                  {
-                    "name": "zeKernelSuggestGroupSize",
-                    "name_sha256": "952d93f3c7c8dfc4a0fe444916824751155efa194cb4a15a94445b908fb265f5",
-                    "name_truncated": false,
-                    "count": 512,
-                    "clipped_sum_us": 213.2255859375
-                  },
-                  {
-                    "name": "zexCounterBasedEventCreate2",
-                    "name_sha256": "eaebf6e210d22babfd1a63e63e8d3572736519bfd9777b4fef7eb74d9da3966a",
-                    "name_truncated": false,
-                    "count": 640,
-                    "clipped_sum_us": 181.3876953125
                   }
                 ],
                 "included_gpu_ids_unique": true,
@@ -210208,33 +209545,550 @@
         },
         "ownership_closed": true,
         "fresh_faults": [],
-        "commands": [
+        "route_checks": {
+          "exact_32769_input_reuse0": true,
+          "chunk8192": true,
+          "residual_gpu_bytes": 671088640,
+          "residual_host_bytes": 0,
+          "packed_bank384_checked_drain": true,
+          "target_detached_bytes": 521472000,
+          "MTP_detached_bytes": 0,
+          "draft_reader": "absent-dflash2",
+          "DFlash2_tail_rows": 2046,
+          "DFlash2_cold_prefix": 0,
+          "loan_pairs": 0,
+          "prompt_includes_DFlash2_activation": true
+        },
+        "rounded_window_timing": [
           {
-            "label": "bench",
-            "exit_code": 0,
-            "ownership_closed": true,
-            "error": null,
-            "errors": []
+            "windows": 9,
+            "ms_per_window": {
+              "average_T": 3.67,
+              "tokens_per_window": 2.67,
+              "total": 402.86,
+              "verify": 385.1,
+              "GPU_reach_wait": 139.54,
+              "per_layer_host": 124.42,
+              "CPU_pool_run": 98.4,
+              "draft": 17.23
+            },
+            "work": {
+              "target_windows": 9,
+              "target_rows": 33,
+              "emitted_tokens": 24,
+              "target_rows_per_emitted": 1.375,
+              "cpu_unique_jobs": 9817,
+              "cpu_entries": 14451,
+              "cpu_unique_jobs_per_emitted": 409.0416666666667,
+              "minimum_NT1_jobs": 5183,
+              "minimum_NT1_job_fraction": 0.5279616990934094,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 142059110400,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            }
           },
           {
-            "label": "stop",
-            "exit_code": 0,
-            "ownership_closed": true,
-            "error": null,
-            "errors": []
-          },
-          {
-            "label": "reduce",
-            "exit_code": 0,
-            "ownership_closed": true,
-            "error": null,
-            "errors": []
+            "windows": 9,
+            "ms_per_window": {
+              "average_T": 3.67,
+              "tokens_per_window": 2.67,
+              "total": 390.72,
+              "verify": 373.96,
+              "GPU_reach_wait": 145.29,
+              "per_layer_host": 122.24,
+              "CPU_pool_run": 97.32,
+              "draft": 16.35
+            },
+            "work": {
+              "target_windows": 9,
+              "target_rows": 33,
+              "emitted_tokens": 24,
+              "target_rows_per_emitted": 1.375,
+              "cpu_unique_jobs": 9820,
+              "cpu_entries": 14439,
+              "cpu_unique_jobs_per_emitted": 409.1666666666667,
+              "minimum_NT1_jobs": 5201,
+              "minimum_NT1_job_fraction": 0.529633401221996,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 141941145600,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            }
           }
-        ]
+        ],
+        "runtime_validation": {
+          "before_main_parameter_validation": true,
+          "quiet": true,
+          "retained_reference_until_exit": true,
+          "ordinary_teardown_qualified": false,
+          "mapped_ELF_count": 39,
+          "mapped_ELF_sha256": "4d47d905c7e8b5262db7a9989ae6d616912b5b22c2ccaa1cbce5c8657f9a9975"
+        }
+      },
+      {
+        "label": "reference-after",
+        "passed": true,
+        "complete": true,
+        "model_executed": true,
+        "native_execution_complete": true,
+        "initial_clock": {
+          "raw_before_ns": 2505678930597804,
+          "monotonic_ns": 2505698825878567,
+          "raw_after_ns": 2505678930598425
+        },
+        "windows": [
+          {
+            "begin_clock": {
+              "raw_before_ns": 2505790121287578,
+              "monotonic_ns": 2505810017522398,
+              "raw_after_ns": 2505790121288459
+            },
+            "end_clock": {
+              "raw_before_ns": 2505848906351440,
+              "monotonic_ns": 2505868803091703,
+              "raw_after_ns": 2505848906352261
+            }
+          },
+          {
+            "begin_clock": {
+              "raw_before_ns": 2505851031457027,
+              "monotonic_ns": 2505870928215582,
+              "raw_after_ns": 2505851031457889
+            },
+            "end_clock": {
+              "raw_before_ns": 2505899622831599,
+              "monotonic_ns": 2505919520008540,
+              "raw_after_ns": 2505899622832220
+            }
+          }
+        ],
+        "native_identity": {
+          "pid": 405833,
+          "start_ticks": 250570051,
+          "sid": 405694
+        },
+        "startup": {
+          "chunk": 8192,
+          "free_MiB": 1579
+        },
+        "native_exit_code": 0,
+        "benchmark_exit_code": 0,
+        "final_clock": {
+          "raw_before_ns": 2505906651569951,
+          "monotonic_ns": 2505926548807737,
+          "raw_after_ns": 2505906651570873
+        },
+        "journal": {
+          "warmups": 1,
+          "long_requests": 2,
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d"
+          ]
+        },
+        "caller": [
+          {
+            "request": 1,
+            "wall_ns": 6803878407,
+            "caller_cpu_ns": 6599297034,
+            "accounting_passed": true,
+            "native_wait_wall_ns": 885286533,
+            "native_wait_caller_cpu_ns": 884607535,
+            "unclassified": {
+              "wall_ns": 678172005,
+              "caller_cpu_ns": 671624502,
+              "native_wait_calls": 383,
+              "native_wait_wall_ns": 762588,
+              "native_wait_caller_cpu_ns": 715610
+            },
+            "regions": {
+              "capture": {
+                "calls": 8,
+                "wall_ns": 4263734827,
+                "caller_cpu_ns": 4106359835,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "stage": {
+                "calls": 8,
+                "wall_ns": 28286809,
+                "caller_cpu_ns": 967196,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "layer_wait": {
+                "calls": 384,
+                "wall_ns": 787492201,
+                "caller_cpu_ns": 786808991,
+                "native_wait_calls": 384,
+                "native_wait_wall_ns": 786703618,
+                "native_wait_caller_cpu_ns": 786072905
+              },
+              "pool": {
+                "calls": 384,
+                "wall_ns": 868602090,
+                "caller_cpu_ns": 861938091,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "copy_retire": {
+                "calls": 384,
+                "wall_ns": 2044386,
+                "caller_cpu_ns": 2042877,
+                "native_wait_calls": 384,
+                "native_wait_wall_ns": 1218239,
+                "native_wait_caller_cpu_ns": 1222099
+              },
+              "submit": {
+                "calls": 392,
+                "wall_ns": 78906483,
+                "caller_cpu_ns": 72923312,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "final_compute_wait": {
+                "calls": 8,
+                "wall_ns": 96601443,
+                "caller_cpu_ns": 96594208,
+                "native_wait_calls": 8,
+                "native_wait_wall_ns": 96580147,
+                "native_wait_caller_cpu_ns": 96574820
+              },
+              "final_copy_wait": {
+                "calls": 8,
+                "wall_ns": 38163,
+                "caller_cpu_ns": 38022,
+                "native_wait_calls": 8,
+                "native_wait_wall_ns": 21941,
+                "native_wait_caller_cpu_ns": 22101
+              },
+              "sampling_wait": {
+                "calls": 0,
+                "wall_ns": 0,
+                "caller_cpu_ns": 0,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              }
+            }
+          },
+          {
+            "request": 2,
+            "wall_ns": 2348398754,
+            "caller_cpu_ns": 2265476144,
+            "accounting_passed": true,
+            "native_wait_wall_ns": 980186024,
+            "native_wait_caller_cpu_ns": 973300066,
+            "unclassified": {
+              "wall_ns": 109397842,
+              "caller_cpu_ns": 106058786,
+              "native_wait_calls": 430,
+              "native_wait_wall_ns": 862312,
+              "native_wait_caller_cpu_ns": 851570
+            },
+            "regions": {
+              "capture": {
+                "calls": 9,
+                "wall_ns": 102434565,
+                "caller_cpu_ns": 102138795,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "stage": {
+                "calls": 9,
+                "wall_ns": 56690438,
+                "caller_cpu_ns": 1318379,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "layer_wait": {
+                "calls": 432,
+                "wall_ns": 870516229,
+                "caller_cpu_ns": 863581956,
+                "native_wait_calls": 432,
+                "native_wait_wall_ns": 869586590,
+                "native_wait_caller_cpu_ns": 862724911
+              },
+              "pool": {
+                "calls": 432,
+                "wall_ns": 1010228227,
+                "caller_cpu_ns": 997220100,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "copy_retire": {
+                "calls": 432,
+                "wall_ns": 2525208,
+                "caller_cpu_ns": 2511249,
+                "native_wait_calls": 432,
+                "native_wait_wall_ns": 1529930,
+                "native_wait_caller_cpu_ns": 1531730
+              },
+              "submit": {
+                "calls": 441,
+                "wall_ns": 88350228,
+                "caller_cpu_ns": 84410692,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "final_compute_wait": {
+                "calls": 9,
+                "wall_ns": 108203956,
+                "caller_cpu_ns": 108184210,
+                "native_wait_calls": 9,
+                "native_wait_wall_ns": 108175903,
+                "native_wait_caller_cpu_ns": 108159444
+              },
+              "final_copy_wait": {
+                "calls": 9,
+                "wall_ns": 52061,
+                "caller_cpu_ns": 51977,
+                "native_wait_calls": 9,
+                "native_wait_wall_ns": 31289,
+                "native_wait_caller_cpu_ns": 32411
+              },
+              "sampling_wait": {
+                "calls": 0,
+                "wall_ns": 0,
+                "caller_cpu_ns": 0,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              }
+            }
+          },
+          {
+            "request": 3,
+            "wall_ns": 2207752607,
+            "caller_cpu_ns": 2193465130,
+            "accounting_passed": true,
+            "native_wait_wall_ns": 952249326,
+            "native_wait_caller_cpu_ns": 950928746,
+            "unclassified": {
+              "wall_ns": 109086601,
+              "caller_cpu_ns": 106173122,
+              "native_wait_calls": 430,
+              "native_wait_wall_ns": 761273,
+              "native_wait_caller_cpu_ns": 756573
+            },
+            "regions": {
+              "capture": {
+                "calls": 9,
+                "wall_ns": 100304503,
+                "caller_cpu_ns": 100159905,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "stage": {
+                "calls": 9,
+                "wall_ns": 141826,
+                "caller_cpu_ns": 142035,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "layer_wait": {
+                "calls": 432,
+                "wall_ns": 845577759,
+                "caller_cpu_ns": 844315828,
+                "native_wait_calls": 432,
+                "native_wait_wall_ns": 844710734,
+                "native_wait_caller_cpu_ns": 843508902
+              },
+              "pool": {
+                "calls": 432,
+                "wall_ns": 960456380,
+                "caller_cpu_ns": 953142722,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "copy_retire": {
+                "calls": 432,
+                "wall_ns": 2123044,
+                "caller_cpu_ns": 2122001,
+                "native_wait_calls": 432,
+                "native_wait_wall_ns": 1236823,
+                "native_wait_caller_cpu_ns": 1239161
+              },
+              "submit": {
+                "calls": 441,
+                "wall_ns": 84485055,
+                "caller_cpu_ns": 81950351,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              },
+              "final_compute_wait": {
+                "calls": 9,
+                "wall_ns": 105542012,
+                "caller_cpu_ns": 105423789,
+                "native_wait_calls": 9,
+                "native_wait_wall_ns": 105521291,
+                "native_wait_caller_cpu_ns": 105404804
+              },
+              "final_copy_wait": {
+                "calls": 9,
+                "wall_ns": 35427,
+                "caller_cpu_ns": 35377,
+                "native_wait_calls": 9,
+                "native_wait_wall_ns": 19205,
+                "native_wait_caller_cpu_ns": 19306
+              },
+              "sampling_wait": {
+                "calls": 0,
+                "wall_ns": 0,
+                "caller_cpu_ns": 0,
+                "native_wait_calls": 0,
+                "native_wait_wall_ns": 0,
+                "native_wait_caller_cpu_ns": 0
+              }
+            }
+          }
+        ],
+        "samples": [
+          {
+            "ok": true,
+            "ttft_s": 54.471,
+            "total_s": 56.668,
+            "prompt_tokens": 32769,
+            "read_tokens": 32769,
+            "reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 54299.3,
+            "decode_ms": 2348.4,
+            "prompt_tps": 603.5,
+            "decode_tps": 10.2,
+            "drafts_offered": 24,
+            "drafts_accepted": 18,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "stream_complete": true,
+            "client_interval": {
+              "request_begin_monotonic_ns": 2505812135232890,
+              "first_output_monotonic_ns": 2505866606156901,
+              "request_end_monotonic_ns": 2505868802952451
+            }
+          },
+          {
+            "ok": true,
+            "ttft_s": 44.378,
+            "total_s": 46.447,
+            "prompt_tokens": 32769,
+            "read_tokens": 32769,
+            "reused_tokens": 0,
+            "generated_tokens": 24,
+            "prompt_ms": 44218.8,
+            "decode_ms": 2207.7,
+            "prompt_tps": 741.1,
+            "decode_tps": 10.9,
+            "drafts_offered": 24,
+            "drafts_accepted": 18,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "thinking_requested": true,
+            "reasoning_observed": true,
+            "stream_complete": true,
+            "client_interval": {
+              "request_begin_monotonic_ns": 2505873072638871,
+              "first_output_monotonic_ns": 2505917451034317,
+              "request_end_monotonic_ns": 2505919519892992
+            }
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "route_checks": {
+          "exact_32769_input_reuse0": true,
+          "chunk8192": true,
+          "residual_gpu_bytes": 671088640,
+          "residual_host_bytes": 0,
+          "packed_bank384_checked_drain": true,
+          "target_detached_bytes": 521472000,
+          "MTP_detached_bytes": 0,
+          "draft_reader": "absent-dflash2",
+          "DFlash2_tail_rows": 2046,
+          "DFlash2_cold_prefix": 0,
+          "loan_pairs": 0,
+          "prompt_includes_DFlash2_activation": true
+        },
+        "rounded_window_timing": [
+          {
+            "windows": 9,
+            "ms_per_window": {
+              "average_T": 3.67,
+              "tokens_per_window": 2.67,
+              "total": 260.93,
+              "verify": 250.06,
+              "GPU_reach_wait": 96.76,
+              "per_layer_host": 113.36,
+              "CPU_pool_run": 105.56,
+              "draft": 10.58
+            },
+            "work": {
+              "target_windows": 9,
+              "target_rows": 33,
+              "emitted_tokens": 24,
+              "target_rows_per_emitted": 1.375,
+              "cpu_unique_jobs": 9817,
+              "cpu_entries": 14451,
+              "cpu_unique_jobs_per_emitted": 409.0416666666667,
+              "minimum_NT1_jobs": 5183,
+              "minimum_NT1_job_fraction": 0.5279616990934094,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 142059110400,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            }
+          },
+          {
+            "windows": 9,
+            "ms_per_window": {
+              "average_T": 3.67,
+              "tokens_per_window": 2.67,
+              "total": 245.3,
+              "verify": 234.42,
+              "GPU_reach_wait": 93.99,
+              "per_layer_host": 107.79,
+              "CPU_pool_run": 98.99,
+              "draft": 10.67
+            },
+            "work": {
+              "target_windows": 9,
+              "target_rows": 33,
+              "emitted_tokens": 24,
+              "target_rows_per_emitted": 1.375,
+              "cpu_unique_jobs": 9820,
+              "cpu_entries": 14439,
+              "cpu_unique_jobs_per_emitted": 409.1666666666667,
+              "minimum_NT1_jobs": 5201,
+              "minimum_NT1_job_fraction": 0.529633401221996,
+              "expert_copy_requested_bytes": 0,
+              "mathematical_dot_equivalent_ops": 141941145600,
+              "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+            }
+          }
+        ],
+        "runtime_validation": {
+          "before_main_parameter_validation": true,
+          "quiet": true,
+          "retained_reference_until_exit": true,
+          "ordinary_teardown_qualified": false,
+          "mapped_ELF_count": 38,
+          "mapped_ELF_sha256": "76cb9d37f49f3aeb8f12fb4dcf4602b0420bcc634155cd0549cee51b63355bae"
+        }
       }
     ],
     "passed": false,
-    "complete": false,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budget": {
@@ -210256,9 +210110,104 @@
       "retention": "One profile needs complete history because pausing during graph construction loses later kernels. Budget1GiB/file,1.5GiB/job,2GiBwhole,2400s/104GiBRSS. Reduce after native exit under a separate240s/16GiB CPU owner. Keep compact individual samples,counters,clocks,services,decisions and faults;retire successful full traces/logs/JIT after guarded reduction and observer decision.",
       "limits": "Diagnostic24-output requests do not qualify sustained TG,strong/weak draft classes,agent/task quality,length scaling,physical262144/RESTORE or adoption. Caller CPU excludes worker CPU. Device command services/API wall are not FLOP utilization,physical RAM/VRAM/PCIe traffic,complete device coverage or hardware saturation. No engine rebuild."
     },
+    "observer_decision": {
+      "requests": [
+        {
+          "request": 0,
+          "fixed_24_output_work": true,
+          "phases": {
+            "prompt_ms": {
+              "reference_samples": [
+                56154.6,
+                54299.3
+              ],
+              "profile": 58899.6,
+              "ratio": 1.0665010470431555,
+              "screen_passed": true
+            },
+            "decode_ms": {
+              "reference_samples": [
+                2433.5,
+                2348.4
+              ],
+              "profile": 3625.7,
+              "ratio": 1.516426525021435,
+              "screen_passed": false
+            },
+            "ttft_s": {
+              "reference_samples": [
+                56.337,
+                54.471
+              ],
+              "profile": 59.287,
+              "ratio": 1.0700851924048806,
+              "screen_passed": true
+            }
+          },
+          "observer_screen_passed": false
+        },
+        {
+          "request": 1,
+          "fixed_24_output_work": true,
+          "phases": {
+            "prompt_ms": {
+              "reference_samples": [
+                45098.5,
+                44218.8
+              ],
+              "profile": 49093.4,
+              "ratio": 1.0993032704750367,
+              "screen_passed": true
+            },
+            "decode_ms": {
+              "reference_samples": [
+                2434.0,
+                2207.7
+              ],
+              "profile": 3516.5,
+              "ratio": 1.5151776288859686,
+              "screen_passed": false
+            },
+            "ttft_s": {
+              "reference_samples": [
+                45.436,
+                44.378
+              ],
+              "profile": 49.482,
+              "ratio": 1.1018772129066738,
+              "screen_passed": true
+            }
+          },
+          "observer_screen_passed": false
+        }
+      ],
+      "observer_screen_passed": false,
+      "clean_speed_qualified": false,
+      "sustained_TG_qualified": false
+    },
     "source_inputs": {
       "files": 626,
       "sha256": "6b9e834b88491d40c427349595037836a69ad6f0bfb077e3600ce8c69acabef1"
+    },
+    "evidence_retention": {
+      "original_plan_commit": "737e700fcbf4f2d2de1a6c1995e3ed813db6f038",
+      "host_result_commit": "b4df22209b63a0eab70d5d55bb9c22c56c95158b",
+      "first_reference_commit": "a0789eca1c0e136ad5b37a4f5b11c6f4c1a64f6e",
+      "profile_commit": "f178089ae8bb3fee893469d0d8649d2364c76b3e",
+      "policy": "Keep all six individual speed/work/identity samples,all three conserved caller ledgers per process,guard clocks,observed leading device/API services,source/configuration/proof and independent phase decisions. Other successful parser/lifecycle/trace details have no next consumer;retire them after commit. No status or acceptance change.",
+      "source_inputs": 626,
+      "final_model_assets_fully_hashed": 15,
+      "stock_DFlash2_pack_separately_hash_checked": true
+    },
+    "decision": {
+      "normal_execution_passed": true,
+      "observer_admission_passed": false,
+      "current_physical_limiting_resource": "unknown",
+      "inference_changed": false,
+      "sustained_TG_qualified": false,
+      "complete_device_coverage_qualified": false,
+      "physical_traffic_qualified": false,
+      "next": "Use the observed Q6/mapped-row-copy ranking only to select bounded independent component questions. Do not treat failed whole-observer screen as representative normal-run attribution. Resolve the mapped-row component controller environment and current cohort gates before preparation;test copy contract/whole dependency path separately."
     }
   }
 }

@@ -137,9 +137,28 @@ host/call logging. At controller source `6aa32694f`, all three CPU controls pass
 with zero skips. Its same-ELF device process also passes: eight kernels/five
 copies, unique native joins, contained clocks, normal0, quiet validation,
 closed ownership and no fresh fault. `compat_profile_exec_v1` records this
-separate pass; the three-case V1 and paused construction remain failed. This
-mode is eligible for a new bounded model profile, whose coverage and observer
-cost must be evaluated independently.
+separate pass; the three-case V1 and paused construction remain failed.
+The model screen in `dflash2_device_service_v2` is now closed: three fresh
+90f processes, each with one short thinking warmup and two exact32769-input,
+24-output requests. All native/benchmark exits are0, owners close, validation
+is quiet, no fresh fault occurs and all15final model hashes match. The626-input
+controller is `66313f4f2`; its20CPU controls pass without skips.
+Against the median of the two bracketing references, profile/reference prompt
+ratios are1.066501/1.099303, clientTTFT1.070085/1.101877 and decode
+1.516427/1.515178. Both decode ratios fail the declared<=1.5observer screen;
+the cohort remains `passed=false`. Do not promote these observed services into
+representative unprofiled attribution, clean speed or sustained TG.
+
+The two guarded profile windows observe Q6-column service292.242/294.660ms
+and mapped-row-copy service186.532/215.580ms. These sums select questions,
+not hardware saturation or critical-path costs. The unprofiled caller ledgers
+instead retain roughly0.96–1.02s in the CPU-pool wrapper and0.95–1.08s nested
+native waits per24-output request; pool time includes scheduling/waits and the
+wait thread's CPU time is not expert arithmetic. Mapped host-memory reads are
+not counted by explicit copy-command payloads. Keep PCIe/RAM traffic and
+complete device coverage unknown. The row-uniform-copy component is a bounded
+next hypothesis; its existing controller needs its current-source/environment
+holds resolved before preparation. No inference dispatch changes here.
 An unprofiled completion must expose no graph timestamps. These checks do not
 measure kernel arithmetic utilization, physical traffic, a lossless pause with
 pending work, model observer overhead or inference performance. Requalify the

@@ -3284,7 +3284,14 @@ but the collector omits all eight kernels. The separate active-from-exec mode at
 controller`6aa32694f`passes three CPU controls and its same-ELF device check,
 retaining all eight kernels/five copies with quiet validation,closed ownership
 and no fresh fault. This enables a bounded model profile,not a hardware
-saturation or observer-overhead claim. See`docs/RESOURCE_PROFILING.md`.
+saturation or observer-overhead claim. The subsequent exact32K model screen
+is closed under`dflash2_device_service_v2`:all six requests,native/benchmark
+exits,owner closures,quiet validation and15final asset hashes pass. Its whole
+observer screen fails:decode ratios1.516427/1.515178 exceed the declared1.5,
+although prompt/clientTTFT ratios pass. Preserve this failed admission;the
+observed Q6/mapped-copy rankings select bounded component questions without
+qualifying normal-run attribution or physical saturation. The inference engine
+is unchanged. See`docs/RESOURCE_PROFILING.md`for samples and limits.
 Standard long/agent comparisons and independent prefill/decode selection remain
 pending. About96% of expert lookup entries fall to the CPU in this256-slot
 diagnostic layout; the requested expert
