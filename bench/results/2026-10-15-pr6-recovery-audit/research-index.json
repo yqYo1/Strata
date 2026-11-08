@@ -26341,7 +26341,7 @@
   },
   "dflash2_checked_cache_loan_absent_mtp_20261108": {
     "classification": "decision_support",
-    "state": "running",
+    "state": "available_snapshot_reviewing_worker_return_pending",
     "scope": "Actual target CacheScratchLease lifecycle and optional-MTP dependencies for future DF2 borrowed mixed-scratch path;not a generic long-shape or performance survey.",
     "scope_eligibility": {
       "schedulable_now": true,
@@ -26385,6 +26385,23 @@
       "liveness": "live",
       "terminal_state": "active",
       "note": "worker-start acknowledged;terminal discoverability warning does not imply failure and does not authorize redispatch."
-    }
+    },
+    "available_snapshot": {
+      "path": ".cache/research/2026-11-08/dflash2-cache-scratch-ownership/report.md",
+      "sha256": "433798be6e20990de18e3f3143a879651f5af710a5a8657fbe6a92cf6fc6616d",
+      "bytes": 8667,
+      "report_budget_bytes": 8192,
+      "formal_worker_return_confirmed": false,
+      "observed_utc": "2026-11-08T04:08:49.615967+00:00"
+    },
+    "native_review": {
+      "task": "/root/review_dflash2_cache_loan_snapshot_20261108",
+      "path": ".cache/research/2026-11-08/dflash2-cache-scratch-ownership/review.md",
+      "state": "running_available_snapshot_only",
+      "model": "gpt-6-luna",
+      "reasoning": "max",
+      "snapshot_sha256": "433798be6e20990de18e3f3143a879651f5af710a5a8657fbe6a92cf6fc6616d"
+    },
+    "native_input_hold": "The12pinned native files remain frozen until the original Orca worker formally returns. Available report/review does not prove task or terminal closure;do not steer or replace it."
   }
 }
