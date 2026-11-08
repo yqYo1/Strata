@@ -1556,7 +1556,7 @@
       "config_copy_kept": true
     },
     "dflash2_native_port": {
-      "state": "corrected_output_components_passed_model_recheck_pending",
+      "state": "bounded_target_model_passed_long_phase_and_speed_unqualified",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
       "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights;physical tail buffer has2047positions(104806400bytes),while capture omits the last prompt anchor and retains at most2046rows;then loads and seeds the drafter.",
       "remaining": "First thinking-enabled target model completed32tokens with24of24drafts accepted,but SIGABRT(-6) during teardown makes the gate FAILED and unusable for adoption/speed.Normal pre-main validation and38qualified mappings;all owned children reaped/session empty,no fresh GPU fault.Source contract writes7draft outputs,while both serve/standalone callers allocate only S entries(spec4 gave4),corrupting host heap.Next:preserve fixed7entry output contract,validate output spans before submissions,allocate at least7only forDFlash2 in both callers;add narrow-width/guard/admission fixtures,rebuild unadopted candidate and repeat bounded component/model checks before any long benchmark.MTP/prefill fast references remain untouched.",
@@ -1610,10 +1610,21 @@
             "bytes": 6963
           }
         ],
-        "retention": "One representative host-heap mechanism diagnostic until corrected model normal closure;no core dump(RLIMIT_CORE0).Not a GPU fault or performance sample."
+        "retention": "One representative host-heap mechanism diagnostic until corrected model normal closure;no core dump(RLIMIT_CORE0).Not a GPU fault or performance sample.",
+        "corrective_result": {
+          "source_commit": "f50df1f3c81272b14d994e4d8fcad19703ad0b7e",
+          "model_gate": "dflash2-target-model-v2",
+          "exit_code": 0,
+          "generated": 32,
+          "drafts_accepted": 24,
+          "drafts_offered": 24,
+          "original_failure_preserved": true,
+          "scope": "Same wire/request,span guards and normal teardown with retained validation reference;not ordinary UR provider teardown qualification."
+        }
       },
-      "progress": "Corrective native source f50df1f3c81272b14d994e4d8fcad19703ad0b7e built;16kernel/prompt,7small stock-drafter,5ring and12mask cases passed normally with no fresh fault.The7small cases include13undersized span refusals,all7active widths/guard/inactive-zero checks and optional probabilities.Read-only audit/native review find no blocker to identical82ID/32output V2diagnostic.V1 remains failed after DONE/-6;not a speed/adoption result.Preserve552b prefill/e1b011 decode.",
-      "unqualified_option_edge": "--mtp-max-t1 can request set_max_drafts0 and is refused by the drafter;V2 uses declared0,unaffected.Reject this combination or define/test no-proposal behavior before claiming all option combinations."
+      "progress": "Corrective source f50df1f3c81272b14d994e4d8fcad19703ad0b7e passes16kernel/prompt,7small stock-drafter,5ring and12mask cases,plus identical82ID thinking-enabled32output native model diagnostic.Normal child exit0,reaped/session empty,24of24drafts accepted,actual INFO/pre-main validation/38file-backed ELF maps and pre/post15model asset hashes checked,no fresh GPU fault.Other executable VMAs separately counted;no full address-space closure.V1 remains failed.Host seven-vs-four output defect resolved for these gates.Keep552b/e1b011 fastest phase references;no short-run speed/quality/full262144/RESTORE/default adoption claim.",
+      "unqualified_option_edge": "--mtp-max-t1 can request set_max_drafts0 and is refused by the drafter;V2 uses declared0,unaffected.Reject this combination or define/test no-proposal behavior before claiming all option combinations.",
+      "next_action": "Prepare a safe long-prefill optional-drafter resource boundary after the active report review;MTP-only expert/head controls and cache lease stay0 for this diagnostic.Minimize readers/VRAM without changing independent decode;then committed long bench.sh/agent/long-generation comparisons and physical262144/RESTORE remain required."
     },
     "native_feature_build": {
       "stage": "built",
@@ -2385,9 +2396,18 @@
       "prospective_controller": "Current-runtime reuse admission reached actual native READY;fresh same-PID pre-main proof and38ELF mappings passed.Host heap corruption after DONE is a separate caller-buffer defect.The old canary refusal remains failed."
     },
     "dflash2_model_check": {
-      "stage": "prepared",
-      "commands": [],
-      "passed": false,
+      "stage": "passed",
+      "commands": [
+        {
+          "label": "model",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ],
+      "passed": true,
       "ownership_closed": true,
       "previous_failure": {
         "record": {
@@ -2650,6 +2670,61 @@
       "meaning": "Same thinking-enabled real82ID prompt and32output budget as failed V1,actual stock DFlash2 and target embeddings/head.Require actual INFO placement,positive offered drafts,complete GEN,normal exit,pre-main validation,file-backed executable ELF checks and no fresh fault.Diagnostic only;no speed,task quality,full-context,RESTORE,phase preservation or default adoption.",
       "speed_eligible": false,
       "model_adoption_qualified": false,
+      "reported_placement": {
+        "context": "4096",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "1256",
+        "expert_cache_mib": "2455",
+        "expert_slots_primary": "1256",
+        "expert_cache_primary_mib": "2455",
+        "spec": "4",
+        "mtp_max": "0",
+        "lookup": "0",
+        "vram_free_mib": "2691",
+        "cvec": "0",
+        "arena_mib": "47962",
+        "pool_workers": "5",
+        "pcie_frac": "0.00",
+        "spec_min_p": "0.00",
+        "conversation_cache_mib": "0",
+        "conversation_cache_slots": "4",
+        "conversation_cache_min_free_mib": "2560",
+        "engine": "0.1.38"
+      },
+      "pre_main_validation": {
+        "pid": 2271469,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "mapping": {
+        "files": 38,
+        "sha256": "30a2e4dcc5b30dbeee4281002d6a788e59d7a920b59d7cbd813a1064c11a14f7",
+        "scope": "file-backed executable ELF mappings at READY",
+        "other_executable_vmas": {
+          "[vdso]": 1,
+          "[vsyscall]": 1
+        },
+        "full_executable_address_space_qualified": false
+      },
+      "request_result": {
+        "prompt_tokens": 82,
+        "generated": 32,
+        "drafts_accepted": 24,
+        "drafts_offered": 24,
+        "finish": "length",
+        "output_ids_sha256": "59135d1d156e6fdf80a707208f4a622c06ec3eef3da7fdf246283b3d9efd624d",
+        "complete": true
+      },
+      "native_launched": true,
+      "fresh_faults": [],
       "native_build": {
         "source_commit": "f50df1f3c81272b14d994e4d8fcad19703ad0b7e",
         "project_source_sha256": "3d285cc7afe5bbcbb1bb61a7a66b2df7c6d36716a110121d7beda8fe4a4972e8",

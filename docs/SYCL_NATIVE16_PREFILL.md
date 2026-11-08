@@ -3028,45 +3028,42 @@ that timestamp. **DeepSeek and35B execution support remain excluded until the
 user explicitly requests them, including future syncs.**
 
 Unsloth v3.1 catalog/pinned metadata and the stock DFlash2 Q4 pack are present.
-The native optional DFlash2 engine remains compiled at`689c3da346aeeb819d03ee644b27648adc241d3b`;
-ring fixture source`f62df4999c1a56ba41d2598837d92e4d5ce705e1`adds no engine change.
-Three GPU processes pass16kernel/prompt cases,5small stock-drafter cases and
-5ring/lineage cases,all normal exit0 with36qualified executable mappings and
-no fresh fault. These cover signed Q4 GEMM,mixed FP32/BF16 prompt means,the
-104806400-byte tail allocation,2046/2047/2048transitions,stock block forward,
-wrap/rewind/parked-branch restoration,fresh replay equivalence,masked missing
-context and failed-owner refusal. The original missing-row case proves only
-execution/tag state. A separate12case attention discriminator at`1aa641860`
-passes both variants and64/128-key chunks:stale epoch or wrong position gives0,
-while the same poisoned value with a live tag gives1 in all32768outputs per case
-(within2e-5),with finite scales and intact guards. Normal exit0,32qualified
-executable mappings and no fresh fault. The source audit and native review
-find no fixture blocker;the masked mean denominator is137,the live control138.
-The target embedding/head in the stock-drafter fixture remain synthetic;
-this does not qualify target-model output,RESTORE,physical262144 fill or speed.
-Next:finish the new current-runtime validation admission,then bounded target-model execution and
-independent-phase comparisons. Default
-native MTP and legacy explicit-MTP configs remain selected;the imported host
-Auto policy can choose DFlash2 on a fresh supported configuration. The feature
-candidate is not installed/default-adopted. Both fast references remain. See`current_sync`in the linked
-status for exact source/build/runtime identity and remaining functional ports.
-The legacy preload-reuse predicate's changed-zlib refusal remains unchanged.
-A new admission recovers the probe source/recipe and six later current-runtime
-pre-main proofs. First target-model execution reaches32tokens with24/24drafts
-accepted,but aborts on host heap corruption after DONE;this gate is failed.
-Its38executable mappings,pre-main proof and owned closure pass,without a fresh
-GPU fault. Both production callers allocated4outputs at spec4 while the drafter's
-fixed contract writes7. The corrective source adds output spans with pre-submission
-capacity admission and at least7slots in both DFlash2 callers,keeping MTP sizes
-and kernels unchanged. The new stock fixture checks13undersized spans without
-output/ring mutation,all7active widths with guards/inactive zeros,and omitted
-probabilities. Rebuild the unadopted candidate and repeat16kernel,7small,5ring
-and12mask cases,then the identical82ID/32output model diagnostic before speed
-work;no corrective result exists yet. V1 remains failed and its raw rate ineligible.
-The38checked mappings mean file-backed host executable ELF at READY,not all
-executable VMAs. The new plan records other executable VMAs separately and
-checks actual INFO placement;no full executable-address-space closure claim.
-See`validation_environment_reuse`and`dflash2_native_port`in the status.
+The optional native DFlash2 candidate is compiled at
+`f50df1f3c81272b14d994e4d8fcad19703ad0b7e`(engine SHA`d0f42948…`).
+Both serve and standalone now allocate at least7DFlash2 result slots,and the
+span API refuses undersized outputs before submission. MTP sizes/math remain
+unchanged. The rebuilt kernel/ring fixtures and retained mask fixture pass
+16kernel/prompt,7small stock-drafter,5ring/lineage and12attention-mask cases.
+The small cases include13undersized token/probability spans with untouched
+outputs/ring state,all7active widths with guards/inactive zeros,and omitted
+probabilities. Ring rewind/parked/fresh replay and the0/1poisoned-value mask
+oracle remain valid component evidence;synthetic target pieces do not qualify
+full target-context behavior or task quality.
+
+The identical82ID,thinking-enabled32output target-model recheck now passes:
+24of24drafts accepted,normal child exit0,reaped/session empty,no fresh GPU
+fault. Actual INFO placement,pre-main validation,38file-backed executable ELF
+mappings and all15model assets before/after execution are checked. The two
+bracketed executable VMAs(`[vdso]`,`[vsyscall]`)are counted separately;this is
+not full executable-address-space qualification. The original V1completed GEN
+then aborted-6from writing7outputs into4slot callers;it remains failed in Git
+and the V2previous-failure record. The new run resolves that specific host-heap
+mechanism for these gates,without making the raw cold/observed rate eligible
+for a speed comparison. Legacy preload-reuse's changed-zlib refusal also stays
+unchanged;the new admission recovers the original probe source/recipe and
+checks six later current-runtime pre-main proofs.
+
+Native default MTP and legacy explicit-MTP configs remain selected. The host
+Auto policy can choose DFlash2 on a fresh supported configuration;this candidate
+is not installed/default-adopted. Both fast phase references remain. Next:
+audit/adapt the long-prefill resource boundary's remaining MTP dependencies after its
+active read-only audit/review,then collect pinned bench.sh long/agent and
+thinking long-generation evidence. The short diagnostic keeps those three
+resource controls0and proves no speed,task quality,physical262144/RESTORE or
+ordinary-provider-teardown qualification. `--mtp-max-t1`is an unqualified option
+edge to reject or define before claiming all combinations. See
+`dflash2_native_port`,`dflash2_model_check`and`validation_environment_reuse`in
+the linked status for exact identities,outcomes and remaining functional ports.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.
 After both frozen cohorts closed,the required streamed-tool closing-tag
