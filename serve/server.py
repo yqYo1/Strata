@@ -10161,6 +10161,12 @@ def _main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> i
         lazy = a.lazy or cfg.get("lazy_load") is True
         for line in card_roles_lines(cfg):             # the card roles: said first; every card Off stops here, before anything touches a card
             print(line, flush=True)
+        # Check config-implied drafter constraints before the vision reader can
+        # start as well. Reuse these arguments for the RAM estimate below.
+        try:
+            startup_args = engine_args(cfg, announce=False) if "args" in cfg else []
+        except ValueError as e:
+            raise SystemExit(f"[strata] config {e}")
         if cfg.get("vision"):
             elastic = cfg["vision"].get("elastic") is True
             print("the vision encoder starts with the first picture (elastic) ..." if elastic else
@@ -10182,7 +10188,7 @@ def _main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> i
                             env=vision_env(cfg, env), lazy=lazy)
         print("model unloaded; the first request loads it ..." if lazy else
               "loading the model (the first start takes a minute or two) ...", flush=True)
-        warn_budget_over_ram(engine_args(cfg, announce=False) if "args" in cfg else [])      # #1080
+        warn_budget_over_ram(startup_args)               # #1080
         note = card_note(cfg, env)
         if note:
             print(note, flush=True)
@@ -10228,15 +10234,12 @@ def _main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> i
                 split_mod.check_cfg(cfg, split)
         except split_mod.SplitConfigError as e:
             raise SystemExit(f"[strata] config {e}")
-        try:
-            if groups:
-                engine = start_replicas(cfg, groups, exe, effort_end or [], lazy, offline=a.offline)
-            elif split:
-                engine = start_split(cfg, split, exe, effort_end or [], lazy, offline=a.offline)
-            else:
-                engine = start_engine_or_fallback(cfg, exe, effort_end, env, lazy, tok, offline=a.offline, batch_telemetry=a.batch_telemetry)
-        except ValueError as e:
-            raise SystemExit(f"[strata] config {e}")
+        if groups:
+            engine = start_replicas(cfg, groups, exe, effort_end or [], lazy, offline=a.offline)
+        elif split:
+            engine = start_split(cfg, split, exe, effort_end or [], lazy, offline=a.offline)
+        else:
+            engine = start_engine_or_fallback(cfg, exe, effort_end, env, lazy, tok, offline=a.offline, batch_telemetry=a.batch_telemetry)
         engine.silence_s = silence                      # an attribute of its own: restart() keeps it
         warn_tight_ram(engine.info.get("arena_mib"))
         note = desktop_vram_note(cfg.get("backend"), engine.info.get("vram_free_mib"), engine.spawn[1],

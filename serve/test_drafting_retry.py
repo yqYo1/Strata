@@ -1,5 +1,6 @@
 """GUI-FB3 item 2(b): an Auto start that picked DFlash2 and ended before the engine was ready is started once more with the MTP, in one quiet line. A start the person
 named DFlash2 for fails with the engine's own reason. A real process and a real pipe (a fake engine program), like serve/test_fatal_recovery.py."""
+import json
 import os
 import sys
 import tempfile
@@ -176,6 +177,32 @@ class SyclVisionDrafting(unittest.TestCase):
             with self.subTest(vision=vision):
                 with self.assertRaisesRegex(ValueError, "text-only"):
                     server.engine_args(self.config("dflash2", vision), announce=False)
+
+    def test_named_images_fail_before_the_vision_reader_or_model_starts(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        for name, value in [("vocab.json", {"<|im_end|>": 0}), ("token_type.json", [3]),
+                            ("tokenizer.json", {"pre": "qwen35"})]:
+            (root / name).write_text(json.dumps(value))
+        (root / "merges.txt").write_text("")
+        cfg = self.config("dflash2", "config")
+        cfg.update(exe="/unused/strata", tokenizer=str(root))
+        cfg["vision"] = {"exe": "/unused/vision", "gpu": True}
+        path = root / "config.json"
+        path.write_text(json.dumps(cfg))
+        with ExitStack() as stack:
+            stack.enter_context(mock.patch("strata_control.private_files.adopt_user_defaults"))
+            stack.enter_context(mock.patch.object(server.lifeline, "install_stop_handlers"))
+            for name in ("apply_saved_tuning", "with_component_engine", "apply_vision_defaults"):
+                stack.enter_context(mock.patch.object(server, name, side_effect=lambda value: value))
+            stack.enter_context(mock.patch.object(server, "hub_from_config", return_value=None))
+            stack.enter_context(mock.patch.object(server, "card_roles_lines", return_value=[]))
+            stack.enter_context(mock.patch.object(server, "Server"))
+            vision = stack.enter_context(mock.patch.object(server, "Vision"))
+            engine = stack.enter_context(mock.patch.object(server, "StrataEngine"))
+            with self.assertRaisesRegex(SystemExit, "SYCL engine is text-only"):
+                server._main(["--engine", "strata", "--config", str(path), "--port", "0", "--offline"])
+            vision.assert_not_called()
+            engine.assert_not_called()
 
     def test_explicit_mtp_off_and_legacy_configs_keep_their_selection(self):
         for vision in ("config", "argument"):
