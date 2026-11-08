@@ -49,8 +49,10 @@ These are durable operating rules for Main and delegated work. Use the
 for upstream evaluation; the user's project-specific rules here take precedence
 over generic workflow examples.
 
-At session start, resume and after context compaction, perform these checks in
-order before launching work:
+Main performs these checks in order at session start, resume and after context
+compaction. Report-only workers instead resume their named Task, pinned inputs
+and report contract under [Parallel research](#parallel-research); Main's tuning,
+Git and measurement duties do not expand their assignment.
 
 1. Reread the checked-out version of this file and
    [the artifact retention policy](docs/ARTIFACT_RETENTION.md), rather than a
@@ -441,6 +443,9 @@ integration and testing.
   continues implementation, analysis and serialized measurement. Respect
   actual concurrency/resource limits; aim for roughly five researchers only
   when capacity permits, otherwise fill the available slots.
+  Select medium reasoning for ordinary Luna collection and finite source audits;
+  keep native report review at the required max reasoning. State a different
+  research effort explicitly when the bounded question warrants it.
 - Shift scopes and share `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`
   and relevant previous reports in every assignment. Prioritize this engine's
   measured bottlenecks, but also investigate general SYCL and transferable
@@ -456,9 +461,12 @@ integration and testing.
   into trivial fact lookups or fill reports with known context. Treat report
   length as a working budget, allowing enough room for substantive findings;
   review novelty and depth after completion before choosing the next scope.
-  Before dispatch, verify that the worker's startup permissions allow its named
-  report directory. For a report outside its workspace, pass that directory as
-  an additional writable root at launch; do not rely on a later save approval.
+  Give a report-only worker an isolated report workspace and enforce read-only
+  access to product checkouts at launch. Its writable scope is the named report
+  directory, not the shared product worktree. Keep the bounded Task/spec and
+  pinned inputs available there; after compaction the worker reloads that Task
+  and returns its report or failure, rather than resuming Main's tuning work.
+  Verify the actual submitted Task and write scope, not just terminal readiness.
   Include permissions for Orca lifecycle IPC; a custom workspace-write Codex
   launch must explicitly enable sandbox network access. Require a successful
   worker-side Orca status check before investigation; Main's connection alone

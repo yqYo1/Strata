@@ -3151,20 +3151,48 @@ The highest retained phase references and performance CSV remain unchanged.
 First-to-next prompt differences here are 9.4768 s (MTP) and 9.8406 s (DFlash2),
 observed at one length; they do not identify a fixed cost or fit a new length law.
 The current throughput-limiting hardware resource remains unqualified.
-The matched >=1K thinking-output screen is committed in
-`tools/sycl/drafter_generation.py` (source `2a7b98908`). Its first cohort remains
-failed before warmup or generation: Main compared the full process-status mapping
-with a three-field identity claim. Startup reached the expected native/chunk
-state, then the owner terminated and reaped the session; no fresh GPU fault or
-validation warning occurred. The native exit receipt is absent, so no native
-exit code is inferred. Follow `drafter_generation_v1` in the linked result,
-original evidence `c70ef71ae`; its 28 closed private files (5,582,188 bytes) are
-retired with a pinned manifest. The source auditor is still live; preserve its
-pinned inputs until formal return. Next fix the stable identity-field check,
-commit a fresh cohort and repeat the sustained-output screen. No new TG or
-adoption result exists. Standard long/agent, clean repeated comparisons and
-independent prefill/decode selection remain pending.
-The checked borrowed-buffer path remains a separate optional-reader investigation.
+The corrected matched >=1K thinking-output screen is closed in
+`drafter_generation_v2` at result commit `92c6e784b` and controller/source commit
+`3b24ea716`. It uses the existing f633 engine and compares one fresh MTP process
+then one DFlash2 process on the same 33,213-token input with thinking enabled.
+Both produce an answer, finish normally with quiet validation, close all owners,
+retain unchanged model assets, and record no fresh GPU fault. The complete
+request body hashes match; this does not require identical generated text. MTP reports
+585.2 PP / 56.921 s TTFT / 11.1 TG tok/s for 2,955 output tokens at 85.67%
+acceptance; DFlash2 reports 579.9 PP / 57.427 s TTFT / 12.1 TG tok/s for 3,905
+output tokens at 85.0% acceptance. The actual route checks identify MTP4 callback
+coverage versus 2,046 DFlash2 tail rows with the MTP reader absent. This is an
+eligible one-request-per-arm screen: stage and parameter-validation observers
+remain charged, output lengths differ, and there is no repeatability, task
+quality, clean-speed, whole-request-latency, or adoption result. The request
+census shows zero expert-copy submissions and 1,192,027 / 1,567,836 CPU unique
+misses with 3.8% / 3.7% printed cache hit rates; these are logical work counters,
+not physical traffic, host service time, or proof of the limiting resource.
+
+The next bounded decode-side candidate is `dflash2_checked_cache_loan_candidate_v1`
+from source commit `969e4891d` on `tune/dflash2-checked-lease`. Its narrow,
+default-off policy uses the existing checked cache-loan lifecycle; provenance
+records the original owned cache lifecycle and reviewed `aa5df5bd` snapshot, with
+no XeStrata source. After this primary cohort closed, the next gate is to pin the
+host/build/runtime recipe, run the scoped 38-case/854-check host fixture and
+pre-GPU refusals, then the small traced native and short-long-short/resumed-prefix
+borrowed-versus-owned model checks. These do not replace separate clean repeated
+speed, agent/task, physical 262144, tail, handoff, or RESTORE gates. Preserve the
+479a/552b validated fallback; the physical limiting resource remains unknown.
+Standard long/agent comparisons and independent prefill/decode selection remain
+pending. About96% of expert lookup entries fall to the CPU in this256-slot
+diagnostic layout; the requested expert
+H2D-copy counters are zero. This motivates the capacity comparison,without
+establishing CPU/RAM saturation or measured PCIe wire traffic.
+
+The first startup-identity failure remains failed at`c70ef71ae`. Its superseded
+driver is retired from the active tree and recoverable at`2a7b98908`;
+`tools/sycl/compare_drafters.py` contains the corrected stable-field check.
+The source-audit assignment returned the wrong task response without a report
+and is failed,not a qualification. Both affected research terminals are closed;
+the available cache-loan snapshot and its completed native review remain
+usable decision support. See the research index for the exact lifecycle limits
+and the required isolated/read-only Task preflight before the next round.
 
 The count-only OpenAI route, removed by the bulk server import, is restored at
 `5db3ede7c`. At frontend/benchmark source `c9f4ce45d`, 69 CPU/mock tests pass with
@@ -3245,7 +3273,7 @@ squashing, rebasing or bypassing that rule. The last verified default remains
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently206
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently208
 milestone rows,including eight compact CPU-GU points,the rejected packed-gather and activation-LUT stream comparisons and the two closed e1b011adaptive32/96code aggregates,
 the four closed adaptive8/32code/prose aggregates,
 the four MTP-width,four earlier adaptive code/prose aggregates,the CPU
