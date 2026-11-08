@@ -133,6 +133,9 @@ def source_reviews():
     for key in REVIEW_KEYS:
         row = heads.model.validation.committed(heads.model.validation.INDEX, (key,))
         require(row.get('long_benchmark_admission') is True, 'source/counter review corrections not admitted:' + key)
+        corrections = row['admission_corrections']
+        require(corrections['controller_path'] == str(SELF.relative_to(P)) and
+            corrections['controller_sha256'] == digest(SELF), 'review corrections cover a different controller:' + key)
         pin = row['native_review']; require(digest(pin['path']) == pin['sha256'], 'review digest changed')
         result[key] = {k:row[k] for k in ('native_review', 'long_benchmark_admission', 'admission_corrections')}
     return result
