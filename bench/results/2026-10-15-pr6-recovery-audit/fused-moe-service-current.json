@@ -206824,5 +206824,155 @@
       "condition_satisfied": true,
       "reason": "The current hash was already in V2 before the five-test run. No Python source edit is proposed;only a new explicit collector-source audit. Inclusion in V2 therefore confirms continuity rather than introducing a new hash."
     }
+  },
+  "compat_profile_fixture_build_v1": {
+    "stage": "prepared",
+    "toolchain": {
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "fallbacks": {
+      "prefill": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cache-map-model-v1/build/strata",
+        "bytes": 24058712,
+        "sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a"
+      },
+      "decode": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/build/strata",
+        "bytes": 24518560,
+        "sha256": "e1b01116ccdc4adc3d59cbccb78c365ebbcc937dfa343463656263c1044e1eb2"
+      },
+      "selected_feature": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
+        "sha256": "90f7e1588640f8293d372888d78abae7f2958579175332ebec83aa64974003ce",
+        "bytes": 26272056,
+        "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+      }
+    },
+    "selected_native": {
+      "record": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/record.json",
+        "sha256": "327957e294935d8f71e9e0ca31fe20a5252456ed3d08894c5823615154d99985"
+      },
+      "source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
+        "sha256": "90f7e1588640f8293d372888d78abae7f2958579175332ebec83aa64974003ce",
+        "bytes": 26272056,
+        "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+      },
+      "runtime_sources": {
+        "files": 21,
+        "sha256": "4ad04b2b5ec540309724373c3f61a108dfe9e4511dbb33b7a1a4565117aaab7b"
+      }
+    },
+    "collector": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "budgets": {
+      "wall": 1200,
+      "cpu": 3600,
+      "rss_cap": 8589934592,
+      "text_cap": 33554432,
+      "file_cap": 134217728,
+      "total_cap": 536870912
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_qualified": false,
+    "model_qualified": false,
+    "scope": "Build only four production-runtime/fixture translation units. No engine build,fixture execution,device enumeration,collector load,metric/Sysman request or model speed claim.",
+    "consumer": "Next serialized direct,fully active and separately paused-construction production-adapter checks. Verify counts,flows,guards,clock bounds,normal exit,ownership and fresh faults before model profiling.",
+    "retention": "One fixture build for this named current comparison;no extra model-engine generation. Keep original source/recipe and compact compiled-input census,then retire successful build output and the fixture after the collector boundary question closes. Preserve engine/phase guards. Existing legacy provenance holds are unchanged.",
+    "project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "f4f83be4f0af9ad42d36ac72ad2e927db5a02c0d",
+      "count": 755,
+      "aggregate_sha256": "56752aa3522e93947898023ad6c408e9096dbabc09fb9bb47d04820c8cbe38d4",
+      "prefixes": [
+        "CMakeLists.txt",
+        "cmake",
+        "include",
+        "src",
+        "tests/sycl",
+        "tools/sycl"
+      ]
+    },
+    "dependencies": [
+      {
+        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "count": 239,
+        "aggregate_sha256": "8116cd51a763acaa18b06c82d2bfe76e23eedd6ef1175242828c8e06daccd455"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "count": 906,
+        "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
+      }
+    ],
+    "recipe": {
+      "configure": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/orca/workspaces/Strata/sycl",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON"
+      ],
+      "targets": [
+        "sycl_profile_compat_window"
+      ],
+      "build_targets": [
+        "sycl_profile_compat_window"
+      ]
+    },
+    "build_environment_sha256": "5ca1860e717ecfc331ed1afdf1255b5f44c137633fc94151a602aac01052f4cc",
+    "commands": []
   }
 }
