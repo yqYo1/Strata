@@ -22,10 +22,10 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = source.P, source.B
-ROOT = B / 'dflash2-cache-loan-cli-v2'
+ROOT = B / 'dflash2-cache-loan-cli-v3'
 NATIVE = B / 'dflash2-cache-loan-native-v1'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'dflash2_cache_loan_cli_v2'
+KEY = 'dflash2_cache_loan_cli_v3'
 EVIDENCE = 'f2d679316bf454158ed99c2cc12276bbfac7ad41'
 BUILD_KEY = 'dflash2_cache_loan_native_build'
 INPUTS = ['tools/sycl/' + name for name in (
@@ -119,7 +119,7 @@ def cases(binary):
     for label, extra, remove, env, expected in (
         ('owned', ['--no-prefill-borrow'], [], {}, reject),
         ('not_serve', [], ['--serve'], {}, reject),
-        ('token_graph', [], ['--no-token-graph'], {}, reject),
+        ('admit_default_no_token_graph', [], ['--no-token-graph'], {}, 'dflash2 pack: cannot open pack'),
         ('stages', ['--gpu-stages'], [], {}, reject),
         ('not_native_bank', [], [], {'STRATA_PREFILL_NATIVE_DENSE_BANK': '0'}, reject),
         ('width2', ['--spec', '2'], [], {}, reject),
@@ -172,6 +172,8 @@ def prepare():
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
         budgets=dict(wall=25, cpu=20, rss_cap=2 << 30, text_cap=2 << 20, file_cap=2 << 20, total_cap=64 << 20),
         dependency_budgets=dict(wall=25, cpu=20, rss_cap=2 << 30, text_cap=32 << 20, file_cap=32 << 20, total_cap=64 << 20),
+        previous_case_failure=dict(key='dflash2_cache_loan_cli_v2',
+            reason='SYCL no_token_graph already defaults true. V2 expected a refusal after omitting an enable-only CLI flag;this is not a negative case. V3 expects CPU draft-pack inspection without device work.'),
         previous_metadata_failure=dict(key='dflash2_cache_loan_cli_v1',
             reason='Original2MiB metadata envelope terminated Ninja via owned SIGTERM/reap before native execution. Preserve failed census;only metadata output budget grows to32MiB.'),
         criteria='First audit actual Ninja compiler deps/GNU ld -t inputs against original prebuild pins;'
