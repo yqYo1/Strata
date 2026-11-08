@@ -96,6 +96,12 @@ sources against that build, then checks the four actual translation units and
 compiler/link inputs. It performs no device work. Its source is prepared;build
 and execution are still pending. A current collector-admission refusal must be
 preserved and resolved prospectively,without refreshing its recorded hashes.
+[profile_compat.py](../tools/sycl/profile_compat.py) controls the three cases in
+separate processes,with a result commit between them. Its prepared host controls
+in`tests/core/test_profile_compat.py`reject missing post-window copies,wrong
+kernel inventories,unobserved replays and ambiguous/boundary-crossing instances.
+Run those host checks at a serialized boundary before the device checks. Neither
+controller nor those controls have been executed yet.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction
