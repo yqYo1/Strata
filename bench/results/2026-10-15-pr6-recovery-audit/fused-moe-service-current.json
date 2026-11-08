@@ -206023,7 +206023,7 @@
     }
   },
   "dflash2_checked_cache_loan_candidate_v1": {
-    "state": "native_compiled_device_and_cli_admission_pending",
+    "state": "native_compiled_host_and_pre_gpu_CLI_passed_device_model_pending",
     "branch": "tune/dflash2-checked-lease",
     "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease",
     "source_commit": "969e4891df629957bec89cc4ea863e338d0c431b",
@@ -206042,14 +206042,20 @@
       "GPU_executed": false,
       "speed_qualified": false,
       "adopted": false,
-      "next": "Commit bounded native CLI-refusal/runtime and same-build small traced plans before actual tests. Build90f and host38/854 do not qualify GPU lease use,model correctness or speed. After admission,short-long-short/resumed-prefix borrowed-vs-owned checks remain;full physical262144/tails/handoff/RESTORE and clean repeated speed are separate.",
+      "next": "Commit the same-build small traced device gate and execute under current qualified runtime,then short-long-short/resumed-prefix borrowed-versus-owned model checks. All5fixture ELFs match f633 bytes,but do not reuse qualification without exact relevant-input/recipe proof. GPU lease/model/performance/full262144/tails/handoff/RESTORE remain pending.",
       "host_result_key": "dflash2_cache_loan_heads_host_v1",
       "native_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
       "native_engine_sha256": "90f7e1588640f8293d372888d78abae7f2958579175332ebec83aa64974003ce",
       "native_build_key": "current_sync.dflash2_cache_loan_native_build",
       "host_evidence_commit": "3c7ccce8f20c6f05fcb37be87660b666d2320773",
       "build_evidence_commit": "f2d679316bf454158ed99c2cc12276bbfac7ad41",
-      "host_artifacts_retired_commit": "adfd78b57e29fc0812a0b822cbfb2de5068b0eb1"
+      "host_artifacts_retired_commit": "adfd78b57e29fc0812a0b822cbfb2de5068b0eb1",
+      "CLI_executed": true,
+      "CLI_cases_passed": 12,
+      "actual_compiler_inputs": 1461,
+      "actual_external_link_inputs": 29,
+      "actual_uncovered_inputs": 0,
+      "CLI_result_key": "dflash2_cache_loan_cli_v3"
     },
     "isolation": "Primary native math and closed measurement sources remain unchanged. The child is refreshed from feature/sycl;only candidate source and host controller differ. Main serializes all tests/builds/GPU/cleanup.",
     "retirement": "This isolated child remains unfinished for the immediate candidate CLI/device/model admission. Preserve f633/552b/e1b;after the first same-build model decision select the feature generation and retire the extra using original-source/recipe recovery. Integrate accepted source and original evidence into feature/sycl,then delete the finished child/worktree;no inference adoption follows from build90f."
@@ -206181,9 +206187,15 @@
     "next": "New prospective V3 counts omitted--no-token-graph as default-no-graph admission;V2 stays failed. Its actual1461compiler/1generated/29external-link census remains useful. Retire raw V2 after V3 records equivalent census and closed owners."
   },
   "dflash2_cache_loan_cli_v3": {
-    "stage": "prepared",
-    "passed": false,
+    "stage": "passed",
+    "passed": true,
     "ownership_closed": true,
+    "controller": {
+      "revision": "5c7fff526a85f4a39ce1911f04da967e4bf115d1",
+      "count": 8,
+      "aggregate_sha256": "b0853f68311b67171bdd36cc3521916e4371861b0ef17a15e5ad13d1d4ec7807"
+    },
+    "original_plan_commit": "d85d0827bd1346b7c869bbc20808300afdbf42aa",
     "native_build": {
       "evidence_commit": "f2d679316bf454158ed99c2cc12276bbfac7ad41",
       "key": "current_sync.dflash2_cache_loan_native_build",
@@ -206231,15 +206243,9 @@
         }
       }
     },
-    "native_validation_probe": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "loader": {
-        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
-      }
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
     },
     "runtime_reuse": {
       "original_source_commit": "f312b6691f508125db6cfc2580ca32a686ff2642",
@@ -206258,401 +206264,215 @@
       "legacy_refusal_preserved": true,
       "ordinary_runtime_teardown_qualified": false
     },
-    "previous_prepare_failure": {
-      "source_commit": "2cc1b831cec44625d73af5ee3e776cf2d2e42d20",
-      "stage": "prepare_failed_before_plan_or_native_launch",
-      "error": "preload runtime changed: /usr/lib/x86_64-linux-gnu/libz.so.1.3",
-      "reason": "Controller selected the legacy preload predicate. Current84ELF manifest is unchanged;use separately closed current-runtime evidence,not refreshed canary hashes."
+    "environment_sha256": "321c01674b660c808d8b1a97150051d0c005602457df68e2ae7212630970cf7a",
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/actual-inputs.json",
+      "sha256": "c2ae0f9af7dc24fe99ecd96a937fadcd3d8ce4c9069f3edbabced202bac20a33",
+      "compiler_files": 1461,
+      "owned_generated_files": 1,
+      "external_link_files": 29,
+      "owned_link_products": 40,
+      "uncovered": 0,
+      "scope": "Post-build census against original prebuild pins;owned generated outputs are derived from the pinned recipe,not new external inputs. No compilation/GPU work."
     },
-    "runtime_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
-      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
-    },
-    "audit_inputs": {
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/.ninja_deps": "33978407370082cba1f8fe4a83902d8efd63f95991bb4e6516009b3528345462",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/build.ninja": "cb88ff57272f64f5be4c2cbf9475cce772fc71ba7fc5908d5deb5b855ee3915f",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/compile_commands.json": "51f054feaa1d443490711232475fa935b3217f7a0c120c4c9f4038a711fe7e4f",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/owned-2/compile.stdout": "2c365e9638cca3a0c5359d1fc6ac8a4b7de4c33e60487ee85f99979ccae520b9"
-    },
-    "dependency_command": [
-      "/usr/bin/ninja",
-      "-C",
-      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build",
-      "-t",
-      "deps"
-    ],
-    "cases": [
+    "case_results": [
       {
         "label": "owned",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve",
-          "--no-prefill-borrow"
-        ],
-        "environment": {},
         "expected": "DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "not_serve",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph"
-        ],
-        "environment": {},
         "expected": "DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "admit_default_no_token_graph",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--serve"
-        ],
-        "environment": {},
         "expected": "dflash2 pack: cannot open pack",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "stages",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve",
-          "--gpu-stages"
-        ],
-        "environment": {},
         "expected": "DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "not_native_bank",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve"
-        ],
-        "environment": {
-          "STRATA_PREFILL_NATIVE_DENSE_BANK": "0"
-        },
         "expected": "DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "width2",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve",
-          "--spec",
-          "2"
-        ],
-        "environment": {},
         "expected": "DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "width8",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve",
-          "--spec",
-          "8"
-        ],
-        "environment": {},
         "expected": "DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "cap3",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve",
-          "--draft-cap",
-          "3"
-        ],
-        "environment": {},
         "expected": "DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "mtp_expert_release",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve"
-        ],
-        "environment": {
-          "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "1"
-        },
         "expected": "DFlash2 requires STRATA_PREFILL_RELEASE_MTP_EXPERTS=0",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "admit_width4",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve"
-        ],
-        "environment": {},
         "expected": "dflash2 pack: cannot open pack",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "admit_width8_cap4",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve",
-          "--spec",
-          "8",
-          "--draft-cap",
-          "4"
-        ],
-        "environment": {},
         "expected": "dflash2 pack: cannot open pack",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       },
       {
         "label": "admit_lease0_owned",
-        "argv": [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
-          "--pack",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target",
-          "--native",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-target.gguf",
-          "--draft",
-          "dflash2",
-          "--draft-model",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/absent-draft.df2p",
-          "--draft-fallback",
-          "none",
-          "--spec",
-          "4",
-          "--prefill",
-          "8192",
-          "--no-coupled-draft",
-          "--no-token-graph",
-          "--serve",
-          "--no-prefill-borrow"
-        ],
-        "environment": {
-          "STRATA_SYCL_CACHE_SCRATCH_LEASE": "0"
-        },
         "expected": "dflash2 pack: cannot open pack",
-        "expected_exit": 2
+        "exit_code": 2,
+        "ownership_closed": true,
+        "native_pre_main_validation": true,
+        "GPU_calls_observed": false
       }
     ],
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
+    "fresh_faults": [],
+    "commands": [
+      {
+        "label": "dependencies",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "owned",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "not_serve",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "admit_default_no_token_graph",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "stages",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "not_native_bank",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "width2",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "width8",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "cap3",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "mtp_expert_release",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "admit_width4",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "admit_width8_cap4",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      },
+      {
+        "label": "admit_lease0_owned",
+        "exit_code": 2,
+        "ownership_closed": true,
+        "errors": [],
+        "cleanup": []
+      }
+    ],
+    "limits": "Twelve normal exit2 cases:8policy refusals and4admission-only missing-draft-pack inspections. Each has same-PID before-main validation;no platform/device/context/queue/allocation/enqueue or model work. No GPU lease/model/speed/task/full-context/default-adoption qualification. Physical262144 context not exercised.",
+    "previous_failures": {
+      "legacy_preload_predicate": "dflash2_cache_loan_cli_v1.previous_prepare_failure",
+      "metadata_budget": "dflash2_cache_loan_cli_v1",
+      "incorrect_SYCL_default_case": "dflash2_cache_loan_cli_v2"
     },
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "budgets": {
-      "wall": 25,
-      "cpu": 20,
-      "rss_cap": 2147483648,
-      "text_cap": 2097152,
-      "file_cap": 2097152,
-      "total_cap": 67108864
-    },
-    "dependency_budgets": {
-      "wall": 25,
-      "cpu": 20,
-      "rss_cap": 2147483648,
-      "text_cap": 33554432,
-      "file_cap": 33554432,
-      "total_cap": 67108864
-    },
-    "previous_case_failure": {
-      "key": "dflash2_cache_loan_cli_v2",
-      "reason": "SYCL no_token_graph already defaults true. V2 expected a refusal after omitting an enable-only CLI flag;this is not a negative case. V3 expects CPU draft-pack inspection without device work."
-    },
-    "previous_metadata_failure": {
-      "key": "dflash2_cache_loan_cli_v1",
-      "reason": "Original2MiB metadata envelope terminated Ninja via owned SIGTERM/reap before native execution. Preserve failed census;only metadata output budget grows to32MiB."
-    },
-    "criteria": "First audit actual Ninja compiler deps/GNU ld -t inputs against original prebuild pins;only original owned generated outputs may be outside external pins. Then twelve separate immutableprocesses in listed order;all normal exit2 with the exact expected rejection and same-PID qualifiedpre-main proof. No platform/device/context/queue/allocation/enqueue calls or model stages.Positive cases only reach the missing draft-pack CPU inspection;not device/model admission.Stop first failure;no automatic retry,reset,weights,quality,speed or physical-context qualification.",
-    "retention": "Keep compact closure/individual case results and source/recipe identities. Retire closed normaltraces after evidence commit;retain native90f and5fixtures only for imminent same-build device/model gate. Preserve f633/552b/e1b until feature-generation selection;review extra builds at first model decision.",
-    "controller": {
-      "revision": "5c7fff526a85f4a39ce1911f04da967e4bf115d1",
-      "count": 8,
-      "aggregate_sha256": "b0853f68311b67171bdd36cc3521916e4371861b0ef17a15e5ad13d1d4ec7807"
-    },
-    "environment_sha256": "321c01674b660c808d8b1a97150051d0c005602457df68e2ae7212630970cf7a",
-    "commands": []
+    "retention": "Closed raw traces/owner records are unnecessary after compact evidence. Keep actual-inputs.json only for immediate new-engine native/device/model qualification;engine90f plus5fixtures and f633/552b/e1b retain their named comparison holds. Select feature generation at first model decision."
   }
 }

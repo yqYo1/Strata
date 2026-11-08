@@ -3178,10 +3178,16 @@ at evidence `3c7ccce8f`, with 214 compiler and 28 linker inputs covered. Candida
 engine 90f and its five same-build fixtures compile from source/recipe `591c2fbe3`
 (evidence `f2d679316`). The original precompile controller-key failure remains
 failed at `ed10b6a69`; its fixed prospective attempt is separate. Closed host
-outputs are retired after exact source/recipe recovery (`adfd78b57`). No GPU or
-native CLI test has run on 90f. Next verify its actual compiler/linker closure,
-then commit and execute pre-GPU refusals, small traced native checks and
-short-long-short/resumed-prefix borrowed-versus-owned model checks. These do not replace separate clean
+outputs are retired after exact source/recipe recovery (`adfd78b57`). Actual
+compiler/linker census covers 1461 frozen inputs, one owned generated header and
+29 external linker files with zero uncovered inputs. The V3 CLI matrix passes
+12 normal exit2 cases with same-PID before-main validation and no device/model
+calls: eight policy refusals and four CPU-only missing-pack inspections. V1's
+metadata budget stop and V2's incorrect expectation about SYCL's default
+no-token-graph flag remain failed. All five fixture ELFs match f633 bytes;this
+alone does not reuse native qualification. No GPU test has run on 90f. Next
+commit and execute small traced native checks and short-long-short/resumed-prefix
+borrowed-versus-owned model checks. These do not replace separate clean
 repeated speed, agent/task, physical 262144, tail, handoff, or RESTORE gates. Preserve the
 479a/552b validated fallback; the physical limiting resource remains unknown.
 Standard long/agent comparisons and independent prefill/decode selection remain
