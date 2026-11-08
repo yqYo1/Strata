@@ -99,6 +99,43 @@ class MaxTokens(unittest.TestCase):
         self.assertEqual(s2, 200)
         self.assertEqual(b["input_tokens"], n_in)
 
+    def test_openai_count_is_the_thinking_prompt_without_loading_or_generating(self):
+        body = {"model": "m", "messages": [{"role": "user", "content": "count literal <think> text"}],
+                "max_tokens": 8, "chat_template_kwargs": {"enable_thinking": True}}
+        with mock.patch.object(self.svc, "load", side_effect=AssertionError("count must not load")), \
+                mock.patch.object(self.engine, "generate", side_effect=AssertionError("count must not infer")), \
+                mock.patch.object(self.svc, "encode_prompt", wraps=self.svc.encode_prompt) as encode:
+            status, counted = self.post("/v1/chat/completions/count_tokens", body)
+        self.assertEqual(status, 200, counted)
+        self.assertEqual(encode.call_args.kwargs, {"store": False})
+        status, generated = self.post("/v1/chat/completions", body)
+        self.assertEqual(status, 200, generated)
+        self.assertEqual(counted["input_tokens"], generated["usage"]["prompt_tokens"])
+
+    def test_openai_count_uses_the_same_structured_prompt_and_shared_thinking(self):
+        body = {"model": "m", "messages": [{"role": "user", "content": "reply with JSON"}],
+                "max_tokens": 8, "response_format": {"type": "json_object"}}
+        from serve.frontend import openai_to_messages
+        from serve.server import prepare_format
+        with mock.patch.object(self.svc, "shared", {"reasoning_effort": "medium"}):
+            messages, tools, kw = openai_to_messages(self.svc.with_shared(body, "openai"))
+            messages, _ = prepare_format(body["response_format"], messages)
+            expected = self.svc.encode_prompt(messages, tools, kw, store=False)
+            status, counted = self.post("/v1/chat/completions/count_tokens", body)
+        self.assertEqual(status, 200, counted)
+        self.assertEqual(counted["input_tokens"], len(expected))
+
+    def test_openai_count_rejects_dynamic_tools_images_and_invalid_sampling(self):
+        body = {"messages": [{"role": "user", "content": "hi"}]}
+        cases = [{**body, "strata_mcp": True}, {**body, "temperature": "wrong"},
+                 {"messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": "https://example.invalid/p.png"}}]}]}]
+        with mock.patch.object(self.svc, "load", side_effect=AssertionError("count must not load")), \
+                mock.patch.object(self.engine, "generate", side_effect=AssertionError("count must not infer")):
+            for req in cases:
+                with self.subTest(req=req):
+                    status, out = self.post("/v1/chat/completions/count_tokens", req)
+                    self.assertEqual(status, 400, out)
+
     def test_request_line_parses_the_engine_summary(self):
         line = ("strata serve: prompt 1200 tokens = 1000 reused + 200 read in 50 ms (4000.0 tok/s), 30 generated in "
                 "300 ms (100.0 tok/s), drafts accepted 20 of 28, 2 checkpoints")
