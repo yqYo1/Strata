@@ -3173,11 +3173,16 @@ The next bounded decode-side candidate is `dflash2_checked_cache_loan_candidate_
 from source commit `969e4891d` on `tune/dflash2-checked-lease`. Its narrow,
 default-off policy uses the existing checked cache-loan lifecycle; provenance
 records the original owned cache lifecycle and reviewed `aa5df5bd` snapshot, with
-no XeStrata source. After this primary cohort closed, the next gate is to pin the
-host/build/runtime recipe, run the scoped 38-case/854-check host fixture and
-pre-GPU refusals, then the small traced native and short-long-short/resumed-prefix
-borrowed-versus-owned model checks. These do not replace separate clean repeated
-speed, agent/task, physical 262144, tail, handoff, or RESTORE gates. Preserve the
+no XeStrata source. The host fixture passes 38 cases/854 checks under ASan/UBSan
+at evidence `3c7ccce8f`, with 214 compiler and 28 linker inputs covered. Candidate
+engine 90f and its five same-build fixtures compile from source/recipe `591c2fbe3`
+(evidence `f2d679316`). The original precompile controller-key failure remains
+failed at `ed10b6a69`; its fixed prospective attempt is separate. Closed host
+outputs are retired after exact source/recipe recovery (`adfd78b57`). No GPU or
+native CLI test has run on 90f. Next verify its actual compiler/linker closure,
+then commit and execute pre-GPU refusals, small traced native checks and
+short-long-short/resumed-prefix borrowed-versus-owned model checks. These do not replace separate clean
+repeated speed, agent/task, physical 262144, tail, handoff, or RESTORE gates. Preserve the
 479a/552b validated fallback; the physical limiting resource remains unknown.
 Standard long/agent comparisons and independent prefill/decode selection remain
 pending. About96% of expert lookup entries fall to the CPU in this256-slot
