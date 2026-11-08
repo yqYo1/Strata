@@ -220327,7 +220327,7 @@
     }
   },
   "q6_dpas_component_v2": {
-    "stage": "cpu-controlled",
+    "stage": "failed",
     "source_commit": "d6f65b0eb7a9e7a5ed548d78d234b9f7babcf0b6",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "97b78ac0dd298ebe358c2d27de50a5425e18e8ad7c47d9d882cae21ff5d21fef",
@@ -220652,6 +220652,19 @@
         "tests": 10,
         "skipped": 0,
         "native_execution_attempted": false
+      },
+      {
+        "mode": "build",
+        "passed": false,
+        "host_probe_accepted": false,
+        "build_commands": [
+          {
+            "name": "configure",
+            "exit_code": 0,
+            "ownership_closed": true
+          }
+        ],
+        "error": "RuntimeError(\"build failed: F low = e::convert<float>(e::simd<int32_t, 16>(d0.template select<16, 1>(c * 16)));\\n      |                                                                          ~~~~~~~~~~~~^~~~~~~~~~~~~\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/ext/intel/esimd/detail/simd_obj_impl.hpp:518:3: note: candidate function template not viable: no known conversion from 'const sycl::ext::intel::esimd::simd<int, 64>' to 'sycl::ext::intel::esimd::detail::simd_obj_impl<int, 64, sycl::ext::intel::esimd::simd<int, 64>>' for object argument\\n  518 |   select(uint16_t Offset = 0) &[[clang::lifetimebound]] {\\n      |   ^\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/ext/intel/esimd/detail/simd_obj_impl.hpp:533:39: note: candidate function template not viable: no known conversion from 'const sycl::ext::intel::esimd::simd<int, 64>' to 'sycl::ext::intel::esimd::detail::simd_obj_impl<int, 64, sycl::ext::intel::esimd::simd<int, 64>>' for object argument\\n  533 |   resize_a_simd_type_t<Derived, Size> select(uint16_t Offset = 0) && {\\n      |                                       ^\\n/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v2/source/src/kernels/sycl/q6_dpas_component.cpp:100:87: error: no matching member function for call to 'select'\\n  100 |                     const F high = e::convert<float>(e::simd<int32_t, 16>(d1.template select<16, 1>(c * 16)));\\n      |                                                                           ~~~~~~~~~~~~^~~~~~~~~~~~~\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/ext/intel/esimd/detail/simd_obj_impl.hpp:518:3: note: candidate function template not viable: no known conversion from 'const sycl::ext::intel::esimd::simd<int, 64>' to 'sycl::ext::intel::esimd::detail::simd_obj_impl<int, 64, sycl::ext::intel::esimd::simd<int, 64>>' for object argument\\n  518 |   select(uint16_t Offset = 0) &[[clang::lifetimebound]] {\\n      |   ^\\n/opt/intel/oneapi/compiler/2026.2/bin/compiler/../../include/sycl/ext/intel/esimd/detail/simd_obj_impl.hpp:533:39: note: candidate function template not viable: no known conversion from 'const sycl::ext::intel::esimd::simd<int, 64>' to 'sycl::ext::intel::esimd::detail::simd_obj_impl<int, 64, sycl::ext::intel::esimd::simd<int, 64>>' for object argument\\n  533 |   resize_a_simd_type_t<Derived, Size> select(uint16_t Offset = 0) && {\\n      |                                       ^\\n4 errors generated.\\nninja: build stopped: subcommand failed.\\n\")"
       }
     ],
     "timing": [],
@@ -220676,6 +220689,15 @@
     "dependency_inputs": {
       "files": 1686,
       "aggregate_sha256": "b6ea708f610c3a07158683a434b00b32829ca4ecc2834f59e2b233c5b8689f6a"
+    },
+    "build_failure": {
+      "translation_unit": "src/kernels/sycl/q6_dpas_component.cpp:77-100",
+      "error": "4 compiler errors: ESIMD bit_cast_view and select are non-const view APIs;lo8,hi8,d0,d1 were const locals. No GPU execution.",
+      "diagnostic_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v2/owned-build/build.stdout",
+      "diagnostic_sha256": "0823e98cab9bf0c5d82e4bd62a083cc56444daf0b4cd666566115ebe42b535ee",
+      "native_execution_attempted": false,
+      "GPU_executed": false,
+      "next": "Make the four local SIMD values non-const,then commit a fresh V3 plan;preserve this failed V2 outcome."
     }
   }
 }
