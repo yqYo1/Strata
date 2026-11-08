@@ -1766,19 +1766,22 @@ The fixture does not measure physical traffic or kernel service.
 Its planned timing retains UR parameter validation and the validation preload
 in all variants. Treat it as an instrumented component screen,not clean speed;
 any later clean comparison needs a separate committed plan and fresh processes.
-Neither the modified prototype nor fixture has been compiled or run. The
+Neither the prototype nor fixture has been compiled or run. The
 `tools/sycl/mapped_row_copy_component.py` controller prepares a private Git
 source snapshot and pins the compiler,headers,system packages and runtime files.
-Before its preparation after the current audit cohort closes, fix its native
-recipe environment lookup and explicitly gate on that audit cohort: the current
-build's recipe records a helper identity, not an `environment` field, and the
-existing gate names the earlier IQ3 selector cohort. These are unexecuted
-controller holds, not a component failure or permission to refresh native pins.
-It records preparation
+It now uses the selected90f private build recipe and the original exact32K
+environment's driver selection,with explicit runtime-safety checks. Preparation
+requires the current DFlash2 model cohort to be closed. That cohort's failed
+observer screen remains failed;its observed ranking only motivates this
+independent component question. The new actual-input reader has five CPU
+controls to run before compilation. The build requires all five actual
+translation units and every compiler/link input to match the precommitted
+inventories,with zero uncovered/generated inputs. These changes are
+source-prepared only,not build/device/speed qualification. It records preparation
 intent before extracting sources,and preserves a failed
 attempt if materialization fails. An unwritable receipt remains an explicit
 failure requiring preservation of the partial root;it cannot authorize retry.
-After the cohort closes,prepare and commit its exact plan,then build,run the small traced check and full
+Prepare and commit its exact plan,then run the five CPU controls,build,run the small traced check and full
 check,and collect timing processes0/1/2,committing each closed stage before the
 next. The fixture retains its runtime through a final live-owner/environment/
 provider check outside timing. A component win remains separate from a

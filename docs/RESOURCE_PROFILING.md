@@ -157,8 +157,10 @@ native waits per24-output request; pool time includes scheduling/waits and the
 wait thread's CPU time is not expert arithmetic. Mapped host-memory reads are
 not counted by explicit copy-command payloads. Keep PCIe/RAM traffic and
 complete device coverage unknown. The row-uniform-copy component is a bounded
-next hypothesis; its existing controller needs its current-source/environment
-holds resolved before preparation. No inference dispatch changes here.
+next hypothesis; its controller now binds the selected native recipe,original
+driver selection and closed current cohort,with CPU input-reader controls and
+an actual compiler/link census. These are source changes awaiting execution;
+they qualify no component or inference dispatch.
 An unprofiled completion must expose no graph timestamps. These checks do not
 measure kernel arithmetic utilization, physical traffic, a lossless pause with
 pending work, model observer overhead or inference performance. Requalify the

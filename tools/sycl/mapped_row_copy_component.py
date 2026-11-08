@@ -25,6 +25,7 @@ import benchmark_runtime as python_runtime
 import measurement_guards as guards
 import measurement_owner as owner
 import ur_validation as validation
+import build_compat_profile as selected
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
@@ -38,6 +39,8 @@ FIELDS = ('wall_ns', 'cpu_ns', 'submit_wall_ns', 'submit_cpu_ns')
 HELPERS = ('tools/sycl/mapped_row_copy_component.py', 'tools/sycl/benchmark_runtime.py',
     'tools/sycl/measurement_guards.py', 'tools/sycl/measurement_owner.py',
     'tools/sycl/ur_validation.py', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md')
+UNITS = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
+         'src/kernels/sycl/elementwise.cpp', 'tests/sycl/mapped_row_copy.cpp')
 PACKAGES = ('libc6', 'libc6-dev', 'linux-libc-dev', 'libstdc++6',
             'libstdc++-13-dev', 'libgcc-s1', 'libgcc-13-dev', 'binutils')
 require, sha = guards.require, owner.sha
@@ -94,19 +97,33 @@ def dependency_pins(roots):
 
 def prepare():
     data = validation.committed(RESULT)
-    cohort = data['decode_iq3_generation_speed_v1']
+    cohort = data['dflash2_device_service_v2']
     require(cohort['stage'] == 'closed' and cohort['complete'] and cohort['ownership_closed']
-        and not cohort['active'], 'close the frozen IQ3 cohort before component preparation')
+        and not cohort['active'] and len(cohort['cases']) == 3 and
+        all(c['passed'] and c['complete'] and c['ownership_closed'] and
+            c['native_exit_code'] == c['benchmark_exit_code'] == 0 and not c['fresh_faults']
+            for c in cohort['cases']), 'close the current frozen DFlash2 cohort before component preparation')
     require(not ROOT.exists() and KEY not in data, 'fresh component attempt only')
     revision = git('rev-parse', 'HEAD').decode().strip()
     helpers = {n: sha(P / n) for n in HELPERS}
     require(all((P / n).read_bytes() == git('show', revision + ':' + n) for n in HELPERS),
         'commit exact component controls first')
-    native = data['decode_iq3_pair_model_build_v1']
+    native, identity = selected.basis()
+    require(native['binaries']['strata'] == cohort['binary'], 'same selected90f production input required')
+    recipe = cohort['recipe']
+    original = json.loads(git('show', recipe['commit'] + ':' + recipe['path']))
+    template = original['current_sync']['dflash2_cache_loan_long_v1']['plans'][0]['environment']
     env = dict(native['recipe']['environment'])
     env = {k: v for k, v in env.items() if not k.startswith('STRATA_IQ') and k != 'STRATA_CPU_SERVICE'}
     env.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
-        ZE_ENABLE_ALT_DRIVERS=cohort['environment_template']['ZE_ENABLE_ALT_DRIVERS'])
+        ZE_ENABLE_ALT_DRIVERS=template['ZE_ENABLE_ALT_DRIVERS'],
+        UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+        UR_LOG_TRACING='level:info;flush:info;output:stderr')
+    require(not env.get('LD_PRELOAD') and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and
+        env['EnableDirectSubmission'] == '0' and env['NEOReadDebugKeys'] == '1' and
+        env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1' and
+        env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0' and env['ZES_ENABLE_SYSMAN'] == '0',
+        'preserve selected immutable runtime safety')
     provider = cohort['runtime_manifest']
     require(sha(provider['path']) == provider['sha256'], 'qualified provider inventory differs')
     runtime = json.loads(Path(provider['path']).read_text())
@@ -127,6 +144,10 @@ def prepare():
     dependencies += sorted(str(p) for p in Path('/opt/intel/oneapi/compiler/2026.2/lib/clang').glob('*/include'))
     require(len(dependencies) > 6, 'compiler resource headers required')
     dependency_inputs = dependency_pins(dependencies)
+    external = native['external_inputs']
+    require(sha(external['path']) == external['sha256'], 'original external-input manifest changed')
+    external_inputs = json.loads(Path(external['path']).read_text())
+    require(all(sha(p) == h for p, h in external_inputs.items()), 'original external compiler/link inputs changed')
     names = git('ls-files', '-z', 'CMakeLists.txt', 'LICENSE', 'cmake', 'src', 'include',
         'tests', 'bench', 'tools', 'third_party').decode().split('\0')
     names = sorted(n for n in names if n and not n.startswith('bench/results/')
@@ -148,19 +169,26 @@ def prepare():
         '-DSTRATA_ENABLE_SYCL=ON', '-DSTRATA_ENABLE_CUDA=OFF', '-DSTRATA_ENABLE_HIP=OFF',
         '-DSTRATA_NATIVE_EXPERTS=OFF', '-DSTRATA_BUILD_TESTS=OFF', '-DSTRATA_SYCL_TESTS=OFF',
         '-DSTRATA_BUILD_PREFILL_HOST_TESTS=OFF', '-DSTRATA_SYCL_VLLM_XE2_NATIVE16=OFF',
-        '-DSTRATA_WERROR=ON', '-DCMAKE_CXX_FLAGS=-Wno-error=deprecated-declarations']
+        '-DSTRATA_WERROR=ON',
+        '-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
+        '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t']
     row = dict(stage='preparing', source_commit=revision, sources=sources, helpers=helpers,
         dependency_roots=dependencies, dependency_pins=dependency_inputs,
         tools=tools, tool_versions=versions, system_packages=packages(), runtime_pins=runtime,
-        runtime_basis=dict(evidence_commit=revision, key='decode_iq3_generation_speed_v1',
-            scope='Reuse qualified provider files,safety settings and retained UR preload only;new component needs its own device validation.'),
+        external_inputs=external, selected_native=identity,
+        runtime_basis=dict(evidence_commit=revision, key='dflash2_device_service_v2',
+            observer_screen_passed=cohort['observer_decision']['observer_screen_passed'],
+            scope='Closed current model execution and selected native provenance only. The model observer screen failed;observed Q6/mapped-copy services select a hypothesis,not representative attribution. Reuse unchanged provider/safety/preload only;new component needs its own build/device validation.'),
         native_validation_probe=cohort['native_validation_probe'], environment=env,
         configure=configure, build=[tools['cmake']['path'], '--build', str(ROOT / 'build'),
             '--target', TARGET, '--parallel', '1'],
         build_budget=budget(300, 1200, file_cap=128 << 20),
+        host_budget=dict(budget(60, 60, file_cap=16 << 20), rss_cap=1 << 30),
+        host_command=[tools['python']['path'], '-B', '-m', 'unittest', '-v',
+                      'tools.sycl.test_mapped_row_copy_component'],
         native_budget=budget(600, 1200, file_cap=16 << 20),
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=guards.driver_guard(),
-        plan=dict(order='Build,small traced check,full check,three fresh timing processes0/1/2.No retries.',
+        plan=dict(order='Five CPU actual-input reader controls,build,small traced check,full check,three fresh timing processes0/1/2.Commit each closed stage before next;no retries.',
             dimensions=dict(rows=40, width=2560, sources=['host_usm', 'device'], banks=[1, 64], hits=[4, 20]),
             variants=VARIANTS, variant_orders=ORDERS, samples_per_cell=5, batch_launches=4096,
             warmup_batches=2, minimum_batch_ns=10000000, minimum_timer_multiple=300,
@@ -204,6 +232,13 @@ def current(row):
     require(all((P / n).read_bytes() == git('show', row['source_commit'] + ':' + n)
                 and sha(P / n) == h for n, h in row['helpers'].items()), 'component control drift')
     require(all(sha(ROOT / 'source' / n) == h for n, h in row['sources'].items()), 'native snapshot drift')
+    require(all(sha(P / n) == h for n, h in row['sources'].items()), 'live component/helper source drift')
+    _, identity = selected.basis()
+    require(identity == row['selected_native'], 'selected production provenance drift')
+    external = row['external_inputs']
+    require(sha(external['path']) == external['sha256'] and
+        all(sha(p) == h for p, h in json.loads(Path(external['path']).read_text()).items()),
+        'external compiler/link input drift')
     require(all(sha(n) == h for n, h in row['runtime_pins'].items()), 'runtime provider drift')
     require(dependency_pins(row['dependency_roots']) == row['dependency_pins'], 'compiler/header/config dependency drift')
     require(all(str(Path(t['path']).resolve()) == t['realpath'] and sha(t['path']) == t['sha256']
@@ -212,6 +247,49 @@ def current(row):
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'driver/boot drift')
     if 'binary' in row:
         require(sha(row['binary']['path']) == row['binary']['sha256'], 'component executable drift')
+        actual = row['actual_inputs']
+        require(sha(actual['path']) == actual['sha256'], 'actual component input census drift')
+        census = json.loads(Path(actual['path']).read_text())
+        require(all(sha(p) == h for k in ('compiled', 'generated', 'links') for p, h in census[k].items()),
+            'actual component compiler/link bytes changed')
+
+
+def census(row, dependencies, link_text):
+    """Reject actual compiler/link files outside the precommitted inventories."""
+    allowed = {str((ROOT / 'source' / p).resolve()): h for p, h in row['sources'].items()}
+    allowed.update({str(Path(p).resolve()): h for p, h in row['dependency_pins'].items()})
+    allowed.update({str(Path(p).resolve()): h for p, h in
+        json.loads(Path(row['external_inputs']['path']).read_text()).items()})
+    allowed.update({v['realpath']: v['sha256'] for v in row['tools'].values()})
+    compiled, generated, links, owned = {}, {}, {}, set()
+    for line in dependencies.splitlines():
+        if not line.startswith('    ') or not line.strip(): continue
+        p = Path(line.strip()); p = (p if p.is_absolute() else ROOT / 'build' / p).resolve()
+        value = sha(p)
+        if p.is_relative_to(ROOT / 'build'): generated[str(p)] = value
+        else:
+            require(allowed.get(str(p)) == value, 'unfrozen actual compiler input: ' + str(p))
+            compiled[str(p)] = value
+    expected = {str((ROOT / 'source' / p).resolve()) for p in UNITS}
+    observed = {p for p in compiled if Path(p).suffix in ('.cpp', '.c', '.cc', '.cu')}
+    require(observed == expected and len(compiled) > 100 and not generated,
+        'exact five-unit compiler census with no uncovered/generated input required')
+    for line in link_text.splitlines():
+        name = line.strip(); p = Path(name)
+        if not name or any(c.isspace() for c in name) or not (
+            p.is_absolute() or p.suffix in ('.o', '.a') or '.so' in p.name): continue
+        p = (p if p.is_absolute() else ROOT / 'build' / p).resolve()
+        if any(p.is_relative_to(ROOT / n) for n in ('build', 'tmp')):
+            owned.add(str(p)); continue
+        require(p.is_file() and allowed.get(str(p)) == sha(p), 'unfrozen actual linker input: ' + str(p))
+        links[str(p)] = sha(p)
+    require(len(links) > 8, 'actual external link census incomplete')
+    path = ROOT / 'actual-inputs.json'
+    path.write_text(json.dumps(dict(compiled=compiled, generated=generated, links=links,
+        owned_link_products=sorted(owned)), indent=2) + '\n')
+    return dict(path=str(path), sha256=sha(path), compiler_files=len(compiled),
+        generated_files=len(generated), external_link_files=len(links), uncovered=0,
+        translation_units=UNITS, source_commit=row['source_commit'])
 
 
 def budget(wall, cpu, *, file_cap):
@@ -268,7 +346,7 @@ def decision(timing):
 
 def execute(mode):
     row = json.loads((ROOT / 'record.json').read_text()); current(row)
-    expected = {'build': 'prepared', 'check-small': 'built', 'check': 'small-checked'}
+    expected = {'host': 'prepared', 'build': 'host-checked', 'check-small': 'built', 'check': 'small-checked'}
     if mode.startswith('time'):
         index = int(mode[-1]); require(row['stage'] in ('checked', 'timing') and len(row['timing']) == index, 'fresh ordered timing only')
     else: require(row['stage'] == expected[mode], 'fresh ordered component stage only')
@@ -279,19 +357,32 @@ def execute(mode):
             active=bool(scope and scope.active), commands=scope.commands if scope else []), indent=2) + '\n')
     try:
         scope = owner.Owner(ROOT / ('owned-' + mode), persist)
-        if mode == 'build':
+        if mode == 'host':
+            e, out, err = scope.run('reader-controls', row['host_command'], row['environment'], P,
+                **row['host_budget'])
+            text = out.read_text() + err.read_text()
+            require(owner.closed(e) and e['exit_code'] == 0 and 'Ran 5 tests' in text and
+                '\nOK\n' in text and 'skipped' not in text, 'all five CPU input-reader controls required')
+            outcome.update(tests=5, skipped=0, native_execution_attempted=False)
+            row['stage'] = 'host-checked'
+        elif mode == 'build':
             outcome['build_commands'] = []
+            outputs = {}
             for name, command in [('configure', row['configure']), ('build', row['build'])]:
-                e, _, err = scope.run(name, command, row['environment'], ROOT, **row['build_budget'])
+                e, out, err = scope.run(name, command, row['environment'], ROOT, **row['build_budget'])
                 require(owner.closed(e) and e['exit_code'] == 0, name + ' failed:' + err.read_text()[-1500:])
+                outputs[name] = out
                 outcome['build_commands'].append(dict(name=name, exit_code=0, ownership_closed=True))
+            e, out, _ = scope.run('dependencies', [row['tools']['ninja']['path'], '-C', str(ROOT / 'build'), '-t', 'deps'],
+                row['environment'], ROOT, **row['build_budget'])
+            require(owner.closed(e) and e['exit_code'] == 0, 'actual dependency listing failed')
+            row['actual_inputs'] = census(row, out.read_text(), outputs['build'].read_text())
             path = ROOT / 'build' / TARGET
             row['binary'] = dict(path=str(path), sha256=sha(path), bytes=path.stat().st_size)
             database = ROOT / 'build/compile_commands.json'
             commands = [c for c in json.loads(database.read_text()) if
                 TARGET + '.dir' in c['command'] or 'strata_sycl_runtime.dir' in c['command']]
-            expected_sources = {'src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
-                'src/kernels/sycl/elementwise.cpp', 'tests/sycl/mapped_row_copy.cpp'}
+            expected_sources = set(UNITS)
             require(len(commands) == 5 and
                 {str(Path(c['file']).relative_to(ROOT / 'source')) for c in commands} == expected_sources and
                 all('-fsycl' in shlex.split(c['command']) and
@@ -382,7 +473,7 @@ def execute(mode):
 
 if __name__ == '__main__':
     require(len(sys.argv) == 2 and sys.argv[1] in
-        ('prepare', 'build', 'check-small', 'check', 'time0', 'time1', 'time2'), 'use prepare|build|check-small|check|time0|time1|time2')
+        ('prepare', 'host', 'build', 'check-small', 'check', 'time0', 'time1', 'time2'), 'use prepare|host|build|check-small|check|time0|time1|time2')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
