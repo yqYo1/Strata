@@ -26,13 +26,22 @@ import decode_window_trace as device
 from profile_cache_map_decode import client_decode_window
 
 P, B, RESULT = collector.P, collector.B, collector.RESULT
-ROOT, KEY = B / 'dflash2-device-service-v1', 'dflash2_device_service_v1'
+ROOT, KEY = B / 'dflash2-device-service-v2', 'dflash2_device_service_v2'
 SELF = Path(__file__).resolve()
 READ, RUNS, ORDER = 32769, 2, ('reference-before', 'profile', 'reference-after')
 require, digest, write, signature = collector.require, collector.digest, collector.write, collector.signature
 HEADER, READER = 'include/strata/sycl/decode_service_profile.hpp', 'tools/sycl/decode_service_evidence.py'
 BUDGET = dict(wall=2400, cpu=14400, rss_cap=104 << 30, text_cap=64 << 20,
               file_cap=1024 << 20, total_cap=1536 << 20)
+
+
+def inputs(revision):
+    pins = long.bench.sources(revision)
+    for name, raw in long.small.loan.source.blobs(P, revision, (
+            'tests/core/test_decode_window_trace.py', 'tools/sycl/measurement_environment.json')):
+        require((P / name).read_bytes() == raw, 'commit invoked host test/settings: ' + name)
+        pins[name] = hashlib.sha256(raw).hexdigest()
+    return pins
 
 
 def basis():
@@ -69,7 +78,7 @@ def save(row):
 
 def current(row, full=False):
     require(collector.adapter.validation.committed(RESULT, (KEY,)) == compact(row), 'commit exact model-profile plan/result')
-    require(long.bench.sources(row['source_commit']) == row['sources'], 'model-profile source changed')
+    require(inputs(row['source_commit']) == row['sources'], 'model-profile source changed')
     _, proof = basis(); require(proof == row['qualification'], 'selected native/collector/caller proof changed')
     probe, reuse = long.small.loan.current_probe()
     require(probe == row['native_validation_probe'] and reuse == row['runtime_reuse'], 'current runtime proof changed')
@@ -102,7 +111,9 @@ def prepare():
     reference = json.loads((long.small.model.REFERENCE / 'record.json').read_text())
     probe, reuse = long.small.loan.current_probe()
     revision = long.small.loan.source.git(P, 'rev-parse', 'HEAD').decode().strip()
-    row = dict(stage='prepared', source_commit=revision, sources=long.bench.sources(revision), qualification=proof,
+    row = dict(stage='prepared', source_commit=revision, sources=inputs(revision), qualification=proof,
+        previous_attempt=dict(commit='d99f1f21471e46c99014771bd9fffc563e8e7243', key='dflash2_device_service_v1',
+            reason='V1 source inventory omitted the invoked guarded-window test. Closed before CPU tests/model/GPU;preserve its refusal. V2 pins that file and the measurement settings;no hash refresh.'),
         binary=proof['binary'], native_source_commit=proof['native_source_commit'], native_validation_probe=probe, runtime_reuse=reuse,
         runtime_manifest=reference['runtime_manifest'], runtime_files=json.loads(Path(reference['runtime_manifest']['path']).read_text()),
         models=reference['model_assets'], models_sha256=long.small.model.fingerprint(reference['model_assets']),
@@ -119,7 +130,9 @@ def prepare():
             retention='One profile needs complete history because pausing during graph construction loses later kernels. Budget1GiB/file,1.5GiB/job,2GiBwhole,2400s/104GiBRSS. Reduce after native exit under a separate240s/16GiB CPU owner. Keep compact individual samples,counters,clocks,services,decisions and faults;retire successful full traces/logs/JIT after guarded reduction and observer decision.',
             limits='Diagnostic24-output requests do not qualify sustained TG,strong/weak draft classes,agent/task quality,length scaling,physical262144/RESTORE or adoption. Caller CPU excludes worker CPU. Device command services/API wall are not FLOP utilization,physical RAM/VRAM/PCIe traffic,complete device coverage or hardware saturation. No engine rebuild.'))
     require(shutil.disk_usage(B).free >= 4 << 30, 'finite profile output headroom required')
-    long.small.model.model_pins(row, full=True)
+    # Full model hashing is required immediately before the first native run
+    # and after the last; preparation only checks the immutable inventory.
+    long.small.model.model_pins(row, full=False)
     ROOT.mkdir(mode=0o700)
     for label in ORDER:
         root = ROOT / label; root.mkdir(mode=0o700)

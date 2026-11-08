@@ -46,6 +46,10 @@ class ProfileDflash2Test(unittest.TestCase):
         self.assertFalse(profile.observer_decision(rows)['requests'][0]['fixed_24_output_work'])
 
     def test_changed_body_or_unclocked_sample_never_qualifies(self):
+        revision=profile.long.small.loan.source.git(profile.P,'rev-parse','HEAD').decode().strip()
+        pins=profile.inputs(revision)
+        for name in ('tests/core/test_decode_window_trace.py','tools/sycl/measurement_environment.json'):
+            self.assertEqual(pins[name],profile.digest(profile.P/name))
         rows=cases();self.assertTrue(profile.observer_decision(rows)['observer_screen_passed'])
         bad=copy.deepcopy(rows);bad[2]['samples'][1]['request_sha256']='f'*64
         with self.assertRaises(RuntimeError):profile.observer_decision(bad)
