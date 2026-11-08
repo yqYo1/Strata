@@ -121,7 +121,7 @@ def model_pins(row, full=False):
     require(mask.ring.PACK.stat().st_size == 522458112 and digest(mask.ring.PACK) == mask.ring.PACK_SHA, 'stock draft pack changed')
 
 
-def request_ids(tokenizer):
+def request_ids(tokenizer, content=None):
     # Use the maintained tokenizer and the model's own thinking-enabled template.
     # Commit the resulting small ID list/wire hash in the prepared plan; the
     # native run consumes those exact IDs, not another tokenizer invocation.
@@ -134,7 +134,8 @@ def request_ids(tokenizer):
     require(config['pre'] == 'qwen35' and len(tokens) == 248320, 'unexpected target tokenizer')
     tok = Tokenizer(tokens, (tokenizer / 'merges.txt').read_text().split('\n'),
         json.loads((tokenizer / 'token_type.json').read_text()), config['pre'], config['special_ids'])
-    messages = [dict(role='user', content='Write a Python implementation of a stable merge sort with type annotations, then explain its correctness and time complexity. Work through the design before writing the code.')]
+    messages = [dict(role='user', content=content if content is not None else
+        'Write a Python implementation of a stable merge sort with type annotations, then explain its correctness and time complexity. Work through the design before writing the code.')]
     text = Environment().from_string((tokenizer / 'chat_template.jinja').read_text()).render(
         messages=messages, tools=None, add_generation_prompt=True, enable_thinking=True)
     require(text.endswith('<think>\n'), 'thinking prompt suffix changed')
@@ -147,6 +148,39 @@ def request_ids(tokenizer):
 
 def wire(ids, count):
     return ('GEN ' + str(count) + ' ' + ','.join(map(str, ids)) + '\n').encode()
+
+
+def runtime_evidence(row, pid, text):
+    """Same-PID pre-main proof and file-backed executable mappings at READY.
+
+    This does not qualify anonymous/bracketed code or ordinary provider teardown.
+    Both the original model diagnostic and the independent head boundary use it.
+    """
+    proof = validation.preload_evidence(text, pid)
+    require(Path(proof['loader']).resolve() == Path(row['probe']['loader']['path']).resolve(), 'actual pre-main loader differs')
+    actual = set(); other = {}
+    for line in Path('/proc', str(pid), 'maps').read_text().splitlines():
+        fields = line.split(maxsplit=5)
+        if 'x' not in fields[1]: continue
+        if len(fields) == 6 and fields[5].startswith('/'):
+            require(not fields[5].endswith(' (deleted)'), 'mapped code removed')
+            actual.add(str(Path(fields[5]).resolve()))
+        else:
+            name = fields[5] if len(fields) == 6 else 'anonymous'
+            other[name] = other.get(name, 0) + 1
+    allowed = {str(Path(p).resolve()): h for p, h in row['runtime_files'].items()}
+    binary = row['native_build']['binaries']['strata']
+    for p, h in [(binary['path'], binary['sha256']), (row['probe']['library']['path'], row['probe']['library']['sha256'])]:
+        allowed[str(Path(p).resolve())] = h
+    required = {str(Path(p).resolve()) for p in [row['probe']['library']['path'], row['probe']['loader']['path'],
+        row['environment']['UR_ADAPTERS_FORCE_LOAD'], row['environment']['ZE_ENABLE_ALT_DRIVERS'],
+        '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0']}
+    require(len(actual) >= 8 and actual <= allowed.keys() and required <= actual, 'actual executable maps unqualified')
+    require(all(digest(p) == allowed[p] for p in actual), 'mapped ELF bytes changed')
+    return dict(pre_main_validation=proof, mapping=dict(files=len(actual),
+        sha256=build.signature({p: allowed[p] for p in sorted(actual)}),
+        scope='file-backed executable ELF mappings at READY', other_executable_vmas=other,
+        full_executable_address_space_qualified=False))
 
 
 def verify(row):
@@ -273,28 +307,8 @@ def run():
             placement = dict(s.split('=', 1) for s in info[0].split())
             require(all(placement.get(k) == v for k, v in row['reported_placement_required'].items()), 'actual INFO placement differs')
             row['reported_placement'] = placement
-            stderr = ROOT / 'owned/model.stderr'; proof = validation.preload_evidence(stderr.read_text(errors='replace'), entry['pid'])
-            require(Path(proof['loader']).resolve() == Path(row['probe']['loader']['path']).resolve(), 'actual pre-main loader differs')
-            actual = set(); other_executable = {}
-            for line in Path('/proc', str(entry['pid']), 'maps').read_text().splitlines():
-                fields = line.split(maxsplit=5)
-                if 'x' not in fields[1]: continue
-                if len(fields) == 6 and fields[5].startswith('/'):
-                    require(not fields[5].endswith(' (deleted)'), 'mapped code removed'); actual.add(str(Path(fields[5]).resolve()))
-                else:
-                    name = fields[5] if len(fields) == 6 else 'anonymous'
-                    other_executable[name] = other_executable.get(name, 0) + 1
-            allowed = {str(Path(p).resolve()): h for p, h in row['runtime_files'].items()}
-            for p, h in [(row['argv'][0], row['native_build']['binaries']['strata']['sha256']),
-                         (row['probe']['library']['path'], row['probe']['library']['sha256'])]: allowed[str(Path(p).resolve())] = h
-            required = {str(Path(p).resolve()) for p in [row['probe']['library']['path'], row['probe']['loader']['path'],
-                row['environment']['UR_ADAPTERS_FORCE_LOAD'], row['environment']['ZE_ENABLE_ALT_DRIVERS'],
-                '/opt/intel/oneapi/compiler/2026.2/lib/libsycl.so.9.0.0']}
-            require(len(actual) >= 8 and actual <= allowed.keys() and required <= actual, 'actual executable maps unqualified')
-            require(all(digest(p) == allowed[p] for p in actual), 'mapped ELF bytes changed')
-            row['pre_main_validation'] = proof; row['mapping'] = dict(files=len(actual), sha256=build.signature({p: allowed[p] for p in sorted(actual)}),
-                scope='file-backed executable ELF mappings at READY', other_executable_vmas=other_executable,
-                full_executable_address_space_qualified=False)
+            stderr = ROOT / 'owned/model.stderr'
+            row.update(runtime_evidence(row, entry['pid'], stderr.read_text(errors='replace')))
             print('Native READY with pre-main validation,actual INFO placement and file-backed executable ELF checks.', flush=True)
             request = row['request']; parser = protocol.RequestProtocol(request['prompt_tokens'], request['generated'])
             io.send(wire(request['ids'], request['generated']))
