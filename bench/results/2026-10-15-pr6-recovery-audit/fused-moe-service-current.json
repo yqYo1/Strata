@@ -220139,7 +220139,7 @@
     }
   },
   "q6_dpas_component_v5": {
-    "stage": "cpu-controlled",
+    "stage": "failed",
     "source_commit": "44715a9917abdd341da44ae2638c6c91c7401ddf",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "93425bb50e2c4575e69e373345e32e25ca98a77b0b9d0222144db93a26eee81e",
@@ -220474,7 +220474,7 @@
       "acceptance": "Exact input/ELF/provider/pre-main/ownership/boot pins;normal0,quiet validation,no fresh fault. CPU roundtrip,C1 rejection before runtime and unchanged C1 reference;all small/full numeric/input/canary checks. Codegen must retain>=2DPAS intrinsic calls;this is compiler-IR evidence,not native ISA or utilization. All60timed samples meet order/replay count/timer/conservation gates. Compare each shape independently:all3candidate/reference process-median whole-batch wall ratios<1,no percentage floor. Only a winning full head cell can motivate a separately qualified model proposal;no adoption.",
       "limits": "Parameter-validation/preload-instrumented component wall/threadCPU including graph submission/completion;not clean or sustained model speed. Source-selected cost hypothesis;physical bottleneck remains unknown."
     },
-    "retention": "Useful individual samples,setup/numeric outcomes,source/recipe and decision only.Retire successful raw/build output after this named component/model-proposal consumer ends;no additional inference engine.",
+    "retention": "Keep this unexecuted native build only for prospective V6 source/build/ELF reuse;no unrelated engine generation. V6 must qualify all native/host/device/performance gates anew;retire at its comparison/model-proposal boundary.",
     "results": [
       {
         "mode": "controls",
@@ -220483,6 +220483,29 @@
         "tests": 10,
         "skipped": 0,
         "native_execution_attempted": false
+      },
+      {
+        "mode": "build",
+        "passed": false,
+        "host_probe_accepted": false,
+        "build_commands": [
+          {
+            "name": "configure",
+            "exit_code": 0,
+            "ownership_closed": true
+          },
+          {
+            "name": "build",
+            "exit_code": 0,
+            "ownership_closed": true
+          },
+          {
+            "name": "codegen",
+            "exit_code": 0,
+            "ownership_closed": true
+          }
+        ],
+        "error": "RuntimeError('ir-text failed:error: IR output is not supported.\\n1 error generated.\\n')"
       }
     ],
     "timing": [],
@@ -220507,6 +220530,48 @@
     "dependency_inputs": {
       "files": 1686,
       "aggregate_sha256": "b6ea708f610c3a07158683a434b00b32829ca4ecc2834f59e2b233c5b8689f6a"
+    },
+    "build_failure": {
+      "error": "Native14-unit build/link and device bitcode emission succeeded;the installed frontend refuses LLVM text even in -cc1 IR-input mode. System LLVM21 cannot read this LLVM23 bitcode.",
+      "native_build_exit_code": 0,
+      "bitcode_exit_code": 0,
+      "ir_text_exit_code": 1,
+      "native_execution_attempted": false,
+      "GPU_executed": false,
+      "diagnostic_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v5/owned-build/ir-text.stderr",
+      "diagnostic_sha256": "22eeb789de9d45f873336e3dcf97648a7534ad6c21f8a13fa735f8f762baafdc",
+      "next": "Commit V6 with exact native-source/build/ELF reuse and a stronger embedded-SPIR-V callgraph check,then fresh CPU/small/full/timing gates. Original V5 remains failed."
+    },
+    "unexecuted_native_build": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v5/build/sycl_q6_dpas_component",
+      "sha256": "c7f3fd3d11a9d91717b16f8326de4b7d3ac4b824cb44d41ec430e61b949c0788",
+      "bytes": 11592488,
+      "actual_inputs": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v5/actual-inputs.json",
+        "sha256": "7b4b90384d86722e798c18ba8ad9b97b276c0880b40621cd51ad9c8b70a5fd26",
+        "compiler_files": 800,
+        "generated_files": 0,
+        "external_link_files": 24,
+        "uncovered": 0,
+        "translation_units": [
+          "src/sycl/runtime.cpp",
+          "src/sycl/compat.cpp",
+          "src/sycl/command_profile.cpp",
+          "src/kernels/sycl/native_mmvq.cpp",
+          "src/kernels/sycl/native_q5_head.cpp",
+          "src/kernels/sycl/native_q3_esimd.cpp",
+          "src/kernels/sycl/native_q4_esimd.cpp",
+          "src/kernels/sycl/native_q2_esimd.cpp",
+          "src/kernels/sycl/native_iq4xs_esimd.cpp",
+          "src/kernels/sycl/native_iq_esimd.cpp",
+          "src/kernels/sycl/native_mmq_xmx.cpp",
+          "src/kernels/sycl/iq.cpp",
+          "src/kernels/sycl/q6_dpas_component.cpp",
+          "bench/sycl/q6_dpas.cpp"
+        ],
+        "source_commit": "44715a9917abdd341da44ae2638c6c91c7401ddf"
+      },
+      "scope": "Original44715a native build from3db30d920 plan;input census only,no native execution or V5 qualification."
     }
   }
 }
