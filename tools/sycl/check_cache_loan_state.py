@@ -16,8 +16,8 @@ import check_cache_loan_cli as loan
 import check_dflash2 as device
 
 P, B, STATUS = loan.P, loan.B, device.STATUS
-ROOT = B / 'dflash2-cache-loan-state-v1'
-KEY = 'dflash2_cache_loan_state_check'
+ROOT = B / 'dflash2-cache-loan-state-v2'
+KEY = 'dflash2_cache_loan_state_v2_check'
 PACK = Path('/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack')
 PACK_SHA = 'cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1'
 INPUTS = list(dict.fromkeys(['tools/sycl/check_cache_loan_state.py', 'tools/sycl/check_dflash2.py', *loan.INPUTS]))
@@ -105,7 +105,8 @@ def prepare():
         env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0' and env['ZES_ENABLE_SYSMAN'] == '0', 'qualified safety settings')
     manifest = dict(path=str(device.REFERENCE / 'runtime-inputs.json'), sha256=digest(device.REFERENCE / 'runtime-inputs.json'))
     row = dict(stage='prepared', passed=False, ownership_closed=True, commands=[], results=[],
-        controller=loan.source.pin(P, INPUTS), native_build=native, prior_device_sha256=loan.build.signature(prior),
+        controller=loan.source.pin(P, INPUTS), native_build=native,
+        previous_failure_key='current_sync.dflash2_cache_loan_state_check', prior_device_sha256=loan.build.signature(prior),
         native_validation_probe=probe, runtime_reuse=reuse, pack=dict(path=str(PACK), bytes=522458112, sha256=PACK_SHA),
         environment=env, runtime_manifest=manifest, runtime_files=json.loads(Path(manifest['path']).read_text()),
         driver=loan.guards.driver_guard(), boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), order=steps(),
@@ -176,7 +177,12 @@ def run():
                         result['runtime_maps']=mappings(row,fixture,entry['pid']);io.send(b'X')
                     elif line==case['wait']:
                         result['runtime_maps']=mappings(row,fixture,entry['pid'])
-                        io.send(b'X' if case['label']=='submission' else b'QUIT\n');io.exit(25);break
+                        if case['label']=='submission':
+                            io.send(b'X')
+                            require(io.line(seconds=25)=='case teardown=PASS','missing teardown marker')
+                            require(io.line(seconds=25)=='fixture_status=PASS mode=submission','missing final submission status')
+                        else:io.send(b'QUIT\n')
+                        io.exit(25);break
             entry,out,err=owner.run(case['label'],[fixture['path'],*case['args']],env,P,
                 interaction=interact if case['wait'] else None,**case['budgets'])
             require(loan.ownership.closed(entry) and entry['exit_code']==0,'case failed/ownership not normal: '+case['label'])
