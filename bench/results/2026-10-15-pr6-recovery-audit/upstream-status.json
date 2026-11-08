@@ -3480,7 +3480,7 @@
       }
     },
     "dflash2_prefill_heads": {
-      "stage": "model_plan_prepared",
+      "stage": "small_model_configuration_refused",
       "adopted": false,
       "scope": "Optional target-head retirement during long layer-major prefill,single-card native spec4;MTP duplicate-head participant preserved or absent only when the DFlash2 owner is null after checked teardown. No new kernel math or default selection.",
       "resource_evidence": "Native target head is unused during layer-major prefill;its actual released bytes/free-memory delta and end-to-end benefit are to be measured.Hardware saturation remains unknown;this is an ownership gate,not a claimed bottleneck fix.",
@@ -3511,7 +3511,7 @@
         "link_input_files": 28,
         "uncovered": 0
       },
-      "pending": "Prepared finite3admission+9request model plan;use existing upstream-host-tests-146df3c4/bin/python. Commit plan then launch through owned controller;no duplicate/retry.",
+      "pending": "Commit original failure. New V2plan on same exact native binary disables all8192-only optimizations for256chunk safety diagnostic,keeps scope/acceptance/normal-exit gates. Use actual8192configuration only in later >=32Kbench.sh comparisons.",
       "native_compile_attempt7": {
         "source_commit": "0de74d32e8556df4341f803d5d75481410ce650c",
         "passed": false,
@@ -3534,7 +3534,7 @@
         "bytes": 26272056,
         "origin_source_commit": "5ecb4435f8ac3bc5067554f368d0fa7424ec193f"
       },
-      "native_model_launched": false,
+      "native_model_launched": true,
       "source_review": {
         "path": ".cache/research/2026-11-08/optional-mtp-heads/source-audit-review.md",
         "sha256": "89971fad6d52c32f5ff15c2fc9cdce59a0548a4eef1fb61ac7e29037f726789b",
@@ -3548,13 +3548,82 @@
         "error": "System Python lacks regex;failure before ROOT creation and before any native child.",
         "native_launched": false,
         "correction": "Use existing upstream-host-tests-146df3c4/bin/python(Python3.12.3,regex2026.9.10,jinja2 3.1.6);no installation/mutation.Pin parent interpreter and tokenizer/template package files in the new prepared plan."
+      },
+      "failed_gate": {
+        "root": "prefill-drafter-heads-model-v1",
+        "request_tokens": 513,
+        "chunk": 256,
+        "error": "8192-only mixed scratch/MoE-window/score/bank options inherited into256chunk diagnostic;source guard refused before prompt arithmetic.",
+        "admission_cases_passed": 3,
+        "request_cases_passed": 0,
+        "ownership_qualified": false,
+        "physical_process_closure": "Native2457227 exit-15 after owned cleanup;direct child reaped,session empty,no survivors,current/proc PID absent,active receipt false. Do not relabel original ownership_closed=false or failure as passed.",
+        "fresh_faults": []
       }
     },
     "dflash2_prefill_heads_check": {
-      "stage": "prepared",
+      "stage": "failed",
       "passed": false,
-      "ownership_closed": true,
-      "cases": [],
+      "ownership_closed": false,
+      "cases": [
+        {
+          "label": "df2_head0",
+          "draft": "dflash2",
+          "heads": 0,
+          "requests": [],
+          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
+          "environment_overrides": {
+            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v1/df2_head0/cache",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v1/df2_head0/tmp",
+            "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v1/df2_head0"
+          },
+          "environment_sha256": "1b15e95998dafe81ee0c5224c0a142d263745243f341e23c669955f5cee61ea1",
+          "placement": {
+            "context": "4096",
+            "kv": "int8",
+            "kv_resident": "0",
+            "expert_slots": "1256",
+            "expert_cache_mib": "2455",
+            "expert_slots_primary": "1256",
+            "expert_cache_primary_mib": "2455",
+            "spec": "4",
+            "mtp_max": "0",
+            "lookup": "0",
+            "vram_free_mib": "2691",
+            "cvec": "0",
+            "arena_mib": "47962",
+            "pool_workers": "5",
+            "pcie_frac": "0.00",
+            "spec_min_p": "0.00",
+            "conversation_cache_mib": "0",
+            "conversation_cache_slots": "4",
+            "conversation_cache_min_free_mib": "2560",
+            "engine": "0.1.38"
+          },
+          "pre_main_validation": {
+            "pid": 2457227,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "32bfa3ffd0f56a4a972ec76fbf59951b7bae73a8f2f8e83e063d735da2f35d02",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          }
+        }
+      ],
       "component_reuse": {
         "original_model_record": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-model-v2/record.json",
@@ -3894,6 +3963,37 @@
       "speed_eligible": false,
       "model_adoption_qualified": false,
       "retention": "Keep compact request hashes,configuration,per-request counters,head/free-memory observations and closures.Generated IDs are reproduced from committed generator+hash-pinned tokenizer;verify exact wire before launch.Discard successful stage/API text and caches after extracting useful evidence;no new engine copy.",
+      "admission_results": [
+        {
+          "label": "reject_width1",
+          "exit_code": 2,
+          "ownership_closed": true,
+          "expected_error_seen": true,
+          "observed_UR_calls": 0,
+          "argv_sha256": "7e1d6ec149ed0ba62dda5482d610d9162243ec7a488e401480bda866462956cc",
+          "environment_sha256": "7fcc2c6ae0899060d1b698a1cb1252c8007dcb105052e57370af064d90d0be6c"
+        },
+        {
+          "label": "reject_mtp_experts",
+          "exit_code": 2,
+          "ownership_closed": true,
+          "expected_error_seen": true,
+          "observed_UR_calls": 0,
+          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
+          "environment_sha256": "6f55b78e7028f04202174d9e7266993af15f198f73f53b027a4d29d5530e02bc"
+        },
+        {
+          "label": "reject_cache_scratch",
+          "exit_code": 2,
+          "ownership_closed": true,
+          "expected_error_seen": true,
+          "observed_UR_calls": 0,
+          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
+          "environment_sha256": "123a15cc822dfc393dda9b3fc3cdfd7efbf1c5032b97084967268cfc8b998e30"
+        }
+      ],
+      "error": "RuntimeError(\"native closure failed: RuntimeError('unexpected native protocol: ERR prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue')\")",
+      "fresh_faults": [],
       "generator_runtime": {
         "executable": "/usr/bin/python3.12",
         "invocation": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
@@ -3945,7 +4045,53 @@
           "generator": "check_dflash2_model.request_ids:original82ID thinking prompt"
         }
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "reject_width1",
+          "exit_code": 2,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "reject_mtp_experts",
+          "exit_code": 2,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "reject_cache_scratch",
+          "exit_code": 2,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "df2_head0",
+          "exit_code": -15,
+          "error": "RuntimeError('unexpected native protocol: ERR prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue')",
+          "ownership_closed": false,
+          "errors": [],
+          "cleanup": [
+            {
+              "pid": 2457227,
+              "start_ticks": 244957721,
+              "signal": "SIGTERM",
+              "result": "sent"
+            },
+            {
+              "pid": 2457227,
+              "start_ticks": 244957721,
+              "signal": "SIGKILL",
+              "result": "sent"
+            }
+          ]
+        }
+      ]
     }
   }
 }
