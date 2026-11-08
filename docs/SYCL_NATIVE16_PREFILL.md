@@ -1769,34 +1769,50 @@ fixture and comparison CLI are removed;only Python input/provenance helpers
 used by`device_fp64_probe`and`measure_q6_columns`remain. Their import does not
 requalify old inputs after a source change.
 
-The next independently selected decode proposal is the compressed-Q6 C4
-component at`src/kernels/sycl/q6_dpas_component.cpp`. It retains Q6/Q8_1
-quantization,uses two integer DPAS halves for the signed per16 scales,and
-stores a separate uint16 interleave with padded output-row tails. The canonical
-weights and C1/prefill paths remain untouched. Its original reference is pinned
-MIT-licensed GGML`34ca79122`,not XeStrata;the local packing/kernel integration
-is authored here. Earlier compile/LLVM-text recipe failures remain failed in Git;
-ended partial builds are retired. The V5 source`44715a991`and recipe`3db30d920`
-remain recoverable;its unused build is retired after V7 source materialization.
-V6 passes16CPU readers,12CPU pack/shape controls and the exact linked ELF's
-two reachable GenX DPAS calls in its C4 SPIR-V image. This binds packaged device
-calls,not final ISA/utilization. Its first device attempt is refused before
-Runtime by the provider predicate;the exact missing/extra paths were not captured.
-That predicate demands every forced provider before Runtime initialization,
-so admission timing is a concrete suspect requiring the two-phase recheck.
-The child is stopped/reaped with an empty final session and no fresh GPU fault;
-the original normal-closure/performance gates remain failed. No Q6 GPU math ran.
-V7 adds an explicit gate after Runtime creation but before Fixture allocations,
-copies or kernels. It requires preload/loader at pre-main and all forced
-adapter/driver mappings at the second gate,recording missing/extra paths at both.
-All13kernel/runtime translation units are unchanged;only native benchmark gates
-change. A fresh native build and all16CPU/12pack/small/full/timing gates are
-prospective,not inherited from V6. Follow`q6_dpas_component_v7`for the new plan.
-All12existing control translation units match the retained591c/90f source.
-Successful allocation,pack/upload cost and cold/warm scope must be recorded;
-model placement,task quality,full context and adoption remain unqualified.
-The failed model observer selects this cost question without establishing
-normal-run attribution or a saturated resource.
+The compressed-Q6 C4 component at
+`src/kernels/sycl/q6_dpas_component.cpp` closes its V7 comparison.
+Q6/Q8_1 quantization and signed per16 scales are unchanged;two integer DPAS
+halves use a separate uint16 interleave. Its pinned reference is MIT GGML
+`34ca79122`,not XeStrata;packing/integration is authored here.
+Source`f97893576704e6679c89ea6c4613d912665a0824`,native ELF`7b2b8775…`:
+16CPU readers,12CPU pack/shape cases,6small+4full+12timing numerical checks pass.
+Five GPU processes exit0,close normally,keep validation quiet and add no fault.
+All60timed samples meet their floor;130560successful one-node graph replays
+include submission/completion. The shortest timed batch is423.4972ms.
+The3process orders are reference/candidate,candidate/reference,reference/candidate.
+The linked C4 SPIR-V image has two reachable static GenX DPAS calls;that is
+packaged-code evidence,not final ISA,arithmetic utilization or dynamic call count.
+
+| K/N/columns | Reference median ms/replay | Candidate median ms/replay | Paired geometric time ratio | Decision |
+| --- | ---: | ---: | ---: | --- |
+|2560/248320/4|11.089957|1.684034|0.15260586|6.55283x component speedup;eligible for head-only model proposal|
+|2560/640/4|0.120803|0.144796|1.20673003|20.673% slower;keep existing small-matrix path|
+
+Each value is the median of three process medians,each based on five samples
+per arm;the paired ratio uses all three processes. Full-head process medians
+are11.097119/11.089957/11.084126ms versus1.682505/1.684034/1.710992ms.
+Parameter-validation and retained-loader observers are charged. No clean
+model PP/TTFT/TG gain,physical traffic/saturation,task quality or262144-context
+qualification follows. Individual samples,conditions and decisions are in
+`q6_dpas_component_v7` and the performance CSV.
+The two-gate check observes21mapped files before Runtime and34after it.
+The forced Level Zero driver appears only after device initialization.
+This resolves the premature-provider check;V6's original refusal remains failed.
+
+The canonical and candidate full-head payloads are each521472000bytes;
+both together plus inputs/outputs admit1050901760Device bytes.
+The maximum single-allocation report is10132807680bytes. Full-head pack time
+is about0.15s;fixture uploads include both layouts,not one model upload or
+complete cold startup. Retire ended raw/build output after source/recipe
+recovery;the next consumer is source-level model integration with fresh checks.
+No production dispatch changes yet. A separate packed head would add about
+0.49GiB;measure its effect on expert-cache placement and whole requests.
+`NativeHead.run`,Verifier,MTP row gathers/sub-vocabulary heads and DFlash2
+still consume canonical rows,so do not reorder that object in place.
+The next opt-in decode-C4 head must build from mapped GGUF/RAM,include every
+packed reader in retirement/restore ownership,and preserve C1,other shapes
+and both prefill strategies. Actual model,agent/long-thinking,phase-preservation
+and physical262144/RESTORE checks remain required.
 
 The current device-service diagnostic targets `9922 / b310` through
 `tools/sycl/profile_iq3_decode.py`, using the maintained owner, frontend and

@@ -220324,7 +220324,7 @@
     }
   },
   "q6_dpas_component_v7": {
-    "stage": "timing",
+    "stage": "closed",
     "source_commit": "f97893576704e6679c89ea6c4613d912665a0824",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "32d846740cd13cefe769e9f8115f3990abcc7710c1e93ed2809b8f6d172012fb",
@@ -220628,7 +220628,7 @@
       "limits": "Parameter-validation/preload-instrumented component wall/threadCPU including graph submission/completion;not clean or sustained model speed. Source-selected cost hypothesis;physical bottleneck remains unknown.",
       "provider_admission": "Require pinned preload and UR loader at pre-main gate. After Runtime device/queue creation,but before Fixture allocations/copies/kernels,require pinned forced adapter and Level Zero driver too. At both gates record missing/extra paths and reject any mapped provider outside the frozen inventory. No environment mutation."
     },
-    "retention": "One prospective fresh component build;the old refused generation was retired after exact source/recipe recovery and this source materialization. Preserve useful config/samples/numeric/provider/closure decisions;retire successful raw/build output at comparison/model-proposal closure.",
+    "retention": "No next consumer needs the ended component executable or raw streams once compact source/recipe/samples/selection are committed and recovered. Retire this build;new model integration must qualify its own executable and packed-owner lifecycle. Keep the native kernel/benchmark and bounded linked-image reader only for that named next implementation.",
     "results": [
       {
         "mode": "controls",
@@ -220999,6 +220999,84 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "time2",
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "8be1aa74ec3647d8f1b7b9e4572fe113a8d832e745a97a2de5cb6ec41190e6e3",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "c8c869d5bf018fcb6767e7e45e57d3da564a56126b03f4ec7736dc162498f32e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          }
+        ],
+        "native_identity": {
+          "pid": 919650,
+          "state": "S",
+          "ppid": 918898,
+          "pgid": 919650,
+          "sid": 919650,
+          "start_ticks": 251980987,
+          "rss_bytes": 61513728
+        },
+        "mapped_provider_count": 34,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 919650,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "setup": [
+          "SETUP k=2560 n=640 seed=7 pack_wall_ns=326194 pack_cpu_ns=325690 upload_wall_ns=792092 upload_cpu_ns=784802",
+          "ADMISSION k=2560 n=640 canonical_bytes=1344000 packed_bytes=1344000 device_payload_bytes=2720000 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=2560 n=248320 seed=7 pack_wall_ns=141896221 pack_cpu_ns=141838075 upload_wall_ns=278249544 upload_cpu_ns=165905120",
+          "ADMISSION k=2560 n=248320 canonical_bytes=521472000 packed_bytes=521472000 device_payload_bytes=1050901760 max_alloc_bytes=10132807680 graphs=2 nodes_each=1"
+        ],
+        "numerical": [
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1"
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "timing": [
@@ -221277,12 +221355,150 @@
             ]
           }
         }
+      },
+      {
+        "index": 2,
+        "timer_stamp_median_ns": 742,
+        "cells": {
+          "640": {
+            "0": [
+              [
+                567217737,
+                557888313,
+                567145802,
+                557816959
+              ],
+              [
+                473663338,
+                465461984,
+                473306967,
+                465106267
+              ],
+              [
+                472567825,
+                464371189,
+                472500930,
+                464304924
+              ],
+              [
+                467243702,
+                454991991,
+                467173610,
+                454922601
+              ],
+              [
+                539293320,
+                531338489,
+                539225793,
+                531271654
+              ]
+            ],
+            "1": [
+              [
+                579716412,
+                571270961,
+                579631752,
+                571186933
+              ],
+              [
+                583921460,
+                574677083,
+                583637065,
+                574393411
+              ],
+              [
+                716000165,
+                706331963,
+                715712283,
+                706045055
+              ],
+              [
+                572322481,
+                564195865,
+                572246748,
+                564120704
+              ],
+              [
+                599003688,
+                590708566,
+                598919510,
+                590625049
+              ]
+            ]
+          },
+          "248320": {
+            "0": [
+              [
+                2837081123,
+                2835581300,
+                2826132448,
+                2824632900
+              ],
+              [
+                2837536185,
+                2835782106,
+                2826622486,
+                2824869113
+              ],
+              [
+                2838117464,
+                2829020089,
+                2827173708,
+                2818076980
+              ],
+              [
+                2844252150,
+                2838297127,
+                2833160546,
+                2827206340
+              ],
+              [
+                2836755819,
+                2834582619,
+                2825783981,
+                2823611407
+              ]
+            ],
+            "1": [
+              [
+                436221539,
+                435588540,
+                434599144,
+                433966819
+              ],
+              [
+                445172181,
+                444509387,
+                443590824,
+                442928633
+              ],
+              [
+                432099467,
+                431456178,
+                430497731,
+                429855005
+              ],
+              [
+                452043359,
+                451186246,
+                449925852,
+                449069297
+              ],
+              [
+                438013914,
+                437417976,
+                436415404,
+                435820070
+              ]
+            ]
+          }
+        }
       }
     ],
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": true,
     "model_executed": false,
     "materialization": {
@@ -221348,6 +221564,88 @@
       ],
       "device_images": 14,
       "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
+    },
+    "decision": {
+      "cells": {
+        "640": {
+          "candidate_over_reference_median_wall": [
+            1.1986124951366202,
+            1.1892328515232802,
+            1.232777403599685
+          ],
+          "component_gain_qualified": false
+        },
+        "248320": {
+          "candidate_over_reference_median_wall": [
+            0.15161635525678094,
+            0.15185218466257336,
+            0.15436416857535157
+          ],
+          "component_gain_qualified": true
+        }
+      },
+      "head_component_gain": true,
+      "model_speed_qualified": false,
+      "inference_adopted": false,
+      "physical_traffic_qualified": false,
+      "next": "Only a winning full-head cell permits a new decode-only model proposal;placement/setup,phase preservation,task/agent and physical262144 remain unqualified."
+    },
+    "summary": {
+      "cells": {
+        "640": {
+          "reference_process_median_ms_per_replay": [
+            0.12080264526367188,
+            0.13814149072265625,
+            0.11564046337890625
+          ],
+          "candidate_process_median_ms_per_replay": [
+            0.14479556005859376,
+            0.16428239892578125,
+            0.1425589501953125
+          ],
+          "reference_median_ms_per_replay": 0.12080264526367188,
+          "candidate_median_ms_per_replay": 0.14479556005859376,
+          "paired_geomean_time_ratio": 1.2067300321799181,
+          "paired_geomean_speedup": 0.8286857651114664,
+          "all_three_faster": false,
+          "timed_samples_per_arm": 15
+        },
+        "248320": {
+          "reference_process_median_ms_per_replay": [
+            11.09711893359375,
+            11.089956671875,
+            11.08412572265625
+          ],
+          "candidate_process_median_ms_per_replay": [
+            1.6825047265625,
+            1.6840341484375,
+            1.7109918515625
+          ],
+          "reference_median_ms_per_replay": 11.089956671875,
+          "candidate_median_ms_per_replay": 1.6840341484375,
+          "paired_geomean_time_ratio": 0.15260585564545168,
+          "paired_geomean_speedup": 6.552828499079972,
+          "all_three_faster": true,
+          "timed_samples_per_arm": 15
+        }
+      },
+      "eligible_timing_samples": 60,
+      "successful_timed_graph_replays": 130560,
+      "minimum_timed_batch_ns": 423497200,
+      "independent_gpu_processes": 5,
+      "numerical_scope": "6small+4full+12before/after-timing numeric checks;all relevant outputs finite,bounded reference differences,independent scalar rows and immutable input/canary checks. This quantized FP32-association component only,not task/model quality.",
+      "setup_scope": "Full-head pack approximately0.15s;recorded fixture uploads contain canonical+packed+Q8 inputs,not model cold start or a single packed upload. Allocation/guard initialization,data generation,JIT/capture are outside this pack/upload interval.",
+      "observer_scope": "UR parameter validation and retained-loader preload charged;ordinary1node production graphs. No clean-model PP/TTFT/TG or physical saturation claim.",
+      "selection": "Full K2560/N248320/C4 head only is eligible for a new model proposal. Reject N640 candidate;C1 and prefill paths remain unchanged."
+    },
+    "next_model_proposal": {
+      "state": "not_implemented",
+      "default": "off",
+      "scope": "Target output head at K2560,N248320,decode C4 only;all other shapes and prefill preserve current paths.",
+      "canonical_consumers": "NativeHead.run,Verifier,MTP row gathers/full/sub-vocabulary heads,and DFlash2 projection still use canonical GGUF layout;do not reorder that object in place.",
+      "placement": "A separately owned packed head adds521472000Device bytes. Measure expert-cache/VRAM effect and whole-request setup,not kernel ratio alone. Build the pack from mapped GGUF/RAM rather than reading canonical GPU weights back.",
+      "lifetime": "Extend all-reader preflight,graph/stream retirement,detach/restore and failure handling to every packed owner before a model run. Preserve long-prefill and short-input behavior;use fresh native/component/model qualification.",
+      "validation": "Owner/pack lifecycle fixtures,actual full-head dispatch,matched thinking-on32K long and agent/long-generation workloads with observed strong/weak acceptance,phase and full262144/RESTORE gates remain outstanding."
     },
     "source_inputs": {
       "files": 1283,
