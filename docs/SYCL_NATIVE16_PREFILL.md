@@ -1762,8 +1762,12 @@ this gate does not admit a model trial. Two device-only cells improve at one
 bank/20hits,with candidate/reference geometric means0.948168and0.836202,but
 they do not match the model's host source. These instrumented component results
 do not qualify clean timing,model gain,physical traffic or saturation. Keep
-the useful individual samples and original decisions in the compact result;
-retire the ended fixture/build/raw output after exact source/recipe recovery.
+the useful individual samples and original decisions in the compact result.
+The ended fixture/build/raw root is retired after exact1281-file archive/recipe
+recovery and716compiler/24link binding checks. Unused native proposals,target,
+fixture and comparison CLI are removed;only Python input/provenance helpers
+used by`device_fp64_probe`and`measure_q6_columns`remain. Their import does not
+requalify old inputs after a source change.
 
 The current device-service diagnostic targets `9922 / b310` through
 `tools/sycl/profile_iq3_decode.py`, using the maintained owner, frontend and

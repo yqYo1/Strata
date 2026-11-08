@@ -35,12 +35,6 @@ add_executable(sycl_transfer_ceiling EXCLUDE_FROM_ALL
   ${PROJECT_SOURCE_DIR}/bench/sycl/transfer_ceiling.cpp)
 target_link_libraries(sycl_transfer_ceiling PRIVATE strata_sycl_runtime)
 target_compile_features(sycl_transfer_ceiling PRIVATE cxx_std_17)
-add_executable(sycl_mapped_row_copy_component EXCLUDE_FROM_ALL
-  tests/sycl/mapped_row_copy.cpp src/kernels/sycl/elementwise.cpp)
-target_include_directories(sycl_mapped_row_copy_component PRIVATE src/kernels/sycl)
-target_link_libraries(sycl_mapped_row_copy_component PRIVATE strata_sycl_runtime strata_warnings)
-target_compile_features(sycl_mapped_row_copy_component PRIVATE cxx_std_20)
-target_compile_options(sycl_mapped_row_copy_component PRIVATE -fno-fast-math -ffp-contract=off)
 
 target_include_directories(strata_sycl_runtime PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/include/strata/sycl/compat)
 # The compiler's default asserts every global range fits in signed int. Large
