@@ -1773,11 +1773,12 @@ It now uses the selected90f private build recipe and the original exact32K
 environment's driver selection,with explicit runtime-safety checks. Preparation
 requires the current DFlash2 model cohort to be closed. That cohort's failed
 observer screen remains failed;its observed ranking only motivates this
-independent component question. The new actual-input reader has five CPU
-controls to run before compilation. The build requires all five actual
+independent component question. At source`7f6c38b37`and plan`507b96cee`,all five
+actual-input reader CPU controls pass without skips,with normal0,closed ownership
+and no GPU/model execution. The build requires all five actual
 translation units and every compiler/link input to match the precommitted
 inventories,with zero uncovered/generated inputs. These changes are
-source-prepared only,not build/device/speed qualification. It records preparation
+host-checked only,not build/device/speed qualification. It records preparation
 intent before extracting sources,and preserves a failed
 attempt if materialization fails. An unwritable receipt remains an explicit
 failure requiring preservation of the partial root;it cannot authorize retry.
