@@ -241,6 +241,20 @@ class SyclVisionDrafting(unittest.TestCase):
         self.assertNotIn("--draft", args)
         self.assertIn("--mtp", args)
 
+    def test_supported_family_keeps_dflash2_with_the_existing_display_alias(self):
+        cfg = self.config("dflash2", None)
+        cfg.update(model_name="qwen3.8-flash-next-iq3_s-primary", family="qwen")
+        args = server.engine_args(cfg, exe=str(server.ROOT / "tools/sycl/engine_once.py"), announce=False)
+        self.assertEqual(args[args.index("--draft") + 1], "dflash2")
+        self.assertNotIn("--mtp", args)
+
+    def test_unsupported_family_does_not_borrow_a_supported_display_name(self):
+        cfg = self.config("dflash2", None)
+        cfg["family"] = "coder"
+        args = server.engine_args(cfg, announce=False)
+        self.assertNotIn("--draft", args)
+        self.assertIn("--mtp", args)
+
 
 if __name__ == "__main__":
     unittest.main()

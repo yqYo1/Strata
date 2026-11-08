@@ -1088,6 +1088,10 @@ def apply(cfg: dict[str, Any], *, klass: str = "other", data_dir: str | Path | N
     args = [str(a) for a in cfg.get("args") or []]
     if cfg.get("split_engine_note") and _flag_value(args, "--draft") == "dflash2":   # the all-cards split engine started with DFlash2 as its drafter (split_engine.split_config): its flags are its own, nothing is added or taken out
         return Decision("dflash2", "dflash2")
+    # The public model name may be an app alias. An explicit model family is
+    # capability metadata, independent of that display name.
+    if family is None and isinstance(cfg.get("family"), str) and cfg["family"].strip():
+        family = cfg["family"].strip()
     if not supported_model(cfg.get("model_name"), family):    # another model: its drafting is not this choice's business (DeepSeek, Swift, Coder, NVFP4, Qwen3.6...)
         asked = normalize(cfg.get("drafting"))
         if asked == "dflash2":
