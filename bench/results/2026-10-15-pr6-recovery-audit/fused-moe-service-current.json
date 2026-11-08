@@ -204265,7 +204265,7 @@
     "retention": "Failure,source/prospective plan and original ownership evidence in reachable Git. Retire private host logs/duplicate record after V4 isolated fixture passes;no native artifacts belong to V3."
   },
   "drafter_long_admission_v4": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "cecb75ab6db410b226f0316d7d647d283344150e",
     "previous_failure": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v2/record.json",
@@ -205198,6 +205198,224 @@
           }
         ],
         "fresh_faults": []
+      },
+      {
+        "index": 1,
+        "drafter": "dflash2",
+        "passed": false,
+        "complete": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 2837233,
+          "start_ticks": 245871934,
+          "sid": 2837174
+        },
+        "file_backed_executable_mappings": 38,
+        "startup_admission": {
+          "actual_chunk": 8192,
+          "free_MiB": 1579,
+          "required_free_MiB": 1536,
+          "before_benchmark_warmup": true
+        },
+        "error": "RuntimeError('DFlash2 actual tail/activation differs')",
+        "ownership_closed": true,
+        "commands": [
+          {
+            "label": "bench",
+            "argv": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v4/dflash2/config.json",
+              "--port",
+              "40497",
+              "--prefill-exact-tokens",
+              "32769",
+              "--think",
+              "--runs",
+              "2",
+              "--profile-request-gates",
+              "--profile-startup-gate",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v4/dflash2/bench"
+            ],
+            "environment": {
+              "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+              "HOME": "/home/yayoi",
+              "LANG": "C.UTF-8",
+              "LC_ALL": "C.UTF-8",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+              "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+              "OMP_NUM_THREADS": "1",
+              "PYTHONUNBUFFERED": "1",
+              "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+              "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "SYCL_CACHE_PERSISTENT": "0",
+              "NEOReadDebugKeys": "1",
+              "EnableDirectSubmission": "0",
+              "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+              "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+              "STRATA_SYCL_MMQ_XMX": "1",
+              "STRATA_SYCL_MMQ_XMX_TILE": "8",
+              "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+              "STRATA_SYCL_MMQ_XMX_PACK": "0",
+              "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+              "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+              "STRATA_PREFILL_RING": "8",
+              "STRATA_PREFILL_MMQ": "0",
+              "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+              "STRATA_WATCHDOG_S": "480",
+              "STRATA_SYCL_PROMPT_DIRECT": "1",
+              "STRATA_PREFILL_LAYER_MAJOR": "1",
+              "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+              "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+              "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "0",
+              "STRATA_SYCL_KV_COPY_GROUPS": "0",
+              "STRATA_IQ_SINGLE_EXACT": "0",
+              "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+              "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+              "STRATA_IQ_TIMING_PROGRESS": "0",
+              "STRATA_PREFILL_RELEASE_HEADS": "1",
+              "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+              "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+              "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+              "STRATA_GR_UNFUSED": "0",
+              "STRATA_PREFILL_BF16X2": "0",
+              "STRATA_PF_FUSED": "0",
+              "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+              "STRATA_SYCL_SELECT_RADIX4": "1",
+              "STRATA_SYCL_SELECT_CYCLIC": "0",
+              "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+              "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+              "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v4/dflash2/cache",
+              "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+              "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+              "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+              "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+              "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+              "STRATA_ROPE_TABLE": "1",
+              "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+              "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+              "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+              "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+              "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v4/dflash2/tmp",
+              "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v4/dflash2",
+              "ZES_ENABLE_SYSMAN": "0",
+              "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+              "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+              "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+              "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+              "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+              "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+              "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+              "STRATA_SYCL_CACHE_SCRATCH_LEASE": "0",
+              "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+              "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+              "CUDA_MODULE_LOADING": "EAGER",
+              "STRATA_MTP_BATCH_F16": "1",
+              "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+              "STRATA_IQ2_PAIR": "1",
+              "STRATA_SYCL_MTP_OBSERVER": "0",
+              "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+              "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+              "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+              "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+              "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+              "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v4/dflash2/validation.log",
+              "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+              "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+              "PYTHONNOUSERSITE": "1",
+              "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v4/dflash2/cache/python",
+              "STRATA_TRACE": "1",
+              "STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR": "1",
+              "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+              "STRATA_SYCL_PREFILL_TOPK_EARLY": "0",
+              "STRATA_SYCL_PREFILL_GDN_BARRIERS3": "1",
+              "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+              "STRATA_SYCL_PREFILL_GDN_FP16": "1",
+              "STRATA_SNAPSHOT_VERIFY": "1",
+              "STRATA_IQ3_PAIR": "1",
+              "STRATA_IQ3_PAIR_AUDIT": "0",
+              "STRATA_CPU_SERVICE": "0",
+              "STRATA_CPU_WORK_CENSUS": "0",
+              "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+              "STRATA_SYCL_ADAPT_SYNC": "1",
+              "STRATA_POOL_SPIN_US": "20000",
+              "STRATA_BENCH_REAL_PACK": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+              "STRATA_BENCH_REAL_PACK_SHA256": "d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6"
+            },
+            "started_utc": "2026-11-08T03:52:33.561403+00:00",
+            "wall_seconds": 1200,
+            "errors": [],
+            "owners": [
+              {
+                "pid": 2837174,
+                "start_ticks": 245871768,
+                "sid": 2837174,
+                "pgid": 2837174
+              },
+              {
+                "pid": 2837184,
+                "start_ticks": 245871797,
+                "sid": 2837174,
+                "pgid": 2837174
+              },
+              {
+                "pid": 2837219,
+                "start_ticks": 245871900,
+                "sid": 2837174,
+                "pgid": 2837219
+              },
+              {
+                "pid": 2837233,
+                "start_ticks": 245871934,
+                "sid": 2837174,
+                "pgid": 2837219
+              }
+            ],
+            "cleanup": [],
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "spawn_begin_monotonic": 2458717.68295197,
+            "pid": 2837174,
+            "spawn_return_monotonic": 2458717.688545794,
+            "direct_identity": {
+              "pid": 2837174,
+              "state": "R",
+              "ppid": 2836538,
+              "pgid": 2837174,
+              "sid": 2837174,
+              "start_ticks": 245871768,
+              "rss_bytes": 471040
+            },
+            "peak_live_owned_identities": 4,
+            "peak_session_rss_bytes": 55427973120,
+            "survivors": [],
+            "ownership_status": "observed",
+            "exit_code": 0,
+            "finished_utc": "2026-11-08T03:56:10.916414+00:00",
+            "elapsed_seconds": 217.35473445104435,
+            "logs": {
+              "bench.stdout": {
+                "bytes": 910,
+                "sha256": "c61ac97d21b2315bae0ad660e5922237f0f5bc642b967730043869a1737a1d21"
+              },
+              "bench.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          }
+        ],
+        "fresh_faults": []
       }
     ],
     "passed": false,
@@ -206038,6 +206256,64 @@
     "qualification_record": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/record.json",
       "canonical_sha256": "647b597925c097b387d7c0a7e16bb7587e3c1e19a4ac8f9baacdfe78a8b4839c"
+    },
+    "failure_diagnosis": {
+      "actual_native_execution": true,
+      "actual_GPU_model_execution": true,
+      "benchmark_complete": true,
+      "benchmark_exit_code": 0,
+      "native_exit_code": 0,
+      "physical_owner_closed": true,
+      "fresh_faults": [],
+      "long_requests": 2,
+      "actual_long_inputs": [
+        32769,
+        32769
+      ],
+      "actual_DFlash2_tail_rows": [
+        2046,
+        2046
+      ],
+      "actual_cold_prefix": [
+        0,
+        0
+      ],
+      "actual_drafter_vram_bytes": 845776220,
+      "expected_cold_prefix": 1,
+      "source_interpretation": "src/core/dflash2.cpp:begin_request initializes cold=false and computes missing rows only below resume. Both requests have resume0,so missing0 and cold0 are correct. Main controller incorrectly equated cold_prefix with fresh model load. Native math/state/source unchanged;original failed route gate stays failed. No post-run full-model hashing was reached after this first route assertion.",
+      "unqualified_observed_samples": [
+        {
+          "actual_prompt_tokens": 32769,
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_tps": 583.9,
+          "prompt_ms": 56118.8,
+          "ttft_s": 56.299,
+          "total_s": 58.695,
+          "drafts_accepted": 18,
+          "drafts_offered": 24,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287"
+        },
+        {
+          "actual_prompt_tokens": 32769,
+          "actual_read_tokens": 32769,
+          "actual_reused_tokens": 0,
+          "generated_tokens": 24,
+          "prompt_tps": 698.9,
+          "prompt_ms": 46887.9,
+          "ttft_s": 47.08,
+          "total_s": 49.405,
+          "drafts_accepted": 18,
+          "drafts_offered": 24,
+          "thinking_requested": true,
+          "reasoning_observed": true,
+          "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d"
+        }
+      ],
+      "next": "Commit corrected cold0 assertion and a fresh DFlash2-only two-request plan. Retain normal MTP V4 evidence as context;do not repeat it or promote the failed V4 cohort."
     }
   }
 }
