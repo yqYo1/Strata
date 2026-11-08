@@ -119,6 +119,19 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   no inference adoption or sustained decode qualification follows from these
   short-output checks.
   V1 remains failed.
+- The tuned 8192 DFlash2 route admission passes in `drafter_long_admission_v5`
+  with one fresh native process and two exact 32,769-token thinking requests.
+  Both read all tokens with zero reuse, generated 24, and accepted 18/24 drafts;
+  PP is 584.7/709.2 tok/s and client TTFT is 56.193/46.395 s. The actual route
+  is 2,046 DFlash2 tail rows with `cold_prefix=0`, 384 staged slots, 32K
+  residuals on GPU, and 1,579 MiB free at startup against a 1,536 MiB floor.
+  Validation is quiet; the process exits 0, all owners close, all 15 model assets
+  pass final full hashing, and no fresh fault appears. These traced samples
+  establish bounded 32K route admission only; they do not qualify clean speed,
+  sustained decode, resource saturation, task quality or physical-context
+  behavior. Preserve `drafter_long_admission_v4` as failed: its checker expected
+  `cold_prefix=1` although both fresh resume-0 requests reported 0. The corrected
+  V5 source/plan and both outcomes are in the linked result.
 - Retain two explicit prefill strategies, `--prefill-strategy ttft` and
   `--prefill-strategy throughput`, within the same binary; selection is manual.
   Keep decode independently selected.
@@ -3116,12 +3129,43 @@ An inspectable native without drafter flags still selects MTP. Explicit config
 an unsupported family cannot borrow a supported display name.
 The shared asset lookup has a local`dflash2`symlink to the already verified
 stock pack beside the current model;no weights moved or duplicated.
-The actual long V1host gate remains failed at`1fa4b829a`:the display suffix
-`-primary`was unsupported and named DFlash2 became MTP before native exec.
-All four CPUchildren closed(three0,one1),with no native/GPU work. The new
-family-aware source requires a fresh prospective V2without renaming that alias.
-The earlier minimal-tokenizer fixture error remains failed at`11e43b8f`.
-No native build,GPU execution or speed qualification follows from these host tests.
+The named drafter bench.sh route now passes diagnostics with 32,769 input tokens
+and 24 generated tokens. Settings are 65,536 INT8 context/resident cells, 256
+expert slots, 8192-token chunks, owned prompt buffers, a 384-slot packed prefill
+bank and native16 BF16/GDN16. Thinking stays on; reused tokens are zero.
+MTP at evidence `1d065ac07` has first/subsequent PP 591.5/713.6 tok/s,
+prompt time 55.3988/45.9220 s and client TTFT 55.578/46.139 s. DFlash2 at
+`e73050a42` has PP 584.7/709.2 tok/s, prompt time 56.0484/46.2078 s and
+TTFT 56.193/46.395 s. Both native and benchmark owners exit zero, reap and empty
+their sessions, with no fresh GPU faults. Actual 8192-token chunks, GPU residuals
+(671,088,640 bytes), mode10 checked drain and head retirement are observed.
+Startup free memory is 526 MiB for MTP and 1579 MiB for DFlash2. DFlash2 uses
+2046 tap rows and cold_prefix=0 with resume=0; it loads/binds again for each
+fresh long prompt. The native engine is unchanged f633/source `5ecb4435f`;
+the corrected controller source is `6c4ec648a`.
+
+These use parameter validation and stage tracing. They do not qualify clean
+paired speed, sustained TG, task quality, rollover/split, physical 262144/RESTORE
+or default adoption.
+The highest retained phase references and performance CSV remain unchanged.
+First-to-next prompt differences here are 9.4768 s (MTP) and 9.8406 s (DFlash2),
+observed at one length; they do not identify a fixed cost or fit a new length law.
+The current throughput-limiting hardware resource remains unqualified.
+Next collect >=1K thinking-output and standard long/agent evidence, then compare
+clean repeated configurations while retaining independent prefill/decode selection.
+The checked borrowed-buffer path remains a separate optional-reader investigation.
+
+The count-only OpenAI route, removed by the bulk server import, is restored at
+`5db3ede7c`. At frontend/benchmark source `c9f4ce45d`, 69 CPU/mock tests pass with
+zero skips (normal zero exit and closed ownership, evidence `aaa109d17`). The
+isolated real-tokenizer test also passes 73729/73730/81921/81922-token extents
+before native launch after its import-order fix at `cecb75ab6`; inference is
+not called. Optional Anthropic SDK
+client tests remain unqualified because that interpreter lacks the SDK.
+Original failed V1/V2/V3/V4 cohorts remain failed in the compact results and
+linked Git evidence: alias fallback, missing count API/VRAM chunk fallback,
+isolated fixture imports, and Main's incorrect cold_prefix=1 assertion. Fresh
+cohorts resolve those admissions without relabelling their outcomes.
 Disk sessions,BGEN/capabilities,native v3.1 model
 behavior and the full bulk-import suite remain open.
 The following earlier host-component results refer to their original pinned
