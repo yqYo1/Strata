@@ -56,6 +56,7 @@
 #include "strata/kernels/qsa.hpp"
 #include "strata/core/native_head.hpp"
 #include "strata/core/prefill_head_scope.hpp"
+#include "strata/core/cache_scratch_lease.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/checked_worker.hpp"
@@ -1915,10 +1916,20 @@ int main(int argc, char** argv) {
             const char* value=std::getenv(name);
             return value && std::strcmp(value,"1")==0;
         };
-        // Neither lease is qualified for an absent MTP owner. Reject before
-        // pack/GPU initialization, not after the prompt retires other readers.
-        if(enabled("STRATA_PREFILL_RELEASE_MTP_EXPERTS") || enabled("STRATA_SYCL_CACHE_SCRATCH_LEASE")) {
-            std::fprintf(stderr,"DFlash2 requires STRATA_PREFILL_RELEASE_MTP_EXPERTS=0 and STRATA_SYCL_CACHE_SCRATCH_LEASE=0\n");
+        // MTP expert release needs an actual MTP owner. Target cache scratch
+        // borrowing has a separate checked admission below; no MTP is created
+        // or loaded merely to participate in that target-cache transaction.
+        if(enabled("STRATA_PREFILL_RELEASE_MTP_EXPERTS")) {
+            std::fprintf(stderr,"DFlash2 requires STRATA_PREFILL_RELEASE_MTP_EXPERTS=0\n");
+            return 2;
+        }
+        const int lease_spec = o.draft_cap > 0 ? std::min(o.spec, o.draft_cap) : o.spec;
+        if (enabled("STRATA_SYCL_CACHE_SCRATCH_LEASE") &&
+            (!o.serve || o.no_prefill_borrow || !o.no_token_graph || o.gpu_stages ||
+             !enabled("STRATA_PREFILL_NATIVE_DENSE_BANK") ||
+             strata::core::detail::cache_scratch_drafter(lease_spec, false, true) ==
+                 strata::core::detail::CacheScratchDrafter::unsupported)) {
+            std::fprintf(stderr,"DFlash2 cache scratch requires serve, native dense bank, borrowed buffers, spec4 and no token graphs/stages\n");
             return 2;
         }
         if (o.draft_model.empty() || o.draft_fallback != "none" || o.spec < 2 || o.spec > 8 ||
@@ -2703,11 +2714,14 @@ int main(int argc, char** argv) {
         std::fprintf(stderr,"cache scratch lease requires exact0 or1\n"); return 2;
     }
     const bool cache_scratch_lease_enabled = cache_lease_switch && !std::strcmp(cache_lease_switch,"1");
+    const auto cache_scratch_draft_reader = strata::core::detail::cache_scratch_drafter(
+        o.spec, !o.mtp.empty(), use_df2);
     if (cache_scratch_lease_enabled && (!o.serve || !native_dense_bank_enabled || !native_pack ||
-        !o.no_token_graph || o.no_prefill_borrow || o.spec != 4 || o.mtp.empty() || use_df2 || o.vision || o.gpu_stages ||
+        !o.no_token_graph || o.no_prefill_borrow ||
+        cache_scratch_draft_reader == strata::core::detail::CacheScratchDrafter::unsupported || o.vision || o.gpu_stages ||
         multi_gpu || !o.layer_split.empty() || o.peer_device >= 0 ||
         std::any_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto n){return n>0;}))) {
-        std::fprintf(stderr,"cache scratch lease requires serve, native dense bank, profiled borrowing, MTP4 and one GPU without token graphs/vision/remote experts\n"); return 2;
+        std::fprintf(stderr,"cache scratch lease requires serve, native dense bank, profiled borrowing, spec4 with MTP or DFlash2 without MTP, and one GPU without token graphs/vision/remote experts\n"); return 2;
     }
 #endif
     const char* canonical_bank_switch=std::getenv("STRATA_PREFILL_CANONICAL_DENSE_BANK");

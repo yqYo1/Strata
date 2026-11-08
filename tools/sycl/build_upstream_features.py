@@ -19,6 +19,7 @@ import measurement_owner as ownership
 
 P, B = source.P, source.B
 ROOT = B / 'upstream-features-146df3c4'
+PLAN_KEY = 'native_feature_build'
 REFERENCE = B / 'adaptive-payload-audit-model-v2'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json'
 TARGETS = ['strata', 'sycl_dflash2_test', 'sycl_dflash2_ring_test', 'sycl_dflash2_mask_test', 'dflash2_pack_test', 'sycl_submission_test']
@@ -37,7 +38,7 @@ def signature(value):
 
 
 def committed_plan():
-    return json.loads(source.git(P, 'show', 'HEAD:' + str(STATUS.relative_to(P))))['current_sync']['native_feature_build']
+    return json.loads(source.git(P, 'show', 'HEAD:' + str(STATUS.relative_to(P))))['current_sync'][PLAN_KEY]
 
 
 def check_inputs(row):
@@ -56,6 +57,9 @@ def check_inputs(row):
     for value in row['fallbacks'].values():
         require(Path(value['path']).stat().st_size == value['bytes'] and
                 source.digest(value['path']) == value['sha256'], 'preserve both fast fallbacks')
+    baseline = row.get('baseline_feature_build')
+    if baseline:
+        require(source.digest(baseline['path']) == baseline['sha256'], 'original feature build receipt changed')
 
 
 def compact(row):
@@ -70,11 +74,11 @@ def compact(row):
         commands=[dict(label=c['label'], exit_code=c.get('exit_code'),
                        ownership_closed=ownership.closed(c), errors=c.get('errors', []), cleanup=c.get('cleanup', []))
                   for c in row.get('commands', [])],
-        retention='Temporary third generation: preserve552b prefill and e1b011 decode. '
+        retention=row.get('retention', 'Temporary third generation: preserve552b prefill and e1b011 decode. '
                   'This candidate is only for immediate native feature compilation and bounded DFlash2 qualification. '
                   'Retire it if qualification fails; at the feature comparison boundary select validated outputs '
-                  'and retire superseded generations after original-source/recipe recovery. No adoption from build success.')
-    for key in ['attempt', 'previous_attempt', 'unchanged_outputs']:
+                  'and retire superseded generations after original-source/recipe recovery. No adoption from build success.'))
+    for key in ['attempt', 'previous_attempt', 'unchanged_outputs', 'host_policy_gate', 'baseline_feature_build']:
         if key in row: result[key] = row[key]
     return result
 
@@ -82,13 +86,14 @@ def compact(row):
 def publish(row):
     write(ROOT / 'record.json', row)
     status = json.loads(STATUS.read_text())
-    status['current_sync']['native_feature_build'] = compact(row)
+    status['current_sync'][PLAN_KEY] = compact(row)
     write(STATUS, status)
 
 
 def prepare():
     previous = None
     status = json.loads(STATUS.read_text())
+    loan = PLAN_KEY == 'dflash2_cache_loan_native_build'
     if ROOT.exists():
         previous = json.loads((ROOT / 'record.json').read_text())
         failed_compile = previous['stage'] == 'build_failed' and not previous['passed']
@@ -149,14 +154,14 @@ def prepare():
                 require(source.digest(value['path']) == value['sha256'], 'original candidate executable changed')
         require(source.git(P, 'rev-parse', 'HEAD').decode().strip() != previous['project']['revision'], 'new committed source required')
     else:
-        require('native_feature_build' not in status['current_sync'], 'existing feature build must close first')
+        require(PLAN_KEY not in status['current_sync'], 'existing feature build must close first')
     baseline = json.loads((REFERENCE / 'record.json').read_text())
     recipe = copy.deepcopy(baseline['recipe'])
     recipe['configure'] = [v.replace(str(REFERENCE / 'source'), str(P)).replace(str(REFERENCE), str(ROOT))
                            for v in recipe['configure']]
     recipe['environment'] = {k: v.replace(str(REFERENCE), str(ROOT)) for k, v in recipe['environment'].items()}
     recipe['targets'] = TARGETS
-    recipe['build_targets'] = ['strata']
+    recipe['build_targets'] = TARGETS if loan else ['strata']
     recipe.pop('retention', None)
     project = source.pin(P, PREFIXES)
     dependencies = []
@@ -182,6 +187,42 @@ def prepare():
         budgets=dict(wall=2400, cpu=7200, rss_cap=12 << 30, total_cap=4 << 30,
                      text_cap=48 << 20, file_cap=512 << 20), commands=[], passed=False, ownership_closed=True,
         qualification='Compilation only, no GPU execution, no speed, no model-route or full-context qualification.')
+    if loan:
+        result_path = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
+        raw = source.git(P, 'show', 'HEAD:' + str(result_path.relative_to(P)))
+        require(raw == result_path.read_bytes(), 'commit host result before native build')
+        host = json.loads(raw)['dflash2_cache_loan_heads_host_v1']
+        require(host['passed'] and host['complete'] and host['ownership_closed'] and
+                not host['active'] and not host['GPU_executed'] and
+                host['result'] == dict(kind='prefill_head_scope', cases=38, checks=854, status='PASS'),
+                'exact closed cache-loan host policy required')
+        row['host_policy_gate'] = dict(evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
+            key='dflash2_cache_loan_heads_host_v1', source_commit=host['source_commit'], result=host['result'])
+        host_names = ['tests/sycl/prefill_head_scope.cpp', 'include/strata/core/prefill_head_scope.hpp',
+                      'include/strata/core/cache_scratch_lease.hpp']
+        require(all(source.git(P, 'show', host['source_commit'] + ':' + name) == (P / name).read_bytes()
+                    for name in host_names), 'native host policy changed after its passing check')
+        row['host_policy_gate']['native_inputs'] = {name: source.digest(P / name) for name in host_names}
+        reference_path = B / 'upstream-features-146df3c4/record.json'
+        reference = json.loads(reference_path.read_text())
+        require(status['current_sync']['native_feature_build']['record'] ==
+                dict(path=str(reference_path), sha256=source.digest(reference_path)),
+                'original feature build must match its committed qualification record')
+        require(reference['passed'] and reference['ownership_closed'] and reference['stage'] == 'built',
+                'preserve closed f633 feature engine and its same-build fixtures')
+        for pin in [reference['project'], *reference['dependencies']]:
+            recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
+                source.blobs(Path(pin['root']), pin['revision'], pin['source_sha256'])}
+            require(recovered == pin['source_sha256'], 'original f633 source must remain recoverable')
+        row['baseline_feature_build'] = dict(path=str(reference_path), sha256=source.digest(reference_path),
+            source_commit=reference['project']['revision'], binaries=reference['binaries'])
+        row['fallbacks'].update({'feature_' + name: value for name, value in reference['binaries'].items()})
+        row['retention'] = ('One isolated candidate for the imminent borrowed-vs-owned DFlash2 gate. '
+            'Preserve f633 and all5fixtures until same-build small/model admission selects a replacement;'
+            'then retire the superseded feature engine,or retire this candidate on failure,after exact source/recipe recovery. '
+            'Keep552b/e1b phase references;this finite transition temporarily has four engine generations,not a new quota. '
+            'Legacy56ELF provenance holds remain separate and unresolved;review their current consumers at closure. '
+            'No speed,device/model qualification or adoption follows from compilation.')
     row['attempt'] = previous.get('attempt', 1) + 1 if previous else 1
     if previous:
         if previous.get('unchanged_outputs'):
@@ -212,7 +253,7 @@ def build():
     row = json.loads((ROOT / 'record.json').read_text())
     frozen = compact(row)
     require(row['stage'] == 'prepared' and committed_plan() == frozen, 'commit the prepared build first')
-    require(json.loads(STATUS.read_text())['current_sync']['native_feature_build'] == frozen, 'pending plan edits')
+    require(json.loads(STATUS.read_text())['current_sync'][PLAN_KEY] == frozen, 'pending plan edits')
     check_inputs(row); guards.no_model_owners([])
     monitor = None
     def persist():
@@ -256,7 +297,11 @@ def build():
 
 
 if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in ['prepare', 'build'], 'use prepare or build')
+    require(len(sys.argv) == 2 and sys.argv[1] in ['prepare', 'build', 'prepare-loan', 'build-loan'],
+            'use prepare|build or prepare-loan|build-loan')
+    if sys.argv[1].endswith('-loan'):
+        ROOT, PLAN_KEY = B / 'dflash2-cache-loan-native-v1', 'dflash2_cache_loan_native_build'
+        sys.argv[1] = sys.argv[1].removesuffix('-loan')
     with (B / 'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         (prepare if sys.argv[1] == 'prepare' else build)()

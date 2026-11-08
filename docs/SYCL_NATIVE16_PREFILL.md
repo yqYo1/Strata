@@ -3263,8 +3263,9 @@ its reinitialization cost is unmeasured. Keep that first-long/subsequent
 distinction. Each borrowed long prompt loans/refills1092slots.
 
 Select90f as the retained feature-validation generation,with the loan still
-default-off;this does not adopt its whole inference route. Next integrate the
-measured child,update consumers,recover original inputs and retire f633.
+default-off;this does not adopt its whole inference route. The measured child
+is integrated with its original commits. Next update consumers,recover original
+inputs and retire f633 and the finished child checkout/branch.
 Preserve552b/e1b as independent phase guards. Validation/stage observers remain
 charged;clean speed,agent/task,length scaling,physical262144,tails and RESTORE
 remain pending. The physical limiting resource remains unknown.
