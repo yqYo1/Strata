@@ -3268,8 +3268,12 @@ upstream measurements remain incomplete. Source and evidence are published on
 squash-only rule24638744. All92CSV source/evidence commits are verified ancestors
 of the pushed permanent primary and automatic head deletion is disabled. The
 project workflow permits a default content snapshot while preserving all those
-original identities on `feature/sycl`; merge the updated default back normally
-and verify it again. No protection or measured history is rewritten. The last
+original identities on `feature/sycl`. The ordinary squash attempt at `514111ac9`
+was also rejected: the active ruleset restricts updates, with
+`update_allows_fetch_and_merge=false`. Admin merge permission for this concrete
+PR is pending; no protection bypass or rule change was performed. After an
+authorized merge, merge the updated default back normally and verify the original
+identities again. The last
 verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce5c`.
 
 ## Evidence pointers

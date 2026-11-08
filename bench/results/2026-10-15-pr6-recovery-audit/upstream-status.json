@@ -3007,13 +3007,13 @@
       }
     },
     "default_integration": {
-      "checked_utc": "2026-11-08T04:27:26.396331+00:00",
+      "checked_utc": "2026-11-08T06:34:54.721114+00:00",
       "pr": 180,
-      "state": "OPEN_BLOCKED_BY_MAIN_RULE",
+      "state": "OPEN_ORDINARY_SQUASH_REJECTED_ADMIN_PERMISSION_PENDING",
       "allowed_merge_methods": [
         "squash"
       ],
-      "decision": "Main pull_request rule permits squash only despite repository-wide merge/rebase settings. Preserve original measured commit identities;do not squash,rebase,force,bypass or change rules. Keep completed source/evidence on feature/sycl and update PR180 to final scope;continue authorized tuning and imports.",
+      "decision": "Ordinary squash merge was rejected by GitHub main protection after the project approved a default content snapshot preserving measured history on permanent feature/sycl. The active ruleset includes an update restriction with update_allows_fetch_and_merge=false. No admin merge, auto-merge, protection change or history rewrite was performed. Explicit user permission for this concrete PR admin merge is pending; continue independent tuning.",
       "clean_default_mirror": "05069aeedea43f778b97dce30c729739cb3bce5c",
       "mirror_pull": "Already up to date after actual clean-main --ff-only pull at current boundary;no local/default changes.",
       "meaning": "Default-integration check only,not a new Niko upstream check or native/model qualification.",
@@ -3025,7 +3025,28 @@
       "main_ruleset": 24638744,
       "mergeability": "MERGEABLE",
       "merge_state": "BLOCKED",
-      "last_examined_head": "c210da44a761e5f6d191b0ff2d83f38fe428e954"
+      "last_examined_head": "514111ac929a02fa04e810dc78ab7ff1efd555e1",
+      "normal_squash_attempt": {
+        "head_commit": "514111ac929a02fa04e810dc78ab7ff1efd555e1",
+        "command": [
+          "gh",
+          "pr",
+          "merge",
+          "180",
+          "--repo",
+          "yqYo1/Strata",
+          "--squash"
+        ],
+        "outcome": "base branch policy prohibits the merge",
+        "merged": false
+      },
+      "history_preservation": {
+        "retained_primary": "feature/sycl",
+        "verified_csv_commits": 92,
+        "automatic_head_deletion": false,
+        "after_merge": "Normally merge updated default into permanent primary and verify original evidence/source identities again."
+      },
+      "admin_permission": "Pending explicit user answer;elapsed time is not permission."
     },
     "dflash2_ring_check": {
       "stage": "full_passed",
