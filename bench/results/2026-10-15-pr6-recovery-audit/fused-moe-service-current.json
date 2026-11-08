@@ -206023,7 +206023,7 @@
     }
   },
   "dflash2_checked_cache_loan_candidate_v1": {
-    "state": "source_committed_validation_pending",
+    "state": "host_policy_passed_native_build_pending",
     "branch": "tune/dflash2-checked-lease",
     "worktree": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease",
     "source_commit": "969e4891df629957bec89cc4ea863e338d0c431b",
@@ -206038,17 +206038,18 @@
     "scope": "Default lease remains off. Only spec4 single-GPU serve/native/no-token-graph/borrowed buffers;MTP expert release remains forbidden. Existing mask/lease/reader retirement/drain/exact-refill/publish code is unchanged.",
     "validation": {
       "build_executed": false,
-      "host_executed": false,
+      "host_executed": true,
       "GPU_executed": false,
       "speed_qualified": false,
       "adopted": false,
-      "next": "After the primary MTP/DFlash2 generation cohort closes,commit host/build/runtime recipe and run scoped38-case854-check host fixture plus pre-GPU refusals,then same-build small traced native and short-long-short/resumed-prefix borrowed-vs-owned model gates. Full physical262144/tails/handoff/RESTORE remain required separately."
+      "next": "Commit the isolated native build/runtime recipe,compile without overwriting f633/552b/e1b references,then pre-GPU CLI refusals and same-build small traced checks before short-long-short/resumed-prefix borrowed-vs-owned model entry. Host38/854 is not device/model qualification.",
+      "host_result_key": "dflash2_cache_loan_heads_host_v1"
     },
-    "isolation": "Primary12cache-loan and7generation-audit source hashes remain unchanged;the primary614-input generation comparison stays frozen. No parallel tests/builds/GPU/cleanup.",
+    "isolation": "Primary native math and closed measurement sources remain unchanged. The child is refreshed from feature/sycl;only candidate source and host controller differ. Main serializes all tests/builds/GPU/cleanup.",
     "retirement": "At this finite borrowed-path implementation/validation decision,integrate accepted code and original compact evidence into pushed feature/sycl,retire rejected active code via reachable history,and delete this finished child/worktree. No child native build exists yet."
   },
   "dflash2_cache_loan_heads_host_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "d6f7a8052846ff29c8d90fd2eb4beaa59b6f66f6",
     "compiler": {
       "path": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -206136,11 +206137,32 @@
     "expected_cases": 38,
     "expected_checks": 854,
     "criteria": "Host-only cases:the previous15 boundary/cache controls plus128admission rows (single/spec1..8/MTP/DFlash2/live-owner),optional MTP weight transitions for prompt success/false/throw and repeat request,target preparation false/throw,prepared cancellation,and MTP preflight refusal. The previous15 include two actual CacheScratchState poison reproductions,two preparation-before-activation failures,prepared cancellation on stale activation preflight,and joint prompt success/false/throw with checked retirement/refill. Nine additional draft-owner/width admission cases cover optional MTP cache loans; require the exact recorded case/check totals. Exact committed inputs,actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.",
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": false,
+    "compiled_inputs": {
+      "files": 214,
+      "uncovered": 0,
+      "aggregate_sha256": "e2679d962435834f3cba19c6acd0e3d8172a7322f21982d5fc6a4f957a5cc473"
+    },
+    "link_inputs": {
+      "files": 28,
+      "uncovered": 0,
+      "aggregate_sha256": "e18d3c44f1098200721911b3eadb1e75b606aad82da43a56f4f4fac39ea6cd17"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope",
+      "sha256": "5b68cb5706c5ec403ad394c2c502f2c7fcb924eda178f2113f5e2dac9a5a3957",
+      "bytes": 1862752
+    },
+    "result": {
+      "kind": "prefill_head_scope",
+      "cases": 38,
+      "checks": 854,
+      "status": "PASS"
+    },
     "source_inputs": {
       "files": 268,
       "aggregate_sha256": "3c384f973e00d5a9c1bb0dee848f83846c777c53956660b33a3d1008e12dfc25"
