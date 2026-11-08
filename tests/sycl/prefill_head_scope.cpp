@@ -151,6 +151,23 @@ struct WeightBoundary {
 
 int main() {
     std::string err="unchanged";
+    // The target cache loan may omit MTP, but must still select exactly one
+    // supported draft route. This does not relax the separate live-head gate.
+    {
+        using D=strata::core::detail::CacheScratchDrafter;
+        struct Row {int spec;bool mtp,df2;D expected;};
+        const Row rows[] = {
+            {4,true,false,D::mtp4}, {4,false,true,D::absent_mtp_dflash2},
+            {4,false,false,D::unsupported}, {4,true,true,D::unsupported},
+            {0,true,false,D::unsupported}, {2,false,true,D::unsupported},
+            {8,false,true,D::unsupported}, {3,true,false,D::unsupported},
+            {8,true,false,D::unsupported}
+        };
+        for(const auto& row:rows) {
+            ++cases;
+            check(strata::core::detail::cache_scratch_drafter(row.spec,row.mtp,row.df2)==row.expected);
+        }
+    }
     {
         ++cases;
         using D=strata::core::detail::PrefillHeadDrafter;
