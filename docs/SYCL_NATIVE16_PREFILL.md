@@ -3218,8 +3218,18 @@ request bodies match. Direction changes between first/subsequent and there is
 only one process per placement,so speed remains undecided. Output24does not
 qualify sustained TG. Descriptive expert-bank counters report the same
 requestedH2Dbytes in both arms;they do not measure wire traffic or saturation.
-Next collect matched>=1Kthinking-output/fresh-process repetitions,then select
-the feature generation and retire the extra after original-source recovery.
+The matched sustained-output cohort is underway at controller`31a16936a` and
+original plan`f0d81312a`:six fresh processes in ABBAAB order,three per placement,
+with both thinking workloads in each. The first owned256process passes normal
+native/benchmark0,reaped/empty ownership and no fresh fault (evidence`403b7e3af`).
+Code reads33213and generates3905tokens:PP577.7tok/s,TTFT57.676s,TG12.2tok/s,
+drafts2805/3300(85.0%). Prose reads33283and generates9870tokens:PP663.6tok/s,
+TTFT50.342s,TG7.0tok/s,drafts4871/14994(32.486%). Both finish with an answer
+above5000characters. These are the first control samples,not a placement gain;
+strong/weak classification still requires all three processes per placement.
+Next complete the frozen matched repetitions,then select the feature generation
+and retire the extra after original-source recovery. Validation/stage observers
+remain charged;clean speed and task quality are separate gates.
 Keep f633 only as the sustained-output fallback until that gate;552b/e1b remain
 independent phase guards. Clean speed,agent/task,physical262144,tails and RESTORE
 remain pending. The physical limiting resource remains unknown.
