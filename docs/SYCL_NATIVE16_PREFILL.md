@@ -1768,8 +1768,10 @@ in all variants. Treat it as an instrumented component screen,not clean speed;
 any later clean comparison needs a separate committed plan and fresh processes.
 The component fixture is now built from source`7f6c38b37`and plan`507b96cee`:
 ELF`04a7450b…`,716actual compiler inputs,24external link inputs,zero generated
-or uncovered inputs. All three build commands close normally0. No device or
-timing check has run. The
+or uncovered inputs. All three build commands close normally0. The small
+traced80-case device check now passes bitwise copies and guards,normal0,
+quiet parameter validation,closed ownership and no fresh fault. Full-width
+checks and timing remain pending. The
 `tools/sycl/mapped_row_copy_component.py` controller prepares a private Git
 source snapshot and pins the compiler,headers,system packages and runtime files.
 It now uses the selected90f private build recipe and the original exact32K
@@ -1781,7 +1783,7 @@ actual-input reader CPU controls pass without skips,with normal0,closed ownershi
 and no GPU/model execution. The build requires all five actual
 translation units and every compiler/link input to match the precommitted
 inventories,with zero uncovered/generated inputs. These changes are
-host/build-checked only,not device/speed qualification. It records preparation
+host/build/small-device evidence only,not full component/speed qualification. It records preparation
 intent before extracting sources,and preserves a failed
 attempt if materialization fails. An unwritable receipt remains an explicit
 failure requiring preservation of the partial root;it cannot authorize retry.
