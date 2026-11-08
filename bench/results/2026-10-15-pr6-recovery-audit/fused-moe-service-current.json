@@ -205449,7 +205449,7 @@
     }
   },
   "drafter_generation_v2": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "3b24ea716040397e20e33f1f467f6800e5726685",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/strata",
@@ -206195,11 +206195,340 @@
             }
           }
         ],
-        "fresh_faults": []
+        "fresh_faults": [],
+        "resource_work_census": {
+          "expert_copy": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 1192027,
+            "cpu_entries": 1530093
+          },
+          "cache_hits": 60147,
+          "cache_lookups": 1590240,
+          "hit_rate_percent_printed": 3.8,
+          "scope": "Final long request;logical work/requested copy counters,not physical PCIe bytes,RAM bandwidth,GPU occupancy or saturation. pcie-frac0 leaves misses on the CPU."
+        }
+      },
+      {
+        "index": 1,
+        "drafter": "dflash2",
+        "passed": true,
+        "complete": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 3054219,
+          "start_ticks": 246356004,
+          "sid": 3054072
+        },
+        "provider_mappings": 38,
+        "startup_free_MiB": 1579,
+        "samples": [
+          {
+            "ok": true,
+            "err": null,
+            "ttft_s": 57.427,
+            "total_s": 380.709,
+            "prompt_tokens": 33213,
+            "reused_tokens": 0,
+            "read_tokens": 33213,
+            "generated_tokens": 3905,
+            "prompt_tps": 579.9,
+            "prompt_tps_source": "engine",
+            "decode_tps": 12.1,
+            "decode_tps_source": "engine",
+            "prompt_ms": 57277.0,
+            "decode_ms": 323405.5,
+            "drafts_offered": 3300,
+            "drafts_accepted": 2805,
+            "finish_reason": "stop",
+            "request_sha256": "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976",
+            "stream_complete": true,
+            "truncated": false,
+            "generated_tokens_source": "usage",
+            "client_interval": {
+              "request_begin_monotonic_ns": 2463698024585568,
+              "first_output_monotonic_ns": 2463755451376328,
+              "request_end_monotonic_ns": 2464078733357973
+            },
+            "eligible": true,
+            "agreement_eligible": true,
+            "speed_eligible": true,
+            "speed_ineligible_reasons": [],
+            "ineligible_reasons": [],
+            "acceptance_rate": 0.85,
+            "usage_generated_tokens": 3905,
+            "completion_includes_thinking": true,
+            "run": 0,
+            "order": 0,
+            "output_sha256": "5b7ae0f207d7804bc693ebde382f1a762c43f477fd01483939648d004cfaf971",
+            "reasoning_sha256": "f78ec18a7265e9a6171c89d7e94cbc6c7473aed8f2494e1466327dd3ef943448",
+            "output_chars": 5496,
+            "reasoning_chars": 4728,
+            "reasoning_tokens": null,
+            "workload": "regular-code",
+            "controller_eligible": true
+          }
+        ],
+        "warmups": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "33adadb1aa40b794eab251f4c7a4bd05e151a65233d5ca16c7f1215a88684dae",
+            "e3181e3501ce75cb9621bae63b9ff839aa40427ac2b80baf71e4dc5f5b8018f8",
+            "84408590b4ce4ee906461b2d38983047aff9a366c3ee73e0150f052d426d654a",
+            "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976"
+          ]
+        },
+        "route": {
+          "rows": 33212,
+          "chunk": 8192,
+          "residual_gpu_bytes": 680181760,
+          "prefill_slots": 384,
+          "window_mode": 10,
+          "split_active": false,
+          "target_detached_bytes": 521472000,
+          "reader": "absent-dflash2",
+          "MTP_callback_cells": 0,
+          "DFlash2_tail_rows": 2046,
+          "native_prompt_ms": 57277.0,
+          "native_decode_ms": 323405.0,
+          "physical_resource_saturation_qualified": false
+        },
+        "native_exit_code": 0,
+        "speed_adoption_qualified": false,
+        "ownership_closed": true,
+        "commands": [
+          {
+            "label": "bench",
+            "argv": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v2/dflash2/config.json",
+              "--port",
+              "41937",
+              "--long-generation-only",
+              "--long-generation-workload",
+              "regular-code",
+              "--think",
+              "--runs",
+              "1",
+              "--long-generation-max-tokens",
+              "16384",
+              "--profile-request-gates",
+              "--profile-startup-gate",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v2/dflash2/bench"
+            ],
+            "environment": {
+              "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+              "HOME": "/home/yayoi",
+              "LANG": "C.UTF-8",
+              "LC_ALL": "C.UTF-8",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+              "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+              "OMP_NUM_THREADS": "1",
+              "PYTHONUNBUFFERED": "1",
+              "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+              "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "SYCL_CACHE_PERSISTENT": "0",
+              "NEOReadDebugKeys": "1",
+              "EnableDirectSubmission": "0",
+              "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+              "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+              "STRATA_SYCL_MMQ_XMX": "1",
+              "STRATA_SYCL_MMQ_XMX_TILE": "8",
+              "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+              "STRATA_SYCL_MMQ_XMX_PACK": "0",
+              "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+              "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+              "STRATA_PREFILL_RING": "8",
+              "STRATA_PREFILL_MMQ": "0",
+              "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+              "STRATA_WATCHDOG_S": "480",
+              "STRATA_SYCL_PROMPT_DIRECT": "1",
+              "STRATA_PREFILL_LAYER_MAJOR": "1",
+              "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+              "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+              "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "0",
+              "STRATA_SYCL_KV_COPY_GROUPS": "0",
+              "STRATA_IQ_SINGLE_EXACT": "0",
+              "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+              "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+              "STRATA_IQ_TIMING_PROGRESS": "0",
+              "STRATA_PREFILL_RELEASE_HEADS": "1",
+              "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+              "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+              "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+              "STRATA_GR_UNFUSED": "0",
+              "STRATA_PREFILL_BF16X2": "0",
+              "STRATA_PF_FUSED": "0",
+              "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+              "STRATA_SYCL_SELECT_RADIX4": "1",
+              "STRATA_SYCL_SELECT_CYCLIC": "0",
+              "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+              "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+              "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v2/dflash2/cache",
+              "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+              "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+              "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+              "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+              "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+              "STRATA_ROPE_TABLE": "1",
+              "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+              "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+              "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+              "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+              "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v2/dflash2/tmp",
+              "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v2/dflash2",
+              "ZES_ENABLE_SYSMAN": "0",
+              "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+              "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+              "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+              "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+              "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+              "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+              "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+              "STRATA_SYCL_CACHE_SCRATCH_LEASE": "0",
+              "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+              "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+              "CUDA_MODULE_LOADING": "EAGER",
+              "STRATA_MTP_BATCH_F16": "1",
+              "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+              "STRATA_IQ2_PAIR": "1",
+              "STRATA_SYCL_MTP_OBSERVER": "0",
+              "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+              "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+              "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+              "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+              "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+              "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v2/dflash2/validation.log",
+              "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+              "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+              "PYTHONNOUSERSITE": "1",
+              "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v2/dflash2/cache/python",
+              "STRATA_TRACE": "1",
+              "STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR": "1",
+              "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+              "STRATA_SYCL_PREFILL_TOPK_EARLY": "0",
+              "STRATA_SYCL_PREFILL_GDN_BARRIERS3": "1",
+              "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+              "STRATA_SYCL_PREFILL_GDN_FP16": "1",
+              "STRATA_SNAPSHOT_VERIFY": "1",
+              "STRATA_IQ3_PAIR": "1",
+              "STRATA_IQ3_PAIR_AUDIT": "0",
+              "STRATA_CPU_SERVICE": "0",
+              "STRATA_CPU_WORK_CENSUS": "0",
+              "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+              "STRATA_SYCL_ADAPT_SYNC": "1",
+              "STRATA_POOL_SPIN_US": "20000",
+              "STRATA_BENCH_REAL_PACK": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+              "STRATA_BENCH_REAL_PACK_SHA256": "d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6"
+            },
+            "started_utc": "2026-11-08T05:13:14.047797+00:00",
+            "wall_seconds": 2400,
+            "errors": [],
+            "owners": [
+              {
+                "pid": 3054072,
+                "start_ticks": 246355817,
+                "sid": 3054072,
+                "pgid": 3054072
+              },
+              {
+                "pid": 3054081,
+                "start_ticks": 246355847,
+                "sid": 3054072,
+                "pgid": 3054072
+              },
+              {
+                "pid": 3054199,
+                "start_ticks": 246355969,
+                "sid": 3054072,
+                "pgid": 3054199
+              },
+              {
+                "pid": 3054219,
+                "start_ticks": 246356004,
+                "sid": 3054072,
+                "pgid": 3054199
+              }
+            ],
+            "cleanup": [],
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "spawn_begin_monotonic": 2463558.169376757,
+            "pid": 3054072,
+            "spawn_return_monotonic": 2463558.17478432,
+            "direct_identity": {
+              "pid": 3054072,
+              "state": "R",
+              "ppid": 3053338,
+              "pgid": 3054072,
+              "sid": 3054072,
+              "start_ticks": 246355817,
+              "rss_bytes": 442368
+            },
+            "peak_live_owned_identities": 4,
+            "peak_session_rss_bytes": 55425372160,
+            "survivors": [],
+            "ownership_status": "observed",
+            "exit_code": 0,
+            "finished_utc": "2026-11-08T05:21:59.772713+00:00",
+            "elapsed_seconds": 525.7246053162962,
+            "logs": {
+              "bench.stdout": {
+                "bytes": 1264,
+                "sha256": "3777b0031edfd9011bb0f109fb1719496c5d0a453929e7c754f54a1fcc000909"
+              },
+              "bench.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          }
+        ],
+        "fresh_faults": [],
+        "resource_work_census": {
+          "expert_copy": {
+            "submitted_blobs": 0,
+            "submitted_bytes": 0,
+            "completed_blobs": 0,
+            "completed_bytes": 0,
+            "host_view_groups": 0,
+            "gpu_miss_groups": 0,
+            "cpu_unique_misses": 1567836,
+            "cpu_entries": 2033608
+          },
+          "cache_hits": 78872,
+          "cache_lookups": 2112480,
+          "hit_rate_percent_printed": 3.7,
+          "scope": "Final long request;logical work/requested copy counters,not physical PCIe bytes,RAM bandwidth,GPU occupancy or saturation. pcie-frac0 leaves misses on the CPU."
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "budgets": {
       "wall": 2400,
@@ -206568,6 +206897,23 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v5/record.json",
       "canonical_sha256": "48346588b8090175c6d025793de473584575d084d04d7a20b0b1de8f9b6b6171",
       "evidence": "e73050a42f9f07ffcec33f3df2d14d473478fdd9"
+    },
+    "comparison_screen": {
+      "state": "eligible_observed_single_request_per_arm_not_adopted",
+      "order": [
+        "mtp",
+        "dflash2"
+      ],
+      "same_actual_input": 33213,
+      "output_lengths": [
+        2955,
+        3905
+      ],
+      "engine_reported_TG": [
+        11.1,
+        12.1
+      ],
+      "notes": "DFlash2observed12.1vsMTP11.1tok/s,but generates3905vs2955tokens;one observed process per arm,greedy output differs,stage/validation observers charged. No repeatability,task quality,clean-speed or whole-request latency improvement claim. Current limiting physical resource remains unknown;small256-slot cache has measured low residency and CPU expert work,justifying a separate checked-borrow capacity comparison."
     }
   },
   "dflash2_checked_cache_loan_candidate_v1": {
