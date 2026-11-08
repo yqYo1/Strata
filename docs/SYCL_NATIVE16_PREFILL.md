@@ -1766,7 +1766,8 @@ mean0.879819. The model's actual host-USM source has **no** qualifying cell.
 Keep all failed host-cell gates and the current production entry. This is a
 parameter-validation-instrumented component result,not clean timing,model gain,
 physical traffic or saturation. Full samples and decisions remain in the
-compact result and cumulative CSV;source/recipe are recoverable from Git.
+compact result;the device-only component milestone is indexed separately in
+the cumulative CSV. Source/recipe are recoverable from Git.
 
 The next bounded question is the same copy contract through the production
 compatibility graph's capture/replay path. The direct-entry screen includes
@@ -3372,27 +3373,18 @@ verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently218
-milestone rows,including two completed owned DFlash2 three-process aggregates
-and the first owned/borrowed DFlash2 thinking pair's four
-workload points,eight compact CPU-GU points,the rejected packed-gather and activation-LUT stream comparisons and the two closed e1b011adaptive32/96code aggregates,
-the four closed adaptive8/32code/prose aggregates,
-the four MTP-width,four earlier adaptive code/prose aggregates,the CPU
-read-payload calibration and the single13.94265TG resource-diagnostic sample.
-The code rows recover their exact samples from result commit
-`3fc4e9094c83029ea39b83f82a555740b5572fe2`,keeping native source`bbd345c63`
-separate. The two prose rows use result commit
-`c2e317112d6a6643d5c5d5638ced5a6d7b8e766b`and the same native identity.
-The32/96code rows use result commit
-`6e964f739d3c92b2b6ed2adc911aed6d4026cdcb`and the same native identity.
-These cohorts record repeated decode gains and failed prompt/TTFT
-nonregression gates. The older resource diagnostic retains its charged
-observer envelope and failed caller-cost comparison;it is not clean speed.
+[`bench/performance-records.csv`](../bench/performance-records.csv) is the
+cumulative index of superior results and useful comparison milestones. Each
+row identifies its original evidence/native commits,metrics and qualification;
+retrieve detailed samples from that pinned evidence. Keep first-use,warmed,
+independent-process and observer scopes distinct. The device-only row-copy
+component point leaves model PP/TTFT/TG blank and does not qualify host-USM use.
 Detailed current evidence and frozen plans are in
 [`fused-moe-service-current.json`](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json)
 under `cache_map_prefill_speed117489_v1`, `cache_map_prefill_curve_v7`,
 `cache_map_decode_census_v1`, `cache_map_worker_scaling_v1`,
-`verify_window_generation_speed_v1`, and `retained_builds_review_20261103`.
+`verify_window_generation_speed_v1`, `dflash2_device_service_v2`,
+`mapped_row_copy_component_v1`, and `retained_builds_review_20261103`.
 Earlier closed phases are retrievable from the baseline Git revision above;
 consult them only for a concrete comparison or provenance recovery. Follow
 [`ARTIFACT_RETENTION.md`](ARTIFACT_RETENTION.md) for retained builds and cleanup.
