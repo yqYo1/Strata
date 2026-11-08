@@ -74,8 +74,8 @@ struct Q6DpasC4 {
                     w.template select<16, 1>(16 * j) = (((low | high) | 0x80808080u) - 0x20202020u) ^ 0x80808080u;
                 }
                 const U sc = e::convert<uint32_t>(e::gather<uint16_t, 16>(weights, base + uint32_t(192 + 2 * unit) * 16));
-                const auto lo8 = e::convert<uint8_t>(sc & 255u);
-                const auto hi8 = e::convert<uint8_t>(sc >> 8);
+                auto lo8 = e::convert<uint8_t>(sc & 255u);
+                auto hi8 = e::convert<uint8_t>(sc >> 8);
                 const F s0 = e::convert<float>(e::simd<int8_t, 16>(lo8.template bit_cast_view<int8_t>())) * super;
                 const F s1 = e::convert<float>(e::simd<int8_t, 16>(hi8.template bit_cast_view<int8_t>())) * super;
                 e::simd<int32_t, 32> a0 = 0, a1 = 0;
@@ -90,9 +90,9 @@ struct Q6DpasC4 {
                         reinterpret_cast<const uint16_t*>(p), e::simd<uint32_t, 1>(0))))[0];
                 }
                 const e::simd<int32_t, 64> zero = 0;
-                const auto d0 = e::xmx::dpas<8, 4, int32_t, int32_t, uint32_t, int32_t,
+                auto d0 = e::xmx::dpas<8, 4, int32_t, int32_t, uint32_t, int32_t,
                     e::xmx::dpas_argument_type::s8, e::xmx::dpas_argument_type::s8>(zero, w, a0);
-                const auto d1 = e::xmx::dpas<8, 4, int32_t, int32_t, uint32_t, int32_t,
+                auto d1 = e::xmx::dpas<8, 4, int32_t, int32_t, uint32_t, int32_t,
                     e::xmx::dpas_argument_type::s8, e::xmx::dpas_argument_type::s8>(zero, w, a1);
 #pragma unroll
                 for (int c = 0; c < 4; ++c) {

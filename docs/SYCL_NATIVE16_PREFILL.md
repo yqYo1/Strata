@@ -1778,7 +1778,10 @@ MIT-licensed GGML`34ca79122`,not XeStrata;the local packing/kernel integration
 is authored here. V1 failed before GPU execution because its fixture selected
 a capture-mode constant absent from this compatibility API. Its original failed
 result and source/recipe remain recoverable;the unused partial build is retired.
-V2 selects the supported thread-local mode. Follow`q6_dpas_component_v2`for the prospective input/build,
+V2 selected the supported thread-local mode,but failed before GPU execution on
+four const SIMD locals passed to non-const ESIMD view APIs. Its failed evidence
+is preserved and partial build retired. V3 makes those locals non-const.
+Follow`q6_dpas_component_v3`for the prospective input/build,
 CPU,small traced,full-head numerical and repeated ordinary-graph comparison.
 All12existing control translation units match the retained591c/90f source.
 Successful allocation,pack/upload cost and cold/warm scope must be recorded;

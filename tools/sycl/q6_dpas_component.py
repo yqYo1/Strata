@@ -26,9 +26,9 @@ import ur_validation as validation
 import build_compat_profile as selected
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'q6-dpas-component-v2'
+ROOT = B / 'q6-dpas-component-v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_dpas_component_v2'
+KEY = 'q6_dpas_component_v3'
 TARGET = 'sycl_q6_dpas_component'
 HELPERS = ('tools/sycl/q6_dpas_component.py','tools/sycl/test_q6_dpas_component.py',
     'tools/sycl/benchmark_runtime.py','tools/sycl/measurement_guards.py',
@@ -91,11 +91,12 @@ def dependency_pins(roots):
 
 def prepare():
     data = validation.committed(RESULT)
-    failed = data['q6_dpas_component_v1']
-    require(failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
-        and failed['ownership_closed'] and not failed['active'] and not failed['GPU_executed']
-        and failed['artifact_retirement']['state'] == 'deleted_verified',
-        'preserve and retire the pre-native V1 capture-mode compile failure first')
+    for key in ('q6_dpas_component_v1', 'q6_dpas_component_v2'):
+        failed = data[key]
+        require(failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
+            and failed['ownership_closed'] and not failed['active'] and not failed['GPU_executed']
+            and failed['artifact_retirement']['state'] == 'deleted_verified',
+            'preserve and retire each pre-native compiler failure first')
     previous = data['mapped_row_copy_graph_v1']
     require(previous['stage']=='closed' and previous['passed'] and previous['complete'] and
         previous['ownership_closed'] and not previous['active'] and
