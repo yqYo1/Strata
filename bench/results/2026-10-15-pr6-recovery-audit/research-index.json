@@ -26405,22 +26405,29 @@
       "bytes": 4377,
       "decision": "Conditional source support only. DFlash2-specific refusal is policy; target-reader retirement, active lease, checked drain and exact refill remain mandatory without MTP. No implementation or borrowed-route qualification.",
       "retrieval": "Head destruction/restoration order; target-reader lease lifecycle; absent-MTP admission; failure containment and split boundaries.",
-      "auxiliary_source_pins_required": [
-        "src/core/dflash2.cpp",
-        "src/prefill/sycl/dflash2_taps.cpp",
-        "src/core/mtp.cpp",
-        "src/core/native_head.cpp",
-        "include/strata/core/native_head.hpp",
-        "include/strata/prefill/draft_uploads.hpp"
-      ],
       "next_implementation_gate": {
         "schedulable_now": false,
         "prerequisites": [
           "Confirm original Orca worker formal return before releasing the12native-input hold.",
-          "Verify six auxiliary inputs against committed native/build provenance before integrating a proposal.",
           "Commit bounded absent-MTP admission and failure-containment checks before new execution."
         ],
         "qualification_limit": "Small ownership and32Kowned-buffer gates do not qualify borrowed DFlash2, sustained TG, full context, RESTORE or adoption."
+      },
+      "auxiliary_source_provenance": {
+        "verified": true,
+        "build_source_commit": "5ecb4435f8ac3bc5067554f368d0fa7424ec193f",
+        "report_source_commit": "d619278b559395caa05bc11fa0e0efb38d718ade",
+        "source_files": {
+          "src/core/dflash2.cpp": "a78dbd7f9f3c29d57be183273d4fe6e7f63ad76a9adb8a64dc57b7f008eca8d5",
+          "src/prefill/sycl/dflash2_taps.cpp": "377761dc6fa0c90dab9e114676317f34a5689d6068685dfe5041f0e44f2e6646",
+          "src/core/mtp.cpp": "7e98636191fa0b9c10d4a651c2148c1446dfb722c1536bda2be4d4f78e2e2af5",
+          "src/core/native_head.cpp": "6a6942d485ad3ed5e43c0dd7977e92e4594d6adee0648d03edc0e60df6ff91d8",
+          "include/strata/core/native_head.hpp": "a212993bbcd2acaf4e6cb8599d2f6c3b87e0d60f93fe93b0559d10eeafaa9d0f",
+          "include/strata/prefill/draft_uploads.hpp": "2d32126e28c67751d14bde6cd46f1db60b92aa3939b17a6f78fd66bc10955908"
+        },
+        "build_inputs_aggregate_sha256": "9e516c2b31c6121cbde05435541056ba8f6be95552911500709eaf60cecc9320",
+        "native_sha256": "f633543c14954197abc3e5de64450232231ff486e9be7652b78ac6432d227454",
+        "scope": "Main recovered all six auxiliary inputs from both reachable commits and matched current bytes to the841-input native build;no new executable or GPU qualification."
       }
     },
     "native_input_hold": "The12pinned native files remain frozen until the original Orca worker formally returns. Available report/review does not prove task or terminal closure;do not steer or replace it."
