@@ -3246,12 +3246,16 @@ Both processes finish both answers above5000characters. Each borrowed long
 prompt loans/refills1092slots. The speed direction differs by workload;one pair
 does not decide placement. Strong/weak classification still requires all three
 processes per placement.
-Four of six processes are now closed. The second borrowed process also exits
+Five of six processes are now closed. The second borrowed process also exits
 normally without a fresh fault (evidence`781ddb3f7`):code PP578.0/TG12.2 and
 prose PP679.0/TG7.3tok/s,with the same actual input/output counts and draft
 counters as the first borrowed process. Its matched owned process also passes
 (evidence`adee8a0b2`):code PP579.3/TG12.1 and prose PP668.0/TG7.0tok/s.
-There are two completed pairs;the final owned/borrowed pair remains pending.
+There are two completed pairs. The third owned process also passes at
+`40975d456`:code PP579.9/TG12.2 and prose PP683.5/TG7.1tok/s. Its final borrowed
+partner remains pending. The three owned process medians,computed from actual
+counts and engine intervals,are PP579.260/TG12.180/TTFT57.528s for code and
+PP667.973/TG7.032/TTFT50.008s for prose. Individual printed rates remain intact.
 Both workloads' owned footer counters reconcile target rows*48layers*10experts with GPU
 cache entries plus CPU entries. These are logical work counts,not physical
 traffic or hardware saturation;the measured counts are retained in that result.
@@ -3364,8 +3368,9 @@ verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce
 ## Evidence pointers
 
 The cumulative user-requested index is
-[`bench/performance-records.csv`](../bench/performance-records.csv),currently216
-milestone rows,including the first owned/borrowed DFlash2 thinking pair's four
+[`bench/performance-records.csv`](../bench/performance-records.csv),currently218
+milestone rows,including two completed owned DFlash2 three-process aggregates
+and the first owned/borrowed DFlash2 thinking pair's four
 workload points,eight compact CPU-GU points,the rejected packed-gather and activation-LUT stream comparisons and the two closed e1b011adaptive32/96code aggregates,
 the four closed adaptive8/32code/prose aggregates,
 the four MTP-width,four earlier adaptive code/prose aggregates,the CPU
