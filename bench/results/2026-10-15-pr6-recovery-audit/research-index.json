@@ -26184,7 +26184,7 @@
   },
   "dflash2_tuned_long_shape_admission_20261108": {
     "classification": "decision_support",
-    "state": "running",
+    "state": "report_completed_native_review_running",
     "scope": "Question:can the current native DFlash2 spec4 target-head-only route safely enter the existing tuned long-prefill profile at33K/64K/117K input,chunk8192,131072resident context,with MTP-expert/cache-scratch leases0? Inspect actual mode10 window,mixed/split scratch,384packed expert bank,score GEMM,GDN16 and target/verifier/dense/state readers. Compare the declared profile in inputs.json for MTP versus absent-DFlash2 MTP participant. Identify concrete admission failures,unsupported combinations or memory/queue lifetime/extent hazards BEFORE execution. Audit tap tail positions and chunk/full-window boundaries;do not repeat the completed generic optional-head audit or propose a new optimization. In particular MTP_BATCH_F16=1 and SNAPSHOT_VERIFY=1 are inherited tuned choices whereas short9gate used0;are they safe/applicable for DFlash2? Is.requires_prefix_checkpoints/row-callback behavior different and does it suppress the tuned path? Produce a small actual-guard matrix,what must be disabled/changed before launch,and remaining finite validation. Include256Ksource bounds limitations without claiming full-context validation. Main will not edit these9native files until you return. Read the large generator only at DF2begin/activate/tap callbacks/head boundary and setup conditions relevant to this question.",
     "scope_eligibility": {
       "schedulable_now": true,
@@ -26211,7 +26211,9 @@
       "sha256": "4031f4c3cffb61e8635c373f5c304e8a55a0c3f0e2c98aa08ad867e02ae0c91f"
     },
     "report": {
-      "path": ".cache/research/2026-11-08/dflash2-long-shape-admission/report.md"
+      "path": ".cache/research/2026-11-08/dflash2-long-shape-admission/report.md",
+      "sha256": "b0aa8cec42182d4645cc4c7ed4c6de20b17fdf41964fbbe9aeb64d2ed60d1f97",
+      "bytes": 8191
     },
     "constraints": "Read-only named source/metadata and named report only;worker IPC preflight,no steering,no Sol,no execution/product edits.",
     "retention": "Temporary decision-support material until Main long-profile/counter admission and reviewed compact disposition;retire transaction/spec/raw bodies when superseded. Not permanent inventory.",
@@ -26221,14 +26223,22 @@
       "task": "task_e5d25af9985d",
       "terminal": "term_0462fb5c-2784-444a-aa39-b9a81e1796e9",
       "agent": "codex/gpt-6-luna",
-      "observed_state": "ready",
-      "liveness": "live",
-      "terminal_state": "active"
+      "observed_state": "succeeded",
+      "liveness": "exited",
+      "terminal_state": "released",
+      "process_action": "closed_agent_terminal"
+    },
+    "native_review": {
+      "task": "/root/review_dflash2_long_admission_20261108",
+      "path": ".cache/research/2026-11-08/dflash2-long-shape-admission/review.md",
+      "state": "running",
+      "model": "gpt-6-luna",
+      "reasoning": "max"
     }
   },
   "dflash2_bench_clock_counter_contract_20261108": {
     "classification": "decision_support",
-    "state": "running",
+    "state": "report_completed_native_review_running",
     "scope": "Question:does current pinned bench.sh/long-generation/server/native protocol actually measure and attribute DFlash2 versus MTP correctly? Inspect draft offered/accepted accounting and meanings,source clock boundaries for prompt/decode/TTFT (including DFlash2 activation/initial context/head restoration),server rewriting/retry and output/header observability,benchmark eligibility and strong/weak classification. Point out potential silent wrong-route or clock/count interpretation (not just parameter labels). Main has independently found interpreter engine_once.py is classified unsupported by byte-scanning engine_form and is fixing that in drafting.py;do not investigate/reimplement that fix or read/edit drafting.py/engine_once.py. Your frozen files are only inputs.json.source_files. Main needs exact minimal runtime evidence to prove DF2 was used (native stderr/init/request/counters and launch args),and which existing parsers can be reused or need phase-specific handling before long comparison. Check actual native strings versus regex labels;do not claim any throughput or task quality. No broad upstream/API feature audit.",
     "scope_eligibility": {
       "schedulable_now": true,
@@ -26254,7 +26264,9 @@
       "sha256": "41a3efcf8cf8c5edb345d4594be590117ddd9fe8bcf4c047ce9bd8d99f9aa55e"
     },
     "report": {
-      "path": ".cache/research/2026-11-08/dflash2-bench-clock-counters/report.md"
+      "path": ".cache/research/2026-11-08/dflash2-bench-clock-counters/report.md",
+      "sha256": "076be0ee52cd81b54fe143cc7e270928c336fbee8db2d708c803701223b79920",
+      "bytes": 7947
     },
     "constraints": "Read-only named source/metadata and named report only;worker IPC preflight,no steering,no Sol,no execution/product edits.",
     "retention": "Temporary decision-support material until Main long-profile/counter admission and reviewed compact disposition;retire transaction/spec/raw bodies when superseded. Not permanent inventory.",
@@ -26264,9 +26276,17 @@
       "task": "task_ddfe6216c0d3",
       "terminal": "term_6870f60b-981b-4644-b9b1-3de57ca328f8",
       "agent": "codex/gpt-6-luna",
-      "observed_state": "ready",
-      "liveness": "live",
-      "terminal_state": "active"
+      "observed_state": "succeeded",
+      "liveness": "exited",
+      "terminal_state": "released",
+      "process_action": "closed_agent_terminal"
+    },
+    "native_review": {
+      "task": "/root/review_dflash2_bench_contract_20261108",
+      "path": ".cache/research/2026-11-08/dflash2-bench-clock-counters/review.md",
+      "state": "running",
+      "model": "gpt-6-luna",
+      "reasoning": "max"
     }
   }
 }
