@@ -206724,5 +206724,71 @@
       "deletion_manifest_key": "compat_profile_window_host_v2.artifact_retirement.manifest",
       "remaining_files": 0
     }
+  },
+  "compat_profile_fixture_prepare_v1": {
+    "state": "refused_before_plan_build_or_GPU",
+    "controller_revision": "3278eb39e62dc6bcc8eb26c9433538a7dd441614",
+    "entrypoint": "tools/sycl/build_compat_profile.py prepare",
+    "error": "RuntimeError: unreviewed collector source difference",
+    "output_root_created": false,
+    "plan_created": false,
+    "build_executed": false,
+    "GPU_executed": false,
+    "missing_host_review_path": "tools/sycl/ur_validation.py",
+    "original_collector_source_commit": "e57b5ee7fce1de6391c793f1014c44cae3b85d9c",
+    "read_only_native_boundary": {
+      "original_module_AST_preserved_after_removing": [
+        "_probe_fingerprint",
+        "current_runtime_probe"
+      ],
+      "generated_native_files_unchanged": 3,
+      "compile_recipe_unchanged": true,
+      "actual_compiler_inputs_unchanged": 460,
+      "launcher_and_collector_ELFs_unchanged": true
+    },
+    "old_audit_reference": {
+      "commit": "3278eb39e62dc6bcc8eb26c9433538a7dd441614",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "collector_reuse.current_source_audit"
+    },
+    "report": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/collector-host-delta-20261108",
+      "inputs": {
+        "evidence.json": {
+          "bytes": 1771,
+          "sha256": "0fde4d3c3a3579613458ff40f224095ee35574c7fccc73d191809eaa4d5b13e0"
+        },
+        "ur-validation-additions.diff": {
+          "bytes": 4817,
+          "sha256": "d7f09f1dbe0650fb1ea5bfd6072939bc765a4cb0f8e6ee9e617692509d0f7223"
+        },
+        "decision.md": {
+          "bytes": 2664,
+          "sha256": "31b974997069e690be02a7f025dcd10e25ce59224038d586d7a5688efa58cc90"
+        }
+      },
+      "classification": "decision support",
+      "consumer": "Native Luna-max review of Main audit before any prospective collector-source admission;not implementation or device qualification.",
+      "review_task": "/root/review_collector_host_delta_20261108",
+      "review": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/collector-host-delta-20261108/review.md",
+        "sha256": "525c6d64dc0a78a6e04ded901c9045408457df4d867351a7e3b9152bc86f9f29",
+        "bytes": 2322,
+        "model": "gpt-6-luna",
+        "effort": "max",
+        "verdict": "conditional",
+        "condition": "Verify unchanged host V2 coverage of ur_validation.py before claiming the host qualification remains valid."
+      }
+    },
+    "host_v2_continuity": {
+      "plan_commit": "4e5d7074d867b3dbb89861019dd952c7fa4256dd",
+      "source_commit": "65b6b6349de6f188909c7c1be29b5d75e92c348e",
+      "input_path": "tools/sycl/ur_validation.py",
+      "recorded_sha256": "e128633812c8189b5d76a8a5366a4b610c2cabd223844c232e1046e0f400f26c",
+      "current_sha256": "e128633812c8189b5d76a8a5366a4b610c2cabd223844c232e1046e0f400f26c",
+      "all_620_source_inputs_match": true,
+      "condition_satisfied": true,
+      "reason": "The current hash was already in V2 before the five-test run. No Python source edit is proposed;only a new explicit collector-source audit. Inclusion in V2 therefore confirms continuity rather than introducing a new hash."
+    }
   }
 }
