@@ -207019,7 +207019,7 @@
     ]
   },
   "compat_profile_window_v1": {
-    "stage": "checking",
+    "stage": "failed",
     "host_qualification": {
       "plan_commit": "4e5d7074d867b3dbb89861019dd952c7fa4256dd",
       "source_commit": "65b6b6349de6f188909c7c1be29b5d75e92c348e",
@@ -207309,6 +207309,85 @@
         },
         "mapped_ELF_files": 35,
         "mapped_ELF_sha256": "591aa8d315a7439f4dcc7f48d0cc8f94724b57a41b09b481430283edac480ebd",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "paused-construction",
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "clock_domain": "CLOCK_MONOTONIC_RAW",
+        "clock_bounds": {
+          "phases": {
+            "before-runtime": {
+              "raw_ns": 2500236318480736,
+              "monotonic_ns": 2500256170098611,
+              "boottime_ns": 2500256170099353
+            },
+            "runtime-ready": {
+              "raw_ns": 2500236327426862,
+              "monotonic_ns": 2500256179044407,
+              "boottime_ns": 2500256179044708
+            },
+            "captured": {
+              "raw_ns": 2500236371895795,
+              "monotonic_ns": 2500256223513988,
+              "boottime_ns": 2500256223514178
+            },
+            "window-drained": {
+              "raw_ns": 2500236500815568,
+              "monotonic_ns": 2500256352434895,
+              "boottime_ns": 2500256352435115
+            },
+            "before-exit": {
+              "raw_ns": 2500236533033426,
+              "monotonic_ns": 2500256384652911,
+              "boottime_ns": 2500256384653111
+            }
+          },
+          "controls": [
+            {
+              "action": "resume",
+              "before_ns": 2500236373792913,
+              "after_ns": 2500236494282937
+            },
+            {
+              "action": "stop",
+              "before_ns": 2500236637485034,
+              "after_ns": 2500236754991514
+            }
+          ],
+          "capture_begin": 2500236494671777,
+          "begin": 2500236494673770,
+          "end": 2500236502576039,
+          "capture_end": 2500236636242464
+        },
+        "native_exit_code": 0,
+        "native_execution_complete": true,
+        "numerical_and_guard_check_passed": true,
+        "validation": {
+          "pid": 211987,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "error": "ValueError('GPU kernels/host APIs missing from window')",
         "ownership_closed": true,
         "fresh_faults": [],
         "boot_unchanged": true,
