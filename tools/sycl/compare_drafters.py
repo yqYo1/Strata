@@ -3,8 +3,8 @@
 
 Main-authored from this repository's benchmark/ownership interfaces; repository
 LICENSE. Reuses the closed owned-buffer admission without rebuilding an engine.
-The older drafter_generation.py is retained only for its still-live read-only
-source audit; retire that superseded driver once the auditor formally returns.
+The failed first driver is recoverable at source commit2a7b98908. Match stable
+process identity independently of observed state/RSS before native admission.
 """
 import fcntl
 import json

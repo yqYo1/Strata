@@ -49,8 +49,10 @@ These are durable operating rules for Main and delegated work. Use the
 for upstream evaluation; the user's project-specific rules here take precedence
 over generic workflow examples.
 
-At session start, resume and after context compaction, perform these checks in
-order before launching work:
+Main performs these checks in order at session start, resume and after context
+compaction. Report-only workers instead resume their named Task, pinned inputs
+and report contract under [Parallel research](#parallel-research); Main's tuning,
+Git and measurement duties do not expand their assignment.
 
 1. Reread the checked-out version of this file and
    [the artifact retention policy](docs/ARTIFACT_RETENTION.md), rather than a
@@ -233,13 +235,20 @@ integration and testing.
 - Integrate completed child source, tests, skills and reports into the actual
   `feature/sycl` tree, then push. Update the fork's remote default through a PR
   at each completed boundary; the ghq root remains the default mirror and only pulls.
-  Use a merge commit for work containing original source revisions referenced by
-  measurements. Before retiring a finished child, verify those revisions and
+  Use a merge commit when integrating measured child work into `feature/sycl`.
+  Before retiring a finished child, verify its original revisions and
   needed reports are reachable from the pushed, retained `feature/sycl` or the
   fork default. Continue default integration through its PR separately; a blocked
   PR does not justify retaining a finished child. Do not squash, rebase away or
   force-push measured source revisions that retained results reference; preserve
   their original commit identities and recoverable inputs.
+  When protected main permits only squash, its PR may publish a content snapshot
+  after verifying every retained measured source/evidence commit remains an
+  ancestor of the pushed, permanent `feature/sycl` and automatic head deletion
+  is disabled. Keep that primary branch, merge the updated default back into it
+  normally, verify original identities again, and open the next PR from it.
+  This exception never squashes/rebases the measured primary or child history
+  and never bypasses repository protection. The ghq default mirror still only pulls.
 - Pin delegated source proposals to an immutable commit or a fully hashed source
   snapshot. Generate the patch against that same base, even if the main worktree
   changes during implementation. Review the complete patch and preservation of
@@ -441,6 +450,9 @@ integration and testing.
   continues implementation, analysis and serialized measurement. Respect
   actual concurrency/resource limits; aim for roughly five researchers only
   when capacity permits, otherwise fill the available slots.
+  Select medium reasoning for ordinary Luna collection and finite source audits;
+  keep native report review at the required max reasoning. State a different
+  research effort explicitly when the bounded question warrants it.
 - Shift scopes and share `bench/results/2026-10-15-pr6-recovery-audit/research-index.json`
   and relevant previous reports in every assignment. Prioritize this engine's
   measured bottlenecks, but also investigate general SYCL and transferable
@@ -456,9 +468,12 @@ integration and testing.
   into trivial fact lookups or fill reports with known context. Treat report
   length as a working budget, allowing enough room for substantive findings;
   review novelty and depth after completion before choosing the next scope.
-  Before dispatch, verify that the worker's startup permissions allow its named
-  report directory. For a report outside its workspace, pass that directory as
-  an additional writable root at launch; do not rely on a later save approval.
+  Give a report-only worker an isolated report workspace and enforce read-only
+  access to product checkouts at launch. Its writable scope is the named report
+  directory, not the shared product worktree. Keep the bounded Task/spec and
+  pinned inputs available there; after compaction the worker reloads that Task
+  and returns its report or failure, rather than resuming Main's tuning work.
+  Verify the actual submitted Task and write scope, not just terminal readiness.
   Include permissions for Orca lifecycle IPC; a custom workspace-write Codex
   launch must explicitly enable sandbox network access. Require a successful
   worker-side Orca status check before investigation; Main's connection alone

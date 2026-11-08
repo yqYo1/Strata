@@ -36,12 +36,22 @@ entire chain of stale references. Link historical evidence to a pinned Git
 revision. Keep the archive commit reachable; do not rewrite shared history.
 
 Preserve the original source commits referenced by retained measurements when
-integrating branches. Use a merge commit for such work. Before deleting a
+integrating child branches into the permanent `feature/sycl`; use a merge commit.
+Before deleting a
 finished child, verify its needed original source/report commits are reachable
 from the pushed, retained `feature/sycl` or the fork default. Continue default
 integration through its PR separately; a blocked PR does not justify retaining
 the finished child. A squash or rebase with equivalent files does not preserve
 the recorded commit identities.
+
+A squash-only protected default may receive a PR content snapshot while the
+original measured commits remain ancestors of the pushed, permanent
+`feature/sycl`. Verify those references and disabled automatic head deletion
+before merging, retain that primary branch, then merge the updated default back
+into it normally and verify the same original identities again. This publishes
+the actual implementation without rewriting its measured history. Do not use
+this exception to squash/rebase a measured child or the primary, delete the
+retained primary, bypass protection, or claim unperformed validation/adoption.
 
 Build retirement does not need to wait for default-branch integration when the
 exact original source and recipe are recoverable from the pushed, retained
