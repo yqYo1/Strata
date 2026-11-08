@@ -5447,10 +5447,334 @@
       }
     },
     "dflash2_cache_loan_model_v1_check": {
-      "stage": "prepared",
-      "passed": false,
+      "stage": "passed",
+      "passed": true,
       "ownership_closed": true,
-      "results": [],
+      "results": [
+        {
+          "label": "owned",
+          "loan": false,
+          "passed": true,
+          "requests": [
+            {
+              "label": "short",
+              "prompt_tokens": 82,
+              "generated": 32,
+              "resumed": 0,
+              "fresh_tokens": 82,
+              "prompt_ms": 28801.4,
+              "decode_ms": 2815.1,
+              "finish": "length",
+              "accepted": 24,
+              "offered": 24,
+              "progress_count": 1,
+              "route": "cache-window",
+              "lease": {
+                "pairs": 0
+              },
+              "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+              "complete": true
+            },
+            {
+              "label": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "resumed": 0,
+              "fresh_tokens": 513,
+              "prompt_ms": 36096.7,
+              "decode_ms": 2835.1,
+              "finish": "length",
+              "accepted": 24,
+              "offered": 30,
+              "progress_count": 2,
+              "route": "layer-major",
+              "lease": {
+                "pairs": 0
+              },
+              "output_ids_sha256": "9ae8940c5c256b4959857bd81463aab027ed14fd26d8bbf7cdf346857d1cd3ed",
+              "complete": true
+            },
+            {
+              "label": "known_live",
+              "prompt_tokens": 82,
+              "generated": 1,
+              "resumed": 0,
+              "fresh_tokens": 82,
+              "prompt_ms": 5006.2,
+              "decode_ms": 94.7,
+              "finish": "length",
+              "accepted": 0,
+              "offered": 0,
+              "progress_count": 1,
+              "route": "cache-window",
+              "lease": {
+                "pairs": 0
+              },
+              "output_ids_sha256": "4c9f01ba9b7eeea9900cd9cbab1fcf8abba5eca628cf63960aec216e83a4b107",
+              "complete": true
+            },
+            {
+              "label": "resumed_long",
+              "prompt_tokens": 595,
+              "generated": 32,
+              "resumed": 82,
+              "fresh_tokens": 513,
+              "prompt_ms": 30893.9,
+              "decode_ms": 3393.7,
+              "finish": "length",
+              "accepted": 21,
+              "offered": 36,
+              "progress_count": 2,
+              "route": "layer-major",
+              "lease": {
+                "pairs": 0
+              },
+              "output_ids_sha256": "2d5d53d42adddbfa147ff1a723bc29f8d6d197259f356ca2524dcdbe4efe361b",
+              "complete": true
+            }
+          ],
+          "argv_sha256": "b9e2c4e2d7b24ce2acaedf2044492e9d1409b484e575df8aa149fc85b888a165",
+          "environment_sha256": "a954d54d22e86325879159bf205dcad6aa34715cc55e9ee9b787744df53659f5",
+          "placement": {
+            "context": "4096",
+            "kv": "int8",
+            "kv_resident": "0",
+            "expert_slots": "1256",
+            "expert_cache_mib": "2455",
+            "expert_slots_primary": "1256",
+            "expert_cache_primary_mib": "2455",
+            "spec": "4",
+            "mtp_max": "0",
+            "lookup": "0",
+            "vram_free_mib": "2497",
+            "cvec": "0",
+            "arena_mib": "47962",
+            "pool_workers": "5",
+            "pcie_frac": "0.00",
+            "spec_min_p": "0.00",
+            "conversation_cache_mib": "0",
+            "conversation_cache_slots": "4",
+            "conversation_cache_min_free_mib": "2560",
+            "engine": "0.1.38"
+          },
+          "pre_main_validation": {
+            "pid": 3484603,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "76cb9d37f49f3aeb8f12fb4dcf4602b0420bcc634155cd0549cee51b63355bae",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          },
+          "ownership_closed": true,
+          "target_head_detached_bytes": [
+            521472000,
+            521472000
+          ],
+          "lease_totals": {
+            "pairs": 0
+          }
+        },
+        {
+          "label": "checked_borrowed",
+          "loan": true,
+          "passed": true,
+          "requests": [
+            {
+              "label": "short",
+              "prompt_tokens": 82,
+              "generated": 32,
+              "resumed": 0,
+              "fresh_tokens": 82,
+              "prompt_ms": 28405.7,
+              "decode_ms": 3118.4,
+              "finish": "length",
+              "accepted": 24,
+              "offered": 24,
+              "progress_count": 1,
+              "route": "cache-window",
+              "lease": {
+                "pairs": 0,
+                "generations": [],
+                "lent_rows": [],
+                "resident_payload_bytes_checked": 0,
+                "exact_payloads": true,
+                "mask_match": true,
+                "same_slots": true,
+                "ready_after_refill": true
+              },
+              "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+              "complete": true
+            },
+            {
+              "label": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "resumed": 0,
+              "fresh_tokens": 513,
+              "prompt_ms": 37500.7,
+              "decode_ms": 2870.2,
+              "finish": "length",
+              "accepted": 24,
+              "offered": 30,
+              "progress_count": 2,
+              "route": "layer-major",
+              "lease": {
+                "pairs": 1,
+                "generations": [
+                  1
+                ],
+                "lent_rows": [
+                  87
+                ],
+                "resident_payload_bytes_checked": 2575206400,
+                "exact_payloads": true,
+                "mask_match": true,
+                "same_slots": true,
+                "ready_after_refill": true
+              },
+              "output_ids_sha256": "9ae8940c5c256b4959857bd81463aab027ed14fd26d8bbf7cdf346857d1cd3ed",
+              "complete": true
+            },
+            {
+              "label": "known_live",
+              "prompt_tokens": 82,
+              "generated": 1,
+              "resumed": 0,
+              "fresh_tokens": 82,
+              "prompt_ms": 5735.3,
+              "decode_ms": 148.1,
+              "finish": "length",
+              "accepted": 0,
+              "offered": 0,
+              "progress_count": 1,
+              "route": "cache-window",
+              "lease": {
+                "pairs": 0,
+                "generations": [],
+                "lent_rows": [],
+                "resident_payload_bytes_checked": 0,
+                "exact_payloads": true,
+                "mask_match": true,
+                "same_slots": true,
+                "ready_after_refill": true
+              },
+              "output_ids_sha256": "4c9f01ba9b7eeea9900cd9cbab1fcf8abba5eca628cf63960aec216e83a4b107",
+              "complete": true
+            },
+            {
+              "label": "resumed_long",
+              "prompt_tokens": 595,
+              "generated": 32,
+              "resumed": 82,
+              "fresh_tokens": 513,
+              "prompt_ms": 31845.8,
+              "decode_ms": 3358.0,
+              "finish": "length",
+              "accepted": 21,
+              "offered": 36,
+              "progress_count": 2,
+              "route": "layer-major",
+              "lease": {
+                "pairs": 1,
+                "generations": [
+                  2
+                ],
+                "lent_rows": [
+                  87
+                ],
+                "resident_payload_bytes_checked": 2575206400,
+                "exact_payloads": true,
+                "mask_match": true,
+                "same_slots": true,
+                "ready_after_refill": true
+              },
+              "output_ids_sha256": "2d5d53d42adddbfa147ff1a723bc29f8d6d197259f356ca2524dcdbe4efe361b",
+              "complete": true
+            }
+          ],
+          "argv_sha256": "fb68d93187f470155e973f0d6014f1fc2387e390e6c16d38608a84c707d00cd2",
+          "environment_sha256": "cd956adee2c08c747cda34e04efa469748ceb49a5b7a557ccdadb5c4e4c5b3f3",
+          "placement": {
+            "context": "4096",
+            "kv": "int8",
+            "kv_resident": "0",
+            "expert_slots": "1256",
+            "expert_cache_mib": "2455",
+            "expert_slots_primary": "1256",
+            "expert_cache_primary_mib": "2455",
+            "spec": "4",
+            "mtp_max": "0",
+            "lookup": "0",
+            "vram_free_mib": "2691",
+            "cvec": "0",
+            "arena_mib": "47962",
+            "pool_workers": "5",
+            "pcie_frac": "0.00",
+            "spec_min_p": "0.00",
+            "conversation_cache_mib": "0",
+            "conversation_cache_slots": "4",
+            "conversation_cache_min_free_mib": "2560",
+            "engine": "0.1.38"
+          },
+          "pre_main_validation": {
+            "pid": 3491343,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "76cb9d37f49f3aeb8f12fb4dcf4602b0420bcc634155cd0549cee51b63355bae",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          },
+          "ownership_closed": true,
+          "target_head_detached_bytes": [
+            521472000,
+            521472000
+          ],
+          "lease_totals": {
+            "pairs": 2,
+            "generations": [
+              1,
+              2
+            ],
+            "lent_rows": [
+              87,
+              87
+            ],
+            "resident_payload_bytes_checked": 5150412800,
+            "exact_payloads": true,
+            "mask_match": true,
+            "same_slots": true,
+            "ready_after_refill": true
+          }
+        }
+      ],
       "prerequisites": {
         "device": "64ea47a6b5db293934e376e93922ba0f36ca6b99c72a7ae8bfdbc261bbb93317",
         "state": "af5ccaad3f9fee903bbe42cf6adc753a2d068c22d7529c23306227df4f2f4821",
@@ -6282,6 +6606,7 @@
       "speed_eligible": false,
       "model_adoption_qualified": false,
       "retention": "Commit compact per-arm/request ownership,extent/counters,loan/payload totals,identities and fault result.Then delete normal full stage logs/cache after source/recipe recovery. Keep original plan/workload in Git.At this first model decision select feature generation and retire extra build after exact original-input recovery;preserve independent552b/e1b phase references and carry explicit unresolved legacy provenance holds.",
+      "fresh_faults": [],
       "controller": {
         "revision": "66fac0b8c6bd640da134d054299cda58c134555b",
         "count": 18,
@@ -6317,7 +6642,24 @@
         "input_files": 34,
         "sha256": "c0e61429504ee000be8d1105df305a2d15b50e8cf7ecb0a1dddfe25bcc1b7f28"
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "owned",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "checked_borrowed",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ]
     }
   }
 }

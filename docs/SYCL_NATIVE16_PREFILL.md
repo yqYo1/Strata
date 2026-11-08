@@ -3195,11 +3195,23 @@ at controller`c6f915a48`/plan`8c4afccfa`:19pack,10submission,7small-ring,
 5wrap/rewind/parked-restore and12mask controls,all normal0/reaped/empty and no
 fresh fault. V1remains failed because Main's controller did not consume the
 submission fixture's final two protocol lines;V2corrects that reader. All five
-fixture binaries have now executed. Next commit bounded owned-versus-borrowed
-short/long/short/live-prefix continuation model checks. The one-token third
-request creates a known live prefix;prompt-cache1/every0avoids checkpoint copies. These do not replace separate clean
-repeated speed, agent/task, physical 262144, tail, handoff, or RESTORE gates. Preserve the
-479a/552b validated fallback; the physical limiting resource remains unknown.
+fixture binaries have now executed. The bounded owned-versus-checked-borrowed
+model gate now passes: controller`66fac0b8c`,plan`1e91cedb4`,candidate90f,
+4096context,1256expert slots and256chunk. Two fresh processes complete all8
+short/long/short/live-prefix requests with32/32/1/32thinking outputs. The third
+one-output request creates the exact82-token live prefix;prompt-cache1/every0
+avoids checkpoint copies. Both actual routes and2target-head retirements per
+process are verified. Each borrowed long request lends87slots,then verifies all
+1256resident expert payloads(2,575,206,400bytes)against RAM and publishes the
+original slots ready before decode. Both owners exit0,reap and empty their
+sessions;38mapped ELFs and before-main validation match;no fresh fault occurs.
+This is a charged payload/ownership diagnostic,not speed or task quality.
+Native90f is not yet qualified for the prior32Kfeature envelope. Next commit
+larger-chunk/context capacity admission and matched>=32Kbench.sh speed with
+larger decode residency. Preserve f633 until that feature-generation decision
+and552b/e1b as independent phase guards;then retire the extra after original
+source recovery. Clean repeats,agent/task,physical262144,tails and RESTORE remain
+pending. The physical limiting resource remains unknown.
 Standard long/agent comparisons and independent prefill/decode selection remain
 pending. About96% of expert lookup entries fall to the CPU in this256-slot
 diagnostic layout; the requested expert
