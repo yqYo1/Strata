@@ -28,14 +28,14 @@ import decode_footer
 
 P, B = heads.P, heads.B
 RESULT = heads.model.RESULT
-ROOT = B / 'drafter-long-admission-v4'
-KEY = 'drafter_long_admission_v4'
+ROOT = B / 'drafter-long-admission-v5'
+KEY = 'drafter_long_admission_v5'
 PREVIOUS = B / 'drafter-long-admission-v2'
 FAILURE_COMMIT = '1381e9a9b997115308fa2cc1dc462e73d376bfa8'
 REVIEW_KEYS = ('dflash2_tuned_long_shape_admission_20261108', 'dflash2_bench_clock_counter_contract_20261108')
 SELF = Path(__file__).resolve()
 READ, RUNS = 32769, 2
-ORDER = ('mtp', 'dflash2')
+ORDER = ('dflash2',)
 require, digest, write = heads.require, heads.digest, heads.write
 
 
@@ -80,7 +80,9 @@ def request_route(text, drafter, sample):
     if drafter == 'mtp':
         require(callbacks == [('batched', '2', '8192')]*4 and not activations, 'MTP prompt callbacks differ')
     else:
-        require(not callbacks and len(activations) == 1 and activations[0][:2] == ('2046', '1') and
+        # With no reused target prefix, begin_request has no rows below resume
+        # to rebuild. A fresh drafter therefore reports cold_prefix=0 too.
+        require(not callbacks and len(activations) == 1 and activations[0][:2] == ('2046', '0') and
             0 < int(activations[0][2]) <= 2 << 30, 'DFlash2 actual tail/activation differs')
     header = re.findall(decode_footer.HEADER, text, re.M)
     require(len(header) == 1 and tuple(map(int, header[0])) == tuple(sample[k] for k in
@@ -105,7 +107,8 @@ def request_route(text, drafter, sample):
         prefill_slots=384, window_mode=10, windows=48, staged_bank_checked_drain=True,
         target_detached_bytes=521472000, MTP_detached_bytes=223227900 if drafter=='mtp' else 0,
         draft_reader='mtp4' if drafter=='mtp' else 'absent-dflash2',
-        DFlash2_tail_rows=2046 if activations else 0, nominal_MTP_callback_cells=n if callbacks else 0,
+        DFlash2_tail_rows=2046 if activations else 0, DFlash2_cold_prefix=0 if activations else None,
+        nominal_MTP_callback_cells=n if callbacks else 0,
         native_prompt_ms_rounded=prompt_ms, native_prompt_pp_rounded=prompt_pp,
         prompt_includes_repeated_DFlash2_activation=bool(activations), GDN_columns=4, GDN_barriers=3,
         score_GEMM_requested=True, score_GEMM_command_dispatch_observed=False,
@@ -126,7 +129,9 @@ def previous_failure():
         evidence_commit=FAILURE_COMMIT, source_commit=old['source_commit'],
         GPU_executed=True, native_executed=True, qualified_ownership_closed=False, status='failed',
         earlier_host_failure_evidence='1fa4b829af8e8d34aee0015bd238a56784101f74',
-        isolated_count_host_failure_evidence='1465f7973c6cf06fefa55fe45351a7211ef82792')
+        isolated_count_host_failure_evidence='1465f7973c6cf06fefa55fe45351a7211ef82792',
+        incorrect_cold_prefix_gate_evidence='c83a4f85451bff48d928331c0fe5f0dacf4bd65a',
+        MTP_context_evidence='1d065ac0743fb1ced114f2381f97b0b99139cf63')
 
 
 def source_reviews():
@@ -214,8 +219,8 @@ def prepare():
         passed=False, complete=False, ownership_closed=True, active=False,
         budgets=dict(wall=1200, cpu=14400, rss_cap=104 << 30, text_cap=16 << 20,
                      file_cap=32 << 20, total_cap=64 << 20),
-        plan=dict(question='Can both named drafters run the existing tuned8192 long-prefill route through the current production frontend?',
-            order='Two fresh native/bench processes:MTP then DFlash2. Two exact32769-token thinking requests each,24output budget. Tiny benchmark warmup and count-only preflight are outside timed long samples;first long use and subsequent long request stay separate.',
+        plan=dict(question='Does named DFlash2 satisfy tuned8192 long-route admission with the correct resume0/cold_prefix0 contract?',
+            order='One fresh DFlash2 native/bench process,two exact32769-token thinking requests,24output budget. Revalidate corrected diagnostic cold_prefix=0 with resume0;V4 failed assertion remains failed. Existing MTP V4 normal evidence is context only,no new MTP execution or paired-speed adoption. Tiny benchmark warmup and count-only preflight are outside timed long samples;first long use and subsequent long request stay separate.',
             constants='Same f633 native,65536 INT8 resident context,256 expert-cache budget,5workers,8192chunk,spec4,greedy,suffix0,zero caches/adaptation,throughput BF16/native16,GDN16,mode10 mixed/split scratch,384packed bank,score GEMM requested,head retirement1. Force owned buffers with --no-prefill-borrow;MTP expert release/cache scratch0in BOTH arms. V2measured8192buffers2212MiB versus1122MiB free,then automatic1536chunks. This prospectively halves context and reduces cache768->256 to fund the fixed buffers and verifier/drafter headroom. Actual8192/full-GPU/bank/drain admission must pass,without fallback. This is not best-MTP tuning,a speed comparison to retained fast references,or131072/262144capacity qualification.',
             routing='Named configuration must yield exactly committed actual engine arguments at host admission and native exec. No Auto fallback,restart,benchmark-specific model renaming or forged capability markers. Verify native DFlash2 on/absent MTP versus MTP callbacks and per-request generated/accepted/offered counters.',
             acceptance='Each long sample has exactly32769actual/read tokens,zero reuse,thinking/reasoning,1..24generated,finite engine PP/prompt and client TTFT,valid complete journal. Actual BF16 layer-major8192/full-GPU residual path,quiet validation,pre-main proof,qualified live providers,normal benchmark AND native exit0,reaped empty session,unchanged models/source/runtime and no fresh driver fault are required.',
