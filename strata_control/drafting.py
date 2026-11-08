@@ -712,7 +712,10 @@ _forms: dict[tuple[str, int, int], str | None] = {}
 
 def engine_form(exe: str | os.PathLike[str] | None) -> str | None:
     """How the engine program at `exe` takes the DFlash2-alone vocabulary: FORM_FILE, FORM_DIR, FORM_NONE, or None when it cannot be told (no path, the file is
-    unreadable, or it has the flag but says nothing we know: the usual form is used then). The program is read once per path, size and time and the answer kept."""
+    unreadable, or its interface cannot be told: the usual form is used then).
+    An interpreter launcher may delegate to another engine; absent strings in
+    that script do not establish that the selected engine lacks DFlash2.
+    The program is read once per path, size and time and the answer kept."""
     if not exe:
         return None
     try:
@@ -733,7 +736,7 @@ def _read_form(path: Path) -> str | None:
                 return FORM_FILE
             if data.find(_MARK_DIR) >= 0:
                 return FORM_DIR
-            return None if data.find(_MARK_FALLBACK) >= 0 else FORM_NONE
+            return None if data.find(_MARK_FALLBACK) >= 0 or data[:2] == b"#!" else FORM_NONE
     except (OSError, ValueError):                 # unreadable, or an empty file (mmap refuses it)
         return None
 

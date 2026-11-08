@@ -140,7 +140,6 @@ class SyclVisionDrafting(unittest.TestCase):
         stack = self.enterContext(ExitStack())
         for obj, name, value in [
             (drafting, "detect_hardware", ("sycl", ["arc_b"])),
-            (drafting, "engine_form", drafting.FORM_FILE),
             (drafting, "vocab_path", Path("/unused/draft_vocab.bin")),
             (drafting, "drafter_ready", True),
             (drafting, "pack_ready", True),
@@ -222,6 +221,25 @@ class SyclVisionDrafting(unittest.TestCase):
             args = server.engine_args(self.config("auto", None), announce=False)
         self.assertEqual(args[args.index("--draft") + 1], "dflash2")
         self.assertNotIn("--mtp", args)
+
+    def test_transparent_measurement_launcher_keeps_the_named_drafter(self):
+        launcher = server.ROOT / "tools/sycl/engine_once.py"
+        self.assertIsNone(drafting.engine_form(launcher))
+        with mock.patch.object(drafting, "mtp_ready", return_value=True):
+            args = server.engine_args(self.config("dflash2", None), exe=str(launcher), announce=False)
+        self.assertEqual(args[args.index("--draft") + 1], "dflash2")
+        self.assertIn("--mtp-draft-vocab", args)
+        self.assertNotIn("--mtp", args)
+
+    def test_inspectable_native_without_drafter_still_uses_mtp(self):
+        root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        native = root / "engine"
+        native.write_bytes(b"\x7fELFno drafter flags in this native fixture")
+        self.assertEqual(drafting.engine_form(native), drafting.FORM_NONE)
+        with mock.patch.object(drafting, "mtp_ready", return_value=True):
+            args = server.engine_args(self.config("auto", None), exe=str(native), announce=False)
+        self.assertNotIn("--draft", args)
+        self.assertIn("--mtp", args)
 
 
 if __name__ == "__main__":
