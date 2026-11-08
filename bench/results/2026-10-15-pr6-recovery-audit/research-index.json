@@ -26471,6 +26471,15 @@
       "agent": "codex/gpt-6-luna",
       "observed_state": "ready",
       "note": "Custom workspace-write launch explicitly enables network IPC;worker must prove its own successful Orca status. No steering."
+    },
+    "main_followup": {
+      "original_cohort": "drafter_generation_v1",
+      "failure_evidence": "c70ef71ae5c6ba2a681ab6a763f725aeec8eaf8a",
+      "original_source_inputs_unchanged": true,
+      "implementation": "tools/sycl/compare_drafters.py",
+      "implementation_source_commit": "0b71d3caa4ef12baa4c9986a6b64451ae88642bf",
+      "scope": "Main independently found/corrected full process-status versus stable3-field identity mismatch. Original7source files remain frozen for this live audit. Fresh V2cohort is prospective;do not relabel V1as passed.",
+      "retirement": "After the original worker formally returns,its report review is consumed and the frozen V2comparison closes,retire superseded drafter_generation.py from the active tree;recover V1source from2a7b98908."
     }
   }
 }
