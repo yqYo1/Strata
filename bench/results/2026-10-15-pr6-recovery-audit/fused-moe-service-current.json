@@ -206826,7 +206826,7 @@
     }
   },
   "compat_profile_fixture_build_v1": {
-    "stage": "prepared",
+    "stage": "built",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -206892,8 +206892,8 @@
       "file_cap": 134217728,
       "total_cap": 536870912
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_qualified": false,
@@ -206901,6 +206901,27 @@
     "scope": "Build only four production-runtime/fixture translation units. No engine build,fixture execution,device enumeration,collector load,metric/Sysman request or model speed claim.",
     "consumer": "Next serialized direct,fully active and separately paused-construction production-adapter checks. Verify counts,flows,guards,clock bounds,normal exit,ownership and fresh faults before model profiling.",
     "retention": "One fixture build for this named current comparison;no extra model-engine generation. Keep original source/recipe and compact compiled-input census,then retire successful build output and the fixture after the collector boundary question closes. Preserve engine/phase guards. Existing legacy provenance holds are unchanged.",
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/actual-inputs.json",
+      "sha256": "4d9698ffb0214c208ca85aa3e13d2e083afd45a4a651342995d5fe75128688f0",
+      "compiler_files": 711,
+      "owned_generated_files": 0,
+      "external_link_files": 24,
+      "uncovered": 0,
+      "translation_units": [
+        "tests/sycl/profile_compat_window.cpp",
+        "src/sycl/runtime.cpp",
+        "src/sycl/compat.cpp",
+        "src/sycl/command_profile.cpp"
+      ],
+      "source_commit": "f4f83be4f0af9ad42d36ac72ad2e927db5a02c0d"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/build/sycl_profile_compat_window",
+      "sha256": "5046a53558a3d6858aefd5c0d2b335b02cccdd35a43b805e0966e5ea707f37b1",
+      "bytes": 293864,
+      "source_commit": "f4f83be4f0af9ad42d36ac72ad2e927db5a02c0d"
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "f4f83be4f0af9ad42d36ac72ad2e927db5a02c0d",
@@ -206973,6 +206994,28 @@
       ]
     },
     "build_environment_sha256": "5ca1860e717ecfc331ed1afdf1255b5f44c137633fc94151a602aac01052f4cc",
-    "commands": []
+    "commands": [
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "dependencies",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
