@@ -220860,7 +220860,7 @@
       "route_audit": "Existing canonical Q6_ROUTE/SHAPE schema preserved;new Q6_DPAS_HEAD row joins request/device/phase/tokens/capture_id and static call count to the common completed replay counters. All ready non-C4/prompt windows must have zero packed calls.",
       "next": "Commit then run the bounded CPU selector/cache controls;prepare a separately committed exact native build/owner fixture and real target-head route qualification before model speed. No new native/GPU/model execution claimed.",
       "cpu_policy_plan": {
-        "state": "prospective_source_commit_before_dependency_probe_and_build",
+        "state": "prepared_committed_dependencies_before_compile",
         "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1",
         "source_inputs": {
           "tests/core/verify_window_policy_test.cpp": "d51ce58198fe65e353e6b7a6b4d4298f80b3f0d1f8057d6fddb841cc5bd60153",
@@ -220880,9 +220880,17 @@
           "-Iinclude"
         ],
         "dependency_probe": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++20",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Iinclude",
           "-M",
           "-MT",
-          "policy"
+          "policy",
+          "tests/core/verify_window_policy_test.cpp"
         ],
         "build_extra": [
           "-MD",
@@ -220898,7 +220906,38 @@
         "GPU_executed": false,
         "acceptance": "Source and dependency identities match pinned committed inputs;normal compile0 and run0;exact fixture PASS line,including dpas-head=1;all previous30/18/26 selections and phase/cache retirement controls preserved. Stop first failure;never refresh failed pins. No native-head/device or model qualification.",
         "expected_stdout": "verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n",
-        "retirement": "Retire this pure CPU binary/dependency/build text after committed results and exact source/recipe recovery;no ongoing comparison consumer."
+        "retirement": "Retire this pure CPU binary/dependency/build text after committed results and exact source/recipe recovery;no ongoing comparison consumer.",
+        "source_commit": "f2a9fb447400cf30e0bd9b09c1e0d07c6b627e2a",
+        "manifest": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/dependency-manifest.json",
+          "sha256": "8fd5ac9e31fd9fdab749aafa216aaafb5f0784125d6550253b872d2a5decfd7d",
+          "files": 196
+        },
+        "compiler_inputs": 174,
+        "link_inputs": 17,
+        "tool_inputs": 5,
+        "environment": {
+          "PATH": "/usr/bin:/bin",
+          "LANG": "C",
+          "LC_ALL": "C",
+          "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/tmp"
+        },
+        "compile_command": [
+          "/usr/bin/x86_64-linux-gnu-g++-13",
+          "-std=c++20",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Iinclude",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/policy.d",
+          "-Wl,-t",
+          "tests/core/verify_window_policy_test.cpp",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/verify_window_policy_test"
+        ]
       }
     },
     "retained_reader_check": {
