@@ -220861,7 +220861,6 @@
       "next": "Commit then run the bounded CPU selector/cache controls;prepare a separately committed exact native build/owner fixture and real target-head route qualification before model speed. No new native/GPU/model execution claimed.",
       "cpu_policy_plan": {
         "state": "prepared_committed_dependencies_before_compile",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1",
         "source_inputs": {
           "tests/core/verify_window_policy_test.cpp": "d51ce58198fe65e353e6b7a6b4d4298f80b3f0d1f8057d6fddb841cc5bd60153",
           "include/strata/core/verify_window_policy.hpp": "4df769ac0a4a55de1a540a78f256b8d225b70abcd4dc1bc9f26b274e70adc1fe"
@@ -220909,9 +220908,9 @@
         "retirement": "Retire this pure CPU binary/dependency/build text after committed results and exact source/recipe recovery;no ongoing comparison consumer.",
         "source_commit": "f2a9fb447400cf30e0bd9b09c1e0d07c6b627e2a",
         "manifest": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/dependency-manifest.json",
           "sha256": "8fd5ac9e31fd9fdab749aafa216aaafb5f0784125d6550253b872d2a5decfd7d",
-          "files": 196
+          "files": 196,
+          "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/dependency-manifest.json"
         },
         "compiler_inputs": 174,
         "link_inputs": 17,
@@ -220937,7 +220936,9 @@
           "tests/core/verify_window_policy_test.cpp",
           "-o",
           "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/verify_window_policy_test"
-        ]
+        ],
+        "retired_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1",
+        "plan_active": false
       },
       "cpu_policy_result": {
         "source_commit": "f2a9fb447400cf30e0bd9b09c1e0d07c6b627e2a",
@@ -220949,15 +220950,15 @@
         "model_executed": false,
         "ownership_closed": true,
         "manifest": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/dependency-manifest.json",
           "sha256": "8fd5ac9e31fd9fdab749aafa216aaafb5f0784125d6550253b872d2a5decfd7d",
-          "files": 196
+          "files": 196,
+          "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/dependency-manifest.json"
         },
         "compile_exit_code": 0,
         "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/verify_window_policy_test",
           "sha256": "a78adf885bfd8e48112429de40c5a41d9a517a6869418199e230a55378fc7cae",
-          "bytes": 26792
+          "bytes": 26792,
+          "retired_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/verify_window_policy_test"
         },
         "actual_compiler_inputs": 174,
         "actual_link_inputs": 16,
@@ -220965,7 +220966,16 @@
         "uncovered_inputs": 0,
         "run_exit_code": 0,
         "stdout": "verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n",
-        "stderr": ""
+        "stderr": "",
+        "artifact_retirement": {
+          "state": "deleted_verified",
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-policy-report-retirement-20261109.json",
+          "sha256": "a1a7c309da9cb7020c3762e2d48a5de60eb86f7ad8f7bc8682cb12b3c6ba6be2",
+          "deleted_files": 15,
+          "deleted_bytes": 110820,
+          "section_bytes_removed": 11541,
+          "reason": "CPU policy check closed;source/recipe recovered. Fresh native/GPU owner qualification remains unbuilt."
+        }
       }
     },
     "retained_reader_check": {

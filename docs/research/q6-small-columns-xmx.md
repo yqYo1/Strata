@@ -1,34 +1,14 @@
-# Q6_K small-column head: source and dispatch reference
+# Q6_K C4 target-head source reference
 
-**Scope and status.** This is a source/dispatch reference for the resident Q6_K
-head `[K=2560,N=248320]` at `C=1` and `C=4`; it is not performance evidence.
-`C=1` is ineligible for the pinned GGML Q6 XMX path. `C=4` is conditionally
-source-eligible. Intel's device/AOT tables support the B570-to-BMG G21 family
-mapping, but local runtime compatibility and Strata dispatch remain unproved.
-`schedulable_now=false`: the separate component gate and a prospective
-numerical, lifetime and residency plan remain open. Source availability does not qualify a component
-or model route.
-
-## Control and candidate
-
-The fixed local control is native source commit
-`05a9b45c0a3a266779d4757a855b45a3bb42a62e`:
-`src/kernels/sycl/native_mmvq.cpp` SHA-256
-`e11821dc10a71670236d45f9bdb1387b185118389e000d42385abbe9ce7197e4` and
-`include/strata/kernels/native_mmvq.hpp` SHA-256
-`1798072d98d3b15ee8fbdeb067d81df5c45dfed6378907748bb9eb09cc198e13`.
-It keeps Q6_K in 210-byte row-major blocks, quantizes activations to Q8_1,
-and returns FP32. The production control uses DP4A; its calls enqueue on the
-caller queue and use caller-owned scratch, with no allocation or wait inside
-the kernel. Its exact multi-column layout preserves the C1 result when
-`native_mmvq_multi_exact()` is enabled. Keep this fixed source as the semantic
-and dispatch control, not a mutable proposal.
-
-A Q6_K block stores 256 weights in 210 bytes: 128 low-bit bytes, 64 high-bit
-bytes, 16 signed scales (one per 16 weights), and a 16-bit super-scale. The
-target's logical packed weight payload is `521,472,000 B` (521.472 MB or about
-497.2 MiB); full FP16 expansion is `1,271,398,400 B`. These are storage sizes,
-not measured traffic, peak residency, or a hardware ceiling.
+Focused reference retained through the opt-in target-head owner/placement review.
+Original source and complete report are recoverable from Git at
+1fcba76f71dd7a27d378218fdd7d79e28f623131 at this path.
+The historical feasibility language below is source-review context: the later
+3d81310de:q6_dpas_component_v7 component passes the B570 numerical/graph
+comparison and measures6.55283x at2560x248320/C4,while640/C4 is20.673%slower.
+Model dispatch is now a default-off source proposal with CPU policy controls;
+native owner/device/model/phase/context qualification remains open.
+The unrelated A16 hypothesis has no current implementation consumer.
 
 ## Official compressed-Q6 int8-DPAS source
 
@@ -90,30 +70,6 @@ Strata implementation must separately prove temporary and weight ownership
 through completion, queue/event dependencies, graph capture/replay lifetime,
 actual admission and maximum single-allocation feasibility. Cold reorder/setup
 and warm reuse must be measured separately.
-
-## A16 reference and distinct hypothesis
-
-SGLang `sgl-kernel-xpu` commit
-[`22d8550db80f9366c7e263d9e52b01aa1ad57040`](https://github.com/sgl-project/sgl-kernel-xpu/tree/22d8550db80f9366c7e263d9e52b01aa1ad57040)
-is the closest transient A16 example. Its `moe_grouped_mm_nt_xe20_w4a16`
-kernel accepts packed W4 expert weights with grouped scales (32/64/128/256),
-BF16 or FP16 activations, and a grouped MoE shape; it dequantizes operand
-fragments for Xe20 DPAS and accumulates in FP32. It neither unpacks Q6_K's
-planes/per-16 scales nor provides an LM-head route. The XPU docs scope this
-quantized path to MoE experts; attention, router, embeddings and LM head remain
-BF16 ([matching docs revision](https://github.com/sgl-project/sglang/blob/4c7c775cf4adcbd2c7419d13b51ec838a17e559e/docs/docs/hardware-platforms/xpu.mdx)).
-The cited kernel file carries BSD-3-Clause and its repository root LICENSE is
-MIT ([file notice](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/src/sycl/GroupGemmW4A16Xe20.cpp),
-[root license](https://github.com/sgl-project/sgl-kernel-xpu/blob/22d8550db80f9366c7e263d9e52b01aa1ad57040/LICENSE)). No source was copied;
-any reuse must preserve file notices and audit transitive provenance.
-
-A Q6-to-A16 path would be a separately authored hypothesis: load packed Q6,
-reconstruct codes/scales, convert weight and activation fragments to one
-chosen format (BF16 or FP16), then DPAS with FP32 accumulation. It is not
-implemented by the cited W4 kernel and does not retain the Q8_1 numerical
-contract. Its plan must state scale application, both conversions and rounding,
-reduction order, output type and task/logit acceptance; FP32 references are
-diagnostic, not a universal precision threshold.
 
 ## Conditional next choices and gates
 

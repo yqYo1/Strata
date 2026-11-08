@@ -22506,81 +22506,33 @@
   },
   "q6_packed_integer_dot_lowering_20261104": {
     "classification": "knowledge collection",
-    "status": "reviewed_conditional_retrieval_reference",
+    "status": "closed_reference_body_retired",
     "schedulable_now": false,
-    "question": "Compare source-expressible packed signed-int8 dot-product paths for the actually observed Q6_K SPMD GEMV on Intel B570:current scalar packed_dot loop,documented SYCL/SPIR-V integer-dot builtins,and ESIMD dp4a alternatives. Check sign/accumulator exactness,device/compiler support and software fallback,original sources/licenses,counterexamples and concrete bounded discriminators;do not repeat generic register/spill or graph surveys.",
-    "prerequisites": {
-      "selected_decode_service_observed": true,
-      "Q6_service_seconds": 0.342909855,
-      "interior_window_seconds": 2.153721362,
-      "physical_saturation_known": false,
-      "source_available": true,
-      "SDK_headers_available": true,
-      "no_build_or_GPU_dependency": true
-    },
+    "original_index_commit": "1fcba76f71dd7a27d378218fdd7d79e28f623131",
     "source": {
       "path": "src/kernels/sycl/native_mmvq.cpp",
       "sha256": "22c39693c9bb64e233ab796764e9de70d5965fa1c15e9e86c4fccb44d88b664a"
     },
-    "previous_scopes": [
-      "xe2_register_spill_collection_scope",
-      "register_only_subgroup_gemm_barrier_methods_20261027"
-    ],
-    "report": ".cache/research/2026-11-04/q6-packed-integer-dot-lowering.md",
-    "report_budget_bytes": 18432,
-    "worker_model": "gpt-6-luna",
-    "review_model": "native Codex gpt-6-luna max",
-    "consumer": "Next independently decode-scoped Q6 kernel choice after column-specialization comparison;retrieve specific compiler/integer arithmetic sections only if needed",
-    "review_point": "Native review on completion;retain only nonduplicated source-feasible findings through next Q6 implementation decision",
-    "main_reads_body_on_arrival": false,
-    "ownership_closed": true,
-    "worker_done_accepted": true,
-    "run": "run_bb9bcf6fbc64",
-    "task": "task_73b7e2502801",
-    "dispatch": "ctx_c3ed19c2c33b",
-    "terminal": "term_0c21d476-6b8e-4273-a25b-59260b6645ee",
-    "launch": {
-      "sha256": "9efe91231384de8ad68fb90b89543eb5dde0401c8ebd2e81176b501419da6c11",
-      "turn_start_observed": true,
-      "prompt_request": "4ea0c3ce-133a-48bd-9874-63efab2d58b9"
-    },
-    "preflight": {
-      "runtime_id": "9cb50b9b-f8d9-466f-8fef-98360bc7a4fd",
-      "agent_sandbox_runtime_reachable": true,
-      "report_directory_writable": true,
-      "model_screen": "GPT-6-Luna high",
-      "startup": "Main-created exact terminal;process-local no-update and workspace-write/network settings;worker-start reused that terminal."
-    },
-    "worker_done_message": "msg_fab712bcdbca",
-    "worker_outcome": "succeeded",
-    "report_bytes": 13023,
-    "report_sha256": "87ec05b445878b19b0b878576f8f2b9d98589bb4923ebcac95d659dcada9724a",
-    "review_agent": "/root/review_q6_packed_dot_20261104",
-    "worker_process_closure": "Exact task/dispatch succeeded;external-terminal release took no process action;Main-owned terminal close confirms ptyKilled;delivery acknowledged.",
-    "review": {
-      "path": ".cache/research/2026-11-04/q6-packed-integer-dot-lowering.review.json",
-      "sha256": "49d7d1851c49d271a6902f666ab66461dad0e71ce4880cbe1c591c04ee4b559f",
-      "verdict": "retain_as_conditional_retrieval_reference",
-      "original_report_sha256": "faa694c66d2ae5c51b21a7572b21500db21628f7cb5f52b1b3d07f5a22b7be37",
-      "original_review_sha256": "e62dd74c73a0a7ffd3e9dd95208dd6d6537f981cd23b30c8da8d9e2e32240b42",
-      "corrections_verified": true
+    "retired_report": {
+      "path": ".cache/research/2026-11-04/q6-packed-integer-dot-lowering.md",
+      "bytes": 13023,
+      "sha256": "87ec05b445878b19b0b878576f8f2b9d98589bb4923ebcac95d659dcada9724a"
     },
     "review_digest": "Corrections are applied. The report remains a conditional retrieval reference, with no generated-code, speed, saturation or adoption evidence. Next work is not eligible until the active column-specialization comparison closes and a fresh decision justifies a committed codegen discriminator; only a distinct favorable lowering can justify a later repeated Q6 kernel comparison.",
-    "conditional_next_scope": {
+    "provenance_corrections": [
+      "No XeStrata material used. Do not copy Intel header implementation text;new project code follows repository MIT LICENSE.",
+      "The original failed profile does not establish critical-path attribution,physical traffic or saturation."
+    ],
+    "next_scope": {
       "schedulable_now": false,
-      "reason": "The named consumer is a separate decode-scoped Q6 choice after Main's active column-specialization comparison. Main serializes builds and GPU work; this collection has no generated-code or clean-speed evidence to justify a concurrent candidate.",
-      "prerequisites": [
-        "Close the active column-specialization comparison and preserve its original outcome.",
-        "Recheck whether a Q6-only integer-dot discriminator still addresses a measured production-path cost; the failed profile does not establish a critical-path fraction or hardware limit.",
-        "Before compiling, commit exact source, recipe, compiler/dependencies, environment and a bounded codegen comparison. Inspect emitted SPIR-V and IGC/B570 instructions; stop the expression change if scalar and dot_acc forms lower identically.",
-        "Only if generated-code evidence supports a distinct path, commit a Q6-only repeated matched full-kernel speed and numerical plan. Preserve all other packed_dot call sites and the existing SPMD distribution/reduction."
-      ]
+      "condition": "A fresh actual model/phase result identifies the retained Q6 fallback packed_dot expression as material;then decide a separately committed lowering/full-kernel comparison. The C4 result does not attribute a dot-expression gain."
     },
-    "retention": {
-      "consumer": "Next independently decode-scoped Q6 kernel choice after column-specialization comparison; retrieve only the signed-lane, installed-header and lowering sections needed for that decision.",
-      "review_point": "At that Q6 decision, keep the body only if a concrete implementation question uses it; otherwise transfer corrected arithmetic/lowering conclusions to the compact index/result and retire the report body.",
-      "report_budget_bytes": 18432,
-      "within_budget": true
+    "retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-policy-report-retirement-20261109.json",
+      "sha256": "a1a7c309da9cb7020c3762e2d48a5de60eb86f7ad8f7bc8682cb12b3c6ba6be2",
+      "deleted_files": 15,
+      "deleted_bytes": 110820,
+      "section_bytes_removed": 11541
     }
   },
   "verify_window_phase_policy_audit_20261104": {
@@ -23129,15 +23081,15 @@
     "report_budget_bytes": 12288,
     "worker_model": "gpt-6-luna",
     "worker_effort": "high",
-    "consumer": "Next independent decode-kernel architecture choice after the current same-binary Q6 model screen;no current XMX speed/quality claim.",
+    "consumer": "Default-off full target-head C4 owner,placement and native-route qualification;review after integration or rejection.",
     "stage": "reviewed_corrected_reference",
     "main_reads_body_on_arrival": false,
     "ownership_closed": true,
     "report_path": "docs/research/q6-small-columns-xmx.md",
     "report": {
       "path": "docs/research/q6-small-columns-xmx.md",
-      "bytes": 9754,
-      "sha256": "7e72289490163b7acf3572b5b54689405031b73dc853003ac50d1aa1d9770239"
+      "bytes": 6899,
+      "sha256": "e0b77904727680fb694508d39dc2289bf2965ff109850b8a185b6fb04acd3698"
     },
     "review": {
       "model": "gpt-6-luna",
@@ -23196,13 +23148,12 @@
         }
       },
       "operational_digest": [
-        "Compressed Q6 int8-DPAS at C4 is the strongest distinct next source lead;local dispatch,numerics and10GiB placement remain unqualified.",
-        "Retrieve packed-dot codegen only if Q6 cost is material after active comparison closure;stop if emitted code is unchanged. Widening semantics/offline SPIR-V are already covered.",
-        "Retrieve widening production-entry design only for a material conversion-cost question. Phase-shape intersections constrain routing without proving model gain or utilization.",
-        "Match the actual BF16 SGLang/vLLM contract;extra FP32 accuracy or blanket minimum-speedup thresholds are not adoption requirements."
+        "C4 component3d81310de measures6.55283x at2560x248320;640 is20.673%slower. No model gain/adoption.",
+        "Sourcef2a9fb447 implements an opt-in full-head decode-C4 owner,canonical consumers unchanged;CPU selector/cache controls pass. Native owner/device/model qualification pending.",
+        "Packed-dot/widening collection has no current measured-cost consumer;do not repeat known semantics/IR work. Preserve original pass/fail outcomes."
       ],
       "main_retrieval": "Short native digest only,then the compressed-Q6 source/dispatch and conditional-gates sections for the concrete C4 DPAS/scale/reorder feasibility question. Other collection bodies were not loaded.",
-      "next_consumer": "Main source-feasibility/placement decision for a separately planned decode-only C4 Q6 DPAS component;the closed failed model observer is hypothesis selection only. No dispatch,numerical,device or model qualification follows.",
+      "next_consumer": "Default-off full target-head C4 owner,placement and native-route qualification;review after integration or rejection.",
       "retention": "Commit this short retrieval decision;then retire the redundant review body and Task/input paperwork. Original four references remain only through their named Q6 decisions.",
       "retirement_state": "deleted_verified",
       "retired_report_identity": {
@@ -23216,6 +23167,29 @@
         "files": 3,
         "bytes": 31139,
         "root_absent": true
+      }
+    },
+    "original_report": {
+      "commit": "1fcba76f71dd7a27d378218fdd7d79e28f623131",
+      "path": "docs/research/q6-small-columns-xmx.md",
+      "bytes": 9754,
+      "sha256": "7e72289490163b7acf3572b5b54689405031b73dc853003ac50d1aa1d9770239"
+    },
+    "post_component_review": {
+      "model": "gpt-6-luna",
+      "effort": "max",
+      "review_sha256": "8f9c13457325825df32e1f8e242692b042e4dfe969f7bdbce89b32d3323016e3",
+      "review_bytes": 4703,
+      "review_policy_revision": "d1699922a7882a28087116fe353de0662abac954",
+      "main_read": "Short operational review and only concrete phase/lifetime sections;not the collection library.",
+      "disposition": "Keep focused XMX source/gates and phase map through owner integration;retire packed-dot/widening bodies and completed review transaction.",
+      "measurement_evidence": "3d81310dee165015081a7a5235ecb2dd614d7ee1:q6_dpas_component_v7",
+      "retirement": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-policy-report-retirement-20261109.json",
+        "sha256": "a1a7c309da9cb7020c3762e2d48a5de60eb86f7ad8f7bc8682cb12b3c6ba6be2",
+        "deleted_files": 15,
+        "deleted_bytes": 110820,
+        "section_bytes_removed": 11541
       }
     }
   },
@@ -25009,44 +24983,36 @@
   },
   "q6_widening_device_design_20261105": {
     "classification": "decision support",
-    "stage": "device_semantics_and_IR_closed_production_entry_deferred",
+    "stage": "closed_design_body_retired",
+    "original_index_commit": "1fcba76f71dd7a27d378218fdd7d79e28f623131",
     "source_revision": "a0270d619c80efd2308a13f1d47ac8743b39050a",
     "native_source_commit": "92832da86d9a63f996e6fcebbf4e919e2c8f746a",
-    "consumer": "Conditional actual Q6-entry numerical/timing comparison only if representative attribution shows material Q6 cost.",
-    "previous_scopes": [
-      "native_half_conversion_codegen_collection_20261101",
-      "q6_centering_whole_kernel_contract_20261105",
-      "q6_centering_model_route_audit_20261105"
-    ],
-    "schedulable_now": false,
-    "worker_model": "gpt-6-luna/high/Orca",
-    "review_model": "gpt-6-luna/max/native",
-    "source_pins": {
+    "original_outcome": "succeeded",
+    "operational_digest": "Standalone V2 exhaustive device semantics and offline SPIR-V comparison passed;no model integration or speed/final-ISA claim. Unique remaining design value:Q6KTraits load/apply seam,decode-only policy and byte-safe loads;keep generic/grouped/prompt converters unchanged.",
+    "retired_report": {
+      "path": ".cache/research/2026-11-05/q6-widening-device-study-design/report.md",
+      "bytes": 11086,
+      "sha256": "b733aa4e845cdf1d11c08437bd11ab9a200b128276b85e4a85eea25a44c5958d"
+    },
+    "retired_source_pins": {
       "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/q6-widening-device-study-design/inputs.json",
       "sha256": "e5cf272e32db78b16eab35d5330b51c70d2669d513a7aa34801b04b8619767fc",
       "files": 11
     },
-    "ownership_closed": true,
-    "retention": "Two technical files for the conditional production-entry consumer;completed review retired.",
-    "outcome": "succeeded",
-    "report": {
-      "path": "/home/yayoi/orca/workspaces/Strata/sycl/.cache/research/2026-11-05/q6-widening-device-study-design/report.md",
-      "bytes": 11086,
-      "sha256": "b733aa4e845cdf1d11c08437bd11ab9a200b128276b85e4a85eea25a44c5958d"
-    },
-    "source_pins_verified": 11,
-    "operational_digest": "Standalone V2 exhaustive device semantics and offline SPIR-V comparison passed;no model integration or speed/final-ISA claim. Unique remaining design value:Q6KTraits load/apply seam,decode-only policy and byte-safe loads;keep generic/grouped/prompt converters unchanged.",
-    "main_retrieval": "Retrieve only the Q6KTraits load/apply integration design when that concrete candidate is selected;stage1 device work is complete.",
+    "corrections": [
+      "Do not select a new CLZ seam before its target-device compile and exhaustive device semantic gate;original disassembly-publication failure remains failed.",
+      "The completed standalone V2 device semantics/offline-SPIR-V pass remains unchanged. The report review general host-only wording does not overwrite that evidence. Neither result qualifies model conversion cost or adoption."
+    ],
     "next_scope": {
       "schedulable_now": false,
-      "condition": "Material Q6 cost after representative attribution and observer-overhead qualification;Main owns implementation/testing."
+      "condition": "A pinned target-head/fallback call path uses the widening seam and has a measured unresolved conversion cost;do not repeat already closed standalone semantics/IR work."
     },
-    "technical_files_consumer": "Design report and input pins only;review after profile0/1 or retire if Q6 is immaterial.",
-    "transport_retired": true,
-    "artifact_retirement": {
-      "manifest_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-service-model-output-retirement-20261106.json",
-      "manifest_sha256": "254a21f8830953ad269493a440940cdba8ff39059ac97f13e295b4fbd68a3e19",
-      "technical_files_retained": 2
+    "retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-policy-report-retirement-20261109.json",
+      "sha256": "a1a7c309da9cb7020c3762e2d48a5de60eb86f7ad8f7bc8682cb12b3c6ba6be2",
+      "deleted_files": 15,
+      "deleted_bytes": 110820,
+      "section_bytes_removed": 11541
     }
   },
   "q6_widening_device_controller_audit_20261105": {
@@ -25328,7 +25294,7 @@
     },
     "report_root": ".cache/research/2026-11-06/q6-native-half-phase-selection-v1",
     "report_budget_bytes": 12288,
-    "report_consumer": "Main's imminent decode-only Q6 policy and model-admission work; the phase/caller map and exact selector intersection are needed to implement and audit routing.",
+    "report_consumer": "Only historical Verifier phase/caller/graph lifetime map for current packed-C4 owner review;no native-half/DPAS model qualification.",
     "ownership": {
       "run": "run_c8d9605f791e",
       "task": "task_0909c95199ef",
@@ -25345,8 +25311,8 @@
     },
     "report": {
       "path": ".cache/research/2026-11-06/q6-native-half-phase-selection-v1/report.md",
-      "bytes": 11536,
-      "sha256": "5a5fd83ebb9cdc8ab2fc9b8093cbc6072e420cfddfcc9718a766d31f10047f75"
+      "bytes": 2850,
+      "sha256": "e819877feb94083e1793d2801f31dc2396e9b64253475b067bbafaf488c5f0a1"
     },
     "review": {
       "verdict": "accept_with_recorded_ipc_limit",
@@ -25359,7 +25325,7 @@
         "Capture-time dispatch counts do not show replay frequency. Track the captured per-shape phase/T route and its actual replay/window counts; component entry wins do not establish model gain, GPU ISA, or physical saturation."
       ]
     },
-    "report_review_point": "After the policy smoke and matched model comparison close, move the essential route, result and limits into the existing compact result/index, then retire the full body if no open caller question still needs it.",
+    "report_review_point": "After fresh native packed-owner/Verifier route qualification;retire when maintained source/fixtures supersede this historical map.",
     "next_scope": {
       "schedulable_now": false,
       "question": "No independent collection scope is justified now; Main has bounded Q6 admission work, with the CPU IQ3_S640-row direct-entry follow-up already identified.",
@@ -25395,6 +25361,14 @@
       "candidate_model_entry_key": "q6_native_half_model_entry_arm1_v2",
       "generation_controller_source": "24b271b6070916f436182207aa3bfcdf21036a6f",
       "generation_result_key": "q6_native_half_generation_speed_v1"
+    },
+    "original_report_sha256": "5a5fd83ebb9cdc8ab2fc9b8093cbc6072e420cfddfcc9718a766d31f10047f75",
+    "section_retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-policy-report-retirement-20261109.json",
+      "sha256": "a1a7c309da9cb7020c3762e2d48a5de60eb86f7ad8f7bc8682cb12b3c6ba6be2",
+      "deleted_files": 15,
+      "deleted_bytes": 110820,
+      "section_bytes_removed": 11541
     }
   },
   "q6_replay_component_bridge_20261106": {
