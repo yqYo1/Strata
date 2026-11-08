@@ -110,12 +110,16 @@ def prepare():
             scope='All math/kernels/prefill inputs equal the previous f6338192/384bank admission;'
                 'policy change is independently host/CLI/five-fixture/4Kmodel checked. Not a new long-model result.'),
         native_validation_probe=probe, runtime_reuse=reuse,
-        runtime_manifest=reference['runtime_manifest'], runtime_files=reference['runtime_files'],
+        runtime_manifest=reference['runtime_manifest'],
+        runtime_files=json.loads(Path(reference['runtime_manifest']['path']).read_text()),
         models=reference['model_assets'], models_sha256=small.model.fingerprint(reference['model_assets']),
         recipe=dict(path=str(recipe), sha256=digest(recipe), scope='configuration/environment template only'),
         python_contract=reference['python_contract'], python_selected=reference['python_selected'], template=reference['template'],
         boot=reference['boot'], driver=reference['driver'], plans=[], host=[], processes=[],
         passed=False, complete=False, ownership_closed=True,
+        previous_prepare_failure=dict(source_commit='5f4c343860d5caf9d758e9a9f516d0f184116a54',
+            error="KeyError('runtime_files')", plan_written=False, native_executed=False,
+            reason='Reference stores the qualified runtime inventory in its pinned manifest,not an inline runtime_files key.'),
         budgets=dict(wall=1500, cpu=18000, rss_cap=104 << 30, text_cap=32 << 20, file_cap=64 << 20, total_cap=128 << 20),
         comparison=dict(question='Can checked prompt borrowing fund1536decode expert slots while admitting the8192/384bank long route?',
             order='Fresh owned256 first,then checked-borrowed1536;2exact32769-token thinking requests each. Original official warmups unchanged.'
