@@ -70,9 +70,13 @@ in [SYCL_NATIVE16_PREFILL.md](SYCL_NATIVE16_PREFILL.md) and the single
 and its old speed figures remain in [their original document revision](https://github.com/yqYo1/Strata/blob/0820688a4ff14947b659d96bff112ed293559ca8/docs/UPSTREAM_INTEGRATION.md);
 they do not describe the current selected engines.
 
-Default-branch promotion remains pending. PR 180 is mergeable but blocked by
-main ruleset `24638744`, whose pull-request rule permits only squash merges.
-Repository-wide permission for merge commits does not override that rule.
-The last verified default ref is `05069aeedea43f778b97dce30c729739cb3bce5c`;
-keep original measured commits reachable on `feature/sycl` without bypassing the
-rule or claiming default integration.
+Default-branch promotion remains pending through PR 180. Main ruleset `24638744`
+permits only squash PR merges. All92source/evidence commits referenced by the
+208-row performance CSV are verified ancestors of the pushed, permanent
+`feature/sycl`, and automatic head deletion is disabled. Under the updated
+project workflow, the default may receive the PR content snapshot while the
+primary retains those original identities; merge the updated default back into
+the primary normally and verify reachability again. This changes no protection
+or measured source history. The last verified default before that operation is
+`05069aeedea43f778b97dce30c729739cb3bce5c`; do not claim integration until its
+remote ref and clean ghq mirror are verified.

@@ -14,8 +14,13 @@
 主作業は `feature/sycl` とし、必要な実装用の子ブランチだけをその現在の commit から作る。
 完了した成果は実ファイルと検証を確認して `feature/sycl` に取り込み、commit/pushする。
 区切りごとに `feature/sycl` から fork のデフォルトへの PR を merge し、ghq root は pull
-だけで同期する。履歴を保持する merge を使い、検証レポートを元 commit 指定で復元できる
-状態にする。統合後の不要な remote/local 子ブランチと worktree は同じ区切りで削除する。
+だけで同期する。子の統合は履歴を保持する merge を使い、検証レポートを元 commit 指定で
+復元できる状態にする。保護された default が squash 限定の場合は、測定元・証跡の全
+commit が push 済みの永続 `feature/sycl` の祖先であり、自動ブランチ削除も無効であることを
+確認してから、default に PR の内容を squash で反映してよい。測定履歴を保持した
+`feature/sycl` 自体は残し、更新した default を通常の merge で戻し、元 ID の到達性を再確認
+して次の PR も主ブランチから作る。測定済みの子や主の履歴の squash/rebase、保護の迂回は
+行わない。統合後の不要な remote/local 子ブランチと worktree は同じ区切りで削除する。
 必要な fixture や toolchain は named consumer の保持領域へ移してから worktree を退役する。
 未完了の子ブランチは残作業と見直し時点を記録し、別の子ブランチから枝を増やさない。
 保存用の ancestry-only merge は機能統合ではなく、推論部品の採用判断も別に記録する。

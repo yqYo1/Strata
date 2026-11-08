@@ -3264,11 +3264,13 @@ Fresh bounded model/frontend checks now pass for both fixed-width routes;
 their sustained comparison and broader model qualification remain pending.
 Required tracking/recovery/alias/API/CLI imports and hardware-tuned unmodified
 upstream measurements remain incomplete. Source and evidence are published on
-`feature/sycl`. PR 180 is mergeable but blocked: main ruleset `24638744` permits
-only squash pull-request merges, although the repository-wide settings allow
-merge commits too. Preserve the original measured commit identities without
-squashing, rebasing or bypassing that rule. The last verified default remains
-`05069aeedea43f778b97dce30c729739cb3bce5c`; default integration is pending.
+`feature/sycl`. Default integration is pending through PR180 under main's
+squash-only rule24638744. All92CSV source/evidence commits are verified ancestors
+of the pushed permanent primary and automatic head deletion is disabled. The
+project workflow permits a default content snapshot while preserving all those
+original identities on `feature/sycl`; merge the updated default back normally
+and verify it again. No protection or measured history is rewritten. The last
+verified default before that operation is`05069aeedea43f778b97dce30c729739cb3bce5c`.
 
 ## Evidence pointers
 
