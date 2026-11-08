@@ -8650,6 +8650,251 @@
               "cleanup": []
             }
           ]
+        },
+        {
+          "label": "1-borrowed1536",
+          "passed": true,
+          "complete": true,
+          "model_executed": true,
+          "pre_main_validation": {
+            "pid": 3724909,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "76cb9d37f49f3aeb8f12fb4dcf4602b0420bcc634155cd0549cee51b63355bae",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          },
+          "native_identity": {
+            "pid": 3724909,
+            "start_ticks": 248167033,
+            "sid": 3724835
+          },
+          "startup_admission": {
+            "chunk": 8192,
+            "expert_slots": 1536,
+            "free_MiB": 1300,
+            "borrowed": true
+          },
+          "samples": [
+            {
+              "ok": true,
+              "err": null,
+              "ttft_s": 58.295,
+              "total_s": 350.712,
+              "prompt_tokens": 33213,
+              "reused_tokens": 0,
+              "read_tokens": 33213,
+              "generated_tokens": 3465,
+              "prompt_tps": 571.5,
+              "prompt_tps_source": "engine",
+              "decode_tps": 11.8,
+              "decode_tps_source": "engine",
+              "prompt_ms": 58113.2,
+              "decode_ms": 292572.4,
+              "drafts_offered": 3120,
+              "drafts_accepted": 2426,
+              "finish_reason": "stop",
+              "request_sha256": "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976",
+              "stream_complete": true,
+              "truncated": false,
+              "generated_tokens_source": "usage",
+              "client_interval": {
+                "request_begin_monotonic_ns": 2481814907922078,
+                "first_output_monotonic_ns": 2481873202659919,
+                "request_end_monotonic_ns": 2482165620221602
+              },
+              "eligible": true,
+              "agreement_eligible": true,
+              "speed_eligible": true,
+              "speed_ineligible_reasons": [],
+              "ineligible_reasons": [],
+              "acceptance_rate": 0.7775641025641026,
+              "usage_generated_tokens": 3465,
+              "completion_includes_thinking": true,
+              "run": 0,
+              "order": 0,
+              "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+              "reasoning_sha256": "4634b1c07d59549ece23b82645d842041ebeb11192c6a4ae0d7ac62faed120e6",
+              "output_chars": 5578,
+              "reasoning_chars": 4499,
+              "reasoning_tokens": null,
+              "workload": "regular-code",
+              "controller_eligible": true
+            },
+            {
+              "ok": true,
+              "err": null,
+              "ttft_s": 49.239,
+              "total_s": 1207.456,
+              "prompt_tokens": 33283,
+              "reused_tokens": 0,
+              "read_tokens": 33283,
+              "generated_tokens": 8430,
+              "prompt_tps": 678.4,
+              "prompt_tps_source": "engine",
+              "decode_tps": 7.3,
+              "decode_tps_source": "engine",
+              "prompt_ms": 49058.4,
+              "decode_ms": 1158370.5,
+              "drafts_offered": 12933,
+              "drafts_accepted": 4119,
+              "finish_reason": "stop",
+              "request_sha256": "7f7919cf23e0281b7b677c52e82cbbce8081a71017adad91669347b61833608d",
+              "stream_complete": true,
+              "truncated": false,
+              "generated_tokens_source": "usage",
+              "client_interval": {
+                "request_begin_monotonic_ns": 2482170604439731,
+                "first_output_monotonic_ns": 2482219843251108,
+                "request_end_monotonic_ns": 2483378061033300
+              },
+              "eligible": true,
+              "agreement_eligible": true,
+              "speed_eligible": true,
+              "speed_ineligible_reasons": [],
+              "ineligible_reasons": [],
+              "acceptance_rate": 0.3184875898863373,
+              "usage_generated_tokens": 8430,
+              "completion_includes_thinking": true,
+              "run": 0,
+              "order": 1,
+              "output_sha256": "52e0ed893a3abc796a9ceae453c0c32dfbbacb3d73660597802cb4349c8058ae",
+              "reasoning_sha256": "9ecf8ef55ad52f720a7e6c1a04ad7e8cc9ed71b2290786bc7142e0b411a7a638",
+              "output_chars": 6980,
+              "reasoning_chars": 15002,
+              "reasoning_tokens": null,
+              "workload": "varied-prose",
+              "controller_eligible": true
+            }
+          ],
+          "routes": [
+            {
+              "rows": 33212,
+              "chunk": 8192,
+              "residual_gpu_bytes": 680181760,
+              "prefill_slots": 384,
+              "window_mode": 10,
+              "split_active": false,
+              "target_detached_bytes": 521472000,
+              "reader": "absent-dflash2",
+              "MTP_callback_cells": 0,
+              "DFlash2_tail_rows": 2046,
+              "native_prompt_ms": 58113.0,
+              "native_decode_ms": 292572.0,
+              "physical_resource_saturation_qualified": false,
+              "loan": {
+                "pairs": 1,
+                "generations": [
+                  5
+                ],
+                "lent_rows": [
+                  1092
+                ],
+                "checked_mask_ready": true
+              },
+              "decode_work": {
+                "target_windows": 1041,
+                "target_rows": 4161,
+                "emitted_tokens": 3465,
+                "target_rows_per_emitted": 1.2008658008658009,
+                "cpu_unique_jobs": 1339900,
+                "cpu_entries": 1731403,
+                "cpu_unique_jobs_per_emitted": 386.6955266955267,
+                "minimum_NT1_jobs": 948397,
+                "minimum_NT1_job_fraction": 0.7078117769982835,
+                "expert_copy_requested_bytes": 0,
+                "mathematical_dot_equivalent_ops": 17020384051200,
+                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+              }
+            },
+            {
+              "rows": 33282,
+              "chunk": 8192,
+              "residual_gpu_bytes": 681615360,
+              "prefill_slots": 384,
+              "window_mode": 10,
+              "split_active": false,
+              "target_detached_bytes": 521472000,
+              "reader": "absent-dflash2",
+              "MTP_callback_cells": 0,
+              "DFlash2_tail_rows": 2046,
+              "native_prompt_ms": 49058.0,
+              "native_decode_ms": 1158371.0,
+              "physical_resource_saturation_qualified": false,
+              "loan": {
+                "pairs": 1,
+                "generations": [
+                  6
+                ],
+                "lent_rows": [
+                  1092
+                ],
+                "checked_mask_ready": true
+              },
+              "decode_work": {
+                "target_windows": 4312,
+                "target_rows": 17245,
+                "emitted_tokens": 8430,
+                "target_rows_per_emitted": 2.045670225385528,
+                "cpu_unique_jobs": 4751477,
+                "cpu_entries": 7668781,
+                "cpu_unique_jobs_per_emitted": 563.6390272835113,
+                "minimum_NT1_jobs": 1834173,
+                "minimum_NT1_job_fraction": 0.3860216517937475,
+                "expert_copy_requested_bytes": 0,
+                "mathematical_dot_equivalent_ops": 75387184742400,
+                "limits": "Spec4,48 layers,top10,pcie0,no peer. NT1 bound is max(0,2*jobs-entries). Dot equivalents exclude decode/index/quant/nonlinear work and are not issued FP/integer instructions. Blob visits and expert-copy counters are not physical DRAM/PCIe bytes; no saturation or critical-path qualification."
+              }
+            }
+          ],
+          "warmups": {
+            "successful_warmups": 4,
+            "successful_long_requests": 2,
+            "phase_order": [
+              "warm-up/chat",
+              "calibration",
+              "calibration",
+              "warm-up/prompt",
+              "long-generation/regular-code",
+              "long-generation/varied-prose"
+            ],
+            "request_sha256": [
+              "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+              "33adadb1aa40b794eab251f4c7a4bd05e151a65233d5ca16c7f1215a88684dae",
+              "e3181e3501ce75cb9621bae63b9ff839aa40427ac2b80baf71e4dc5f5b8018f8",
+              "84408590b4ce4ee906461b2d38983047aff9a366c3ee73e0150f052d426d654a",
+              "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976",
+              "7f7919cf23e0281b7b677c52e82cbbce8081a71017adad91669347b61833608d"
+            ]
+          },
+          "speed_adoption_qualified": false,
+          "native_exit_code": 0,
+          "ownership_closed": true,
+          "fresh_faults": [],
+          "commands": [
+            {
+              "label": "bench",
+              "exit_code": 0,
+              "error": null,
+              "ownership_closed": true,
+              "errors": [],
+              "cleanup": []
+            }
+          ]
         }
       ],
       "passed": false,
