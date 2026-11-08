@@ -97,6 +97,58 @@ def preload_qualification():
         retained_reference_until_exit=True,runtime_teardown_qualified=False)
 
 
+def _probe_fingerprint(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
+
+
+def current_runtime_probe(reference):
+    """Reuse closed current-runtime proofs without modifying the old canary pins."""
+    import build_engine as source
+    require = guards.require
+    RESULT = P / "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json"
+    REFERENCE_KEY = "decode_iq3_audit_speed_v2"
+    public = committed(RESULT, (REFERENCE_KEY,))
+    payload = {k: v for k, v in reference.items() if k not in ['sources', 'model_assets']}
+    payload['source_inputs'] = dict(files=len(reference['sources']), aggregate_sha256=_probe_fingerprint(reference['sources']))
+    require(_probe_fingerprint(payload) == _probe_fingerprint(public) and reference['stage'] == 'closed' and reference['passed'] and
+            reference['complete'] and reference['ownership_closed'] and not reference['active'], 'later reference not committed/closed')
+    recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in source.blobs(P, reference['source_commit'], reference['sources'])}
+    require(recovered == reference['sources'], 'later validation caller source unrecoverable')
+    probe = reference['native_validation_probe']
+    component = committed(INDEX, ('UR_silent_validation_native_child_scope', 'preload_component'))
+    require(component['passed'] and component['complete'] and component['ownership_closed'] and
+            not component['fresh_faults'] and component['provider_mismatch_stopped_before_body'] and
+            probe['library'] == component['library'], 'probe is not the qualified native library')
+    ref = component['original_plan']; raw = source.git(P, 'show', ref['commit'] + ':' + ref['path'])
+    require(hashlib.sha256(raw).hexdigest() == ref['sha256'], 'original probe recipe changed')
+    original = json.loads(raw)['UR_silent_validation_native_child_scope']['canary_plan']
+    require(original['source_commit'] == component['source_commit'] and len(original['build_commands']) == 2,
+            'original probe source/recipe identity differs')
+    project = {str(Path(p).relative_to(P)): h for p, h in original['inputs'].items() if Path(p).is_relative_to(P)}
+    require({n: hashlib.sha256(raw).hexdigest() for n, raw in source.blobs(P, component['source_commit'], project)} == project,
+            'original probe project inputs unrecoverable')
+    for p, h in original['inputs'].items():
+        # The original controllers may evolve. The C implementation and every
+        # original external compiler/header input must still match its recipe.
+        if not Path(p).is_relative_to(P) or Path(p).suffix == '.c':
+            require(digest(p) == h, 'original probe build input changed: ' + p)
+    for artifact in probe.values(): require(digest(artifact['path']) == artifact['sha256'], 'probe/loader ELF changed')
+    require(len(reference['processes']) == 6, 'six later independent processes required')
+    for case in reference['processes']:
+        proof = case['validation']
+        require(case['passed'] and case['complete'] and case['ownership_closed'] and case['native_exit_code'] == 0 and
+                case['boot_unchanged'] and not case['fresh_faults'] and proof['pid'] == case['native_identity']['pid'] and
+                Path(proof['loader']).resolve() == Path(probe['loader']['path']).resolve() and
+                proof['threads_before'] == 1 and proof['preinit'] == 37 and proof['first_init'] and
+                proof['config_enabled'] and proof['dispatch_result'] == 46 and proof['output_untouched'] and
+                proof['retained_reference_until_exit'] and not proof['runtime_teardown_qualified'], 'later pre-main proof incomplete')
+    return probe, dict(original_source_commit=component['source_commit'], original_plan=ref,
+        build_commands_sha256=_probe_fingerprint(original['build_commands']), original_input_files=len(original['inputs']),
+        original_inputs_sha256=_probe_fingerprint(original['inputs']), later_source_commit=reference['source_commit'],
+        later_committed_key=REFERENCE_KEY, later_processes=6, later_pre_main_proofs_checked=True,
+        legacy_refusal_preserved=True, ordinary_runtime_teardown_qualified=False)
+
+
 def finish(record,owner,cursor,boot):
     record.update(ownership_closed=owner.active is None and all(supervision.closed(c) for c in owner.commands),
         fresh_faults=None,boot_unchanged=False)

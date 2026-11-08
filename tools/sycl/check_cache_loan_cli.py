@@ -40,6 +40,11 @@ ENV_KEYS = ('PATH', 'HOME', 'LANG', 'LC_ALL', 'PYTHONDONTWRITEBYTECODE',
 require, digest, write = guards.require, source.digest, build.write
 
 
+def current_probe():
+    reference = json.loads((B / 'decode-iq3-audit-speed-v2/record.json').read_text())
+    return validation.current_runtime_probe(reference)
+
+
 def native():
     row = json.loads((NATIVE / 'record.json').read_text())
     proof = json.loads(source.git(P, 'show', EVIDENCE + ':' + str(
@@ -90,7 +95,8 @@ def verify(row):
         n['project']['revision'] == row['native_build']['source_commit'], 'native identity changed')
     for path, sha in row['audit_inputs'].items():
         require(digest(path) == sha, 'original compilation metadata changed: ' + path)
-    require(validation.preload_qualification() == row['native_validation_probe'], 'preload qualification changed')
+    probe, reuse = current_probe()
+    require(probe == row['native_validation_probe'] and reuse == row['runtime_reuse'], 'current-runtime proof changed')
     require(digest(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
         json.loads(Path(row['runtime_manifest']['path']).read_text()) == row['runtime_files'],
         'runtime manifest changed')
@@ -133,6 +139,7 @@ def cases(binary):
 def prepare():
     require(not ROOT.exists(), 'fresh finite CLI plan only; no automatic retry')
     n, proof = native()
+    probe, reuse = current_probe()
     reference = B / 'decode-iq3-audit-speed-v2'
     old = json.loads((reference / 'record.json').read_text())
     env = {k: old['environment_template'][k] for k in ENV_KEYS}
@@ -149,7 +156,11 @@ def prepare():
     row = dict(stage='prepared', passed=False, commands=[], ownership_closed=True,
         controller=source.pin(P, INPUTS), native_build=dict(evidence_commit=EVIDENCE,
             key='current_sync.' + BUILD_KEY, record=proof['record'], source_commit=n['project']['revision'],
-            binaries=n['binaries']), native_validation_probe=validation.preload_qualification(),
+            binaries=n['binaries']), native_validation_probe=probe, runtime_reuse=reuse,
+        previous_prepare_failure=dict(source_commit='2cc1b831cec44625d73af5ee3e776cf2d2e42d20',
+            stage='prepare_failed_before_plan_or_native_launch',
+            error='preload runtime changed: /usr/lib/x86_64-linux-gnu/libz.so.1.3',
+            reason='Controller selected the legacy preload predicate. Current84ELF manifest is unchanged;use separately closed current-runtime evidence,not refreshed canary hashes.'),
         environment=env, runtime_manifest=dict(path=str(reference / 'runtime-inputs.json'),
             sha256=digest(reference / 'runtime-inputs.json')),
         runtime_files=json.loads((reference / 'runtime-inputs.json').read_text()),
