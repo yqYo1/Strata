@@ -3033,7 +3033,7 @@ The current optional native candidate is compiled at
 The original arithmetic/ring and short target-model evidence below belongs to
 `f50df1f3c81272b14d994e4d8fcad19703ad0b7e`(former engine SHA`d0f42948…`).
 The new model plan checks the shared native inputs and five unchanged component
-fixtures against that original source;new head ownership still needs its own gate.
+fixtures against that original source;new head ownership is checked separately below.
 Both serve and standalone now allocate at least7DFlash2 result slots,and the
 span API refuses undersized outputs before submission. MTP sizes/math remain
 unchanged. The rebuilt kernel/ring fixtures and retained mask fixture pass
@@ -3081,8 +3081,8 @@ f633engine,not a rebuilt or differently labelled executable. Three processes
 exercise DFlash2 release0,DFlash2 release1 and MTP release1. Each receives
 513/82/513thinking-enabled input tokens and32output tokens per request;positive
 draft acceptance,actual long/short routing,head transition counts,restored decode
-state,quiet validation and normal owner closure are required. All nine requests pass,with positive accepted drafts and normal exit0 for all
-three model children. The three pre-GPU refusals also pass. Actual route/head
+state,quiet validation and normal owner closure are required. All nine requests
+pass,with positive accepted drafts and normal exit0 for all three model children. The three pre-GPU refusals also pass. Actual route/head
 transitions,pre-main validation,38file-backed ELF mappings per child and all15
 model-asset hashes before/after are checked;all owners close and no fresh GPU
 fault occurs. DFlash2 frees521472000target-head bytes per long transition;MTP
@@ -3091,7 +3091,9 @@ retained in the gate;these are not physical PCIe-byte or saturation measurements
 This is a small ownership diagnostic,not the tuned8192performance route or a
 >=32Kcomparison.
 
-Measure released head bytes,free memory and restore cost before claiming a gain.
+Measure total detach/restore cost and matched end-to-end benefit before claiming
+a speed gain;the released bytes and phase/free-memory readings alone do not
+establish one.
 Then collect pinned bench.sh long/agent and thinking long-generation evidence.
 Physical262144/RESTORE,task quality,ordinary-provider teardown and default adoption
 remain open. See`dflash2_native_port`,`dflash2_model_check`,
