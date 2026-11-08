@@ -222856,7 +222856,7 @@
     ]
   },
   "q6_head_model_build_v1": {
-    "stage": "configured",
+    "stage": "built",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -222987,8 +222987,8 @@
       "file_cap": 536870912,
       "total_cap": 4294967296
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "GPU_executed": false,
     "model_qualified": false,
@@ -223150,6 +223150,72 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v1/build/CMakeFiles/rules.ninja": "1f1edb611c8ff9e91bb7644a821d150e9bc1d8228c72e1bfe0f231bad2c11c7b"
     },
     "active": false,
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v1/actual-inputs.json",
+      "sha256": "de21a7847ab6fe86f3665dae673d0176c085cd9986b8ee3271c7047e2bca714f",
+      "compiler_files": 1461,
+      "generated_files": 1,
+      "external_link_files": 29,
+      "uncovered": 0,
+      "translation_units": 127,
+      "source_commit": "4c2c824e71d275c4f8371de46f2a89b1db308e6f"
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v1/build/strata",
+        "sha256": "0b6633cde0b2b3d7a239fa2317350812f202b7b9805c4ec2b55ac7ef3617f74a",
+        "bytes": 26296360,
+        "origin_source_commit": "4c2c824e71d275c4f8371de46f2a89b1db308e6f"
+      },
+      "sycl_q6_head_owner_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v1/build/sycl_q6_head_owner_test",
+        "sha256": "d59bfea1bbfb10d3a3c1258f6a49b17fc52e7b3b03a2a99ba14d13904aaeba7d",
+        "bytes": 11660896,
+        "origin_source_commit": "4c2c824e71d275c4f8371de46f2a89b1db308e6f"
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v1/build/sycl_submission_test",
+        "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
+        "bytes": 351832,
+        "origin_source_commit": "4c2c824e71d275c4f8371de46f2a89b1db308e6f"
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v1/build/sycl_verifier_retirement_test",
+        "sha256": "38c170a13efb008e76f1aaed0bd351c1ac9a89f1f8cea2b0c0f1551c0201b183",
+        "bytes": 19669136,
+        "origin_source_commit": "4c2c824e71d275c4f8371de46f2a89b1db308e6f"
+      }
+    },
+    "codegen": {
+      "strata": {
+        "image_symbol": ".sycl_offloading.49.data",
+        "image_offset": 10704464,
+        "image_bytes": 16520,
+        "image_sha256": "e9f6543e839747035fab433ec3cc6f773ddd69cb9eab36f89b6493b54cb46d8d",
+        "entrypoint": "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E",
+        "reachable_functions": 17,
+        "dpas_static_calls": 2,
+        "dpas_callees": [
+          "llvm.genx.dpas2.v64i32.v64i32.v128i32.v32i32"
+        ],
+        "device_images": 105,
+        "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
+      },
+      "sycl_q6_head_owner_test": {
+        "image_symbol": ".sycl_offloading.1.data",
+        "image_offset": 1041184,
+        "image_bytes": 16520,
+        "image_sha256": "e9f6543e839747035fab433ec3cc6f773ddd69cb9eab36f89b6493b54cb46d8d",
+        "entrypoint": "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E",
+        "reachable_functions": 17,
+        "dpas_static_calls": 2,
+        "dpas_callees": [
+          "llvm.genx.dpas2.v64i32.v64i32.v128i32.v32i32"
+        ],
+        "device_images": 14,
+        "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
+      }
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "4c2c824e71d275c4f8371de46f2a89b1db308e6f",
@@ -223187,6 +223253,20 @@
       },
       {
         "label": "planned-commands",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "dependencies",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
