@@ -1778,7 +1778,10 @@ ELF`53b7cbca…`,716actual compiler inputs,24external link inputs,zero generated
 uncovered inputs and three normal0closed build commands. The small80-case graph
 check now passes changed metadata,bit copies and guards,with normal0,quiet
 before-main validation,closed ownership and no fresh fault. Its trace includes
-actual command-buffer kernel capture/replay. Full checks/timing remain pending.
+actual command-buffer kernel capture/replay. The full1120-case graph matrix
+also passes both placements,changed metadata,odd widths/alignment and guards,
+with the same quiet validation,normal0,closed ownership and no fresh fault.
+Timing remains pending.
 The direct-entry screen includes entry/queue submission on every call;the
 model captures these entries and replays completed graph segments. All five
 new arms capture one ordinary kernel node per fixed source bank and replay
