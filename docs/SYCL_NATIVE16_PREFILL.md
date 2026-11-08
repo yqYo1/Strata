@@ -1773,7 +1773,9 @@ The next bounded question is the same copy contract through the production
 compatibility graph's capture/replay path. That fixture/controller is now
 prepared under`mapped_row_copy_graph_v1`,source`85f33092f`,plan`18eadae2b`.
 All eight CPU input/dispatch reader controls pass without skips,with normal0,
-closed ownership and no GPU/model execution. No native build/check has run.
+closed ownership and no GPU/model execution. Its fixture build now also passes:
+ELF`53b7cbca…`,716actual compiler inputs,24external link inputs,zero generated/
+uncovered inputs and three normal0closed build commands. No device check has run.
 The direct-entry screen includes entry/queue submission on every call;the
 model captures these entries and replays completed graph segments. All five
 new arms capture one ordinary kernel node per fixed source bank and replay
