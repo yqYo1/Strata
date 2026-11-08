@@ -206063,72 +206063,7 @@
       "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
     },
     "native_build_source": "5ecb4435f8ac3bc5067554f368d0fa7424ec193f",
-    "sanitizer_link_inputs": {
-      "files": {
-        "/usr/lib/x86_64-linux-gnu/librt.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
-        "/usr/lib/x86_64-linux-gnu/libresolv.so.2": "1d730ea434da5a5595bc6a961d7a9ace83e03703205df9644044b3dca79c362f"
-      },
-      "compiler_queries": [
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-print-file-name=librt.a"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/librt.a",
-          "resolved": "/usr/lib/x86_64-linux-gnu/librt.a"
-        },
-        {
-          "argv": [
-            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-            "-print-file-name=libresolv.so"
-          ],
-          "reported": "/lib/x86_64-linux-gnu/libresolv.so",
-          "resolved": "/usr/lib/x86_64-linux-gnu/libresolv.so.2"
-        }
-      ],
-      "packages": [
-        "libc6:amd64 2.39-0ubuntu8.9",
-        "libc6-dev:amd64 2.39-0ubuntu8.9"
-      ]
-    },
-    "environment_overrides": {
-      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/tmp",
-      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/cache",
-      "ASAN_OPTIONS": "detect_leaks=1:abort_on_error=1",
-      "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
-    },
     "environment_sha256": "b171f97c79be2ea0a8aad0bd9b1589520bd82811972303309323cd1220983bbc",
-    "commands": [
-      [
-        "compile",
-        [
-          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
-          "-std=c++17",
-          "-O1",
-          "-g0",
-          "-fno-omit-frame-pointer",
-          "-fsanitize=address,undefined",
-          "-fno-fast-math",
-          "-ffp-contract=off",
-          "-I/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease/include",
-          "-MD",
-          "-MF",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/policy.d",
-          "-save-temps=obj",
-          "-v",
-          "-Wl,-t",
-          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/tune-dflash2-checked-lease/tests/sycl/prefill_head_scope.cpp",
-          "-o",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope"
-        ]
-      ],
-      [
-        "policy",
-        [
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope"
-        ]
-      ]
-    ],
     "budgets": {
       "wall": 90,
       "cpu": 180,
@@ -206156,9 +206091,9 @@
       "aggregate_sha256": "e18d3c44f1098200721911b3eadb1e75b606aad82da43a56f4f4fac39ea6cd17"
     },
     "binary": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope",
       "sha256": "5b68cb5706c5ec403ad394c2c502f2c7fcb924eda178f2113f5e2dac9a5a3957",
-      "bytes": 1862752
+      "bytes": 1862752,
+      "retired": true
     },
     "result": {
       "kind": "prefill_head_scope",
@@ -206169,10 +206104,15 @@
     "source_inputs": {
       "files": 268,
       "aggregate_sha256": "3c384f973e00d5a9c1bb0dee848f83846c777c53956660b33a3d1008e12dfc25"
+    },
+    "original_full_result_commit": "3c7ccce8f20c6f05fcb37be87660b666d2320773",
+    "artifact_retirement": {
+      "state": "deleted_verified",
+      "key": "dflash2_cache_loan_host_retirement_v1"
     }
   },
   "dflash2_cache_loan_host_retirement_v1": {
-    "state": "planned_before_delete",
+    "state": "deleted_verified",
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1",
     "reason": "Closed normal host-only fixture;no future executable/trace consumer. Native build admission consumes committed38/854result and3native inputs,not this binary or raw compiler output.",
     "original_source_commit": "d6f7a8052846ff29c8d90fd2eb4beaa59b6f66f6",
@@ -206183,63 +206123,9 @@
     },
     "files": 11,
     "bytes": 3837615,
-    "delete": [
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/execution.json",
-        "bytes": 8009,
-        "sha256": "ebcffe09a50e94d17d48611ba25277d0e54e01e858c8fe91111324ce9da37bba"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/owned/compile.stderr",
-        "bytes": 10373,
-        "sha256": "5a10a401f2248a77d8e8d2c447c453842c13f439c94e58f8f298a55cd5440e89"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/owned/compile.stdout",
-        "bytes": 2103,
-        "sha256": "9816f74b694f648829ba0a388d4532601e5b6a1f10d7036751f74c72603c6326"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/owned/policy.stderr",
-        "bytes": 0,
-        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/owned/policy.stdout",
-        "bytes": 70,
-        "sha256": "8328d2384f1c43032fb1005c1bf70c83469ae95d6029b999beb9e56d11ae31b8"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/policy.d",
-        "bytes": 14801,
-        "sha256": "9ba3ec149881c634a2bcf3c0e643bf659a85ded76e76caba0b09e2fa87806f69"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope",
-        "bytes": 1862752,
-        "sha256": "5b68cb5706c5ec403ad394c2c502f2c7fcb924eda178f2113f5e2dac9a5a3957"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope.ii",
-        "bytes": 1074803,
-        "sha256": "acfafe3dfac5275432eddbe55816f6153c954a0c7ea645f0ae7ea643f47e6ec8"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope.o",
-        "bytes": 171792,
-        "sha256": "2b7ce23d97df7190c2e1d6557633a87c8c7fe23aac7c8c90c72b2954bc9f8c4d"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/prefill_head_scope.s",
-        "bytes": 649030,
-        "sha256": "1611e3b2fa4ad24d51d88c3d5ea2156f499f8745c8a24831c37dd94b8d412ab8"
-      },
-      {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-dflash2-cache-loan-host-v1/record.json",
-        "bytes": 43882,
-        "sha256": "2038367a191ff1d76880fab151973a9eaf9ba845f97e82f82387ae622369bd4d"
-      }
-    ],
-    "preserve": "All applicable source/recipe/environment/sanitizer/actual214compiler+28linker closure and38/854result remain recoverable from original reachable commits. Preserve engine90f,all5same-buildfixtures,f633/552b/e1b,and legacy provenance holds. Original host PASS remains PASS."
+    "preserve": "All applicable source/recipe/environment/sanitizer/actual214compiler+28linker closure and38/854result remain recoverable from original reachable commits. Preserve engine90f,all5same-buildfixtures,f633/552b/e1b,and legacy provenance holds. Original host PASS remains PASS.",
+    "manifest_commit": "4015651d4",
+    "manifest_sha256": "c173a732386a7434cb3c43c5e148d649fba48d20accc5fcedc570cc42d5d56bc",
+    "original_result_unchanged": true
   }
 }
