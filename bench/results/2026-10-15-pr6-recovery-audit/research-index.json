@@ -26583,11 +26583,11 @@
   },
   "orca_report_isolation_preflight_20261108": {
     "classification": "decision_support",
-    "state": "failed_native_review_complete_product_write_denial_unproved_closure_pending",
+    "state": "failed_effective_product_isolation_disproved_closure_pending",
     "scope": "One ordinary Orca folder workspace:recognized Task,worker-side IPC,report write and denied product write opens. No source audit.",
     "scope_eligibility": {
       "schedulable_now": false,
-      "prerequisite": "Task/report review complete:status succeeded but required caller.orcaSessionId was absent,so product opens were not attempted. Main must verify existing worker lifecycle;source audit remains ineligible. Any later corrected preflight must reconcile the actual status schema and preserve this failure,not assume read-only enforcement."
+      "prerequisite": "Latest capability Task is failed/settled and natively reviewed:explicit-terminal IPC works,but the primary product AGENTS.md allowed a nonmutating write-open. Other paths untested. Require an effective report-only launch boundary and verified existing-worker custody before another source audit;no automatic retry or physical closure claim."
     },
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-report-isolation-preflight-20261108",
     "model": "gpt-6-luna",
