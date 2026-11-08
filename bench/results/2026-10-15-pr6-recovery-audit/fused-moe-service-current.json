@@ -206785,35 +206785,6 @@
       "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
       "key": "collector_reuse.current_source_audit"
     },
-    "report": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/collector-host-delta-20261108",
-      "inputs": {
-        "evidence.json": {
-          "bytes": 1771,
-          "sha256": "0fde4d3c3a3579613458ff40f224095ee35574c7fccc73d191809eaa4d5b13e0"
-        },
-        "ur-validation-additions.diff": {
-          "bytes": 4817,
-          "sha256": "d7f09f1dbe0650fb1ea5bfd6072939bc765a4cb0f8e6ee9e617692509d0f7223"
-        },
-        "decision.md": {
-          "bytes": 2664,
-          "sha256": "31b974997069e690be02a7f025dcd10e25ce59224038d586d7a5688efa58cc90"
-        }
-      },
-      "classification": "decision support",
-      "consumer": "Native Luna-max review of Main audit before any prospective collector-source admission;not implementation or device qualification.",
-      "review_task": "/root/review_collector_host_delta_20261108",
-      "review": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/collector-host-delta-20261108/review.md",
-        "sha256": "525c6d64dc0a78a6e04ded901c9045408457df4d867351a7e3b9152bc86f9f29",
-        "bytes": 2322,
-        "model": "gpt-6-luna",
-        "effort": "max",
-        "verdict": "conditional",
-        "condition": "Verify unchanged host V2 coverage of ur_validation.py before claiming the host qualification remains valid."
-      }
-    },
     "host_v2_continuity": {
       "plan_commit": "4e5d7074d867b3dbb89861019dd952c7fa4256dd",
       "source_commit": "65b6b6349de6f188909c7c1be29b5d75e92c348e",
@@ -206823,6 +206794,12 @@
       "all_620_source_inputs_match": true,
       "condition_satisfied": true,
       "reason": "The current hash was already in V2 before the five-test run. No Python source edit is proposed;only a new explicit collector-source audit. Inclusion in V2 therefore confirms continuity rather than introducing a new hash."
+    },
+    "report_archive": {
+      "commit": "7b8f506299fbfccfc914749fad760de52836040c",
+      "path": "bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json",
+      "key": "compat_profile_fixture_prepare_v1.report",
+      "decision": "Source review and condition resolution complete;external paperwork selected for retirement."
     }
   },
   "compat_profile_fixture_build_v1": {
@@ -206921,6 +206898,16 @@
       "sha256": "5046a53558a3d6858aefd5c0d2b335b02cccdd35a43b805e0966e5ea707f37b1",
       "bytes": 293864,
       "source_commit": "f4f83be4f0af9ad42d36ac72ad2e927db5a02c0d"
+    },
+    "artifact_retirement": {
+      "reference_key": "compat_profile_window_v1.artifact_retirement",
+      "manifest_sha256": "213b68a28832a52de3dbb9765022fbff984302828b850112da55e8e5959aa8c5",
+      "state": "prepared_not_deleted",
+      "retained_paths": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/actual-inputs.json",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/build/sycl_profile_compat_window",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/record.json"
+      ]
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -207416,7 +207403,100 @@
       "aggregate_sha256": "4bafd47b4d0dd8c69225771957a4bceac309fd2464e705e4f60821271223737b"
     },
     "environment_template_sha256": "5e9941b1e4f50e3a3286775e08d8d8c8dd0aed00d8735244c1d20d4486dbe98d",
-    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51"
+    "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51",
+    "closed_analysis": {
+      "native_exit_code": 0,
+      "numerical_and_guard_check_passed": true,
+      "UR_successful_template_kernel_appends": 2,
+      "UR_successful_command_buffer_replays": 4,
+      "UR_successful_memcopies": 5,
+      "observed_gpu_kernels": 0,
+      "observed_gpu_readbacks": 4,
+      "interpretation": "Closed-data evidence confirms the missed recorded graph kernels,not a GPU hang. Preserve the original failed status. The generic old GraphExp UR reducer does not expand these CommandBufferExp APIs;do not use its copy-only output as a kernel census.",
+      "representative": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-window-v1/paused-construction/trace/sycl_profile_co.211987.json",
+        "sha256": "9ca434dc545a69cd3c9fc6585b59bd1925c2b7aab3fafaac5d61391d777f677f",
+        "bytes": 8974,
+        "owner": "Main",
+        "budget_bytes": 65536,
+        "consumer": "One representative of unresolved paused-construction collector coverage;before any future enablement of that mode,compare its native/trace inventory with this failure.",
+        "review": "Next collector-source change or retention boundary;no complete successful API history is needed."
+      }
+    },
+    "artifact_retirement": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-window-output-retirement-v1.json",
+      "sha256": "213b68a28832a52de3dbb9765022fbff984302828b850112da55e8e5959aa8c5",
+      "files": 89,
+      "bytes": 2672516,
+      "state": "prepared_not_deleted",
+      "groups": {
+        "adapter_windows": {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-window-v1",
+          "files": 31,
+          "bytes": 382777,
+          "keep": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-window-v1/paused-construction/trace/sycl_profile_co.211987.json"
+          ],
+          "reason": "Three closed cases;counts,clocks,pass/failure and source recipe are committed. Preserve one failed timeline;the ended original controller recipe is recoverable from Git."
+        },
+        "exec_control": {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-exec-v1",
+          "files": 12,
+          "bytes": 159487,
+          "keep": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-exec-v1/record.json"
+          ],
+          "reason": "Closed passing fixture;compact evidence and current admission record suffice. Full successful API trace,timeline,host output and ownership bookkeeping have no further consumer."
+        },
+        "fixture_build": {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1",
+          "files": 42,
+          "bytes": 2118678,
+          "keep": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/actual-inputs.json",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/build/sycl_profile_compat_window",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/record.json"
+          ],
+          "reason": "Keep the current fixture ELF/recipe/census for the next model-profile admission;retire rebuildable objects,CMake probes and successful compiler output after exact Git source/recipe recovery."
+        },
+        "closed_audit": {
+          "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/collector-host-delta-20261108",
+          "files": 4,
+          "bytes": 11574,
+          "keep": [],
+          "reason": "The reviewed source audit and its conditional-review resolution are preserved at7b8f50629/f4f83be4f;full report/diff paperwork has no remaining consumer."
+        }
+      },
+      "source_recovery": {
+        "old_controller": {
+          "revision": "218be8e4e5b4c1166f84a0432f26285dc7b30b39",
+          "files": 273,
+          "sha256": "4bafd47b4d0dd8c69225771957a4bceac309fd2464e705e4f60821271223737b"
+        },
+        "exec_controller": {
+          "revision": "6aa32694f8ff71cc4b2c7b89d9a733d122c6444a",
+          "files": 275,
+          "sha256": "00a027366062c30692aa228d789a39c11579c6c37954e5cfbc00f4495b28ea63"
+        },
+        "fixture_project": {
+          "revision": "f4f83be4f0af9ad42d36ac72ad2e927db5a02c0d",
+          "files": 755,
+          "sha256": "56752aa3522e93947898023ad6c408e9096dbabc09fb9bb47d04820c8cbe38d4"
+        },
+        "dependency0": {
+          "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+          "files": 239,
+          "sha256": "8116cd51a763acaa18b06c82d2bfe76e23eedd6ef1175242828c8e06daccd455"
+        },
+        "dependency1": {
+          "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+          "files": 906,
+          "sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
+        }
+      },
+      "fixture_recipe_recovered_from_Git": true,
+      "next_action": "Commit this manifest receipt;under the shared owner lock recheck every selected hash,delete only these closed outputs,then verify current exec-mode/fixture admission and retained guards."
+    }
   },
   "compat_profile_exec_v1": {
     "stage": "closed",
@@ -207658,6 +207738,14 @@
     "acceptance": "Same source/fixture/census/collector/runtime and immutable safety. Active named session at all five native gates;no pause/resume calls. Exact guarded results,normal0/reap/empty,quiet before-main validation,no fresh fault. Six inner kernels/three copies,two post kernels/one copy,whole eight kernels/five copies,unique native flow joins and contained RAW clocks through native exit/flush.",
     "limits": "Separate launcher-mode qualification only. The three-case V1 remains failed. No model coverage,observer overhead,physical traffic/saturation,clean speed,task quality,physical context or ordinary provider teardown qualification.",
     "retention": "Keep compact source,counts,clocks,numerical/provider/fault/closure evidence. Retire normal API/timeline/JIT/host output after verification. Reuse the named fixture generation;do not build another engine.",
+    "artifact_retirement": {
+      "reference_key": "compat_profile_window_v1.artifact_retirement",
+      "manifest_sha256": "213b68a28832a52de3dbb9765022fbff984302828b850112da55e8e5959aa8c5",
+      "state": "prepared_not_deleted",
+      "retained_paths": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-exec-v1/record.json"
+      ]
+    },
     "source": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "6aa32694f8ff71cc4b2c7b89d9a733d122c6444a",
