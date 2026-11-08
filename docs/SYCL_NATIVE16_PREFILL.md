@@ -1769,6 +1769,20 @@ fixture and comparison CLI are removed;only Python input/provenance helpers
 used by`device_fp64_probe`and`measure_q6_columns`remain. Their import does not
 requalify old inputs after a source change.
 
+The next independently selected decode proposal is the compressed-Q6 C4
+component at`src/kernels/sycl/q6_dpas_component.cpp`. It retains Q6/Q8_1
+quantization,uses two integer DPAS halves for the signed per16 scales,and
+stores a separate uint16 interleave with padded output-row tails. The canonical
+weights and C1/prefill paths remain untouched. Its original reference is pinned
+MIT-licensed GGML`34ca79122`,not XeStrata;the local packing/kernel integration
+is authored here. Follow`q6_dpas_component_v1`for the prospective input/build,
+CPU,small traced,full-head numerical and repeated ordinary-graph comparison.
+All12existing control translation units match the retained591c/90f source.
+Successful allocation,pack/upload cost and cold/warm scope must be recorded;
+model placement,task quality,full context and adoption remain unqualified.
+The failed model observer selects this cost question without establishing
+normal-run attribution or a saturated resource.
+
 The current device-service diagnostic targets `9922 / b310` through
 `tools/sycl/profile_iq3_decode.py`, using the maintained owner, frontend and
 trace readers.

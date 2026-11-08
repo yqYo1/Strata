@@ -114,6 +114,17 @@ set_source_files_properties(src/kernels/sycl/fused_gdn.cpp PROPERTIES
   COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 
 # Manual component targets: no automatic GPU execution in CTest.
+add_executable(sycl_q6_dpas_component EXCLUDE_FROM_ALL
+  bench/sycl/q6_dpas.cpp src/kernels/sycl/q6_dpas_component.cpp
+  src/kernels/sycl/native_mmvq.cpp src/kernels/sycl/native_q5_head.cpp
+  src/kernels/sycl/native_q3_esimd.cpp src/kernels/sycl/native_q4_esimd.cpp
+  src/kernels/sycl/native_q2_esimd.cpp src/kernels/sycl/native_iq4xs_esimd.cpp
+  src/kernels/sycl/native_iq_esimd.cpp src/kernels/sycl/native_mmq_xmx.cpp
+  src/kernels/sycl/iq.cpp)
+target_include_directories(sycl_q6_dpas_component PRIVATE src/kernels/sycl)
+target_link_libraries(sycl_q6_dpas_component PRIVATE strata_sycl_runtime strata_warnings)
+target_compile_options(sycl_q6_dpas_component PRIVATE -fno-fast-math -ffp-contract=off)
+target_compile_features(sycl_q6_dpas_component PRIVATE cxx_std_20)
 add_executable(sycl_q6_columns_bench EXCLUDE_FROM_ALL bench/sycl/q6_columns.cpp)
 target_link_libraries(sycl_q6_columns_bench PRIVATE strata_kernels)
 target_compile_options(sycl_q6_columns_bench PRIVATE -fno-fast-math -ffp-contract=off)
