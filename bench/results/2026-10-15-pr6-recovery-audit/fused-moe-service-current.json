@@ -220575,7 +220575,7 @@
     }
   },
   "q6_dpas_component_v6": {
-    "stage": "host-checked",
+    "stage": "failed",
     "source_commit": "44715a9917abdd341da44ae2638c6c91c7401ddf",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "58c297ae26dee6178fa13322460480be1392ec8d1beea4ae8a2c4f7d592cc95e",
@@ -220906,14 +220906,32 @@
         "cases": 12,
         "native_execution_attempted": true,
         "GPU_executed": false
+      },
+      {
+        "mode": "check-small",
+        "passed": false,
+        "host_probe_accepted": false,
+        "native_execution_attempted": true,
+        "error": "RuntimeError('owned native component failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "timing": [],
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "passed": false,
     "complete": false,
-    "GPU_executed": false,
+    "GPU_executed": null,
     "model_executed": false,
     "materialization": {
       "complete": true,
@@ -220998,6 +221016,49 @@
     "dependency_inputs": {
       "files": 1686,
       "aggregate_sha256": "b6ea708f610c3a07158683a434b00b32829ca4ecc2834f59e2b233c5b8689f6a"
+    },
+    "pre_gpu_refusal": {
+      "error": "RuntimeError('actual provider mappings')",
+      "progress": "STRATA_Q6_DPAS_GATE pid=842218",
+      "native_exit_code": -15,
+      "GPU_work_gate_released": false,
+      "device_initialization_reached": false,
+      "normal_closure_gate_passed": false,
+      "pre_main_required_keys": [
+        "LD_PRELOAD",
+        "STRATA_UR_PROBE_EXPECTED_LOADER",
+        "UR_ADAPTERS_FORCE_LOAD",
+        "ZE_ENABLE_ALT_DRIVERS"
+      ],
+      "actual_missing_or_extra_paths": "Not captured by the original predicate;do not infer exact membership from the error.",
+      "next": "V7 must record actual missing/extra sets at both gates. Require preload/UR loader before Runtime and the forced adapter/driver after Runtime but before fixture allocations or kernels;all mapped files remain pinned."
+    },
+    "termination_reconciliation": {
+      "processes_closed": true,
+      "original_normal_closure_gate_passed": false,
+      "direct_child_reaped": true,
+      "final_pre_reap_session_empty": true,
+      "recorded_survivors": 0,
+      "original_identity": {
+        "pid": 842218,
+        "state": "R",
+        "ppid": 841704,
+        "pgid": 842218,
+        "sid": 842218,
+        "start_ticks": 251763883,
+        "rss_bytes": 417792
+      },
+      "current_pid_absent": true,
+      "cleanup": [
+        {
+          "pid": 842218,
+          "start_ticks": 251763883,
+          "signal": "SIGTERM",
+          "result": "sent"
+        }
+      ],
+      "error_preserved": "RuntimeError('actual provider mappings')",
+      "scope": "Physical closure of deliberately stopped pre-main child only;original V6 passed/complete/ownership gate remains failed,not a successful native/GPU run."
     }
   }
 }
