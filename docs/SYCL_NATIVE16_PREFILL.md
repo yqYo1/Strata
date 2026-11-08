@@ -3082,14 +3082,19 @@ exercise DFlash2 release0,DFlash2 release1 and MTP release1. Each receives
 513/82/513thinking-enabled input tokens and32output tokens per request;positive
 draft acceptance,actual long/short routing,head transition counts,restored decode
 state,quiet validation and normal owner closure are required. All nine requests
-pass,with positive accepted drafts and normal exit0 for all three model children. The three pre-GPU refusals also pass. Actual route/head
+pass,with positive accepted drafts and normal exit0 for all three model children.
+The three pre-GPU refusals also pass. Actual route/head
 transitions,pre-main validation,38file-backed ELF mappings per child and all15
 model-asset hashes before/after are checked;all owners close and no fresh GPU
 fault occurs. DFlash2 frees521472000target-head bytes per long transition;MTP
 also frees223227900duplicate-head bytes. The phase/free-memory samples are
 retained in the gate;these are not physical PCIe-byte or saturation measurements.
 This is a small ownership diagnostic,not the tuned8192performance route or a
->=32Kcomparison.
+>=32Kcomparison. Closed stage/CLI logs,private compiler caches and the host
+fixture outputs are retired after original-source/recipe recovery:188files,
+43151075bytes. The original result records and phase engines remain;post-retirement
+metadata admission passes without new GPU work. The path/hash manifest is in
+commit`44e71e7fb`.
 
 Measure total detach/restore cost and matched end-to-end benefit before claiming
 a speed gain;the released bytes and phase/free-memory readings alone do not

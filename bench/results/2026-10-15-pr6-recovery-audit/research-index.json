@@ -26201,7 +26201,7 @@
   },
   "legacy_exact_receipt_bindings_20261108": {
     "classification": "decision_support",
-    "state": "running",
+    "state": "report_returned_review_pending",
     "scope": "Nearest artifact/hash-to-receipt-to-final-source/recipe binding for remaining66legacy ELFs;max6high-yield families,not broad retention audit.",
     "scope_eligibility": {
       "schedulable_now": true,
@@ -26217,7 +26217,9 @@
       "sha256": "85811250ca0db41c4c3d99e1f4b2c354477786df59b6a764f67dfbcdf72d6208"
     },
     "report": {
-      "path": ".cache/research/2026-11-08/legacy-receipt-bindings/bindings-report.md"
+      "path": ".cache/research/2026-11-08/legacy-receipt-bindings/bindings-report.md",
+      "sha256": "ba009c3e6df5927c387d6c66419dff85c7d9db635313a28db6512d860ca012d2",
+      "bytes": 8192
     },
     "constraints": "Read metadata/report only,no Git/build/test/GPU/profiler/process/product/policy/index/cleanup,do not load Xe implementation materials.No steering,no Sol.",
     "retention": "Temporary report/input/spec until Main exact-source recovery and retirement at feature boundary;no permanent inventory.",
@@ -26227,9 +26229,16 @@
       "task": "task_e89c44add039",
       "terminal": "term_3cd97fd1-7f79-4bb2-82c0-448ee304559a",
       "agent": "codex/gpt-6-luna",
-      "observed_state": "ready",
+      "observed_state": "succeeded",
       "observed_outcome": "in_progress",
-      "observed_liveness": "live"
+      "observed_liveness": "live",
+      "release": "released",
+      "process_action": "closed_agent_terminal"
+    },
+    "native_review": {
+      "task": "/root/review_legacy_exact_bindings_20261108",
+      "path": ".cache/research/2026-11-08/legacy-receipt-bindings/review.md",
+      "state": "running"
     }
   }
 }
