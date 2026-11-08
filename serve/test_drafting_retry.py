@@ -180,10 +180,11 @@ class SyclVisionDrafting(unittest.TestCase):
 
     def test_named_images_fail_before_the_vision_reader_or_model_starts(self):
         root = Path(self.enterContext(tempfile.TemporaryDirectory()))
-        for name, value in [("vocab.json", {"<|im_end|>": 0}), ("token_type.json", [3]),
+        for name, value in [("vocab.json", {"a": 0, "b": 1, "ab": 2, "<|im_end|>": 3}),
+                            ("token_type.json", [1, 1, 1, 3]),
                             ("tokenizer.json", {"pre": "qwen35"})]:
             (root / name).write_text(json.dumps(value))
-        (root / "merges.txt").write_text("")
+        (root / "merges.txt").write_text("a b")
         cfg = self.config("dflash2", "config")
         cfg.update(exe="/unused/strata", tokenizer=str(root))
         cfg["vision"] = {"exe": "/unused/vision", "gpu": True}
