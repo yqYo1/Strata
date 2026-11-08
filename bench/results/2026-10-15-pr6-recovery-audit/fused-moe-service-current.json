@@ -220324,7 +220324,7 @@
     }
   },
   "q6_dpas_component_v7": {
-    "stage": "host-checked",
+    "stage": "small-checked",
     "source_commit": "f97893576704e6679c89ea6c4613d912665a0824",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "32d846740cd13cefe769e9f8115f3990abcc7710c1e93ed2809b8f6d172012fb",
@@ -220668,6 +220668,97 @@
         "cases": 12,
         "native_execution_attempted": true,
         "GPU_executed": false
+      },
+      {
+        "mode": "check-small",
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "8be1aa74ec3647d8f1b7b9e4572fe113a8d832e745a97a2de5cb6ec41190e6e3",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "c8c869d5bf018fcb6767e7e45e57d3da564a56126b03f4ec7736dc162498f32e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          }
+        ],
+        "native_identity": {
+          "pid": 898303,
+          "state": "S",
+          "ppid": 897691,
+          "pgid": 898303,
+          "sid": 898303,
+          "start_ticks": 251921265,
+          "rss_bytes": 61521920
+        },
+        "mapped_provider_count": 34,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 898303,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "setup": [
+          "SETUP k=256 n=1 seed=7 pack_wall_ns=1904 pack_cpu_ns=1212 upload_wall_ns=518997 upload_cpu_ns=511490",
+          "ADMISSION k=256 n=1 canonical_bytes=210 packed_bytes=3360 device_payload_bytes=4754 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=256 n=1 seed=7 pack_wall_ns=3546 pack_cpu_ns=2364 upload_wall_ns=3287612 upload_cpu_ns=3277325",
+          "SETUP k=256 n=1 seed=19 pack_wall_ns=1653 pack_cpu_ns=1423 upload_wall_ns=434268 upload_cpu_ns=425478",
+          "SETUP k=256 n=17 seed=7 pack_wall_ns=1904 pack_cpu_ns=1643 upload_wall_ns=427195 upload_cpu_ns=418544",
+          "ADMISSION k=256 n=17 canonical_bytes=3570 packed_bytes=6720 device_payload_bytes=11986 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=256 n=17 seed=7 pack_wall_ns=2465 pack_cpu_ns=2144 upload_wall_ns=503719 upload_cpu_ns=494887",
+          "SETUP k=256 n=17 seed=19 pack_wall_ns=1844 pack_cpu_ns=1593 upload_wall_ns=2798360 upload_cpu_ns=2789471",
+          "SETUP k=512 n=33 seed=7 pack_wall_ns=3586 pack_cpu_ns=3296 upload_wall_ns=441893 upload_cpu_ns=433702",
+          "ADMISSION k=512 n=33 canonical_bytes=13860 packed_bytes=20160 device_payload_bytes=37380 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=512 n=33 seed=7 pack_wall_ns=3326 pack_cpu_ns=3076 upload_wall_ns=497868 upload_cpu_ns=488907",
+          "SETUP k=512 n=33 seed=19 pack_wall_ns=3377 pack_cpu_ns=3106 upload_wall_ns=410022 upload_cpu_ns=403377"
+        ],
+        "numerical": [
+          "NUMERIC passed=1 k=256 n=1 columns=4 outputs=4 oracle_rows=1 max_abs_error=0 guards=1",
+          "NUMERIC passed=1 k=256 n=1 columns=4 outputs=4 oracle_rows=1 max_abs_error=0 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0",
+          "NUMERIC passed=1 k=256 n=17 columns=4 outputs=68 oracle_rows=17 max_abs_error=0 guards=1",
+          "NUMERIC passed=1 k=256 n=17 columns=4 outputs=68 oracle_rows=17 max_abs_error=0 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0",
+          "NUMERIC passed=1 k=512 n=33 columns=4 outputs=132 oracle_rows=33 max_abs_error=3.81469726562e-06 guards=1",
+          "NUMERIC passed=1 k=512 n=33 columns=4 outputs=132 oracle_rows=33 max_abs_error=3.81469726562e-06 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0"
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "timing": [],
@@ -220675,7 +220766,7 @@
     "ownership_closed": true,
     "passed": false,
     "complete": false,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "materialization": {
       "complete": true,
