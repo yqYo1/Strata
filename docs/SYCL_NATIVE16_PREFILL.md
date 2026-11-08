@@ -3104,21 +3104,25 @@ Physical262144/RESTORE,task quality,ordinary-provider teardown and default adopt
 remain open. See`dflash2_native_port`,`dflash2_model_check`,
 `dflash2_prefill_heads_check`and`validation_environment_reuse`in the linked status
 for exact identities,outcomes and remaining functional ports.
-The host drafter/vision adapter at source`b63465e80`passes16CPU/mock cases,
-with no skips,normal exit0and closed ownership. SYCL Auto sees config-implied
+The host drafter adapter at`388eb6f18`passes20CPU/mock cases with no skips,normal
+exit0and closed ownership(evidence`d69950af2`). SYCL Auto sees config-implied
 or explicit`--vision`and uses available MTP/off;named DFlash2 fails with a
 text-only reason before either encoder or model starts. Explicit MTP/off and
 legacy configs retain their selection,and text Auto remains available.
-The V2fixture's empty merge entry remains failed at`11e43b8f`;V3changes only
-that test tokenizer. The launcher capability correction at`77f33d93e`passes
-18CPU/mock cases with no skips and normal closed ownership at`6a4472bae`.
 An interpreter script without capability markers is unknown rather than proven
 unsupported;the actual`engine_once.py`retains named DFlash2/file-vocab arguments.
-An inspectable opaque native without drafter flags still selects MTP.
-The shared asset lookup now has a local`dflash2`symlink to the already verified
-stock pack beside the current model;no weights moved or duplicated. The planned
-production argument and native launch gates must verify this selection.
-No new native build,GPU execution or speed qualification follows from these host tests. Disk sessions,BGEN/capabilities,native v3.1 model
+An inspectable native without drafter flags still selects MTP. Explicit config
+`family`identifies the supported model independently of its public display alias;
+an unsupported family cannot borrow a supported display name.
+The shared asset lookup has a local`dflash2`symlink to the already verified
+stock pack beside the current model;no weights moved or duplicated.
+The actual long V1host gate remains failed at`1fa4b829a`:the display suffix
+`-primary`was unsupported and named DFlash2 became MTP before native exec.
+All four CPUchildren closed(three0,one1),with no native/GPU work. The new
+family-aware source requires a fresh prospective V2without renaming that alias.
+The earlier minimal-tokenizer fixture error remains failed at`11e43b8f`.
+No native build,GPU execution or speed qualification follows from these host tests.
+Disk sessions,BGEN/capabilities,native v3.1 model
 behavior and the full bulk-import suite remain open.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.
