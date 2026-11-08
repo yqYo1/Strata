@@ -88,6 +88,14 @@ The manual `sycl_profile_compat_window` CMake target links the production
 `strata_sycl_runtime`; it is excluded from the default build and from CTest.
 Its controlled build recipe, compiler-input census and execution owner must be
 committed before running it. Do not reuse an older SDK fixture's qualification.
+[build_compat_profile.py](../tools/sycl/build_compat_profile.py) prepares and
+builds only this target from the selected engine's configure recipe. It requires
+the frozen six-process comparison to close and the original measured child
+revision to be reachable from the pushed primary. It verifies the21runtime
+sources against that build, then checks the four actual translation units and
+compiler/link inputs. It performs no device work. Its source is prepared;build
+and execution are still pending. A current collector-admission refusal must be
+preserved and resolved prospectively,without refreshing its recorded hashes.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction
