@@ -28,8 +28,8 @@ import decode_footer
 
 P, B = heads.P, heads.B
 RESULT = heads.model.RESULT
-ROOT = B / 'drafter-long-admission-v3'
-KEY = 'drafter_long_admission_v3'
+ROOT = B / 'drafter-long-admission-v4'
+KEY = 'drafter_long_admission_v4'
 PREVIOUS = B / 'drafter-long-admission-v2'
 FAILURE_COMMIT = '1381e9a9b997115308fa2cc1dc462e73d376bfa8'
 REVIEW_KEYS = ('dflash2_tuned_long_shape_admission_20261108', 'dflash2_bench_clock_counter_contract_20261108')
@@ -125,7 +125,8 @@ def previous_failure():
     return dict(path=str(PREVIOUS / 'record.json'), sha256=hashlib.sha256(raw).hexdigest(),
         evidence_commit=FAILURE_COMMIT, source_commit=old['source_commit'],
         GPU_executed=True, native_executed=True, qualified_ownership_closed=False, status='failed',
-        earlier_host_failure_evidence='1fa4b829af8e8d34aee0015bd238a56784101f74')
+        earlier_host_failure_evidence='1fa4b829af8e8d34aee0015bd238a56784101f74',
+        isolated_count_host_failure_evidence='1465f7973c6cf06fefa55fe45351a7211ef82792')
 
 
 def source_reviews():
@@ -323,8 +324,8 @@ def host():
             require(actual['backend'][0] == 'sycl', 'actual hardware backend differs')
             plan['native_args'] = actual['args']
             row['host'].append(dict(role='args-' + plan['drafter'], passed=True, exit_code=0, ownership_closed=True))
-        entry, out, err = owner.run('count-api', [row['python_selected']['path'], '-B', '-m', 'unittest', '-v',
-            'tools.test_strata_bench.RealPackExactCounts'], row['plans'][0]['environment'], P,
+        entry, out, err = owner.run('count-api', [row['python_selected']['path'], '-B',
+            str(P/'tools/test_strata_bench.py'), '-v', 'RealPackExactCounts'], row['plans'][0]['environment'], P,
             wall=300, cpu=120, rss_cap=2 << 30, text_cap=2 << 20, file_cap=4 << 20, total_cap=8 << 20)
         require(heads.ownership.closed(entry) and entry['exit_code'] == 0 and
             re.search(r'^Ran 1 test in ',err.read_text(),re.M) and
