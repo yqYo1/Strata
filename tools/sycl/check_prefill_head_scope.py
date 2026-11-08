@@ -17,7 +17,8 @@ import build_official_model as model
 import build_upstream_features as feature
 
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT, KEY = B / 'prefill-drafter-head-scope-v3', 'optional_mtp_prefill_heads_host_v3'
+ROOT, KEY = B / 'prefill-dflash2-cache-loan-host-v1', 'dflash2_cache_loan_heads_host_v1'
+EXPECTED_CASES, EXPECTED_CHECKS = 38, 854
 TEST = 'tests/sycl/prefill_head_scope.cpp'
 HEADER = 'include/strata/core/prefill_head_scope.hpp'
 LEASE = 'include/strata/core/cache_scratch_lease.hpp'
@@ -104,13 +105,15 @@ def prepare():
         environment_sha256=hashlib.sha256(json.dumps(env, sort_keys=True).encode()).hexdigest(),
         commands=[['compile', command], ['policy', [str(ROOT / 'prefill_head_scope')]]],
         budgets=dict(wall=90, cpu=180, rss_cap=4 << 30, text_cap=1 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        criteria='Twenty-nine host-only cases:the previous15 boundary/cache controls plus128admission rows '
+        expected_cases=EXPECTED_CASES, expected_checks=EXPECTED_CHECKS,
+        criteria='Host-only cases:the previous15 boundary/cache controls plus128admission rows '
             '(single/spec1..8/MTP/DFlash2/live-owner),optional MTP weight transitions for prompt success/false/throw '
             'and repeat request,target preparation false/throw,prepared cancellation,and MTP preflight refusal. '
             'The previous15 include two actual CacheScratchState'
             ' poison reproductions,two preparation-before-activation failures,prepared cancellation on stale'
             ' activation preflight,and joint prompt success/false/throw with checked retirement/refill.'
-            ' At least500checks. Exact committed inputs,'
+            ' Nine additional draft-owner/width admission cases cover optional MTP cache loans;'
+            ' require the exact recorded case/check totals. Exact committed inputs,'
             'actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.',
         passed=False, complete=False, active=False, ownership_closed=True, GPU_executed=False)
     save(row)
@@ -156,8 +159,10 @@ def run():
                                      bytes=(ROOT / 'prefill_head_scope').stat().st_size)
             else:
                 result = json.loads(out.read_text())
-                require(not err.read_bytes() and result['kind'] == 'prefill_head_scope' and result['cases'] == 29
-                        and result['checks'] >= 500 and result['status'] == 'PASS', 'policy/sanitizer check failed')
+                require(not err.read_bytes() and result['kind'] == 'prefill_head_scope' and
+                        result['cases'] == row['expected_cases'] == EXPECTED_CASES and
+                        result['checks'] == row['expected_checks'] == EXPECTED_CHECKS and
+                        result['status'] == 'PASS', 'policy/sanitizer check failed')
                 row['result'] = result
         inputs()
         require(sanitizer_links(row['environment']) == row['sanitizer_link_inputs'], 'sanitizer link inputs changed after run')
