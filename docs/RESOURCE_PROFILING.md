@@ -106,6 +106,11 @@ at a serialized boundary before the device checks. At source`adee8a0b2`,all five
 host controls pass with zero skips,normal0and closed ownership under
 `compat_profile_window_host_v1`. This tests the trace-admission logic on the CPU.
 The fixture build and all three device/collector cases remain pending.
+The host plan freezes all620Python/benchmark inputs. Integrating the measured
+cache-loan child changes two of those helpers,so prepare a new committed host
+plan and repeat the five controls after integration before using this device
+gate. Preserve V1's actual pass and source;do not refresh its hashes or describe
+the post-merge tree as the already tested snapshot.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction
