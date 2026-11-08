@@ -219940,7 +219940,7 @@
     }
   },
   "q6_dpas_component_v1": {
-    "stage": "prepared",
+    "stage": "cpu-controlled",
     "source_commit": "b0b988a1bd4ad76ea17ac86ef67a21d2e4d88b35",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "911b03f722f7e0bf75f6e69092622ee55877ba2de64b663401cae51080a46608",
@@ -220257,7 +220257,16 @@
       "limits": "Parameter-validation/preload-instrumented component wall/threadCPU including graph submission/completion;not clean or sustained model speed. Source-selected cost hypothesis;physical bottleneck remains unknown."
     },
     "retention": "Useful individual samples,setup/numeric outcomes,source/recipe and decision only.Retire successful raw/build output after this named component/model-proposal consumer ends;no additional inference engine.",
-    "results": [],
+    "results": [
+      {
+        "mode": "controls",
+        "passed": true,
+        "host_probe_accepted": false,
+        "tests": 10,
+        "skipped": 0,
+        "native_execution_attempted": false
+      }
+    ],
     "timing": [],
     "active": false,
     "ownership_closed": true,
