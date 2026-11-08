@@ -1770,13 +1770,23 @@ compact result;the device-only component milestone is indexed separately in
 the cumulative CSV. Source/recipe are recoverable from Git.
 
 The next bounded question is the same copy contract through the production
-compatibility graph's capture/replay path. The direct-entry screen includes
-entry/queue submission on every call;the model captures these entries and
-replays completed graph segments. Commit a new recipe,comparison order and
-criteria before testing that distinct path. Keep the prototype/fixture source
-for that named next consumer;the closed direct-entry build and successful raw
-output are physically retired after exact1280-file archive/recipe recovery
-and716compiler/24link binding checks. Every lane reaches the group broadcast
+compatibility graph's capture/replay path. That fixture/controller is now
+source-prepared under`mapped_row_copy_graph_v1`;nothing has been built or run.
+The direct-entry screen includes entry/queue submission on every call;the
+model captures these entries and replays completed graph segments. All five
+new arms capture one ordinary kernel node per fixed source bank and replay
+through`graph_launch_with_completion`with checked event completion. Metadata
+changes are tested between replays;both queues drain before source changes or
+allocation retirement. Capture,JIT,initialization and checks stay outside timing.
+The prospective plan has eight CPU reader controls,80small/1120full cases and
+three fresh timing processes with600samples of8192replays per batch. Each
+sample must report the actual graph route,node count and8192successful replay
+calls. Only a repeated winning host-USM cell can motivate a separately qualified
+decode-only model proposal. No environment mutation or direct fallback occurs.
+Commit the exact source and generated recipe before execution;retain original
+direct-entry failures. The ended direct-entry build/raw root is already retired
+after exact1280-file archive/recipe recovery and716compiler/24link binding checks.
+Every lane reaches the group broadcast
 before branching,following the
 [Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
 

@@ -73,5 +73,43 @@ class InputCensus(unittest.TestCase):
             self.read(links=[*self.links, self.file('sdk/unpinned.so')])
 
 
+class GraphTiming(unittest.TestCase):
+    @staticmethod
+    def transcript():
+        lines = [f'CLOCK median_stamp_ns=100 floor_ns=10000000 batch={component.BATCH} process=0']
+        for kind in ('host_usm', 'device'):
+            for banks in (1, 64):
+                for hits in (4, 20):
+                    for variant in component.ORDERS[0]:
+                        for sample in range(5):
+                            values = dict(process=0, variant=variant, source=kind,
+                                rows=40, width=2560, hits=hits, banks=banks, sample=sample,
+                                launches=component.BATCH, route='compat_graph',
+                                graph_launches=component.BATCH, nodes_per_graph=1,
+                                wall_ns=20000000, cpu_ns=10000000,
+                                submit_wall_ns=15000000, wait_wall_ns=5000000,
+                                submit_cpu_ns=9000000, wait_cpu_ns=1000000)
+                            lines.append('SAMPLE ' + ' '.join(f'{k}={v}' for k,v in values.items()))
+        lines.append('TIMING passed=1 samples=200 model_speed=0 physical_traffic=0')
+        return '\n'.join(lines)
+
+    def test_complete_actual_graph_dispatch(self):
+        value = component.collect_timing(self.transcript(), 0)
+        self.assertEqual(len(value['cells']), 8)
+        self.assertEqual(sum(len(rows) for cell in value['cells'].values()
+                             for rows in cell.values()), 200)
+
+    def test_direct_fallback_refused(self):
+        text = self.transcript().replace('route=compat_graph', 'route=direct', 1)
+        with self.assertRaisesRegex(RuntimeError, 'actual graph route differs'):
+            component.collect_timing(text, 0)
+
+    def test_missing_replay_refused(self):
+        text = self.transcript().replace(f'graph_launches={component.BATCH}',
+            f'graph_launches={component.BATCH-1}', 1)
+        with self.assertRaisesRegex(RuntimeError, 'sample shape/order differs'):
+            component.collect_timing(text, 0)
+
+
 if __name__ == '__main__':
     unittest.main()

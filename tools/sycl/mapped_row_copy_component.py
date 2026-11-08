@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Owned mapped-row copy comparison; independently authored, repository LICENSE.
+"""Owned production-graph row-copy comparison; authored here, repository LICENSE.
 
 Build only the component target from a committed private source snapshot. Keep
 the production entry, all four proposals and both actual source placements.
-Timing retains UR parameter validation and its preload in every variant. This
+Capture every entry once,then replay its ordinary production graph with checked
+completion. Timing retains UR parameter validation/preload in every variant. This
 is an instrumented component screen, never clean speed, model speed or
 physical-memory traffic.
 """
@@ -29,10 +30,11 @@ import build_compat_profile as selected
 
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'mapped-row-copy-component-v1'
+ROOT = B / 'mapped-row-copy-graph-v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'mapped_row_copy_component_v1'
+KEY = 'mapped_row_copy_graph_v1'
 TARGET = 'sycl_mapped_row_copy_component'
+BATCH = 8192
 VARIANTS = ('production', 'row256e1', 'row256e4', 'tile256e4', 'tile64e4')
 ORDERS = (VARIANTS, tuple(reversed(VARIANTS)), tuple(VARIANTS[i] for i in (2, 0, 4, 1, 3)))
 FIELDS = ('wall_ns', 'cpu_ns', 'submit_wall_ns', 'submit_cpu_ns')
@@ -97,6 +99,12 @@ def dependency_pins(roots):
 
 def prepare():
     data = validation.committed(RESULT)
+    direct = data['mapped_row_copy_component_v1']
+    require(direct['stage'] == 'closed' and direct['passed'] and direct['complete'] and
+        direct['ownership_closed'] and not direct['active'] and len(direct['timing']) == 3 and
+        direct['decision']['host_source_qualified_gain_cells'] == 0 and
+        not direct['decision']['model_admission_allowed'] and
+        direct['artifact_retirement']['state'] == 'deleted_verified', 'closed direct-entry screen required')
     cohort = data['dflash2_device_service_v2']
     require(cohort['stage'] == 'closed' and cohort['complete'] and cohort['ownership_closed']
         and not cohort['active'] and len(cohort['cases']) == 3 and
@@ -148,7 +156,7 @@ def prepare():
     require(sha(external['path']) == external['sha256'], 'original external-input manifest changed')
     external_inputs = json.loads(Path(external['path']).read_text())
     require(all(sha(p) == h for p, h in external_inputs.items()), 'original external compiler/link inputs changed')
-    names = git('ls-files', '-z', 'CMakeLists.txt', 'LICENSE', 'cmake', 'src', 'include',
+    names = git('ls-files', '-z', '.gitattributes', 'CMakeLists.txt', 'LICENSE', 'cmake', 'src', 'include',
         'tests', 'bench', 'tools', 'third_party').decode().split('\0')
     names = sorted(n for n in names if n and not n.startswith('bench/results/')
                    and n != 'bench/performance-records.csv')
@@ -173,6 +181,12 @@ def prepare():
         '-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
         '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t']
     row = dict(stage='preparing', source_commit=revision, sources=sources, helpers=helpers,
+        prior_direct_screen=dict(evidence_commit='e5114d1d8d776edb6448f3345635d573058d4594',
+            key='mapped_row_copy_component_v1', host_source_gain_cells=0, model_admission_allowed=False,
+            meaning='Preserve all failed direct-entry host cells. This new graph path removes repeated kernel-entry work from replay;not a retry or revised old acceptance.'),
+        source_generation=dict(command='git archive --format=tar <source_commit> <named source paths>',
+            attributes_path='.gitattributes', attributes_sha256=sources['.gitattributes'],
+            meaning='Retirement must reproduce archive bytes,including committed checkout line-ending rules;raw Git blobs alone can differ.'),
         dependency_roots=dependencies, dependency_pins=dependency_inputs,
         tools=tools, tool_versions=versions, system_packages=packages(), runtime_pins=runtime,
         external_inputs=external, selected_native=identity,
@@ -188,13 +202,14 @@ def prepare():
                       'tools.sycl.test_mapped_row_copy_component'],
         native_budget=budget(600, 1200, file_cap=16 << 20),
         boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=guards.driver_guard(),
-        plan=dict(order='Five CPU actual-input reader controls,build,small traced check,full check,three fresh timing processes0/1/2.Commit each closed stage before next;no retries.',
+        plan=dict(order='Eight CPU input/graph-timing reader controls,build,small traced check,full check,three fresh timing processes0/1/2.Commit each closed stage before next;no retries.',
             dimensions=dict(rows=40, width=2560, sources=['host_usm', 'device'], banks=[1, 64], hits=[4, 20]),
-            variants=VARIANTS, variant_orders=ORDERS, samples_per_cell=5, batch_launches=4096,
+            variants=VARIANTS, variant_orders=ORDERS, samples_per_cell=5, batch_launches=BATCH,
+            route='All five variants use cudaStreamBeginCapture,ordinary one-node cudaGraphInstantiate and graph_launch_with_completion,cudaEventSynchronize. Input/metadata initialization,capture,JIT,checks and resets outside timing. One captured graph per fixed source bank;metadata contents change between checked replays. No direct fallback or environment mutation.',
             warmup_batches=2, minimum_batch_ns=10000000, minimum_timer_multiple=300,
             sample_fields_ns=FIELDS,
-            acceptance='Normal0,all bit/guard checks,actual Intel B570,live native ownership/environment/provider check,pre-main parameter validation,unchanged source/runtime/boot,no fresh fault. All600timed samples must meet timing,order and conservation gates. Compare each cell independently:eligible only when all3candidate/reference median wall ratios<1;no percentage floor.',
-            limits='UR parameter-validation/preload-instrumented component screen,not clean speed.Whole dependent-batch host wall/thread-CPU only;submission overlaps device work and wait CPU may poll.No kernel-service,physical traffic,model gain or adoption claim.'),
+            acceptance='Normal0,all bit/guard checks,actual Intel B570,one kernel node per ordinary graph and all8192actual replay calls per sample,live native ownership/environment/provider check,pre-main parameter validation,unchanged source/runtime/boot,no fresh fault. All600timed samples must meet timing,order and conservation gates. Compare each cell independently:eligible only when all3candidate/reference median wall ratios<1;no percentage floor. Only a winning host-USM cell can motivate a separately qualified decode-only model proposal.',
+            limits='UR parameter-validation/preload-instrumented graph component screen,not clean speed.Whole dependent-batch host wall/thread-CPU only;submission overlaps device work and wait CPU may poll.One-node throughput is not a whole model layer or its CPU expert dependency.No kernel-service,physical traffic,model gain or adoption claim.'),
         retention='Keep source/recipe,compact individual samples and decisions.Retire successful logs/traces and component build after its named comparison/implementation consumer ends;no new inference engine.',
         results=[], timing=[], active=False, ownership_closed=True, passed=False, complete=False,
         GPU_executed=False, model_executed=False,
@@ -302,7 +317,7 @@ def collect_timing(text, index):
     lines = text.splitlines()
     clocks = [v for v in lines if v.startswith('CLOCK ')]
     require(len(clocks) == 1 and
-        re.fullmatch(r'CLOCK median_stamp_ns=\d+ floor_ns=10000000 batch=4096 process=' + str(index), clocks[0]),
+        re.fullmatch(r'CLOCK median_stamp_ns=\d+ floor_ns=10000000 batch=' + str(BATCH) + ' process=' + str(index), clocks[0]),
         'complete timing clock calibration required')
     timer = int(clocks[0].split()[1].split('=')[1])
     samples = [v for v in lines if v.startswith('SAMPLE ')]
@@ -316,12 +331,15 @@ def collect_timing(text, index):
         pairs = [s.split('=', 1) for s in line.split()[1:]]
         f = dict(pairs)
         require(len(f) == len(pairs) and set(f) == {'process', 'variant', 'source', 'rows', 'width',
-            'hits', 'banks', 'sample', 'launches', *FIELDS, 'wait_wall_ns', 'wait_cpu_ns'}, 'timing fields')
+            'hits', 'banks', 'sample', 'launches', 'route', 'graph_launches', 'nodes_per_graph',
+            *FIELDS, 'wait_wall_ns', 'wait_cpu_ns'}, 'timing fields')
         require((f['source'], f['variant']) == (kind, variant), 'actual placement/variant order')
-        integers = {k: int(v) for k, v in f.items() if k not in ('source', 'variant')}
+        require(f['route'] == 'compat_graph', 'actual graph route differs')
+        integers = {k: int(v) for k, v in f.items() if k not in ('source', 'variant', 'route')}
         require(all(re.fullmatch(r'\d+', f[k]) for k in integers) and
             all(integers[k] == v for k, v in dict(process=index, rows=40, width=2560,
-                hits=hits, banks=banks, sample=n, launches=4096).items()), 'sample shape/order differs')
+                hits=hits, banks=banks, sample=n, launches=BATCH, graph_launches=BATCH,
+                nodes_per_graph=1).items()), 'sample shape/order differs')
         require(integers['wall_ns'] >= max(10000000, 300 * timer) and
             integers['submit_wall_ns'] + integers['wait_wall_ns'] == integers['wall_ns'] and
             integers['submit_cpu_ns'] + integers['wait_cpu_ns'] == integers['cpu_ns'], 'batch eligibility/conservation')
@@ -340,7 +358,9 @@ def decision(timing):
                 statistics.median(v['cells'][name]['production'][i][0] for i in range(5)) for v in timing]
             out[name][variant] = dict(candidate_over_production_median_wall=ratios,
                 component_gain_qualified=all(v < 1 for v in ratios))
-    return dict(cells=out, model_speed_qualified=False, physical_traffic_qualified=False,
+    host_gain=any(v['component_gain_qualified'] for name,c in out.items()
+                  if name.startswith('host_usm/') for v in c.values())
+    return dict(cells=out, host_source_component_gain=host_gain, model_speed_qualified=False, physical_traffic_qualified=False,
         inference_adopted=False, next='Consider only winning placement/shape cells for a separately qualified decode-only proposal;measure the complete model dependency path.')
 
 
@@ -361,9 +381,9 @@ def execute(mode):
             e, out, err = scope.run('reader-controls', row['host_command'], row['environment'], P,
                 **row['host_budget'])
             text = out.read_text() + err.read_text()
-            require(owner.closed(e) and e['exit_code'] == 0 and 'Ran 5 tests' in text and
-                '\nOK\n' in text and 'skipped' not in text, 'all five CPU input-reader controls required')
-            outcome.update(tests=5, skipped=0, native_execution_attempted=False)
+            require(owner.closed(e) and e['exit_code'] == 0 and 'Ran 8 tests' in text and
+                '\nOK\n' in text and 'skipped' not in text, 'all eight CPU input/graph reader controls required')
+            outcome.update(tests=8, skipped=0, native_execution_attempted=False)
             row['stage'] = 'host-checked'
         elif mode == 'build':
             outcome['build_commands'] = []
@@ -445,9 +465,12 @@ def execute(mode):
                 if index == 2: row.update(stage='closed', decision=decision(row['timing']), complete=True)
             else:
                 footer = ('CHECK passed=1 small=' + str(int(mode == 'check-small')) + ' variants=5 launches=' +
-                    ('80' if mode == 'check-small' else '1120') + ' metadata=device source=host_usm,device bitwise=1 guards=1')
+                    ('80' if mode == 'check-small' else '1120') + ' metadata=device source=host_usm,device bitwise=1 guards=1 route=compat_graph nodes_per_graph=1')
                 require(text.splitlines().count(footer) == 1, 'complete numerical/guard footer')
-                if mode == 'check-small': require('urEnqueueKernelLaunch' in diagnostic, 'small API trace must contain actual kernel launch')
+                if mode == 'check-small':
+                    require('urEnqueueCommandBufferExp' in diagnostic and
+                        'urCommandBufferAppendKernelLaunchWithArgsExp' in diagnostic,
+                        'small trace must show ordinary command-buffer kernel capture/replay')
                 row['stage'] = 'small-checked' if mode == 'check-small' else 'checked'
             outcome['host_probe_accepted'] = True
         # The originally committed input record is unchanged until final save.

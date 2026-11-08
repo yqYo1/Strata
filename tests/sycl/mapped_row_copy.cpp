@@ -1,6 +1,7 @@
 // Independently authored for Strata; repository LICENSE.
-// Compare the existing production entry with unselected row-copy components.
+// Compare completed production-compatibility graphs,not direct queue entries.
 #include "strata/kernels/elementwise.hpp"
+#include "strata/sycl/compat/cuda_runtime.h"
 #include "mapped_row_copy.hpp"
 #include <algorithm>
 #include <array>
@@ -19,6 +20,7 @@
 
 namespace {
 using namespace strata::sycl_backend;
+namespace compat = strata::sycl_backend::compat;
 using Copy = void (*)(float*, const float*, int64_t, int64_t,
                        const int32_t*, const int32_t*, void*);
 constexpr size_t Guard = 16;
@@ -34,6 +36,40 @@ const std::array<Variant, 5> Variants{{
 void need(bool value, const char* why) {
     if (!value) throw std::runtime_error(why);
 }
+void check(cudaError_t value, const char* why) {
+    if (value != cudaSuccess)
+        throw std::runtime_error(std::string(why) + ": " + cudaGetErrorString(value));
+}
+void retire(cudaError_t value) noexcept {
+    if (value != cudaSuccess) std::abort(); // completion/ownership uncertain
+}
+struct Stream {
+    cudaStream_t value = nullptr;
+    Stream() { check(cudaStreamCreate(&value), "copy graph stream create"); }
+    ~Stream() noexcept {
+        if (value) {
+            retire(cudaStreamSynchronize(value));
+            retire(cudaStreamDestroy(value));
+        }
+    }
+    Stream(const Stream&) = delete;
+    Stream& operator=(const Stream&) = delete;
+};
+struct Completion {
+    cudaEvent_t value = nullptr;
+    Completion() { check(cudaEventCreateWithFlags(&value, cudaEventDisableTiming), "copy graph completion create"); }
+    ~Completion() noexcept { if (value) retire(cudaEventDestroy(value)); }
+    Completion(const Completion&) = delete;
+    Completion& operator=(const Completion&) = delete;
+};
+struct RecordedCopy {
+    cudaGraph_t source = nullptr;
+    cudaGraphExec_t executable = nullptr;
+    ~RecordedCopy() noexcept {
+        if (executable) retire(cudaGraphExecDestroy(executable));
+        if (source) retire(cudaGraphDestroy(source));
+    }
+};
 void drain(const std::shared_ptr<Runtime>& rt) noexcept {
     // Never unwind a source/metadata owner when GPU completion is uncertain.
     try { rt->wait(); } catch (...) { std::abort(); }
@@ -62,6 +98,43 @@ class Buffers {
     std::array<int32_t, 2 * Guard + 1> counts_{}, counts_check_{};
     std::vector<bool> hit_;
     Allocation source_, destination_, ids_device_, count_device_;
+    Stream stream_;
+    Completion completion_;
+    std::array<std::vector<std::unique_ptr<RecordedCopy>>, 5> graphs_;
+    uint64_t replays_ = 0;
+
+    void drain_all() noexcept {
+        retire(cudaStreamSynchronize(stream_.value));
+        drain(rt_);
+    }
+    void capture(size_t variant, size_t bank) {
+        auto graph = std::make_unique<RecordedCopy>();
+        check(cudaStreamBeginCapture(stream_.value, cudaStreamCaptureModeThreadLocal), "copy graph begin");
+        bool recording = true;
+        try {
+            Variants[variant].copy(destination_.as<float>() + begin_,
+                source_.as<float>() + bank * words_ + begin_, rows_, width_,
+                ids_device_.as<int32_t>() + Guard, count_device_.as<int32_t>() + Guard,
+                stream_.value);
+            const auto status = cudaStreamEndCapture(stream_.value, &graph->source);
+            if (status == cudaSuccess) recording = false;
+            check(status, "copy graph end");
+            size_t nodes = 0;
+            check(cudaGraphGetNodes(graph->source, nullptr, &nodes), "copy graph topology");
+            need(nodes == 1, "exactly one ordinary captured copy kernel required");
+            check(cudaGraphInstantiate(&graph->executable, graph->source, 0ull), "copy graph instantiate");
+            check(cudaGraphDestroy(graph->source), "copy source graph retirement");
+            graph->source = nullptr;
+        } catch (...) {
+            if (recording) {
+                cudaGraph_t partial = nullptr;
+                retire(cudaStreamEndCapture(stream_.value, &partial));
+                if (partial) retire(cudaGraphDestroy(partial));
+            }
+            throw;
+        }
+        graphs_[variant].push_back(std::move(graph));
+    }
 public:
     Buffers(std::shared_ptr<Runtime> rt, size_t rows, size_t width,
             size_t offset, MemoryKind kind, size_t banks)
@@ -86,20 +159,28 @@ public:
             need(sycl::get_pointer_type(pointer, rt_->context()) == sycl::usm::alloc::device,
                  "destination/metadata must be device USM");
         counts_.fill(-1234567);
+        need(queue_for(stream_.value).get_context() == rt_->context(), "copy graph allocation/queue contexts differ");
+        hits(0); // valid metadata even if a broken capture unexpectedly executes
         reset();
+        for (size_t v = 0; v < Variants.size(); ++v) {
+            graphs_[v].reserve(banks_);
+            for (size_t bank = 0; bank < banks_; ++bank) capture(v, bank);
+        }
+        std::cout << "COPY_GRAPH captured=" << Variants.size() * banks_
+                  << " nodes_per_graph=1 route=compat_graph\n";
     }
-    ~Buffers() noexcept { drain(rt_); }
+    ~Buffers() noexcept { drain_all(); }
     Buffers(const Buffers&) = delete;
     Buffers& operator=(const Buffers&) = delete;
     void reset() {
-        drain(rt_);
+        drain_all();
         std::fill(output_.begin(), output_.end(), Sentinel);
         rt_->wait(rt_->compute().memcpy(destination_.data(), output_.data(), words_ * 4));
     }
-    // Every metadata producer and consumer uses this same in-order queue.
-    // Previous readers complete before CPU staging storage is changed.
+    // Drain graph readers before CPU staging changes. Complete metadata uploads
+    // on rt_->compute() before any replay on the separate same-context stream.
     void hits(int mode) {
-        drain(rt_);
+        drain_all();
         std::fill(hit_.begin(), hit_.end(), false);
         std::fill(ids_.begin(), ids_.end(), -1234567);
         int count = 0;
@@ -122,13 +203,15 @@ public:
     }
     void launch(size_t variant, size_t bank = 0) {
         need(variant < Variants.size() && bank < banks_, "fixture selection bounds");
-        Variants[variant].copy(destination_.as<float>() + begin_,
-            source_.as<float>() + bank * words_ + begin_, rows_, width_,
-            ids_device_.as<int32_t>() + Guard, count_device_.as<int32_t>() + Guard,
-            &rt_->compute());
+        need(replays_ != UINT64_MAX, "copy graph replay counter overflow");
+        check(compat::graph_launch_with_completion(graphs_[variant][bank]->executable,
+            stream_.value, completion_.value), "copy graph replay");
+        ++replays_;
     }
-    void wait() { rt_->wait(); }
+    uint64_t replays() const { return replays_; }
+    void wait() { check(cudaEventSynchronize(completion_.value), "copy graph checked completion"); }
     void verify(size_t bank, bool all_inputs = true) {
+        drain_all();
         rt_->wait(rt_->compute().memcpy(output_.data(), destination_.data(), words_ * 4));
         for (size_t i = 0; i < words_; ++i) {
             uint32_t expected = Sentinel;
@@ -168,6 +251,9 @@ void host_checks() {
     }
 }
 std::shared_ptr<Runtime> checked_runtime() {
+    const char* capture = std::getenv("STRATA_SYCL_VERIFY_NATIVE_CAPTURE");
+    need(capture && std::strcmp(capture, "0") == 0, "fixed ordinary production capture required");
+    check(cudaSetDevice(0), "copy graph device select");
     auto rt = runtime_for();
     const auto& device = rt->device();
     const auto name = device.get_info<sycl::info::device::name>();
@@ -200,10 +286,10 @@ void checks(bool small, std::shared_ptr<Runtime>& keepalive) {
                 }
             }
     std::cout << "CHECK passed=1 small=" << small << " variants=5 launches=" << launches
-              << " metadata=device source=host_usm,device bitwise=1 guards=1\n";
+              << " metadata=device source=host_usm,device bitwise=1 guards=1 route=compat_graph nodes_per_graph=1\n";
 }
 void timing(int process, std::shared_ptr<Runtime>& keepalive) {
-    constexpr size_t Batch = 4096;
+    constexpr size_t Batch = 8192;
     constexpr int Samples = 5;
     constexpr int64_t Floor = 10000000; // whole dependent batch,not one launch
     const std::array<std::array<size_t, 5>, 3> orders{{{{0,1,2,3,4}}, {{4,3,2,1,0}}, {{2,0,4,1,3}}}};
@@ -228,12 +314,14 @@ void timing(int process, std::shared_ptr<Runtime>& keepalive) {
                 for (size_t v : orders[size_t(process)]) {
                     b.reset(); b.launch(v); b.verify(0); // correctness/JIT outside timing
                     for (int sample = -2; sample < Samples; ++sample) {
+                        const auto before = b.replays();
                         const auto a = stamp();
                         for (size_t i = 0; i < Batch; ++i) b.launch(v, i % banks);
                         const auto submitted = stamp();
                         b.wait();
                         const auto end = stamp();
                         const auto wall = end.wall - a.wall;
+                        need(b.replays() - before == Batch, "actual graph replay count differs");
                         need(wall >= Floor && wall >= 300 * timer && submitted.cpu >= a.cpu &&
                              end.cpu >= submitted.cpu &&
                              submitted.wall >= a.wall && end.wall >= submitted.wall,
@@ -244,6 +332,8 @@ void timing(int process, std::shared_ptr<Runtime>& keepalive) {
                                       << " source=" << (kind == MemoryKind::Host ? "host_usm" : "device")
                                       << " rows=40 width=2560 hits=" << hits << " banks=" << banks
                                       << " sample=" << sample << " launches=" << Batch
+                                      << " route=compat_graph graph_launches=" << b.replays()-before
+                                      << " nodes_per_graph=1"
                                       << " wall_ns=" << wall << " cpu_ns=" << end.cpu-a.cpu
                                       << " submit_wall_ns=" << submitted.wall-a.wall
                                       << " wait_wall_ns=" << end.wall-submitted.wall
