@@ -150,6 +150,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
   state distinct from storage dtype. A prospectively validated SGLang/vLLM
   numerical contract is acceptable; FP32/ggml remains diagnostic and does not
   impose its extra precision. Flags alone do not prove native-16 storage.
+  In the current`591c2fbe3`build,the8192-row planner accounts for2,311,569,920
+  scratch bytes,including a1,180,698,624-byte shared region. Source review at
+  `src/prefill/prefill.cpp:1224`confirms that this region is the maximum of
+  GDN,QSA and MoE layouts. Shrinking only a nonmaximum layout saves no allocation.
+  Storage views also need individual checks:the old`gated`float reservation
+  contains two disjoint BF16 arrays,and`Kc`contains both raw and rotated BF16
+  keys,so neither reservation has a spare half. The chunk-sized FP32`R`still
+  serves conditional PLE and float callbacks. The existing planner also covers
+  the non-layer-major path used when rows do not exceed the chunk,even with
+  BF16 enabled. A tighter long-prefill layout therefore needs an explicit
+  producer/consumer contract while preserving that short-input path. These
+  allocation facts establish no timing or hardware-saturation result.
 - Q6 specialization is a decode-only candidate detail. In
   `q6_byte_load_component_v2`, 30/35 geometry/column combinations pass the
   performance screen: each candidate/reference median time ratio is below one
