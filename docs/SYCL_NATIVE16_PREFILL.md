@@ -1809,43 +1809,50 @@ and original-reader replay of every timing sample. The closed CLI and its
 census/timing controls are archived;the unchanged linked-image reader and six
 CPU controls remain for model integration. The next consumer uses source and
 fresh checks rather than the old executable.
-The target-head model proposal is now implemented,unbuilt and default off.
-`STRATA_SYCL_DECODE_Q6_DPAS_HEAD=1` requires exact Q8_1 and
-`STRATA_PREFILL_RELEASE_HEADS=1`;unsupported explicit requests fail before the
-new allocations. Only decode C4 at2560x248320 can select it. Canonical rows and
-`weight_bytes`/`row_bytes` stay unchanged for C1,MTP gathers and DFlash2.
-The extra Device payload is521472000bytes;measure its effect on expert-cache
-placement and whole requests before adoption. An immutable RAM packing of the
-same size is built once from mapped GGUF,retained for H2D restoration and never
-copied back from the GPU. The existing canonical snapshot is still521472000B:
-combined target RAM backing/snapshot1042944000B fits the1GiB budget.
-All-reader graph retirement precedes freeing both Device layouts. Restore
-uploads both,then publishes the owner;individual and joint Verifier resumes
-check packed bytes/readiness. A separate`Q6_DPAS_HEAD`audit joins packed calls
-with the unchanged canonical-route schema and existing replay identities.
-The first new gate passes on CPU at source`f2a9fb447`,plan`cc5c03a9c`:
-only the one measured head/decode-C4 cell is selected;the previous30/18/26
-selections,phase isolation and packed-route retirement controls remain intact.
-All174actual compiler and16link inputs match their196-file manifest.
-This does not execute the NativeHead/device owner or a model.
-The next fixture,`tests/sycl/native_head_dpas.cpp`,loads the actual mapped
-GGUF head and tests its public projection/release APIs. Its supervised
-`tools/sycl/q6_head_owner.py`plan freezes15translation units and the qualified
-toolchain/runtime. It runs reference0 then packed1 in fresh processes,with
-two retire/overwrite/restore cycles,all-byte canonical/packed checks and
-registered-address retirement. Its graphs belong to the fixture;the production
-Verifier lease and complete model still need their own qualification.
-Its V1 reference process completes all native checks,normal0 and no fresh
-fault,but the controller gate remains failed:the caller omitted the shared
-finalizer's mandatory`host_probe_accepted`field. Preserve that original outcome.
-The V2 controller adds an evidence-gated acceptance wrapper and a regression
-against the actual finalizer. It may reuse the same803compiler/24link inputs,
-15native units and ELF81340dc8 only after exact proof of unchanged native bytes;
-the original private source/build is shared,not duplicated. Fresh CPU controls
-and reference/packed GPU processes remain required under the new committed plan.
-Fresh native build/pack-owner/device-route checks,actual model speed,
-agent/long-thinking,phase preservation and physical262144/RESTORE qualification
-remain required. The component ratio is not a model-throughput result.
+The target-head proposal remains default off. Its standalone native owner
+fixture now passes at native source afbd954c0,controller 484d403e6 and
+ELF81340dc8;closed evidence is 0840eccd2:q6_head_owner_v2.
+STRATA_SYCL_DECODE_Q6_DPAS_HEAD=1 requires exact Q8_1 and
+STRATA_PREFILL_RELEASE_HEADS=1. Only decode C4 at2560x248320 selects it.
+Canonical rows and weight_bytes/row_bytes stay unchanged for C1,MTP and DFlash2.
+A separate521472000-byte device layout and equal immutable RAM packing are
+owned together. Both device layouts retire for long prefill;canonical D2H is
+521472000bytes and combined restoration H2D is1042944000bytes. The packed
+layout is never copied back from GPU. Combined target RAM backing/snapshot
+1042944000bytes fits the1GiB budget.
+
+Fourteen CPU reader/parser/acceptance controls and five native CPU-only owner/
+switch cases pass. Two fresh GPU processes close normally0 with quiet
+validation,unchanged boot/driver,no fresh fault and full real-shard agreement.
+Eight numerical cases check993280outputs each,543distributed/head-tail scalar
+oracle rows per case,C1 and prompt-reference paths,and guards. Maximum packed/
+reference absolute difference is4.17232513428e-7. Four total retire/overwrite/
+restore cycles remove the old addresses from the live registry,overwrite the
+reclaimed capacity,and restore every canonical/packed byte correctly. The24
+ordinary graph replays use two nodes each. C4's linked SPIR-V image is exactly
+the previously qualified e9f6543e image,two reachable static DPAS calls.
+This proves the fixture-owned graphs and NativeHead APIs,not the production
+Verifier's lease or full model. V1's overall failed result remains failed:
+the caller omitted host_probe_accepted;the V2 acceptance-contract regression
+and fresh processes resolve that controller defect without a native rebuild.
+
+The next whole-model build uses the current primary native tree and selected
+90f recipe,preserving the independent phase guards. The measured e1b tree has
+24native-file differences from current;its actual measured iq3s_dot body is
+byte-identical to current. This source comparison does not prove whole-engine
+parity. The head fixture now links strata_engine's production objects instead
+of a separately compiled kernel/owner copy;that new linkage still needs build
+and execution qualification. The closed standalone benchmark/runner retire to
+Git;unchanged protocol/acceptance readers remain for this model admission.
+
+The traced wrapper samples show268..323ms preparing the RAM snapshot and
+133..165ms versus289..345ms restoring reference/packed heads. These are two
+samples per arm,not clean performance or physical bandwidth. After whole-model
+routing admission,check persistent canonical RAM backing or deferred packed
+upload against actual PP/TTFT/TG before adopting either. Neither is implemented.
+Production Verifier/state handoff,clean matched model speed,agent/long-thinking,
+phase/length behavior,task quality and physical262144/RESTORE remain open.
+The6.55283x component ratio is not a model-throughput result.
 
 The current device-service diagnostic targets `9922 / b310` through
 `tools/sycl/profile_iq3_decode.py`, using the maintained owner, frontend and
