@@ -1803,8 +1803,12 @@ The canonical and candidate full-head payloads are each521472000bytes;
 both together plus inputs/outputs admit1050901760Device bytes.
 The maximum single-allocation report is10132807680bytes. Full-head pack time
 is about0.15s;fixture uploads include both layouts,not one model upload or
-complete cold startup. Retire ended raw/build output after source/recipe
-recovery;the next consumer is source-level model integration with fresh checks.
+complete cold startup. The ended1348-file/62073223-byte raw/build root is
+retired after exact1283-source/archive,8controller,800compiler/24link recovery
+and original-reader replay of every timing sample. The closed CLI and its
+census/timing controls are archived;the unchanged linked-image reader and six
+CPU controls remain for model integration. The next consumer uses source and
+fresh checks rather than the old executable.
 No production dispatch changes yet. A separate packed head would add about
 0.49GiB;measure its effect on expert-cache placement and whole requests.
 `NativeHead.run`,Verifier,MTP row gathers/sub-vocabulary heads and DFlash2
