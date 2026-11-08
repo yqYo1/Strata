@@ -25,8 +25,9 @@ from q6_dpas_component import embedded_dpas
 P=Path(__file__).resolve().parents[2]
 B=Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 RESULT=P/'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-ROOT=B/'q6-head-owner-v1'
-KEY='q6_head_owner_v1'
+ROOT=B/'q6-head-owner-v2'
+KEY='q6_head_owner_v2'
+CONTROLLER_FILES={'tools/sycl/q6_head_owner.py','tools/sycl/test_q6_dpas_component.py'}
 TARGET='sycl_q6_head_owner_test'
 CPP='tests/sycl/native_head_dpas.cpp'
 UNITS=(CPP,'src/core/native_head.cpp','src/kernels/sycl/q6_dpas_component.cpp',
@@ -177,7 +178,7 @@ def prepare():
         build_budget=raw['build_budget'],host_budget=raw['host_budget'],native_budget=raw['native_budget'],
         host_command=[raw['tools']['python']['path'],'-B','-m','unittest','-v','tools.sycl.test_q6_dpas_component'],
         assets=assets,boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver=guards.driver_guard(),
-        plan=dict(order='13CPU reader/parser controls;15-unit fresh fixture build and linked DPAS check;five native CPU-only owner/switch cases;two fresh real-head processes reference0 then packed1.Commit each stage;stop first failure,no retries.',
+        plan=dict(order='14CPU reader/parser/acceptance controls;15-unit fresh fixture build and linked DPAS check;five native CPU-only owner/switch cases;two fresh real-head processes reference0 then packed1.Commit each stage;stop first failure,no retries.',
             shape=dict(K=2560,N=248320,columns=4,C1_reference=True),
             owner_cases='Per process:cancel1;two all-graph drain/retire/detach/Device-overwrite/restore/publish/recapture cycles;four independent543-row/all-output-envelope checks;canonical full-byte immutability;all buffer guards.',
             admission='Attest preload/loader before Runtime;forced adapter/driver after Runtime but before fixture allocations/copies/kernels. Immutable environment.',
@@ -199,11 +200,62 @@ def prepare():
         row.update(stage='failed',preparation_error=repr(e));save(row);raise
     print('Prepared fresh source/owner plan;commit before execution.',flush=True)
 
-def current(row):
-    require(validation.committed(RESULT,(KEY,))==compact(row),'commit unchanged owner gate')
+def prepare_reuse():
+    require(not ROOT.exists() and KEY not in validation.committed(RESULT),'one fresh controller-only plan')
+    old_root=B/'q6-head-owner-v1';old=json.loads((old_root/'record.json').read_text())
+    previous=validation.committed(RESULT,('q6_head_owner_v1',))
+    require(previous==compact(old) and old['stage']=='failed' and not old['passed'] and not old['complete']
+        and old['ownership_closed'] and not old['active'],'preserve original rejected plan')
+    last=old['results'][-1]
+    require(last['mode']=='reference' and last['native_exit_code']==0 and last['ownership_closed']
+        and last['fresh_faults']==[] and last['boot_unchanged'] and last['assets_pre_post_match']
+        and 'host_probe_accepted' not in last and old['failure_mechanism']['kind']=='controller_missing_acceptance_field'
+        and not Path('/proc',str(last['native_identity']['pid'])).exists(),'specific closed controller failure only')
+    revision=git('rev-parse','HEAD').decode().strip()
+    helpers={n:sha(P/n) for n in old['helpers']}
+    changed={n for n in helpers if helpers[n]!=old['helpers'][n]}
+    require(changed==CONTROLLER_FILES and all((P/n).read_bytes()==git('show',revision+':'+n) for n in helpers),
+        'exact committed controller/test-only correction')
+    require(subprocess.run(['git','diff','--quiet',old['source_commit'],'--',
+        *[n for n in old['sources'] if n not in CONTROLLER_FILES]],cwd=P).returncode==0,'native source drift before reuse')
+    require(all(sha(old_root/'source'/n)==v for n,v in old['sources'].items()),'exact original private source')
+    require(sha(old['binary']['path'])==old['binary']['sha256'] and
+        embedded_dpas(Path(old['binary']['path']).read_bytes())==old['codegen'],'same actual ELF and device image')
+    inv=old['actual_inputs'];require(sha(inv['path'])==inv['sha256'],'same actual compiler census')
+    actual=json.loads(Path(inv['path']).read_text())
+    require(all(sha(p)==v for group in ('compiled','links','generated') for p,v in actual[group].items())
+        and not actual['generated'] and inv['compiler_files']==803 and inv['external_link_files']==24
+        and inv['translation_units']==list(UNITS),'all15 native units and803compiler/24link inputs unchanged')
+    require(sha(old['compile_database']['path'])==old['compile_database']['sha256'],'same actual compile commands')
+    row=json.loads(json.dumps(old))
+    row.update(stage='prepared',controller_commit=revision,helpers=helpers,native_root=str(old_root),
+        controller_only_deltas={n:dict(native_snapshot_sha256=old['sources'][n],controller_sha256=helpers[n]) for n in sorted(changed)},
+        native_reuse=dict(original_native_source=old['source_commit'],original_build_evidence='185a05c7f9be1eed09c0152aa40de31db90c2927',
+            original_failed_evidence='2d1040ed1dd6ab43eaa3aaf1a58b47c473fde7c5',original_binary=old['binary'],all15units_803compiler_24link_inputs_unchanged=True,
+            reason='Only the host acceptance contract and its test change;no native rebuild or inherited model/GPU qualification.'),
+        results=[],commands=[],active=False,ownership_closed=True,passed=False,complete=False,GPU_executed=False)
+    row.pop('failure_mechanism',None)
+    row['environment']={k:v.replace(str(old_root),str(ROOT)) for k,v in old['environment'].items()}
+    row['plan']['order']='14CPU reader/parser/real acceptance-contract controls;same qualified native build;five fresh CPU owner/switch cases;fresh reference0 then packed1 GPU processes.Commit each stage;stop first failure.'
+    row['plan']['acceptance_fix']='Set host_probe_accepted only after complete parsed owner,quiet parameter validation,normal0 and full asset agreement;then call the shared fault/closure finalizer. Original V1 remains failed.'
+    row['plan']['retention']='V1 native source/build is shared by this named V2 qualification;no duplicate build. Retire ended raw/source/build after V2 closure and exact Git recovery;keep phase guards and separate legacy holds.'
+    ROOT.mkdir(mode=0o700)
+    for name in ('tmp','cache'):(ROOT/name).mkdir()
+    save(row)
+    try:current(row,committed=False)
+    except BaseException as e:row.update(stage='failed',preparation_error=repr(e));save(row);raise
+    print('Prepared controller-only correction with unchanged native ELF;commit before execution.',flush=True)
+
+def current(row,committed=True):
+    if committed:require(validation.committed(RESULT,(KEY,))==compact(row),'commit unchanged owner gate')
     require(all(sha(P/n)==v and (P/n).read_bytes()==git('show',row['controller_commit']+':'+n) for n,v in row['helpers'].items()),'control drift')
-    require(subprocess.run(['git','diff','--quiet',row['source_commit'],'--',*row['sources']],cwd=P).returncode==0,'live native inputs changed')
-    require(all(sha(ROOT/'source'/n)==v for n,v in row['sources'].items()),'private source drift')
+    deltas=row.get('controller_only_deltas',{})
+    require(set(deltas)<=CONTROLLER_FILES and all(deltas[n]['native_snapshot_sha256']==row['sources'][n]
+        and deltas[n]['controller_sha256']==row['helpers'][n] for n in deltas),'controller-only proof drift')
+    require(subprocess.run(['git','diff','--quiet',row['source_commit'],'--',
+        *[n for n in row['sources'] if n not in deltas]],cwd=P).returncode==0,'live native inputs changed')
+    native_root=Path(row.get('native_root',ROOT))
+    require(all(sha(native_root/'source'/n)==v for n,v in row['sources'].items()),'private source drift')
     _,identity=selected.basis();require(identity==row['selected_native'],'selected native provenance changed')
     e=row['external_inputs'];require(sha(e['path'])==e['sha256'] and
         all(sha(p)==v for p,v in json.loads(Path(e['path']).read_text()).items()),'external compiler/link drift')
@@ -264,6 +316,13 @@ def parse_native(text,packed):
         canonical_immutable=True,packed_immutable=True if packed else None,
         scope='Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed.')
 
+def finish_gpu_probe(outcome,scope,cursor,boot):
+    # The shared finalizer intentionally rejects a caller that omits its
+    # acceptance field. Never infer acceptance from normal process exit alone.
+    outcome['host_probe_accepted']=bool('error' not in outcome and outcome.get('passed') and outcome.get('assets_pre_post_match')
+        and outcome.get('native_exit_code')==0 and outcome.get('owner') and outcome.get('validation'))
+    validation.finish(outcome,scope,cursor,boot)
+
 def run_gpu(row,scope,mode,outcome):
     packed=int(mode=='packed')
     require(model_assets()==row['assets'],'full pre-exec real-shard identities')
@@ -323,7 +382,7 @@ def run_gpu(row,scope,mode,outcome):
     except BaseException as e:
         outcome.update(passed=False,error=repr(e))
     finally:
-        validation.finish(outcome,scope,cursor,row['boot'])
+        finish_gpu_probe(outcome,scope,cursor,row['boot'])
         if not outcome['passed'] or outcome.get('driver_after')!=row['driver'] or 'error' in outcome:
             outcome['passed']=False
     require(outcome['passed'],outcome.get('error','native owner/fault/closure gate failed'))
@@ -341,9 +400,9 @@ def execute(mode):
         if mode=='controls':
             e,out,err=scope.run('reader-parser-controls',row['host_command'],row['environment'],P,**row['host_budget'])
             text=out.read_text()+err.read_text()
-            require(owner.closed(e) and e['exit_code']==0 and 'Ran 13 tests' in text and '\nOK\n' in text
-                and 'skipped' not in text,'all13 reader/parser controls')
-            outcome.update(tests=13,GPU_executed=False);row['stage']='cpu-controlled'
+            require(owner.closed(e) and e['exit_code']==0 and 'Ran 14 tests' in text and '\nOK\n' in text
+                and 'skipped' not in text,'all14 reader/parser/acceptance controls')
+            outcome.update(tests=14,GPU_executed=False);row['stage']='built' if row.get('native_reuse') else 'cpu-controlled'
         elif mode=='build':
             outputs={}
             for name,command in [('configure',row['configure']),('build',row['build'])]:
@@ -402,7 +461,8 @@ def execute(mode):
 def main():
     with (B/'owned-v0141-measurement.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        require(len(sys.argv)==2,'use prepare|controls|build|host|reference|packed')
+        require(len(sys.argv)==2,'use prepare|prepare-reuse|controls|build|host|reference|packed')
         if sys.argv[1]=='prepare':prepare()
+        elif sys.argv[1]=='prepare-reuse':prepare_reuse()
         else:execute(sys.argv[1])
 if __name__=='__main__':main()

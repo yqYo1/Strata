@@ -1835,6 +1835,14 @@ toolchain/runtime. It runs reference0 then packed1 in fresh processes,with
 two retire/overwrite/restore cycles,all-byte canonical/packed checks and
 registered-address retirement. Its graphs belong to the fixture;the production
 Verifier lease and complete model still need their own qualification.
+Its V1 reference process completes all native checks,normal0 and no fresh
+fault,but the controller gate remains failed:the caller omitted the shared
+finalizer's mandatory`host_probe_accepted`field. Preserve that original outcome.
+The V2 controller adds an evidence-gated acceptance wrapper and a regression
+against the actual finalizer. It may reuse the same803compiler/24link inputs,
+15native units and ELF81340dc8 only after exact proof of unchanged native bytes;
+the original private source/build is shared,not duplicated. Fresh CPU controls
+and reference/packed GPU processes remain required under the new committed plan.
 Fresh native build/pack-owner/device-route checks,actual model speed,
 agent/long-thinking,phase preservation and physical262144/RESTORE qualification
 remain required. The component ratio is not a model-throughput result.

@@ -4,6 +4,8 @@ from pathlib import Path
 import struct
 import sys
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 sys.dont_write_bytecode = True
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import q6_dpas_component as component
@@ -128,6 +130,26 @@ class NativeHeadProtocol(unittest.TestCase):
                      self.output().replace('max_abs_pair_error=0.001','max_abs_pair_error=nan'),
                      self.output().replace('model=0','model=1')]:
             with self.assertRaises(RuntimeError):head_owner.parse_native(text,1)
+
+    def test_actual_fault_finalizer_acceptance_contract(self):
+        # Real shared finalizer,only its OS reads mocked. Normal exit alone and
+        # partial evidence must not qualify;the complete caller must set its
+        # mandatory acceptance field before finalization (the V1 defect).
+        scope=SimpleNamespace(active=None,commands=[])
+        complete=dict(passed=True,assets_pre_post_match=True,native_exit_code=0,
+            owner={'numeric_cases':4},validation={'preinit':37})
+        with patch.object(head_owner.validation.subprocess,'check_output',return_value=''), \
+             patch.object(head_owner.validation.guards,'driver_guard',return_value={'driver':'fixture'}), \
+             patch.object(head_owner.validation,'Path',return_value=SimpleNamespace(read_text=lambda:'fixture-boot\n')):
+            good=dict(complete);head_owner.finish_gpu_probe(good,scope,'fixture-cursor','fixture-boot')
+            self.assertTrue(good['host_probe_accepted'] and good['passed'])
+            for missing in complete:
+                partial=dict(complete);partial.pop(missing)
+                head_owner.finish_gpu_probe(partial,scope,'fixture-cursor','fixture-boot')
+                self.assertFalse(partial['passed'])
+            failed=dict(complete,error='original failure must survive')
+            head_owner.finish_gpu_probe(failed,scope,'fixture-cursor','fixture-boot')
+            self.assertFalse(failed['passed'])
 
 
 if __name__ == '__main__':
