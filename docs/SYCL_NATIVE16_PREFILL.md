@@ -1741,64 +1741,29 @@ useful only for selecting a new question. Its 2.154 s interior window observes
 service (316 launches); these overlapping services are not critical-path costs.
 That earlier 479a, short-output configuration does not establish today's
 long-decode ranking, and its original artifact-cap failure remains unchanged.
-The production mapped-row copy checks the same hit list for every float,
-although the decision is row-uniform. The independently authored unselected
-`src/kernels/sycl/mapped_row_copy.hpp` tests one row-group decision and scalar/
-four-element copy groupings,with optional column tiling. The old failed profile
-only selected this question;it did not qualify normal-run service or saturation.
+Both independently authored row-uniform copy comparisons are closed. The
+direct-entry screen (`mapped_row_copy_component_v1`,source`7f6c38b37`,plan
+`507b96cee`) has no qualifying host-USM cell;its device-only milestone remains
+in the CSV. Its source/recipe are recoverable and its ended build/raw root is
+already retired. Keep the original failed host-cell gates.
 
-The direct-entry component comparison is now closed under
-`mapped_row_copy_component_v1`,source`7f6c38b37`,plan`507b96cee`,fixture
-ELF`04a7450b…`. All five CPU input-reader controls pass without skips. Its five
-actual translation units cover716compiler and24external link inputs,with zero
-uncovered/generated inputs. Small80and full1120device cases pass bit copies,
-hit zeros,NaNs/signed zeros,odd widths/alignment,changed/duplicate/unsorted IDs
-and allocation/input guards on actual host-USM/device placements. All three
-fresh timing processes close normally0 with quiet before-main parameter
-validation,closed ownership,unchanged boot/driver and no fresh fault.
-
-All600timed samples are eligible;the minimum whole4096-launch batch is
-149.968ms against the10ms floor. Each cell has five samples per variant/process,
-with forward,reverse and mixed variant orders. The sole cell improving in all
-three processes is`tile256e4`,device source,one bank,four hits,40x2560floats:
-candidate/reference median-wall ratios0.930028/0.950132/0.770726,geometric
-mean0.879819. The model's actual host-USM source has **no** qualifying cell.
-Keep all failed host-cell gates and the current production entry. This is a
-parameter-validation-instrumented component result,not clean timing,model gain,
-physical traffic or saturation. Full samples and decisions remain in the
-compact result;the device-only component milestone is indexed separately in
-the cumulative CSV. Source/recipe are recoverable from Git.
-
-The next bounded question is the same copy contract through the production
-compatibility graph's capture/replay path. That fixture/controller is now
-prepared under`mapped_row_copy_graph_v1`,source`85f33092f`,plan`18eadae2b`.
-All eight CPU input/dispatch reader controls pass without skips,with normal0,
-closed ownership and no GPU/model execution. Its fixture build now also passes:
-ELF`53b7cbca…`,716actual compiler inputs,24external link inputs,zero generated/
-uncovered inputs and three normal0closed build commands. The small80-case graph
-check now passes changed metadata,bit copies and guards,with normal0,quiet
-before-main validation,closed ownership and no fresh fault. Its trace includes
-actual command-buffer kernel capture/replay. The full1120-case graph matrix
-also passes both placements,changed metadata,odd widths/alignment and guards,
-with the same quiet validation,normal0,closed ownership and no fresh fault.
-Timing remains pending.
-The direct-entry screen includes entry/queue submission on every call;the
-model captures these entries and replays completed graph segments. All five
-new arms capture one ordinary kernel node per fixed source bank and replay
-through`graph_launch_with_completion`with checked event completion. Metadata
-changes are tested between replays;both queues drain before source changes or
-allocation retirement. Capture,JIT,initialization and checks stay outside timing.
-The prospective plan has eight CPU reader controls,80small/1120full cases and
-three fresh timing processes with600samples of8192replays per batch. Each
-sample must report the actual graph route,node count and8192successful replay
-calls. Only a repeated winning host-USM cell can motivate a separately qualified
-decode-only model proposal. No environment mutation or direct fallback occurs.
-Commit the exact source and generated recipe before execution;retain original
-direct-entry failures. The ended direct-entry build/raw root is already retired
-after exact1280-file archive/recipe recovery and716compiler/24link binding checks.
-Every lane reaches the group broadcast
-before branching,following the
-[Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
+The production-graph screen (`mapped_row_copy_graph_v1`,source`85f33092f`,plan
+`18eadae2b`,ELF`53b7cbca…`) passes eight CPU controls,80small and1120full device
+cases. Its five actual translation units cover716compiler and24external link
+inputs,with zero uncovered/generated inputs. Metadata changes,bit copies,
+NaNs/signed zeros,odd widths/alignment and guards pass on both placements.
+All three fresh timing processes close normally0,with quiet before-main
+validation,closed ownership,unchanged boot/driver and no fresh fault. All600
+samples report8192successful ordinary graph replays and one kernel node;the
+minimum batch is323.626ms against the10ms floor. Each cell has five samples per
+variant/process,with forward,reverse and mixed orders. None of the16host-USM
+candidate cells improves in all three processes. Keep production unchanged;
+this gate does not admit a model trial. Two device-only cells improve at one
+bank/20hits,with candidate/reference geometric means0.948168and0.836202,but
+they do not match the model's host source. These instrumented component results
+do not qualify clean timing,model gain,physical traffic or saturation. Keep
+the useful individual samples and original decisions in the compact result;
+retire the ended fixture/build/raw output after exact source/recipe recovery.
 
 The current device-service diagnostic targets `9922 / b310` through
 `tools/sycl/profile_iq3_decode.py`, using the maintained owner, frontend and
