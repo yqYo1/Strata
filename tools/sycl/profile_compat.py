@@ -27,7 +27,7 @@ import profile_split as profile
 
 P, B, RESULT = build.P, build.B, build.RESULT
 ROOT, KEY = B / 'compat-profile-window-v1', 'compat_profile_window_v1'
-HOST_KEY = 'compat_profile_window_host_v1'
+HOST_KEY = 'compat_profile_window_host_v2'
 MODES = ('direct', 'active', 'paused-construction')
 PHASES = ('before-runtime', 'runtime-ready', 'captured', 'window-drained', 'before-exit')
 NAMES = ('StrataCompatWindowProduce', 'StrataCompatWindowConsume')

@@ -111,6 +111,13 @@ cache-loan child changes two of those helpers,so prepare a new committed host
 plan and repeat the five controls after integration before using this device
 gate. Preserve V1's actual pass and source;do not refresh its hashes or describe
 the post-merge tree as the already tested snapshot.
+The device controller now requires`compat_profile_window_host_v2`;that new
+host plan has not yet run. The selected-native reader recovers its original841
+project inputs from the pushed primary and checks the original1461-compiler/
+29-link census,SDK and same-build ELFs. It no longer needs the integrated child
+checkout or the ended f633 fallback binaries. The fixture build instead retains
+the selected90f binary and both independent phase guards. This is a source
+change;verify that admission before deleting the old checkout/build.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction

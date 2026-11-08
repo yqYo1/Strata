@@ -124,7 +124,9 @@ def prepare():
         'isolated source/output paths required')
     row = dict(stage='prepared', project=project, dependencies=copy.deepcopy(native['dependencies']),
         recipe=recipe, toolchain=native['toolchain'], external_inputs=native['external_inputs'],
-        fallbacks=native['fallbacks'], selected_native=identity, collector=assets,
+        fallbacks={name: native['fallbacks'][name] for name in ('prefill', 'decode')} |
+                  dict(selected_feature=identity['engine']),
+        selected_native=identity, collector=assets,
         budgets=BUDGET, commands=[], passed=False, complete=False, active=False, ownership_closed=True,
         GPU_qualified=False, model_qualified=False,
         scope='Build only four production-runtime/fixture translation units. No engine build,fixture execution,'

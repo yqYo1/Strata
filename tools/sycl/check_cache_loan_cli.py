@@ -45,6 +45,60 @@ def current_probe():
     return validation.current_runtime_probe(reference)
 
 
+def retained_inputs(row, proof):
+    """Verify the selected closed build without its retired source checkout.
+
+    Historical CLI execution still requires its original controller and plan.
+    Old fallback binaries are comparison guards, not inputs to the built ELF.
+    """
+    selection = validation.committed(build.STATUS, ('current_sync', 'feature_generation_selection'))
+    cohort = validation.committed(build.STATUS, ('current_sync', 'dflash2_cache_loan_generation_v1'))
+    require(selection['binary'] == row['binaries']['strata'] == cohort['binary'] and
+        selection['native_source_commit'] == row['project']['revision'] and
+        selection['original_build_record'] == proof['record'] == cohort['native_build']['record'] and
+        selection['original_child_merged'] and cohort['passed'] and cohort['complete'] and
+        cohort['ownership_closed'] and len(cohort['processes']) == 6 and
+        all(p['passed'] and p['complete'] and p['ownership_closed'] and
+            p['native_exit_code'] == 0 and p['fresh_faults'] == [] for p in cohort['processes']),
+        'closed selected feature generation required before archived-source reuse')
+    source.git(P, 'merge-base', '--is-ancestor', row['project']['revision'], 'origin/feature/sycl')
+    allowed = {}
+    for index, pin in enumerate([row['project'], *row['dependencies']]):
+        root = P if index == 0 else Path(pin['root'])
+        recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
+            source.blobs(root, pin['revision'], pin['source_sha256'])}
+        require(len(recovered) == pin['count'] and recovered == pin['source_sha256'] and
+            build.signature(recovered) == pin['aggregate_sha256'], 'original source unavailable in Git')
+        if index:
+            require(all(digest(root / n) == sha for n, sha in recovered.items()), 'dependency source changed')
+        allowed.update({str((Path(pin['root']) / n).resolve()): sha for n, sha in recovered.items()})
+    for path, sha in row['toolchain'].items():
+        require(digest(path) == sha, 'compiler/tool input changed: ' + path)
+    allowed.update({str(Path(path).resolve()): sha for path, sha in row['toolchain'].items()})
+    external = row['external_inputs']
+    require(digest(external['path']) == external['sha256'], 'external input map changed')
+    sdk = json.loads(Path(external['path']).read_text())
+    require(all(digest(path) == sha for path, sha in sdk.items()), 'SDK/dependency input changed')
+    allowed.update({str(Path(path).resolve()): sha for path, sha in sdk.items()})
+    audit = validation.committed(STATUS, (KEY,))
+    meta = audit['actual_inputs']
+    require(audit['passed'] and audit['ownership_closed'] and
+        audit['native_build']['record'] == proof['record'] and meta['uncovered'] == 0 and
+        digest(meta['path']) == meta['sha256'], 'original actual-input census changed')
+    actual = json.loads(Path(meta['path']).read_text())
+    require(len(actual['compiled']) == meta['compiler_files'] == 1461 and
+        len(actual['generated']) == meta['owned_generated_files'] == 1 and
+        len(actual['frozen_links']) == meta['external_link_files'] == 29 and
+        all(allowed.get(path) == sha for group in ('compiled', 'frozen_links')
+            for path, sha in actual[group].items()), 'actual compiler/link inputs differ from original pins')
+    require(all(Path(path).is_relative_to(NATIVE / 'build') and digest(path) == sha
+        for path, sha in actual['generated'].items()), 'owned generated input changed')
+    for name in ('prefill', 'decode'):
+        guard = row['fallbacks'][name]
+        require(Path(guard['path']).stat().st_size == guard['bytes'] and
+            digest(guard['path']) == guard['sha256'], 'preserve independent phase guard: ' + name)
+
+
 def native():
     row = json.loads((NATIVE / 'record.json').read_text())
     proof = json.loads(source.git(P, 'show', EVIDENCE + ':' + str(
@@ -55,7 +109,7 @@ def native():
         proof['passed'] and proof['ownership_closed'] and
         proof['source_commit'] == row['project']['revision'] and
         proof['binaries'] == row['binaries'], 'original committed candidate build differs')
-    build.check_inputs(row)
+    retained_inputs(row, proof)
     for value in row['binaries'].values():
         require(digest(value['path']) == value['sha256'] and
             Path(value['path']).stat().st_size == value['bytes'], 'same-build output changed')
