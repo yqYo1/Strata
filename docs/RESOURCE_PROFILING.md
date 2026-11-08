@@ -157,10 +157,12 @@ native waits per24-output request; pool time includes scheduling/waits and the
 wait thread's CPU time is not expert arithmetic. Mapped host-memory reads are
 not counted by explicit copy-command payloads. Keep PCIe/RAM traffic and
 complete device coverage unknown. The row-uniform-copy component is a bounded
-next hypothesis; its controller now binds the selected native recipe,original
-driver selection and closed current cohort,with CPU input-reader controls and
-an actual compiler/link census. These are source changes awaiting execution;
-they qualify no component or inference dispatch.
+next hypothesis. Its separately owned direct-entry screen now passes five CPU
+controls,716compiler/24link input checks,80+1120guarded numerical cases and
+600timing samples in three fresh processes. No host-USM cell improves in all
+three;the only repeated win uses device input. Keep production unchanged and
+model admission false. The next graph-replay comparison needs its own plan;
+the direct-entry result does not settle that different dependency path.
 An unprofiled completion must expose no graph timestamps. These checks do not
 measure kernel arithmetic utilization, physical traffic, a lossless pause with
 pending work, model observer overhead or inference performance. Requalify the

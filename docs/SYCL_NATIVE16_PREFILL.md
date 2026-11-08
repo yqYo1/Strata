@@ -1741,71 +1741,41 @@ useful only for selecting a new question. Its 2.154 s interior window observes
 service (316 launches); these overlapping services are not critical-path costs.
 That earlier 479a, short-output configuration does not establish today's
 long-decode ranking, and its original artifact-cap failure remains unchanged.
-The current mapped-row copy checks the same hit-row list for every float in a
-row (`src/kernels/sycl/elementwise.cpp`), whereas the hit decision is row-uniform.
-A bounded row-mask/broadcast/vector-copy component can test this concrete
-redundancy after the CPU component; compare actual host-USM and device input
-placement and preserve hit zeros, source lifetime and graph ordering. The
-unselected `src/kernels/sycl/mapped_row_copy.hpp` prototype defines a hit-list
-scan and converged broadcast per row group. An optional column-tiled variant
-repeats that scan per tile:at the actual40x2560 shape,one group per row provides
-40 groups,while256x4 and64x4 column tiles provide120/400 groups. This tests
-whether more independent work offsets the extra membership work;these are
-group counts,not occupancy measurements. Scalar/four-element source groupings
-allow four-byte-aligned rows without promising emitted vector instructions.
-The independent `tests/sycl/mapped_row_copy.cpp` fixture compares the existing
-production entry with four unselected variants,using device metadata and both
-host-USM/device sources. Its prepared checks include changed/duplicate/unsorted
-hit lists,positive-zero hit output,NaN/signed-zero bit copies,odd tails,offset
-alignment and source/output/metadata guards. The timing path separates untimed
-checks and warmups from dependent-batch wall/host CPU clocks,with one/64 source
-banks and two hit ratios. Submission and checked-wait regions each retain wall
-and thread CPU time;their sums conserve each batch's total. A wait's thread CPU
-time is not host tensor arithmetic,and submission can overlap device execution.
-The fixture does not measure physical traffic or kernel service.
-Its planned timing retains UR parameter validation and the validation preload
-in all variants. Treat it as an instrumented component screen,not clean speed;
-any later clean comparison needs a separate committed plan and fresh processes.
-The component fixture is now built from source`7f6c38b37`and plan`507b96cee`:
-ELF`04a7450b…`,716actual compiler inputs,24external link inputs,zero generated
-or uncovered inputs. All three build commands close normally0. The small
-traced80-case device check now passes bitwise copies and guards,normal0,
-quiet parameter validation,closed ownership and no fresh fault. The full1120
-cases also pass both actual placements,odd widths/alignment,metadata variants
-and bit/guard checks with the same closure/fault results. Timing remains pending. The
-`tools/sycl/mapped_row_copy_component.py` controller prepares a private Git
-source snapshot and pins the compiler,headers,system packages and runtime files.
-It now uses the selected90f private build recipe and the original exact32K
-environment's driver selection,with explicit runtime-safety checks. Preparation
-requires the current DFlash2 model cohort to be closed. That cohort's failed
-observer screen remains failed;its observed ranking only motivates this
-independent component question. At source`7f6c38b37`and plan`507b96cee`,all five
-actual-input reader CPU controls pass without skips,with normal0,closed ownership
-and no GPU/model execution. The build requires all five actual
-translation units and every compiler/link input to match the precommitted
-inventories,with zero uncovered/generated inputs. These changes are
-host/build/component-correctness evidence only,not speed/model qualification. It records preparation
-intent before extracting sources,and preserves a failed
-attempt if materialization fails. An unwritable receipt remains an explicit
-failure requiring preservation of the partial root;it cannot authorize retry.
-Prepare and commit its exact plan,then run the five CPU controls,build,run the small traced check and full
-check,and collect timing processes0/1/2,committing each closed stage before the
-next. The fixture retains its runtime through a final live-owner/environment/
-provider check outside timing. A component win remains separate from a
-decode-only model proposal and its complete dependency-path comparison.
-The excluded `sycl_mapped_row_copy_component` CMake target links only the
-runtime,production elementwise translation unit and fixture. It does not build
-an inference engine or require native-expert/GGML and test-suite targets.
-Prepare a separate pinned Release configuration with`STRATA_ENABLE_SYCL=ON`,
-`STRATA_NATIVE_EXPERTS=OFF`,`STRATA_BUILD_TESTS=OFF` and`STRATA_SYCL_TESTS=OFF`;
-use`/opt/intel/oneapi/compiler/2026.2/bin/icpx` and
-`-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl`. The SYCL configuration
-still resolves oneMKL before this target can build,although this target does
-not link the prefill library. Build only this target with one compiler job.
-No configure/build has run.
-The existing production copy and measured engine remain unchanged.
-Every lane reaches the two-dimensional group broadcast with the same valid
-source ID before the hit-dependent branch,following the
+The production mapped-row copy checks the same hit list for every float,
+although the decision is row-uniform. The independently authored unselected
+`src/kernels/sycl/mapped_row_copy.hpp` tests one row-group decision and scalar/
+four-element copy groupings,with optional column tiling. The old failed profile
+only selected this question;it did not qualify normal-run service or saturation.
+
+The direct-entry component comparison is now closed under
+`mapped_row_copy_component_v1`,source`7f6c38b37`,plan`507b96cee`,fixture
+ELF`04a7450b…`. All five CPU input-reader controls pass without skips. Its five
+actual translation units cover716compiler and24external link inputs,with zero
+uncovered/generated inputs. Small80and full1120device cases pass bit copies,
+hit zeros,NaNs/signed zeros,odd widths/alignment,changed/duplicate/unsorted IDs
+and allocation/input guards on actual host-USM/device placements. All three
+fresh timing processes close normally0 with quiet before-main parameter
+validation,closed ownership,unchanged boot/driver and no fresh fault.
+
+All600timed samples are eligible;the minimum whole4096-launch batch is
+149.968ms against the10ms floor. Each cell has five samples per variant/process,
+with forward,reverse and mixed variant orders. The sole cell improving in all
+three processes is`tile256e4`,device source,one bank,four hits,40x2560floats:
+candidate/reference median-wall ratios0.930028/0.950132/0.770726,geometric
+mean0.879819. The model's actual host-USM source has **no** qualifying cell.
+Keep all failed host-cell gates and the current production entry. This is a
+parameter-validation-instrumented component result,not clean timing,model gain,
+physical traffic or saturation. Full samples and decisions remain in the
+compact result and cumulative CSV;source/recipe are recoverable from Git.
+
+The next bounded question is the same copy contract through the production
+compatibility graph's capture/replay path. The direct-entry screen includes
+entry/queue submission on every call;the model captures these entries and
+replays completed graph segments. Commit a new recipe,comparison order and
+criteria before testing that distinct path. Keep the prototype/fixture source
+for that named next consumer;the closed direct-entry build and successful raw
+output have no remaining consumer. Every lane reaches the group broadcast
+before branching,following the
 [Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
 
 The current device-service diagnostic targets `9922 / b310` through
