@@ -26583,11 +26583,11 @@
   },
   "orca_report_isolation_preflight_20261108": {
     "classification": "decision_support",
-    "state": "failed_report_available_native_review_pending_physical_closure_unproved",
+    "state": "failed_native_review_complete_product_write_denial_unproved_closure_pending",
     "scope": "One ordinary Orca folder workspace:recognized Task,worker-side IPC,report write and denied product write opens. No source audit.",
     "scope_eligibility": {
       "schedulable_now": false,
-      "prerequisite": "This finite preflight is settled as failed. Await native review of the998-byte report and prove exact worker closure before a separately justified follow-up. No source audit/retry or product investigation is eligible from dispatch readiness alone."
+      "prerequisite": "Task/report review complete:status succeeded but required caller.orcaSessionId was absent,so product opens were not attempted. Main must verify existing worker lifecycle;source audit remains ineligible. Any later corrected preflight must reconcile the actual status schema and preserve this failure,not assume read-only enforcement."
     },
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-report-isolation-preflight-20261108",
     "model": "gpt-6-luna",
@@ -26622,7 +26622,12 @@
       "terminal": "term_8db6c39c-d36c-4ad1-91af-4f22f16436df",
       "workspace": "8c945749-8725-4e6a-9092-c7b027194b01::/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-report-isolation-preflight-20261108",
       "liveness": "live",
-      "terminalState": "retained"
+      "terminalState": "retained",
+      "release": {
+        "state": "retained",
+        "reason": "external_terminal",
+        "processAction": "none"
+      }
     },
     "launch": {
       "operation_id": "1794123588639-f4116edcaa53482fab1235c06217fdd1",
@@ -26631,13 +26636,16 @@
       "receipt": "Started normal Orca agent launch with user-default terminal surface;TUI idle and worker-start recognized/ready. This is not worker-side IPC or product write-denial evidence."
     },
     "native_review": {
-      "state": "running",
+      "state": "complete",
       "agent": "/root/review_report_workspace_preflight_20261108",
       "model": "gpt-6-luna",
       "effort": "max",
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-report-isolation-preflight-20261108/review.md",
-      "budget_bytes": 4096
+      "budget_bytes": 4096,
+      "sha256": "a7eba1312b97b404a38344b91f091620e32b0baf54546cfd4d3b1e6d083d6434",
+      "bytes": 1500,
+      "digest": "Worker-side Orca status returned success but lacked the requested caller.orcaSessionId;the Task stopped before product write-open probes. No write-denial errno is observed. Report placement alone is shown. Failed/live/retained is not physical closure. No source-audit Task is schedulable;verify existing worker lifecycle next."
     },
-    "ownership": "Task failed/report exists;worker-show still live/retained. No proof of physical closure,no stop/release/terminal close or duplicate launch attempted."
+    "ownership": "Task is failed/settled;worker-show remains live/retained. Guarded post-completion worker-release retained this Main-launched pre-existing terminal as external_terminal with processAction=none. No direct terminal close,steering,stop or duplicate launch. Carry exact handle until eligible same-worker lifecycle follow-up;no source input hold."
   }
 }
