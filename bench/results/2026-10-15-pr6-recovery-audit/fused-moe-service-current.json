@@ -205151,7 +205151,7 @@
     }
   },
   "drafter_generation_v1": {
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "fc94ada3a6ef796e880fe5c638d83efe92002572",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/build/strata",
@@ -205584,10 +205584,253 @@
         "passed": true
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "drafter": "mtp",
+        "passed": false,
+        "complete": false,
+        "model_executed": false,
+        "error": "RuntimeError('benchmark/ownership failure')",
+        "ownership_closed": false,
+        "commands": [
+          {
+            "label": "bench",
+            "argv": [
+              "/bin/sh",
+              "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+              "--config",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v1/mtp/config.json",
+              "--port",
+              "52681",
+              "--long-generation-only",
+              "--long-generation-workload",
+              "regular-code",
+              "--think",
+              "--runs",
+              "1",
+              "--long-generation-max-tokens",
+              "16384",
+              "--profile-request-gates",
+              "--profile-startup-gate",
+              "--workload-id",
+              "native_gdn_20261018",
+              "--fail-fast-engine-error",
+              "--ready-timeout",
+              "600",
+              "--out",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v1/mtp/bench"
+            ],
+            "environment": {
+              "PATH": "/home/yayoi/.local/share/strata-sycl/venv/bin:/usr/bin:/bin",
+              "HOME": "/home/yayoi",
+              "LANG": "C.UTF-8",
+              "LC_ALL": "C.UTF-8",
+              "PYTHONDONTWRITEBYTECODE": "1",
+              "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+              "MKLROOT": "/opt/intel/oneapi/mkl/2026.1",
+              "OMP_NUM_THREADS": "1",
+              "PYTHONUNBUFFERED": "1",
+              "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+              "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+              "SYCL_CACHE_PERSISTENT": "0",
+              "NEOReadDebugKeys": "1",
+              "EnableDirectSubmission": "0",
+              "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+              "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+              "STRATA_SYCL_MMQ_XMX": "1",
+              "STRATA_SYCL_MMQ_XMX_TILE": "8",
+              "STRATA_SYCL_MMQ_XMX_EXACT": "1",
+              "STRATA_SYCL_MMQ_XMX_PACK": "0",
+              "STRATA_SYCL_MMQ_XMX_COMPACT": "1",
+              "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+              "STRATA_PREFILL_RING": "8",
+              "STRATA_PREFILL_MMQ": "0",
+              "STRATA_PREFILL_MOE_COMPACT_FP16": "1",
+              "STRATA_WATCHDOG_S": "480",
+              "STRATA_SYCL_PROMPT_DIRECT": "1",
+              "STRATA_PREFILL_LAYER_MAJOR": "1",
+              "STRATA_PREFILL_LAYER_MAJOR_R_DTYPE": "bf16",
+              "STRATA_PREFILL_LAYER_MAJOR_R_GPU": "auto",
+              "STRATA_PREFILL_RELEASE_MTP_EXPERTS": "0",
+              "STRATA_SYCL_KV_COPY_GROUPS": "0",
+              "STRATA_IQ_SINGLE_EXACT": "0",
+              "STRATA_SYCL_PARALLEL_IQ_DEQUANT": "1",
+              "STRATA_PREFILL_LAYER_MAJOR_SHAPE_CENSUS": "0",
+              "STRATA_IQ_TIMING_PROGRESS": "0",
+              "STRATA_PREFILL_RELEASE_HEADS": "1",
+              "STRATA_PREFILL_NATIVE_DENSE_BANK": "1",
+              "STRATA_SYCL_PREFILL_SCRATCH_ALIAS": "1",
+              "STRATA_SYCL_QSA_INDEXER_DEVICE_BATCH": "1",
+              "STRATA_GR_UNFUSED": "0",
+              "STRATA_PREFILL_BF16X2": "0",
+              "STRATA_PF_FUSED": "0",
+              "STRATA_PREFILL_CANONICAL_DENSE_BANK": "1",
+              "STRATA_SYCL_SELECT_RADIX4": "1",
+              "STRATA_SYCL_SELECT_CYCLIC": "0",
+              "STRATA_SYCL_PROMPT_K_CELL_MAJOR": "0",
+              "STRATA_SYCL_PROMPT_NATIVE_KV_MIN": "0",
+              "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v1/mtp/cache",
+              "STRATA_SYCL_PREFILL_NATIVE16": "bf16",
+              "STRATA_SYCL_PREFILL_QSA_MATH": "bf16-prefix-ordered-exp",
+              "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm",
+              "STRATA_SYCL_PREFILL_NATIVE16_QSA": "1",
+              "STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE": "auto",
+              "STRATA_ROPE_TABLE": "1",
+              "STRATA_SYCL_PREFILL_MOE_WINDOW": "10",
+              "STRATA_SYCL_SCORE_QUERY_TILE": "8",
+              "STRATA_SYCL_SCORE_HEAD_PARALLEL": "1",
+              "STRATA_SYCL_PREFILL_SCORE_GEMM": "1",
+              "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v1/mtp/tmp",
+              "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v1/mtp",
+              "ZES_ENABLE_SYSMAN": "0",
+              "STRATA_SYCL_PREFILL_GDN_COLUMNS": "4",
+              "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
+              "STRATA_SYCL_PREFILL_GU_SWIGLU": "large",
+              "STRATA_SYCL_PREFILL_EXPERT_SOURCE_VIEW": "1",
+              "STRATA_SYCL_PREFILL_DOWN_SCATTER": "large",
+              "STRATA_SYCL_PREFILL_MIXED_SCRATCH": "1",
+              "STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS": "384",
+              "STRATA_SYCL_CACHE_SCRATCH_LEASE": "0",
+              "STRATA_SYCL_VERIFY_ARENA_COPY": "0",
+              "STRATA_SYCL_VERIFY_PCIE_EARLY": "0",
+              "CUDA_MODULE_LOADING": "EAGER",
+              "STRATA_MTP_BATCH_F16": "1",
+              "STRATA_SYCL_PREFILL_EXPERT_BANK_PACKED": "1",
+              "STRATA_IQ2_PAIR": "1",
+              "STRATA_SYCL_MTP_OBSERVER": "0",
+              "STRATA_SYCL_PREFILL_CANONICAL_CHUNK64": "0",
+              "STRATA_SYCL_PREFILL_CANONICAL_RESTORE_AUDIT": "0",
+              "STRATA_PREFILL_TRANSITION_PROFILE": "0",
+              "STRATA_PREFILL_LAYER_MAJOR_PROFILE": "0",
+              "UR_ENABLE_LAYERS": "UR_LAYER_PARAMETER_VALIDATION",
+              "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v1/mtp/validation.log",
+              "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+              "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+              "PYTHONNOUSERSITE": "1",
+              "PYTHONPYCACHEPREFIX": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-generation-v1/mtp/cache/python",
+              "STRATA_TRACE": "1",
+              "STRATA_SYCL_PREFILL_MOE_SPLIT_ACCUMULATOR": "1",
+              "STRATA_SYCL_PREFILL_DOWN_SPLIT_KERNEL": "original",
+              "STRATA_SYCL_PREFILL_TOPK_EARLY": "0",
+              "STRATA_SYCL_PREFILL_GDN_BARRIERS3": "1",
+              "ZE_ENABLE_ALT_DRIVERS": "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758",
+              "STRATA_SYCL_PREFILL_GDN_FP16": "1",
+              "STRATA_SNAPSHOT_VERIFY": "1",
+              "STRATA_IQ3_PAIR": "1",
+              "STRATA_IQ3_PAIR_AUDIT": "0",
+              "STRATA_CPU_SERVICE": "0",
+              "STRATA_CPU_WORK_CENSUS": "0",
+              "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+              "STRATA_SYCL_ADAPT_SYNC": "1",
+              "STRATA_POOL_SPIN_US": "20000",
+              "STRATA_BENCH_REAL_PACK": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+              "STRATA_BENCH_REAL_PACK_SHA256": "d58a004711ec8a9b9d1c73e598dff22a45de4d7561b56e41d6f291573dea5af6"
+            },
+            "started_utc": "2026-11-08T04:45:57.127506+00:00",
+            "wall_seconds": 2400,
+            "errors": [],
+            "owners": [
+              {
+                "pid": 2976391,
+                "start_ticks": 246192125,
+                "sid": 2976391,
+                "pgid": 2976391
+              },
+              {
+                "pid": 2976406,
+                "start_ticks": 246192156,
+                "sid": 2976391,
+                "pgid": 2976391
+              },
+              {
+                "pid": 2976448,
+                "start_ticks": 246192268,
+                "sid": 2976391,
+                "pgid": 2976448
+              },
+              {
+                "pid": 2976460,
+                "start_ticks": 246192299,
+                "sid": 2976391,
+                "pgid": 2976448
+              }
+            ],
+            "cleanup": [
+              {
+                "pid": 2976391,
+                "start_ticks": 246192125,
+                "signal": "SIGTERM",
+                "result": "sent"
+              },
+              {
+                "pid": 2976406,
+                "start_ticks": 246192156,
+                "signal": "SIGTERM",
+                "result": "sent"
+              },
+              {
+                "pid": 2976448,
+                "start_ticks": 246192268,
+                "signal": "SIGTERM",
+                "result": "sent"
+              },
+              {
+                "pid": 2976460,
+                "start_ticks": 246192299,
+                "signal": "SIGTERM",
+                "result": "sent"
+              },
+              {
+                "pid": 2976406,
+                "start_ticks": 246192156,
+                "signal": "SIGKILL",
+                "result": "sent"
+              }
+            ],
+            "observation_complete": false,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "spawn_begin_monotonic": 2461921.249122397,
+            "pid": 2976391,
+            "spawn_return_monotonic": 2461921.254874766,
+            "direct_identity": {
+              "pid": 2976391,
+              "state": "R",
+              "ppid": 2975658,
+              "pgid": 2976391,
+              "sid": 2976391,
+              "start_ticks": 246192125,
+              "rss_bytes": 634880
+            },
+            "peak_live_owned_identities": 4,
+            "peak_session_rss_bytes": 54866784256,
+            "error": "RuntimeError('owned native arguments/identity differ')",
+            "error_traceback": "Traceback (most recent call last):\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/measurement_owner.py\", line 257, in run\n    if interaction: interaction(io,entry)\n                    ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/drafter_generation.py\", line 216, in interact\n    gate(io,entry,'ready','startup',-1)\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/drafter_generation.py\", line 213, in gate\n    live(entry)\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/drafter_generation.py\", line 189, in live\n    require(now and now==claim['native'] and now['sid']==entry['pid'] and\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/measurement_guards.py\", line 15, in require\n    raise RuntimeError(reason)\nRuntimeError: owned native arguments/identity differ\n",
+            "survivors": [],
+            "ownership_status": "observed",
+            "exit_code": -15,
+            "finished_utc": "2026-11-08T04:46:57.683872+00:00",
+            "elapsed_seconds": 60.55606409162283,
+            "logs": {
+              "bench.stdout": {
+                "bytes": 305,
+                "sha256": "37d8acd81b2c0a3d8c131779099c388e8d86b70f9008c9e663a7d15373313e48"
+              },
+              "bench.stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            }
+          }
+        ],
+        "fresh_faults": []
+      }
+    ],
     "passed": false,
     "complete": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "budgets": {
       "wall": 2400,
       "cpu": 28800,
@@ -205936,6 +206179,19 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/drafter-long-admission-v5/record.json",
       "canonical_sha256": "48346588b8090175c6d025793de473584575d084d04d7a20b0b1de8f9b6b6171",
       "evidence": "e73050a42f9f07ffcec33f3df2d14d473478fdd9"
+    },
+    "failure_diagnosis": {
+      "cause": "Main compares full measurement_owner.identity (state,ppid,pgid,RSS included) with a3-key pid/start_ticks/sid claim;they cannot be equal. Match stable identity fields instead. Actual native arguments already match.",
+      "GPU_startup_executed": true,
+      "long_generation_started": false,
+      "warmup_started": false,
+      "native_exit_receipt_available": false,
+      "benchmark_exit_code": -15,
+      "physical_session_closed": true,
+      "qualification_ownership_closed": false,
+      "fresh_GPU_faults": [],
+      "validation_bytes": 0,
+      "next_action": "Keep V1failed. After pinned source auditor formally returns,commit corrected stable-field identity admission and fresh V2plan;no V1rerun or hash refresh."
     }
   }
 }
