@@ -93,35 +93,29 @@ builds only this target from the selected engine's configure recipe. It requires
 the frozen six-process comparison to close and the original measured child
 revision to be reachable from the pushed primary. It verifies the21runtime
 sources against that build, then checks the four actual translation units and
-compiler/link inputs. It performs no device work. Its source is prepared;build
-and execution are still pending. A current collector-admission refusal must be
-preserved and resolved prospectively,without refreshing its recorded hashes.
+compiler/link inputs. It performs no device work. The fixture-only build at
+source `f4f83be4f` produces ELF `5046a535…`; its four translation units cover
+711 actual compiler inputs and 24 external link inputs, with zero uncovered
+inputs. The earlier preflight refusal remains failed at `7b8f50629`. A new
+reviewed source audit proves that three Python-only changes leave the collector's
+generated native files, 460 compiler dependencies, recipe and ELFs unchanged.
 [profile_compat.py](../tools/sycl/profile_compat.py) controls the three cases in
 separate processes,with a result commit between them. Its prepared host controls
 in`tools/sycl/test_profile_compat.py`reject missing post-window copies,wrong
 kernel inventories,unobserved replays and ambiguous/boundary-crossing instances.
 The device controller requires all five host controls to pass without skips,
-with their original committed source/plan recoverable and unchanged. Run them
-at a serialized boundary before the device checks. At source`adee8a0b2`,all five
-host controls pass with zero skips,normal0and closed ownership under
-`compat_profile_window_host_v1`. This tests the trace-admission logic on the CPU.
-The fixture build and all three device/collector cases remain pending.
-The host plan freezes all620Python/benchmark inputs. Integrating the measured
-cache-loan child changes two of those helpers,so prepare a new committed host
-plan and repeat the five controls after integration before using this device
-gate. Preserve V1's actual pass and source;do not refresh its hashes or describe
-the post-merge tree as the already tested snapshot.
-The device controller now requires`compat_profile_window_host_v2`. Its new
+with their original committed source/plan recoverable and unchanged. The
+device controller requires `compat_profile_window_host_v2`. Its
 620-input plan at`4e5d7074d`passes all five controls with zero skips,normal0
 and closed ownership at source`65b6b6349`. V1remains available in Git history;
-the active proof is V2. The selected-native reader recovers its original841
+the active proof is V2. This qualifies the host reader, not a new collector
+device result. The selected-native reader recovers its original841
 project inputs from the pushed primary and checks the original1461-compiler/
 29-link census,SDK and same-build ELFs. It no longer needs the integrated child
 checkout or the ended f633 fallback binaries. The fixture build instead retains
 the selected90f binary and both independent phase guards. Admission now passes
 before and after physical retirement of the old checkout/build and private
-cohort root,including the production-adapter build-basis check. No device
-execution or collector qualification follows from these source/ELF checks.
+cohort root,including the production-adapter build-basis check.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction
@@ -130,6 +124,17 @@ and three readbacks. A subsequent replay adds two named instances and one
 readback; the initial upload precedes the window. Verify native flow identities,
 clock bounds, exact instance counts, numerical/guard results, normal exit, owner
 closure and fresh faults. Keep collection active through native exit/flush.
+The direct case passes at `e2ccc46a6`, and the active-before-construction case
+passes at `44b5fac45`: all eight named instances and five copies are retained,
+with six kernels/three readbacks in the inner window and two kernels/one
+readback after it. The paused-construction case remains failed at `4d1528859`:
+native guarded execution and normal exit0 pass, but the timeline contains only
+four readbacks and no kernels. All three owners close with quiet validation
+and no fresh GPU fault. Do not use this failed mode for model attribution.
+[profile_compat_exec.py](../tools/sycl/profile_compat_exec.py) prepares a separate
+active-from-exec control using the existing aggregate launcher with explicit
+host/call logging. It reuses this same fixture ELF; its three CPU controls and
+device execution must pass before using that precise mode for a model profile.
 An unprofiled completion must expose no graph timestamps. These checks do not
 measure kernel arithmetic utilization, physical traffic, a lossless pause with
 pending work, model observer overhead or inference performance. Requalify the
