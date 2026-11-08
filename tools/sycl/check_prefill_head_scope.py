@@ -14,9 +14,10 @@ import sys
 
 sys.dont_write_bytecode = True
 import build_official_model as model
+import build_upstream_features as feature
 
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT, KEY = B / 'prefill-dense-head-scope-v2', 'joint_prefill_heads_host_v2'
+ROOT, KEY = B / 'prefill-drafter-head-scope-v3', 'optional_mtp_prefill_heads_host_v3'
 TEST = 'tests/sycl/prefill_head_scope.cpp'
 HEADER = 'include/strata/core/prefill_head_scope.hpp'
 LEASE = 'include/strata/core/cache_scratch_lease.hpp'
@@ -24,8 +25,11 @@ require, digest, write = model.require, model.digest, model.write
 
 
 def pins(revision):
-    values = model.controls(revision)
-    for name in [str(Path(__file__).resolve().relative_to(P)), TEST, HEADER, LEASE]:
+    # Freeze the transitive Python helper library as well as the three native
+    # fixture inputs; the older official-build import has further readers.
+    names = feature.source.git(P, 'ls-files', '-z', '--', 'tools/sycl').decode().strip('\0').split('\0')
+    values = {}
+    for name in [*names, TEST, HEADER, LEASE]:
         raw = model.source.build.git(P, 'show', revision + ':' + name)
         require(raw == (P / name).read_bytes(), 'commit exact host source: ' + name)
         values[name] = hashlib.sha256(raw).hexdigest()
@@ -45,10 +49,15 @@ def save(row):
 
 
 def inputs():
-    native = json.loads((model.ROOT / 'record.json').read_text())
-    require(native['passed'] and native['stage'] == 'built-not-executed' and native['ownership_closed'],
-            'closed original official build required')
-    return native, model.admit(native)
+    native = json.loads((feature.ROOT / 'record.json').read_text())
+    require(native['passed'] and native['stage'] == 'built' and native['ownership_closed'] and
+            feature.committed_plan() == feature.compact(native), 'closed committed current feature build required')
+    external = native['external_inputs']
+    require(digest(external['path']) == external['sha256'], 'compiler/SDK manifest changed')
+    allowed = json.loads(Path(external['path']).read_text())
+    allowed.update(native['toolchain'])
+    require(all(digest(p) == h for p, h in allowed.items()), 'compiler/SDK bytes changed')
+    return native, allowed
 
 
 def sanitizer_links(environment):
@@ -81,23 +90,27 @@ def prepare():
     sources = pins(revision)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'): (ROOT / name).mkdir()
-    env = dict(native['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
+    env = dict(native['recipe']['environment'], TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
                ASAN_OPTIONS='detect_leaks=1:abort_on_error=1', UBSAN_OPTIONS='halt_on_error=1:print_stacktrace=1')
     links = sanitizer_links(env)
     command = [model.COMPILER, '-std=c++17', '-O1', '-g0', '-fno-omit-frame-pointer',
         '-fsanitize=address,undefined', '-fno-fast-math', '-ffp-contract=off', '-I' + str(P / 'include'),
         '-MD', '-MF', str(ROOT / 'policy.d'), '-save-temps=obj', '-v', '-Wl,-t',
         str(P / TEST), '-o', str(ROOT / 'prefill_head_scope')]
-    row = dict(stage='prepared', source_commit=revision, sources=sources, compiler=native['compiler'],
-        sdk=native['sdk'], official_build_source=native['source_commit'], sanitizer_link_inputs=links,
-        environment=env, environment_overrides={k: v for k, v in env.items() if native['environment'].get(k) != v},
+    row = dict(stage='prepared', source_commit=revision, sources=sources,
+        compiler=dict(path=model.COMPILER, sha256=native['toolchain'][model.COMPILER]),
+        sdk=native['external_inputs'], native_build_source=native['project']['revision'], sanitizer_link_inputs=links,
+        environment=env, environment_overrides={k: v for k, v in env.items() if native['recipe']['environment'].get(k) != v},
         environment_sha256=hashlib.sha256(json.dumps(env, sort_keys=True).encode()).hexdigest(),
         commands=[['compile', command], ['policy', [str(ROOT / 'prefill_head_scope')]]],
         budgets=dict(wall=90, cpu=180, rss_cap=4 << 30, text_cap=1 << 20, file_cap=32 << 20, total_cap=64 << 20),
-        criteria='Fifteen host-only cases:previous seven boundary controls plus two actual CacheScratchState'
+        criteria='Twenty-nine host-only cases:the previous15 boundary/cache controls plus128admission rows '
+            '(single/spec1..8/MTP/DFlash2/live-owner),optional MTP weight transitions for prompt success/false/throw '
+            'and repeat request,target preparation false/throw,prepared cancellation,and MTP preflight refusal. '
+            'The previous15 include two actual CacheScratchState'
             ' poison reproductions,two preparation-before-activation failures,prepared cancellation on stale'
             ' activation preflight,and joint prompt success/false/throw with checked retirement/refill.'
-            ' At least250checks. Exact committed inputs,'
+            ' At least500checks. Exact committed inputs,'
             'actual compiler/linker closure,no sanitizer output,normal owned exit. No device/graph/model qualification.',
         passed=False, complete=False, active=False, ownership_closed=True, GPU_executed=False)
     save(row)
@@ -143,8 +156,8 @@ def run():
                                      bytes=(ROOT / 'prefill_head_scope').stat().st_size)
             else:
                 result = json.loads(out.read_text())
-                require(not err.read_bytes() and result['kind'] == 'prefill_head_scope' and result['cases'] == 15
-                        and result['checks'] >= 250 and result['status'] == 'PASS', 'policy/sanitizer check failed')
+                require(not err.read_bytes() and result['kind'] == 'prefill_head_scope' and result['cases'] == 29
+                        and result['checks'] >= 500 and result['status'] == 'PASS', 'policy/sanitizer check failed')
                 row['result'] = result
         inputs()
         require(sanitizer_links(row['environment']) == row['sanitizer_link_inputs'], 'sanitizer link inputs changed after run')

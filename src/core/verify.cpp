@@ -354,7 +354,7 @@ bool Verifier::can_release_prefill_head(const NativeHead& head,std::string& err)
     if(dense_retired_ || head_detached_ || released_.load() || head_!=&head || !head.loaded() || head.head_detached() ||
        !g_ || !cs_ || !copy_ || max_t_!=4 || next_ || lb_!=0 || le_!=g_->n_layers ||
        (phase!=VerifyPhase::inactive && phase!=VerifyPhase::completed)) {
-        err="verify: head release requires idle intact single-device native MTP4 window";return false;
+        err="verify: head release requires idle intact single-device native spec4 window";return false;
     }
     return true;
 #endif

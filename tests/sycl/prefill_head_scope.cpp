@@ -85,10 +85,139 @@ struct Cache {
         finish_used();
     }
 };
+
+// Instrument the production weight-participant composition, independently of
+// the existing fake verifier/cache boundary. No device completion is inferred.
+struct WeightEvents {
+    std::array<int,32> values{};size_t size=0;
+    void add(int value) noexcept {check(size<values.size());values[size++]=value;}
+    template<size_t N> void expect(const std::array<int,N>& wanted) const noexcept {
+        check(size==N);for(size_t i=0;i<N;++i)check(values[i]==wanted[i]);
+    }
+};
+struct TargetWeights {
+    WeightEvents& log;
+    bool prepared=false,detached=false;int prepare_result=1;
+    const uint64_t identity=0x12345678;
+    bool prepare_prefill_weights(std::string& err) {
+        check(!prepared && !detached);log.add(2);
+        if(prepare_result==2)throw std::runtime_error("target RAM preparation");
+        if(!prepare_result){err="target preparation refused";return false;}
+        prepared=true;return true;
+    }
+    void cancel_prefill_weights() noexcept {check(prepared && !detached);log.add(10);prepared=false;}
+    void detach_prefill_weights() noexcept {check(prepared && !detached);log.add(4);detached=true;}
+    void restore_prefill_weights() noexcept {check(prepared && detached);log.add(6);detached=false;}
+    void resume_prefill_weights() noexcept {check(prepared && !detached);log.add(8);prepared=false;}
+};
+struct DraftWeights {
+    WeightEvents& log;TargetWeights& target;
+    bool accept=true,prepared=false,retired=false,detached=false;
+    bool prepare_prefill_head(const TargetWeights& h,std::string& err) {
+        check(&h==&target && !prepared && !retired && !detached && !h.prepared);log.add(1);
+        if(!accept){err="draft preparation refused";return false;}
+        prepared=true;return true;
+    }
+    void cancel_prefill_head() noexcept {check(prepared && !retired && !detached);log.add(11);prepared=false;}
+    void retire_prefill_head_readers() noexcept {
+        check(prepared && !retired && !target.detached);log.add(3);retired=true;
+    }
+    void detach_prefill_head() noexcept {
+        check(prepared && retired && !detached && target.detached);log.add(5);detached=true;
+    }
+    void restore_prefill_head() noexcept {
+        check(prepared && retired && detached && !target.detached);log.add(7);detached=false;
+    }
+    void resume_prefill_head() noexcept {
+        check(prepared && retired && !detached && !target.prepared);log.add(9);prepared=false;retired=false;
+    }
+};
+struct WeightBoundary {
+    strata::core::detail::PrefillHeadWeights<TargetWeights,DraftWeights> weights;
+    PrefillHeadState state;
+    bool prepare(std::string& err) {
+        check(state.readable());if(!weights.prepare(err))return false;
+        check(state.transition(Phase::ready,Phase::prepared));return true;
+    }
+    void require_prepared() const noexcept {check(state.phase()==Phase::prepared);}
+    void retire_readers() noexcept {
+        weights.retire_draft_readers();check(state.transition(Phase::prepared,Phase::retired));
+    }
+    void detach() noexcept {weights.detach();check(state.transition(Phase::retired,Phase::detached));}
+    void restore() noexcept {weights.restore();check(state.transition(Phase::detached,Phase::restored));}
+    void resume() noexcept {weights.resume();check(state.transition(Phase::restored,Phase::ready));}
+};
 }
 
 int main() {
     std::string err="unchanged";
+    {
+        ++cases;
+        using D=strata::core::detail::PrefillHeadDrafter;
+        int allowed=0,rows=0;
+        for(bool single:{false,true})for(int spec=1;spec<=8;++spec)
+            for(bool mtp:{false,true})for(bool df2:{false,true})for(bool live:{false,true}) {
+                ++rows;
+                const auto selected=strata::core::detail::prefill_head_drafter(single,spec,mtp,df2,live);
+                const bool eligible=single && spec==4 && !live && mtp!=df2;
+                check((selected!=D::unsupported)==eligible);
+                if(eligible){++allowed;check(selected==(mtp?D::mtp4:D::absent_dflash2));}
+            }
+        check(rows==128 && allowed==2);
+    }
+    for(bool with_mtp:{false,true}) {
+        for(int outcome:{0,1,2}) {
+            ++cases;
+            WeightEvents log;TargetWeights head{log};DraftWeights draft{log,head};
+            WeightBoundary boundary{{head,with_mtp?&draft:nullptr},{}};
+            bool caught=false,result=false;
+            try {
+                result=with_prefill_head_release(boundary,[&]() {
+                    check(boundary.state.phase()==Phase::detached && head.detached);
+                    check(with_mtp?draft.detached:!draft.prepared);
+                    if(outcome==2)throw std::runtime_error("prompt failure after detach");
+                    return outcome==1;
+                },err);
+            }catch(const std::runtime_error&){caught=true;}
+            check(result==(outcome==1) && caught==(outcome==2) && boundary.state.readable());
+            check(!head.prepared && !head.detached && head.identity==0x12345678);
+            check(!draft.prepared && !draft.retired && !draft.detached && err=="unchanged");
+            if(with_mtp)log.expect(std::array<int,9>{1,2,3,4,5,6,7,8,9});
+            else log.expect(std::array<int,4>{2,4,6,8});
+            // A restored owner must admit another request rather than only
+            // surviving destruction after one prompt.
+            log.size=0;
+            check(with_prefill_head_release(boundary,[](){return true;},err));
+            check(boundary.state.readable() && !head.prepared && !draft.prepared);
+        }
+        for(int failure:{0,2}) {
+            ++cases;
+            WeightEvents log;TargetWeights head{log};head.prepare_result=failure;
+            DraftWeights draft{log,head};WeightBoundary boundary{{head,with_mtp?&draft:nullptr},{}};
+            std::string failure_err;bool caught=false,called=false;
+            try {check(!with_prefill_head_release(boundary,[&](){called=true;return true;},failure_err));}
+            catch(const std::runtime_error&){caught=true;}
+            check(caught==(failure==2) && !called && boundary.state.readable());
+            check(!head.prepared && !head.detached && !draft.prepared && !draft.retired);
+            if(with_mtp)log.expect(std::array<int,3>{1,2,11});else log.expect(std::array<int,1>{2});
+        }
+        {
+            ++cases;
+            WeightEvents log;TargetWeights head{log};DraftWeights draft{log,head};
+            strata::core::detail::PrefillHeadWeights<TargetWeights,DraftWeights> weights{head,with_mtp?&draft:nullptr};
+            check(weights.prepare(err));weights.cancel_prepared();
+            check(!head.prepared && !head.detached && !draft.prepared && !draft.retired);
+            if(with_mtp)log.expect(std::array<int,4>{1,2,10,11});else log.expect(std::array<int,2>{2,10});
+        }
+    }
+    {
+        ++cases;
+        WeightEvents log;TargetWeights head{log};DraftWeights draft{log,head};draft.accept=false;
+        strata::core::detail::PrefillHeadWeights<TargetWeights,DraftWeights> weights{head,&draft};
+        std::string refusal;check(!weights.prepare(refusal));
+        check(refusal=="draft preparation refused" && !head.prepared && !draft.prepared);
+        log.expect(std::array<int,1>{1});
+    }
     for(bool throws : {false,true}) {
         ++cases;
         Backend b;b.joint=true;b.accept=false;b.throw_prepare=throws;

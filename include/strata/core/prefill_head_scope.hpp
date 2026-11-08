@@ -5,6 +5,59 @@
 #include <cstdint>
 
 namespace strata::core::detail {
+enum class PrefillHeadDrafter { unsupported, mtp4, absent_dflash2 };
+
+// Absence is an ownership fact at this serialized request boundary, not an
+// instruction to retire an unloaded MTP owner. A live DFlash2 owner may still
+// borrow the target head, even though eager mode has no recorded graph.
+inline PrefillHeadDrafter prefill_head_drafter(bool single_native,int spec,
+        bool has_mtp,bool uses_dflash2,bool dflash2_live) noexcept {
+    if(!single_native || spec!=4 || dflash2_live || (has_mtp && uses_dflash2))
+        return PrefillHeadDrafter::unsupported;
+    if(has_mtp)return PrefillHeadDrafter::mtp4;
+    if(uses_dflash2 && !dflash2_live)return PrefillHeadDrafter::absent_dflash2;
+    return PrefillHeadDrafter::unsupported;
+}
+
+// The target always participates. MTP's duplicate head and its readers are an
+// optional, separate participant; its existing prepare/retire order is retained.
+// Used by the real generator boundary and the host ownership/failure fixture.
+template<class Head,class Drafter>
+struct PrefillHeadWeights {
+    Head& head;
+    Drafter* mtp;
+    bool prepare(std::string& err) {
+        if(mtp && !mtp->prepare_prefill_head(head,err))return false;
+        try {
+            if(!head.prepare_prefill_weights(err)) {
+                if(mtp)mtp->cancel_prefill_head();
+                return false;
+            }
+        } catch(...) {
+            if(mtp)mtp->cancel_prefill_head();
+            throw;
+        }
+        return true;
+    }
+    void cancel_prepared() noexcept {
+        head.cancel_prefill_weights();
+        if(mtp)mtp->cancel_prefill_head();
+    }
+    void retire_draft_readers() noexcept {if(mtp)mtp->retire_prefill_head_readers();}
+    void detach() noexcept {
+        head.detach_prefill_weights();
+        if(mtp)mtp->detach_prefill_head();
+    }
+    void restore() noexcept {
+        head.restore_prefill_weights();
+        if(mtp)mtp->restore_prefill_head();
+    }
+    void resume() noexcept {
+        head.resume_prefill_weights();
+        if(mtp)mtp->resume_prefill_head();
+    }
+};
+
 // Commit only an already prepared boundary. A cache-loan activation callback
 // must use this no-fail part: callback refusal/throw poisons the parent loan,
 // even when no device reader was retired. Prepare before entering that callback.

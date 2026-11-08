@@ -115,10 +115,19 @@ def prepare():
             model['commands'][0]['ownership_closed'] and not model.get('fresh_faults') and
             model.get('native_build', {}).get('record') == compact(previous)['record'] and
             status['current_sync']['dflash2_native_port']['state'] == 'model_runtime_failed_host_draft_result_extent')
-        require((failed_compile or superseded_component or failed_model) and previous['ownership_closed'] and
+        bounded_model = (previous['stage'] == 'built' and previous['passed'] and
+            model.get('stage') == 'passed' and model.get('passed') and model.get('ownership_closed') and
+            len(model.get('commands', [])) == 1 and model['commands'][0]['exit_code'] == 0 and
+            model['commands'][0]['ownership_closed'] and not model.get('fresh_faults') and
+            model.get('native_build', {}).get('record') == compact(previous)['record'] and
+            not model.get('speed_eligible', True) and not model.get('model_adoption_qualified', True) and
+            status['current_sync']['dflash2_native_port']['state'] ==
+                'bounded_target_model_passed_long_phase_and_speed_unqualified')
+        replace_candidate = superseded_component or failed_model or bounded_model
+        require((failed_compile or replace_candidate) and previous['ownership_closed'] and
                 all(ownership.closed(c) for c in previous['commands']) and
                 committed_plan() == compact(previous), 'commit and close failed compilation before a new source attempt')
-        if superseded_component or failed_model:
+        if replace_candidate:
             # This candidate has no qualified model route or adoption. Recover
             # its original inputs before replacing its disposable output path;
             # both validated phase engines remain hash-checked fallbacks.
@@ -139,7 +148,7 @@ def prepare():
                            for v in recipe['configure']]
     recipe['environment'] = {k: v.replace(str(REFERENCE), str(ROOT)) for k, v in recipe['environment'].items()}
     recipe['targets'] = TARGETS
-    recipe['build_targets'] = ['strata', 'sycl_dflash2_test', 'sycl_dflash2_ring_test']
+    recipe['build_targets'] = ['strata']
     recipe.pop('retention', None)
     project = source.pin(P, PREFIXES)
     dependencies = []
@@ -174,16 +183,16 @@ def prepare():
             record_sha256=source.digest(ROOT / 'record.json'), error=previous.get('error'),
             ownership_closed=True, evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
             reason='Reuse the closed unqualified candidate cache; exact source/recipe/outcome remain in Git. Preserve both validated phase references.')
-        if superseded_component or failed_model:
+        if replace_candidate:
             row['unchanged_outputs'] = {name: dict(value, origin_source_commit=
                 value.get('origin_source_commit', previous['project']['revision']))
                 for name, value in previous['binaries'].items() if name not in recipe['build_targets']}
             row['previous_attempt']['retirement'] = dict(
-                qualification='Only bounded components qualified;target-model V1 failed host heap closure.Never an adopted model engine.',
+                qualification='Closed bounded candidate only;prior model outcome remains in its original committed record.No adopted long/model-speed route.',
                 original_source_recovered=True, source_sha256=previous['project']['aggregate_sha256'],
                 source_files=previous['project']['count'], original_binaries_verified=previous['binaries'],
-                consumer='Correct the fixed7entry DFlash2 host output contract;rebuild engine/kernel/ring fixtures and preserve the other3outputs.',
-                point='Repeat bounded components and matched target-model diagnostic within the temporary candidate;keep552b/e1b011.No fourth generation.')
+                consumer='Replace the unadopted feature candidate with optional-MTP prefill-head ownership;rebuild engine only,preserve all5original component outputs.',
+                point='Same new binary supplies release0/1 arms after host/admission gates;keep552b/e1b011.No fourth generation or f50baseline copy.')
     check_inputs(row)
     ROOT.mkdir(mode=0o700, exist_ok=bool(previous))
     for name in ['tmp', 'cache']: (ROOT / name).mkdir(mode=0o700, exist_ok=bool(previous))

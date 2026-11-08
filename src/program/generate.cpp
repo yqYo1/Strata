@@ -204,13 +204,22 @@ struct NativeDensePhase {
     std::atomic_flag occupied=ATOMIC_FLAG_INIT;
 };
 
+struct PrefillHeadRoute {
+    strata::core::detail::PrefillHeadDrafter drafter;
+    strata::core::MtpDrafter* mtp;
+    bool mtp_supported() const noexcept {
+        return drafter==strata::core::detail::PrefillHeadDrafter::mtp4;
+    }
+};
+
 #ifdef STRATA_ENABLE_SYCL
-bool prefill_head_release_supported(bool supported,std::string& err,strata::prefill::Strategy strategy) {
+bool prefill_head_release_supported(PrefillHeadRoute route,std::string& err,strata::prefill::Strategy strategy) {
     const char* cp=std::getenv("STRATA_SPEC_COUPLED");
-    if(!supported || strategy!=strata::prefill::Strategy::throughput || (cp && std::strcmp(cp,"1")==0) ||
+    if(route.drafter==strata::core::detail::PrefillHeadDrafter::unsupported ||
+       strategy!=strata::prefill::Strategy::throughput || (cp && std::strcmp(cp,"1")==0) ||
        std::getenv("STRATA_PREFILL_LOGITS") || std::getenv("STRATA_PREFILL_LOGITS_POSITIONS") ||
        std::getenv("STRATA_PREFILL_NLL") || std::getenv("STRATA_LOGPOS")) {
-        err="head release requires long layer-major single-GPU native MTP4 without split/peer/remote/coupled or logits/NLL diagnostics";
+        err="head release requires long layer-major single-GPU native spec4 with MTP or an absent DFlash2 owner, without split/peer/remote/coupled or logits/NLL diagnostics";
         return false; // no owner is detached on unsupported routes
     }
     return true;
@@ -222,7 +231,7 @@ bool prefill_head_release_supported(bool supported,std::string& err,strata::pref
 // all publications and head storage. Standalone behavior stays independent.
 enum class PrefillHeadReaders { standalone, dense_transaction };
 struct PrefillHeadBoundary {
-        strata::core::NativeHead& head;strata::core::MtpDrafter& mtp;
+        strata::core::detail::PrefillHeadWeights<strata::core::NativeHead,strata::core::MtpDrafter> weights;
         strata::core::Verifier* verifier;cudaStream_t main_cs;
         strata::core::detail::PrefillHeadState state;
         PrefillHeadReaders readers=PrefillHeadReaders::standalone;
@@ -231,11 +240,9 @@ struct PrefillHeadBoundary {
         void move(Phase from,Phase to) noexcept {if(!state.transition(from,to))fatal("head boundary duplicate/out-of-order transition");}
         bool prepare(std::string& error) {
             if(!state.readable() || !main_cs){error="head boundary is not ready";return false;}
-            if(verifier && !verifier->can_release_prefill_head(head,error))return false;
-            if(!mtp.prepare_prefill_head(head,error))return false;
-            try {
-                if(!head.prepare_prefill_weights(error)){mtp.cancel_prefill_head();return false;}
-            }catch(...){mtp.cancel_prefill_head();throw;}
+            if(verifier && !verifier->can_release_prefill_head(weights.head,error))return false;
+            if(!weights.prepare(error))return false;
+            std::fprintf(stderr,"strata prefill heads: draft_reader=%s\n",weights.mtp?"mtp4":"absent-dflash2");
             move(Phase::ready,Phase::prepared);return true;
         }
         void require_prepared() const noexcept {
@@ -243,7 +250,7 @@ struct PrefillHeadBoundary {
         }
         void cancel_prepared() noexcept {
             require_prepared();
-            head.cancel_prefill_weights();mtp.cancel_prefill_head();
+            weights.cancel_prepared();
             if(!state.cancel_prepared())fatal("head boundary prepare cancellation failed");
         }
         void retire_readers() noexcept try {
@@ -252,17 +259,17 @@ struct PrefillHeadBoundary {
             std::string error;
             if(verifier) {
                 if(readers==PrefillHeadReaders::dense_transaction) {
-                    if(!verifier->has_prefill_dense_head_lease(head))
+                    if(!verifier->has_prefill_dense_head_lease(weights.head))
                         fatal("head detach without joint verifier lease");
-                } else if(!verifier->retire_prefill_head(head,error))
+                } else if(!verifier->retire_prefill_head(weights.head,error))
                     fatal("verifier rejected prepared head retirement");
             }
-            mtp.retire_prefill_head_readers();
+            weights.retire_draft_readers();
             move(Phase::prepared,Phase::retired);
         }catch(...){fatal("head reader retirement threw");}
         void detach() noexcept {
             if(state.phase()!=Phase::retired)fatal("head detach before all graph readers retired");
-            head.detach_prefill_weights();mtp.detach_prefill_head();
+            weights.detach();
             move(Phase::retired,Phase::detached);
         }
         void restore() noexcept {
@@ -270,18 +277,18 @@ struct PrefillHeadBoundary {
             // Prefill::run has returned/unwound its checked local owners. Drain
             // its main stream as well as MTP's KV-only queue before reuse.
             if(cudaStreamSynchronize(main_cs)!=cudaSuccess)fatal("prompt main completion before head restore");
-            head.restore_prefill_weights();mtp.restore_prefill_head();
+            weights.restore();
             move(Phase::detached,Phase::restored);
         }
         void resume() noexcept try {
             if(state.phase()!=Phase::restored)fatal("head resume before complete restore");
-            head.resume_prefill_weights();mtp.resume_prefill_head();
+            weights.resume();
             std::string error;
             if(verifier) {
                 if(readers==PrefillHeadReaders::dense_transaction) {
-                    if(!verifier->has_prefill_dense_head_lease(head))
+                    if(!verifier->has_prefill_dense_head_lease(weights.head))
                         fatal("joint verifier lease lost before head restore");
-                } else if(!verifier->resume_prefill_head(head,error))fatal("verifier head resume failed");
+                } else if(!verifier->resume_prefill_head(weights.head,error))fatal("verifier head resume failed");
             }
             move(Phase::restored,Phase::ready);
         }catch(...){fatal("head resume threw");}
@@ -292,9 +299,9 @@ struct PrefillHeadBoundary {
 // Both warm serve and standalone pass through this request-scoped boundary.
 // Default off and short segments take exactly the existing prompt/expert path.
 bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
-        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
+        PrefillHeadRoute route,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
         const int64_t* tokens,int64_t n,int64_t pos0,std::string& err,strata::prefill::Strategy strategy) {
-    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err,strategy);};
+    auto run=[&](){return run_prompt_with_mtp_experts_impl(prompt,mtp,route.mtp_supported(),tokens,n,pos0,err,strategy);};
     const char* requested=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
     if(!requested || std::strcmp(requested,"1")!=0 ||
        !strata::prefill::uses_layer_major(strategy,n,prompt.chunk()))return run();
@@ -302,17 +309,17 @@ bool run_prompt_with_mtp_experts(strata::prefill::Prefill& prompt,strata::core::
     (void)head;(void)verifier;(void)main_cs;
     err="head release requires SYCL";return false;
 #else
-    if(!prefill_head_release_supported(supported,err,strategy))return false;
-    PrefillHeadBoundary boundary{head,mtp,verifier,main_cs,{}};
+    if(!prefill_head_release_supported(route,err,strategy))return false;
+    PrefillHeadBoundary boundary{{head,route.mtp},verifier,main_cs,{}};
     return strata::core::detail::with_prefill_head_release(boundary,run,err);
 #endif
 }
 
 bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         strata::prefill::Prefill& prompt,strata::core::MtpDrafter& mtp,
-        bool supported,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
+        PrefillHeadRoute route,strata::core::NativeHead& head,strata::core::Verifier* verifier,cudaStream_t main_cs,
         const int64_t* tokens,int64_t n,int64_t pos0,std::string& err,strata::prefill::Strategy strategy) {
-    auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,supported,head,verifier,main_cs,tokens,n,pos0,err,strategy);};
+    auto run=[&](){return run_prompt_with_mtp_experts(prompt,mtp,route,head,verifier,main_cs,tokens,n,pos0,err,strategy);};
     if (!strata::prefill::valid_strategy(strategy)) {err="prefill: invalid strategy";return false;}
     const bool release_dense = strata::prefill::uses_layer_major(strategy,n,prompt.chunk());
     if (std::getenv("STRATA_TRACE"))
@@ -382,14 +389,14 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
        phase.canonical->state()!=strata::core::CanonicalDenseBank::State::Full)) {
         err="canonical bank requires intact Full owner and independent NativeEmbed";return false;
     }
-    if(joint_heads && !prefill_head_release_supported(supported,err,strategy))return false;
+    if(joint_heads && !prefill_head_release_supported(route,err,strategy))return false;
     if(verifier && !verifier->can_retire_prefill_dense(err)) return false;
     if(joint_heads && verifier && !verifier->can_release_prefill_head(head,err))return false;
     if(phase.occupied.test_and_set()) {err="prefill dense bank: request already owns transaction";return false;}
     struct Exclusion {NativeDensePhase& p;~Exclusion(){p.occupied.clear();}} exclusion{phase};
     const bool recapture=phase.graphs->captured;
     bool retired=false, cache_loan_active=false;
-    PrefillHeadBoundary head_boundary{head,mtp,verifier,main_cs,{},
+    PrefillHeadBoundary head_boundary{{head,route.mtp},verifier,main_cs,{},
                                      PrefillHeadReaders::dense_transaction};
     int64_t activated_layers=0;
     const bool trace_dense=std::getenv("STRATA_TRACE")!=nullptr;
@@ -534,7 +541,7 @@ bool run_prompt_with_native_dense_phase(NativeDensePhase& phase,
         host_profile.run_begin();
         // The joint transaction already owns head release; do not enter the
         // standalone head wrapper a second time while its verifier is retired.
-        const bool ok=joint_heads ? run_prompt_with_mtp_experts_impl(prompt,mtp,supported,tokens,n,pos0,err,strategy) : run();
+        const bool ok=joint_heads ? run_prompt_with_mtp_experts_impl(prompt,mtp,route.mtp_supported(),tokens,n,pos0,err,strategy) : run();
         host_profile.run_end(ok);
         restore();
         return ok;
@@ -1905,12 +1912,12 @@ int main(int argc, char** argv) {
     if (use_df2) {
 #ifdef STRATA_ENABLE_SYCL
         if (o.draft_model.empty() || o.draft_fallback != "none" || o.spec < 2 || o.spec > 8 ||
-            o.draft_cap < 0 || o.draft_cap == 1 || o.draft_cap > 8 ||
+            o.draft_cap < 0 || o.draft_cap == 1 || o.draft_cap > 8 || o.mtp_max_t == 1 ||
             !std::isfinite(o.draft_conf) || o.draft_conf < 0 || o.draft_conf > 1 ||
             o.native_preset.empty() || o.prefill_chunk <= 0 || !o.layer_split.empty() ||
             o.peer_device >= 0 || o.vision || o.coupled_draft || o.prefill_until > 0 ||
             std::any_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots > 0; })) {
-            std::fprintf(stderr, "DFlash2 requires native single-card text, --draft-model PACK, --draft-fallback none, --spec2..8 and --prefill; coupled MTP/partial prefill are unavailable\n"); return 2;
+            std::fprintf(stderr, "DFlash2 requires native single-card text, --draft-model PACK, --draft-fallback none, --spec2..8, --mtp-max-t 0 or >=2, and --prefill; coupled MTP/partial prefill are unavailable\n"); return 2;
         }
         strata::core::Dflash2PackInfo info;
         std::string why;
@@ -3638,6 +3645,22 @@ int main(int argc, char** argv) {
                        : df2->context(verifier.tap_dev(), kept, pos0, why);
     };
 #endif
+    auto prefill_head_route = [&]() {
+        bool dflash2_live=false;
+#ifdef STRATA_ENABLE_SYCL
+        // df2_begin_prompt destroys long-request owners and waits their queue
+        // before any prompt segment. No prompt callback constructs a drafter;
+        // df2_activate binds only after the target head is restored. Short or
+        // partially reused routes retaining an owner must refuse head release.
+        dflash2_live=bool(df2);
+#endif
+        const bool single_native=native_pack && !multi_gpu && o.layer_split.empty() &&
+            o.peer_device<0 && !peer.valid() &&
+            std::all_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto slots){return slots<=0;});
+        const auto drafter=strata::core::detail::prefill_head_drafter(
+            single_native,o.spec,!o.mtp.empty(),use_df2,dflash2_live);
+        return PrefillHeadRoute{drafter,drafter==strata::core::detail::PrefillHeadDrafter::mtp4?&mtp:nullptr};
+    };
     const bool auto_cache = o.expert_cache < 0;
     bool reserve_adapted = false;   // #496: the auto sizing lowered the reserve so a small card's cache fits
     if (o.expert_cache < 0) {
@@ -6790,9 +6813,7 @@ int main(int argc, char** argv) {
                 }
                 const auto tsp = Clock::now();
                 const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_native_dense_phase(dense_phase,
-                    sp, mtp, native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
-                    o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
-                    std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
+                    sp, mtp, prefill_head_route(),
                     native_head, &ver, main_stream, ids.data() + at, to - at, at, err, o.prefill_strategy);
                 if (trace) {
                     if (win) std::fprintf(stderr,"strata prefill policy: requested=%s route=cache-window tokens=%lld chunk=%lld\n",
@@ -7608,9 +7629,7 @@ int main(int argc, char** argv) {
 #endif
         const Clock::time_point tp0 = Clock::now();
         if (!run_prompt_with_native_dense_phase(dense_phase, prefill, mtp,
-                native_pack && o.spec == 4 && !o.mtp.empty() && !multi_gpu &&
-                o.layer_split.empty() && o.peer_device < 0 && !peer.valid() &&
-                std::all_of(o.expert_cache_remote.begin(), o.expert_cache_remote.end(), [](auto slots) { return slots <= 0; }),
+                prefill_head_route(),
                 native_head, nullptr, main_stream, o.tokens.data(), n_batched, 0, err, o.prefill_strategy)) {
             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
             return 1;
