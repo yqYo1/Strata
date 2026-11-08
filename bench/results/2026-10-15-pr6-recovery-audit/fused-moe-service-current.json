@@ -221400,7 +221400,7 @@
     ]
   },
   "q6_head_owner_v1": {
-    "stage": "cpu-controlled",
+    "stage": "built",
     "source_commit": "afbd954c0f5abad0a1488edbb791ed4c62833d78",
     "controller_commit": "afbd954c0f5abad0a1488edbb791ed4c62833d78",
     "source_generation": {
@@ -221668,6 +221668,16 @@
         "ownership_closed": true,
         "tests": 13,
         "GPU_executed": false
+      },
+      {
+        "mode": "build",
+        "passed": true,
+        "ownership_closed": true,
+        "GPU_executed": false,
+        "translation_units": 15,
+        "compiler_files": 803,
+        "external_link_files": 24,
+        "dpas_static_calls": 2
       }
     ],
     "active": false,
@@ -221676,6 +221686,56 @@
     "complete": false,
     "GPU_executed": false,
     "model_executed": false,
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-owner-v1/actual-inputs.json",
+      "sha256": "2bd927d183237364110fd6b22333a4e2331306c17f92323e672abc5dd0341870",
+      "compiler_files": 803,
+      "generated_files": 0,
+      "external_link_files": 24,
+      "uncovered": 0,
+      "translation_units": [
+        "tests/sycl/native_head_dpas.cpp",
+        "src/core/native_head.cpp",
+        "src/kernels/sycl/q6_dpas_component.cpp",
+        "src/kernels/sycl/native_mmvq.cpp",
+        "src/kernels/sycl/native_q5_head.cpp",
+        "src/kernels/sycl/native_q3_esimd.cpp",
+        "src/kernels/sycl/native_q4_esimd.cpp",
+        "src/kernels/sycl/native_q2_esimd.cpp",
+        "src/kernels/sycl/native_iq4xs_esimd.cpp",
+        "src/kernels/sycl/native_iq_esimd.cpp",
+        "src/kernels/sycl/native_mmq_xmx.cpp",
+        "src/kernels/sycl/iq.cpp",
+        "src/sycl/runtime.cpp",
+        "src/sycl/compat.cpp",
+        "src/sycl/command_profile.cpp"
+      ],
+      "source_commit": "afbd954c0f5abad0a1488edbb791ed4c62833d78"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-owner-v1/build/sycl_q6_head_owner_test",
+      "sha256": "81340dc83760585fc51c6785471ae2569f35933b06c42ac198bc56cccc5256d3",
+      "bytes": 11644512
+    },
+    "compile_database": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-owner-v1/build/compile_commands.json",
+      "sha256": "3305c43fe4989500dbf0dfb6b336630a32d3b96c1f06aafd01a11235eabe6adc",
+      "translation_units": 15
+    },
+    "codegen": {
+      "image_symbol": ".sycl_offloading.1.data",
+      "image_offset": 1041184,
+      "image_bytes": 16520,
+      "image_sha256": "e9f6543e839747035fab433ec3cc6f773ddd69cb9eab36f89b6493b54cb46d8d",
+      "entrypoint": "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E",
+      "reachable_functions": 17,
+      "dpas_static_calls": 2,
+      "dpas_callees": [
+        "llvm.genx.dpas2.v64i32.v64i32.v128i32.v32i32"
+      ],
+      "device_images": 14,
+      "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
+    },
     "sources_identity": {
       "files": 1285,
       "aggregate_sha256": "205af3418b92fd7d7e4bf784d755b2d148ad9fdf0f3ed0c9a551c005cb8ddaea"
@@ -221695,6 +221755,27 @@
     "commands": [
       {
         "label": "reader-parser-controls",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "build",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "dependencies",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
