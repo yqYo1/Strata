@@ -1775,17 +1775,14 @@ quantization,uses two integer DPAS halves for the signed per16 scales,and
 stores a separate uint16 interleave with padded output-row tails. The canonical
 weights and C1/prefill paths remain untouched. Its original reference is pinned
 MIT-licensed GGML`34ca79122`,not XeStrata;the local packing/kernel integration
-is authored here. V1 failed before GPU execution because its fixture selected
-a capture-mode constant absent from this compatibility API. Its original failed
-result and source/recipe remain recoverable;the unused partial build is retired.
-V2 selected the supported thread-local mode,but failed before GPU execution on
-four const SIMD locals passed to non-const ESIMD view APIs. Its failed evidence
-is preserved and partial build retired. V3 built/linked the14native units after
-that fix,but its direct LLVM-text output command was refused before execution.
-All800compiler/24link inputs and the unexecuted ELF were recovered before
-retirement. V4 emits the documented LLVM device object,then prints it through
-the same installed LLVM frontend's IR reader. The native sources are unchanged.
-Follow`q6_dpas_component_v4`for the prospective input/build,
+is authored here. Closed V1/V2 compile failures and the V3 LLVM-text recipe
+failure remain recorded;their source/recipe and800compiler/24link inputs are
+recoverable,and unused build artifacts are retired. V4's duplicate internal
+frontend version probe failed before materialization;no root or GPU work existed.
+V5 keeps the exact frontend pin and compiler version,emits the documented LLVM
+device object,then prints it through the installed LLVM frontend's IR reader.
+The native sources are unchanged from the V3 successful build/link.
+Follow`q6_dpas_component_v5`for the prospective input/build,
 CPU,small traced,full-head numerical and repeated ordinary-graph comparison.
 All12existing control translation units match the retained591c/90f source.
 Successful allocation,pack/upload cost and cold/warm scope must be recorded;

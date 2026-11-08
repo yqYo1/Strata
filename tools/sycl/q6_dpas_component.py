@@ -26,9 +26,9 @@ import ur_validation as validation
 import build_compat_profile as selected
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'q6-dpas-component-v4'
+ROOT = B / 'q6-dpas-component-v5'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_dpas_component_v4'
+KEY = 'q6_dpas_component_v5'
 TARGET = 'sycl_q6_dpas_component'
 HELPERS = ('tools/sycl/q6_dpas_component.py','tools/sycl/test_q6_dpas_component.py',
     'tools/sycl/benchmark_runtime.py','tools/sycl/measurement_guards.py',
@@ -97,6 +97,12 @@ def prepare():
             and failed['ownership_closed'] and not failed['active'] and not failed['GPU_executed']
             and failed['artifact_retirement']['state'] == 'deleted_verified',
             'preserve and retire each pre-native compiler failure first')
+    probe = data['q6_dpas_component_v4']
+    require(probe['stage'] == 'failed' and not probe['passed'] and not probe['complete']
+        and probe['ownership_closed'] and not probe['active'] and not probe['GPU_executed']
+        and probe['artifact_retirement']['state'] == 'not_created'
+        and not Path(probe['artifact_retirement']['root']).exists(),
+        'preserve the pre-materialization V4 tool-probe failure')
     previous = data['mapped_row_copy_graph_v1']
     require(previous['stage']=='closed' and previous['passed'] and previous['complete'] and
         previous['ownership_closed'] and not previous['active'] and
@@ -147,7 +153,7 @@ def prepare():
              ir_frontend='/opt/intel/oneapi/compiler/2026.2/bin/compiler/clang', cmake='/usr/bin/cmake',
              ninja='/usr/bin/ninja', assembler='/usr/bin/as', linker='/usr/bin/ld', python=sys.executable).items()}
     versions = {n: subprocess.check_output([tools[n]['path'], '--version'], env=env,
-        text=True, timeout=15).splitlines()[0] for n in ('compiler', 'ir_frontend', 'cmake', 'ninja')}
+        text=True, timeout=15).splitlines()[0] for n in ('compiler', 'cmake', 'ninja')}
     dependencies = ['/opt/intel/oneapi/compiler/2026.2/include',
         '/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl', '/usr/include/c++/13',
         '/usr/include/x86_64-linux-gnu/c++/13', '/usr/lib/gcc/x86_64-linux-gnu/13/include',
