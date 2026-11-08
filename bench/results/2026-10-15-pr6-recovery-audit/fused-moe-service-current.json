@@ -203631,9 +203631,9 @@
     "error": "RuntimeError('host suite failed: drafting-route-and-existing-retry\\ntest_a_memory_stop_without_a_no_drafter_retry_fails_with_the_engines_reason_and_does_not_try_the_mtp (serve.test_drafting_retry.AutoRetriesWithTheMtp.test_a_memory_stop_without_a_no_drafter_retry_fails_with_the_engines_reason_and_does_not_try_the_mtp) ... ok\\ntest_a_start_that_ran_out_of_memory_is_repeated_with_no_drafter_never_with_the_mtp (serve.test_drafting_retry.AutoRetriesWithTheMtp.test_a_start_that_ran_out_of_memory_is_repeated_with_no_drafter_never_with_the_mtp)\\n2 small cards on a layer split: the engine says a card has no room.  The old retry swapped DFlash2 for the MTP, which takes MORE memory from a card that is short. ... ok\\ntest_a_start_that_works_is_not_started_twice (serve.test_drafting_retry.AutoRetriesWithTheMtp.test_a_start_that_works_is_not_started_twice) ... ok\\ntest_a_start_with_no_retry_arguments_fails_with_the_engines_reason (serve.test_drafting_retry.AutoRetriesWithTheMtp.test_a_start_with_no_retry_arguments_fails_with_the_engines_reason)\\nNamed by the person (or nothing to retry with): a real error that says why. ... ok\\ntest_auto_that_picked_dflash2_starts_again_with_the_mtp_and_says_so_quietly (serve.test_drafting_retry.AutoRetriesWithTheMtp.test_auto_that_picked_dflash2_starts_again_with_the_mtp_and_says_so_quietly) ... ok\\ntest_the_retry_is_one_start_only (serve.test_drafting_retry.AutoRetriesWithTheMtp.test_the_retry_is_one_start_only) ... ok\\ntest_the_same_arguments_are_not_a_retry (serve.test_drafting_retry.AutoRetriesWithTheMtp.test_the_same_arguments_are_not_a_retry) ... ok\\ntest_auto_selects_an_available_drafter_before_adding_vision (serve.test_drafting_retry.SyclVisionDrafting.test_auto_selects_an_available_drafter_before_adding_vision) ... ok\\ntest_explicit_mtp_off_and_legacy_configs_keep_their_selection (serve.test_drafting_retry.SyclVisionDrafting.test_explicit_mtp_off_and_legacy_configs_keep_their_selection) ... ok\\ntest_named_dflash2_refuses_images_during_argument_selection (serve.test_drafting_retry.SyclVisionDrafting.test_named_dflash2_refuses_images_during_argument_selection) ... ok\\ntest_named_images_fail_before_the_vision_reader_or_model_starts (serve.test_drafting_retry.SyclVisionDrafting.test_named_images_fail_before_the_vision_reader_or_model_starts) ... ERROR\\ntest_text_auto_keeps_dflash2 (serve.test_drafting_retry.SyclVisionDrafting.test_text_auto_keeps_dflash2) ... ok\\ntest_only_an_explicit_false_turns_it_off (serve.test_draft_layer.DraftLayer.test_only_an_explicit_false_turns_it_off) ... ok\\ntest_strip_keeps_everything_but_the_draft_layer (serve.test_draft_layer.DraftLayer.test_strip_keeps_everything_but_the_draft_layer) ... ok\\ntest_the_server_applies_it_at_every_start (serve.test_draft_layer.DraftLayer.test_the_server_applies_it_at_every_start) ... ok\\ntest_the_web_settings_page_lists_it (serve.test_draft_layer.DraftLayer.test_the_web_settings_page_lists_it) ... ok\\n\\n======================================================================\\nERROR: test_named_images_fail_before_the_vision_reader_or_model_starts (serve.test_drafting_retry.SyclVisionDrafting.test_named_images_fail_before_the_vision_reader_or_model_starts)\\n----------------------------------------------------------------------\\nTraceback (most recent call last):\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/serve/test_drafting_retry.py\", line 203, in test_named_images_fail_before_the_vision_reader_or_model_starts\\n    server._main([\"--engine\", \"strata\", \"--config\", str(path), \"--port\", \"0\", \"--offline\"])\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/serve/server.py\", line 10129, in _main\\n    tok = ST.Tokenizer(tokens, merges, types, tcfg.get(\"pre\") or \"qwen35\", tcfg.get(\"special_ids\") or None)\\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/home/yayoi/orca/workspaces/Strata/sycl/tools/strata_tokenizer.py\", line 118, in __init__\\n    raise ValueError(\"merge %d is not a pair: %r\" % (i, m))\\nValueError: merge 0 is not a pair: \\'\\'\\n\\n----------------------------------------------------------------------\\nRan 16 tests in 0.995s\\n\\nFAILED (errors=1)\\n')"
   },
   "upstream_dflash2_vision_host_v3": {
-    "stage": "prepared",
-    "passed": false,
-    "complete": false,
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-dflash2-vision-host-v3",
@@ -204326,6 +204326,18 @@
     "GPU_executed": false,
     "model_executed": false,
     "retention": "Keep source,command/runtime identity,cases/skip/closure and decision. Retire normal test text after verification;full source map and original prepared plan remain recoverable from Git when compacted.",
-    "previous_host_evidence": "V1source92da15cases pass at13d5c9d6;V2source1b4116cases has1fixture error(empty merge entry),failed status/closed owner preserved at11e43b8f. V3corrects only the committed minimal tokenizer fixture;production startup/DFlash2 selection unchanged,criteria unchanged."
+    "previous_host_evidence": "V1source92da15cases pass at13d5c9d6;V2source1b4116cases has1fixture error(empty merge entry),failed status/closed owner preserved at11e43b8f. V3corrects only the committed minimal tokenizer fixture;production startup/DFlash2 selection unchanged,criteria unchanged.",
+    "tests": [
+      {
+        "role": "drafting-route-and-existing-retry",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "tests": 16,
+        "skipped": 0,
+        "skip_reasons": [],
+        "stdout_bytes": 903,
+        "stderr_bytes": 2953
+      }
+    ]
   }
 }

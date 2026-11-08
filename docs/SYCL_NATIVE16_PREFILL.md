@@ -3104,6 +3104,15 @@ Physical262144/RESTORE,task quality,ordinary-provider teardown and default adopt
 remain open. See`dflash2_native_port`,`dflash2_model_check`,
 `dflash2_prefill_heads_check`and`validation_environment_reuse`in the linked status
 for exact identities,outcomes and remaining functional ports.
+The host drafter/vision adapter at source`b63465e80`passes16CPU/mock cases,
+with no skips,normal exit0and closed ownership. SYCL Auto sees config-implied
+or explicit`--vision`and uses available MTP/off;named DFlash2 fails with a
+text-only reason before either encoder or model starts. Explicit MTP/off and
+legacy configs retain their selection,and text Auto remains available.
+The V2fixture's empty merge entry remains failed at`11e43b8f`;V3changes only
+that test tokenizer. No new native build,GPU execution or speed qualification
+follows from these host tests. Disk sessions,BGEN/capabilities,native v3.1 model
+behavior and the full bulk-import suite remain open.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.
 After both frozen cohorts closed,the required streamed-tool closing-tag
