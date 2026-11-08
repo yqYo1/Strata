@@ -1556,10 +1556,10 @@
       "config_copy_kept": true
     },
     "dflash2_native_port": {
-      "state": "bounded_target_model_passed_long_phase_and_speed_unqualified",
+      "state": "bounded_target_and_prefill_head_handoff_passed_speed_unqualified",
       "origin": "Niko146df3c4 sycl core/kernel/header implementation, MIT",
       "adaptation": "Niko146 Q4/BF16-selector eager drafter,registered allocations and qualified in-order queues,no native graphs or GPU host-flag polling. Optional verifier taps and GPU-local FP32/BF16 prefill mean taps,including layer-major/MoE-window routes. Default MTP untouched. Long prefill releases decode-only DFlash weights;physical tail buffer has2047positions(104806400bytes),while capture omits the last prompt anchor and retains at most2046rows;then loads and seeds the drafter.",
-      "remaining": "First thinking-enabled target model completed32tokens with24of24drafts accepted,but SIGABRT(-6) during teardown makes the gate FAILED and unusable for adoption/speed.Normal pre-main validation and38qualified mappings;all owned children reaped/session empty,no fresh GPU fault.Source contract writes7draft outputs,while both serve/standalone callers allocate only S entries(spec4 gave4),corrupting host heap.Next:preserve fixed7entry output contract,validate output spans before submissions,allocate at least7only forDFlash2 in both callers;add narrow-width/guard/admission fixtures,rebuild unadopted candidate and repeat bounded component/model checks before any long benchmark.MTP/prefill fast references remain untouched.",
+      "remaining": "Long bench.sh/agent and thinking-enabled sustained generation,independent phase preservation,numerical/task and physical262144/RESTORE qualification;shared native protocol/capability ports remain separately pending. DeepSeek/35B execution remains excluded.",
       "metadata_fixture_plan": {
         "command": "g++ -std=c++20 -O2 -Wall -Wextra -Iinclude src/core/dflash2_pack.cpp tests/core/dflash2_pack_test.cpp -o /home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/dflash2_pack_test; fixture receives pinned stock pack path",
         "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
@@ -1616,8 +1616,8 @@
         }
       },
       "progress": "Corrective source f50df1f3c81272b14d994e4d8fcad19703ad0b7e passes16kernel/prompt,7small stock-drafter,5ring and12mask cases,plus identical82ID thinking-enabled32output native model diagnostic.Normal child exit0,reaped/session empty,24of24drafts accepted,actual INFO/pre-main validation/38file-backed ELF maps and pre/post15model asset hashes checked,no fresh GPU fault.Other executable VMAs separately counted;no full address-space closure.V1 remains failed.Host seven-vs-four output defect resolved for these gates.Keep552b/e1b011 fastest phase references;no short-run speed/quality/full262144/RESTORE/default adoption claim.",
-      "unqualified_option_edge": "--mtp-max-t1 can request set_max_drafts0 and is refused by the drafter;V2 uses declared0,unaffected.Reject this combination or define/test no-proposal behavior before claiming all option combinations.",
-      "next_action": "Implement selected optional target-head/verifier retirement independently from MTP duplicate-head ownership,explicit DFlash2 MTP-absent mode initially verifier max_t4.Preserve drains/fail-stop rollback;keep expert release rejected and cache scratch gated until their contract is proved.Ordinary long prefill already works with controls0.Next require committed component/handoff checks and long bench.sh/agent/thinking generation comparisons;physical262144/RESTORE still open."
+      "unqualified_option_edge": "DFlash2 --mtp-max-t1 and absent-MTP expert-release/cache-scratch conflicts are now rejected before GPU initialization;all three actual negative CLI gates pass. Full model option/width coverage remains separate from spec4 diagnostics.",
+      "next_action": "Commit the closed9request ownership result,retire normal output after consumer/source checks,then prepare matched long benchmark and remaining host/native function adapters. Keep552b/e1b011 fastest phase references;do not infer speed or default adoption from this gate."
     },
     "native_feature_build": {
       "stage": "built",
@@ -3480,25 +3480,11 @@
       }
     },
     "dflash2_prefill_heads": {
-      "stage": "small_model_configuration_refused",
+      "stage": "bounded_model_handoff_passed",
       "adopted": false,
       "scope": "Optional target-head retirement during long layer-major prefill,single-card native spec4;MTP duplicate-head participant preserved or absent only when the DFlash2 owner is null after checked teardown. No new kernel math or default selection.",
-      "resource_evidence": "Native target head is unused during layer-major prefill;its actual released bytes/free-memory delta and end-to-end benefit are to be measured.Hardware saturation remains unknown;this is an ownership gate,not a claimed bottleneck fix.",
+      "resource_evidence": "DFlash2 long-prefill target-head detach is521472000bytes per transition,two repeats;MTP also detaches223227900bytes of its duplicate head. The compact gate retains all18phase/free-memory observations. These are requested allocation/copy sizes and driver free-memory readings,not measured physical PCIe traffic,saturation or a speed gain.",
       "preservation": "Keep both fast phase references;release0 and short/chunked paths retain existing behavior.MTP expert release stays MTP-only;DFlash2 cache-scratch stays gated.",
-      "validation_plan": [
-        "29host/ASan/UBSan ownership cases including128admission rows and target preparation false/throw/repeated requests.",
-        "Rebuild unadopted candidate in place after exact source/recipe recovery;preserve5same-build component fixtures with original identities.No fourth engine.",
-        "New committed bounded model plan before launch:real MTP4/DFlash2,release0/1,separate child environments,layer-major plus short and repeated requests;parameter validation/stage logs,no fresh fault,normal closure.",
-        "Only after bounded ownership/handoff gates,matched pinned bench.sh >=32K/agent/thinking long-generation comparisons and physical262144/RESTORE validation.No speed/adoption claim from compilation or short diagnostics."
-      ],
-      "option_fix": "Reject DFlash2 --mtp-max-t1 before pack/GPU initialization;the drafter needs at least one proposal.",
-      "controller_admission": {
-        "source_commit": "f931eca2f9c96757a2cf8ee30dc2218469d384f7",
-        "prepare_exit": 1,
-        "error": "AttributeError: official_joint_sources has no attribute build;stale host-controller Git helper before root/plan creation",
-        "native_launched": false,
-        "correction": "Use build_upstream_features.source.git;commit corrected controller before preparing a fresh host plan."
-      },
       "host_policy": {
         "key": "optional_mtp_prefill_heads_host_v3",
         "source_commit": "930bab9a7c842daf80243b3f7e41e0d0e40a634f",
@@ -3511,18 +3497,6 @@
         "link_input_files": 28,
         "uncovered": 0
       },
-      "pending": "V2source sets all6chunk8192-only options0 for the256chunk ownership fixture;ordinary full512expert bank/native16 remains. Original V1failure is pinned to8868b857 and its exact raw record. Native engine f633/source5ecb unchanged. Prepare/commit V2then3negative admissions+9requests. On native ERR wait for normal exit rather than forcing immediate cleanup;success still requires exit0 and accepted drafts.",
-      "native_compile_attempt7": {
-        "source_commit": "0de74d32e8556df4341f803d5d75481410ce650c",
-        "passed": false,
-        "ownership_closed": true,
-        "configure_exit": 0,
-        "compile_exit": 1,
-        "error": "generate.cpp:3658 use of undeclared identifier peer;factory placed before peer declaration at4105",
-        "GPU_executed": false,
-        "next_action": "Move the route factory after peer initialization once the pinned read-only audit finishes;commit corrected source/recipe before attempt8. Preserve original failed compile and existing phase fallbacks."
-      },
-      "factory_correction": "Move factory immediately before NativeDensePhase,after peer initialization;all four reader-selection guards unchanged.Native attempt8 pending.",
       "compiled_candidate_record": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/upstream-features-146df3c4/record.json",
         "sha256": "df3d550f5877795ab7fa20923911bc8e254b4805e926b930a15ff636a3a7b053"
@@ -3534,38 +3508,579 @@
         "bytes": 26272056,
         "origin_source_commit": "5ecb4435f8ac3bc5067554f368d0fa7424ec193f"
       },
-      "native_model_launched": true,
       "source_review": {
         "path": ".cache/research/2026-11-08/optional-mtp-heads/source-audit-review.md",
         "sha256": "89971fad6d52c32f5ff15c2fc9cdce59a0548a4eef1fb61ac7e29037f726789b",
         "bytes": 4887
       },
-      "review_disposition": "Core spec4 head-only ownership is coherent in source. Fix2independent admission gaps before GPU:reject DFlash2 expert-release/cache-scratch at CLI and require actual MTP for cache lease. Base model validation keeps both0 and requires positive accepted drafts for every request. Current compiled2e candidate has no GPU launch and is superseded by this prospective source/CLI-gate correction.",
-      "admission_corrections": "Both reviewed conflicts are now rejected in CLI before pack/GPU initialization;cache-scratch also requires nonempty MTP and excludes DFlash2. All3negative CLI gates remain to execute.",
-      "model_plan_admission": {
-        "source_commit": "045bbe471b7294fe8c8d4cc142b37b1bc575fdf4",
-        "prepare_exit": 1,
-        "error": "System Python lacks regex;failure before ROOT creation and before any native child.",
-        "native_launched": false,
-        "correction": "Use existing upstream-host-tests-146df3c4/bin/python(Python3.12.3,regex2026.9.10,jinja2 3.1.6);no installation/mutation.Pin parent interpreter and tokenizer/template package files in the new prepared plan."
-      },
-      "failed_gate": {
-        "root": "prefill-drafter-heads-model-v1",
-        "request_tokens": 513,
-        "chunk": 256,
-        "error": "8192-only mixed scratch/MoE-window/score/bank options inherited into256chunk diagnostic;source guard refused before prompt arithmetic.",
-        "admission_cases_passed": 3,
-        "request_cases_passed": 0,
-        "ownership_qualified": false,
-        "physical_process_closure": "Native2457227 exit-15 after owned cleanup;direct child reaped,session empty,no survivors,current/proc PID absent,active receipt false. Do not relabel original ownership_closed=false or failure as passed.",
+      "source_review_disposition": "Optional target/MTP head ownership reviewed;both admission gaps fixed in5ecb before native execution. Three negative CLI cases now pass before GPU initialization.",
+      "model_gate": {
+        "key": "dflash2_prefill_heads_check",
+        "controller_commit": "cec2e237bad84175a68305715a70ef3860dc926e",
+        "configuration": "single-card native spec4,ctx4096,chunk256,short-read128;all six8192-specific options explicitly0;thinking enabled",
+        "processes": 3,
+        "requests": 9,
+        "input_token_order": [
+          513,
+          82,
+          513
+        ],
+        "generated_tokens_each": 32,
+        "normal_exit_codes": [
+          0,
+          0,
+          0
+        ],
+        "all_offered_and_accepted_positive": true,
+        "ownership_closed": true,
+        "pre_main_validation": true,
+        "executable_maps_per_process": 38,
+        "full_executable_address_space_qualified": false,
+        "all15_model_assets_pre_post_hashed": true,
         "fresh_faults": []
-      }
+      },
+      "previous_failure": {
+        "evidence_commit": "8868b857cf52f733b82ce74c20318792948db873",
+        "stage": "failed",
+        "ownership_closed": false,
+        "native_exit": -15,
+        "reason": "V1mixed-scratch shape guard refused inherited8192-only options at chunk256. Original outcomes remain unchanged;V2uses the same native binary with an explicitly committed corrected configuration."
+      },
+      "pending": "Pinned bench.sh>=32K long/agent and >=1K thinking-enabled generation with observed strong/weak drafting;matched repeated speed and independent phase preservation/resource evidence. Also native function ledger,task/numerical checks,physical262144/tails/RESTORE,ordinary provider teardown and default adoption. No PP/TG/CSV record from this small diagnostic."
     },
     "dflash2_prefill_heads_check": {
-      "stage": "prepared",
-      "passed": false,
+      "stage": "passed",
+      "passed": true,
       "ownership_closed": true,
-      "cases": [],
+      "cases": [
+        {
+          "label": "df2_head0",
+          "draft": "dflash2",
+          "heads": 0,
+          "requests": [
+            {
+              "kind": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "accepted": 24,
+              "offered": 30,
+              "finish": "length",
+              "output_ids_sha256": "f56a800673c54ed66ccefbde596f296ea2ba720ca5598b5e8a8c51e22841707f",
+              "complete": true
+            },
+            {
+              "kind": "short",
+              "prompt_tokens": 82,
+              "generated": 32,
+              "accepted": 24,
+              "offered": 24,
+              "finish": "length",
+              "output_ids_sha256": "59135d1d156e6fdf80a707208f4a622c06ec3eef3da7fdf246283b3d9efd624d",
+              "complete": true
+            },
+            {
+              "kind": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "accepted": 24,
+              "offered": 30,
+              "finish": "length",
+              "output_ids_sha256": "f56a800673c54ed66ccefbde596f296ea2ba720ca5598b5e8a8c51e22841707f",
+              "complete": true
+            }
+          ],
+          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
+          "environment_overrides": {
+            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/df2_head0/cache",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/df2_head0/tmp",
+            "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/df2_head0"
+          },
+          "environment_sha256": "c5f07dcf821796ecd220b0b98c3c15f18e30238068017ac826d43e492961ab3d",
+          "placement": {
+            "context": "4096",
+            "kv": "int8",
+            "kv_resident": "0",
+            "expert_slots": "1256",
+            "expert_cache_mib": "2455",
+            "expert_slots_primary": "1256",
+            "expert_cache_primary_mib": "2455",
+            "spec": "4",
+            "mtp_max": "0",
+            "lookup": "0",
+            "vram_free_mib": "2691",
+            "cvec": "0",
+            "arena_mib": "47962",
+            "pool_workers": "5",
+            "pcie_frac": "0.00",
+            "spec_min_p": "0.00",
+            "conversation_cache_mib": "0",
+            "conversation_cache_slots": "4",
+            "conversation_cache_min_free_mib": "2560",
+            "engine": "0.1.38"
+          },
+          "pre_main_validation": {
+            "pid": 2494383,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "32bfa3ffd0f56a4a972ec76fbf59951b7bae73a8f2f8e83e063d735da2f35d02",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          },
+          "target_head_detached_bytes": [],
+          "draft_head_detached_bytes": [],
+          "dense_memory": [
+            {
+              "phase": "retired",
+              "residency": "Full",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "2551132160",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "bank",
+              "residency": "Bank",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "5379846144",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "restored",
+              "residency": "Full",
+              "activations": "48",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "2408734720",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "retired",
+              "residency": "Full",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "1877647360",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "bank",
+              "residency": "Bank",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "4711219200",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "restored",
+              "residency": "Full",
+              "activations": "48",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "1992728576",
+              "total_bytes": "10666115072"
+            }
+          ],
+          "passed": true,
+          "ownership_closed": true
+        },
+        {
+          "label": "df2_head1",
+          "draft": "dflash2",
+          "heads": 1,
+          "requests": [
+            {
+              "kind": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "accepted": 24,
+              "offered": 30,
+              "finish": "length",
+              "output_ids_sha256": "f56a800673c54ed66ccefbde596f296ea2ba720ca5598b5e8a8c51e22841707f",
+              "complete": true
+            },
+            {
+              "kind": "short",
+              "prompt_tokens": 82,
+              "generated": 32,
+              "accepted": 24,
+              "offered": 24,
+              "finish": "length",
+              "output_ids_sha256": "59135d1d156e6fdf80a707208f4a622c06ec3eef3da7fdf246283b3d9efd624d",
+              "complete": true
+            },
+            {
+              "kind": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "accepted": 24,
+              "offered": 30,
+              "finish": "length",
+              "output_ids_sha256": "f56a800673c54ed66ccefbde596f296ea2ba720ca5598b5e8a8c51e22841707f",
+              "complete": true
+            }
+          ],
+          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
+          "environment_overrides": {
+            "STRATA_PREFILL_RELEASE_HEADS": "1",
+            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/df2_head1/cache",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/df2_head1/tmp",
+            "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/df2_head1"
+          },
+          "environment_sha256": "d94b0d754a2204c821982b76385a2c621fa4b8211722603504335598564cbf91",
+          "placement": {
+            "context": "4096",
+            "kv": "int8",
+            "kv_resident": "0",
+            "expert_slots": "1256",
+            "expert_cache_mib": "2455",
+            "expert_slots_primary": "1256",
+            "expert_cache_primary_mib": "2455",
+            "spec": "4",
+            "mtp_max": "0",
+            "lookup": "0",
+            "vram_free_mib": "2691",
+            "cvec": "0",
+            "arena_mib": "47962",
+            "pool_workers": "5",
+            "pcie_frac": "0.00",
+            "spec_min_p": "0.00",
+            "conversation_cache_mib": "0",
+            "conversation_cache_slots": "4",
+            "conversation_cache_min_free_mib": "2560",
+            "engine": "0.1.38"
+          },
+          "pre_main_validation": {
+            "pid": 2501248,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "32bfa3ffd0f56a4a972ec76fbf59951b7bae73a8f2f8e83e063d735da2f35d02",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          },
+          "target_head_detached_bytes": [
+            521472000,
+            521472000
+          ],
+          "draft_head_detached_bytes": [],
+          "dense_memory": [
+            {
+              "phase": "retired",
+              "residency": "Full",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "2551132160",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "bank",
+              "residency": "Bank",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "5901385728",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "restored",
+              "residency": "Full",
+              "activations": "48",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "2408726528",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "retired",
+              "residency": "Full",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "1877639168",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "bank",
+              "residency": "Bank",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "5228363776",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "restored",
+              "residency": "Full",
+              "activations": "48",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "1877565440",
+              "total_bytes": "10666115072"
+            }
+          ],
+          "passed": true,
+          "ownership_closed": true
+        },
+        {
+          "label": "mtp_head1",
+          "draft": "mtp",
+          "heads": 1,
+          "requests": [
+            {
+              "kind": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "accepted": 22,
+              "offered": 27,
+              "finish": "length",
+              "output_ids_sha256": "96a8588e79674cf3113ca58aafa0031fdddd3dcfacced6856a5a12eb739b1098",
+              "complete": true
+            },
+            {
+              "kind": "short",
+              "prompt_tokens": 82,
+              "generated": 32,
+              "accepted": 23,
+              "offered": 24,
+              "finish": "length",
+              "output_ids_sha256": "59135d1d156e6fdf80a707208f4a622c06ec3eef3da7fdf246283b3d9efd624d",
+              "complete": true
+            },
+            {
+              "kind": "long",
+              "prompt_tokens": 513,
+              "generated": 32,
+              "accepted": 22,
+              "offered": 27,
+              "finish": "length",
+              "output_ids_sha256": "96a8588e79674cf3113ca58aafa0031fdddd3dcfacced6856a5a12eb739b1098",
+              "complete": true
+            }
+          ],
+          "argv_sha256": "d84f8a95959b69a1ea13495c3d38930ded4048ecd785292f5f2b52d88956e7cd",
+          "environment_overrides": {
+            "STRATA_PREFILL_RELEASE_HEADS": "1",
+            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/mtp_head1/cache",
+            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/mtp_head1/tmp",
+            "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v2/mtp_head1"
+          },
+          "environment_sha256": "56fbb9a8b7aa21dc0d2e416971f2af0e3f5c2e4bc0d98b5f46a740b07f3000ee",
+          "placement": {
+            "context": "4096",
+            "kv": "int8",
+            "kv_resident": "0",
+            "expert_slots": "1256",
+            "expert_cache_mib": "2455",
+            "expert_slots_primary": "1256",
+            "expert_cache_primary_mib": "2455",
+            "spec": "4",
+            "mtp_max": "0",
+            "lookup": "0",
+            "vram_free_mib": "1678",
+            "cvec": "0",
+            "arena_mib": "47962",
+            "pool_workers": "5",
+            "pcie_frac": "0.00",
+            "spec_min_p": "0.00",
+            "conversation_cache_mib": "0",
+            "conversation_cache_slots": "4",
+            "conversation_cache_min_free_mib": "2560",
+            "engine": "0.1.38"
+          },
+          "pre_main_validation": {
+            "pid": 2507280,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "threads_before": 1,
+            "preinit": 37,
+            "config_enabled": true,
+            "first_init": true,
+            "dispatch_result": 46,
+            "output_untouched": true,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false
+          },
+          "mapping": {
+            "files": 38,
+            "sha256": "32bfa3ffd0f56a4a972ec76fbf59951b7bae73a8f2f8e83e063d735da2f35d02",
+            "scope": "file-backed executable ELF mappings at READY",
+            "other_executable_vmas": {
+              "[vdso]": 1,
+              "[vsyscall]": 1
+            },
+            "full_executable_address_space_qualified": false
+          },
+          "target_head_detached_bytes": [
+            521472000,
+            521472000
+          ],
+          "draft_head_detached_bytes": [
+            223227900,
+            223227900
+          ],
+          "dense_memory": [
+            {
+              "phase": "retired",
+              "residency": "Full",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "1593954304",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "bank",
+              "residency": "Bank",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "5157060608",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "restored",
+              "residency": "Full",
+              "activations": "48",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "1446895616",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "retired",
+              "residency": "Full",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "803807232",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "bank",
+              "residency": "Bank",
+              "activations": "0",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "4481556480",
+              "total_bytes": "10666115072"
+            },
+            {
+              "phase": "restored",
+              "residency": "Full",
+              "activations": "48",
+              "full_bytes": "2116951040",
+              "bank_bytes": "50918400",
+              "snapshot_bytes": "2116951040",
+              "overlay_rows": "0",
+              "session_recapture": "0",
+              "verifier": "1",
+              "free_bytes": "1033969664",
+              "total_bytes": "10666115072"
+            }
+          ],
+          "passed": true,
+          "ownership_closed": true
+        }
+      ],
       "component_reuse": {
         "original_model_record": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-model-v2/record.json",
@@ -3918,6 +4433,36 @@
       "speed_eligible": false,
       "model_adoption_qualified": false,
       "retention": "Keep compact request hashes,configuration,per-request counters,head/free-memory observations and closures.Generated IDs are reproduced from committed generator+hash-pinned tokenizer;verify exact wire before launch.Discard successful stage/API text and caches after extracting useful evidence;no new engine copy.",
+      "admission_results": [
+        {
+          "label": "reject_width1",
+          "exit_code": 2,
+          "ownership_closed": true,
+          "expected_error_seen": true,
+          "observed_UR_calls": 0,
+          "argv_sha256": "7e1d6ec149ed0ba62dda5482d610d9162243ec7a488e401480bda866462956cc",
+          "environment_sha256": "354d31f4c6a9fc78a2aa7d0051bbf4e549d6b1f682ce37b9dd20ec3c79622469"
+        },
+        {
+          "label": "reject_mtp_experts",
+          "exit_code": 2,
+          "ownership_closed": true,
+          "expected_error_seen": true,
+          "observed_UR_calls": 0,
+          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
+          "environment_sha256": "ff1e69a2662f28e5646957cba2fbccc736e794091e8ba820fd946ff6edc240f7"
+        },
+        {
+          "label": "reject_cache_scratch",
+          "exit_code": 2,
+          "ownership_closed": true,
+          "expected_error_seen": true,
+          "observed_UR_calls": 0,
+          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
+          "environment_sha256": "bba5c383dfdd80be6d7933b4599f70198c3bb6fa29820355bfa25f4ef39f141d"
+        }
+      ],
+      "fresh_faults": [],
       "generator_runtime": {
         "executable": "/usr/bin/python3.12",
         "invocation": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
@@ -3969,7 +4514,56 @@
           "generator": "check_dflash2_model.request_ids:original82ID thinking prompt"
         }
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "reject_width1",
+          "exit_code": 2,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "reject_mtp_experts",
+          "exit_code": 2,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "reject_cache_scratch",
+          "exit_code": 2,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "df2_head0",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "df2_head1",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "mtp_head1",
+          "exit_code": 0,
+          "error": null,
+          "ownership_closed": true,
+          "errors": [],
+          "cleanup": []
+        }
+      ]
     }
   }
 }

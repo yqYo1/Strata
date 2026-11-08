@@ -3028,8 +3028,12 @@ that timestamp. **DeepSeek and35B execution support remain excluded until the
 user explicitly requests them, including future syncs.**
 
 Unsloth v3.1 catalog/pinned metadata and the stock DFlash2 Q4 pack are present.
-The optional native DFlash2 candidate is compiled at
-`f50df1f3c81272b14d994e4d8fcad19703ad0b7e`(engine SHA`d0f42948…`).
+The current optional native candidate is compiled at
+`5ecb4435f8ac3bc5067554f368d0fa7424ec193f`(engine SHA`f633543c…`).
+The original arithmetic/ring and short target-model evidence below belongs to
+`f50df1f3c81272b14d994e4d8fcad19703ad0b7e`(former engine SHA`d0f42948…`).
+The new model plan checks the shared native inputs and five unchanged component
+fixtures against that original source;new head ownership still needs its own gate.
 Both serve and standalone now allocate at least7DFlash2 result slots,and the
 span API refuses undersized outputs before submission. MTP sizes/math remain
 unchanged. The rebuilt kernel/ring fixtures and retained mask fixture pass
@@ -3054,26 +3058,45 @@ unchanged;the new admission recovers the original probe source/recipe and
 checks six later current-runtime pre-main proofs.
 
 Native default MTP and legacy explicit-MTP configs remain selected. The host
-Auto policy can choose DFlash2 on a fresh supported configuration;this candidate
-is not installed/default-adopted. Both fast phase references remain. Next:
-split target-head/verifier retirement from optional MTP-head ownership,initially
-max_t4,as selected by the completed audit/review. Ordinary DFlash2 long-prefill
-already works with release controls0;expert release is inapplicable and cache
-scratch remains gated. The new source separates optional MTP weights/readers
-from the target head and checks that no DFlash2 owner is live before admitting
-release. It retains the MTP transition order and refuses `--mtp-max-t1` before
-pack/GPU initialization. The host fixture passes29cases/845checks at controller
-source`930bab9a7`with214compiler and28link inputs covered,no sanitizer output
-and closed children. This proves host policy only;native rebuild and a new
-committed model plan still precede GPU ownership/handoff validation.
-Measure actual head bytes/free-memory and restore cost before claiming a gain.
-Then collect pinned bench.sh long/agent and
-thinking long-generation evidence. The short diagnostic keeps those three
-resource controls0and proves no speed,task quality,physical262144/RESTORE or
-ordinary-provider-teardown qualification. `--mtp-max-t1`is an unqualified option
-edge to reject or define before claiming all combinations. See
-`dflash2_native_port`,`dflash2_model_check`and`validation_environment_reuse`in
-the linked status for exact identities,outcomes and remaining functional ports.
+Auto policy can choose DFlash2 on a fresh supported configuration;the current
+candidate is not installed/default-adopted. Both fast phase references remain.
+The new single-card spec4 path separates target-head/verifier retirement from
+optional MTP duplicate-head ownership. It checks that no DFlash2 owner is live
+before release,preserves the MTP transition order,and keeps short-input decode
+placement available. DFlash2 width1,expert-release and cache-scratch conflicts
+are rejected before pack/GPU initialization;cache scratch remains MTP-only.
+
+The host fixture passes29cases/845checks at controller source`930bab9a7`,with
+214compiler and28link inputs covered,no sanitizer output and normal closed
+children. The new engine is compiled;this alone does not qualify native ownership.
+The first small model gate remains failed at evidence`8868b857`:it inherited
+8192-only tuning into a256-token chunk and the native mixed-scratch guard refused
+the first513-token prompt. Its three pre-GPU rejection cases pass. The owned
+child was terminated-15,reaped and its session emptied;qualified normal ownership
+remains false. No fresh GPU fault occurred.
+
+The new V2plan at controller`cec2e237b`explicitly disables those six shape-specific
+options,retaining ordinary full512expert-bank/native16 behavior. It uses the same
+f633engine,not a rebuilt or differently labelled executable. Three processes
+exercise DFlash2 release0,DFlash2 release1 and MTP release1. Each receives
+513/82/513thinking-enabled input tokens and32output tokens per request;positive
+draft acceptance,actual long/short routing,head transition counts,restored decode
+state,quiet validation and normal owner closure are required. All nine requests pass,with positive accepted drafts and normal exit0 for all
+three model children. The three pre-GPU refusals also pass. Actual route/head
+transitions,pre-main validation,38file-backed ELF mappings per child and all15
+model-asset hashes before/after are checked;all owners close and no fresh GPU
+fault occurs. DFlash2 frees521472000target-head bytes per long transition;MTP
+also frees223227900duplicate-head bytes. The phase/free-memory samples are
+retained in the gate;these are not physical PCIe-byte or saturation measurements.
+This is a small ownership diagnostic,not the tuned8192performance route or a
+>=32Kcomparison.
+
+Measure released head bytes,free memory and restore cost before claiming a gain.
+Then collect pinned bench.sh long/agent and thinking long-generation evidence.
+Physical262144/RESTORE,task quality,ordinary-provider teardown and default adoption
+remain open. See`dflash2_native_port`,`dflash2_model_check`,
+`dflash2_prefill_heads_check`and`validation_environment_reuse`in the linked status
+for exact identities,outcomes and remaining functional ports.
 The following earlier host-component results refer to their original pinned
 inputs;they do not qualify the later bulk Python imports.
 After both frozen cohorts closed,the required streamed-tool closing-tag
