@@ -15,6 +15,7 @@ import re
 import select
 import shlex
 import statistics
+import struct
 import subprocess
 import sys
 import tarfile
@@ -28,7 +29,7 @@ P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 ROOT = B / 'q6-dpas-component-v5'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_dpas_component_v5'
+KEY = 'q6_dpas_component_v6'
 TARGET = 'sycl_q6_dpas_component'
 HELPERS = ('tools/sycl/q6_dpas_component.py','tools/sycl/test_q6_dpas_component.py',
     'tools/sycl/benchmark_runtime.py','tools/sycl/measurement_guards.py',
@@ -89,184 +90,204 @@ def dependency_pins(roots):
                 pins[name] = sha(path)
     return pins
 
+KERNEL_ENTRY = '_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E'
+CONTROLLER_FILES = ('tools/sycl/q6_dpas_component.py', 'tools/sycl/test_q6_dpas_component.py')
+
+
+def embedded_dpas(blob):
+    """Read exact linked ELF images and count reachable SPIR-V DPAS calls.
+
+    This is a bounded format/callgraph check,not a full SPIR-V validator or
+    evidence of final native ISA,hardware utilization or dynamic call count.
+    """
+    require(64 <= len(blob) <= 64 << 20, 'finite ELF extent')
+    def span(offset, size):
+        require(0 <= offset <= len(blob) and 0 <= size <= len(blob)-offset,
+                'ELF file span')
+        return blob[offset:offset+size]
+    def name(table, at):
+        require(0 <= at < len(table), 'ELF/SPIR-V string offset')
+        end=table.find(b'\0',at)
+        require(at <= end <= at+4096, 'bounded terminated name')
+        return table[at:end].decode('utf-8')
+    h=struct.unpack('<16sHHIQQQIHHHHHH',span(0,64))
+    require(h[0][:6]==b'\x7fELF\x02\x01' and h[1] in (2,3) and h[2]==62
+        and h[8]==64 and h[11]==64 and 0<h[12]<=4096 and h[13]<h[12],
+        'supported ELF64 little-endian native executable')
+    sections=[struct.unpack('<IIQQQQIIQQ',span(h[6]+64*i,64)) for i in range(h[12])]
+    strings=sections[h[13]]
+    require(strings[1]==3, 'ELF section-name string table')
+    section_names=span(strings[4],strings[5])
+    ids={i for i,q in enumerate(sections)
+        if name(section_names,q[0]).startswith('__CLANG_OFFLOAD_BUNDLE__sycl-spir64')}
+    require(ids, 'linked SYCL SPIR-V section')
+    seen=set();matches=[]
+    for table in sections:
+        if table[1]!=2:continue
+        require(table[9]==24 and table[5]%24==0 and table[5]//24<=1000000
+            and table[6]<len(sections), 'finite ELF symbol table')
+        string_section=sections[table[6]]
+        require(string_section[1]==3, 'ELF symbol-name string table')
+        symbol_names=span(string_section[4],string_section[5])
+        for at in range(table[4],table[4]+table[5],24):
+            symbol,_,_,section,value,size=struct.unpack('<IBBHQQ',span(at,24))
+            if section not in ids or size==0:continue
+            q=sections[section]
+            require(q[3]<=value and size<=q[5] and value-q[3]<=q[5]-size,
+                    'embedded image belongs to its ELF section')
+            offset=q[4]+value-q[3];key=(offset,size)
+            image=span(offset,size)
+            if key in seen or image[:4]!=b'\x03\x02\x23\x07':continue
+            seen.add(key)
+            require(len(seen)<=1024, 'finite linked image inventory')
+            if KERNEL_ENTRY.encode()+b'\0' not in image:continue
+            require(20<=size and size%4==0, 'SPIR-V module extent')
+            words=struct.unpack('<'+str(size//4)+'I',image)
+            require(words[0]==0x07230203 and 0x10000<=words[1]<=0x10600
+                and 0<words[3]<=10000000 and words[4]==0, 'SPIR-V module header')
+            labels={};entries=[];functions=set();calls=[];function=None
+            cursor=5;instructions=0
+            while cursor<len(words):
+                count,op=words[cursor]>>16,words[cursor]&65535
+                require(count>0 and count<=len(words)-cursor, 'SPIR-V instruction extent')
+                a=words[cursor+1:cursor+count];instructions+=1
+                require(instructions<=1000000, 'finite SPIR-V instruction inventory')
+                if op==5:
+                    require(len(a)>=2 and 0<a[0]<words[3], 'SPIR-V OpName')
+                    text=name(struct.pack('<'+str(len(a)-1)+'I',*a[1:]),0)
+                    require(a[0] not in labels or labels[a[0]]==text, 'unambiguous SPIR-V names')
+                    labels[a[0]]=text
+                elif op==15:
+                    require(len(a)>=3 and 0<a[1]<words[3], 'SPIR-V OpEntryPoint')
+                    text=name(struct.pack('<'+str(len(a)-2)+'I',*a[2:]),0)
+                    entries.append((a[0],a[1],text))
+                elif op==54:
+                    require(len(a)==4 and function is None and 0<a[1]<words[3]
+                        and a[1] not in functions, 'SPIR-V function declaration')
+                    function=a[1];functions.add(function)
+                elif op==56:
+                    require(not a and function is not None, 'SPIR-V function end')
+                    function=None
+                elif op==57:
+                    require(len(a)>=3 and function is not None and 0<a[2]<words[3],
+                            'SPIR-V function call')
+                    calls.append((function,a[2]))
+                cursor+=count
+            require(function is None, 'closed SPIR-V function')
+            if not any(text==KERNEL_ENTRY for _,_,text in entries):continue
+            require(len(entries)==1 and entries[0][0]==6 and entries[0][1] in functions,
+                    'one exact C4 kernel entrypoint')
+            reachable=set();pending=[entries[0][1]];edges={}
+            for caller,callee in calls:edges.setdefault(caller,[]).append(callee)
+            while pending:
+                f=pending.pop()
+                if f in reachable:continue
+                reachable.add(f);pending.extend(edges.get(f,()))
+            dpas=[(caller,callee) for caller,callee in calls if caller in reachable and
+                labels.get(callee,'').startswith(('llvm.genx.dpas.','llvm.genx.dpas2.'))]
+            require(len(dpas)>=2 and all(callee in functions for _,callee in dpas),
+                    'at least two reachable SPIR-V DPAS calls')
+            matches.append(dict(image_symbol=name(symbol_names,symbol),image_offset=offset,
+                image_bytes=size,image_sha256=hashlib.sha256(image).hexdigest(),
+                entrypoint=KERNEL_ENTRY,reachable_functions=len(reachable),
+                dpas_static_calls=len(dpas),dpas_callees=sorted({labels[v] for _,v in dpas})))
+    require(len(matches)==1, 'one exact linked C4 device image')
+    return dict(matches[0],device_images=len(seen),
+        scope='Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count.')
+
+
 def prepare():
-    data = validation.committed(RESULT)
-    for key in ('q6_dpas_component_v1', 'q6_dpas_component_v2', 'q6_dpas_component_v3'):
-        failed = data[key]
-        require(failed['stage'] == 'failed' and not failed['passed'] and not failed['complete']
-            and failed['ownership_closed'] and not failed['active'] and not failed['GPU_executed']
-            and failed['artifact_retirement']['state'] == 'deleted_verified',
-            'preserve and retire each pre-native compiler failure first')
-    probe = data['q6_dpas_component_v4']
-    require(probe['stage'] == 'failed' and not probe['passed'] and not probe['complete']
-        and probe['ownership_closed'] and not probe['active'] and not probe['GPU_executed']
-        and probe['artifact_retirement']['state'] == 'not_created'
-        and not Path(probe['artifact_retirement']['root']).exists(),
-        'preserve the pre-materialization V4 tool-probe failure')
-    previous = data['mapped_row_copy_graph_v1']
-    require(previous['stage']=='closed' and previous['passed'] and previous['complete'] and
-        previous['ownership_closed'] and not previous['active'] and
-        not previous['decision']['host_source_component_gain'] and
-        previous['artifact_retirement']['state']=='deleted_verified',
-        'close and retire graph-copy comparison first')
-    cohort = data['dflash2_device_service_v2']
-    require(cohort['stage'] == 'closed' and cohort['complete'] and cohort['ownership_closed']
-        and not cohort['active'] and len(cohort['cases']) == 3 and
-        all(c['passed'] and c['complete'] and c['ownership_closed'] and
-            c['native_exit_code'] == c['benchmark_exit_code'] == 0 and not c['fresh_faults']
-            for c in cohort['cases']), 'close the current frozen DFlash2 cohort before component preparation')
-    require(not ROOT.exists() and KEY not in data, 'fresh component attempt only')
-    revision = git('rev-parse', 'HEAD').decode().strip()
-    helpers = {n: sha(P / n) for n in HELPERS}
-    require(all((P / n).read_bytes() == git('show', revision + ':' + n) for n in HELPERS),
-        'commit exact component controls first')
-    native, identity = selected.basis()
-    require(native['binaries']['strata'] == cohort['binary'], 'same selected90f production input required')
-    existing=[n for n in UNITS if n not in ('src/kernels/sycl/q6_dpas_component.cpp','bench/sycl/q6_dpas.cpp')]
-    control_inputs={n:sha(P/n) for n in existing}
-    require(len(existing)==12 and all(native['project']['source_sha256'].get(n)==h for n,h in control_inputs.items()),
-        'all12production control units must match selected591c native source')
-    recipe = cohort['recipe']
-    original = json.loads(git('show', recipe['commit'] + ':' + recipe['path']))
-    template = original['current_sync']['dflash2_cache_loan_long_v1']['plans'][0]['environment']
-    env = dict(native['recipe']['environment'])
-    env = {k: v for k, v in env.items() if not k.startswith('STRATA_IQ') and k != 'STRATA_CPU_SERVICE'}
-    env.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
-        ZE_ENABLE_ALT_DRIVERS=template['ZE_ENABLE_ALT_DRIVERS'],
-        UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
-        UR_LOG_TRACING='level:info;flush:info;output:stderr')
-    require(not env.get('LD_PRELOAD') and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and
-        env['EnableDirectSubmission'] == '0' and env['NEOReadDebugKeys'] == '1' and
-        env['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1' and
-        env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0' and env['ZES_ENABLE_SYSMAN'] == '0',
-        'preserve selected immutable runtime safety')
-    provider = cohort['runtime_manifest']
-    require(sha(provider['path']) == provider['sha256'], 'qualified provider inventory differs')
-    runtime = json.loads(Path(provider['path']).read_text())
-    require(len(runtime) == provider['files'] and all(sha(n) == h for n, h in runtime.items()),
-        'qualified runtime files differ')
-    for asset in cohort['native_validation_probe'].values():
-        require(runtime.get(str(Path(asset['path']).resolve())) == asset['sha256'],
-            'qualified validation preload/loader differs')
-    tools = {name: dict(path=path, realpath=str(Path(path).resolve()), sha256=sha(path)) for name, path in
-        dict(compiler='/opt/intel/oneapi/compiler/2026.2/bin/icpx',
-             ir_frontend='/opt/intel/oneapi/compiler/2026.2/bin/compiler/clang', cmake='/usr/bin/cmake',
-             ninja='/usr/bin/ninja', assembler='/usr/bin/as', linker='/usr/bin/ld', python=sys.executable).items()}
-    versions = {n: subprocess.check_output([tools[n]['path'], '--version'], env=env,
-        text=True, timeout=15).splitlines()[0] for n in ('compiler', 'cmake', 'ninja')}
-    dependencies = ['/opt/intel/oneapi/compiler/2026.2/include',
-        '/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl', '/usr/include/c++/13',
-        '/usr/include/x86_64-linux-gnu/c++/13', '/usr/lib/gcc/x86_64-linux-gnu/13/include',
-        '/usr/include/level_zero']
-    dependencies += sorted(str(p) for p in Path('/opt/intel/oneapi/compiler/2026.2/lib/clang').glob('*/include'))
-    require(len(dependencies) > 6, 'compiler resource headers required')
-    dependency_inputs = dependency_pins(dependencies)
-    external = native['external_inputs']
-    require(sha(external['path']) == external['sha256'], 'original external-input manifest changed')
-    external_inputs = json.loads(Path(external['path']).read_text())
-    require(all(sha(p) == h for p, h in external_inputs.items()), 'original external compiler/link inputs changed')
-    names = git('ls-files', '-z', '.gitattributes', 'CMakeLists.txt', 'LICENSE', 'cmake', 'src', 'include',
-        'tests', 'bench', 'tools', 'third_party').decode().split('\0')
-    names = sorted(n for n in names if n and not n.startswith('bench/results/')
-                   and n != 'bench/performance-records.csv')
-    require(0 < len(names) <= 4096, 'finite source snapshot')
-    archive = git('archive', '--format=tar', revision, *names)
-    require(len(archive) <= 64 << 20, 'source snapshot byte budget')
-    sources = {}
+    """Prospectively admit the unchanged,unexecuted V5 native build for V6."""
+    data=validation.committed(RESULT)
+    require(KEY not in data, 'fresh V6 admission only')
+    previous=data['q6_dpas_component_v5']
+    require(previous['stage']=='failed' and not previous['passed'] and not previous['complete']
+        and previous['ownership_closed'] and not previous['active'] and not previous['GPU_executed'],
+        'preserve the failed V5 text-output gate')
+    row=json.loads((ROOT/'record.json').read_text())
+    require(row['stage']=='failed' and row['ownership_closed'] and not row['active']
+        and not row['GPU_executed'] and all(owner.closed(c) for c in row['commands']),
+        'original native owner must be closed')
+    require([(c['label'],c['exit_code']) for c in row['commands']]==
+        [('configure',0),('build',0),('codegen',0),('ir-text',1)],
+        'only the original unexecuted successful native build is reusable')
+    recipe_commit='3db30d9201f163dbadbc83f4c801890227d04043'
+    original=json.loads(git('show',recipe_commit+':'+str(RESULT.relative_to(P))))['q6_dpas_component_v5']
+    require(all(row[k]==original[k] for k in ('source_commit','configure','build','environment',
+        'source_generation','tools','tool_versions','dependency_roots','system_packages')),
+        'original native source/recipe/toolchain identity')
+    require(signature(row['sources'])==original['source_inputs'], 'original native source inventory')
+    archive=git('archive','--format=tar',row['source_commit'],*sorted(row['sources']))
+    require(len(archive)<=64<<20, 'finite original Git archive')
+    recovered={}
     with tarfile.open(fileobj=io.BytesIO(archive)) as source:
         for item in source.getmembers():
-            if item.isdir(): continue
-            require(item.isfile() and item.name in names, 'only named regular source files')
-            sources[item.name] = hashlib.sha256(source.extractfile(item).read()).hexdigest()
-    require(set(sources) == set(names), 'complete archive source identity')
-    configure = [tools['cmake']['path'], '-S', str(ROOT / 'source'), '-B', str(ROOT / 'build'),
-        '-G', 'Ninja', '-DCMAKE_CXX_COMPILER=' + tools['compiler']['path'],
-        '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
-        '-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl',
-        '-DSTRATA_ENABLE_SYCL=ON', '-DSTRATA_ENABLE_CUDA=OFF', '-DSTRATA_ENABLE_HIP=OFF',
-        '-DSTRATA_NATIVE_EXPERTS=OFF', '-DSTRATA_BUILD_TESTS=OFF', '-DSTRATA_SYCL_TESTS=OFF',
-        '-DSTRATA_BUILD_PREFILL_HOST_TESTS=OFF', '-DSTRATA_SYCL_VLLM_XE2_NATIVE16=OFF',
-        '-DSTRATA_WERROR=ON',
-        '-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
-        '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t']
-    # The installed driver refuses direct -S -emit-llvm with SYCL. Emit its
-    # documented LLVM device object,then print that bitcode through the same
-    # installed LLVM frontend's IR reader;no host/device execution is involved.
-    codegen = [tools['compiler']['path'],'-fsycl','-fsycl-device-only',
-        '-fsycl-device-obj=llvmir','-c',
-        '-O3','-std=c++20','-ffp-contract=off','-fno-fast-math','-fsycl-id-queries-range=size_t',
-        '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
-        '-I'+str(ROOT/'source/include'),'-I'+str(ROOT/'source/include/strata/sycl/compat'),
-        '-I'+str(ROOT/'source/src/kernels/sycl'),str(ROOT/'source/src/kernels/sycl/q6_dpas_component.cpp'),
-        '-o',str(ROOT/'q6-dpas.bc')]
-    ir_text = [tools['ir_frontend']['path'],'-cc1','-triple','spir64-unknown-unknown',
-        '-emit-llvm','-disable-llvm-passes','-x','ir',str(ROOT/'q6-dpas.bc'),
-        '-o',str(ROOT/'q6-dpas.ll')]
-    row = dict(stage='preparing',source_commit=revision,sources=sources,helpers=helpers,
-        source_generation=dict(command='git archive --format=tar <source_commit> <named source paths>',
-            attributes_path='.gitattributes',attributes_sha256=sources['.gitattributes']),
-        provenance=dict(local_reference='src/kernels/sycl/native_mmq_xmx.cpp;existing public Q6 columns entry',
-            external_reference='ggml-org/llama.cpp@34ca79122b44d43eda7efb203b82ec91db94c55c:ggml/src/ggml-sycl/esimd.hpp',
-            device_ir_reference='https://github.com/intel/llvm/blob/sycl/sycl/doc/UsersManual.md;-fsycl-device-obj=llvmir;installed icpx and matching -cc1 --help plus nonexecuting driver -### confirm the selected actions.',
-            license='MIT notice retained;new pack/kernel/controller/fixture authored here under repository LICENSE;no XeStrata source.',
-            distinction='Own uint16 interleave and explicit C4 entry;not upstream in-place SOA reorder or engine dispatch.'),
-        dependency_roots=dependencies,dependency_pins=dependency_inputs,tools=tools,tool_versions=versions,
-        production_control_inputs=dict(source_commit=native['project']['revision'],**signature(control_inputs)),
-        system_packages=packages(),runtime_pins=runtime,external_inputs=external,selected_native=identity,
-        runtime_basis=dict(key='dflash2_device_service_v2',observer_screen_passed=False,
-            scope='Normal current-model execution/provider/preload provenance only;failed observer screen supplies a hypothesis,not representative attribution or saturation.'),
-        native_validation_probe=cohort['native_validation_probe'],environment=env,configure=configure,
-        build=[tools['cmake']['path'],'--build',str(ROOT/'build'),'--target',TARGET,'--parallel','1'],
-        codegen_command=codegen,ir_text_command=ir_text,build_budget=budget(600,2400,file_cap=128<<20),
-        host_budget=dict(budget(90,90,file_cap=16<<20),rss_cap=1<<30),
-        host_command=[tools['python']['path'],'-B','-m','unittest','-v','tools.sycl.test_q6_dpas_component'],
-        native_budget=budget(600,1200,file_cap=16<<20),
-        boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver=guards.driver_guard(),
-        plan=dict(order='10CPU reader controls,build+device IR,12CPU pack/shape controls,small traced3shape/2seed check,full2shape/2seed check,three timing processes0/1/2.Commit each closed stage;stop first failure,no retries.',
-            shapes=[[2560,640],[2560,248320]],columns=4,arms=['public_columns','packed_dpas'],orders=[[0,1],[1,0],[0,1]],
-            timing_samples_per_shape_arm=5,warmup_batches=2,batch_by_rows={'640':4096,'248320':256},
-            minimum_batch_ns=10000000,minimum_timer_multiple=300,sample_fields_ns=FIELDS,
-            numerical='Canonical Q6_K and Q8_1 quantization unchanged,per16 signed scale and FP16 super-scale/d preserved;s unused. FP32 accumulation association changes. All outputs finite and DP4A/DPAS difference bounded by2*gamma(8*(K/32)+64)*row L1 upper envelope+1e-12. Independent byte scalar double oracle on every small row and >=512distributed/head-tail rows per large shape;each arm within gamma*actual L1+1e-12. This checks this FP32-accumulating component,not a universal FP32 model precision or task-quality rule.',
-            lifetime='Both entries capture one ordinary node and replay through graph_launch_with_completion. Explicit completion and both-queue drains precede CPU writes,readback,graph or allocation retirement. Immutable pre-exec environment;no dynamic fallback.',
-            placement='Canonical and independently interleaved Device allocations both live. Record exact payload and successful maximum allocation,host pack and uploaded setup separately. Does not qualify10GiB model placement,cold total model latency or physical traffic.',
-            acceptance='Exact input/ELF/provider/pre-main/ownership/boot pins;normal0,quiet validation,no fresh fault. CPU roundtrip,C1 rejection before runtime and unchanged C1 reference;all small/full numeric/input/canary checks. Codegen must retain>=2DPAS intrinsic calls;this is compiler-IR evidence,not native ISA or utilization. All60timed samples meet order/replay count/timer/conservation gates. Compare each shape independently:all3candidate/reference process-median whole-batch wall ratios<1,no percentage floor. Only a winning full head cell can motivate a separately qualified model proposal;no adoption.',
-            limits='Parameter-validation/preload-instrumented component wall/threadCPU including graph submission/completion;not clean or sustained model speed. Source-selected cost hypothesis;physical bottleneck remains unknown.'),
-        retention='Useful individual samples,setup/numeric outcomes,source/recipe and decision only.Retire successful raw/build output after this named component/model-proposal consumer ends;no additional inference engine.',
-        results=[],timing=[],active=False,ownership_closed=True,passed=False,complete=False,GPU_executed=False,model_executed=False,
-        materialization=dict(complete=False,completed_source_files=0))
-    ROOT.mkdir(mode=0o700)
-    try:
-        # Persist intent before extraction. A partial tree is a failed attempt,
-        # never a fresh root to repair or retry by refreshing its input hashes.
-        save(row)
-        for name in ('source', 'tmp', 'cache'): (ROOT / name).mkdir()
-        with tarfile.open(fileobj=io.BytesIO(archive)) as source:
-            for item in source.getmembers():
-                if item.isdir(): continue
-                path = ROOT / 'source' / item.name
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes(source.extractfile(item).read()); path.chmod(item.mode & 0o777)
-                row['materialization']['completed_source_files'] += 1
-        row['materialization']['complete'] = True
-        row['stage'] = 'prepared'
-        save(row)
-    except BaseException as error:
-        row.update(stage='failed', passed=False, complete=False, preparation_error=repr(error))
-        try:
-            save(row)
-        except BaseException as persist_error:
-            raise RuntimeError('Preparation failed and its receipt could not be saved; '
-                               'preserve the partial component root. Original error: ' +
-                               repr(error)) from persist_error
-        raise
-    print('Prepared committed-source Q6 DPAS component;commit its exact plan before build.', flush=True)
+            if item.isdir():continue
+            require(item.isfile() and item.name in row['sources'], 'original regular native inputs')
+            recovered[item.name]=hashlib.sha256(source.extractfile(item).read()).hexdigest()
+    require(recovered==row['sources'] and
+        all(sha(ROOT/'source'/n)==h for n,h in recovered.items()), 'exact original private native source')
+    revision=git('rev-parse','HEAD').decode().strip()
+    helpers={n:sha(P/n) for n in HELPERS}
+    require(all((P/n).read_bytes()==git('show',revision+':'+n) for n in HELPERS),
+            'commit exact new admission/reader controls')
+    deltas={n:dict(native_snapshot_sha256=h,controller_sha256=sha(P/n))
+        for n,h in row['sources'].items() if sha(P/n)!=h}
+    require(set(deltas)<=set(CONTROLLER_FILES) and
+        all(v['controller_sha256']==helpers[n] for n,v in deltas.items()),
+        'only explicitly pinned controller/test files may differ from native source')
+    native=previous['unexecuted_native_build']
+    require(native['actual_inputs']['source_commit']==row['source_commit'] and
+        sha(native['path'])==native['sha256'] and
+        sha(native['actual_inputs']['path'])==native['actual_inputs']['sha256'],
+        'original final ELF and actual compiler census')
+    census_inputs=json.loads(Path(native['actual_inputs']['path']).read_text())
+    require(native['actual_inputs']['uncovered']==0 and not census_inputs['generated']
+        and all(sha(p)==h for k in ('compiled','links') for p,h in census_inputs[k].items())
+        and {p for p in census_inputs['compiled'] if Path(p).suffix in ('.cpp','.cc','.c','.cu')}==
+            {str((ROOT/'source'/n).resolve()) for n in UNITS}, 'all14 original compiled units and link bytes')
+    database_path=ROOT/'build/compile_commands.json'
+    database=json.loads(database_path.read_text())
+    commands=[c for c in database if TARGET+'.dir' in c['command'] or 'strata_sycl_runtime.dir' in c['command']]
+    require(len(commands)==14 and {str(Path(c['file']).relative_to(ROOT/'source')) for c in commands}==set(UNITS)
+        and all('-fsycl' in shlex.split(c['command']) and '-fsycl-id-queries-range=size_t' in shlex.split(c['command']) for c in commands)
+        and all('-fno-fast-math' in shlex.split(c['command']) and '-ffp-contract=off' in shlex.split(c['command'])
+                for c in commands if TARGET+'.dir' in c['command']), 'original numerical/target flags')
+    _,identity=selected.basis()
+    require(identity==row['selected_native'], 'same selected90f production control')
+    # Keep original native source/recipe and ELF. Pin the new controller revision
+    # separately;none of the V5 host/device/performance gates is inherited.
+    for key in ('commands','codegen_command','ir_text_command'):row.pop(key,None)
+    row.update(controller_commit=revision,helpers=helpers,controller_only_deltas=deltas,
+        binary={k:native[k] for k in ('path','sha256','bytes')},actual_inputs=native['actual_inputs'],
+        compile_database=dict(path=str(database_path),sha256=sha(database_path),translation_units=14),
+        native_reuse=dict(native_source_commit=row['source_commit'],native_recipe_commit=recipe_commit,
+            original_failed_evidence_commit='8162122aa73602eb91a113e7533c2bee602efb98',
+            native_inputs_unchanged=True,previous_host_device_qualification_inherited=False,
+            reason='V5 native compile/link succeeded;only optional LLVM-text output failed. New embedded-SPIR-V gate binds actual linked device code.'),
+        stage='prepared',results=[],timing=[],active=False,ownership_closed=True,passed=False,
+        complete=False,GPU_executed=False,model_executed=False)
+    row['provenance']['device_ir_reference']='ELF64 System V ABI and Khronos SPIR-V core OpName/OpEntryPoint/OpFunction/OpFunctionCall definitions;Main-authored bounded linked-image reader,no external implementation code.'
+    old='Codegen must retain>=2DPAS intrinsic calls;this is compiler-IR evidence,not native ISA or utilization.'
+    require(old in row['plan']['acceptance'], 'preserve original gate intent explicitly')
+    row['plan']['acceptance']=row['plan']['acceptance'].replace(old,
+        'The exact linked ELF C4 SPIR-V image must contain>=2reachable GenX DPAS call instructions from its sole kernel entry;this is packaged device-code evidence,not final native ISA or utilization.')
+    row['plan']['order']='16CPU census/timing/ELF-SPIR-V reader controls;admit the unchanged original14-unit native build and exact linked DPAS callgraph;12CPU pack/shape controls;small traced3shape/2seed;full2shape/2seed;three fresh timing processes0/1/2.Commit each closed stage;stop first failure,no retries.'
+    row['retention']='One reused component native build,not another engine generation. Keep useful samples,numeric/setup/callgraph/source/recipe decisions;retire successful raw/build output when the component/model-proposal consumer ends.'
+    save(row)
+    print('Prepared prospective V6 admission of exact unchanged V5 native ELF;commit before execution.',flush=True)
 
 def current(row):
     require(validation.committed(RESULT, (KEY,)) == compact(row), 'commit exact component state')
-    require(all((P / n).read_bytes() == git('show', row['source_commit'] + ':' + n)
+    require(all((P / n).read_bytes() == git('show', row['controller_commit'] + ':' + n)
                 and sha(P / n) == h for n, h in row['helpers'].items()), 'component control drift')
     require(all(sha(ROOT / 'source' / n) == h for n, h in row['sources'].items()), 'native snapshot drift')
-    require(all(sha(P / n) == h for n, h in row['sources'].items()), 'live component/helper source drift')
+    deltas=row['controller_only_deltas']
+    require(set(deltas)<=set(CONTROLLER_FILES) and all(
+        (sha(P/n)==h if n not in deltas else
+         deltas[n]['native_snapshot_sha256']==h and
+         sha(P/n)==deltas[n]['controller_sha256']==row['helpers'][n])
+        for n,h in row['sources'].items()), 'live native/controller source drift')
     _, identity = selected.basis()
     require(identity == row['selected_native'], 'selected production provenance drift')
     external = row['external_inputs']
@@ -286,10 +307,11 @@ def current(row):
         census = json.loads(Path(actual['path']).read_text())
         require(all(sha(p) == h for k in ('compiled', 'generated', 'links') for p, h in census[k].items()),
             'actual component compiler/link bytes changed')
+    database=row['compile_database']
+    require(sha(database['path'])==database['sha256'], 'original compile database drift')
     if 'codegen' in row:
-        require(sha(row['codegen']['path'])==row['codegen']['sha256'],'DPAS IR drift')
-        bitcode=row['codegen']['bitcode']
-        require(sha(bitcode['path'])==bitcode['sha256'],'DPAS bitcode drift')
+        require(embedded_dpas(Path(row['binary']['path']).read_bytes())==row['codegen'],
+                'linked C4 SPIR-V callgraph drift')
 
 
 def census(row, dependencies, link_text):
@@ -381,36 +403,21 @@ def execute(mode):
     def persist():
         (ROOT/'execution.json').write_text(json.dumps(dict(mode=mode,active=bool(scope and scope.active),commands=scope.commands if scope else []),indent=2)+'\n')
     try:
-        scope=owner.Owner(ROOT/('owned-'+mode),persist)
+        scope=owner.Owner(ROOT/('v6-owned-'+mode),persist)
         if mode=='controls':
             e,out,err=scope.run('reader-controls',row['host_command'],row['environment'],P,**row['host_budget'])
             text=out.read_text()+err.read_text()
-            require(owner.closed(e) and e['exit_code']==0 and 'Ran 10 tests' in text and '\nOK\n' in text and 'skipped' not in text,'all10CPU reader controls')
-            outcome.update(tests=10,skipped=0,native_execution_attempted=False);row['stage']='cpu-controlled'
+            require(owner.closed(e) and e['exit_code']==0 and 'Ran 16 tests' in text and '\nOK\n' in text and 'skipped' not in text,'all16CPU reader controls')
+            outcome.update(tests=16,skipped=0,native_execution_attempted=False);row['stage']='cpu-controlled'
         elif mode=='build':
-            outcome['build_commands']=[];outputs={}
-            for name,command in [('configure',row['configure']),('build',row['build']),
-                    ('codegen',row['codegen_command']),('ir-text',row['ir_text_command'])]:
-                e,out,err=scope.run(name,command,row['environment'],ROOT,**row['build_budget'])
-                require(owner.closed(e) and e['exit_code']==0,
-                    name+' failed:'+(out.read_text()+err.read_text())[-2500:])
-                outputs[name]=out;outcome['build_commands'].append(dict(name=name,exit_code=0,ownership_closed=True))
-            path=ROOT/'q6-dpas.ll';ir=path.read_text()
-            calls=[v for v in ir.splitlines() if 'call ' in v and ('__esimd_dpas' in v or 'llvm.genx.dpas' in v)]
-            require(len(calls)>=2,'device IR must retain the two DPAS half-dot intrinsics')
-            row['codegen']=dict(path=str(path),sha256=sha(path),dpas_intrinsic_calls=len(calls),
-                bitcode=dict(path=str(ROOT/'q6-dpas.bc'),sha256=sha(ROOT/'q6-dpas.bc')),
-                scope='Compiler device IR,not final native ISA or utilization.')
-            e,out,_=scope.run('dependencies',[row['tools']['ninja']['path'],'-C',str(ROOT/'build'),'-t','deps'],row['environment'],ROOT,**row['build_budget'])
-            require(owner.closed(e) and e['exit_code']==0,'actual dependency listing failed')
-            row['actual_inputs']=census(row,out.read_text(),outputs['build'].read_text())
-            path=ROOT/'build'/TARGET;row['binary']=dict(path=str(path),sha256=sha(path),bytes=path.stat().st_size)
-            database=json.loads((ROOT/'build/compile_commands.json').read_text())
-            commands=[c for c in database if TARGET+'.dir' in c['command'] or 'strata_sycl_runtime.dir' in c['command']]
-            require(len(commands)==len(UNITS)==14 and {str(Path(c['file']).relative_to(ROOT/'source')) for c in commands}==set(UNITS)
-                and all('-fsycl' in shlex.split(c['command']) and '-fsycl-id-queries-range=size_t' in shlex.split(c['command']) for c in commands),'exact14-unit build')
-            require(all('-fno-fast-math' in shlex.split(c['command']) and '-ffp-contract=off' in shlex.split(c['command']) for c in commands if TARGET+'.dir' in c['command']),'numerical build flags')
-            row['compiled_commands']=commands;row['stage']='built'
+            # Native compilation is original44715a/3db30d920. The new gate
+            # inspects that unchanged final ELF and never refreshes its inputs.
+            row['codegen']=embedded_dpas(Path(row['binary']['path']).read_bytes())
+            outcome.update(native_recompiled=False,native_execution_attempted=False,
+                translation_units=14,compiler_files=row['actual_inputs']['compiler_files'],
+                external_link_files=row['actual_inputs']['external_link_files'],
+                dpas_static_calls=row['codegen']['dpas_static_calls'])
+            row['stage']='built'
         elif mode=='host':
             e,out,err=scope.run('host-pack',[row['binary']['path'],'--host'],row['environment'],ROOT,**row['host_budget'])
             require(owner.closed(e) and e['exit_code']==0 and out.read_text().splitlines().count('HOST passed=1 cases=12 GPU=0')==1,'all12CPU pack/shape controls')

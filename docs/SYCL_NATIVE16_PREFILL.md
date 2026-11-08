@@ -1779,10 +1779,16 @@ is authored here. Closed V1/V2 compile failures and the V3 LLVM-text recipe
 failure remain recorded;their source/recipe and800compiler/24link inputs are
 recoverable,and unused build artifacts are retired. V4's duplicate internal
 frontend version probe failed before materialization;no root or GPU work existed.
-V5 keeps the exact frontend pin and compiler version,emits the documented LLVM
-device object,then prints it through the installed LLVM frontend's IR reader.
-The native sources are unchanged from the V3 successful build/link.
-Follow`q6_dpas_component_v5`for the prospective input/build,
+V5 built the same native ELF and emitted bitcode,but its matching frontend also
+refused LLVM text;the system LLVM21 reader rejects the LLVM23 attributes.
+Its original failed gate stays failed. V6 prospectively reuses that unchanged
+unexecuted native build at source`44715a991`,recipe`3db30d920`,and separately
+pins its new controller/tests. It checks the exact ELF's embedded C4 SPIR-V
+callgraph for two reachable GenX DPAS calls;this is stronger binding to the
+actual device image than the detached IR gate,not a final-ISA/utilization claim.
+Only controller/test files may differ from the original1283-file native snapshot;
+all14compiled units,800compiler inputs,24link files,flags and ELF bytes must match.
+All CPU/device/timing gates run anew. Follow`q6_dpas_component_v6`for this admission,
 CPU,small traced,full-head numerical and repeated ordinary-graph comparison.
 All12existing control translation units match the retained591c/90f source.
 Successful allocation,pack/upload cost and cold/warm scope must be recorded;
