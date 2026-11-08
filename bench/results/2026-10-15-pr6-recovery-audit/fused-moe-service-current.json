@@ -220324,7 +220324,7 @@
     }
   },
   "q6_dpas_component_v7": {
-    "stage": "cpu-controlled",
+    "stage": "built",
     "source_commit": "f97893576704e6679c89ea6c4613d912665a0824",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "32d846740cd13cefe769e9f8115f3990abcc7710c1e93ed2809b8f6d172012fb",
@@ -220637,6 +220637,29 @@
         "tests": 16,
         "skipped": 0,
         "native_execution_attempted": false
+      },
+      {
+        "mode": "build",
+        "passed": true,
+        "host_probe_accepted": false,
+        "build_commands": [
+          {
+            "name": "configure",
+            "exit_code": 0,
+            "ownership_closed": true
+          },
+          {
+            "name": "build",
+            "exit_code": 0,
+            "ownership_closed": true
+          }
+        ],
+        "native_recompiled": true,
+        "native_execution_attempted": false,
+        "translation_units": 14,
+        "compiler_files": 800,
+        "external_link_files": 24,
+        "dpas_static_calls": 2
       }
     ],
     "timing": [],
@@ -220660,6 +220683,55 @@
       ],
       "unchanged_kernel_runtime_units": 13,
       "scope": "Fresh build;benchmark adds post-Runtime/pre-Fixture gate. No V6 device qualification inherited."
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v7/actual-inputs.json",
+      "sha256": "e83cdc39c48c6b22adb89bf64e92688a12a04971710b7b740dd627943ba6c53b",
+      "compiler_files": 800,
+      "generated_files": 0,
+      "external_link_files": 24,
+      "uncovered": 0,
+      "translation_units": [
+        "src/sycl/runtime.cpp",
+        "src/sycl/compat.cpp",
+        "src/sycl/command_profile.cpp",
+        "src/kernels/sycl/native_mmvq.cpp",
+        "src/kernels/sycl/native_q5_head.cpp",
+        "src/kernels/sycl/native_q3_esimd.cpp",
+        "src/kernels/sycl/native_q4_esimd.cpp",
+        "src/kernels/sycl/native_q2_esimd.cpp",
+        "src/kernels/sycl/native_iq4xs_esimd.cpp",
+        "src/kernels/sycl/native_iq_esimd.cpp",
+        "src/kernels/sycl/native_mmq_xmx.cpp",
+        "src/kernels/sycl/iq.cpp",
+        "src/kernels/sycl/q6_dpas_component.cpp",
+        "bench/sycl/q6_dpas.cpp"
+      ],
+      "source_commit": "f97893576704e6679c89ea6c4613d912665a0824"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v7/build/sycl_q6_dpas_component",
+      "sha256": "7b2b8775852a8702a3db875118c43345e10f994bb3dbfed87741d33e2c026db4",
+      "bytes": 11592800
+    },
+    "compile_database": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v7/build/compile_commands.json",
+      "sha256": "82352eca7e6a1e70a1012fae634e2a8b83afc13d85a2ae618c03ad4f8c43f6d8",
+      "translation_units": 14
+    },
+    "codegen": {
+      "image_symbol": ".sycl_offloading.1.data",
+      "image_offset": 999552,
+      "image_bytes": 16520,
+      "image_sha256": "e9f6543e839747035fab433ec3cc6f773ddd69cb9eab36f89b6493b54cb46d8d",
+      "entrypoint": "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E",
+      "reachable_functions": 17,
+      "dpas_static_calls": 2,
+      "dpas_callees": [
+        "llvm.genx.dpas2.v64i32.v64i32.v128i32.v32i32"
+      ],
+      "device_images": 14,
+      "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
     },
     "source_inputs": {
       "files": 1283,
