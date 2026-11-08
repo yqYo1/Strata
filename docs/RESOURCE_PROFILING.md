@@ -100,7 +100,9 @@ preserved and resolved prospectively,without refreshing its recorded hashes.
 separate processes,with a result commit between them. Its prepared host controls
 in`tools/sycl/test_profile_compat.py`reject missing post-window copies,wrong
 kernel inventories,unobserved replays and ambiguous/boundary-crossing instances.
-Run those host checks at a serialized boundary before the device checks. Neither
+The device controller requires all five host controls to pass without skips,
+with their original committed source/plan recoverable and unchanged. Run them
+at a serialized boundary before the device checks. Neither
 controller nor those controls have been executed yet.
 
 Qualify direct execution, fully active graph construction/collection, and then

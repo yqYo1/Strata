@@ -27,6 +27,7 @@ import profile_split as profile
 
 P, B, RESULT = build.P, build.B, build.RESULT
 ROOT, KEY = B / 'compat-profile-window-v1', 'compat_profile_window_v1'
+HOST_KEY = 'compat_profile_window_host_v1'
 MODES = ('direct', 'active', 'paused-construction')
 PHASES = ('before-runtime', 'runtime-ready', 'captured', 'window-drained', 'before-exit')
 NAMES = ('StrataCompatWindowProduce', 'StrataCompatWindowConsume')
@@ -62,6 +63,27 @@ def fixture():
     return row
 
 
+def host_qualification():
+    proof = validation.committed(RESULT, (HOST_KEY,))
+    require(proof['passed'] and proof['complete'] and proof['ownership_closed'] and not proof['active'] and
+        proof['GPU_executed'] is False and proof['model_executed'] is False and
+        len(proof['tests']) == 1, 'closed adapter host controls required before device execution')
+    test = proof['tests'][0]
+    require(test['role'] == 'adapter-window' and test['exit_code'] == 0 and test['ownership_closed'] and
+        test['tests'] == 5 and test['skipped'] == 0 and test['skip_reasons'] == [],
+        'all five host controls must pass with no skips')
+    reference = proof['source_inventory_reference']
+    original = json.loads(source.git(P, 'show', reference['commit'] + ':' + reference['path']))[HOST_KEY]
+    require(reference['key'] == HOST_KEY and original['source_commit'] == proof['source_commit'] and
+        original['commands'] == proof['commands'], 'original host plan differs')
+    recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
+        source.blobs(P, original['source_commit'], original['sources'])}
+    require(recovered == original['sources'] and all(digest(P / p) == sha for p, sha in recovered.items()),
+            'host-tested source changed or is unavailable')
+    return dict(plan_commit=reference['commit'], source_commit=proof['source_commit'],
+                source_files=len(recovered), source_sha256=signature(recovered), tests=5, skipped=0)
+
+
 def environment(row, mode):
     root = ROOT / mode
     old = row['template_root']
@@ -87,6 +109,7 @@ def current(row):
     recovered = {p: hashlib.sha256(raw).hexdigest() for p, raw in
         source.blobs(P, pin['revision'], pin['source_sha256'])}
     require(recovered == pin['source_sha256'], 'window controller source unavailable in Git')
+    require(host_qualification() == row['host_qualification'], 'host control qualification changed')
     built = fixture()
     require(built['binary'] == row['binary'] and built['actual_inputs'] == row['actual_inputs'] and
         built['collector'] == row['assets'], 'fixture/collector identity changed')
@@ -102,6 +125,7 @@ def current(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(RESULT), 'fresh finite window only')
+    host = host_qualification()
     built = fixture(); probe, reuse = feature.current_probe()
     gen = validation.committed(feature_build.STATUS,
         ('current_sync', 'dflash2_cache_loan_generation_v1'))
@@ -110,7 +134,7 @@ def prepare():
     template = original['environment_template'] | original['plans'][0]['environment_overrides']
     manifest = B / 'decode-iq3-audit-speed-v2/runtime-inputs.json'
     pin = source.pin(P, ['tools/sycl', build.CPP])
-    row = dict(stage='prepared', source=pin, binary=built['binary'], actual_inputs=built['actual_inputs'],
+    row = dict(stage='prepared', source=pin, host_qualification=host, binary=built['binary'], actual_inputs=built['actual_inputs'],
         assets=built['collector'], native_validation_probe=probe, runtime_reuse=reuse,
         environment_template=template, template_root=original['plans'][0]['root'],
         runtime_manifest=dict(path=str(manifest), sha256=digest(manifest)),
