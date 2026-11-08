@@ -6,6 +6,8 @@ component fixtures keep their original native identities. No default adoption.
 """
 import fcntl
 import hashlib
+import importlib
+import importlib.metadata
 import json
 from pathlib import Path
 import re
@@ -25,7 +27,9 @@ require, digest, write = model.require, model.digest, model.write
 
 def compact(row):
     result = {k: v for k, v in row.items() if k not in
-        ('native_build', 'controller', 'models', 'runtime_files', 'environment', 'commands', 'requests')}
+        ('native_build', 'controller', 'models', 'runtime_files', 'environment', 'commands', 'requests', 'generator_runtime')}
+    if 'generator_runtime' in row:
+        result['generator_runtime'] = {k: v for k, v in row['generator_runtime'].items() if k != 'inputs'}
     if 'native_build' in row:
         result['native_build'] = {k: row['native_build'][k] for k in ('source_commit', 'project_source_sha256', 'record')}
     if 'controller' in row:
@@ -52,6 +56,23 @@ def requests(tokenizer):
     long['generator'] = 'check_prefill_drafter_heads.requests:24numbered stable-merge requirements,thinking template'
     short['generator'] = 'check_dflash2_model.request_ids:original82ID thinking prompt'
     return dict(long=long, short=short)
+
+
+def generator_runtime():
+    """Pin the existing parent Python and tokenizer/template packages.
+
+    These inputs generate the wire;they are not the native child's runtime or
+    a claim of full Python executable-address-space closure.
+    """
+    executable = str(Path(sys.executable).resolve())
+    files = {executable: digest(executable)}; packages = {}
+    for name in ('regex', 'jinja2', 'markupsafe'):
+        module = importlib.import_module(name); root = Path(module.__file__).parent
+        packages[name] = dict(version=importlib.metadata.version(name), root=str(root))
+        for p in root.rglob('*'):
+            if p.is_file() and p.suffix in ('.py', '.so', '.pyd'): files[str(p)] = digest(p)
+    return dict(executable=executable, invocation=sys.executable, version=sys.version, packages=packages,
+        input_files=len(files), sha256=build.signature(files), inputs=files)
 
 
 def prior_contract(native):
@@ -119,6 +140,7 @@ def verify(row, full=False):
     for p, h in row['runtime_files'].items(): require(digest(p) == h, 'runtime changed: ' + p)
     require(guards.driver_guard() == row['driver'] and
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'boot/driver changed')
+    require(generator_runtime() == row['generator_runtime'], 'parent Python/tokenizer package changed')
     require(requests(Path(row['tokenizer'])) == row['requests'] and
         model.fingerprint(row['environment']) == row['environment_sha256'], 'request/environment changed')
     model.model_pins(row, full=full); guards.no_model_owners([])
@@ -146,6 +168,7 @@ def prepare():
         source_review=review['native_review'], probe=probe, runtime_reuse=reuse,
         runtime_manifest=previous['runtime_manifest'], runtime_files=previous['runtime_files'],
         models=previous['models'], models_sha256=previous['models_sha256'], driver=previous['driver'], boot=previous['boot'],
+        generator_runtime=generator_runtime(),
         tokenizer=reference['configuration']['tokenizer'], requests=requests(Path(reference['configuration']['tokenizer'])),
         argv=[native['binaries']['strata']['path'], '--serve', *args],
         mtp_path=reference['configuration']['args'][reference['configuration']['args'].index('--mtp') + 1],
