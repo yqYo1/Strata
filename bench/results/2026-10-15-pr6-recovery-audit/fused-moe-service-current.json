@@ -220324,7 +220324,7 @@
     }
   },
   "q6_dpas_component_v7": {
-    "stage": "checked",
+    "stage": "timing",
     "source_commit": "f97893576704e6679c89ea6c4613d912665a0824",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "32d846740cd13cefe769e9f8115f3990abcc7710c1e93ed2809b8f6d172012fb",
@@ -220843,9 +220843,226 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "time0",
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "8be1aa74ec3647d8f1b7b9e4572fe113a8d832e745a97a2de5cb6ec41190e6e3",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "c8c869d5bf018fcb6767e7e45e57d3da564a56126b03f4ec7736dc162498f32e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          }
+        ],
+        "native_identity": {
+          "pid": 905822,
+          "state": "S",
+          "ppid": 905255,
+          "pgid": 905822,
+          "sid": 905822,
+          "start_ticks": 251941305,
+          "rss_bytes": 62173184
+        },
+        "mapped_provider_count": 34,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 905822,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "setup": [
+          "SETUP k=2560 n=640 seed=7 pack_wall_ns=325452 pack_cpu_ns=324839 upload_wall_ns=806288 upload_cpu_ns=799179",
+          "ADMISSION k=2560 n=640 canonical_bytes=1344000 packed_bytes=1344000 device_payload_bytes=2720000 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=2560 n=248320 seed=7 pack_wall_ns=153344383 pack_cpu_ns=153307092 upload_wall_ns=320366634 upload_cpu_ns=191737216",
+          "ADMISSION k=2560 n=248320 canonical_bytes=521472000 packed_bytes=521472000 device_payload_bytes=1050901760 max_alloc_bytes=10132807680 graphs=2 nodes_each=1"
+        ],
+        "numerical": [
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1"
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "timing": [],
+    "timing": [
+      {
+        "index": 0,
+        "timer_stamp_median_ns": 691,
+        "cells": {
+          "640": {
+            "0": [
+              [
+                485289508,
+                472866104,
+                485219767,
+                472796945
+              ],
+              [
+                494807635,
+                483924493,
+                494738215,
+                483855694
+              ],
+              [
+                505947969,
+                496371927,
+                505890200,
+                496314840
+              ],
+              [
+                616153962,
+                607204603,
+                616076496,
+                607127819
+              ],
+              [
+                482434745,
+                471035589,
+                482365535,
+                470967051
+              ]
+            ],
+            "1": [
+              [
+                739677728,
+                728953285,
+                739591737,
+                728868055
+              ],
+              [
+                578243608,
+                567639586,
+                578157045,
+                567558284
+              ],
+              [
+                570021440,
+                561064296,
+                569946169,
+                560989766
+              ],
+              [
+                593082614,
+                584096087,
+                593000248,
+                584014433
+              ],
+              [
+                728792940,
+                718623658,
+                728500019,
+                718331380
+              ]
+            ]
+          },
+          "248320": {
+            "0": [
+              [
+                2844900960,
+                2834609152,
+                2833968710,
+                2823677093
+              ],
+              [
+                2860550250,
+                2850111294,
+                2849661382,
+                2839223047
+              ],
+              [
+                2831781061,
+                2826221195,
+                2820670836,
+                2815115821
+              ],
+              [
+                2840862447,
+                2835743533,
+                2829948621,
+                2824874421
+              ],
+              [
+                2839033844,
+                2835536411,
+                2828087417,
+                2824590656
+              ]
+            ],
+            "1": [
+              [
+                425947203,
+                425291938,
+                424336791,
+                423682099
+              ],
+              [
+                423497200,
+                422871114,
+                421880737,
+                421255384
+              ],
+              [
+                450268488,
+                449586057,
+                448452580,
+                447771515
+              ],
+              [
+                435543288,
+                434920471,
+                433754150,
+                433132368
+              ],
+              [
+                430721210,
+                430068370,
+                428832995,
+                428180770
+              ]
+            ]
+          }
+        }
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "passed": false,
