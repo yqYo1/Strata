@@ -10228,12 +10228,15 @@ def _main(argv=None, *, lifecycle_event=None, interrupt_exit_code: int = 0) -> i
                 split_mod.check_cfg(cfg, split)
         except split_mod.SplitConfigError as e:
             raise SystemExit(f"[strata] config {e}")
-        if groups:
-            engine = start_replicas(cfg, groups, exe, effort_end or [], lazy, offline=a.offline)
-        elif split:
-            engine = start_split(cfg, split, exe, effort_end or [], lazy, offline=a.offline)
-        else:
-            engine = start_engine_or_fallback(cfg, exe, effort_end, env, lazy, tok, offline=a.offline, batch_telemetry=a.batch_telemetry)
+        try:
+            if groups:
+                engine = start_replicas(cfg, groups, exe, effort_end or [], lazy, offline=a.offline)
+            elif split:
+                engine = start_split(cfg, split, exe, effort_end or [], lazy, offline=a.offline)
+            else:
+                engine = start_engine_or_fallback(cfg, exe, effort_end, env, lazy, tok, offline=a.offline, batch_telemetry=a.batch_telemetry)
+        except ValueError as e:
+            raise SystemExit(f"[strata] config {e}")
         engine.silence_s = silence                      # an attribute of its own: restart() keeps it
         warn_tight_ram(engine.info.get("arena_mib"))
         note = desktop_vram_note(cfg.get("backend"), engine.info.get("vram_free_mib"), engine.spawn[1],

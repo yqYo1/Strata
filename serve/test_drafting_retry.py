@@ -4,11 +4,14 @@ import os
 import sys
 import tempfile
 import unittest
+from contextlib import ExitStack, redirect_stdout
+from io import StringIO
 from pathlib import Path
 from unittest import mock
 
 from serve.server import EngineDied, StrataEngine
 from strata_control import drafting
+from serve import server
 
 FAKE = r'''
 import sys
@@ -129,6 +132,68 @@ class AutoRetriesWithTheMtp(unittest.TestCase):
         with self.assertRaises(EngineDied):
             StrataEngine(str(self.script), self.first, log=self.log, retry_args=list(self.first))
         self.assertEqual(len(self.started()), 1)
+
+
+class SyclVisionDrafting(unittest.TestCase):
+    def setUp(self):
+        stack = self.enterContext(ExitStack())
+        for obj, name, value in [
+            (drafting, "detect_hardware", ("sycl", ["arc_b"])),
+            (drafting, "engine_form", drafting.FORM_FILE),
+            (drafting, "vocab_path", Path("/unused/draft_vocab.bin")),
+            (drafting, "drafter_ready", True),
+            (drafting, "pack_ready", True),
+            (drafting, "pack_path", Path("/unused/dflash2.pack")),
+            (drafting, "tuned_applies", False),
+            (server, "drafting_card_class", "other"),
+            (server, "drafting_vram_mib", None),
+        ]:
+            stack.enter_context(mock.patch.object(obj, name, return_value=value))
+        stack.enter_context(redirect_stdout(StringIO()))
+        drafting.take_note()
+        self.addCleanup(drafting.take_note)
+
+    def config(self, mode, vision):
+        cfg = dict(model_name="qwen3.8-flash-next-iq3_s", drafting=mode,
+                   args=["--native", "/unused/pack", "--mtp", "/unused/mtp", "--spec", "4", "--prefill", "8192"])
+        if vision == "config":
+            cfg["vision"] = {}  # Even an empty section enables --vision in engine_args.
+        elif vision == "argument":
+            cfg["args"].append("--vision")
+        return cfg
+
+    def test_auto_selects_an_available_drafter_before_adding_vision(self):
+        for vision in ("config", "argument"):
+            for mtp_here in (True, False):
+                with self.subTest(vision=vision, mtp_here=mtp_here), mock.patch.object(drafting, "mtp_ready", return_value=mtp_here):
+                    args = server.engine_args(self.config("auto", vision), announce=False)
+                    self.assertIn("--vision", args)
+                    self.assertNotIn("--draft", args)
+                    self.assertEqual("--mtp" in args, mtp_here)
+
+    def test_named_dflash2_refuses_images_during_argument_selection(self):
+        for vision in ("config", "argument"):
+            with self.subTest(vision=vision):
+                with self.assertRaisesRegex(ValueError, "text-only"):
+                    server.engine_args(self.config("dflash2", vision), announce=False)
+
+    def test_explicit_mtp_off_and_legacy_configs_keep_their_selection(self):
+        for vision in ("config", "argument"):
+            for mode in ("mtp", "off", None):
+                with self.subTest(vision=vision, mode=mode), mock.patch.object(drafting, "mtp_ready", return_value=True):
+                    cfg = self.config(mode, vision)
+                    if mode is None:
+                        del cfg["drafting"]
+                    args = server.engine_args(cfg, announce=False)
+                    self.assertIn("--vision", args)
+                    self.assertNotIn("--draft", args)
+                    self.assertEqual("--mtp" in args, mode != "off")
+
+    def test_text_auto_keeps_dflash2(self):
+        with mock.patch.object(drafting, "mtp_ready", return_value=True):
+            args = server.engine_args(self.config("auto", None), announce=False)
+        self.assertEqual(args[args.index("--draft") + 1], "dflash2")
+        self.assertNotIn("--mtp", args)
 
 
 if __name__ == "__main__":

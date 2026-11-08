@@ -1099,8 +1099,14 @@ def apply(cfg: dict[str, Any], *, klass: str = "other", data_dir: str | Path | N
     mode = cfg.get("drafting")
     if cfg.get("mtp") is False and normalize(mode) == "auto":
         mode = "off"                                          # "Draft layer (MTP)" turned off by the person, and no drafter chosen since: no drafter
+    # The native SYCL drafter is text-only. The server can add --vision from
+    # the config after this decision, so inspect both declarations here.
+    sycl_vision = str(backend or "").lower() == "sycl" and (
+        "--vision" in args or isinstance(cfg.get("vision"), dict))
+    if sycl_vision and normalize(mode) == "dflash2":
+        raise ValueError("DFlash2 on this SYCL engine is text-only; choose MTP or off for images")
     decision = decide(mode, model_name=cfg.get("model_name"), family=family, data_dir=data_dir, backend=backend, archs=archs,
-                      mtp_here=mtp_here, blocked=blocked_by(strip_draft_flags(args), split=split, slots=slots, named=normalize(mode) == "dflash2", backend=backend) or form == FORM_NONE, vocab_here=vocab is not None,
+                      mtp_here=mtp_here, blocked=sycl_vision or blocked_by(strip_draft_flags(args), split=split, slots=slots, named=normalize(mode) == "dflash2", backend=backend) or form == FORM_NONE, vocab_here=vocab is not None,
                       args=strip_mtp_flags(strip_draft_flags(args)), vram_mib=vram_mib)
     mine = cfg.get("user_args") or []
     pack = None
