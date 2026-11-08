@@ -219940,7 +219940,7 @@
     }
   },
   "q6_dpas_component_v1": {
-    "stage": "cpu-controlled",
+    "stage": "failed",
     "source_commit": "b0b988a1bd4ad76ea17ac86ef67a21d2e4d88b35",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "911b03f722f7e0bf75f6e69092622ee55877ba2de64b663401cae51080a46608",
@@ -220265,6 +220265,19 @@
         "tests": 10,
         "skipped": 0,
         "native_execution_attempted": false
+      },
+      {
+        "mode": "build",
+        "passed": false,
+        "host_probe_accepted": false,
+        "build_commands": [
+          {
+            "name": "configure",
+            "exit_code": 0,
+            "ownership_closed": true
+          }
+        ],
+        "error": "RuntimeError('build failed:')"
       }
     ],
     "timing": [],
@@ -220289,6 +220302,15 @@
     "dependency_inputs": {
       "files": 1686,
       "aggregate_sha256": "b6ea708f610c3a07158683a434b00b32829ca4ecc2834f59e2b233c5b8689f6a"
+    },
+    "build_failure": {
+      "translation_unit": "bench/sycl/q6_dpas.cpp:95",
+      "error": "use of undeclared identifier 'cudaStreamCaptureModeGlobal'; project compatibility API exposes cudaStreamCaptureModeThreadLocal only",
+      "diagnostic_path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v1/owned-build/build.stdout",
+      "diagnostic_sha256": "943fc6fbc754059c9a449b2cab1d980a80a3a601946086f74118ee109c62bad5",
+      "native_execution_attempted": false,
+      "GPU_executed": false,
+      "next": "Use the supported thread-local capture mode in a fresh committed V2 source/plan;preserve this failed V1 outcome."
     }
   }
 }
