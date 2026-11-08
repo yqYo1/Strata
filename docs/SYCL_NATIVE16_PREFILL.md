@@ -3206,12 +3206,23 @@ process are verified. Each borrowed long request lends87slots,then verifies all
 original slots ready before decode. Both owners exit0,reap and empty their
 sessions;38mapped ELFs and before-main validation match;no fresh fault occurs.
 This is a charged payload/ownership diagnostic,not speed or task quality.
-Native90f is not yet qualified for the prior32Kfeature envelope. Next commit
-larger-chunk/context capacity admission and matched>=32Kbench.sh speed with
-larger decode residency. Preserve f633 until that feature-generation decision
-and552b/e1b as independent phase guards;then retire the extra after original
-source recovery. Clean repeats,agent/task,physical262144,tails and RESTORE remain
-pending. The physical limiting resource remains unknown.
+The subsequent long admission also passes at controller`7b4425b22` and
+plan`c730aeb9d`:two fresh90f processes,65536INT8context,8192chunk,384packed bank
+and two exact32769-token thinking requests each. Owned256slots starts with
+1579MiBfree;checked-borrowed1536starts with1300MiBfree. Both keep all671088640
+residual bytes on GPU and the384bank checked drain. Each borrowed long prompt
+loans/refills1092slots;both native and benchmark owners exit0,reap and empty,
+with no fresh fault. First/subsequent PP is582.8/703.8tok/s owned versus
+575.2/714.4borrowed;clientTTFT56.401/46.743s versus57.146/46.034s. Per-run
+request bodies match. Direction changes between first/subsequent and there is
+only one process per placement,so speed remains undecided. Output24does not
+qualify sustained TG. Descriptive expert-bank counters report the same
+requestedH2Dbytes in both arms;they do not measure wire traffic or saturation.
+Next collect matched>=1Kthinking-output/fresh-process repetitions,then select
+the feature generation and retire the extra after original-source recovery.
+Keep f633 only as the sustained-output fallback until that gate;552b/e1b remain
+independent phase guards. Clean speed,agent/task,physical262144,tails and RESTORE
+remain pending. The physical limiting resource remains unknown.
 Standard long/agent comparisons and independent prefill/decode selection remain
 pending. About96% of expert lookup entries fall to the CPU in this256-slot
 diagnostic layout; the requested expert
