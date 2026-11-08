@@ -248,7 +248,9 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
             window.q6_replay_started == window.q6_replay_completed &&
             total[0] == window.q6_reference_calls &&
             total[1] + total[2] + total[3] == window.q6_columns_calls &&
-            total[2] == window.q6_centered_calls && total[3] == window.q6_native_half_calls;
+            total[2] == window.q6_centered_calls && total[3] == window.q6_native_half_calls &&
+            (window.q6_dpas_head_calls==0 || (input==VerifyInput::decode && T==4 &&
+             window.q6_dpas_head_calls==1 && head_ && head_->decode_packed_ready()));
         valid = valid && complete;
         const char* phase = input == VerifyInput::prompt ? "prompt" : "decode";
         valid = std::fprintf(file, "strata Q6_ROUTE request=%llu device=%d phase=%s tokens=%d "
@@ -266,6 +268,11 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
                 shape.n_in, shape.n_out, shape.columns, (unsigned long long)shape.calls[0],
                 (unsigned long long)shape.calls[1], (unsigned long long)shape.calls[2],
                 (unsigned long long)shape.calls[3]) >= 0 && valid;
+        if(head_ && head_->decode_packed_bytes())
+            valid=std::fprintf(file,"strata Q6_DPAS_HEAD request=%llu device=%d phase=%s tokens=%d "
+                "capture_id=%llu canonical_table_excludes_packed=1 calls=%llu complete=%d\n",
+                (unsigned long long)request,device_,phase,T,(unsigned long long)window.q6_capture_id,
+                (unsigned long long)window.q6_dpas_head_calls,int(complete))>=0 && valid;
     }
     return std::fflush(file) == 0 && valid;
 }
@@ -373,6 +380,7 @@ bool Verifier::retire_prefill_head(const NativeHead& head,std::string& err) {
     if(cudaStreamSynchronize(copy_)!=cudaSuccess)cleanup_fail_stop("verify copy/callback drain before head detach");
     head_detached_=true;head_recapture_checked_=true;
     release_head_bytes_=head.weight_bytes();release_head_row_=head.row_bytes();release_head_type_=head.type();
+    release_head_decode_packed_bytes_=head.decode_packed_bytes();
     auto destroy=[](cudaGraphExec_t& e){if(e){
         if(cudaGraphExecDestroy(e)!=cudaSuccess)cleanup_fail_stop("verify head graph retirement");
         e=nullptr;
@@ -388,7 +396,9 @@ bool Verifier::retire_prefill_head(const NativeHead& head,std::string& err) {
 }
 bool Verifier::resume_prefill_head(const NativeHead& head,std::string& err) {
     if(dense_retired_ || !head_detached_ || released_.load() || head_!=&head || !head.loaded() || head.head_detached() ||
-       head.weight_bytes()!=release_head_bytes_ || head.row_bytes()!=release_head_row_ || head.type()!=release_head_type_) {
+       head.weight_bytes()!=release_head_bytes_ || head.row_bytes()!=release_head_row_ || head.type()!=release_head_type_ ||
+       head.decode_packed_bytes()!=release_head_decode_packed_bytes_ ||
+       (release_head_decode_packed_bytes_!=0 && !head.decode_packed_ready())) {
         err="verify: head resume owner/format/state mismatch";return false;
     }
     head_detached_=false;return true; // windows recapture lazily; arenas remain unchanged
@@ -415,6 +425,8 @@ bool Verifier::resume_prefill_dense_and_head(const NativeDense& native,const Nat
     // temporarily clear one flag to enter an individual resume API.
     if(!has_prefill_dense_head_lease(head) || !wt_ || !head.loaded() || head.head_detached() ||
        head.weight_bytes()!=release_head_bytes_ || head.row_bytes()!=release_head_row_ ||
+       head.decode_packed_bytes()!=release_head_decode_packed_bytes_ ||
+       (release_head_decode_packed_bytes_!=0 && !head.decode_packed_ready()) ||
        head.type()!=release_head_type_ || native.residency()!=NativeDense::Residency::Full ||
        native.packed_sources().empty()) {
         err="verify: joint dense/head resume requires complete restored owners";return false;
@@ -819,6 +831,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     auto& graph_window = window_graphs_.at(input, T);
     graph_window.q6_reference_calls = graph_window.q6_columns_calls =
         graph_window.q6_centered_calls = graph_window.q6_native_half_calls = 0;
+    graph_window.q6_dpas_head_calls = 0;
 #endif
     auto window_mmvq = [&](int type, const void* weights, const void* x, float* y,
                            int n_in, int n_out, int columns, void* stream) {
@@ -1397,6 +1410,13 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
         if (head_ != nullptr && head_->loaded()) {
             try {
                 native_quantize_q8_1(head_mixed_, xq_, (int) N, T, cs);
+#ifdef STRATA_ENABLE_SYCL
+                if(verify_q6_dpas_head(head_->decode_packed_ready(),input,native_mmvq_multi_exact(),
+                    head_->type(),int(N),int(n_vocab_),T)) {
+                    head_->run_decode_c4(xq_,head_logits_,cs);
+                    ++graph_window.q6_dpas_head_calls;
+                } else
+#endif
                 window_mmvq(head_->type(), head_->weights(), xq_, head_logits_, (int) N, (int) n_vocab_, T, cs);
             } catch (const std::exception& e) {
                 err = std::string("verify head: ") + e.what();

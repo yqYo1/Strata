@@ -35,12 +35,25 @@ public:
     /// Plan v0.3 P6: the GGUF blocks, for the verify window's multi-column head.
     const void* weights() const { return weights_; }
     int type() const { return type_; }
+    // Opt-in SYCL target-head experiment, immutable after load. Canonical rows
+    // above remain the format consumed by C1, MTP gathers and DFlash2.
+    uint64_t decode_packed_bytes() const { return uint64_t(decode_packed_host_.size()) * sizeof(uint16_t); }
+    bool decode_packed_ready() const {
+        return !head_detached_ && weights_ && decode_packed_weights_ && !decode_packed_host_.empty();
+    }
+    // Four exact Q8_1 columns only; caller selects the decode phase explicitly.
+    // May throw on an invalid owner/shape/span/queue. No internal fallback.
+    void run_decode_c4(const void* q8, float* logits, void* stream) const;
     /// Bytes of one vocabulary row.
     size_t row_bytes() const { return n_out_ > 0 ? (size_t) (bytes_ / (uint64_t) n_out_) : 0; }
 
 private:
     bool head_prepared_=false,head_detached_=false,head_release_used_=false;
     std::vector<uint8_t> head_snapshot_; // exact packed bytes, request-scoped RAM
+    // Retain the new immutable layout in RAM, rather than copying it back over
+    // PCIe at every prompt boundary. Both device layouts retire together.
+    std::vector<uint16_t> decode_packed_host_;
+    void* decode_packed_weights_ = nullptr;
     void* weights_ = nullptr;
     void* scratch_ = nullptr;
     uint64_t bytes_ = 0;

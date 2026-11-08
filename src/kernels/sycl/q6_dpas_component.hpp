@@ -1,5 +1,6 @@
 // Main-authored compressed-Q6 component; repository LICENSE.
-// Unselected decode C4 proposal. No production dispatch or environment switch.
+// Opt-in decode C4 proposal. Only the measured full target head is eligible
+// for model trials; default adoption and model-level gain remain unqualified.
 #pragma once
 #include <algorithm>
 #include <cstddef>

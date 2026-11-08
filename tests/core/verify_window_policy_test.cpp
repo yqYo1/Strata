@@ -10,6 +10,7 @@ using strata::core::VerifyWindowGraphCache;
 using strata::core::verify_q6_columns;
 using strata::core::verify_q6_centering;
 using strata::core::verify_q6_native_half;
+using strata::core::verify_q6_dpas_head;
 using strata::core::VerifyQ6Route;
 
 static void need(bool ok, const char* message) {
@@ -17,6 +18,22 @@ static void need(bool ok, const char* message) {
 }
 
 int main() try {
+    // Only the independently measured winning head can use the new packing.
+    // Exercise negative phase/layout/owner/type controls and every window size.
+    int dpas_selected=0;
+    for(bool ready:{false,true}) for(bool exact:{false,true})
+        for(auto phase:{VerifyInput::prompt,VerifyInput::decode,static_cast<VerifyInput>(255)})
+            for(int type:{-1,13,14,15}) for(int c=0;c<=9;++c) {
+                const bool expected=ready && exact && phase==VerifyInput::decode && type==14 && c==4;
+                need(verify_q6_dpas_head(ready,phase,exact,type,2560,248320,c)==expected,
+                    "packed target-head policy escaped measured owner/phase/layout/type/columns");
+                dpas_selected+=expected;
+                for(const auto& shape:{std::array<int,2>{2560,640},{2560,248319},{2561,248320},
+                                      {0,248320},{2560,0},{-2560,248320}})
+                    need(!verify_q6_dpas_head(ready,phase,exact,type,shape[0],shape[1],c),
+                        "unmeasured packed-head geometry selected");
+            }
+    need(dpas_selected==1,"wrong number of packed target-head selections");
     // Expected selections come from the committed component decision, not a
     // second implementation of the dispatch predicate. Bit c means columns c.
     const int eligible[][3] = {
@@ -106,6 +123,7 @@ int main() try {
     decode.layer = {21}; decode.resident = {22}; decode.pcie = {23};
     decode.q6_columns_calls = 42;
     decode.q6_centered_calls = 12;
+    decode.q6_dpas_head_calls = 1;
     need(!decode.ready, "a partial graph cache became replayable");
     decode.ready = true;
     need(cache.at(VerifyInput::prompt, 4).layer == std::vector<int>{11} &&
@@ -114,6 +132,8 @@ int main() try {
          cache.at(VerifyInput::prompt, 4).q6_centered_calls == 0 &&
          cache.at(VerifyInput::decode, 4).q6_centered_calls == 12 && prompt.ready,
          "decode changed an already captured prompt window");
+    need(prompt.q6_dpas_head_calls==0 && cache.at(VerifyInput::decode,4).q6_dpas_head_calls==1,
+         "packed head route leaked across phase caches");
     auto& decode8 = cache.at(VerifyInput::decode, 8);
     decode8.layer = {31};
     decode8.q6_columns_calls = decode8.q6_native_half_calls = 26;
@@ -154,6 +174,7 @@ int main() try {
          decode.layer.empty() && decode.resident.empty() && decode.pcie.empty() &&
          prompt.q6_reference_calls == 0 && decode.q6_columns_calls == 0 &&
          prompt.q6_centered_calls == 0 && decode.q6_centered_calls == 0 &&
+         prompt.q6_dpas_head_calls==0 && decode.q6_dpas_head_calls==0 &&
          decode8.q6_native_half_calls == 0 && decode8.q6_shapes.empty() &&
          decode8.q6_capture_id == 0 && decode8.q6_replay_started == 0 &&
          decode8.q6_replay_completed == 0 && decode8.q6_cache_hits == 0 &&
@@ -175,7 +196,7 @@ int main() try {
     need(!decode8.q6_routes_complete && decode8.q6_shapes.empty(), "invalid audit route indexed counters");
     cache.clear([](int) {});
     need(decode8.q6_routes_complete, "audit retirement kept an incomplete flag");
-    std::puts("verify-window-policy: passed selections=30 centering=18 native-half=26 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64");
+    std::puts("verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64");
     return 0;
 } catch (const std::exception& error) {
     std::fprintf(stderr, "verify-window-policy: %s\n", error.what());

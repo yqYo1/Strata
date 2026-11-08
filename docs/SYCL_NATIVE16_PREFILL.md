@@ -1809,14 +1809,24 @@ and original-reader replay of every timing sample. The closed CLI and its
 census/timing controls are archived;the unchanged linked-image reader and six
 CPU controls remain for model integration. The next consumer uses source and
 fresh checks rather than the old executable.
-No production dispatch changes yet. A separate packed head would add about
-0.49GiB;measure its effect on expert-cache placement and whole requests.
-`NativeHead.run`,Verifier,MTP row gathers/sub-vocabulary heads and DFlash2
-still consume canonical rows,so do not reorder that object in place.
-The next opt-in decode-C4 head must build from mapped GGUF/RAM,include every
-packed reader in retirement/restore ownership,and preserve C1,other shapes
-and both prefill strategies. Actual model,agent/long-thinking,phase-preservation
-and physical262144/RESTORE checks remain required.
+The target-head model proposal is now implemented,unbuilt and default off.
+`STRATA_SYCL_DECODE_Q6_DPAS_HEAD=1` requires exact Q8_1 and
+`STRATA_PREFILL_RELEASE_HEADS=1`;unsupported explicit requests fail before the
+new allocations. Only decode C4 at2560x248320 can select it. Canonical rows and
+`weight_bytes`/`row_bytes` stay unchanged for C1,MTP gathers and DFlash2.
+The extra Device payload is521472000bytes;measure its effect on expert-cache
+placement and whole requests before adoption. An immutable RAM packing of the
+same size is built once from mapped GGUF,retained for H2D restoration and never
+copied back from the GPU. The existing canonical snapshot is still521472000B:
+combined target RAM backing/snapshot1042944000B fits the1GiB budget.
+All-reader graph retirement precedes freeing both Device layouts. Restore
+uploads both,then publishes the owner;individual and joint Verifier resumes
+check packed bytes/readiness. A separate`Q6_DPAS_HEAD`audit joins packed calls
+with the unchanged canonical-route schema and existing replay identities.
+The first new gate is the committed CPU phase/shape/cache-control plan.
+Fresh native build/pack-owner/device-route checks,actual model speed,
+agent/long-thinking,phase preservation and physical262144/RESTORE qualification
+remain required. The component ratio is not a model-throughput result.
 
 The current device-service diagnostic targets `9922 / b310` through
 `tools/sycl/profile_iq3_decode.py`, using the maintained owner, frontend and

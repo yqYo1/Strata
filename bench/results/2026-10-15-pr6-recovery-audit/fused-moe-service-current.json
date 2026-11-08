@@ -220848,13 +220848,58 @@
       "next": "Only a winning full-head cell permits a new decode-only model proposal;placement/setup,phase preservation,task/agent and physical262144 remain unqualified."
     },
     "next_model_proposal": {
-      "state": "not_implemented",
+      "state": "source_implemented_unbuilt_not_adopted",
       "default": "off",
       "scope": "Target output head at K2560,N248320,decode C4 only;all other shapes and prefill preserve current paths.",
       "canonical_consumers": "NativeHead.run,Verifier,MTP row gathers/full/sub-vocabulary heads,and DFlash2 projection still use canonical GGUF layout;do not reorder that object in place.",
-      "placement": "A separately owned packed head adds521472000Device bytes. Measure expert-cache/VRAM effect and whole-request setup,not kernel ratio alone. Build the pack from mapped GGUF/RAM rather than reading canonical GPU weights back.",
-      "lifetime": "Extend all-reader preflight,graph/stream retirement,detach/restore and failure handling to every packed owner before a model run. Preserve long-prefill and short-input behavior;use fresh native/component/model qualification.",
-      "validation": "Owner/pack lifecycle fixtures,actual full-head dispatch,matched thinking-on32K long and agent/long-generation workloads with observed strong/weak acceptance,phase and full262144/RESTORE gates remain outstanding."
+      "placement": "Additional521472000Device bytes and521472000immutable RAM bytes,packed once from mapped GGUF before GPU allocation. Canonical weights/row metadata remain unchanged. Measure actual cache placement and whole-request cost.",
+      "lifetime": "NativeHead owns the packed Device/RAM pair. Existing all-reader drain and window retirement covers the new head graph. Detach frees both device layouts;restore uploads canonical snapshot and retained RAM packing before publication. Verifier checks restored packed bytes/readiness in individual and joint resumes.",
+      "validation": "Owner/pack lifecycle fixtures,actual full-head dispatch,matched thinking-on32K long and agent/long-generation workloads with observed strong/weak acceptance,phase and full262144/RESTORE gates remain outstanding.",
+      "switch": "STRATA_SYCL_DECODE_Q6_DPAS_HEAD=1;requires exact Q8_1 and STRATA_PREFILL_RELEASE_HEADS=1;default0",
+      "transfer": "Canonical D2H521472000B only;no packed-layout D2H/repacking at prompt boundaries;combined H2D1042944000B. Maximum combined target RAM backing/snapshot1042944000B<1GiB. Timing and real admission remain unqualified.",
+      "route_audit": "Existing canonical Q6_ROUTE/SHAPE schema preserved;new Q6_DPAS_HEAD row joins request/device/phase/tokens/capture_id and static call count to the common completed replay counters. All ready non-C4/prompt windows must have zero packed calls.",
+      "next": "Commit then run the bounded CPU selector/cache controls;prepare a separately committed exact native build/owner fixture and real target-head route qualification before model speed. No new native/GPU/model execution claimed.",
+      "cpu_policy_plan": {
+        "state": "prospective_source_commit_before_dependency_probe_and_build",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1",
+        "source_inputs": {
+          "tests/core/verify_window_policy_test.cpp": "d51ce58198fe65e353e6b7a6b4d4298f80b3f0d1f8057d6fddb841cc5bd60153",
+          "include/strata/core/verify_window_policy.hpp": "4df769ac0a4a55de1a540a78f256b8d225b70abcd4dc1bc9f26b274e70adc1fe"
+        },
+        "compiler": {
+          "path": "/usr/bin/x86_64-linux-gnu-g++-13",
+          "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769",
+          "version": "x86_64-linux-gnu-g++-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+        },
+        "flags": [
+          "-std=c++20",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Iinclude"
+        ],
+        "dependency_probe": [
+          "-M",
+          "-MT",
+          "policy"
+        ],
+        "build_extra": [
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/policy.d",
+          "-Wl,-t"
+        ],
+        "test_source": "tests/core/verify_window_policy_test.cpp",
+        "binary": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-head-policy-v1/verify_window_policy_test",
+        "compile_wall_seconds": 120,
+        "run_wall_seconds": 30,
+        "text_cap_bytes": 1048576,
+        "GPU_executed": false,
+        "acceptance": "Source and dependency identities match pinned committed inputs;normal compile0 and run0;exact fixture PASS line,including dpas-head=1;all previous30/18/26 selections and phase/cache retirement controls preserved. Stop first failure;never refresh failed pins. No native-head/device or model qualification.",
+        "expected_stdout": "verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n",
+        "retirement": "Retire this pure CPU binary/dependency/build text after committed results and exact source/recipe recovery;no ongoing comparison consumer."
+      }
     },
     "retained_reader_check": {
       "source_commit": "0e99305ca694e2399f1ac9f0aa387940c18e2a7c",

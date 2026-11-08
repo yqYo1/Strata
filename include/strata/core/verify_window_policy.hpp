@@ -16,6 +16,15 @@ constexpr bool valid_verify_input(VerifyInput input) {
     return input == VerifyInput::prompt || input == VerifyInput::decode;
 }
 
+// 3d81310de:q6_dpas_component_v7: only the full target head/C4 won.
+// A separate owner supplies this layout; never select ordinary Q6 weights or
+// the slower 2560x640 matrix. This is eligibility for a model trial only.
+constexpr bool verify_q6_dpas_head(bool packed_ready, VerifyInput input, bool exact,
+                                  int type, int n_in, int n_out, int columns) {
+    return packed_ready && input==VerifyInput::decode && exact && type==14 &&
+           n_in==2560 && n_out==248320 && columns==4;
+}
+
 // Only these shapes passed all three independent process medians in
 // 733500802:q6_byte_load_component_v2. This is eligibility for a model comparison,
 // not model adoption. Every other type, phase and shape keeps its reference.
@@ -70,6 +79,9 @@ public:
         std::vector<Handle> layer, resident, pcie;
         uint64_t q6_reference_calls = 0, q6_columns_calls = 0, q6_centered_calls = 0,
                  q6_native_half_calls = 0;
+        // Packed target-head route is counted separately from canonical-row
+        // MMVQ routes, preserving the existing Q6_ROUTE/SHAPE wire schema.
+        uint64_t q6_dpas_head_calls = 0;
         struct Q6Shape {
             int n_in, n_out, columns;
             std::array<uint64_t, 4> calls{};
@@ -106,6 +118,7 @@ public:
                 family->clear();
             }
             q6_reference_calls = q6_columns_calls = q6_centered_calls = q6_native_half_calls = 0;
+            q6_dpas_head_calls = 0;
             q6_shapes.clear();
             q6_capture_id = q6_cache_hits = q6_replay_started = q6_replay_completed = 0;
             q6_routes_complete = true;

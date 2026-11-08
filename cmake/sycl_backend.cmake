@@ -94,6 +94,9 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/native_iq_esimd.cpp)
 target_sources(strata_kernels PRIVATE src/kernels/sycl/dflash2.cpp)
+target_sources(strata_kernels PRIVATE src/kernels/sycl/q6_dpas_component.cpp)
+set_source_files_properties(src/kernels/sycl/q6_dpas_component.cpp PROPERTIES
+  COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 set_source_files_properties(src/kernels/sycl/dflash2.cpp PROPERTIES
   COMPILE_OPTIONS "-fno-fast-math;-ffp-contract=off")
 target_sources(strata_kernels PRIVATE src/kernels/sycl/native_mmq_xmx.cpp)
