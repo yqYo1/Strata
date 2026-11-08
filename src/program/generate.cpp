@@ -3645,22 +3645,6 @@ int main(int argc, char** argv) {
                        : df2->context(verifier.tap_dev(), kept, pos0, why);
     };
 #endif
-    auto prefill_head_route = [&]() {
-        bool dflash2_live=false;
-#ifdef STRATA_ENABLE_SYCL
-        // df2_begin_prompt destroys long-request owners and waits their queue
-        // before any prompt segment. No prompt callback constructs a drafter;
-        // df2_activate binds only after the target head is restored. Short or
-        // partially reused routes retaining an owner must refuse head release.
-        dflash2_live=bool(df2);
-#endif
-        const bool single_native=native_pack && !multi_gpu && o.layer_split.empty() &&
-            o.peer_device<0 && !peer.valid() &&
-            std::all_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto slots){return slots<=0;});
-        const auto drafter=strata::core::detail::prefill_head_drafter(
-            single_native,o.spec,!o.mtp.empty(),use_df2,dflash2_live);
-        return PrefillHeadRoute{drafter,drafter==strata::core::detail::PrefillHeadDrafter::mtp4?&mtp:nullptr};
-    };
     const bool auto_cache = o.expert_cache < 0;
     bool reserve_adapted = false;   // #496: the auto sizing lowered the reserve so a small card's cache fits
     if (o.expert_cache < 0) {
@@ -4768,6 +4752,22 @@ int main(int argc, char** argv) {
     // Plan v0.3 P3: the whole token as ONE graph whenever nothing needs a host step between the ring and post[l]
     // (the VRAM expert tier and the per-layer dumps do).  `--no-token-graph` keeps two graphs per layer.
     strata::core::TokenGraph tgraph;
+    auto prefill_head_route = [&]() {
+        bool dflash2_live=false;
+#ifdef STRATA_ENABLE_SYCL
+        // df2_begin_prompt destroys long-request owners and waits their queue
+        // before any prompt segment. No prompt callback constructs a drafter;
+        // df2_activate binds only after the target head is restored. Short or
+        // partially reused routes retaining an owner must refuse head release.
+        dflash2_live=bool(df2);
+#endif
+        const bool single_native=native_pack && !multi_gpu && o.layer_split.empty() &&
+            o.peer_device<0 && !peer.valid() &&
+            std::all_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto slots){return slots<=0;});
+        const auto drafter=strata::core::detail::prefill_head_drafter(
+            single_native,o.spec,!o.mtp.empty(),use_df2,dflash2_live);
+        return PrefillHeadRoute{drafter,drafter==strata::core::detail::PrefillHeadDrafter::mtp4?&mtp:nullptr};
+    };
     NativeDensePhase dense_phase;
     dense_phase.enabled=native_dense_bank_enabled;
     dense_phase.supported=native_pack && !multi_gpu && o.layer_split.empty() && !o.gpu_stages &&

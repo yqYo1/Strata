@@ -185,12 +185,14 @@ def run():
     try:
         monitor = ownership.Owner(ROOT / 'owned', persist)
         cli = row['argv'][:]; cli += ['--mtp-max-t', '1']
-        env = dict(row['environment']);env.pop('LD_PRELOAD', None)
+        env = dict(row['environment'], UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+            UR_LOG_TRACING='level:info;flush:info;output:stderr');env.pop('LD_PRELOAD', None)
         entry, out, err = monitor.run('reject_width1', cli, env, P,
             wall=30, cpu=60, text_cap=1 << 20, file_cap=1 << 20, total_cap=4 << 20, rss_cap=2 << 30)
         text = err.read_text(errors='replace')
         require(ownership.closed(entry) and entry['exit_code'] == 2 and '--mtp-max-t 0 or >=2' in text and
-            'strata generate:' not in text and not out.read_bytes() and 'UR_PROBE' not in text, 'width1 pre-GPU admission failed')
+            'strata generate:' not in text and not out.read_bytes() and 'UR_PROBE' not in text and
+            not re.search(r'--->\s*ur[A-Z]|<---\s*ur[A-Z]', text), 'width1 pre-GPU admission failed')
         row['width1_refused_before_model_startup'] = True
         for case in row['order']:
             require(not fresh_faults(), 'fault before next child'); guards.no_model_owners([])
@@ -203,7 +205,7 @@ def run():
                     i = argv.index(flag); del argv[i:i + 2]
                 argv += ['--mtp', row['mtp_path']]
             observed = dict(label=label, draft=case['draft'], heads=case['heads'], requests=[],
-                argv=argv, environment_overrides={k: v for k, v in env.items() if row['environment'].get(k) != v},
+                argv_sha256=model.fingerprint(argv), environment_overrides={k: v for k, v in env.items() if row['environment'].get(k) != v},
                 environment_sha256=model.fingerprint(env))
             row['cases'].append(observed)
             def interact(io, owned):
