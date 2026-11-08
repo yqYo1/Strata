@@ -220324,7 +220324,7 @@
     }
   },
   "q6_dpas_component_v7": {
-    "stage": "prepared",
+    "stage": "cpu-controlled",
     "source_commit": "f97893576704e6679c89ea6c4613d912665a0824",
     "helpers": {
       "tools/sycl/q6_dpas_component.py": "32d846740cd13cefe769e9f8115f3990abcc7710c1e93ed2809b8f6d172012fb",
@@ -220629,7 +220629,16 @@
       "provider_admission": "Require pinned preload and UR loader at pre-main gate. After Runtime device/queue creation,but before Fixture allocations/copies/kernels,require pinned forced adapter and Level Zero driver too. At both gates record missing/extra paths and reject any mapped provider outside the frozen inventory. No environment mutation."
     },
     "retention": "One prospective fresh component build;the old refused generation was retired after exact source/recipe recovery and this source materialization. Preserve useful config/samples/numeric/provider/closure decisions;retire successful raw/build output at comparison/model-proposal closure.",
-    "results": [],
+    "results": [
+      {
+        "mode": "controls",
+        "passed": true,
+        "host_probe_accepted": false,
+        "tests": 16,
+        "skipped": 0,
+        "native_execution_attempted": false
+      }
+    ],
     "timing": [],
     "active": false,
     "ownership_closed": true,
