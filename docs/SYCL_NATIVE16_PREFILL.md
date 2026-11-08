@@ -1775,7 +1775,8 @@ entry/queue submission on every call;the model captures these entries and
 replays completed graph segments. Commit a new recipe,comparison order and
 criteria before testing that distinct path. Keep the prototype/fixture source
 for that named next consumer;the closed direct-entry build and successful raw
-output have no remaining consumer. Every lane reaches the group broadcast
+output are physically retired after exact1280-file archive/recipe recovery
+and716compiler/24link binding checks. Every lane reaches the group broadcast
 before branching,following the
 [Khronos group-function contract](https://github.khronos.org/SYCL_Reference/iface/group-functions.html).
 
