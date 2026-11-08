@@ -220111,5 +220111,31 @@
       "executable_executed": false
     },
     "retention": "Closed pre-native device-IR recipe failure;compact diagnostic,original source/plan and verified input/deletion evidence retained. Complete old environment/commands are in reachable Git history. V4 uses only these failed/closed/retired admission facts."
+  },
+  "q6_dpas_component_v4": {
+    "stage": "failed",
+    "source_commit": "cb7eabb5f110cb12fe2d07c594f695a12240ebf9",
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "model_executed": false,
+    "preparation_failure": {
+      "error": "clang --version probe returned1:unable to make temporary file,No such file or directory.",
+      "location": "tools/sycl/q6_dpas_component.py:149",
+      "cause": "The added internal-frontend driver probe uses future private TMPDIR before its directory is created. Existing icpx/cmake/ninja version interfaces work;frontend hash is already pinned.",
+      "native_build_attempted": false,
+      "native_execution_attempted": false,
+      "controller_exit_code": 1,
+      "next": "V5 keeps the exact frontend binary pin and compiler version,but omits its duplicate driver-version invocation. Native and numerical/performance gates stay unchanged."
+    },
+    "artifact_retirement": {
+      "state": "not_created",
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dpas-component-v4",
+      "files": 0,
+      "bytes": 0,
+      "reason": "Preparation failed before root creation or source materialization;no artifact to retire."
+    }
   }
 }
