@@ -3562,68 +3562,10 @@
       }
     },
     "dflash2_prefill_heads_check": {
-      "stage": "failed",
+      "stage": "prepared",
       "passed": false,
-      "ownership_closed": false,
-      "cases": [
-        {
-          "label": "df2_head0",
-          "draft": "dflash2",
-          "heads": 0,
-          "requests": [],
-          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
-          "environment_overrides": {
-            "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v1/df2_head0/cache",
-            "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v1/df2_head0/tmp",
-            "STRATA_MEASUREMENT_ROOT": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v1/df2_head0"
-          },
-          "environment_sha256": "1b15e95998dafe81ee0c5224c0a142d263745243f341e23c669955f5cee61ea1",
-          "placement": {
-            "context": "4096",
-            "kv": "int8",
-            "kv_resident": "0",
-            "expert_slots": "1256",
-            "expert_cache_mib": "2455",
-            "expert_slots_primary": "1256",
-            "expert_cache_primary_mib": "2455",
-            "spec": "4",
-            "mtp_max": "0",
-            "lookup": "0",
-            "vram_free_mib": "2691",
-            "cvec": "0",
-            "arena_mib": "47962",
-            "pool_workers": "5",
-            "pcie_frac": "0.00",
-            "spec_min_p": "0.00",
-            "conversation_cache_mib": "0",
-            "conversation_cache_slots": "4",
-            "conversation_cache_min_free_mib": "2560",
-            "engine": "0.1.38"
-          },
-          "pre_main_validation": {
-            "pid": 2457227,
-            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-            "threads_before": 1,
-            "preinit": 37,
-            "config_enabled": true,
-            "first_init": true,
-            "dispatch_result": 46,
-            "output_untouched": true,
-            "retained_reference_until_exit": true,
-            "runtime_teardown_qualified": false
-          },
-          "mapping": {
-            "files": 38,
-            "sha256": "32bfa3ffd0f56a4a972ec76fbf59951b7bae73a8f2f8e83e063d735da2f35d02",
-            "scope": "file-backed executable ELF mappings at READY",
-            "other_executable_vmas": {
-              "[vdso]": 1,
-              "[vsyscall]": 1
-            },
-            "full_executable_address_space_qualified": false
-          }
-        }
-      ],
+      "ownership_closed": true,
+      "cases": [],
       "component_reuse": {
         "original_model_record": {
           "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-model-v2/record.json",
@@ -3672,6 +3614,19 @@
           }
         },
         "scope": "Reuse original DFlash2 arithmetic/tap/ring evidence and exact original fixture bytes only.New generator/head ownership,graph handoff and new engine are unqualified until this run."
+      },
+      "previous_failure": {
+        "record": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-drafter-heads-model-v1/record.json",
+          "sha256": "6864a3fb089083769032facf44102c26dc3cacfc5e787720c666f69d3edeef31"
+        },
+        "evidence_commit": "8868b857cf52f733b82ce74c20318792948db873",
+        "original_passed": false,
+        "original_ownership_qualified": false,
+        "physical_child_reaped": true,
+        "physical_session_empty": true,
+        "no_survivors": true,
+        "reason": "V1inherited8192-only options into256chunk;native shape guard refused. Keep its failed/-15/cleanup outcome unchanged. New explicit small-shape configuration,new committed plan,same native binary."
       },
       "host_policy": {
         "stage": "closed",
@@ -3901,7 +3856,7 @@
         "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin"
       ],
       "mtp_path": "/home/yayoi/.local/share/strata-sycl/mtp/rt",
-      "environment_sha256": "29ed89988e9e5e41f0e13acb71d47f7376816e95cf3bc0b00724b9dd293057e8",
+      "environment_sha256": "88d1071fffee098331e8a3e7211709335b40da80100a03c9443cbab044e70cf2",
       "order": [
         {
           "label": "df2_head0",
@@ -3959,41 +3914,10 @@
         "total_cap": 268435456,
         "rss_cap": 111669149696
       },
-      "criteria": "One source/binary,three owned processes in declared order,long/short/long32output requests in each.Thinking enabled,short-read128/chunk256:long layer-major twice and short windows once.Each request starts RESUME0,completes extent,offers drafts and accepts at least one;no output equality requirement.Release1 emits two target detaches and expected optional draft reader;DF2 never detaches MTP weights.MTP release1 retains original duplicate-head ordering.Verifier/dense/canonical restored before decode;all children exit0/reaped/session empty,pre-main proof,actual INFO and READY maps,no fresh fault.Three admission children(width1,absent-MTP expert release,DFlash2 cache-scratch)must exit2 before GPU startup.No speed/task/full262144/RESTORE/standalone/default or ordinary provider teardown qualification.",
+      "criteria": "One source/binary,three owned processes in declared order,long/short/long32output requests in each.Thinking enabled,short-read128/chunk256:long layer-major twice and short windows once.Explicitly disable8192-only MoE window,mixed/split scratch,score GEMM and smaller/packed expert bank;ordinary full512bank/native16 remains. This is ownership diagnosis,not the tuned8192performance route.Each request starts RESUME0,completes extent,offers drafts and accepts at least one;no output equality requirement.Release1 emits two target detaches and expected optional draft reader;DF2 never detaches MTP weights.MTP release1 retains original duplicate-head ordering.Verifier/dense/canonical restored before decode;all children exit0/reaped/session empty,pre-main proof,actual INFO and READY maps,no fresh fault.Three admission children(width1,absent-MTP expert release,DFlash2 cache-scratch)must exit2 before GPU startup.No speed/task/full262144/RESTORE/standalone/default or ordinary provider teardown qualification.",
       "speed_eligible": false,
       "model_adoption_qualified": false,
       "retention": "Keep compact request hashes,configuration,per-request counters,head/free-memory observations and closures.Generated IDs are reproduced from committed generator+hash-pinned tokenizer;verify exact wire before launch.Discard successful stage/API text and caches after extracting useful evidence;no new engine copy.",
-      "admission_results": [
-        {
-          "label": "reject_width1",
-          "exit_code": 2,
-          "ownership_closed": true,
-          "expected_error_seen": true,
-          "observed_UR_calls": 0,
-          "argv_sha256": "7e1d6ec149ed0ba62dda5482d610d9162243ec7a488e401480bda866462956cc",
-          "environment_sha256": "7fcc2c6ae0899060d1b698a1cb1252c8007dcb105052e57370af064d90d0be6c"
-        },
-        {
-          "label": "reject_mtp_experts",
-          "exit_code": 2,
-          "ownership_closed": true,
-          "expected_error_seen": true,
-          "observed_UR_calls": 0,
-          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
-          "environment_sha256": "6f55b78e7028f04202174d9e7266993af15f198f73f53b027a4d29d5530e02bc"
-        },
-        {
-          "label": "reject_cache_scratch",
-          "exit_code": 2,
-          "ownership_closed": true,
-          "expected_error_seen": true,
-          "observed_UR_calls": 0,
-          "argv_sha256": "126425fa1a05d49449ffc169e2236904720934134b86d1c5721f19773da5274c",
-          "environment_sha256": "123a15cc822dfc393dda9b3fc3cdfd7efbf1c5032b97084967268cfc8b998e30"
-        }
-      ],
-      "error": "RuntimeError(\"native closure failed: RuntimeError('unexpected native protocol: ERR prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue')\")",
-      "fresh_faults": [],
       "generator_runtime": {
         "executable": "/usr/bin/python3.12",
         "invocation": "/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python",
@@ -4024,8 +3948,8 @@
         }
       },
       "controller_source": {
-        "commit": "7f01e6d78113c5e8d22431debf736f2989baa7e7",
-        "sha256": "b9d69c54091061c5e8fdcdc809ef23b983a24232428a18a6994e85d3c6598f24"
+        "commit": "cec2e237bad84175a68305715a70ef3860dc926e",
+        "sha256": "7e505340d60424039731fd9771678c8f45d37fe786eaafcd0fdd4fe654f18062"
       },
       "requests": {
         "long": {
@@ -4045,53 +3969,7 @@
           "generator": "check_dflash2_model.request_ids:original82ID thinking prompt"
         }
       },
-      "commands": [
-        {
-          "label": "reject_width1",
-          "exit_code": 2,
-          "error": null,
-          "ownership_closed": true,
-          "errors": [],
-          "cleanup": []
-        },
-        {
-          "label": "reject_mtp_experts",
-          "exit_code": 2,
-          "error": null,
-          "ownership_closed": true,
-          "errors": [],
-          "cleanup": []
-        },
-        {
-          "label": "reject_cache_scratch",
-          "exit_code": 2,
-          "error": null,
-          "ownership_closed": true,
-          "errors": [],
-          "cleanup": []
-        },
-        {
-          "label": "df2_head0",
-          "exit_code": -15,
-          "error": "RuntimeError('unexpected native protocol: ERR prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue')",
-          "ownership_closed": false,
-          "errors": [],
-          "cleanup": [
-            {
-              "pid": 2457227,
-              "start_ticks": 244957721,
-              "signal": "SIGTERM",
-              "result": "sent"
-            },
-            {
-              "pid": 2457227,
-              "start_ticks": 244957721,
-              "signal": "SIGKILL",
-              "result": "sent"
-            }
-          ]
-        }
-      ]
+      "commands": []
     }
   }
 }
