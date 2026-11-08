@@ -27,9 +27,10 @@ import ur_validation as validation
 import build_compat_profile as selected
 P = Path(__file__).resolve().parents[2]
 B = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
-ROOT = B / 'q6-dpas-component-v5'
+ROOT = B / 'q6-dpas-component-v7'
+PREVIOUS_ROOT = B / 'q6-dpas-component-v5'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_dpas_component_v6'
+KEY = 'q6_dpas_component_v7'
 TARGET = 'sycl_q6_dpas_component'
 HELPERS = ('tools/sycl/q6_dpas_component.py','tools/sycl/test_q6_dpas_component.py',
     'tools/sycl/benchmark_runtime.py','tools/sycl/measurement_guards.py',
@@ -197,85 +198,91 @@ def embedded_dpas(blob):
 
 
 def prepare():
-    """Prospectively admit the unchanged,unexecuted V5 native build for V6."""
     data=validation.committed(RESULT)
-    require(KEY not in data, 'fresh V6 admission only')
-    previous=data['q6_dpas_component_v5']
+    previous=data['q6_dpas_component_v6']
     require(previous['stage']=='failed' and not previous['passed'] and not previous['complete']
-        and previous['ownership_closed'] and not previous['active'] and not previous['GPU_executed'],
-        'preserve the failed V5 text-output gate')
-    row=json.loads((ROOT/'record.json').read_text())
-    require(row['stage']=='failed' and row['ownership_closed'] and not row['active']
-        and not row['GPU_executed'] and all(owner.closed(c) for c in row['commands']),
-        'original native owner must be closed')
-    require([(c['label'],c['exit_code']) for c in row['commands']]==
-        [('configure',0),('build',0),('codegen',0),('ir-text',1)],
-        'only the original unexecuted successful native build is reusable')
-    recipe_commit='3db30d9201f163dbadbc83f4c801890227d04043'
-    original=json.loads(git('show',recipe_commit+':'+str(RESULT.relative_to(P))))['q6_dpas_component_v5']
-    require(all(row[k]==original[k] for k in ('source_commit','configure','build','environment',
-        'source_generation','tools','tool_versions','dependency_roots','system_packages')),
-        'original native source/recipe/toolchain identity')
-    require(signature(row['sources'])==original['source_inputs'], 'original native source inventory')
-    archive=git('archive','--format=tar',row['source_commit'],*sorted(row['sources']))
-    require(len(archive)<=64<<20, 'finite original Git archive')
-    recovered={}
-    with tarfile.open(fileobj=io.BytesIO(archive)) as source:
-        for item in source.getmembers():
-            if item.isdir():continue
-            require(item.isfile() and item.name in row['sources'], 'original regular native inputs')
-            recovered[item.name]=hashlib.sha256(source.extractfile(item).read()).hexdigest()
-    require(recovered==row['sources'] and
-        all(sha(ROOT/'source'/n)==h for n,h in recovered.items()), 'exact original private native source')
+        and not previous['active'] and previous['termination_reconciliation']['processes_closed']
+        and not previous['termination_reconciliation']['original_normal_closure_gate_passed']
+        and not previous['pre_gpu_refusal']['GPU_work_gate_released']
+        and not Path('/proc',str(previous['termination_reconciliation']['original_identity']['pid'])).exists(),
+        'preserve refused V6 and verify its stopped pre-device child is gone')
+    require(not ROOT.exists() and KEY not in data, 'fresh two-gate native attempt only')
+    old=json.loads((PREVIOUS_ROOT/'record.json').read_text())
+    require(old['stage']=='failed' and not old['active'] and old['source_commit']==previous['source_commit']
+        and sha(previous['binary']['path'])==previous['binary']['sha256'],
+        'original component remains only an unqualified source/recipe template')
+    require(guards.driver_guard()==old['driver'] and
+        Path('/proc/sys/kernel/random/boot_id').read_text().strip()==old['boot'],
+        'retain the qualified driver and boot before fresh native preparation')
     revision=git('rev-parse','HEAD').decode().strip()
     helpers={n:sha(P/n) for n in HELPERS}
     require(all((P/n).read_bytes()==git('show',revision+':'+n) for n in HELPERS),
-            'commit exact new admission/reader controls')
-    deltas={n:dict(native_snapshot_sha256=h,controller_sha256=sha(P/n))
-        for n,h in row['sources'].items() if sha(P/n)!=h}
-    require(set(deltas)<=set(CONTROLLER_FILES) and
-        all(v['controller_sha256']==helpers[n] for n,v in deltas.items()),
-        'only explicitly pinned controller/test files may differ from native source')
-    native=previous['unexecuted_native_build']
-    require(native['actual_inputs']['source_commit']==row['source_commit'] and
-        sha(native['path'])==native['sha256'] and
-        sha(native['actual_inputs']['path'])==native['actual_inputs']['sha256'],
-        'original final ELF and actual compiler census')
-    census_inputs=json.loads(Path(native['actual_inputs']['path']).read_text())
-    require(native['actual_inputs']['uncovered']==0 and not census_inputs['generated']
-        and all(sha(p)==h for k in ('compiled','links') for p,h in census_inputs[k].items())
-        and {p for p in census_inputs['compiled'] if Path(p).suffix in ('.cpp','.cc','.c','.cu')}==
-            {str((ROOT/'source'/n).resolve()) for n in UNITS}, 'all14 original compiled units and link bytes')
-    database_path=ROOT/'build/compile_commands.json'
-    database=json.loads(database_path.read_text())
-    commands=[c for c in database if TARGET+'.dir' in c['command'] or 'strata_sycl_runtime.dir' in c['command']]
-    require(len(commands)==14 and {str(Path(c['file']).relative_to(ROOT/'source')) for c in commands}==set(UNITS)
-        and all('-fsycl' in shlex.split(c['command']) and '-fsycl-id-queries-range=size_t' in shlex.split(c['command']) for c in commands)
-        and all('-fno-fast-math' in shlex.split(c['command']) and '-ffp-contract=off' in shlex.split(c['command'])
-                for c in commands if TARGET+'.dir' in c['command']), 'original numerical/target flags')
+            'commit exact new benchmark/controller/reader source')
+    changed=[n for n in UNITS if sha(P/n)!=old['sources'][n]]
+    require(changed==['bench/sycl/q6_dpas.cpp'],
+            'only native benchmark gates change;all13kernel/runtime units remain unchanged')
+    require(all(sha(p)==h for p,h in old['runtime_pins'].items())
+        and dependency_pins(old['dependency_roots'])==old['dependency_pins']
+        and all(sha(t['path'])==t['sha256'] and str(Path(t['path']).resolve())==t['realpath']
+                for t in old['tools'].values()) and packages()==old['system_packages'],
+        'same pinned native toolchain,headers and providers')
     _,identity=selected.basis()
-    require(identity==row['selected_native'], 'same selected90f production control')
-    # Keep original native source/recipe and ELF. Pin the new controller revision
-    # separately;none of the V5 host/device/performance gates is inherited.
-    for key in ('commands','codegen_command','ir_text_command'):row.pop(key,None)
-    row.update(controller_commit=revision,helpers=helpers,controller_only_deltas=deltas,
-        binary={k:native[k] for k in ('path','sha256','bytes')},actual_inputs=native['actual_inputs'],
-        compile_database=dict(path=str(database_path),sha256=sha(database_path),translation_units=14),
-        native_reuse=dict(native_source_commit=row['source_commit'],native_recipe_commit=recipe_commit,
-            original_failed_evidence_commit='8162122aa73602eb91a113e7533c2bee602efb98',
-            native_inputs_unchanged=True,previous_host_device_qualification_inherited=False,
-            reason='V5 native compile/link succeeded;only optional LLVM-text output failed. New embedded-SPIR-V gate binds actual linked device code.'),
-        stage='prepared',results=[],timing=[],active=False,ownership_closed=True,passed=False,
-        complete=False,GPU_executed=False,model_executed=False)
-    row['provenance']['device_ir_reference']='ELF64 System V ABI and Khronos SPIR-V core OpName/OpEntryPoint/OpFunction/OpFunctionCall definitions;Main-authored bounded linked-image reader,no external implementation code.'
-    old='Codegen must retain>=2DPAS intrinsic calls;this is compiler-IR evidence,not native ISA or utilization.'
-    require(old in row['plan']['acceptance'], 'preserve original gate intent explicitly')
-    row['plan']['acceptance']=row['plan']['acceptance'].replace(old,
-        'The exact linked ELF C4 SPIR-V image must contain>=2reachable GenX DPAS call instructions from its sole kernel entry;this is packaged device-code evidence,not final native ISA or utilization.')
-    row['plan']['order']='16CPU census/timing/ELF-SPIR-V reader controls;admit the unchanged original14-unit native build and exact linked DPAS callgraph;12CPU pack/shape controls;small traced3shape/2seed;full2shape/2seed;three fresh timing processes0/1/2.Commit each closed stage;stop first failure,no retries.'
-    row['retention']='One reused component native build,not another engine generation. Keep useful samples,numeric/setup/callgraph/source/recipe decisions;retire successful raw/build output when the component/model-proposal consumer ends.'
-    save(row)
-    print('Prepared prospective V6 admission of exact unchanged V5 native ELF;commit before execution.',flush=True)
+    require(identity==old['selected_native'], 'same selected90f production reference')
+    names=git('ls-files','-z','.gitattributes','CMakeLists.txt','LICENSE','cmake','src','include',
+              'tests','bench','tools','third_party').decode().split('\0')
+    names=sorted(n for n in names if n and not n.startswith('bench/results/')
+        and n!='bench/performance-records.csv')
+    require(0<len(names)<=4096, 'finite committed source inventory')
+    archive=git('archive','--format=tar',revision,*names)
+    require(len(archive)<=64<<20, 'finite committed source archive')
+    sources={}
+    with tarfile.open(fileobj=io.BytesIO(archive)) as source:
+        for item in source.getmembers():
+            if item.isdir():continue
+            require(item.isfile() and item.name in names, 'only named regular committed source')
+            sources[item.name]=hashlib.sha256(source.extractfile(item).read()).hexdigest()
+    require(set(sources)==set(names), 'complete new native source archive')
+    row=json.loads(json.dumps(old))
+    for k in ('commands','binary','actual_inputs','compile_database','codegen','native_reuse'):
+        row.pop(k,None)
+    row.update(source_commit=revision,controller_commit=revision,sources=sources,helpers=helpers,
+        controller_only_deltas={},
+        source_generation=dict(command='git archive --format=tar <source_commit> <named source paths>',
+            attributes_path='.gitattributes',attributes_sha256=sources['.gitattributes']),
+        stage='preparing',results=[],timing=[],active=False,ownership_closed=True,
+        passed=False,complete=False,GPU_executed=False,model_executed=False,
+        materialization=dict(complete=False,completed_source_files=0),
+        boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(),driver=guards.driver_guard(),
+        native_transition=dict(previous_native_source=old['source_commit'],
+            previous_evidence_commit='ad41175be5e64be422ac962798f35cd506b31c9c',
+            changed_native_units=changed,unchanged_kernel_runtime_units=13,
+            scope='Fresh build;benchmark adds post-Runtime/pre-Fixture gate. No V6 device qualification inherited.'))
+    row['environment']={k:v.replace(str(PREVIOUS_ROOT),str(ROOT)) for k,v in old['environment'].items()}
+    row['configure']=[v.replace(str(PREVIOUS_ROOT),str(ROOT)) for v in old['configure']]
+    row['build']=[v.replace(str(PREVIOUS_ROOT),str(ROOT)) for v in old['build']]
+    env=row['environment']
+    require(env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD']=='1' and env['NEOReadDebugKeys']=='1'
+        and env['EnableDirectSubmission']=='0' and env['STRATA_SYCL_PREFILL_SAME_QUEUE']=='1'
+        and env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE']=='0' and env['ZES_ENABLE_SYSMAN']=='0'
+        and not env.get('LD_PRELOAD'), 'preserve immutable runtime safety')
+    row['plan']['order']='16CPU census/timing/ELF-SPIR-V reader controls;fresh14-unit native build and exact linked DPAS callgraph;12CPU pack/shape controls;small traced3shape/2seed;full2shape/2seed;three timing processes0/1/2.Commit each closed stage;stop first failure,no retries.'
+    row['plan']['provider_admission']='Require pinned preload and UR loader at pre-main gate. After Runtime device/queue creation,but before Fixture allocations/copies/kernels,require pinned forced adapter and Level Zero driver too. At both gates record missing/extra paths and reject any mapped provider outside the frozen inventory. No environment mutation.'
+    row['retention']='One fresh component build;old refused native generation is held only through template/source recovery for this prospective attempt. Keep compact useful source/config/samples/numeric/provider outcomes;retire successful raw/build output at comparison/model-proposal closure.'
+    ROOT.mkdir(mode=0o700)
+    try:
+        save(row)
+        for name in ('source','tmp','cache'):(ROOT/name).mkdir()
+        with tarfile.open(fileobj=io.BytesIO(archive)) as source:
+            for item in source.getmembers():
+                if item.isdir():continue
+                p=ROOT/'source'/item.name;p.parent.mkdir(parents=True,exist_ok=True)
+                p.write_bytes(source.extractfile(item).read());p.chmod(item.mode&0o777)
+                row['materialization']['completed_source_files']+=1
+        row['materialization']['complete']=True;row['stage']='prepared';save(row)
+    except BaseException as error:
+        row.update(stage='failed',passed=False,complete=False,preparation_error=repr(error))
+        save(row);raise
+    print('Prepared committed fresh two-gate Q6 native attempt;commit its plan before execution.',flush=True)
 
 def current(row):
     require(validation.committed(RESULT, (KEY,)) == compact(row), 'commit exact component state')
@@ -307,8 +314,9 @@ def current(row):
         census = json.loads(Path(actual['path']).read_text())
         require(all(sha(p) == h for k in ('compiled', 'generated', 'links') for p, h in census[k].items()),
             'actual component compiler/link bytes changed')
-    database=row['compile_database']
-    require(sha(database['path'])==database['sha256'], 'original compile database drift')
+    if 'compile_database' in row:
+        database=row['compile_database']
+        require(sha(database['path'])==database['sha256'], 'compile database drift')
     if 'codegen' in row:
         require(embedded_dpas(Path(row['binary']['path']).read_bytes())==row['codegen'],
                 'linked C4 SPIR-V callgraph drift')
@@ -403,18 +411,36 @@ def execute(mode):
     def persist():
         (ROOT/'execution.json').write_text(json.dumps(dict(mode=mode,active=bool(scope and scope.active),commands=scope.commands if scope else []),indent=2)+'\n')
     try:
-        scope=owner.Owner(ROOT/('v6-owned-'+mode),persist)
+        scope=owner.Owner(ROOT/('v7-owned-'+mode),persist)
         if mode=='controls':
             e,out,err=scope.run('reader-controls',row['host_command'],row['environment'],P,**row['host_budget'])
             text=out.read_text()+err.read_text()
             require(owner.closed(e) and e['exit_code']==0 and 'Ran 16 tests' in text and '\nOK\n' in text and 'skipped' not in text,'all16CPU reader controls')
             outcome.update(tests=16,skipped=0,native_execution_attempted=False);row['stage']='cpu-controlled'
         elif mode=='build':
-            # Native compilation is original44715a/3db30d920. The new gate
-            # inspects that unchanged final ELF and never refreshes its inputs.
-            row['codegen']=embedded_dpas(Path(row['binary']['path']).read_bytes())
-            outcome.update(native_recompiled=False,native_execution_attempted=False,
-                translation_units=14,compiler_files=row['actual_inputs']['compiler_files'],
+            outcome['build_commands']=[];outputs={}
+            for name,command in [('configure',row['configure']),('build',row['build'])]:
+                e,out,err=scope.run(name,command,row['environment'],ROOT,**row['build_budget'])
+                require(owner.closed(e) and e['exit_code']==0,
+                    name+' failed:'+(out.read_text()+err.read_text())[-2500:])
+                outputs[name]=out
+                outcome['build_commands'].append(dict(name=name,exit_code=0,ownership_closed=True))
+            e,out,_=scope.run('dependencies',[row['tools']['ninja']['path'],'-C',str(ROOT/'build'),'-t','deps'],
+                row['environment'],ROOT,**row['build_budget'])
+            require(owner.closed(e) and e['exit_code']==0,'actual native dependency listing')
+            row['actual_inputs']=census(row,out.read_text(),outputs['build'].read_text())
+            binary=ROOT/'build'/TARGET
+            row['binary']=dict(path=str(binary),sha256=sha(binary),bytes=binary.stat().st_size)
+            database_path=ROOT/'build/compile_commands.json';database=json.loads(database_path.read_text())
+            commands=[c for c in database if TARGET+'.dir' in c['command'] or 'strata_sycl_runtime.dir' in c['command']]
+            require(len(commands)==14 and {str(Path(c['file']).relative_to(ROOT/'source')) for c in commands}==set(UNITS)
+                and all('-fsycl' in shlex.split(c['command']) and '-fsycl-id-queries-range=size_t' in shlex.split(c['command']) for c in commands)
+                and all('-fno-fast-math' in shlex.split(c['command']) and '-ffp-contract=off' in shlex.split(c['command'])
+                        for c in commands if TARGET+'.dir' in c['command']), 'exact14 native units and numerical flags')
+            row['compile_database']=dict(path=str(database_path),sha256=sha(database_path),translation_units=14)
+            row['codegen']=embedded_dpas(binary.read_bytes())
+            outcome.update(native_recompiled=True,native_execution_attempted=False,translation_units=14,
+                compiler_files=row['actual_inputs']['compiler_files'],
                 external_link_files=row['actual_inputs']['external_link_files'],
                 dpas_static_calls=row['codegen']['dpas_static_calls'])
             row['stage']='built'
@@ -430,19 +456,39 @@ def execute(mode):
             args=['--time',str(index)] if mode.startswith('time') else ['--'+mode]
             cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if v.startswith('-- cursor: '))
             def interact(io,command):
-                while True:
-                    line=io.line(600)
-                    if line.startswith('STRATA_Q6_DPAS_GATE '):break
-                identity=owner.identity(command['pid'])
-                require(identity and identity['pid']==identity['sid']==command['pid'] and all(identity[k]==command['direct_identity'][k] for k in ('pid','start_ticks','sid'))
-                    and line=='STRATA_Q6_DPAS_GATE pid='+str(command['pid']),'actual native owner')
-                require(str(Path('/proc',str(command['pid']),'exe').resolve())==row['binary']['path'],'actual executable')
-                actual=dict(v.split('=',1) for v in Path('/proc',str(command['pid']),'environ').read_text().split('\0') if '=' in v)
-                require(actual==env,'immutable native environment')
-                mapped=set(python_runtime.code_maps(command['pid']));required={str(Path(env[k]).resolve()) for k in ('LD_PRELOAD','STRATA_UR_PROBE_EXPECTED_LOADER','UR_ADAPTERS_FORCE_LOAD','ZE_ENABLE_ALT_DRIVERS')}
-                require(required<=mapped<=set(row['runtime_pins'])|{row['binary']['path']},'actual provider mappings')
-                outcome.update(native_identity=identity,mapped_provider_count=len(mapped));row['GPU_executed']=True
-                io.send(b'continue\n');io.proc.stdin.close()
+                all_keys=('LD_PRELOAD','STRATA_UR_PROBE_EXPECTED_LOADER',
+                          'UR_ADAPTERS_FORCE_LOAD','ZE_ENABLE_ALT_DRIVERS')
+                all_required={str(Path(env[k]).resolve()) for k in all_keys}
+                for phase,tag in enumerate(('STRATA_Q6_DPAS_GATE ','STRATA_Q6_DPAS_DEVICE_GATE ')):
+                    while True:
+                        line=io.line(600)
+                        if line.startswith(tag):break
+                        require(not line.startswith('STRATA_Q6_DPAS_'),'unexpected native gate order')
+                    identity=owner.identity(command['pid'])
+                    require(identity and identity['pid']==identity['sid']==command['pid']
+                        and all(identity[k]==command['direct_identity'][k] for k in ('pid','start_ticks','sid'))
+                        and line==tag+'pid='+str(command['pid']),'actual native owner at both gates')
+                    require(str(Path('/proc',str(command['pid']),'exe').resolve())==row['binary']['path'],
+                            'actual executable at both gates')
+                    actual=dict(v.split('=',1) for v in Path('/proc',str(command['pid']),'environ').read_text().split('\0') if '=' in v)
+                    mapped=set(python_runtime.code_maps(command['pid']))
+                    required=all_required if phase else {str(Path(env[k]).resolve()) for k in all_keys[:2]}
+                    extra=sorted(mapped-(set(row['runtime_pins'])|{row['binary']['path']}))
+                    missing=sorted(required-mapped)
+                    proof=dict(phase='post-device-pre-fixture' if phase else 'pre-main',
+                        mapped_files=len(mapped),mapped_path_sha256=hashlib.sha256('\0'.join(sorted(mapped)).encode()).hexdigest(),
+                        missing_required=missing,unexpected_mapped_paths=extra,
+                        not_yet_mapped_forced_providers=sorted(all_required-mapped),
+                        environment_extra_keys=sorted(set(actual)-set(env)),
+                        environment_missing_keys=sorted(set(env)-set(actual)),
+                        environment_changed_keys=sorted(k for k in set(actual)&set(env) if actual[k]!=env[k]))
+                    outcome.setdefault('provider_admission',[]).append(proof)
+                    require(actual==env,'immutable native environment at both gates')
+                    require(not missing and not extra,'phase-appropriate actual provider mappings')
+                    outcome.update(native_identity=identity,mapped_provider_count=len(mapped))
+                    io.send(b'continue\n')
+                    if phase:row['GPU_executed']=True
+                io.proc.stdin.close()
                 while not io.exit_watch.poll(0) or not io.eof:
                     io.poll()
                     if select.select([io.proc.stdout],[],[],.02)[0]:io.read();io.pending.clear()

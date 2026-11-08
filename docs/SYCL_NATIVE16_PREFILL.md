@@ -1775,21 +1775,23 @@ quantization,uses two integer DPAS halves for the signed per16 scales,and
 stores a separate uint16 interleave with padded output-row tails. The canonical
 weights and C1/prefill paths remain untouched. Its original reference is pinned
 MIT-licensed GGML`34ca79122`,not XeStrata;the local packing/kernel integration
-is authored here. Closed V1/V2 compile failures and the V3 LLVM-text recipe
-failure remain recorded;their source/recipe and800compiler/24link inputs are
-recoverable,and unused build artifacts are retired. V4's duplicate internal
-frontend version probe failed before materialization;no root or GPU work existed.
-V5 built the same native ELF and emitted bitcode,but its matching frontend also
-refused LLVM text;the system LLVM21 reader rejects the LLVM23 attributes.
-Its original failed gate stays failed. V6 prospectively reuses that unchanged
-unexecuted native build at source`44715a991`,recipe`3db30d920`,and separately
-pins its new controller/tests. It checks the exact ELF's embedded C4 SPIR-V
-callgraph for two reachable GenX DPAS calls;this is stronger binding to the
-actual device image than the detached IR gate,not a final-ISA/utilization claim.
-Only controller/test files may differ from the original1283-file native snapshot;
-all14compiled units,800compiler inputs,24link files,flags and ELF bytes must match.
-All CPU/device/timing gates run anew. Follow`q6_dpas_component_v6`for this admission,
-CPU,small traced,full-head numerical and repeated ordinary-graph comparison.
+is authored here. Earlier compile/LLVM-text recipe failures remain failed in Git;
+ended partial builds are retired. The V5 native build at`44715a991`and recipe
+`3db30d920`is held only as the next fresh attempt's source/recipe template.
+V6 passes16CPU readers,12CPU pack/shape controls and the exact linked ELF's
+two reachable GenX DPAS calls in its C4 SPIR-V image. This binds packaged device
+calls,not final ISA/utilization. Its first device attempt is refused before
+Runtime by the provider predicate;the exact missing/extra paths were not captured.
+That predicate demands every forced provider before Runtime initialization,
+so admission timing is a concrete suspect requiring the two-phase recheck.
+The child is stopped/reaped with an empty final session and no fresh GPU fault;
+the original normal-closure/performance gates remain failed. No Q6 GPU math ran.
+V7 adds an explicit gate after Runtime creation but before Fixture allocations,
+copies or kernels. It requires preload/loader at pre-main and all forced
+adapter/driver mappings at the second gate,recording missing/extra paths at both.
+All13kernel/runtime translation units are unchanged;only native benchmark gates
+change. A fresh native build and all16CPU/12pack/small/full/timing gates are
+prospective,not inherited from V6. Follow`q6_dpas_component_v7`for the new plan.
 All12existing control translation units match the retained591c/90f source.
 Successful allocation,pack/upload cost and cold/warm scope must be recorded;
 model placement,task quality,full context and adoption remain unqualified.

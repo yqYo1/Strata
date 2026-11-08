@@ -32,6 +32,12 @@ uint32_t mix(uint32_t x) { x ^= x >> 16; x *= 0x7feb352du; x ^= x >> 15; x *= 0x
 uint16_t half_at(const std::vector<uint8_t>& b, size_t p) { return uint16_t(b[p]) | uint16_t(uint16_t(b[p+1]) << 8); }
 void half_put(std::vector<uint8_t>& b, size_t p, uint16_t h) { b[p]=uint8_t(h); b[p+1]=uint8_t(h >> 8); }
 int signed_byte(uint8_t v) { return int(std::bit_cast<int8_t>(v)); }
+void gate(const char* tag) {
+    if (!std::getenv("STRATA_Q6_DPAS_GATE")) return;
+    std::cout << tag << " pid=" << getpid() << '\n';
+    std::string reply;
+    need(bool(std::getline(std::cin,reply))&&reply=="continue","native gate");
+}
 
 void host() {
     int cases=0;
@@ -199,7 +205,10 @@ struct Fixture {
 
 std::shared_ptr<sb::Runtime> runtime() {
     auto r=sb::runtime_for();need(sb::Runtime::devices().size()==1&&r->device().is_gpu()&&r->device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,"actual B570");
-    std::cout << "DEVICE name=" << r->device().get_info<sycl::info::device::name>() << '\n';return r;
+    std::cout << "DEVICE name=" << r->device().get_info<sycl::info::device::name>() << '\n';
+    // Device discovery loads the forced adapter/driver. Stop before Fixture
+    // allocations,copies or kernels so Main can attest those actual mappings.
+    gate("STRATA_Q6_DPAS_DEVICE_GATE");return r;
 }
 void checks(bool small,std::shared_ptr<sb::Runtime>& keep) {
     auto r=runtime();keep=r;int cases=0;
@@ -238,9 +247,7 @@ int main(int argc,char** argv) {
     try {
         need(argc==2||argc==3,"use --host|--check-small|--check|--time 0..2");
         const std::string mode=argv[1];if(mode=="--host"){host();std::cout.flush();std::_Exit(0);}
-        if(std::getenv("STRATA_Q6_DPAS_GATE")) {
-            std::cout << "STRATA_Q6_DPAS_GATE pid=" << getpid() << '\n';std::string reply;need(bool(std::getline(std::cin,reply))&&reply=="continue","native gate");
-        }
+        gate("STRATA_Q6_DPAS_GATE");
         std::shared_ptr<sb::Runtime> keep;
         if(mode=="--check-small"||mode=="--check")checks(mode=="--check-small",keep);
         else {need(mode=="--time"&&argc==3&&std::strlen(argv[2])==1&&argv[2][0]>='0'&&argv[2][0]<='2',"time process0..2");timing(argv[2][0]-'0',keep);}
