@@ -3151,8 +3151,19 @@ The highest retained phase references and performance CSV remain unchanged.
 First-to-next prompt differences here are 9.4768 s (MTP) and 9.8406 s (DFlash2),
 observed at one length; they do not identify a fixed cost or fit a new length law.
 The current throughput-limiting hardware resource remains unqualified.
-Next collect >=1K thinking-output and standard long/agent evidence, then compare
-clean repeated configurations while retaining independent prefill/decode selection.
+The matched >=1K thinking-output screen is committed in
+`tools/sycl/drafter_generation.py` (source `2a7b98908`). Its first cohort remains
+failed before warmup or generation: Main compared the full process-status mapping
+with a three-field identity claim. Startup reached the expected native/chunk
+state, then the owner terminated and reaped the session; no fresh GPU fault or
+validation warning occurred. The native exit receipt is absent, so no native
+exit code is inferred. Follow `drafter_generation_v1` in the linked result,
+original evidence `c70ef71ae`; its 28 closed private files (5,582,188 bytes) are
+retired with a pinned manifest. The source auditor is still live; preserve its
+pinned inputs until formal return. Next fix the stable identity-field check,
+commit a fresh cohort and repeat the sustained-output screen. No new TG or
+adoption result exists. Standard long/agent, clean repeated comparisons and
+independent prefill/decode selection remain pending.
 The checked borrowed-buffer path remains a separate optional-reader investigation.
 
 The count-only OpenAI route, removed by the bulk server import, is restored at
