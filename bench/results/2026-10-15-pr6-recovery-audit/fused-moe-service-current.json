@@ -210240,7 +210240,7 @@
     }
   },
   "mapped_row_copy_component_v1": {
-    "stage": "host-checked",
+    "stage": "built",
     "source_commit": "7f6c38b37507097b9a24d3dfd452de719f507b4b",
     "helpers": {
       "tools/sycl/mapped_row_copy_component.py": "6f0c38a60f97c27ccd510bf9cf27c0a6328ac893a6302bc7680e7744ac264c22",
@@ -210541,6 +210541,23 @@
         "tests": 5,
         "skipped": 0,
         "native_execution_attempted": false
+      },
+      {
+        "mode": "build",
+        "passed": true,
+        "host_probe_accepted": false,
+        "build_commands": [
+          {
+            "name": "configure",
+            "exit_code": 0,
+            "ownership_closed": true
+          },
+          {
+            "name": "build",
+            "exit_code": 0,
+            "ownership_closed": true
+          }
+        ]
       }
     ],
     "timing": [],
@@ -210554,6 +210571,59 @@
       "complete": true,
       "completed_source_files": 1280
     },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/actual-inputs.json",
+      "sha256": "231423f6ebb0979e77e2bdeec0cb842bf3d9ea99e40b60141c7ff693d442c55c",
+      "compiler_files": 716,
+      "generated_files": 0,
+      "external_link_files": 24,
+      "uncovered": 0,
+      "translation_units": [
+        "src/sycl/runtime.cpp",
+        "src/sycl/compat.cpp",
+        "src/sycl/command_profile.cpp",
+        "src/kernels/sycl/elementwise.cpp",
+        "tests/sycl/mapped_row_copy.cpp"
+      ],
+      "source_commit": "7f6c38b37507097b9a24d3dfd452de719f507b4b"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/build/sycl_mapped_row_copy_component",
+      "sha256": "04a7450bbe5f2c2b32067733912464718c559004f05ef485285da1aa803cd2ca",
+      "bytes": 439784
+    },
+    "compiled_commands": [
+      {
+        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/build",
+        "command": "/opt/intel/oneapi/compiler/2026.2/bin/icpx -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include/strata/sycl/compat -fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -o CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o -c /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/sycl/runtime.cpp",
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/sycl/runtime.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o"
+      },
+      {
+        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/build",
+        "command": "/opt/intel/oneapi/compiler/2026.2/bin/icpx -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include/strata/sycl/compat -fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -o CMakeFiles/strata_sycl_runtime.dir/src/sycl/compat.cpp.o -c /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/sycl/compat.cpp",
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/sycl/compat.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/compat.cpp.o"
+      },
+      {
+        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/build",
+        "command": "/opt/intel/oneapi/compiler/2026.2/bin/icpx -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include/strata/sycl/compat -fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -O3 -DNDEBUG -std=c++20 -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -o CMakeFiles/strata_sycl_runtime.dir/src/sycl/command_profile.cpp.o -c /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/sycl/command_profile.cpp",
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/sycl/command_profile.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/command_profile.cpp.o"
+      },
+      {
+        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/build",
+        "command": "/opt/intel/oneapi/compiler/2026.2/bin/icpx -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/kernels/sycl -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include/strata/sycl/compat -fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -o CMakeFiles/sycl_mapped_row_copy_component.dir/tests/sycl/mapped_row_copy.cpp.o -c /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/tests/sycl/mapped_row_copy.cpp",
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/tests/sycl/mapped_row_copy.cpp",
+        "output": "CMakeFiles/sycl_mapped_row_copy_component.dir/tests/sycl/mapped_row_copy.cpp.o"
+      },
+      {
+        "directory": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/build",
+        "command": "/opt/intel/oneapi/compiler/2026.2/bin/icpx -DSTRATA_ENABLE_SYCL=1 -DSTRATA_VERSION=\\\"0.1.38\\\" -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/kernels/sycl -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include -I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/include/strata/sycl/compat -fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13 -O3 -DNDEBUG -std=c++20 -fno-fast-math -ffp-contract=off -fsycl -fsycl-id-queries-range=size_t -Wall -Wextra -Werror -o CMakeFiles/sycl_mapped_row_copy_component.dir/src/kernels/sycl/elementwise.cpp.o -c /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/kernels/sycl/elementwise.cpp",
+        "file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/mapped-row-copy-component-v1/source/src/kernels/sycl/elementwise.cpp",
+        "output": "CMakeFiles/sycl_mapped_row_copy_component.dir/src/kernels/sycl/elementwise.cpp.o"
+      }
+    ],
     "source_inputs": {
       "files": 1280,
       "aggregate_sha256": "14ff283bcedab1dbc7787e07143f0a6eea6282da625862da494fb2a2683744eb"
