@@ -3230,40 +3230,43 @@ request bodies match. Direction changes between first/subsequent and there is
 only one process per placement,so speed remains undecided. Output24does not
 qualify sustained TG. Descriptive expert-bank counters report the same
 requestedH2Dbytes in both arms;they do not measure wire traffic or saturation.
-The matched sustained-output cohort is underway at controller`31a16936a` and
-original plan`f0d81312a`:six fresh processes in ABBAAB order,three per placement,
-with both thinking workloads in each. The first matched pair passes normal
-native/benchmark0,reaped/empty ownership and no fresh fault (owned evidence
-`403b7e3af`,borrowed`3128f4423`). Request bodies match,with33213code and33283prose
-read tokens,reuse0. The paired values below are owned256/borrowed1536.
+The matched sustained-output cohort is closed at controller`31a16936a` and
+original plan`f0d81312a`:six fresh ABBAAB processes,three per placement,two
+thinking workloads each. All native/benchmark exits are0,owners reap and empty,
+validation is quiet,no fresh fault occurs,and all15final model-asset hashes
+match. Final process evidence is`e040c3929`. Request bodies match within each
+workload,with33213code and33283prose read tokens,reuse0. The table gives
+three-process medians,owned256/borrowed1536. Rates use actual counts and engine
+intervals;individual printed rates remain intact in the compact result.
 
-| Workload | Generated tokens | PP(tok/s) | ClientTTFT(s) | TG(tok/s) | Drafts accepted/offered |
+| Request scope | Generated tokens | PP(tok/s) | ClientTTFT(s) | TG(tok/s) | Draft acceptance |
 | --- | --- | --- | --- | --- | --- |
-| Code | 3905/3465 | 577.7/571.5 | 57.676/58.295 | 12.2/11.8 | 2805/3300;2426/3120 |
-| Prose | 9870/8430 | 663.6/678.4 | 50.342/49.239 | 7.0/7.3 | 4871/14994;4119/12933 |
+| Code:first long after four warmups | 3905/3465 | 579.260/571.522 | 57.528/58.295 | 12.180/11.992 | 85.000%/77.756% |
+| Prose:subsequent long | 9870/8430 | 667.973/679.002 | 50.008/49.166 | 7.032/7.295 | 32.486%/31.849% |
 
-Both processes finish both answers above5000characters. Each borrowed long
-prompt loans/refills1092slots. The speed direction differs by workload;one pair
-does not decide placement. Strong/weak classification still requires all three
-processes per placement.
-Five of six processes are now closed. The second borrowed process also exits
-normally without a fresh fault (evidence`781ddb3f7`):code PP578.0/TG12.2 and
-prose PP679.0/TG7.3tok/s,with the same actual input/output counts and draft
-counters as the first borrowed process. Its matched owned process also passes
-(evidence`adee8a0b2`):code PP579.3/TG12.1 and prose PP668.0/TG7.0tok/s.
-There are two completed pairs. The third owned process also passes at
-`40975d456`:code PP579.9/TG12.2 and prose PP683.5/TG7.1tok/s. Its final borrowed
-partner remains pending. The three owned process medians,computed from actual
-counts and engine intervals,are PP579.260/TG12.180/TTFT57.528s for code and
-PP667.973/TG7.032/TTFT50.008s for prose. Individual printed rates remain intact.
-Both workloads' owned footer counters reconcile target rows*48layers*10experts with GPU
-cache entries plus CPU entries. These are logical work counts,not physical
-traffic or hardware saturation;the measured counts are retained in that result.
-Next complete the frozen matched repetitions,then select the feature generation
-and retire the extra after original-source recovery. Validation/stage observers
-remain charged;clean speed and task quality are separate gates.
-Keep f633 only as the sustained-output fallback until that gate;552b/e1b remain
-independent phase guards. Clean speed,agent/task,physical262144,tails and RESTORE
+Pairs0/1,3/2,4/5give borrowed/owned code TG ratios
+0.972313/1.004487/0.982865(geometric mean0.986465). A repeatable code gain
+does not pass;PP and clientTTFT are slower in all three pairs. Prose TG ratios
+are1.039395/1.040639/1.020333(geometric mean1.033414);PP and clientTTFT also
+improve in all three pairs. This is a repeated observed-route gain for the
+second-long prose case,not a reason to adopt the placement for code. Both
+placements satisfy the predeclared strong-code/weak-prose draft classes in all
+three processes. Workload and request order are confounded;this plan cannot
+attribute the prefill difference to content alone.
+
+The final borrowed footer reconciles GPU hits+CPU entries with
+target_rows*48layers*10experts. CPU jobs per emitted token fall3.686%for code
+and7.497%for prose;these are logical work counts,not physical traffic or
+hardware saturation,and generated paths differ. The borrowed planner records
+the same8192-row layout at startup and again after smaller warmup layouts;
+its reinitialization cost is unmeasured. Keep that first-long/subsequent
+distinction. Each borrowed long prompt loans/refills1092slots.
+
+Select90f as the retained feature-validation generation,with the loan still
+default-off;this does not adopt its whole inference route. Next integrate the
+measured child,update consumers,recover original inputs and retire f633.
+Preserve552b/e1b as independent phase guards. Validation/stage observers remain
+charged;clean speed,agent/task,length scaling,physical262144,tails and RESTORE
 remain pending. The physical limiting resource remains unknown.
 The next collector gate uses`tests/sycl/profile_compat_window.cpp`to cover the
 selected ordinary compatibility graph path;its source is prepared,with build and

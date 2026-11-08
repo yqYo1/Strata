@@ -10000,6 +10000,48 @@
           "native_exit_code": 0,
           "ownership_closed": true,
           "fresh_faults": [],
+          "cache_work_observation": {
+            "native_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+            "basis": "Post-run native footer counts on each matched long request;CPU entries from the closed work census. Lookups == target_rows*48layers*10experts == GPU hits+CPU entries;pcie0/no peer. Normalize by actual emitted tokens,including thinking.",
+            "samples": [
+              {
+                "workload": "regular-code",
+                "gpu_cached_expert_token_entries": 265877,
+                "cpu_fallback_expert_token_entries": 1731403,
+                "expert_lookups": 1997280,
+                "target_rows": 4161,
+                "emitted_tokens": 3465,
+                "gpu_entries_per_emitted": 76.73217893217893,
+                "cpu_entries_per_emitted": 499.68340548340547,
+                "gpu_cached_entry_fraction": 0.13311954257790595,
+                "lookup_conservation_passed": true
+              },
+              {
+                "workload": "varied-prose",
+                "gpu_cached_expert_token_entries": 608819,
+                "cpu_fallback_expert_token_entries": 7668781,
+                "expert_lookups": 8277600,
+                "target_rows": 17245,
+                "emitted_tokens": 8430,
+                "gpu_entries_per_emitted": 72.22052194543298,
+                "cpu_entries_per_emitted": 909.7011862396204,
+                "gpu_cached_entry_fraction": 0.07355018362810477,
+                "lookup_conservation_passed": true
+              }
+            ],
+            "limits": "Logical expert-token work,not unique jobs,physical RAM/PCIe traffic,issued instructions,occupancy or saturation. Excludes attention,shared FFN and draft work. Generated paths differ by placement;not a teacher-forced identical-work comparison."
+          },
+          "prefill_workspace_observation": {
+            "chunk": 8192,
+            "scratch_rows": 8192,
+            "accounted_bytes": 2311569920,
+            "shared_region_bytes": 1180698624,
+            "context_tokens": 65536,
+            "native_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+            "planner_records": 6,
+            "long_layout_records": 2,
+            "scope": "Same8192-row planner layout at startup and the first long request,with smaller intervening warmup layouts. Shared region=max(GDN,QSA,MoE). Excludes per-pass layer-major residual/expert-bank and driver/library allocations;not physical peak VRAM,reclaimability or reinitialization-time proof."
+          },
           "commands": [
             {
               "label": "bench",
@@ -10180,6 +10222,265 @@
           }
         ]
       },
+      "borrowed_aggregate": {
+        "source_process_indices": [
+          1,
+          2,
+          5
+        ],
+        "workloads": [
+          {
+            "workload": "regular-code",
+            "process_count": 3,
+            "sample_count": 3,
+            "read_tokens": {
+              "median": 33213,
+              "minimum": 33213,
+              "maximum": 33213
+            },
+            "generated_tokens": {
+              "median": 3465,
+              "minimum": 3465,
+              "maximum": 3465
+            },
+            "metrics": {
+              "pp_tps": {
+                "median": 571.5224768211009,
+                "minimum": 566.6828756430272,
+                "maximum": 577.9953500027844
+              },
+              "prefill_s": {
+                "median": 58.1132,
+                "minimum": 57.4624,
+                "maximum": 58.6095
+              },
+              "ttft_s": {
+                "median": 58.295,
+                "minimum": 57.635,
+                "maximum": 58.832
+              },
+              "tg_tps": {
+                "median": 11.992387170326163,
+                "minimum": 11.843222395550638,
+                "maximum": 12.19882285760154
+              },
+              "draft_acceptance": {
+                "median": 0.7775641025641026,
+                "minimum": 0.7775641025641026,
+                "maximum": 0.7775641025641026
+              }
+            }
+          },
+          {
+            "workload": "varied-prose",
+            "process_count": 3,
+            "sample_count": 3,
+            "read_tokens": {
+              "median": 33283,
+              "minimum": 33283,
+              "maximum": 33283
+            },
+            "generated_tokens": {
+              "median": 8430,
+              "minimum": 8430,
+              "maximum": 8430
+            },
+            "metrics": {
+              "pp_tps": {
+                "median": 679.0023971030754,
+                "minimum": 678.4363126396295,
+                "maximum": 683.8967918515125
+              },
+              "prefill_s": {
+                "median": 49.0175,
+                "minimum": 48.6667,
+                "maximum": 49.0584
+              },
+              "ttft_s": {
+                "median": 49.166,
+                "minimum": 48.835,
+                "maximum": 49.239
+              },
+              "tg_tps": {
+                "median": 7.294613157491909,
+                "minimum": 7.277464334597609,
+                "maximum": 7.318062166721082
+              },
+              "draft_acceptance": {
+                "median": 0.3184875898863373,
+                "minimum": 0.3184875898863373,
+                "maximum": 0.3184875898863373
+              }
+            }
+          }
+        ]
+      },
+      "comparison_result": {
+        "complete": true,
+        "independent_processes": 6,
+        "matched_pairs": [
+          [
+            0,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            5
+          ]
+        ],
+        "ratio_convention": "borrowed1536/owned256;higher is faster for PP/TG,lower for prompt seconds/clientTTFT.",
+        "arithmetic": "Per-process PP=1000*read_tokens/prompt_ms;TG=1000*generated_tokens/decode_ms. median/min/max of three process samples. Paired ratio B/A;geometric mean=product(ratios)**(1/3). Original printed engine rates preserved.",
+        "workloads": [
+          {
+            "workload": "regular-code",
+            "request_sha256": "92bce6ff9fb460ede481191d2d8042dd020cfe0cc41a56e3ca04966250b8d976",
+            "draft_class": "strong",
+            "metrics": {
+              "pp_tps": {
+                "borrowed_over_owned": [
+                  0.9893879531672667,
+                  0.9978159631341539,
+                  0.9772801337667101
+                ],
+                "geometric_mean": 0.9881253596865319,
+                "direction": "borrowed_slower_all_three"
+              },
+              "prefill_s": {
+                "borrowed_over_owned": [
+                  1.0107258702703643,
+                  1.0021888173235736,
+                  1.0232480590245103
+                ],
+                "geometric_mean": 1.0120173419263676,
+                "direction": "borrowed_slower_all_three"
+              },
+              "ttft_s": {
+                "borrowed_over_owned": [
+                  1.010732367015743,
+                  1.0021735350373848,
+                  1.0226672229175358
+                ],
+                "geometric_mean": 1.011822843464036,
+                "direction": "borrowed_slower_all_three"
+              },
+              "tg_tps": {
+                "borrowed_over_owned": [
+                  0.9723133944975044,
+                  1.0044866865355193,
+                  0.982865342141468
+                ],
+                "geometric_mean": 0.9864645697999503,
+                "direction": "mixed_or_equal"
+              }
+            },
+            "logical_work": {
+              "cpu_unique_jobs_per_emitted": {
+                "borrowed_over_owned": [
+                  0.9631402976752873,
+                  0.9631402976752873,
+                  0.9631402976752873
+                ],
+                "geometric_mean": 0.9631402976752873
+              },
+              "cpu_entries_per_emitted": {
+                "borrowed_over_owned": [
+                  0.9595082722002956,
+                  0.9595082722002956,
+                  0.9595082722002956
+                ],
+                "geometric_mean": 0.9595082722002956
+              },
+              "target_rows_per_emitted": {
+                "borrowed_over_owned": [
+                  1.0655262332153947,
+                  1.0655262332153947,
+                  1.0655262332153947
+                ],
+                "geometric_mean": 1.0655262332153947
+              }
+            },
+            "decode_decision": "Repeated TG gain not established;do not adopt borrowed placement for this workload.",
+            "prefill_decision": "Assess PP/prompt and clientTTFT separately;neither is qualified by the decode outcome."
+          },
+          {
+            "workload": "varied-prose",
+            "request_sha256": "7f7919cf23e0281b7b677c52e82cbbce8081a71017adad91669347b61833608d",
+            "draft_class": "weak",
+            "metrics": {
+              "pp_tps": {
+                "borrowed_over_owned": [
+                  1.0224079872152372,
+                  1.0165124700362116,
+                  1.00057945165791
+                ],
+                "geometric_mean": 1.0131245548264882,
+                "direction": "borrowed_faster_all_three"
+              },
+              "prefill_s": {
+                "borrowed_over_owned": [
+                  0.9780831258211601,
+                  0.9837557624496004,
+                  0.9994208839118675
+                ],
+                "geometric_mean": 0.9870454676436738,
+                "direction": "borrowed_faster_all_three"
+              },
+              "ttft_s": {
+                "borrowed_over_owned": [
+                  0.9780898653212029,
+                  0.9831626939689648,
+                  0.999140700124803
+                ],
+                "geometric_mean": 0.9867571154021814,
+                "direction": "borrowed_faster_all_three"
+              },
+              "tg_tps": {
+                "borrowed_over_owned": [
+                  1.0393949587413622,
+                  1.0406392652047627,
+                  1.0203327220330536
+                ],
+                "geometric_mean": 1.0334136882933913,
+                "direction": "borrowed_faster_all_three"
+              }
+            },
+            "logical_work": {
+              "cpu_unique_jobs_per_emitted": {
+                "borrowed_over_owned": [
+                  0.9250281093023737,
+                  0.9250281093023737,
+                  0.9250281093023737
+                ],
+                "geometric_mean": 0.9250281093023737
+              },
+              "cpu_entries_per_emitted": {
+                "borrowed_over_owned": [
+                  0.9503066232341923,
+                  0.9503066232341923,
+                  0.9503066232341923
+                ],
+                "geometric_mean": 0.9503066232341923
+              },
+              "target_rows_per_emitted": {
+                "borrowed_over_owned": [
+                  1.0098917183291733,
+                  1.0098917183291733,
+                  1.0098917183291733
+                ],
+                "geometric_mean": 1.0098917183291733
+              }
+            },
+            "decode_decision": "Repeated observed-route TG gain only.",
+            "prefill_decision": "Assess PP/prompt and clientTTFT separately;neither is qualified by the decode outcome."
+          }
+        ],
+        "limits": "Parameter validation and stage progress charged. Generated paths differ across placements;CPU work counters are logical jobs/entries,not physical traffic,instructions or hardware saturation. No clean speed,agent/task quality,length sweep,physical262144/tails/RESTORE or overall model/default adoption. Preserve independent552b/e1b phase guards.",
+        "feature_generation_selection": "Retain90f for current feature/collector qualification;loan remains default-off. Retire f633 only after original-source recovery and consumer migration;integrate completed measured child preserving original commits."
+      },
       "source_inputs": {
         "files": 617,
         "sha256": "e702fb96bd7844be5737b7429d6f59734703c2826fad0b4cabb6c1c8c27122d2"
@@ -10193,6 +10494,25 @@
         }
       },
       "environment_template_sha256": "5e9941b1e4f50e3a3286775e08d8d8c8dd0aed00d8735244c1d20d4486dbe98d"
+    },
+    "feature_generation_selection": {
+      "binary": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/build/strata",
+        "sha256": "90f7e1588640f8293d372888d78abae7f2958579175332ebec83aa64974003ce",
+        "bytes": 26272056,
+        "origin_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761"
+      },
+      "native_source_commit": "591c2fbe3116c7e6172566646b5ded4a0526b761",
+      "original_build_record": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-native-v1/record.json",
+        "sha256": "327957e294935d8f71e9e0ca31fe20a5252456ed3d08894c5823615154d99985"
+      },
+      "cohort_key": "current_sync.dflash2_cache_loan_generation_v1",
+      "cohort_processes": 6,
+      "default_cache_scratch_lease": 0,
+      "scope": "Retained feature/collector qualification generation;no overall inference/default loan adoption. Keep552b prefill and e1b decode guards.",
+      "superseded_feature_binary_sha256": "f633543c14954197abc3e5de64450232231ff486e9be7652b78ac6432d227454",
+      "retirement": "Next integrate original measured child commits,verify source/recipe recovery and migrate active consumers before retiring the old feature build and child checkout."
     }
   }
 }
