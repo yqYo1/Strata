@@ -9,6 +9,7 @@ import fcntl
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
 import select
@@ -26,14 +27,23 @@ ROOT, KEY = B / 'dflash2-cache-loan-long-v1', 'dflash2_cache_loan_long_v1'
 SELF = Path(__file__).resolve()
 require, digest, write, signature = small.require, small.digest, small.write, small.signature
 READ, RUNS = 32769, 2
+GENERATION_MAX = 16384
+GENERATION_WORKLOADS = ('regular-code', 'varied-prose')
 
 
 def compact(row):
     out = {k: v for k, v in row.items() if k not in ('sources', 'models', 'runtime_files', 'native_build')}
     out['source_inputs'] = dict(files=len(row['sources']), sha256=signature(row['sources']))
     out['native_build'] = {k: row['native_build'][k] for k in ('source_commit', 'project_source_sha256', 'record')}
-    out['plans'] = [{k: v for k, v in p.items() if k != 'environment' or row['stage'] in ('prepared', 'ready')} |
+    out['plans'] = [{k: v for k, v in p.items() if k != 'environment' or
+        row['stage'] in ('prepared', 'ready') and not row.get('generation')} |
         dict(environment_sha256=signature(p['environment'])) for p in row['plans']]
+    if row.get('generation'):
+        template = row['environment_template']
+        out['environment_template_sha256'] = signature(template)
+        if row['stage'] not in ('prepared', 'ready'): out.pop('environment_template')
+        for public, private in zip(out['plans'], row['plans']):
+            public['environment_overrides'] = {k: v for k, v in private['environment'].items() if template.get(k) != v}
     out['processes'] = [{k: v for k, v in p.items() if k != 'commands'} | dict(commands=[
         dict(label=c['label'], exit_code=c.get('exit_code'), error=c.get('error'),
             ownership_closed=small.loan.ownership.closed(c), errors=c.get('errors', []), cleanup=c.get('cleanup', []))
@@ -63,7 +73,17 @@ def current(row, full=False):
         json.loads((ROOT / 'record.json').read_text())), 'commit exact prospective long plan/result')
     require(bench.sources(row['source_commit']) == row['sources'], 'benchmark/controller input changed')
     n, native = small.loan.native(); require(native == row['native_build'] and prior(native) == row['prior'], 'native/model proof changed')
-    require(digest(row['recipe']['path']) == row['recipe']['sha256'], 'original recipe changed')
+    recipe = row['recipe']
+    if 'commit' in recipe:
+        require(hashlib.sha256(small.loan.source.git(P, 'show', recipe['commit'] + ':' + recipe['path'])).hexdigest()
+            == recipe['sha256'], 'original Git recipe changed/unrecoverable')
+    else: require(digest(recipe['path']) == recipe['sha256'], 'original recipe changed')
+    if row.get('generation'):
+        proof = small.loan.validation.committed(STATUS, ('current_sync', 'dflash2_cache_loan_long_v1'))
+        require(signature(proof) == row['long_admission_sha256'] and proof['passed'] and proof['complete'] and
+            proof['ownership_closed'] and proof['native_build']['record'] == native['record'], 'closed long admission changed')
+        alias = row['asset_alias']; p = Path(alias['path'])
+        require(p.is_symlink() and os.readlink(p) == alias['link'] and str(p.resolve()) == alias['target'], 'stock asset alias changed')
     probe, reuse = small.loan.current_probe()
     require(probe == row['native_validation_probe'] and reuse == row['runtime_reuse'], 'current-runtime proof changed')
     require(digest(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
@@ -167,6 +187,83 @@ def prepare():
     save(row); print('Prepared owned256/borrowed1536 exact32Kx2;commit before host/native.', flush=True)
 
 
+def prepare_generation():
+    """Recover the committed 32K recipe,not its retired measurement directory."""
+    require(not ROOT.exists(), 'fresh generation cohort only;no automatic retry')
+    _, native = small.loan.native(); qualification = prior(native)
+    proof = small.loan.validation.committed(STATUS, ('current_sync', 'dflash2_cache_loan_long_v1'))
+    require(proof['passed'] and proof['complete'] and proof['ownership_closed'] and len(proof['processes']) == 2 and
+        all(p['passed'] and p['ownership_closed'] and not p['fresh_faults'] and len(p['samples']) == 2
+            for p in proof['processes']) and proof['native_build']['record'] == native['record'], 'same-build long admission required')
+    recipe_commit = proof['original_plan_commit']; recipe_path = str(STATUS.relative_to(P))
+    raw = small.loan.source.git(P, 'show', recipe_commit + ':' + recipe_path)
+    original = json.loads(raw)['current_sync']['dflash2_cache_loan_long_v1']; seed = original['plans'][0]
+    require(original['stage'] == 'ready' and seed['slots'] == 256 and seed['configuration']['drafting'] == 'dflash2', 'original named recipe differs')
+    reference = json.loads((small.model.REFERENCE / 'record.json').read_text()); probe, reuse = small.loan.current_probe()
+    revision = small.loan.source.git(P, 'rev-parse', 'HEAD').decode().strip()
+    row = dict(stage='prepared', source_commit=revision, sources=bench.sources(revision),
+        native_build=native, binary=native['binaries']['strata'], native_source_commit=native['source_commit'], prior=qualification,
+        native_validation_probe=probe, runtime_reuse=reuse, runtime_manifest=reference['runtime_manifest'],
+        runtime_files=json.loads(Path(reference['runtime_manifest']['path']).read_text()),
+        models=reference['model_assets'], models_sha256=small.model.fingerprint(reference['model_assets']),
+        recipe=dict(commit=recipe_commit, path=recipe_path, sha256=hashlib.sha256(raw).hexdigest(),
+            key='current_sync.dflash2_cache_loan_long_v1', scope='Exact generated config/environment/native-plan recipe from Git'),
+        long_admission_sha256=signature(proof), asset_alias={k: proof['asset_alias'][k] for k in ('path', 'link', 'target')},
+        python_contract=reference['python_contract'], python_selected=reference['python_selected'], template=reference['template'],
+        boot=reference['boot'], driver=reference['driver'], generation=True, workloads=list(GENERATION_WORKLOADS),
+        maximum_output=GENERATION_MAX, plans=[], host=[], processes=[], passed=False, complete=False, ownership_closed=True,
+        budgets=dict(wall=7200, cpu=86400, rss_cap=104 << 30, text_cap=32 << 20, file_cap=64 << 20, total_cap=128 << 20),
+        comparison=dict(question='Does the admitted1536-slot checked loan improve sustained DFlash2 decoding over owned256,independently of PP/TTFT?',
+            order='Six separate immutable processes ABBAAB:owned256,borrowed1536,borrowed1536,owned256,owned256,borrowed1536.'
+                'Each runs the four official warmups then regular-code and varied-prose once,in that order. Three independent processes per placement.'
+                'Matched pairs are0/1,3/2,4/5. No speed-based stopping or runtime environment changes.',
+            constants='Same90f native;65536INT8resident context,8192chunk,384packed bank,throughput BF16/native16/GDN16,spec4,'
+                'head retirement1,zero prefix/conversation caches/adaptation,5workers,pcie0. Only expert residency256/1536 and checked loan0/1 differ.'
+                'Thinking/xhigh remains enabled,no separate thought cap,16384total completion budget;actual input plus budget fits65536context.'
+                'No payload readback or decode timing observer;parameter validation and stage progress stay charged.',
+            acceptance='Official bench.sh full long-generation-only workloadv5,both cases:>=32768actual read=input,reuse0,'
+                '>=1024usage-counted output including thought,>=512answer characters,>=256draft offers,normal SSE/engine clocks and complete journals.'
+                'Verify identical per-workload request bodies across all processes,official four warmups,actual8192/full-GPU residual/384bank/checked drain,'
+                'optional-head absent-MTP route,balanced checked long loans,actual native/Python/arguments/providers/before-main evidence.'
+                'Require normal native AND benchmark0/reap/empty,unchanged source/runtime/15model assets/stock alias,no fresh fault.'
+                'Stop first failure,no retry/reset/hash refresh/changed threshold. Full model hashes before first and after final process.',
+            decision='Keep individual PP,prompt,clientTTFT,TG,output/context lengths and draft counters. Compare each workload and phase separately;'
+                'report three paired ratios,median/min/max and geometric mean,without calling overlap noise or forcing a minimum gain.'
+                'Consistent positive TG is only observed-route evidence,not clean-speed/default adoption or a reason to adopt slower PP.'
+                'Classify strong/weak only if all three regular-code samples per placement have acceptance>=0.60 and varied-prose<=0.40;'
+                'otherwise leave the pair unconfirmed. Do not require identical generated text. Extra repeats need a new committed plan.'
+                'Keep agent/task,clean-speed,length scaling,physical262144/tails/RESTORE and independent phase preservation pending.',
+            retention='Keep compact individual samples,work/route conservation,source/binary/config/actual extent and phase decisions.'
+                'Retire normal per-process raw logs,JIT caches and complete successful journals after each result commit and verification;'
+                'keep only still-required frozen config/plan metadata through the cohort. At this sustained-output decision select feature generation,'
+                'recover original source/recipe,retire extra f633/90f generation,and integrate completed child before branch retirement.'))
+    ROOT.mkdir(mode=0o700)
+    for index, borrowed in enumerate((False, True, True, False, False, True)):
+        slots = 1536 if borrowed else 256; label = f'{index}-' + ('borrowed1536' if borrowed else 'owned256')
+        root = ROOT / label; root.mkdir(mode=0o700)
+        for name in ('tmp', 'cache'): (root / name).mkdir(mode=0o700)
+        env = {k: v.replace(seed['root'], str(root)) for k, v in seed['environment'].items()}
+        env.update(STRATA_SYCL_CACHE_SCRATCH_LEASE=str(int(borrowed)), STRATA_SYCL_CACHE_LOAN_AUDIT='0')
+        require(not env.get('LD_PRELOAD') and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and
+            env['EnableDirectSubmission'] == '0' and env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0' and
+            env['ZES_ENABLE_SYSMAN'] == '0' and env['UR_ENABLE_LAYERS'] == 'UR_LAYER_PARAMETER_VALIDATION' and
+            env['STRATA_PREFILL_RELEASE_MTP_EXPERTS'] == '0', 'qualified immutable safety required')
+        config = copy.deepcopy(seed['configuration']); config['log'] = str(root / 'engine.stderr')
+        config['args'] = [x for x in config['args'] if x != '--no-prefill-borrow']
+        config['args'][config['args'].index('--expert-cache') + 1] = str(slots)
+        if not borrowed: config['args'].append('--no-prefill-borrow')
+        write(root / 'config.json', config); write(root / 'plan.json', dict(binary=row['binary'], native_validation_probe=probe))
+        with socket.socket() as sock: sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
+        row['plans'].append(dict(label=label, root=str(root), slots=slots, borrowed=borrowed, environment=env, configuration=config,
+            generated={p: digest(root / p) for p in ('config.json', 'plan.json')}, command=['/bin/sh', str(P / 'bench.sh'),
+                '--config', str(root / 'config.json'), '--port', str(port), '--long-generation-only', '--think', '--runs', '1',
+                '--long-generation-max-tokens', str(GENERATION_MAX), '--profile-request-gates', '--profile-startup-gate',
+                '--workload-id', 'native_gdn_20261018', '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]))
+    row['environment_template'] = dict(row['plans'][0]['environment'])
+    small.model.model_pins(row, full=True)
+    save(row); print('Prepared6fresh processes/both thinking workloads,ABBAAB;commit before host/native.', flush=True)
+
+
 def route_config(path):
     sys.path.insert(0, str(P)); from serve import server
     cfg = json.loads(Path(path).read_text()); args = server.engine_args(cfg, exe=cfg['exe'], announce=False)
@@ -232,6 +329,35 @@ def loans(text, borrowed):
     return dict(pairs=len(generations), generations=generations, lent_rows=lent, checked_mask_ready=True)
 
 
+def generation_samples(row, plan, root, result, windows, raw):
+    cohort = result['results']['long_generation']
+    samples = bench.evidence.collect_samples(cohort, row['maximum_output'])
+    require(cohort['workload_version'] == 5 and cohort['thinking'] is True and cohort['reasoning_budget_tokens'] == 0 and
+        cohort['max_tokens'] == row['maximum_output'] and cohort['selected_workloads'] == row['workloads'] and
+        cohort['diagnostic_subset'] is False and len(samples) == len(windows) == len(row['workloads']) and
+        [(s['workload'], s['run'], s['order']) for s in samples] == [(name, 0, i) for i, name in enumerate(row['workloads'])] and
+        all(s['controller_eligible'] for s in samples), 'ineligible/incomplete sustained generation')
+    if row['processes']:
+        require([s['request_sha256'] for s in samples] == [s['request_sha256'] for s in row['processes'][0]['samples']], 'per-workload request bodies differ')
+    journal, _ = bench.evidence.journal_evidence(root)
+    require(journal['valid'] and journal['complete'], 'incomplete generation journal')
+    path, = (root / 'bench').glob('*/requests.jsonl')
+    entries = [json.loads(s) for s in path.read_text().splitlines()]
+    warmups = bench.evidence.warmup_reconciliation(entries, tuple(row['workloads']), row['maximum_output'])
+    routes = []
+    for i, (sample, window) in enumerate(zip(samples, windows)):
+        part = raw[window['begin']:window['end']].decode()
+        route = identity.route(part, 'dflash2', sample); route['loan'] = loans(part, plan['borrowed'])
+        require(sample['prompt_tps_source'] == 'engine' and sample['prompt_ms'] > 0 and
+            0 < sample['ttft_s'] <= sample['total_s'], 'generation PP/TTFT clock differs')
+        # Extend beyond the cooperative end gate so the native copy/work footer
+        # cannot race SSE completion. The next begin gate precedes its request.
+        tail = windows[i + 1]['begin'] if i + 1 < len(windows) else len(raw)
+        route['decode_work'] = bench.evidence.decode_work_evidence(raw[window['begin']:tail].decode(), [sample])[0]
+        routes.append(route)
+    return dict(samples=samples, routes=routes, warmups=warmups, speed_adoption_qualified=False)
+
+
 def run(index):
     row = json.loads((ROOT / 'record.json').read_text()); manifest = current(row, full=index == 0)
     require(row['stage'] in ('ready', 'running') and len(row['processes']) == index < len(row['plans']) and
@@ -261,7 +387,7 @@ def run(index):
         observed.update(model_executed=True, native_identity=claim['native'])
     def gate(io, entry, stage, phase, run_id):
         while True:
-            line = io.line(1000)
+            line = io.line(6000 if row.get('generation') else 1000)
             if line.startswith('STRATA_PROFILE_GATE '): break
         require(json.loads(line.removeprefix('STRATA_PROFILE_GATE ')) == dict(stage=stage, phase=phase, run=run_id), 'unexpected benchmark gate')
         delta = [a - b for a, b in zip((time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns()), initial)]
@@ -279,12 +405,13 @@ def run(index):
         require(slots == [str(plan['slots'])], 'actual native expert residency differs')
         observed['startup_admission'] = dict(chunk=8192, expert_slots=plan['slots'], free_MiB=int(free[0]), borrowed=plan['borrowed'])
         print(plan['label'] + ' startup8192/slots admitted', flush=True); io.send(b'continue\n')
-        for request in range(RUNS):
+        schedule = [('long-generation/' + name, 0) for name in row['workloads']] if row.get('generation') else [('prefill-only', i) for i in range(RUNS)]
+        for phase, request in schedule:
             offsets = {}
             for stage in ('begin', 'end'):
-                gate(io, entry, stage, 'prefill-only', request)
+                gate(io, entry, stage, phase, request)
                 offsets[stage] = (root / 'engine.stderr').stat().st_size
-                print(f'{plan["label"]} request{request} {stage}', flush=True); io.send(b'continue\n')
+                print(f'{plan["label"]} {phase} request{request} {stage}', flush=True); io.send(b'continue\n')
             windows.append(offsets)
         io.proc.stdin.close(); deadline = time.monotonic() + 180
         while not io.exit_watch.poll(0) or not io.eof:
@@ -297,8 +424,8 @@ def run(index):
         entry, _, _ = owner.run('bench', plan['command'], env, P, interaction=interact, **row['budgets'])
         require(small.loan.ownership.closed(entry) and entry['exit_code'] == 0, 'native/benchmark closure failed')
         outputs = list((root / 'bench').glob('*/results.json')); require(len(outputs) == 1, 'one result required')
-        result = json.loads(outputs[0].read_text()); cohort = result['results']['prefill_only']; samples = cohort['requests']; counts = cohort['count_preflight']
-        require(result['complete'] and not result['results']['failures'] and len(samples) == len(counts) == len(windows) == RUNS, 'incomplete cohort')
+        result = json.loads(outputs[0].read_text())
+        require(result['complete'] and not result['results']['failures'], 'incomplete benchmark')
         sys.path.insert(0, str(P / 'tools')); import strata_bench as client
         require(client.verify_request_journal(outputs[0].parent)['valid'], 'invalid request journal')
         end = bench.evidence.native_end(root, row, dict(config=dict(args=plan['native_args'])), row['boot'], entry['pid'])
@@ -306,19 +433,24 @@ def run(index):
         require(not any(s in text for s in ('UR_RESULT_ERROR_', 'ZE_RESULT_ERROR_', 'terminate called', 'teardown uncertain')), 'native runtime error')
         require(('prompt path borrows' in text) == plan['borrowed'] and
             text.count('strata serve: the prompt path allocates its own buffers ') == int(not plan['borrowed']), 'actual buffer ownership differs')
-        routes = []
-        for sample, count, window in zip(samples, counts, windows):
-            require(all(sample[k] is True for k in ('ok', 'eligible', 'stream_complete', 'thinking_requested', 'reasoning_observed')) and
-                sample['actual_prompt_tokens'] == sample['actual_read_tokens'] == count['counted_input_tokens'] == READ and
-                sample['actual_reused_tokens'] == 0 and sample['request_sha256'] == count['body_sha256'] and
-                1 <= sample['generated_tokens'] <= 24 and sample['prompt_tps_source'] == 'engine' and
-                all(type(sample[k]) in (int, float) and math.isfinite(sample[k]) and sample[k] > 0 for k in
-                    ('prompt_ms', 'prompt_tps', 'ttft_s', 'total_s')) and sample['ttft_s'] <= sample['total_s'], 'request/thinking/clock differs')
-            part = raw[window['begin']:window['end']].decode()
-            route = bench.request_route(part, 'dflash2', sample); route['loan'] = loans(part, plan['borrowed']); routes.append(route)
+        if row.get('generation'):
+            observed.update(generation_samples(row, plan, root, result, windows, raw))
+        else:
+            cohort = result['results']['prefill_only']; samples = cohort['requests']; counts = cohort['count_preflight']
+            require(len(samples) == len(counts) == len(windows) == RUNS, 'incomplete prefill cohort')
+            routes = []
+            for sample, count, window in zip(samples, counts, windows):
+                require(all(sample[k] is True for k in ('ok', 'eligible', 'stream_complete', 'thinking_requested', 'reasoning_observed')) and
+                    sample['actual_prompt_tokens'] == sample['actual_read_tokens'] == count['counted_input_tokens'] == READ and
+                    sample['actual_reused_tokens'] == 0 and sample['request_sha256'] == count['body_sha256'] and
+                    1 <= sample['generated_tokens'] <= 24 and sample['prompt_tps_source'] == 'engine' and
+                    all(type(sample[k]) in (int, float) and math.isfinite(sample[k]) and sample[k] > 0 for k in
+                        ('prompt_ms', 'prompt_tps', 'ttft_s', 'total_s')) and sample['ttft_s'] <= sample['total_s'], 'request/thinking/clock differs')
+                part = raw[window['begin']:window['end']].decode()
+                route = bench.request_route(part, 'dflash2', sample); route['loan'] = loans(part, plan['borrowed']); routes.append(route)
+            observed.update(samples=samples, count_preflight=counts, routes=routes, speed_adoption_qualified=False)
         if index == len(row['plans']) - 1: small.model.model_pins(row, full=True)
-        observed.update(passed=True, complete=True, native_exit_code=end['exit_code'], samples=samples, count_preflight=counts,
-            routes=routes, speed_adoption_qualified=False)
+        observed.update(passed=True, complete=True, native_exit_code=end['exit_code'])
     except BaseException as error: observed['error'] = repr(error)
     finally:
         observed['commands'] = owner.commands if owner else []
@@ -335,11 +467,16 @@ def run(index):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) >= 2 and sys.argv[1].startswith('generation-'):
+        ROOT, KEY = B / 'dflash2-cache-loan-generation-v1', 'dflash2_cache_loan_generation_v1'
+        sys.argv[1] = sys.argv[1].removeprefix('generation-')
+        if sys.argv[1] == 'prepare': sys.argv[1] = 'prepare-generation'
     if len(sys.argv) == 3 and sys.argv[1] == 'route-config': route_config(sys.argv[2])
     else:
         with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); small.loan.guards.no_model_owners([])
             if sys.argv[1:] == ['prepare']: prepare()
+            elif sys.argv[1:] == ['prepare-generation']: prepare_generation()
             elif sys.argv[1:] == ['host']: host()
             elif len(sys.argv) == 3 and sys.argv[1] == 'run': run(int(sys.argv[2]))
             else: raise RuntimeError('use prepare|host|run INDEX|route-config FILE')
