@@ -206103,14 +206103,15 @@
     "passed": false,
     "ownership_closed": true,
     "actual_inputs": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v2/actual-inputs.json",
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/actual-inputs.json",
       "sha256": "c2ae0f9af7dc24fe99ecd96a937fadcd3d8ce4c9069f3edbabced202bac20a33",
       "compiler_files": 1461,
       "owned_generated_files": 1,
       "external_link_files": 29,
       "owned_link_products": 40,
       "uncovered": 0,
-      "scope": "Post-build census against original prebuild pins;owned generated outputs are derived from the pinned recipe,not new external inputs. No compilation/GPU work."
+      "scope": "Post-build census against original prebuild pins;owned generated outputs are derived from the pinned recipe,not new external inputs. No compilation/GPU work.",
+      "shared_byte_identical_retained_copy": true
     },
     "case_results": [
       {
@@ -206184,7 +206185,7 @@
         "cleanup": []
       }
     ],
-    "next": "New prospective V3 counts omitted--no-token-graph as default-no-graph admission;V2 stays failed. Its actual1461compiler/1generated/29external-link census remains useful. Retire raw V2 after V3 records equivalent census and closed owners."
+    "next": "Original V2 remains failed;normal raw/owner output is retired after V3 records byte-identical actual-input census. Shared actual-inputs.json has the imminent same-build native gate consumer."
   },
   "dflash2_cache_loan_cli_v3": {
     "stage": "passed",
@@ -206473,6 +206474,23 @@
       "metadata_budget": "dflash2_cache_loan_cli_v1",
       "incorrect_SYCL_default_case": "dflash2_cache_loan_cli_v2"
     },
-    "retention": "Closed raw traces/owner records are unnecessary after compact evidence. Keep actual-inputs.json only for immediate new-engine native/device/model qualification;engine90f plus5fixtures and f633/552b/e1b retain their named comparison holds. Select feature generation at first model decision."
+    "retention": "Closed raw traces/owner records are unnecessary after compact evidence. Keep actual-inputs.json only for immediate new-engine native/device/model qualification;engine90f plus5fixtures and f633/552b/e1b retain their named comparison holds. Select feature generation at first model decision.",
+    "artifact_retirement": {
+      "state": "deleted_verified",
+      "original_result_commit": "458fb473fb82feeb63ba7536eb833eb1bd7db7ca",
+      "roots": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v2",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3"
+      ],
+      "preserved": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cache-loan-cli-v3/actual-inputs.json"
+      ],
+      "files": 39,
+      "bytes": 9051954,
+      "manifest_sha256": "ba887511f5a091f772ae07a30403bd395f46d4b36522a49392154d518662a9b2",
+      "source_recovery": "Exact8controller inputs recovered for each original source e915/5c7 from reachable pushed feature/sycl;native executable/5fixtures unchanged and retained. No binary retired.",
+      "original_outcomes_unchanged": true,
+      "manifest_retired_after_verification": true
+    }
   }
 }
