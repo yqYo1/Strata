@@ -3223,18 +3223,13 @@ tests and is now merged into feature/sycl at `4c24b6931`;its completed child
 is retired and original commits remain reachable from the pushed primary.
 Fresh bounded model/frontend checks now pass for both fixed-width routes;
 their sustained comparison and broader model qualification remain pending.
-Required tracking/recovery/alias/API/CLI imports and
-hardware-tuned unmodified-upstream measurements remain incomplete. PR 180 is
-blocked by a squash-only ruleset; preserve measured source commit identities
-and do not claim default-branch integration.
-The Q6 policy source and closed CPU host result are published on
-`feature/sycl` through `83d859db04248701aacd3211a6ea4bdfd5d63c2b`.
-The default remains `05069aeed`; the current branch-rule query still permits
-only squash PR merges. Default integration remains unfinished because the
-measured original commit identities must be preserved.
-Rechecked2026-11-07 22:17UTC:the actual main-branch pull-request rule still
-restricts allowed methods to `squash`;PR180 remains open. Preserve measured
-source identities rather than bypassing this rule.
+Required tracking/recovery/alias/API/CLI imports and hardware-tuned unmodified
+upstream measurements remain incomplete. Source and evidence are published on
+`feature/sycl`. PR 180 is mergeable but blocked: main ruleset `24638744` permits
+only squash pull-request merges, although the repository-wide settings allow
+merge commits too. Preserve the original measured commit identities without
+squashing, rebasing or bypassing that rule. The last verified default remains
+`05069aeedea43f778b97dce30c729739cb3bce5c`; default integration is pending.
 
 ## Evidence pointers
 

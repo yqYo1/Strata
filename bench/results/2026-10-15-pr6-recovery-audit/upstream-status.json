@@ -3007,16 +3007,25 @@
       }
     },
     "default_integration": {
-      "checked_utc": "2026-11-08T02:20:47+00:00",
+      "checked_utc": "2026-11-08T04:27:26.396331+00:00",
       "pr": 180,
-      "state": "OPEN",
+      "state": "OPEN_BLOCKED_BY_MAIN_RULE",
       "allowed_merge_methods": [
         "squash"
       ],
-      "decision": "Pending:preserve original measured commit identities. Do not squash,rebase,force or bypass rule. Continue primary branch implementation/validation.",
+      "decision": "Main pull_request rule permits squash only despite repository-wide merge/rebase settings. Preserve original measured commit identities;do not squash,rebase,force,bypass or change rules. Keep completed source/evidence on feature/sycl and update PR180 to final scope;continue authorized tuning and imports.",
       "clean_default_mirror": "05069aeedea43f778b97dce30c729739cb3bce5c",
       "mirror_pull": "Already up to date after actual clean-main --ff-only pull at current boundary;no local/default changes.",
-      "meaning": "Default-integration check only,not a new Niko upstream check or native/model qualification."
+      "meaning": "Default-integration check only,not a new Niko upstream check or native/model qualification.",
+      "repository_merge_methods": [
+        "merge",
+        "squash",
+        "rebase"
+      ],
+      "main_ruleset": 24638744,
+      "mergeability": "MERGEABLE",
+      "merge_state": "BLOCKED",
+      "last_examined_head": "c210da44a761e5f6d191b0ff2d83f38fe428e954"
     },
     "dflash2_ring_check": {
       "stage": "full_passed",
