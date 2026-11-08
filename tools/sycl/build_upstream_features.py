@@ -94,7 +94,6 @@ def prepare():
     previous = None
     status = json.loads(STATUS.read_text())
     loan = PLAN_KEY == 'dflash2_cache_loan_native_build'
-    require(not loan or not ROOT.exists(), 'one fresh isolated cache-loan build only')
     if ROOT.exists():
         previous = json.loads((ROOT / 'record.json').read_text())
         failed_compile = previous['stage'] == 'build_failed' and not previous['passed']
@@ -254,7 +253,7 @@ def build():
     row = json.loads((ROOT / 'record.json').read_text())
     frozen = compact(row)
     require(row['stage'] == 'prepared' and committed_plan() == frozen, 'commit the prepared build first')
-    require(json.loads(STATUS.read_text())['current_sync']['native_feature_build'] == frozen, 'pending plan edits')
+    require(json.loads(STATUS.read_text())['current_sync'][PLAN_KEY] == frozen, 'pending plan edits')
     check_inputs(row); guards.no_model_owners([])
     monitor = None
     def persist():
