@@ -3220,13 +3220,20 @@ qualify sustained TG. Descriptive expert-bank counters report the same
 requestedH2Dbytes in both arms;they do not measure wire traffic or saturation.
 The matched sustained-output cohort is underway at controller`31a16936a` and
 original plan`f0d81312a`:six fresh processes in ABBAAB order,three per placement,
-with both thinking workloads in each. The first owned256process passes normal
-native/benchmark0,reaped/empty ownership and no fresh fault (evidence`403b7e3af`).
-Code reads33213and generates3905tokens:PP577.7tok/s,TTFT57.676s,TG12.2tok/s,
-drafts2805/3300(85.0%). Prose reads33283and generates9870tokens:PP663.6tok/s,
-TTFT50.342s,TG7.0tok/s,drafts4871/14994(32.486%). Both finish with an answer
-above5000characters. These are the first control samples,not a placement gain;
-strong/weak classification still requires all three processes per placement.
+with both thinking workloads in each. The first matched pair passes normal
+native/benchmark0,reaped/empty ownership and no fresh fault (owned evidence
+`403b7e3af`,borrowed`3128f4423`). Request bodies match,with33213code and33283prose
+read tokens,reuse0. The paired values below are owned256/borrowed1536.
+
+| Workload | Generated tokens | PP(tok/s) | ClientTTFT(s) | TG(tok/s) | Drafts accepted/offered |
+| --- | --- | --- | --- | --- | --- |
+| Code | 3905/3465 | 577.7/571.5 | 57.676/58.295 | 12.2/11.8 | 2805/3300;2426/3120 |
+| Prose | 9870/8430 | 663.6/678.4 | 50.342/49.239 | 7.0/7.3 | 4871/14994;4119/12933 |
+
+Both processes finish both answers above5000characters. Each borrowed long
+prompt loans/refills1092slots. The speed direction differs by workload;one pair
+does not decide placement. Strong/weak classification still requires all three
+processes per placement.
 Next complete the frozen matched repetitions,then select the feature generation
 and retire the extra after original-source recovery. Validation/stage observers
 remain charged;clean speed and task quality are separate gates.
