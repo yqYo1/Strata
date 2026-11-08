@@ -3277,9 +3277,14 @@ and closed private cohort metadata are complete. Admission still passes.
 Preserve552b/e1b as independent phase guards. Validation/stage observers remain
 charged;clean speed,agent/task,length scaling,physical262144,tails and RESTORE
 remain pending. The physical limiting resource remains unknown.
-The next collector gate uses`tests/sycl/profile_compat_window.cpp`to cover the
-selected ordinary compatibility graph path;its source is prepared,with build and
-device checks pending after this frozen cohort. See`docs/RESOURCE_PROFILING.md`.
+The production-adapter fixture now builds at`f4f83be4f`(ELF`5046a535…`),with
+711compiler and24external link inputs checked. Direct and active construction
+pass. Paused construction remains failed at`4d1528859`:native computation exits0,
+but the collector omits all eight kernels. The separate active-from-exec mode at
+controller`6aa32694f`passes three CPU controls and its same-ELF device check,
+retaining all eight kernels/five copies with quiet validation,closed ownership
+and no fresh fault. This enables a bounded model profile,not a hardware
+saturation or observer-overhead claim. See`docs/RESOURCE_PROFILING.md`.
 Standard long/agent comparisons and independent prefill/decode selection remain
 pending. About96% of expert lookup entries fall to the CPU in this256-slot
 diagnostic layout; the requested expert

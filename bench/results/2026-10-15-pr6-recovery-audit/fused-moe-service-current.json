@@ -207419,7 +207419,7 @@
     "runtime_files_sha256": "8770527eb21d363d3b9b633d0a2bf3a3364fc3c0d135f71399ed4c82270c3c51"
   },
   "compat_profile_exec_v1": {
-    "stage": "ready",
+    "stage": "closed",
     "adapter_control": {
       "source_commit": "218be8e4e5b4c1166f84a0432f26285dc7b30b39",
       "binary": {
@@ -207555,11 +207555,95 @@
       "exit_code": 0,
       "ownership_closed": true
     },
-    "outcome": null,
+    "outcome": {
+      "passed": true,
+      "complete": true,
+      "host_probe_accepted": true,
+      "clock_domain": "CLOCK_MONOTONIC_RAW",
+      "clock_bounds": {
+        "phases": {
+          "before-runtime": {
+            "raw_ns": 2501224748412292,
+            "monotonic_ns": 2501244605570639,
+            "boottime_ns": 2501244605571060
+          },
+          "runtime-ready": {
+            "raw_ns": 2501224760387589,
+            "monotonic_ns": 2501244617545663,
+            "boottime_ns": 2501244617545954
+          },
+          "captured": {
+            "raw_ns": 2501224800324733,
+            "monotonic_ns": 2501244657482788,
+            "boottime_ns": 2501244657483028
+          },
+          "window-drained": {
+            "raw_ns": 2501224805888276,
+            "monotonic_ns": 2501244663046133,
+            "boottime_ns": 2501244663046284
+          },
+          "before-exit": {
+            "raw_ns": 2501224809405122,
+            "monotonic_ns": 2501244666563026,
+            "boottime_ns": 2501244666563166
+          }
+        },
+        "capture_begin": 2501224748412292,
+        "begin": 2501224800324733,
+        "end": 2501224805888276,
+        "capture_end": 2501224912331159
+      },
+      "native_exit_code": 0,
+      "native_execution_complete": true,
+      "numerical_and_guard_check_passed": true,
+      "validation": {
+        "pid": 248120,
+        "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "threads_before": 1,
+        "preinit": 37,
+        "config_enabled": true,
+        "first_init": true,
+        "dispatch_result": 46,
+        "output_untouched": true,
+        "retained_reference_until_exit": true,
+        "runtime_teardown_qualified": false
+      },
+      "trace": {
+        "inner_kernels": 6,
+        "inner_copies": 3,
+        "post_kernels": 2,
+        "post_copies": 1,
+        "whole_kernels": 8,
+        "whole_copies": 5,
+        "unique_native_instance_joins": true,
+        "gpu_interval_union_us": 38.955078125,
+        "window_wall_us": 5563.54296875,
+        "collection_active_through_native_exit": true,
+        "lossless_pending_boundary_qualified": false,
+        "model_observer_overhead_qualified": false,
+        "physical_saturation_qualified": false,
+        "sha256": "9a193d213897a1edc3bc9a23e9ceb1fc22c23db95b787154c5dd665aaa9fa64e",
+        "bytes": 58619,
+        "collection_active_from_exec": true
+      },
+      "mapped_ELF_files": 35,
+      "mapped_ELF_sha256": "591aa8d315a7439f4dcc7f48d0cc8f94724b57a41b09b481430283edac480ebd",
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      }
+    },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "budget": {
       "wall": 240,
       "cpu": 240,

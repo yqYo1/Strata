@@ -133,8 +133,13 @@ four readbacks and no kernels. All three owners close with quiet validation
 and no fresh GPU fault. Do not use this failed mode for model attribution.
 [profile_compat_exec.py](../tools/sycl/profile_compat_exec.py) prepares a separate
 active-from-exec control using the existing aggregate launcher with explicit
-host/call logging. It reuses this same fixture ELF; its three CPU controls and
-device execution must pass before using that precise mode for a model profile.
+host/call logging. At controller source `6aa32694f`, all three CPU controls pass
+with zero skips. Its same-ELF device process also passes: eight kernels/five
+copies, unique native joins, contained clocks, normal0, quiet validation,
+closed ownership and no fresh fault. `compat_profile_exec_v1` records this
+separate pass; the three-case V1 and paused construction remain failed. This
+mode is eligible for a new bounded model profile, whose coverage and observer
+cost must be evaluated independently.
 An unprofiled completion must expose no graph timestamps. These checks do not
 measure kernel arithmetic utilization, physical traffic, a lossless pause with
 pending work, model observer overhead or inference performance. Requalify the
