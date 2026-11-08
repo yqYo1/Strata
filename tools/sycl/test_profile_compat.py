@@ -1,4 +1,4 @@
-"""Host controls for production-adapter collector completeness; no GPU work."""
+"""Host controls for production-adapter collection; use the shared host runner."""
 import copy
 from pathlib import Path
 import sys

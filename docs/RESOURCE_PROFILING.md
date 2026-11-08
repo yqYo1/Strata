@@ -98,7 +98,7 @@ and execution are still pending. A current collector-admission refusal must be
 preserved and resolved prospectively,without refreshing its recorded hashes.
 [profile_compat.py](../tools/sycl/profile_compat.py) controls the three cases in
 separate processes,with a result commit between them. Its prepared host controls
-in`tests/core/test_profile_compat.py`reject missing post-window copies,wrong
+in`tools/sycl/test_profile_compat.py`reject missing post-window copies,wrong
 kernel inventories,unobserved replays and ambiguous/boundary-crossing instances.
 Run those host checks at a serialized boundary before the device checks. Neither
 controller nor those controls have been executed yet.
