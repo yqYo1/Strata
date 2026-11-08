@@ -206902,12 +206902,13 @@
     "artifact_retirement": {
       "reference_key": "compat_profile_window_v1.artifact_retirement",
       "manifest_sha256": "213b68a28832a52de3dbb9765022fbff984302828b850112da55e8e5959aa8c5",
-      "state": "prepared_not_deleted",
+      "state": "complete",
       "retained_paths": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/actual-inputs.json",
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/build/sycl_profile_compat_window",
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-fixture-v1/record.json"
-      ]
+      ],
+      "post_retirement_admission_passed": true
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -207428,7 +207429,7 @@
       "sha256": "213b68a28832a52de3dbb9765022fbff984302828b850112da55e8e5959aa8c5",
       "files": 89,
       "bytes": 2672516,
-      "state": "prepared_not_deleted",
+      "state": "complete",
       "groups": {
         "adapter_windows": {
           "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-window-v1",
@@ -207495,7 +207496,27 @@
         }
       },
       "fixture_recipe_recovered_from_Git": true,
-      "next_action": "Commit this manifest receipt;under the shared owner lock recheck every selected hash,delete only these closed outputs,then verify current exec-mode/fixture admission and retained guards."
+      "next_action": "Reuse only the qualified active-from-exec mode for a new bounded model profile;retain fixture ELF/census/current admission record and independent phase guards. Review legacy56ELF provenance holds separately.",
+      "physical_deletion_verified": true,
+      "post_retirement_admission_passed": true,
+      "remaining": {
+        "adapter_windows": {
+          "files": 1,
+          "bytes": 8974
+        },
+        "exec_control": {
+          "files": 1,
+          "bytes": 57955
+        },
+        "fixture_build": {
+          "files": 3,
+          "bytes": 652415
+        },
+        "closed_audit": {
+          "files": 0,
+          "bytes": 0
+        }
+      }
     }
   },
   "compat_profile_exec_v1": {
@@ -207741,10 +207762,11 @@
     "artifact_retirement": {
       "reference_key": "compat_profile_window_v1.artifact_retirement",
       "manifest_sha256": "213b68a28832a52de3dbb9765022fbff984302828b850112da55e8e5959aa8c5",
-      "state": "prepared_not_deleted",
+      "state": "complete",
       "retained_paths": [
         "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/compat-profile-exec-v1/record.json"
-      ]
+      ],
+      "post_retirement_admission_passed": true
     },
     "source": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
