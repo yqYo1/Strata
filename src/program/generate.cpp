@@ -1911,6 +1911,16 @@ int main(int argc, char** argv) {
     if (o.draft != "mtp" && !use_df2) { std::fprintf(stderr, "--draft takes mtp or dflash2\n"); return 2; }
     if (use_df2) {
 #ifdef STRATA_ENABLE_SYCL
+        const auto enabled=[](const char* name) {
+            const char* value=std::getenv(name);
+            return value && std::strcmp(value,"1")==0;
+        };
+        // Neither lease is qualified for an absent MTP owner. Reject before
+        // pack/GPU initialization, not after the prompt retires other readers.
+        if(enabled("STRATA_PREFILL_RELEASE_MTP_EXPERTS") || enabled("STRATA_SYCL_CACHE_SCRATCH_LEASE")) {
+            std::fprintf(stderr,"DFlash2 requires STRATA_PREFILL_RELEASE_MTP_EXPERTS=0 and STRATA_SYCL_CACHE_SCRATCH_LEASE=0\n");
+            return 2;
+        }
         if (o.draft_model.empty() || o.draft_fallback != "none" || o.spec < 2 || o.spec > 8 ||
             o.draft_cap < 0 || o.draft_cap == 1 || o.draft_cap > 8 || o.mtp_max_t == 1 ||
             !std::isfinite(o.draft_conf) || o.draft_conf < 0 || o.draft_conf > 1 ||
@@ -2694,7 +2704,7 @@ int main(int argc, char** argv) {
     }
     const bool cache_scratch_lease_enabled = cache_lease_switch && !std::strcmp(cache_lease_switch,"1");
     if (cache_scratch_lease_enabled && (!o.serve || !native_dense_bank_enabled || !native_pack ||
-        !o.no_token_graph || o.no_prefill_borrow || o.spec != 4 || o.vision || o.gpu_stages ||
+        !o.no_token_graph || o.no_prefill_borrow || o.spec != 4 || o.mtp.empty() || use_df2 || o.vision || o.gpu_stages ||
         multi_gpu || !o.layer_split.empty() || o.peer_device >= 0 ||
         std::any_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto n){return n>0;}))) {
         std::fprintf(stderr,"cache scratch lease requires serve, native dense bank, profiled borrowing, MTP4 and one GPU without token graphs/vision/remote experts\n"); return 2;

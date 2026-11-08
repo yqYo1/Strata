@@ -123,7 +123,15 @@ def prepare():
             not model.get('speed_eligible', True) and not model.get('model_adoption_qualified', True) and
             status['current_sync']['dflash2_native_port']['state'] ==
                 'bounded_target_model_passed_long_phase_and_speed_unqualified')
-        replace_candidate = superseded_component or failed_model or bounded_model
+        head_plan = status['current_sync'].get('dflash2_prefill_heads', {})
+        reviewed_unexecuted_heads = (previous['stage'] == 'built' and previous['passed'] and
+            head_plan.get('stage') == 'compiled_review_corrections_pending' and
+            head_plan.get('compiled_candidate_record') == compact(previous)['record'] and
+            head_plan.get('native_model_launched') is False and 'dflash2_prefill_heads_check' not in public and
+            head_plan.get('source_review', {}).get('sha256') ==
+                '89971fad6d52c32f5ff15c2fc9cdce59a0548a4eef1fb61ac7e29037f726789b')
+        require(head_plan == public.get('dflash2_prefill_heads', {}), 'commit head candidate disposition before reuse')
+        replace_candidate = superseded_component or failed_model or bounded_model or reviewed_unexecuted_heads
         require((failed_compile or replace_candidate) and previous['ownership_closed'] and
                 all(ownership.closed(c) for c in previous['commands']) and
                 committed_plan() == compact(previous), 'commit and close failed compilation before a new source attempt')

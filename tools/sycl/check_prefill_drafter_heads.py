@@ -105,6 +105,8 @@ def verify(row, full=False):
         host['result']['cases'] == 29 and host['result']['checks'] == 845, 'host ownership gate changed')
     host_row = json.loads(Path(row['host_record']['path']).read_text())
     require(digest(row['host_record']['path']) == row['host_record']['sha256'] and
+        host_row['passed'] and host_row['ownership_closed'] and len(host_row['commands_executed']) == 2 and
+        all(ownership.closed(c) and c['exit_code'] == 0 for c in host_row['commands_executed']) and
         all(digest(P / n) == host_row['sources'][n] for n in
             ('include/strata/core/prefill_head_scope.hpp', 'tests/sycl/prefill_head_scope.cpp')), 'tested host policy native inputs changed')
     review = model.validation.committed(model.validation.INDEX, (REVIEW_KEY,))
@@ -150,15 +152,20 @@ def prepare():
         environment=environment, environment_sha256=model.fingerprint(environment),
         order=[dict(label='df2_head0', draft='dflash2', heads=0), dict(label='df2_head1', draft='dflash2', heads=1),
                dict(label='mtp_head1', draft='mtp', heads=1)],
+        rejection_order=[dict(label='reject_width1', args=['--mtp-max-t', '1'], environment={}, expected='--mtp-max-t 0 or >=2'),
+            dict(label='reject_mtp_experts', args=[], environment={'STRATA_PREFILL_RELEASE_MTP_EXPERTS': '1'},
+                expected='DFlash2 requires STRATA_PREFILL_RELEASE_MTP_EXPERTS=0 and STRATA_SYCL_CACHE_SCRATCH_LEASE=0'),
+            dict(label='reject_cache_scratch', args=[], environment={'STRATA_SYCL_CACHE_SCRATCH_LEASE': '1'},
+                expected='DFlash2 requires STRATA_PREFILL_RELEASE_MTP_EXPERTS=0 and STRATA_SYCL_CACHE_SCRATCH_LEASE=0')],
         request_order=['long', 'short', 'long'],
         budgets=dict(wall=900, cpu=10800, text_cap=64 << 20, file_cap=64 << 20, total_cap=256 << 20, rss_cap=104 << 30),
         criteria='One source/binary,three owned processes in declared order,long/short/long32output requests in each.'
             'Thinking enabled,short-read128/chunk256:long layer-major twice and short windows once.'
-            'Each request starts RESUME0,completes extent and offers drafts;no output equality requirement.'
+            'Each request starts RESUME0,completes extent,offers drafts and accepts at least one;no output equality requirement.'
             'Release1 emits two target detaches and expected optional draft reader;DF2 never detaches MTP weights.'
             'MTP release1 retains original duplicate-head ordering.Verifier/dense/canonical restored before decode;'
             'all children exit0/reaped/session empty,pre-main proof,actual INFO and READY maps,no fresh fault.'
-            'Separate --mtp-max-t1 admission child must exit2 with no GPU startup.'
+            'Three admission children(width1,absent-MTP expert release,DFlash2 cache-scratch)must exit2 before GPU startup.'
             'No speed/task/full262144/RESTORE/standalone/default or ordinary provider teardown qualification.',
         speed_eligible=False, model_adoption_qualified=False,
         retention='Keep compact request hashes,configuration,per-request counters,head/free-memory observations and closures.'
@@ -184,16 +191,20 @@ def run():
         return [s for s in text.splitlines() if re.search(r'(?i)(gpu.*(?:hang|fault|reset|wedg)|xe.*(?:error|fault|reset|timeout))', s)]
     try:
         monitor = ownership.Owner(ROOT / 'owned', persist)
-        cli = row['argv'][:]; cli += ['--mtp-max-t', '1']
-        env = dict(row['environment'], UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
-            UR_LOG_TRACING='level:info;flush:info;output:stderr');env.pop('LD_PRELOAD', None)
-        entry, out, err = monitor.run('reject_width1', cli, env, P,
-            wall=30, cpu=60, text_cap=1 << 20, file_cap=1 << 20, total_cap=4 << 20, rss_cap=2 << 30)
-        text = err.read_text(errors='replace')
-        require(ownership.closed(entry) and entry['exit_code'] == 2 and '--mtp-max-t 0 or >=2' in text and
-            'strata generate:' not in text and not out.read_bytes() and 'UR_PROBE' not in text and
-            not re.search(r'--->\s*ur[A-Z]|<---\s*ur[A-Z]', text), 'width1 pre-GPU admission failed')
-        row['width1_refused_before_model_startup'] = True
+        row['admission_results'] = []
+        for case in row['rejection_order']:
+            cli = row['argv'] + case['args']
+            env = dict(row['environment'], UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+                UR_LOG_TRACING='level:info;flush:info;output:stderr', **case['environment']);env.pop('LD_PRELOAD', None)
+            entry, out, err = monitor.run(case['label'], cli, env, P,
+                wall=30, cpu=60, text_cap=1 << 20, file_cap=1 << 20, total_cap=4 << 20, rss_cap=2 << 30)
+            text = err.read_text(errors='replace')
+            require(ownership.closed(entry) and entry['exit_code'] == 2 and case['expected'] in text and
+                'strata generate:' not in text and not out.read_bytes() and 'UR_PROBE' not in text and
+                not re.search(r'--->\s*ur[A-Z]|<---\s*ur[A-Z]', text), 'pre-GPU admission failed: ' + case['label'])
+            row['admission_results'].append(dict(label=case['label'], exit_code=2, ownership_closed=True,
+                expected_error_seen=True, observed_UR_calls=0, argv_sha256=model.fingerprint(cli),
+                environment_sha256=model.fingerprint(env)))
         for case in row['order']:
             require(not fresh_faults(), 'fault before next child'); guards.no_model_owners([])
             label = case['label']; env = dict(row['environment'], TMPDIR=str(ROOT / label / 'tmp'),
@@ -230,6 +241,7 @@ def run():
                     observed['requests'].append(dict(kind=kind, prompt_tokens=request['prompt_tokens'],
                         generated=len(parser.tokens), accepted=int(parser.done[6]), offered=int(parser.done[7]),
                         finish=parser.done[5], output_ids_sha256=model.fingerprint(parser.tokens), complete=True))
+                    require(int(parser.done[6]) > 0, 'accepted-token handoff not exercised')
                     print(label + ' completed ' + kind, flush=True)
                 io.send(b'QUIT\n'); io.exit(30)
             entry, out, err = monitor.run(label, argv, env, P, interaction=interact, **row['budgets'])
