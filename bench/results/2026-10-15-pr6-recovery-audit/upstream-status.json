@@ -5086,10 +5086,90 @@
       "next": "V2 repeats the declared53case cohort with the same native/source/runtime;no criteria weakening or native rebuild."
     },
     "dflash2_cache_loan_state_v2_check": {
-      "stage": "prepared",
-      "passed": false,
+      "stage": "passed",
+      "passed": true,
       "ownership_closed": true,
-      "results": [],
+      "results": [
+        {
+          "label": "pack",
+          "passed": true,
+          "cases": 19,
+          "GPU": false,
+          "ownership_closed": true,
+          "native_pre_main_validation": true,
+          "exit_code": 0,
+          "stdout_sha256": "0462eb69035ddd10d358b72b7614b1807c46ff4622627a987c2feaf80547e4a1",
+          "fresh_faults": []
+        },
+        {
+          "label": "submission",
+          "passed": true,
+          "cases": 10,
+          "GPU": true,
+          "runtime_maps": {
+            "files": 34,
+            "sha256": "d08c0f9c5ab64d78673fa56255c99d10b3dbad6caee547c309cb87e35dbfab53",
+            "unknown": 0,
+            "missing": 0
+          },
+          "ownership_closed": true,
+          "native_pre_main_validation": true,
+          "exit_code": 0,
+          "stdout_sha256": "cbae4aacb0b8293b2c791b538c67376e138696da1b9bc381c83a0c9aa1a69409",
+          "fresh_faults": []
+        },
+        {
+          "label": "ring_small",
+          "passed": true,
+          "cases": 7,
+          "GPU": true,
+          "runtime_maps": {
+            "files": 38,
+            "sha256": "6f7b59f4f356d15325b4084c872738b2703f1e0dc3b115bdb32084643d6897a8",
+            "unknown": 0,
+            "missing": 0
+          },
+          "ownership_closed": true,
+          "native_pre_main_validation": true,
+          "exit_code": 0,
+          "stdout_sha256": "939eadc242e9a89383b978a8fc7b6e8b5f3533205dda3dae079f7e516bccbf1f",
+          "fresh_faults": []
+        },
+        {
+          "label": "ring_full",
+          "passed": true,
+          "cases": 5,
+          "GPU": true,
+          "runtime_maps": {
+            "files": 38,
+            "sha256": "6f7b59f4f356d15325b4084c872738b2703f1e0dc3b115bdb32084643d6897a8",
+            "unknown": 0,
+            "missing": 0
+          },
+          "ownership_closed": true,
+          "native_pre_main_validation": true,
+          "exit_code": 0,
+          "stdout_sha256": "8ab749d499ee2df0dd1accd2df141fc7837eab4a8a6fcfa891302884e196577b",
+          "fresh_faults": []
+        },
+        {
+          "label": "mask",
+          "passed": true,
+          "cases": 12,
+          "GPU": true,
+          "runtime_maps": {
+            "files": 34,
+            "sha256": "ce2dbdb44e02eb11f28320a1bb8d9db7e5d1ca7668a767117b6654c7ef6bc7e2",
+            "unknown": 0,
+            "missing": 0
+          },
+          "ownership_closed": true,
+          "native_pre_main_validation": true,
+          "exit_code": 0,
+          "stdout_sha256": "7c945be08b8ee2e50c1f05fff1b7d34ef0003c9956b64c7508ff6e4cdbc7f5da",
+          "fresh_faults": []
+        }
+      ],
       "previous_failure_key": "current_sync.dflash2_cache_loan_state_check",
       "prior_device_sha256": "64ea47a6b5db293934e376e93922ba0f36ca6b99c72a7ae8bfdbc261bbb93317",
       "native_validation_probe": {
@@ -5284,6 +5364,7 @@
       ],
       "criteria": "One immutable process per declared step,in order. All19stock-index CPU admissions,10submission cases,7small-ring then5wrap/rewind/parked-restore cases and12mask controls must pass with normal0/reap/empty session.Require exact same-build output/source/runtime pins,same-PID before-main parameter-validation proof,actual executable maps at supervised runtime gates,quiet validation beyond the one intentional pre-main null call,no fresh GPU fault. Full-ring phase drops API tracing after successful traced small;parameter/stage diagnostics remain.Stop first failure,no retry/reset. Submission selects--submission,which returns before graph capture.Pack uses private sparse522458112byte metadata fixtures with1GiBfile/2GiBapparent-artifact budget;no weights copied.No target generation,cache-loan lifecycle,quality,speed,physical full target262144 or default adoption qualification.",
       "retention": "Retain compact individual case outcomes,source/binary/runtime/pack identities,actual-mapping count/hash and fault/closure.Delete successful full traces/private caches after result commit. Preserve native90f and5fixtures/f633/552b/e1b for imminent model decision.",
+      "fresh_faults": [],
       "controller": {
         "revision": "c6f915a4887bec64a1810cac35cb1140708e31eb",
         "count": 10,
@@ -5298,7 +5379,48 @@
           "sha256": "327957e294935d8f71e9e0ca31fe20a5252456ed3d08894c5823615154d99985"
         }
       },
-      "commands": []
+      "commands": [
+        {
+          "label": "pack",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "submission",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "ring_small",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "ring_full",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null,
+          "errors": [],
+          "cleanup": []
+        },
+        {
+          "label": "mask",
+          "exit_code": 0,
+          "ownership_closed": true,
+          "error": null,
+          "errors": [],
+          "cleanup": []
+        }
+      ]
     }
   }
 }

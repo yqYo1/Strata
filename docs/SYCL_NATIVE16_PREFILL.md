@@ -3190,8 +3190,14 @@ fixture now passes all16cases at controller source `54c8b4f99` and plan
 `d4b373923`,with38actual executable mappings verified,normal exit0,reaped/empty
 ownership and no fresh GPU fault. Pre-main parameter validation and full API
 tracing remain enabled. This does not execute the changed main cache-loan policy
-or qualify all five fixtures. Next commit applicable remaining fixture evidence
-and bounded short-long-short/resumed-prefix borrowed-versus-owned model checks. These do not replace separate clean
+or qualify all five fixtures. The remaining same-build cohort now passes53cases
+at controller`c6f915a48`/plan`8c4afccfa`:19pack,10submission,7small-ring,
+5wrap/rewind/parked-restore and12mask controls,all normal0/reaped/empty and no
+fresh fault. V1remains failed because Main's controller did not consume the
+submission fixture's final two protocol lines;V2corrects that reader. All five
+fixture binaries have now executed. Next commit bounded owned-versus-borrowed
+short/long/short/live-prefix continuation model checks. The one-token third
+request creates a known live prefix;prompt-cache1/every0avoids checkpoint copies. These do not replace separate clean
 repeated speed, agent/task, physical 262144, tail, handoff, or RESTORE gates. Preserve the
 479a/552b validated fallback; the physical limiting resource remains unknown.
 Standard long/agent comparisons and independent prefill/decode selection remain
