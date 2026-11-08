@@ -116,8 +116,10 @@ host plan has not yet run. The selected-native reader recovers its original841
 project inputs from the pushed primary and checks the original1461-compiler/
 29-link census,SDK and same-build ELFs. It no longer needs the integrated child
 checkout or the ended f633 fallback binaries. The fixture build instead retains
-the selected90f binary and both independent phase guards. This is a source
-change;verify that admission before deleting the old checkout/build.
+the selected90f binary and both independent phase guards. Admission now passes
+before and after physical retirement of the old checkout/build and private
+cohort root,including the production-adapter build-basis check. No device
+execution or collector qualification follows from these source/ELF checks.
 
 Qualify direct execution, fully active graph construction/collection, and then
 paused construction as separate cases. Keep the original paused-construction

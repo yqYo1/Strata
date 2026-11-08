@@ -3032,10 +3032,15 @@ retired after source/recipe recovery and actual successor preparation/frontend
 admission without its original paths. Its immutable metadata record remains
 consumed;no old compiled tree or quarantine is retained. This is the two-build
 window for the closed adaptive comparisons. The current DFlash2/v3.1 work
-temporarily retains a third, unadopted native feature candidate, replacing its
-superseded component generation in place after original-input recovery. Keep
-552b for prefill and e1b011 for decode; select retained outputs and retire the
-extra candidate at feature qualification/comparison closure. Other configured
+retains90f for the immediate production-adapter profiling gate,alongside552b
+for prefill and e1b011 for decode. These three named generations remain a
+temporary qualification window,not a larger default quota. The superseded f633
+build,integrated child checkout/branch and closed cohort's private files are
+physically retired after exact source/recipe recovery and consumer migration.
+Both selected-native admission and profiler build-basis checks pass without
+those paths. Review the remaining three after collector qualification and
+matched phase preservation;the56legacy ELF provenance holds remain separate.
+Other configured
 deployment outputs and qualified validation/profiling tools have separate named
 consumers. The standalone widening executable,IR and receipt are retired after
 numerical/IL choice;successful host/device/build output and superseded source
@@ -3053,8 +3058,10 @@ that timestamp. **DeepSeek and35B execution support remain excluded until the
 user explicitly requests them, including future syncs.**
 
 Unsloth v3.1 catalog/pinned metadata and the stock DFlash2 Q4 pack are present.
-The current optional native candidate is compiled at
-`5ecb4435f8ac3bc5067554f368d0fa7424ec193f`(engine SHA`f633543c…`).
+The current optional feature-validation generation is compiled at
+`591c2fbe3116c7e6172566646b5ded4a0526b761`(engine SHA`90f7e158…`).
+Its original measured child commits are merged into the pushed primary;the
+finished branch/worktree and superseded`5ecb4435`/f633 build are retired.
 The original arithmetic/ring and short target-model evidence below belongs to
 `f50df1f3c81272b14d994e4d8fcad19703ad0b7e`(former engine SHA`d0f42948…`).
 The new model plan checks the shared native inputs and five unchanged component
@@ -3181,8 +3188,8 @@ census shows zero expert-copy submissions and 1,192,027 / 1,567,836 CPU unique
 misses with 3.8% / 3.7% printed cache hit rates; these are logical work counters,
 not physical traffic, host service time, or proof of the limiting resource.
 
-The next bounded decode-side candidate is `dflash2_checked_cache_loan_candidate_v1`
-from source commit `969e4891d` on `tune/dflash2-checked-lease`. Its narrow,
+The checked-loan implementation is `dflash2_checked_cache_loan_candidate_v1`
+from source commit `969e4891d`;its measured child is integrated and retired. Its narrow,
 default-off policy uses the existing checked cache-loan lifecycle; provenance
 records the original owned cache lifecycle and reviewed `aa5df5bd` snapshot, with
 no XeStrata source. The host fixture passes 38 cases/854 checks under ASan/UBSan
@@ -3264,8 +3271,9 @@ distinction. Each borrowed long prompt loans/refills1092slots.
 
 Select90f as the retained feature-validation generation,with the loan still
 default-off;this does not adopt its whole inference route. The measured child
-is integrated with its original commits. Next update consumers,recover original
-inputs and retire f633 and the finished child checkout/branch.
+is integrated with its original commits. Consumer migration,original-input
+recovery and physical retirement of f633,the finished child checkout/branch
+and closed private cohort metadata are complete. Admission still passes.
 Preserve552b/e1b as independent phase guards. Validation/stage observers remain
 charged;clean speed,agent/task,length scaling,physical262144,tails and RESTORE
 remain pending. The physical limiting resource remains unknown.
