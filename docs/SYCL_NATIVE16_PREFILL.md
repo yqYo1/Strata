@@ -3233,6 +3233,9 @@ remain charged;clean speed and task quality are separate gates.
 Keep f633 only as the sustained-output fallback until that gate;552b/e1b remain
 independent phase guards. Clean speed,agent/task,physical262144,tails and RESTORE
 remain pending. The physical limiting resource remains unknown.
+The next collector gate uses`tests/sycl/profile_compat_window.cpp`to cover the
+selected ordinary compatibility graph path;its source is prepared,with build and
+device checks pending after this frozen cohort. See`docs/RESOURCE_PROFILING.md`.
 Standard long/agent comparisons and independent prefill/decode selection remain
 pending. About96% of expert lookup entries fall to the CPU in this256-slot
 diagnostic layout; the requested expert

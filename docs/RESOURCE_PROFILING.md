@@ -74,6 +74,30 @@ and follow [artifact retention](ARTIFACT_RETENTION.md). Commit compact evidence
 and all samples used by decisions; retain large captures only for a named current
 question with a finite budget and review point.
 
+## Collection through the production graph adapter
+
+The selected decode configuration sets `STRATA_SYCL_VERIFY_NATIVE_CAPTURE=0`.
+Its ordinary compatibility graph uses `cudaStreamBeginCapture`, unprofiled
+`cudaGraphInstantiate` and `graph_launch_with_completion` from the SYCL backend.
+An SDK-only `command_graph` collection pass does not cover these wrappers.
+[profile_compat_window.cpp](../tests/sycl/profile_compat_window.cpp) exercises
+that adapter, its kernel submission hooks and checked completion/retirement,
+with two named integer kernels and guarded allocations. It requires an external
+owner to acknowledge each gate; its source alone establishes no collector result.
+
+Qualify direct execution, fully active graph construction/collection, and then
+paused construction as separate cases. Keep the original paused-construction
+SDK failure intact. The clean replay window contains six named kernel instances
+and three readbacks. A subsequent replay adds two named instances and one
+readback; the initial upload precedes the window. Verify native flow identities,
+clock bounds, exact instance counts, numerical/guard results, normal exit, owner
+closure and fresh faults. Keep collection active through native exit/flush.
+An unprofiled completion must expose no graph timestamps. These checks do not
+measure kernel arithmetic utilization, physical traffic, a lossless pause with
+pending work, model observer overhead or inference performance. Requalify the
+current collector/provider inputs before execution, preserve the owned launcher's
+`ZES_ENABLE_SYSMAN=0` policy, and serialize this work after the frozen model cohort.
+
 ## Numerical reference for replacement kernels
 
 Use the reached SGLang/vLLM path for the same model as the preferred algorithm
