@@ -23,7 +23,7 @@ import engine_once
 from iq3_model_entry import dispatches
 
 P, B, RESULT, build = entry.P, entry.B, entry.RESULT, entry.build
-ROOT, KEY = B / 'q6-head-generation-v1', 'q6_head_generation_speed_v1'
+ROOT, KEY = B / 'q6-head-generation-v2', 'q6_head_generation_speed_v2'
 ARMS = (('reference', 96), ('candidate', 96), ('candidate', 96),
         ('reference', 96), ('reference', 96), ('candidate', 96))
 require, digest, signature = entry.require, entry.sha, entry.signature
@@ -67,7 +67,8 @@ def basis(revision):
         PYTHONPYCACHEPREFIX=str(ROOT / 'cache/python'), STRATA_MEASUREMENT_ROOT=str(ROOT),
         UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'validation.log'))
     environment.pop('LD_PRELOAD', None); environment.pop('STRATA_UR_PROBE_EXPECTED_LOADER', None)
-    prior = dict(binary=native['binaries']['strata'], native_source_commit=native['project']['revision'],
+    prior = dict(source_commit=model['source_commit'], sources=model['controller']['source_sha256'],
+        binary=native['binaries']['strata'], native_source_commit=native['project']['revision'],
         native_validation_probe=model['probe'], configuration=config, template=reference['template'],
         boot=model['boot'], driver=model['driver'], python_contract=contract, python_selected=manifest['selected'],
         environment=environment, model_assets=model['models'])
