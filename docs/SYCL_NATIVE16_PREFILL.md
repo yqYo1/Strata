@@ -2287,9 +2287,9 @@ values remain in the result. The common actual canonical tables match for
 decode1/4;mode10/BF16long-prefill checks remain independent. Continue the
 committed order with fresh control4/candidate5. The first-pair and higher second-candidate
 points are indexed in the performance CSV with their incomplete-cohort qualification. After
-source recovery and recorded path/hash deletion manifest,138closed candidate1/2
-logs/journals/cache files(26325424bytes)are retired;post-retirement admission
-passes. Both frozen config/plan pairs remain through cohort closure. V1control raw
+source recovery and recorded path/hash deletion manifest,207closed-process1/2/3
+logs/journals/cache files(39487341bytes)are retired;post-retirement admission
+passes. All three frozen config/plan pairs remain through cohort closure. V1control raw
 remains only for the explicit historical-admission reader.
 The closed V1control exposes a reader mismatch before candidate1:the tuned
 `--short-read 0`route uses dedicated prefill and its live Q6capture reports
