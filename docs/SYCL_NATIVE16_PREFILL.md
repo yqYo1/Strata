@@ -1931,9 +1931,17 @@ not retire the head:decode-C4 capture2 remains live,with cumulative completed
 replays14/22/36 and no detachments. No candidate request runs. Ownership is
 closed and no fresh fault occurs. The original failed status and its erroneous
 `model_executed=false` flag remain,with observed execution recorded separately.
-The next prospective diagnostic must exceed8192input tokens while preserving
-the intended context/cache/chunk settings and retirement criteria.
-It inherits no failed model or speed result. Use the
+V4 now closes both arms at the same context/cache/chunk settings with
+10197/82/10197-input,32-output thinking requests. Each native process exits0,
+closes normally and adds no fresh fault;all15model assets retain their hashes.
+Each arm retires/restores exactly521472000target bytes twice. Decode-C4
+capture IDs2/2/6 carry cumulative replay counts10/18/10:28actual replays per
+arm,not38. Only canonical candidate decode C4 records DPAS;prompt/C1 retain
+their original routes. This qualifies bounded placement/ownership,not speed,
+task quality or physical262144/RESTORE. Owned DRM snapshots after the requests
+show about9.91GiB resident-vram0 and1.84/1.94GiB resident-gtt;these per-client
+allocations do not identify the live tensor placement or physical traffic.
+Use the
 existing `~/.local/share/strata-sycl/venv/bin/python3` for these tokenizer/template
 controllers;the system Python lacks `regex`. The packed kernel/exports remain temporarily only to preserve the exact
 qualified shared image through this comparison;review their removal afterward.
@@ -1941,6 +1949,15 @@ No model PP/TG,task,
 physical-context or default adoption follows from the component result.
 A smaller expert cache would be a separate placement comparison rather than a
 repair of the failed packed same-placement cohort.
+The next implementation instead tests the faster owned packed representation
+as the sole GPU head owner. Its fixed geometry needs the same521472000bytes,
+not a second copy. C1 and partial-column consumers must be made format-aware,
+and MTP can project the shared full head then gather its subset logits instead
+of materializing223227900bytes of Q6 subset weights. That would trade the
+subset weights for425196bytes of one-row logits;the proposed arithmetic and
+net222802704-byte saving require fresh fixture/model checks and matched timing.
+The existing0/1canonical choices and dedicated long-prefill path remain the
+reference;no packed-primary or MTP speed/adoption result exists yet.
 Both standalone roots are retired after recovering all 1,285 original source
 files, the exact recipe, 803 compiler and 24 link inputs, and the final ELF.
 The deletion removes 1,366 files / 67,207,656 bytes. Another 146 successful
