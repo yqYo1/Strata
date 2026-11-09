@@ -20,7 +20,7 @@ import measurement_guards as guards
 import measurement_owner as owner
 
 P, B = primary.P, primary.B
-ROOT, KEY = B / 'q6-dense-head-backing-native-v2', 'q6_dense_head_backing_build_v2'
+ROOT, KEY = B / 'q6-dense-head-backing-native-v3', 'q6_dense_head_backing_build_v3'
 REFERENCE_ROOT, REFERENCE_KEY = primary.ROOT, primary.KEY
 COMPONENT = 'q6_dense_c4_component_v2'
 SHAPES = ('6144x2560', '2560x6144', '2560x10240', '2560x12288')

@@ -138,6 +138,10 @@ add_executable(sycl_verify_window_policy_test EXCLUDE_FROM_ALL tests/core/verify
 target_include_directories(sycl_verify_window_policy_test PRIVATE include)
 target_link_libraries(sycl_verify_window_policy_test PRIVATE strata_warnings)
 target_compile_features(sycl_verify_window_policy_test PRIVATE cxx_std_20)
+# Match the globally pinned SYCL range option without relaxing Werror. This
+# fixture contains CPU policy checks and creates no queue or device work.
+target_compile_options(sycl_verify_window_policy_test PRIVATE -fsycl)
+target_link_options(sycl_verify_window_policy_test PRIVATE -fsycl)
 add_executable(sycl_q6_columns_bench EXCLUDE_FROM_ALL bench/sycl/q6_columns.cpp)
 target_link_libraries(sycl_q6_columns_bench PRIVATE strata_kernels)
 target_compile_options(sycl_q6_columns_bench PRIVATE -fno-fast-math -ffp-contract=off)

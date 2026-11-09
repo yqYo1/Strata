@@ -238980,7 +238980,7 @@
     "commands": []
   },
   "q6_dense_head_backing_build_v2": {
-    "stage": "configured",
+    "stage": "failed",
     "native_source_commit": "12ea4b002ba49855117123200a93b0b3a2dfb979",
     "recipe": {
       "configure": [
@@ -240007,6 +240007,16 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-head-backing-native-v2/owned-configure/planned-commands.stdout": "e65f84c2b89e46afe343b8e88cf0f6dc2d7f277100a109b219a7df1e7419ab41",
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-head-backing-native-v2/build/CMakeFiles/rules.ninja": "cff419bbfe1343e954f9d8baba72535e78d7f45b8f0a0fe0f29d263033ace724"
     },
+    "error": "RuntimeError('build command failed: compile; inspect the owned bounded diagnostic')",
+    "failure_diagnostic": {
+      "phase": "compile",
+      "target": "sycl_verify_window_policy_test",
+      "diagnostic": "icpx: error: argument unused during compilation: '-fsycl-id-queries-range=size_t' [-Werror,-Wunused-command-line-argument]",
+      "cause": "The CPU policy target inherited the global SYCL range option but did not receive the matching -fsycl compile/link mode. Native targets already receive that pair through strata_sycl_runtime. Keep Werror;add only matching target-scoped SYCL mode.",
+      "GPU_executed": false,
+      "owner_closed": true,
+      "next": "Fresh V3 configure/build from committed target-scoped flags;no relabel/retry of the failed V2 result."
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "12ea4b002ba49855117123200a93b0b3a2dfb979",
@@ -240045,6 +240055,13 @@
       {
         "label": "planned-commands",
         "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "compile",
+        "exit_code": 1,
         "ownership_closed": true,
         "error": null,
         "errors": []
