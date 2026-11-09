@@ -23,7 +23,7 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = base.P, base.B
-ROOT, KEY = B / 'q6-canonical-component-v1', 'q6_canonical_component_v1'
+ROOT, KEY = B / 'q6-canonical-component-v2', 'q6_canonical_component_v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 PROTOCOL = 'f97893576704e6679c89ea6c4613d912665a0824'
 PROTOCOL_PATH = 'tools/sycl/q6_dpas_component.py'
@@ -125,7 +125,8 @@ def prepare(ctx):
     row = dict(stage='prepared', project=ctx.source.pin(P, ctx.PREFIXES),
         dependencies=copy.deepcopy(native['dependencies']), recipe=recipe,
         toolchain=native['toolchain'], external_inputs=native['external_inputs'],
-        fallbacks=native['fallbacks'], selected_native=identity,
+        fallbacks={name: native['fallbacks'][name] for name in ('prefill', 'decode')} |
+                  dict(selected_feature=identity['engine']), selected_native=identity,
         environment=environment, runtime_manifest=manifest, runtime_pins=runtime,
         native_validation_probe=qualified['probe'], python_sha256=digest(PYTHON),
         protocol_source=PROTOCOL, protocol_sha256=hashlib.sha256(source).hexdigest(),
