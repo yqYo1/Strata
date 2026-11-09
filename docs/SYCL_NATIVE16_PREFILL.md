@@ -2012,6 +2012,12 @@ comparison only. Preserve the earlier independent6.55283x columns comparison
 as separate evidence;the next same-engine0/2 model trial must exercise the
 actual selected decode path and MTP subset,then measure phase preservation and
 long/agent/strong-and-weak thinking workloads. Neither ratio establishes TG.
+All30timing samples and the named21transfer-wrapper samples remain in Git.
+The ended device/timing private roots,normal traces and caches are retired:
+53files/10392061bytes after recovering both original controller manifests.
+Native admission still passes with the current engine/four fixtures,census and
+configured recipe retained. The resolved V2/V3 model-observer detail is now
+archived at its original Git commits;its failed flags remain explicit.
 The0b engine/fixtures and closed V2/V3/V4 model diagnostic roots are now
 retired:354files/183373323bytes. Exact1119project and1145dependency source
 inputs are recovered from their original commits;the original recipe and
