@@ -224878,6 +224878,20 @@
     "source_inputs": {
       "files": 631,
       "aggregate_sha256": "27f6a827ac2f81f816972f8180c0385bf75c65bb430ef64a47bfbdedd3c15873"
+    },
+    "environment_reproduction": {
+      "source_commit": "7e0129eb4645e6c84e36c80b73ceabb17ce94469",
+      "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout -k 5s 45s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -B tools/sycl/test_q6_head_generation_speed.py",
+      "tests": 2,
+      "failures": 1,
+      "exit_code": 1,
+      "native_launched": false,
+      "actual_added_environment": {
+        "STRATA_GDN_TC": "1",
+        "STRATA_GDN_CONVL2": "2"
+      },
+      "cause": "Legacy benchmark config omits backend. Current real server.child_env treats absent backend as CUDA and adds GDN_STACK_CUDA. Explicit backend=sycl must preserve the pinned environment.",
+      "next": "Prospective v4 with explicit SYCL backend,unchanged native engine and qualified safety. Preserve this failed v3 attempt;no in-place retry or native rebuild."
     }
   }
 }

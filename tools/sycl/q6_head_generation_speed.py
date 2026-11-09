@@ -23,7 +23,7 @@ import engine_once
 from iq3_model_entry import dispatches
 
 P, B, RESULT, build = entry.P, entry.B, entry.RESULT, entry.build
-ROOT, KEY = B / 'q6-head-generation-v3', 'q6_head_generation_speed_v3'
+ROOT, KEY = B / 'q6-head-generation-v4', 'q6_head_generation_speed_v4'
 ARMS = (('reference', 96), ('candidate', 96), ('candidate', 96),
         ('reference', 96), ('reference', 96), ('candidate', 96))
 require, digest, signature = entry.require, entry.sha, entry.signature
@@ -45,7 +45,7 @@ def pins(revision):
 
 def configuration(reference):
     config = copy.deepcopy(reference['configuration'])
-    config.update(exe=str(P / 'tools/sycl/engine_once.py'), family='qwen', env={})
+    config.update(exe=str(P / 'tools/sycl/engine_once.py'), family='qwen', backend='sycl', env={})
     args = config['args']
     args[args.index('--adapt-swaps') + 1] = '96'
     if '--adapt-every' not in args: args += ['--adapt-every', '1']
