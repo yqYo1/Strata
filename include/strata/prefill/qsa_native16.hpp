@@ -14,8 +14,25 @@ struct Q8WritePools {
     uint16_t* v_scale = nullptr;
     const int32_t* page_table = nullptr;
 };
+// Identity-layout full logical extent, without a residency map. For streamed
+// prefill the host view is authoritative and the device view stages attention.
+struct Q8MirrorPools {
+    int8_t* k_q = nullptr;
+    int8_t* v_q = nullptr;
+    uint16_t* k_scale = nullptr;
+    uint16_t* v_scale = nullptr;
+};
 // Startup-only opt-in. A short request does not activate this route.
 bool requested();
+// Independent startup-only opt-in; Mode0 keeps its existing producer/consumers.
+bool streaming_requested();
+// No-submit admission of all three pool extents/domains and their residency
+// table. Call for every streamed layer before the request submits other work.
+void validate_streamed_storage(const Q8WritePools& resident,
+                               const Q8MirrorPools& host, const Q8MirrorPools& stage,
+                               const strata::kernels::QsaShapes& shapes,
+                               const strata::kernels::QsaPromptBf16Bounds& bounds,
+                               void* stream);
 // Startup-only arithmetic selector. Default preserves the qualified typed path.
 // BF16 operands follow the pinned same-model SGLang prefill design; prefix
 // packing is transient and belongs to the dedicated long-prefill lease.
@@ -48,4 +65,19 @@ void append_q8(const uint16_t* k, const uint16_t* v, int64_t tokens,
                const Q8WritePools& pools,
                const strata::kernels::QsaShapes& shapes,
                const strata::kernels::QsaPromptBf16Bounds& bounds, void* stream);
+// Streamed-prefill producer: quantize BF16 once, then publish the same codes
+// and scales to registered Host storage, full-range Device staging, and valid
+// mapped resident slots. The three writable views are disjoint. Missing or
+// invalid resident pages do not suppress either full-range mirror. bounds has
+// the logical page count and the smaller resident page count; stage attention
+// separately uses {logical_pages,logical_pages}. No CPU tensor conversion.
+// Caller retains every owner/map through completion, forbids concurrent CPU
+// access, and guarantees injective valid resident mappings for written cells.
+void append_q8_streamed(const uint16_t* k, const uint16_t* v, int64_t tokens,
+                        int64_t input_ld, int64_t pos0,
+                        const Q8WritePools& resident,
+                        const Q8MirrorPools& host, const Q8MirrorPools& stage,
+                        const strata::kernels::QsaShapes& shapes,
+                        const strata::kernels::QsaPromptBf16Bounds& bounds,
+                        void* stream);
 } // namespace strata::prefill::native16::qsa

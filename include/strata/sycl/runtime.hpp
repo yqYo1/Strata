@@ -52,6 +52,12 @@ private:
 void validate_device_span(const void *pointer, size_t bytes,
                           const sycl::queue &queue);
 
+// Exact extent of a live Strata Host allocation in this queue's Runtime domain.
+// Ordinary/foreign host pointers and device allocations are rejected. Host CPU
+// access must wait for the producing event; validation neither submits nor waits.
+void validate_host_span(const void *pointer, size_t bytes,
+                        const sycl::queue &queue);
+
 // Same exact-span/domain validation as above; returns the already registered
 // Allocation owner's original Runtime, retaining it without selecting a device.
 // Ownership of the buffer and queue is still the caller's asynchronous duty.
@@ -86,6 +92,7 @@ private:
   std::shared_ptr<Runtime> runtime_;
   void *data_ = nullptr;
   size_t bytes_ = 0;
+  MemoryKind kind_ = MemoryKind::Device;
 };
 
 } // namespace strata::sycl_backend
