@@ -1985,6 +1985,19 @@ undefined operands. Both full2443-instruction selected modules compare equal
 after only the declared ID/declaration normalization. Native source remains
 6dd74eab7 and all four ELFs/actual inputs/recipe stay unchanged;the reader
 admission is f518f10c8. No GPU qualification or performance is inherited.
+Fresh device evidence now passes43CPU readers and seven native CPU refusals,
+then five GPU processes:submission10,phase16,and reference0/canonical1/
+sole-packed2 real-GGUF owners. Every head passes four numerical cases,two
+retire/overwrite/restore cycles and12graph replays. Mode2also passes eight
+C2/C3 cases,independent scalar checks,unchanged Q8 inputs/inactive outputs and
+byte-exact packed storage checks. All native children exit0,close normally,
+keep validation quiet and add no fresh fault;full shard hashes agree per arm.
+This qualifies the head fixture,not the new MTP/model route or speed.
+The212.5MiB calculated saving applies to decode/startup:the old materialized
+MTP subset was already retired during long prefill. Computing a full head for
+MTP instead of its106299-row subset adds arithmetic,so its net latency still
+needs matched model evidence. Keep the faster target-head path eligible for
+separate use if MTP's new subset strategy loses;do not reject both together.
 The0b engine/fixtures and closed V2/V3/V4 model diagnostic roots are now
 retired:354files/183373323bytes. Exact1119project and1145dependency source
 inputs are recovered from their original commits;the original recipe and
