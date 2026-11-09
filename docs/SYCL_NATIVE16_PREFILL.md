@@ -2263,6 +2263,23 @@ agent session. Two fresh frontend probes and bounded route-reader controls
 precede execution. Keep all paired TG/PP/TTFT samples and actual MTP classes;
 the nominal32Kcase is supplemental and added generation inputs must meet the
 strict32768fresh-token requirement. This is prospective,not a speed result.
+The closed V1control exposes a reader mismatch before candidate1:the tuned
+`--short-read 0`route uses dedicated prefill and its live Q6capture reports
+contain decode1/4only. `evidence()`incorrectly requires a common Verifier-prompt
+capture after the first process. Do not launch candidate1with that predicate.
+Preserve the original outcome,then commit a corrected prospective observer/admission that
+compares the actually observed canonical windows and retains the independent
+mode10/BF16long-prefill checks. A successful control may be reused only with
+its original source identity and proof that timed native/client inputs are
+unchanged;the current comparison has no qualified speed result yet.
+All18official requests and the native process finish normally,but V1fails
+postprocessing because the reused`generation_engine.require_complete_generation`
+expects workload_version4while the frozen current producer emits5. Native and
+bench exit0,closed ownership,complete journal and no fresh fault are observed;
+later native/source/asset postconditions were skipped by that exception and
+need a separate audit. Keep the V1failure unchanged. Preserve its raw artifacts
+for the current-v5 reader tests and explicit baseline-reuse audit,within the
+original512MiB budget;review that retention after the corrected admission.
 No model/default adoption or physical262144/RESTORE qualification follows here.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
