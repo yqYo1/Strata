@@ -2125,6 +2125,12 @@ so this approximately5.23ms canonical candidate must not replace it. Advance
 only the four winning non-head shapes into a fresh production trial, keeping
 prompt/C1, the smallest shape and packed head on their existing paths. Model,
 prefill-preservation, agent/task and physical262144/RESTORE gates remain open.
+The closed standalone fixture, objects and successful raw logs are retired:
+79files/44806457bytes, after recovering the original native/admission and
+dependency sources and verifying the exact recipe and compiler/link census.
+The compact result keeps every sample and original outcome; its retirement
+entry identifies the external deletion manifest and retained source/census
+receipts. The qualified engine and required same-build fixtures are unchanged.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's
