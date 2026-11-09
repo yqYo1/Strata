@@ -2276,8 +2276,14 @@ All18official requests and the native process finish normally,but V1fails
 postprocessing because the reused`generation_engine.require_complete_generation`
 expects workload_version4while the frozen current producer emits5. Native and
 bench exit0,closed ownership,complete journal and no fresh fault are observed;
-later native/source/asset postconditions were skipped by that exception and
-need a separate audit. Keep the V1failure unchanged. Preserve its raw artifacts
+later native/source/asset postconditions were skipped by that exception. A
+separate read-only audit now passes:original committed source,native five ELFs/
+census/recipe,runtime/generated/profile identities,normal native/bench exit,
+quiet validation,mode10/BF16long routes and all15full model-asset hashes match.
+V1remains failed;this is late postcondition evidence,not new execution or speed
+qualification. Native Luna-max review permits historical-control reanalysis
+only under a new committed plan proving unchanged timed inputs;otherwise use a
+fresh control. Keep the V1failure unchanged. Preserve its raw artifacts
 for the current-v5 reader tests and explicit baseline-reuse audit,within the
 original512MiB budget;review that retention after the corrected admission.
 No model/default adoption or physical262144/RESTORE qualification follows here.

@@ -243441,7 +243441,7 @@
         "journal_complete": true,
         "actual_workload_version": 5,
         "legacy_reader_expected_version": 4,
-        "source_and_native_and_asset_postconditions_not_yet_audited": true,
+        "source_and_native_and_asset_postconditions_not_yet_audited": false,
         "samples": [
           {
             "phase": "warm-up/chat",
@@ -244099,9 +244099,67 @@
         "limits": "Original reader failure and failed status stay unchanged;these are completed client observations,not admitted speed-comparison results.",
         "retained_raw_consumer": {
           "owner": "Main",
-          "question": "Current-v5 metadata/no-Verifier-prompt reader tests and explicit post-closure baseline admission audit",
+          "question": "Current-v5/no-Verifier-prompt reader controls and prospective historical-control admission",
           "byte_budget": 536870912,
-          "next_review": "After corrected observer admission;retire logs/cache when that consumer closes."
+          "next_review": "After corrected reader/admission verification;retire closed logs/cache when that consumer ends."
+        },
+        "late_postconditions": {
+          "checked_utc": "2026-11-09T18:14:34.974304+00:00",
+          "passed": true,
+          "audit_controller_source_commit": "8fa74dfe5213c5ae39545cfe488ccfb87c14148a",
+          "native_admission_sha256": "0262c5c1d368a4f5bb58a4cd7ac01abb7d99ab401f850a3242eb90930f449107",
+          "source_native_five_ELFs_census_recipe_runtime_generated_profile_match": true,
+          "full15_asset_hashes_match": true,
+          "asset_manifest_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+          "benchmark_exit_code": 0,
+          "native_exit_code": 0,
+          "ownership_closed": true,
+          "original_boot_unchanged": true,
+          "original_fresh_faults": [],
+          "actual_route": {
+            "canonical_phase_width_sha256": {
+              "decode/1": "34136fb36571561fa01aa76c0fd618e4641a622e9cadcacfacf28173496893a6",
+              "decode/4": "b3d613c8c99bcfa3996d41f12ab54e17ed38bb9856cb4b818b486694fa232a6e"
+            },
+            "dense_enabled": 0,
+            "generic_small_C4_calls": 21,
+            "head_transitions": 7,
+            "long_request_C4_replay_deltas": {
+              "17": 1128,
+              "18": 3723
+            },
+            "scope": "Static actual captures and per-request replay deltas;logical copy requests,not physical traffic or utilization.",
+            "selected_C4_calls": {
+              "2560x10240": 22,
+              "2560x12288": 5,
+              "2560x6144": 14,
+              "6144x2560": 40
+            }
+          },
+          "validation": {
+            "config_enabled": true,
+            "dispatch_result": 46,
+            "first_init": true,
+            "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "output_untouched": true,
+            "pid": 3490060,
+            "preinit": 37,
+            "retained_reference_until_exit": true,
+            "runtime_teardown_qualified": false,
+            "threads_before": 1
+          },
+          "original_controller_postconditions_complete": false,
+          "V1_outcome_unchanged": "failed",
+          "checks": "Original pins/native/model.context.verify;runtime/generated/profile hashes;owner.closed;generation_engine.native_end;preload and quiet errors;mode10/BF16long routes;audit(engine.stderr,0);model_pins(full=True).",
+          "limits": "Late read-only postconditions,not a rerun,qualified speed,task quality or retroactive V1 success."
+        },
+        "reader_review": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dense-official-reader-review-20261109/review.md",
+          "bytes": 6666,
+          "sha256": "3162a27e4b78d7d9b280452827e1d0d908397a8fa14eb568313cfa8b94d684c3",
+          "reviewer": "native Codex gpt-6-luna max",
+          "decision": "May reanalyse index0 only in a newly committed plan after all skipped postconditions and unchanged native/client/workload/runtime/config/environment equivalence;keep V1 failed. Fresh control if any proof missing.",
+          "consumer": "Prospective current-v5/no-Verifier-prompt comparison admission;review after its result."
         }
       },
       "input_signatures": {
