@@ -21,14 +21,14 @@ import native_request_protocol as protocol
 
 build, guards, owner, validation = device.build, device.guards, device.owner, device.validation
 P, B, RESULT = device.P, device.B, device.RESULT
-ROOT, KEY = B / 'q6-head-model-entry-v1', 'q6_head_model_entry_v1'
+ROOT, KEY = B / 'q6-head-model-entry-v2', 'q6_head_model_entry_v2'
 REFERENCE = B / 'decode-iq3-audit-speed-v2/record.json'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json'
 require, sha, write, signature = device.require, device.sha, device.write, build.signature
 
 
 def routes(text, arm):
-    base, packed = {}, {}
+    base, dpas = {}, {}
     for line in text.splitlines():
         if not line.startswith(('strata Q6_ROUTE ', 'strata Q6_DPAS_HEAD ')): continue
         fields = dict(p.split('=', 1) for p in line.split()[2:])
@@ -39,11 +39,12 @@ def routes(text, arm):
                 fields['replay_started'] == fields['replay_completed'], 'invalid production graph identity/count')
             base[key] = fields
         else:
-            require(key not in packed and fields['canonical_table_excludes_packed'] == '1' and
+            require(key not in dpas and fields['canonical_table_excludes_dpas'] == '1' and
+                fields['layout'] == 'canonical' and fields['extra_weight_bytes'] == '0' and
                 fields['calls'] == str(int(fields['phase'] == 'decode' and fields['tokens'] == '4')),
-                'packed head escaped its decode-C4 policy')
-            packed[key] = fields
-    require(base and ((set(base) == set(packed)) if arm else not packed), 'missing/unexpected packed route joins')
+                'canonical DPAS head escaped its decode-C4/no-extra-weight policy')
+            dpas[key] = fields
+    require(base and ((set(base) == set(dpas)) if arm else not dpas), 'missing/unexpected DPAS route joins')
     ids = sorted({int(k[0]) for k in base})
     require(ids == [1, 2, 3], 'all three actual request route snapshots required')
     decode = []
@@ -53,10 +54,10 @@ def routes(text, arm):
                 'decode-C4 must actually replay in every request')
         k, fields = found[0]
         decode.append(dict(request=request, capture_id=int(k[4]),
-            replay_completed=int(fields['replay_completed']), packed_calls=int(packed[k]['calls']) if arm else 0))
+            replay_completed=int(fields['replay_completed']), dpas_calls=int(dpas[k]['calls']) if arm else 0))
     require(decode[0]['capture_id'] != decode[-1]['capture_id'], 'long prefill must retire and recapture the head reader')
     return dict(snapshots=len(base), requests=ids, decode_C4=decode,
-                packed_only_decode_C4=bool(arm), prompt_and_C1_packed_calls=0)
+                dpas_only_decode_C4=bool(arm), prompt_and_C1_dpas_calls=0)
 
 
 def parser_controls():
@@ -67,20 +68,22 @@ def parser_controls():
                 shared = f'request={request} device=0 phase={phase} tokens={tokens} capture_id={capture}'
                 lines.append('strata Q6_ROUTE ' + shared + ' native_half_enabled=0 complete=1 replay_started=1 replay_completed=1')
                 if arm: lines.append('strata Q6_DPAS_HEAD ' + shared +
-                    ' canonical_table_excludes_packed=1 calls=' + str(int(phase == 'decode' and tokens == 4)) + ' complete=1')
+                    ' layout=canonical extra_weight_bytes=0 canonical_table_excludes_dpas=1 calls=' + str(int(phase == 'decode' and tokens == 4)) + ' complete=1')
         return '\n'.join(lines)
     for arm in (0, 1): routes(sample(arm), arm)
     text = sample(1)
     variants = [text.replace('calls=0', 'calls=1', 1),
         '\n'.join(v for v in text.splitlines() if not v.startswith('strata Q6_DPAS_HEAD request=2')),
-        text.replace('canonical_table_excludes_packed=1', 'canonical_table_excludes_packed=0', 1),
+        text.replace('canonical_table_excludes_dpas=1', 'canonical_table_excludes_dpas=0', 1),
+        text.replace('layout=canonical', 'layout=packed', 1),
+        text.replace('extra_weight_bytes=0', 'extra_weight_bytes=521472000', 1),
         text.replace('replay_completed=1', 'replay_completed=0', 1),
         text + '\n' + text.splitlines()[0], text.replace('request=3', 'request=4')]
     for bad in variants:
         try: routes(bad, 1)
         except RuntimeError: continue
         raise RuntimeError('production head parser accepted a corrupted join/policy/count')
-    return dict(passed=True, positive_arms=2, corrupt_variants=6, GPU_executed=False)
+    return dict(passed=True, positive_arms=2, corrupt_variants=8, GPU_executed=False)
 
 
 def compact(row):
@@ -139,13 +142,18 @@ def prepare():
     n = device.native(); prior = validation.committed(RESULT, (device.KEY,))
     require(prior['passed'] and prior['complete'] and prior['ownership_closed'] and
         all(any(r.get('mode') == arm and r['passed'] for r in prior['results'])
-            for arm in ('submission', 'phase', 'reference', 'packed')), 'same-build device closure required')
+            for arm in ('submission', 'phase', 'reference', 'canonical')), 'same-build device closure required')
     reference = json.loads(REFERENCE.read_text())
     old = validation.committed(STATUS, ('current_sync', 'dflash2_prefill_heads_check'))
     argv = list(old['argv']); argv[0] = n['binaries']['strata']['path']
     for flag in ('--draft', '--draft-model', '--draft-fallback', '--draft-conf', '--mtp-draft-vocab'):
         i = argv.index(flag); del argv[i:i + 2]
     args = reference['configuration']['args']; argv += ['--mtp', args[args.index('--mtp') + 1]]
+    # The packed model failed at this exact resident-context/cache admission.
+    # Exercise those allocations now, while keeping first model requests small.
+    for flag, value in (('--max-context', '131072'), ('--kv-resident', '131072'), ('--prefill', '8192')):
+        require(argv.count(flag) == 1, 'one explicit placement argument required: ' + flag)
+        argv[argv.index(flag) + 1] = value
     env = dict(reference['environment_template'], STRATA_PREFILL_RELEASE_HEADS='1', STRATA_PREFILL_RELEASE_MTP_EXPERTS='0',
         STRATA_SYCL_CACHE_SCRATCH_LEASE='0', STRATA_MTP_BATCH_F16='0', STRATA_SNAPSHOT_VERIFY='0',
         STRATA_SYCL_PREFILL_MOE_WINDOW='0', STRATA_SYCL_PREFILL_MIXED_SCRATCH='0',
@@ -172,7 +180,8 @@ def prepare():
         environment=env, argv=argv, boot=prior['boot'], driver=prior['driver'],
         budgets=dict(wall=900, cpu=10800, rss_cap=104 << 30, text_cap=64 << 20, file_cap=64 << 20, total_cap=256 << 20),
         plan='Committed parser controls first;fresh head0then1 processes,long513/short82/long513 thinking-on32output'
-             ' requests in each. Context4096,chunk256,short-read128,owned1256cache,MTP4,no token/coupled graphs.'
+             ' requests in each. Context131072,KVresident131072,chunk8192,short-read128,1256cache,MTP4,'
+             'no token/coupled graphs. This qualifies full-placement admission,not full-context processing.'
              ' Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps,'
              ' complete GEN/drafts,all request route joins,positive C4replays,two target-head retirements and'
              ' fresh capture identities after restoration. No output-equality requirement. Full15asset hashes'
@@ -218,11 +227,11 @@ def execute(mode):
                 while True:
                     line = io.line(480); startup.append(line); require(len(startup) <= 32, 'startup stdout cap')
                     if line.startswith('READY '): break
-                require(line == 'READY 4096 stop', 'actual context/READY differs')
+                require(line == 'READY 131072 stop', 'actual context/READY differs')
                 info = [v[5:] for v in startup if v.startswith('INFO ')]
                 require(len(info) == 1, 'one actual INFO required')
                 result['placement'] = dict(v.split('=', 1) for v in info[0].split())
-                require(all(result['placement'].get(k) == v for k, v in dict(context='4096', kv='int8',
+                require(all(result['placement'].get(k) == v for k, v in dict(context='131072', kv='int8', kv_resident='131072',
                     expert_slots='1256', spec='4', pool_workers='5', pcie_frac='0.00', mtp_max='0').items()), 'actual placement changed')
                 actual = dict(v.split('=', 1) for v in Path('/proc', str(command['pid']), 'environ').read_text().split('\0') if '=' in v)
                 require(actual == env, 'native environment changed')
@@ -245,9 +254,10 @@ def execute(mode):
             text = err.read_text(errors='replace')
             result['routes'] = routes(text, arm)
             detached = re.findall(r'^strata prefill heads: target detached bytes=(\d+) source=owned-RAM D2H=(\d+) H2D-on-restore=(\d+)$', text, re.M)
-            expected = (str(521472000 * (1 + arm)), '521472000', str(521472000 * (1 + arm)))
+            expected = ('521472000', '521472000', '521472000')
             require(detached == [expected, expected], 'two actual long-prefill target retire/restore transitions required')
-            require(text.count('strata native head DPAS: ready=1 columns=4') == arm and
+            admission = 'strata native head DPAS: ready=1 columns=4 layout=canonical canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 default_adopted=0'
+            require([v for v in text.splitlines() if v.startswith('strata native head DPAS:')] == ([admission] if arm else []) and
                 not re.search(r'UR_RESULT_ERROR_[A-Z_]+', text), 'head layout/UR failure')
             log = ROOT / str(arm) / 'validation.log'
             require(not log.exists() or log.stat().st_size == 0, 'native parameter-validation error')

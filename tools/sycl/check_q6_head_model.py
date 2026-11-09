@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Qualify the production-linked Q6 head before a full-model trial.
 
-Main-authored; repository LICENSE. Reuse the exact closed native GPU gate
-functions from484d, with fresh binary/source/runtime checks and fresh processes.
+Main-authored; repository LICENSE. Adapt our closed native supervision from484d
+to the canonical arm/entry, with fresh source/runtime checks and processes.
 No old executable or private standalone source tree is a dependency.
 """
 import ast
@@ -27,10 +27,11 @@ from run_q6_columns import validation_log
 from check_verify_window_phase import SUBMISSION, PHASE
 
 P, B, RESULT = build.P, build.B, build.RESULT
-ROOT, KEY = B / 'q6-head-model-device-v1', 'q6_head_model_device_v1'
+ROOT, KEY = B / 'q6-head-model-device-v2', 'q6_head_model_device_v2'
 require, sha, write = guards.require, build.digest, build.write
 ORIGINAL = '484d403e60c49361422f00a16dfdd774e4fe90d5'
 ORIGINAL_PATH = 'tools/sycl/q6_head_owner.py'
+PRIOR_DEVICE = '0e6c9385e87a42c56253fafbc5aa682fc7e2cd1e'
 RUNTIME = B / 'decode-iq3-audit-speed-v2/runtime-inputs.json'
 RUNTIME_SHA = '43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21'
 
@@ -41,6 +42,18 @@ def archived_gate():
     nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and
              n.name in ('model_assets', 'run_gpu')]
     require([n.name for n in nodes] == ['model_assets', 'run_gpu'], 'exact archived GPU functions required')
+    # Only the arm label and exact traced kernel change. Ownership, providers,
+    # input assets, finite budgets and actual finalizer keep their old contract.
+    class CanonicalGate(ast.NodeTransformer):
+        def visit_Name(self, node):
+            if node.id == 'packed': node.id = 'dpas'
+            return node
+        def visit_Constant(self, node):
+            replacements = {'packed': 'canonical', 'Q6DpasC4': 'Q6DpasC4Canonical',
+                            'traced packed graph path': 'traced canonical graph path'}
+            if isinstance(node.value, str): node.value = replacements.get(node.value, node.value)
+            return node
+    nodes = [CanonicalGate().visit(n) for n in nodes]
     namespace = dict(globals())
     exec(compile(ast.Module(body=nodes, type_ignores=[]), ORIGINAL + ':' + ORIGINAL_PATH, 'exec'), namespace)
     return namespace['run_gpu'], hashlib.sha256(raw).hexdigest()
@@ -95,11 +108,15 @@ def verify(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in build.public(), 'fresh device plan only')
-    n = native(); old = build.public()['q6_head_owner_v2']
+    n = native()
+    old = json.loads(build.source.git(P, 'show', PRIOR_DEVICE + ':' + str(RESULT.relative_to(P))))[
+        'q6_head_model_device_v1']
     require(old['passed'] and old['complete'] and old['ownership_closed'], 'closed owner prerequisite')
     require(sha(RUNTIME) == RUNTIME_SHA, 'fixed84ELF runtime manifest required')
     env = copy.deepcopy(old['environment'])
-    env.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    env.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
+        STRATA_MEASUREMENT_ROOT=str(ROOT),
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'validation.log'))
     require(env['STRATA_PREFILL_RELEASE_HEADS'] == '1' and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1'
         and env['EnableDirectSubmission'] == '0' and env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0',
         'keep qualified immutable safety/head environment')
@@ -107,6 +124,7 @@ def prepare():
         controller=build.source.pin(P, ['tools/sycl']), native_source_commit=n['project']['revision'],
         native_record=dict(path=str(build.ROOT / 'record.json'), sha256=sha(build.ROOT / 'record.json')),
         binary=n['binaries']['sycl_q6_head_owner_test'], binaries=n['binaries'],
+        prior_environment_source=PRIOR_DEVICE + ':q6_head_model_device_v1',
         archived_gate=dict(commit=ORIGINAL, path=ORIGINAL_PATH, sha256=archived_gate()[1],
             functions=['model_assets', 'run_gpu']),
         environment=env, assets=old['assets'], runtime_manifest=dict(path=str(RUNTIME), sha256=RUNTIME_SHA),
@@ -114,8 +132,8 @@ def prepare():
         boot=old['boot'], driver=old['driver'], native_budget=old['native_budget'],
         host_budget=old['host_budget'],
         plan='Five fresh CPU-only empty-owner/invalid-switch processes,then submission10 and phase-cache16'
-             ' traced checks,then fresh reference0/packed1 real-GGUF owner processes with the exact484d'
-             ' two-gate/native-body/finite-budget controller. Full shard hashes checked before and after'
+             ' traced checks,then fresh reference0/canonical1 real-GGUF owner processes. Adapt only484d'
+             ' arm/entry labels;keep two gates/native identity/finite budgets. Full shard hashes before/after'
              ' each head process. Four numerical cases,two retire/overwrite/restore cycles,12graph replays'
              ' per arm. Commit host closure before device. Stop first failure;no retries.',
         limits='Fresh production-linked fixture only. Not full model/production Verifier ownership,clean'
@@ -183,7 +201,7 @@ def execute(mode):
                 require(outcome['passed'], 'small fixture/fault/closure gate failed: ' + label)
                 print('Production-linked device gate passed: ' + label, flush=True)
             run_gpu, _ = archived_gate()
-            for arm in ('reference', 'packed'):
+            for arm in ('reference', 'canonical'):
                 outcome = dict(mode=arm, passed=False)
                 row['results'].append(outcome)
                 run_gpu(row, scope, arm, outcome)

@@ -16,12 +16,12 @@ constexpr bool valid_verify_input(VerifyInput input) {
     return input == VerifyInput::prompt || input == VerifyInput::decode;
 }
 
-// 3d81310de:q6_dpas_component_v7: only the full target head/C4 won.
-// A separate owner supplies this layout; never select ordinary Q6 weights or
-// the slower 2560x640 matrix. This is eligibility for a model trial only.
-constexpr bool verify_q6_dpas_head(bool packed_ready, VerifyInput input, bool exact,
+// 0ccc4ed45:q6_canonical_component_v4: only the full target head/C4 won.
+// The enabled owner supplies unchanged canonical Q6 rows. Never select the
+// slower 2560x640 matrix. This is eligibility for a model trial only.
+constexpr bool verify_q6_dpas_head(bool dpas_ready, VerifyInput input, bool exact,
                                   int type, int n_in, int n_out, int columns) {
-    return packed_ready && input==VerifyInput::decode && exact && type==14 &&
+    return dpas_ready && input==VerifyInput::decode && exact && type==14 &&
            n_in==2560 && n_out==248320 && columns==4;
 }
 

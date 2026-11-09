@@ -1891,10 +1891,21 @@ processes and remains rejected. Individual samples and the original decision
 are in `q6_canonical_component_v4`; timing includes graph submission/completion
 and UR parameter validation, excluding setup/upload/JIT. This shared-image
 source/recipe reuses the original native artifact; it inherits no GPU result.
-The model dispatcher still does not select the canonical kernel. The next step
-is a decode-only full-head NativeHead integration, followed by production-linked
-ownership checks and actual131072-context/cache1256 admission before matched
-model speed. Preserve C1,prompt and other head paths. No model PP/TG,task,
+The source now selects this kernel only for the opt-in full-head decode-C4
+NativeHead trial. It removes the extra packed host/device owners and uses the
+canonical allocation;C1,prompt and other head paths remain unchanged. Selection
+is immutable after load and stays default-off. The Verifier snapshots that
+selection with the owner metadata across retirement,restore and lazy recapture.
+This integration is not built or production-qualified yet. The V2 model builder
+requires the exact qualified component image and fresh22CPU controls. The
+production-linked fixture will recheck actual GGUF numerics and two canonical
+retire/overwrite/restore cycles per arm before the same-engine model test.
+That test now requests actual131072-context/KV-resident allocation and1256cache
+slots,with8192prefill chunks but initially small513/82/513requests. Passing it
+will qualify placement and repeated handoff,not full-context processing or
+speed. The packed kernel/exports remain temporarily only to preserve the exact
+qualified shared image through this comparison;review their removal afterward.
+No model PP/TG,task,
 physical-context or default adoption follows from the component result.
 A smaller expert cache would be a separate placement comparison rather than a
 repair of the failed packed same-placement cohort.

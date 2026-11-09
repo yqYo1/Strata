@@ -21,7 +21,7 @@ public:
 
     bool load(const std::vector<std::string>& shards, int64_t n_in, int64_t n_out, std::string& err);
     // Narrow SYCL prompt boundary. Caller first preflights all consumers, then
-    // retires their graphs/streams before detach. Snapshot budget: 1 GiB packed
+    // retires their graphs/streams before detach. Snapshot budget: 1 GiB canonical
     // weights, no files; scratch and tensor metadata remain owned and unchanged.
     bool prepare_prefill_weights(std::string& err);
     void cancel_prefill_weights() noexcept;
@@ -37,9 +37,9 @@ public:
     int type() const { return type_; }
     // Opt-in SYCL target-head experiment, immutable after load. Canonical rows
     // above remain the format consumed by C1, MTP gathers and DFlash2.
-    uint64_t decode_packed_bytes() const { return uint64_t(decode_packed_host_.size()) * sizeof(uint16_t); }
-    bool decode_packed_ready() const {
-        return !head_detached_ && weights_ && decode_packed_weights_ && !decode_packed_host_.empty();
+    bool decode_dpas_enabled() const { return decode_dpas_; }
+    bool decode_dpas_ready() const {
+        return !head_detached_ && weights_ && decode_dpas_;
     }
     // Four exact Q8_1 columns only; caller selects the decode phase explicitly.
     // May throw on an invalid owner/shape/span/queue. No internal fallback.
@@ -48,13 +48,9 @@ public:
     size_t row_bytes() const { return n_out_ > 0 ? (size_t) (bytes_ / (uint64_t) n_out_) : 0; }
 
 private:
-    friend struct NativeHeadDpasTestAccess; // Read-only fixture address/backing observations.
     bool head_prepared_=false,head_detached_=false,head_release_used_=false;
-    std::vector<uint8_t> head_snapshot_; // exact packed bytes, request-scoped RAM
-    // Retain the new immutable layout in RAM, rather than copying it back over
-    // PCIe at every prompt boundary. Both device layouts retire together.
-    std::vector<uint16_t> decode_packed_host_;
-    void* decode_packed_weights_ = nullptr;
+    bool decode_dpas_=false; // immutable after load; reads the canonical owner
+    std::vector<uint8_t> head_snapshot_; // exact GGUF bytes, request-scoped RAM
     void* weights_ = nullptr;
     void* scratch_ = nullptr;
     uint64_t bytes_ = 0;

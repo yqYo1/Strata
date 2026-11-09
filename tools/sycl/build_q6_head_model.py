@@ -19,13 +19,14 @@ import build_upstream_features as build
 import build_compat_profile as selected
 import measurement_guards as guards
 import measurement_owner as ownership
-import q6_dpas_component as codegen
+from q6_canonical_component import image as canonical_image
 
 P, B = source.P, source.B
-ROOT = B / 'q6-head-model-v1'
+ROOT = B / 'q6-head-model-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_head_model_build_v1'
-NATIVE = 'afbd954c0f5abad0a1488edbb791ed4c62833d78'
+KEY = 'q6_head_model_build_v2'
+NATIVE = 'cdbd687965b9b1dd96e7a76002381cc257019da5'
+COMPONENT_EVIDENCE = '0ccc4ed45cbf219e835a9c6b03b08951fa321ab8'
 READER = '484d403e60c49361422f00a16dfdd774e4fe90d5'
 TARGETS = ['strata', 'sycl_q6_head_owner_test', 'sycl_submission_test',
            'sycl_verifier_retirement_test']
@@ -58,16 +59,29 @@ def save(row):
 
 
 def prerequisites():
-    value = public()['q6_head_owner_v2']
+    value = public()['q6_canonical_component_v4']
     require(value['passed'] and value['complete'] and value['ownership_closed']
-        and value['stage'] == 'closed' and value['source_commit'] == NATIVE,
-        'real-head owner qualification is required')
-    for name in ('src/core/native_head.cpp', 'include/strata/core/native_head.hpp',
-                 'include/strata/core/verify_window_policy.hpp',
-                 'src/kernels/sycl/q6_dpas_component.cpp',
-                 'src/kernels/sycl/q6_dpas_component.hpp', 'tests/sycl/native_head_dpas.cpp'):
+        and value['stage'] == 'closed' and value['native_source_commit'] == NATIVE
+        and value['decision']['head_component_gain']
+        and not value['decision']['cells']['640']['component_gain_qualified']
+        and not value['decision']['inference_adopted'], 'closed canonical-only full-head component required')
+    evidence = json.loads(source.git(P, 'show', COMPONENT_EVIDENCE + ':' + str(RESULT.relative_to(P))))[
+        'q6_canonical_component_v4']
+    require(all(value[k] == evidence[k] for k in ('decision', 'binary', 'codegen', 'summary', 'actual_inputs')),
+            'canonical component evidence changed')
+    for name in ('src/kernels/sycl/q6_dpas_component.cpp',
+                 'src/kernels/sycl/q6_dpas_component.hpp', 'bench/sycl/q6_canonical.cpp',
+                 'cmake/sycl_backend.cmake'):
         require((P / name).read_bytes() == source.git(P, 'show', NATIVE + ':' + name),
-                'qualified native input changed: ' + name)
+                'qualified component input changed: ' + name)
+    require(digest(value['binary']['path']) == value['binary']['sha256'] and
+        canonical_image(Path(value['binary']['path']).read_bytes()) == value['codegen'],
+        'qualified canonical component executable changed')
+    inputs = value['actual_inputs']
+    require(digest(inputs['path']) == inputs['sha256'], 'canonical compiler census changed')
+    census = json.loads(Path(inputs['path']).read_text())
+    require(all(digest(p) == sha for field in ('compiled', 'generated', 'links')
+        for p, sha in census[field].items()), 'qualified component compiler/link input changed')
     name = 'tools/sycl/q6_head_owner.py'
     before = ast.parse(source.git(P, 'show', READER + ':' + name))
     after = ast.parse((P / name).read_text())
@@ -75,11 +89,16 @@ def prerequisites():
                              for n in tree.body if isinstance(n, ast.FunctionDef)}
     a, b = functions(before), functions(after)
     require(set(b) == {'parse_native', 'finish_gpu_probe'} and
-        all(a[n] == b[n] for n in b), 'retained reader bodies changed')
-    return dict(native_source=NATIVE, reader_source=READER,
-        evidence='0840eccd2398fdcc43cb445edaf49086d47f16dd:q6_head_owner_v2',
-        reader_bodies_identical=True, production_Verifier_qualified=False,
-        model_qualified=False)
+        a['finish_gpu_probe'] == b['finish_gpu_probe'], 'retained fault finalizer changed')
+    previous = public()['q6_head_model_build_v1']
+    require(previous['passed'] and previous['complete'] and previous['ownership_closed'] and
+        all(digest(v['path']) == v['sha256'] for v in previous['binaries'].values()),
+        'preserve original0b engine and same-build fixtures before building replacement')
+    return dict(component_native_source=NATIVE, evidence=COMPONENT_EVIDENCE + ':q6_canonical_component_v4',
+        canonical_image_sha256=value['codegen']['image_sha256'],
+        component_binary=value['binary'], previous_model_binaries=previous['binaries'],
+        reader_source=READER, fault_finalizer_AST_identical=True,
+        production_Verifier_qualified=False, model_qualified=False)
 
 
 def current(row):
@@ -118,17 +137,18 @@ def prepare():
         host_python=HOST_PYTHON, host_python_sha256=digest(HOST_PYTHON),
         budgets=BUDGET, commands=[], passed=False, complete=False, ownership_closed=True,
         GPU_executed=False, model_qualified=False, production_Verifier_qualified=False,
-        plan=dict(host='14 existing linked-image, native protocol and actual finalizer controls;'
-                       'retained reader ASTs must match484d before running',
+        plan=dict(host='22 linked-image,census,current canonical owner-protocol and actual finalizer controls;'
+                       'retained fault-finalizer AST must match484d before running',
             configure='Commit configure recipe first; record generated inputs and selected Ninja commands;'
                       'commit that configured stage before compiling.',
             compile='Build the engine plus production-linked head, submission and verifier-retirement fixtures.'
-                    'Verify actual compiler/link inputs and packaged C4 code before any GPU execution.',
+                    'Verify selected actual compiler/link inputs and exact qualified canonical C4 image'
+                    ' before any GPU execution;source-only integration inherits no production GPU result.',
             subsequent='Separate committed small traced/validated qualification, then matched head0/1 model'
                        'routes and long/agent/thinking performance. No performance adoption from this build.'),
-        retention='One temporary fourth engine for imminent production-head admission and same-binary0/1'
-                  ' comparison. Preserve90f feature and552b/e1b independent phase guards. Select and retire'
-                  ' the superseded feature generation after applicable model/phase validation; retire this'
+        retention='One temporary fifth engine for imminent canonical production-head admission and same-binary0/1'
+                  ' comparison. Preserve0b model fallback,90f feature and552b/e1b independent phase guards.'
+                  ' Select and retire0b after replacement owner/model/128K placement qualification; retire this'
                   ' candidate on rejection after exact source/recipe recovery. Standalone owner consumer ended.'
                   ' Legacy56ELF provenance holds remain unresolved and are not qualified references.')
     build.check_inputs(row)
@@ -159,7 +179,12 @@ def census(row, dependency_output, link_output):
     observed = {p for p in compiled if Path(p).suffix in ('.cpp', '.c', '.cc', '.cxx', '.cu')}
     require(expected == observed and len(expected) > 20, 'actual selected translation-unit census differs')
     database = json.loads((ROOT / 'build/compile_commands.json').read_text())
-    commands = [c for c in database if str(Path(c['file']).resolve()) in expected]
+    commands = []
+    groups = {}
+    for item in row['planned_compilation']:
+        groups.setdefault(item['target'], set()).add(item['file'])
+    for target, files in groups.items():
+        commands += selected.selected_compile_commands(database, files, target)
     require({str(Path(c['file']).resolve()) for c in commands} == expected,
             'compile database is missing an actual selected translation unit')
     links, owned = {}, set()
@@ -193,7 +218,7 @@ def execute(stage):
     try:
         owner = ownership.Owner(ROOT / ('owned-' + stage), persist)
         commands = ([('host-controls', [HOST_PYTHON, '-B', '-m', 'unittest', '-v',
-                                       'tools.sycl.test_q6_dpas_component']),
+                                       'tools.sycl.test_q6_dpas_component', 'tools.sycl.test_compile_census']),
                      ('configure', row['recipe']['configure']),
                      ('planned-commands', ['/usr/bin/ninja', '-C', str(ROOT / 'build'),
                                           '-t', 'commands', *TARGETS])]
@@ -209,19 +234,27 @@ def execute(stage):
                     'build command failed: ' + label + '; inspect the owned bounded diagnostic')
             if label == 'host-controls':
                 text = out.read_text() + err.read_text()
-                require('Ran 14 tests' in text and '\nOK\n' in text, 'all14existing controls required')
-                row['host_controls'] = dict(passed=True, cases=14, reader_ASTs_identical=True,
+                require('Ran 22 tests' in text and '\nOK\n' in text, 'all22controls required')
+                row['host_controls'] = dict(passed=True, cases=22, fault_finalizer_AST_identical=True,
                     GPU_executed=False, source_commit=row['project']['revision'])
             print(json.dumps(dict(label=label, exit_code=entry['exit_code'], closed=True)), flush=True)
         if stage == 'configure':
-            planned = set()
+            planned = set(); compilation = []
             for line in outputs['planned-commands'].read_text().splitlines():
                 args = shlex.split(line)
                 if '-c' in args:
                     p = Path(args[args.index('-c') + 1])
-                    planned.add(str((p if p.is_absolute() else ROOT / 'build' / p).resolve()))
+                    name = str((p if p.is_absolute() else ROOT / 'build' / p).resolve())
+                    output = Path(args[args.index('-o') + 1])
+                    relative = (output.relative_to(ROOT / 'build') if output.is_absolute() else output)
+                    require(len(relative.parts) > 2 and relative.parts[0] == 'CMakeFiles'
+                        and relative.parts[1].endswith('.dir'), 'selected target compile output required')
+                    planned.add(name)
+                    compilation.append(dict(file=name, output=str(relative), target=relative.parts[1][:-4]))
             require(len(planned) > 20, 'selected target compiler commands absent')
+            require(len(compilation) == len(planned), 'duplicate selected source compilation requires explicit admission')
             row['planned_translation_units'] = sorted(planned)
+            row['planned_compilation'] = compilation
             row['generated_inputs'] = {str(p.resolve()): digest(p)
                 for p in (ROOT / 'build').rglob('*') if p.is_file() and
                 p.suffix in ('.h', '.hpp', '.c', '.cpp', '.cxx', '.inc')}
@@ -236,11 +269,11 @@ def execute(stage):
             row['binaries'] = {n: dict(path=str(ROOT / 'build' / n),
                 sha256=digest(ROOT / 'build' / n), bytes=(ROOT / 'build' / n).stat().st_size,
                 origin_source_commit=row['project']['revision']) for n in TARGETS}
-            row['codegen'] = {n: codegen.embedded_dpas((ROOT / 'build' / n).read_bytes())
+            row['codegen'] = {n: canonical_image((ROOT / 'build' / n).read_bytes())
                 for n in ('strata', 'sycl_q6_head_owner_test')}
             require(all(v['image_sha256'] ==
-                'e9f6543e839747035fab433ec3cc6f773ddd69cb9eab36f89b6493b54cb46d8d'
-                for v in row['codegen'].values()), 'production-linked C4 image changed')
+                row['prerequisites']['canonical_image_sha256']
+                for v in row['codegen'].values()), 'production-linked canonical C4 image changed')
             row.update(stage='built', passed=True, complete=True)
         current(frozen)
     except BaseException as error:

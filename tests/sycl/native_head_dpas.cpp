@@ -23,13 +23,6 @@
 #include <unistd.h>
 #include <vector>
 
-namespace strata::core {
-// Observe existing ownership without installing buffers or bypassing a lease.
-struct NativeHeadDpasTestAccess {
-    static const void* device(const NativeHead& h) {return h.decode_packed_weights_;}
-    static const std::vector<uint16_t>& host(const NativeHead& h) {return h.decode_packed_host_;}
-};
-}
 namespace {
 namespace sb = strata::sycl_backend;
 namespace k = strata::kernels;
@@ -82,22 +75,22 @@ struct Fixture {
     cudaStream_t stream=nullptr;
     std::array<cudaGraphExec_t,3> graphs{};
     std::array<uint64_t,3> launches{};
-    bool packed=false;
+    bool dpas=false;
     size_t numerical_cases=0,blocked_cases=0;
     Fixture(std::shared_ptr<sb::Runtime> r,const std::vector<std::string>& shards):rt(r),source(shards),
         mixed(r,K*4),reference(r,N*4),candidate(r,N*4),single(r,N*4),q8(r,k::native_q8_1_bytes(K,4)) {
         const char* flag=std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_HEAD");
         need(flag&&(!std::strcmp(flag,"0")||!std::strcmp(flag,"1")),"explicit fixture arm");
-        packed=!std::strcmp(flag,"1");
+        dpas=!std::strcmp(flag,"1");
         size_t at=0;const auto* tensor=source.find("output.weight",&at);
         need(tensor&&tensor->type==14&&tensor->shape==std::vector<uint64_t>{K,N}&&
             source.in_bounds(*tensor,at),"actual Q6 head extent");
         w=static_cast<const uint8_t*>(source.shard(at).tensor_data(*tensor));
         check(cudaStreamCreate(&stream));
         std::string error;timed("load",-1,[&]{if(!head.load(shards,K,N,error))throw std::runtime_error(error);});
-        metadata();need(head.loaded()&&head.decode_packed_ready()==packed,"loaded owner");
-        std::cout<<"HEAD admitted=1 packed="<<int(packed)<<" canonical_bytes="<<head.weight_bytes()
-            <<" packed_device_bytes="<<head.decode_packed_bytes()<<" packed_host_bytes="<<head.decode_packed_bytes()
+        metadata();need(head.loaded()&&head.decode_dpas_ready()==dpas,"loaded owner");
+        std::cout<<"HEAD admitted=1 dpas="<<int(dpas)<<" layout=canonical canonical_bytes="<<head.weight_bytes()
+            <<" extra_device_weight_bytes=0 extra_host_weight_bytes=0"
             <<" max_alloc_bytes="<<rt->device().get_info<sycl::info::device::max_mem_alloc_size>()<<'\n';
         capture();
     }
@@ -108,7 +101,7 @@ struct Fixture {
     }
     void metadata() const {
         need(head.type()==14&&head.weight_bytes()==WeightBytes&&head.row_bytes()==2100&&
-            head.decode_packed_bytes()==(packed?WeightBytes:0),"canonical metadata/packing budget");
+            head.decode_dpas_enabled()==dpas,"canonical metadata/immutable selector");
     }
     void drain() {check(cudaStreamSynchronize(stream));rt->wait();}
     void retire() {
@@ -118,9 +111,9 @@ struct Fixture {
         if(arm==2){std::string e;if(!head.run(mixed.data(),single.data(),stream,e))throw std::runtime_error(e);return;}
         k::native_quantize_q8_1(mixed.data(),q8.data(),K,4,stream);
         const auto phase=arm==0?VerifyInput::prompt:VerifyInput::decode;
-        const bool selected=strata::core::verify_q6_dpas_head(head.decode_packed_ready(),phase,
+        const bool selected=strata::core::verify_q6_dpas_head(head.decode_dpas_ready(),phase,
             k::native_mmvq_multi_exact(),head.type(),K,N,4);
-        need(selected==(arm==1&&packed),"actual fixture phase/owner selection");
+        need(selected==(arm==1&&dpas),"actual fixture phase/owner selection");
         float* out=arm==0?reference.data():candidate.data();
         if(selected)head.run_decode_c4(q8.data(),out,stream);
         else k::native_mmvq(head.type(),head.weights(),q8.data(),out,K,N,4,stream);
@@ -136,7 +129,7 @@ struct Fixture {
                 check(cudaGraphInstantiate(&graphs[size_t(arm)],g,0ull));check(cudaGraphDestroy(g));
             } catch(...) {std::cerr<<"head fixture capture incomplete\n"<<std::flush;std::_Exit(3);}
         }
-        std::cout<<"CAPTURE graphs=3 nodes_each=2 packed_decode_calls="<<int(packed)<<" packed_prompt_calls=0 packed_C1_calls=0\n";
+        std::cout<<"CAPTURE graphs=3 nodes_each=2 dpas_decode_calls="<<int(dpas)<<" dpas_prompt_calls=0 dpas_C1_calls=0\n";
     }
     std::pair<double,double> oracle(int row,int column,const std::vector<uint8_t>& x) const {
         double sum=0,l1=0;
@@ -200,25 +193,18 @@ struct Fixture {
             <<" max_abs_pair_error="<<std::setprecision(12)<<worst<<" C1=PASS prompt=reference guards=PASS\n";
     }
     void blocked(const char* phase) {
-        std::string e;need(head.head_detached()&&!head.decode_packed_ready()&&
+        std::string e;need(head.head_detached()&&!head.decode_dpas_ready()&&
             !head.run(mixed.data(),single.data(),stream,e),"detached C1 accepted");
         bool refused=false;try{head.run_decode_c4(q8.data(),candidate.data(),stream);}
         catch(const std::invalid_argument&){refused=true;}
-        need(refused,"detached packed projection accepted");++blocked_cases;
-        std::cout<<"BLOCKED phase="<<phase<<" canonical=PASS packed=PASS\n";
+        need(refused,"detached DPAS projection accepted");++blocked_cases;
+        std::cout<<"BLOCKED phase="<<phase<<" canonical=PASS dpas=PASS\n";
     }
     void immutable() {
         drain();
         {std::vector<uint8_t> bytes(WeightBytes);
             check(cudaMemcpy(bytes.data(),head.weights(),bytes.size(),cudaMemcpyDeviceToHost));
             need(std::memcmp(bytes.data(),w,bytes.size())==0,"canonical head byte mutation");}
-        if(packed) {
-            const auto& original=strata::core::NativeHeadDpasTestAccess::host(head);
-            std::vector<uint16_t> bytes(original.size());
-            check(cudaMemcpy(bytes.data(),strata::core::NativeHeadDpasTestAccess::device(head),
-                bytes.size()*sizeof(uint16_t),cudaMemcpyDeviceToHost));
-            need(bytes==original,"packed GPU/backing byte mutation");
-        }
         metadata();
     }
     void retired_span(const void* pointer) {
@@ -237,16 +223,13 @@ struct Fixture {
             timed("prepare",cycle,[&]{if(!head.prepare_prefill_weights(error))throw std::runtime_error(error);});
             timed("retire_readers",cycle,[&]{retire();});
             const void* old_canonical=head.weights();
-            const void* old_packed=strata::core::NativeHeadDpasTestAccess::device(head);
             sb::validate_device_span(old_canonical,WeightBytes,*stream);
-            if(packed)sb::validate_device_span(old_packed,WeightBytes,*stream);
             timed("detach",cycle,[&]{head.detach_prefill_weights();});
             need(!head.loaded()&&head.weights()==nullptr,"canonical owner not detached");metadata();blocked("detached");
-            need(strata::core::NativeHeadDpasTestAccess::device(head)==nullptr,"packed pointer not retired");
-            retired_span(old_canonical);if(packed)retired_span(old_packed);
-            std::cout<<"RETIREMENT cycle="<<cycle<<" canonical_span=retired packed_span="<<(packed?"retired":"absent")<<'\n';
+            retired_span(old_canonical);
+            std::cout<<"RETIREMENT cycle="<<cycle<<" canonical_span=retired extra_weight_span=absent\n";
             {
-                const size_t bytes=WeightBytes+size_t(head.decode_packed_bytes());
+                const size_t bytes=WeightBytes;
                 sb::Allocation overwrite(rt,bytes,sb::MemoryKind::Device);
                 check(cudaMemset(overwrite.data(),0x3c,bytes));rt->wait();
                 std::array<uint8_t,128> tail{};
@@ -257,12 +240,11 @@ struct Fixture {
             timed("restore",cycle,[&]{head.restore_prefill_weights();});blocked("restored_not_published");
             need(head.loaded(),"canonical allocation not restored");
             timed("resume",cycle,[&]{head.resume_prefill_weights();});
-            need(head.decode_packed_ready()==packed,"packed owner not restored");
+            need(head.decode_dpas_ready()==dpas,"DPAS owner not restored");
             capture();numeric(cycle,uint32_t(31+cycle));immutable();
         }
         need(numerical_cases==4&&blocked_cases==4&&launches==std::array<uint64_t,3>{4,4,4},"complete owner extent");
-        std::cout<<"OWNER_CHECK packed="<<int(packed)<<" numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS packed_immutable="
-            <<(packed?"PASS":"absent")<<" model=0 Verifier_owner=0\n";
+        std::cout<<"OWNER_CHECK dpas="<<int(dpas)<<" numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0\n";
     }
 };
 void host() {
@@ -270,7 +252,7 @@ void host() {
     need(!h.prepare_prefill_weights(e),"empty prepare accepted");
     need(!h.run(nullptr,nullptr,nullptr,e),"empty projection accepted");
     bool refused=false;try{h.run_decode_c4(nullptr,nullptr,nullptr);}catch(const std::invalid_argument&){refused=true;}
-    need(refused,"empty packed owner reached runtime");
+    need(refused,"empty DPAS owner reached runtime");
     std::cout<<"HOST owner_negative_cases=3 GPU=0\n";
 }
 } // namespace

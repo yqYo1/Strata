@@ -82,19 +82,19 @@ class LinkedSpirv(unittest.TestCase):
 
 class NativeHeadProtocol(unittest.TestCase):
     @staticmethod
-    def output(packed=1):
-        lines=[f'HEAD admitted=1 packed={packed} canonical_bytes=521472000 packed_device_bytes={521472000*packed} packed_host_bytes={521472000*packed} max_alloc_bytes=10132807680',
+    def output(dpas=1):
+        lines=[f'HEAD admitted=1 dpas={dpas} layout=canonical canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 max_alloc_bytes=10132807680',
             'TRANSITION phase=load cycle=-1 wall_ns=100 thread_cpu_ns=1 scope=whole_wrapper']
-        lines += [f'CAPTURE graphs=3 nodes_each=2 packed_decode_calls={packed} packed_prompt_calls=0 packed_C1_calls=0']*3
+        lines += [f'CAPTURE graphs=3 nodes_each=2 dpas_decode_calls={dpas} dpas_prompt_calls=0 dpas_C1_calls=0']*3
         lines += [f'NUMERIC cycle={cycle} seed={seed} outputs=993280 oracle_rows=543 max_abs_pair_error=0.001 C1=PASS prompt=reference guards=PASS'
             for cycle,seed in [(-1,7),(-1,19),(0,31),(1,32)]]
         for cycle in range(2):
-            lines += ['BLOCKED phase='+phase+' canonical=PASS packed=PASS' for phase in ('detached','restored_not_published')]
-            lines += [f'RECLAIM cycle={cycle} overwritten_device_bytes={521472000*(1+packed)} tail=PASS']
-            lines += [f'RETIREMENT cycle={cycle} canonical_span=retired packed_span='+('retired' if packed else 'absent')]
+            lines += ['BLOCKED phase='+phase+' canonical=PASS dpas=PASS' for phase in ('detached','restored_not_published')]
+            lines += [f'RECLAIM cycle={cycle} overwritten_device_bytes=521472000 tail=PASS']
+            lines += [f'RETIREMENT cycle={cycle} canonical_span=retired extra_weight_span=absent']
             lines += [f'TRANSITION phase={phase} cycle={cycle} wall_ns=100 thread_cpu_ns=1 scope=whole_wrapper'
                 for phase in ('prepare','retire_readers','detach','restore','resume')]
-        lines += [f'OWNER_CHECK packed={packed} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS packed_immutable='+('PASS' if packed else 'absent')+' model=0 Verifier_owner=0',
+        lines += [f'OWNER_CHECK dpas={dpas} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0',
             'HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified']
         return '\n'.join(lines)+'\n'
 
@@ -109,17 +109,21 @@ class NativeHeadProtocol(unittest.TestCase):
         with self.assertRaises(RuntimeError):head_owner.parse_native(text.replace(line+'\n','',1),1)
 
     def test_prompt_route_and_graph_extent(self):
-        for a,b in [('packed_prompt_calls=0','packed_prompt_calls=1'),('nodes_each=2','nodes_each=1')]:
+        for a,b in [('dpas_prompt_calls=0','dpas_prompt_calls=1'),('nodes_each=2','nodes_each=1')]:
             with self.assertRaises(RuntimeError):head_owner.parse_native(self.output().replace(a,b),1)
 
     def test_detach_and_reclaim_extents(self):
-        for a,b in [('overwritten_device_bytes=1042944000','overwritten_device_bytes=521472000'),
+        for a,b in [('overwritten_device_bytes=521472000','overwritten_device_bytes=1042944000'),
                     ('BLOCKED phase=restored_not_published','BLOCKED phase=published')]:
             with self.assertRaises(RuntimeError):head_owner.parse_native(self.output().replace(a,b),1)
 
-    def test_wrong_packed_arm_and_bytes(self):
+    def test_wrong_dpas_arm_or_extra_weight_bytes(self):
         with self.assertRaises(RuntimeError):head_owner.parse_native(self.output(0),1)
-        with self.assertRaises(RuntimeError):head_owner.parse_native(self.output().replace('packed_host_bytes=521472000','packed_host_bytes=0'),1)
+        for a,b in [('extra_host_weight_bytes=0','extra_host_weight_bytes=521472000'),
+                    ('extra_device_weight_bytes=0','extra_device_weight_bytes=521472000'),
+                    ('layout=canonical','layout=packed'),
+                    ('max_alloc_bytes=10132807680','max_alloc_bytes=521471999')]:
+            with self.assertRaises(RuntimeError):head_owner.parse_native(self.output().replace(a,b),1)
 
     def test_transition_is_not_optional(self):
         text=self.output();line=next(v for v in text.splitlines() if v.startswith('TRANSITION phase=restore '))

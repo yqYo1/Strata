@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Read the current real-head fixture protocol and seal its fault/closure proof.
 
-The closed build/controller is recoverable from484d403e60c49361422f00a16dfdd774e4fe90d5;
-its successful V2 evidence is0840eccd2398fdcc43cb445edaf49086d47f16dd.
-These pure readers remain for the production-linked model fixture/entry gate.
+The earlier packed protocol is recoverable from484d403e6 and its successful
+evidence0840eccd2. The current fixture shares canonical weights in both arms.
+These pure readers serve the production-linked model fixture/entry gate.
 Main-authored;repository LICENSE.
 """
 import math
@@ -13,12 +13,12 @@ sys.dont_write_bytecode=True
 from measurement_guards import require
 import ur_validation as validation
 
-def parse_native(text,packed):
-    require(type(packed) is int and packed in (0,1),'explicit owner arm')
+def parse_native(text,dpas):
+    require(type(dpas) is int and dpas in (0,1),'explicit owner arm')
     lines=text.splitlines()
-    captures=f'CAPTURE graphs=3 nodes_each=2 packed_decode_calls={packed} packed_prompt_calls=0 packed_C1_calls=0'
+    captures=f'CAPTURE graphs=3 nodes_each=2 dpas_decode_calls={dpas} dpas_prompt_calls=0 dpas_C1_calls=0'
     require(lines.count(captures)==3 and sum(v.startswith('CAPTURE ') for v in lines)==3,'all graph families recaptured')
-    end=f'OWNER_CHECK packed={packed} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS packed_immutable='+('PASS' if packed else 'absent')+' model=0 Verifier_owner=0'
+    end=f'OWNER_CHECK dpas={dpas} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0'
     require(lines.count(end)==1 and lines.count('HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified')==1
         and lines[-1]=='HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified','complete owner/exit proof')
     numeric=[]
@@ -30,18 +30,18 @@ def parse_native(text,packed):
         require(math.isfinite(value) and value>=0,'finite numerical summary')
         numeric.append(dict(cycle=cycle,seed=seed,max_abs_pair_error=value,outputs=993280,oracle_rows=543))
     require([(v['cycle'],v['seed']) for v in numeric]==[(-1,7),(-1,19),(0,31),(1,32)],'complete fresh-data numerics')
-    expected_blocked=['BLOCKED phase='+p+' canonical=PASS packed=PASS' for _ in range(2)
+    expected_blocked=['BLOCKED phase='+p+' canonical=PASS dpas=PASS' for _ in range(2)
         for p in ('detached','restored_not_published')]
     require([v for v in lines if v.startswith('BLOCKED ')]==expected_blocked,'publication/blocked owner proof')
-    reclaimed=[f'RECLAIM cycle={c} overwritten_device_bytes={521472000*(1+packed)} tail=PASS' for c in range(2)]
+    reclaimed=[f'RECLAIM cycle={c} overwritten_device_bytes=521472000 tail=PASS' for c in range(2)]
     require([v for v in lines if v.startswith('RECLAIM ')]==reclaimed,'temporary reuse/write extent')
-    retired=[f'RETIREMENT cycle={c} canonical_span=retired packed_span='+('retired' if packed else 'absent') for c in range(2)]
+    retired=[f'RETIREMENT cycle={c} canonical_span=retired extra_weight_span=absent' for c in range(2)]
     require([v for v in lines if v.startswith('RETIREMENT ')]==retired,'registered pointer retirement')
     admission=[v for v in lines if v.startswith('HEAD admitted=')]
     require(len(admission)==1,'one actual admission')
-    match=re.fullmatch(r'HEAD admitted=1 packed=([01]) canonical_bytes=521472000 packed_device_bytes=(\d+) packed_host_bytes=(\d+) max_alloc_bytes=(\d+)',admission[0])
-    require(match and [int(match[i]) for i in (1,2,3)]==[packed,521472000*packed,521472000*packed]
-        and int(match[4])>=521472000*(1+packed),'admitted head bytes/single-allocation bound')
+    match=re.fullmatch(r'HEAD admitted=1 dpas=([01]) layout=canonical canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 max_alloc_bytes=(\d+)',admission[0])
+    require(match and int(match[1])==dpas and int(match[2])>=521472000,
+        'admitted canonical head/zero extra weights/single-allocation bound')
     timings=[]
     for line in lines:
         if not line.startswith('TRANSITION '):continue
@@ -50,10 +50,10 @@ def parse_native(text,packed):
         timings.append(dict(phase=m[1],cycle=int(m[2]),wall_ns=int(m[3]),thread_cpu_ns=int(m[4])))
     require([(v['phase'],v['cycle']) for v in timings]==[('load',-1)]+[(p,c) for c in range(2)
         for p in ('prepare','retire_readers','detach','restore','resume')],'all head transition clocks')
-    return dict(packed=packed,numeric=numeric,transitions=timings,restore_cycles=2,blocked_cases=4,
+    return dict(dpas=dpas,numeric=numeric,transitions=timings,restore_cycles=2,blocked_cases=4,
         graph_replays=12,graphs_each_capture=3,nodes_each_graph=2,canonical_bytes=521472000,
-        packed_device_bytes=521472000*packed,packed_host_bytes=521472000*packed,max_alloc_bytes=int(match[4]),
-        canonical_immutable=True,packed_immutable=True if packed else None,
+        layout='canonical',extra_device_weight_bytes=0,extra_host_weight_bytes=0,max_alloc_bytes=int(match[2]),
+        canonical_immutable=True,
         scope='Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed.')
 
 def finish_gpu_probe(outcome,scope,cursor,boot):
