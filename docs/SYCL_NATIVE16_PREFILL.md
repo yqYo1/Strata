@@ -2089,7 +2089,7 @@ pass with normal0 and closed ownership. The original V1 build/parser/import
 results are archived at `491953c77:q6_dense_c4_component_v1` in the result file.
 Controller `491953c77` now admits those unchanged fixture/census/recipe bytes
 as `q6_dense_c4_component_v2`. Compiled bytes and31CPU cases are reused;
-GPU qualification remains pending.
+The original native identity is preserved through that admission.
 It corrects the global trace-error regex that would reject the mandatory
 constructor canary. A unique verified pre-main receipt must attest expected37/46;
 other constructor errors and every subsequent UR/ZE error remain failures.
@@ -2100,8 +2100,31 @@ immutable inputs. Both native provider gates attest the actual process and
 environment; exit0, quiet validation, closed ownership and no fresh fault are
 confirmed. Full six-shape numerics also pass:12cases,6C1 refusals, finite/guard
 checks and unchanged inputs, with normal0, closed ownership and no fresh fault.
-The original build/CPU outcomes are unchanged. Three-process timing remains
-pending; no model speed is qualified.
+The original build/CPU outcomes are unchanged. All three timing processes now
+close with normal0, quiet validation, closed ownership and no fresh fault.
+All180 eligible samples remain in `q6_dense_c4_component_v2`; each process has
+five samples per arm and shape, in R/C,C/R,R/C process order.
+
+| Q6 input/output shape, C4 | Reference median ms | Candidate median ms | Geometric mean C/R time | Component decision |
+| --- | --- | --- | --- | --- |
+|2560x512 |0.113327 |0.110934 |1.120199 |Keep generic incumbent; one process loses |
+|6144x2560 |0.336407 |0.231145 |0.709908 |Candidate wins in3/3processes |
+|2560x6144 |0.356240 |0.196059 |0.520624 |Candidate wins in3/3processes |
+|2560x10240 |0.587055 |0.282678 |0.472114 |Candidate wins in3/3processes |
+|2560x12288 |0.683111 |0.325297 |0.483854 |Candidate wins in3/3processes |
+|2560x248320 |11.079762 |5.229101 |0.471740 |Wins against columns; keep faster packed model head |
+
+Intervals are medians of the three process medians; the geometric mean uses
+each process's paired time ratio. The smallest shape's ratios are
+0.934407/1.536808/0.978880: its lower aggregate candidate median does not pass
+the predeclared all-three gain rule. Preserve that loss. This fixture repeatedly
+accesses one prequantized matrix and charges graph submission/completion and
+parameter validation; it proves no model throughput or physical saturation.
+The current packed full head already has a separate approximately1.69ms result,
+so this approximately5.23ms canonical candidate must not replace it. Advance
+only the four winning non-head shapes into a fresh production trial, keeping
+prompt/C1, the smallest shape and packed head on their existing paths. Model,
+prefill-preservation, agent/task and physical262144/RESTORE gates remain open.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's

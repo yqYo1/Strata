@@ -34,11 +34,16 @@ host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
 The current Unsloth v3.1 catalog/pinned metadata and stock DFlash2 pack are
-present. The native DFlash2 candidate is opt-in and its corrected 32,769-token
-route admission passed, but sustained thinking generation, clean paired speed,
-task quality, physical 262144/RESTORE and default adoption remain open. MTP
-selection for existing configs is preserved. These component and route checks
-do not qualify a model route or a new inference adoption.
+present. The focused v3.1 setup/pins/shard-discovery and DFlash2 packing tests
+passed77host cases with1skip; this does not qualify native v3.1 model/type
+execution. The native DFlash2 candidate is opt-in. Its corrected32,769-token
+route admission and32K-plus sustained thinking generation have been exercised;
+the cache-loan comparison also closed in six fresh processes. Those measurements
+charge validation/observation and do not qualify a clean, repeated DFlash2-versus-
+MTP speed comparison. Task quality, physical262144/RESTORE and default adoption
+remain open. Existing configurations retain their MTP selection, and the
+experimental cache loan remains off by default. See `current_sync` in the status
+file for the original checks and limits; component success is not model adoption.
 
 ## Remaining integration work
 
