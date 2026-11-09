@@ -225617,6 +225617,84 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "time1",
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "3ad02eeba5abaa5d75e3ba1ab158f11082af3aa0696c0ba2a5ef90b9dde2bc7e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "04afcfa60450f3a67a0a3f1662176d16dfeac5b29645321b13dc00962e5a79ce",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          }
+        ],
+        "native_identity": {
+          "pid": 1707309,
+          "state": "S",
+          "ppid": 1706661,
+          "pgid": 1707309,
+          "sid": 1707309,
+          "start_ticks": 254225865,
+          "rss_bytes": 61960192
+        },
+        "mapped_provider_count": 34,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1707309,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "setup": [
+          "SETUP k=2560 n=640 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=512334 upload_cpu_ns=506720",
+          "ADMISSION k=2560 n=640 canonical_bytes=1344000 packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=1376000 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=2560 n=248320 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=100364891 upload_cpu_ns=74694214",
+          "ADMISSION k=2560 n=248320 canonical_bytes=521472000 packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=529429760 max_alloc_bytes=10132807680 graphs=2 nodes_each=1"
+        ],
+        "numerical": [
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1"
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "timing": [
@@ -225753,6 +225831,144 @@
                 1333688007,
                 1329521086,
                 1328619122
+              ]
+            ]
+          }
+        }
+      },
+      {
+        "index": 1,
+        "timer_stamp_median_ns": 691,
+        "cells": {
+          "640": {
+            "1": [
+              [
+                512744468,
+                503502691,
+                512654619,
+                503413464
+              ],
+              [
+                623092035,
+                613614858,
+                623014158,
+                613537654
+              ],
+              [
+                548567063,
+                539078852,
+                548489517,
+                539001828
+              ],
+              [
+                417593097,
+                409687548,
+                417516022,
+                409611045
+              ],
+              [
+                437305948,
+                429908158,
+                437219966,
+                429822758
+              ]
+            ],
+            "0": [
+              [
+                601158813,
+                593567087,
+                601101535,
+                593510450
+              ],
+              [
+                473569784,
+                464231218,
+                473512386,
+                464174372
+              ],
+              [
+                496997663,
+                488546249,
+                496936649,
+                488485936
+              ],
+              [
+                494613659,
+                486925440,
+                494537686,
+                486850099
+              ],
+              [
+                457731644,
+                450067688,
+                457662734,
+                449999430
+              ]
+            ]
+          },
+          "248320": {
+            "1": [
+              [
+                1344222021,
+                1337974593,
+                1339157424,
+                1332910898
+              ],
+              [
+                1333278057,
+                1326783210,
+                1328081481,
+                1321766272
+              ],
+              [
+                1341178240,
+                1339827048,
+                1336113673,
+                1334762922
+              ],
+              [
+                1331784570,
+                1330957309,
+                1326726495,
+                1325899845
+              ],
+              [
+                1332734088,
+                1331618461,
+                1327709847,
+                1326594781
+              ]
+            ],
+            "0": [
+              [
+                2839912885,
+                2837046833,
+                2828805651,
+                2825940206
+              ],
+              [
+                2832864969,
+                2831061538,
+                2821954846,
+                2820152422
+              ],
+              [
+                2840658209,
+                2836948280,
+                2829463029,
+                2825761954
+              ],
+              [
+                2838784376,
+                2823949832,
+                2827861469,
+                2813027371
+              ],
+              [
+                2834995509,
+                2831613038,
+                2824081058,
+                2820717488
               ]
             ]
           }
