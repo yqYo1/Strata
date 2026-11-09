@@ -2143,8 +2143,8 @@ per long transition, plus removal of request-scoped snapshot allocation. Neither
 copy latency nor a PP/TTFT gain is measured. The ownership fixture source adds
 checks for both policies' actual RAM extent, byte equality and repeated
 retire/overwrite/restore; it remains unbuilt and unexecuted. The completed source
-child is eligible for retirement after its original identity is verified on the
-pushed primary. A fresh four-ELF build, CPU refusals, traced
+child branch/worktree is retired locally and remotely after verifying its
+original identity on the pushed primary. A fresh four-ELF build, CPU refusals, traced
 small ownership checks, matched model handoff and repeated PP/TTFT/TG comparison
 are required; do not reuse the old same-build qualification for this changed owner.
 The independent dense trial is default-off at
@@ -2162,6 +2162,11 @@ selection fixed. No prior GPU or model qualification is inherited; both
 mechanisms need independent numerical/lifetime and repeated phase-performance
 checks. Existing phase/feature generations and legacy provenance holds remain
 separate; compilation alone does not qualify this candidate.
+The fresh build plan is prepared at native source
+`02d64c4ca533e357b0c408047a749626790b476b` under
+`q6_dense_head_backing_build_v1`. It pins1127project inputs and the existing
+compiler/dependency/recipe identities; no compilation or GPU execution is
+qualified yet. The unchanged1db engine and its four fixtures remain the fallback.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
