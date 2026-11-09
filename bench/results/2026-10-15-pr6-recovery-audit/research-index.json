@@ -26974,5 +26974,83 @@
       "current_failure_excerpt_retained": true,
       "original_failure_unchanged": true
     }
+  },
+  "orca_ro_bound_context_preflight_20261110": {
+    "classification": "decision_support_capability_only",
+    "stage": "qualified_for_fresh_private_workers",
+    "schedulable_now": true,
+    "ordinary_research_schedulable": true,
+    "source_commit": "69a8051893e0b6dac27fb73c76b1ddbda58c1480",
+    "source_path": "tools/orca_report_readonly.sh",
+    "source_sha256": "c41550676cbc0d80f4c7351faa940d01879a4e90fa7befd3aa0562336aa1ec19",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "CLI_version": "0.162.1",
+    "task": "task_53add908663c",
+    "dispatch": "ctx_c2baa78a44ed",
+    "terminal": "term_adb5ec92-4f3b-4d4c-9182-62559fe7609c",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-ro-bound-context-preflight-20261110/capability.json",
+      "bytes": 1438,
+      "sha256": "4a980a8e53e01fc29e0fb983a3d6f1f39f2f77887010bc709b965ff7095b4626"
+    },
+    "probe": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-ro-bound-context-preflight-20261110/probe.py",
+      "bytes": 2878,
+      "sha256": "0acf1a7a9e9798b29bb4dc93dad33b76f7443d5af1dcb2d0ee1278a28215fac3"
+    },
+    "worker_probe_namespace": "mnt:[4026534912]",
+    "own_probe_namespace_matches": true,
+    "all_three_existing_product_write_opens_refused_EROFS": true,
+    "report_write_succeeded": true,
+    "worker_status_and_exact_dispatch_show_succeeded": true,
+    "correct_literal_assignee_IPC_accepted": true,
+    "dispatch_settlement": {
+      "status": "completed",
+      "completed_at": "2026-11-09T22:24:09.981Z",
+      "capability_revoked_at": "2026-11-09T22:24:09.981Z",
+      "failure_count": 0
+    },
+    "namespace_and_timeout_processes_closed": true,
+    "captured_processes": [
+      {
+        "pid": 4166951,
+        "start_ticks": 261170481,
+        "exe": "/usr/bin/bwrap",
+        "ppid": 4166936,
+        "mount_namespace": "mnt:[4026531832]"
+      },
+      {
+        "pid": 4166952,
+        "start_ticks": 261170481,
+        "exe": "/usr/bin/bwrap",
+        "ppid": 4166951,
+        "mount_namespace": "mnt:[4026534912]"
+      },
+      {
+        "pid": 4166954,
+        "start_ticks": 261170482,
+        "exe": "/home/yayoi/.codex/packages/standalone/releases/0.162.1-x86_64-unknown-linux-musl/bin/codex",
+        "ppid": 4166952,
+        "mount_namespace": "mnt:[4026534912]"
+      },
+      {
+        "pid": 4166936,
+        "start_ticks": 261170475,
+        "exe": "/nix/store/2gfxiwls9hbgwdwcy43mprchwsq36mg6-coreutils-9.11/bin/coreutils"
+      }
+    ],
+    "terminal_custody": "Context-only/unverifiable PTY record;not reused or stopped. Actual captured namespace executor/timeout identities absent.",
+    "native_review": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/orca-ro-bound-context-review-20261110/review.md",
+      "bytes": 3450,
+      "sha256": "0b46bff5fa53b57628083826b5b972a89c19e4269e2215d4d785af1df309eb79",
+      "model": "gpt-6-luna",
+      "reasoning_effort": "max",
+      "digest": "Probe own namespace matches actual Codex namespace and all3opens refusedEROFS. Exact literal Task/Dispatch/assignee CLI IPC accepted;Main additionally verified actual Dispatch completed and all captured namespace/timeout identities absent. No new capability run needed."
+    },
+    "limits": "Filesystem write barrier,not secrecy/network isolation or inference adoption. No reusable old terminal claim. Raw send response was not retained;actual server-side completed Dispatch supplies settlement proof. New workers still need fresh report-only scope,source/runtime/mount verification and literal binding;Main exclusively executes native tests/GPU.",
+    "owner": "Main",
+    "next_review": "Use for three bounded Luna research tasks,then retire successful private CLI state/transaction files after compact qualification commit;keep only current report/probe provenance needed by launch qualification. Never steer active workers."
   }
 }

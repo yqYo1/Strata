@@ -250324,7 +250324,7 @@
     }
   },
   "q6_dense_cpu_leaf_actual_reader_v1": {
-    "stage": "prepared",
+    "stage": "closed",
     "source_commit": "4353b487fb69959dbcbb4f95db60478d0f8dc801",
     "fixture": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/0/engine.stderr",
@@ -250336,8 +250336,19 @@
       "-c",
       "import hashlib,json,sys\nfrom pathlib import Path\nsys.path.insert(0,str(Path('tools/sycl').resolve()))\nimport profile_q6_cpu_leaves as p\nd=json.loads(Path('bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json').read_text())['q6_dense_cpu_leaf_actual_reader_v1']\nassert d['stage']=='prepared'\nsource=Path(d['fixture']['path']);raw=source.read_bytes()\nassert hashlib.sha256(raw).hexdigest()==d['fixture']['sha256']\nlines=raw.splitlines(keepends=True);offset=0;seen=0\nfor line in lines:\n offset+=len(line)\n if line.startswith(b'strata serve: decode expert cache hit rate:'):\n  seen+=1\n  if seen==4:break\nassert seen==4\nobserved=p.context(0).route(raw[offset:].decode(),33208)\nassert observed['read_tokens']==33208 and observed['request'] if 'request' in observed else observed['read_tokens']==33208\nprint(json.dumps(dict(passed=True,actual_failed_V2_window=True,read_tokens=observed['read_tokens'],dense_route=observed['dense_DPAS'],original_V2_outcome_unchanged=True,GPU_executed=False),sort_keys=True))\n"
     ],
-    "scope": "Offline actual long-window route reader only,after15CPU controls;no model qualification,speed or original-failure rewrite.",
-    "passed": false,
-    "GPU_executed": false
+    "scope": "Offline actual failed-V2 long-window route reader only;15synthetic CPU controls plus this actual window pass. No new device execution,speed,task quality or retroactive V2qualification.",
+    "passed": true,
+    "GPU_executed": false,
+    "exit_code": 0,
+    "ownership_closed": true,
+    "actual_timeout_seconds": 45,
+    "actual_read_tokens": 33208,
+    "actual_decode_C4_capture": 8,
+    "actual_decode_C4_completed_replays": 1473,
+    "canonical_phase_widths": [
+      "decode/1",
+      "decode/4"
+    ],
+    "original_V2_failure_unchanged": true
   }
 }

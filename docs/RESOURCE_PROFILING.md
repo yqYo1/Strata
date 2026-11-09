@@ -190,7 +190,14 @@ The new admission verifies the original native inputs, five ELFs and complete
 compiler/link census, separately from this noncompiled observer. It consumes
 the closed comparison evidence, without rerunning its historical V1 raw reader
 or changing the original failure or adoption status. No new current-engine
-profile or observer-cost pass follows from source preparation. Keep
+profile or observer-cost pass follows from source preparation. V1's prelaunch
+artifact-reader lookup and V2's end-gate/client-journal ordering failures remain
+failed in their original records. The end gate precedes client result append:
+bind four warmups before begin, and all five client/native leaf records after
+normal exit. Source4353b487f passes15CPU controls, including this ordering, and
+the actual failed-V2 long window passes the unchanged BF16/head/IQ3 route checks
+and new dense-C4 reader offline. The prospective fresh cohort is V3; no failed
+sample is relabeled as eligible speed. Keep
 leaf CPU time separate from completion polling and nested pool/wait intervals.
 Test physical counter collection separately before making a RAM-bandwidth claim.
 
