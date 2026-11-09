@@ -2039,9 +2039,9 @@ fault and the same body,output and draft counts. Its candidate/reference TG
 ratios are1.053754(code)and1.060156(prose);prompt-time ratios are1.004763and
 0.987319,and TTFT ratios1.004705and0.987366. Both pairs favor candidate TG,
 while the first-long code prefill/TTFT remains slightly slower in each pair.
-Keep that phase result unresolved rather than accepting it as noise. Four of
-the six frozen processes are closed;the final reference/candidate pair remains.
-The completed processes0/1/2/3 also have identical requested-transfer counters
+Keep that phase result unresolved rather than accepting it as noise. Five of
+the six frozen processes are closed; only the final candidate remains.
+The completed processes0/1/2/3/4 also have identical requested-transfer counters
 for each long prefill. These are logical native copy requests, not measured
 PCIe traffic or bandwidth:
 
