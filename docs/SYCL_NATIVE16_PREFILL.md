@@ -2299,10 +2299,11 @@ Task quality,physical262144/tails/RESTORE,ordinary provider teardown and full
 inference/default adoption remain open. All individual samples and decisions
 are in `q6_dense_dpas_official_v2.cohort`;the performance CSV retains the earlier
 partial milestones and now indexes the closed comparison and14.5TGpoint.
-After original-source recovery,276closed-process1/2/3/4logs/journals/cache
-files(52648231bytes)are retired with a path/hash manifest and passing admission.
-Their frozen config/plan pairs and V1raw remain through the final retirement
-admission;review these consumers now that the cohort has closed.
+After original-source recovery,345closed-process1..5logs/journals/cache files
+(65809703bytes)are retired with a path/hash manifest and passing final admission.
+Review the ended V2configuration/probe consumers now. V1raw remains consumed
+by the historical-admission reader;the next resource controller must use the
+closed committed evidence before that temporary raw hold can retire.
 
 V1remains failed:its postprocessor expected metadata v4from the unchanged v5
 producer,and a second predicate wrongly required a Verifier-prompt capture
