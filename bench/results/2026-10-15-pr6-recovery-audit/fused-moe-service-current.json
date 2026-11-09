@@ -242968,7 +242968,7 @@
   },
   "q6_dense_dpas_official_v1": {
     "cohort": {
-      "stage": "prepared",
+      "stage": "ready",
       "source_commit": "8fa74dfe5213c5ae39545cfe488ccfb87c14148a",
       "native_source_commit": "221e95e9ad890383deb418d0a865ee32c99168b6",
       "binary": {
@@ -243333,7 +243333,7 @@
       ],
       "processes": [],
       "fixed_request_inputs": null,
-      "host_passed": false,
+      "host_passed": true,
       "budgets": {
         "wall": 5400,
         "cpu": 43200,
@@ -243364,6 +243364,26 @@
       "passed": false,
       "active": false,
       "ownership_closed": true,
+      "host_reader_controls": {
+        "passed": true,
+        "positive_arms": 2,
+        "corrupt_cases": 10,
+        "GPU_executed": false
+      },
+      "host_results": [
+        {
+          "role": "benchmark",
+          "passed": true,
+          "modules": 144,
+          "code_maps": 18
+        },
+        {
+          "role": "server",
+          "passed": true,
+          "modules": 230,
+          "code_maps": 27
+        }
+      ],
       "input_signatures": {
         "sources": "68521b5b988d727c2f749f803eaa257009ac0b936f71c90b2e8bb3c339325eeb",
         "model_assets": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
