@@ -2186,6 +2186,16 @@ source/recipe recovery:101files/36103460bytes. The successful V3 build/host/poli
 raw output is also retired:13files/6686539bytes. Current five ELFs,census,
 generated/configured inputs and the live planned-command input remain;source,
 numeric/CPU results and original failure statuses are unchanged.
+`tools/sycl/check_q6_dense_model.py` is the sole new observer admitted against
+that exact V3 build. It reuses the maintained real-head supervision and strict
+constructor/body trace reader without changing native or existing reader bytes.
+The prospective device order is50CPU reader cases and11native CPU-only refusals,
+submission10,phase-cache16,then independent head0/1/2 processes each with
+backing0and1. Every head process hashes both real shards before/after and checks
+the actual process/provider/environment at both gates. Keep all six sets of
+numerical/transition samples and original faults;commit every closed stage and
+stop on the first failure. This is fixture qualification,not a dense-dispatch
+model trial or a PP/TTFT/TG claim.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
