@@ -5,6 +5,7 @@ Reuse Main's maintained official-suite evidence, ownership and runtime readers.
 Native source and the already closed model proof keep their original identities.
 Main-authored; repository LICENSE applies. No external implementation copied.
 """
+import ast
 import copy
 import fcntl
 import hashlib
@@ -27,7 +28,9 @@ import qualify_qsa_k_model as suite
 
 build, guards, owner, validation = model.build, model.guards, model.owner, model.validation
 P, B, RESULT = model.P, model.B, model.RESULT
-ROOT, KEY, SCOPE = B / 'q6-dense-dpas-official-v1', 'q6_dense_dpas_official_v1', 'cohort'
+ROOT, KEY, SCOPE = B / 'q6-dense-dpas-official-v2', 'q6_dense_dpas_official_v2', 'cohort'
+OLD_ROOT, OLD_KEY = B / 'q6-dense-dpas-official-v1', 'q6_dense_dpas_official_v1'
+OLD_EVIDENCE = 'da7511195b49705d5cb93728ef84a6769eaa8719'
 THIS = 'tools/sycl/q6_dense_model_speed.py'
 ORDER = ('original', 'candidate', 'candidate', 'original', 'original', 'candidate')
 TEMPLATE = head_speed.ROOT / 'record.json'
@@ -84,6 +87,88 @@ def native(prior):
     return n, proof
 
 
+def historical_control(sources):
+    """New analysis of the mandatory V1 control; never rewrite its failure."""
+    old=json.loads((OLD_ROOT/'record.json').read_text())
+    archived=json.loads(build.primary.source.git(P,'show',
+        OLD_EVIDENCE+':'+str(RESULT.relative_to(P))))[OLD_KEY][SCOPE]
+    require(archived == validation.committed(RESULT,(OLD_KEY,SCOPE)) == compact(old) and
+        old['stage']=='failed' and not old['passed'] and not old['complete'] and
+        not old['active'] and old['ownership_closed'] and len(old['processes'])==1,
+        'preserved failed control/source record required')
+    previous=old['processes'][0];late=old['post_closure_diagnostic']['late_postconditions']
+    require(previous['index']==0 and previous['arm']=='original' and not previous['complete'] and
+        not previous['passed'] and previous['error']==
+        "RuntimeError('unexpected long-generation workload or thinking/output budget')" and
+        previous['ownership_closed'] and previous['fresh_faults']==[] and previous['boot_unchanged'] and
+        old['host_passed'] and late['passed'] and late['full15_asset_hashes_match'] and
+        late['source_native_five_ELFs_census_recipe_runtime_generated_profile_match'] and
+        late['V1_outcome_unchanged']=='failed' and
+        late['native_admission_sha256']==signature(old['native_admission']) and
+        late['asset_manifest_sha256']==signature(old['model_assets']),
+        'late audited control postconditions incomplete')
+    require(set(sources)==set(old['sources']) and all(
+        sources[p]==h for p,h in old['sources'].items() if p!=THIS),
+        'historical reuse allows only this postprocessing/controller change')
+    original=build.primary.source.git(P,'show',old['source_commit']+':'+THIS)
+    require(hashlib.sha256(original).hexdigest()==old['sources'][THIS],
+        'original performance observer not recoverable')
+    definitions=lambda text:{v.name:ast.dump(v,include_attributes=False) for v in ast.parse(text).body
+        if isinstance(v,(ast.FunctionDef,ast.AsyncFunctionDef))}
+    before,after=definitions(original),definitions((P/THIS).read_bytes())
+    unchanged=('pins','native','environment','audit','native_live','decision')
+    require(all(before[p]==after[p] for p in unchanged) and old['plan']['order']==list(ORDER),
+        'timed launch/environment/route/decision helper changed')
+    root=OLD_ROOT/'0';plan=old['plans'][0]
+    prior=json.loads((model.ROOT/'record.json').read_text())
+    runtime=dict(boot=prior['boot'],runtime_files=prior['runtime_files'])
+    require(old['native_source_commit']==prior['native_source_commit'] and
+        old['binary']==prior['native_build']['binaries']['strata'] and old['boot']==prior['boot'] and
+        old['model_assets']==prior['models'] and sha(prior['runtime_manifest']['path'])==old['runtime_sha256'] and
+        suite.d.fingerprint(environment(root,runtime))==plan['environment_sha256'] and
+        all(sha(root/p)==h for p,h in plan['generated'].items()),
+        'historical native/runtime/environment/generated configuration differs')
+    profile=old['profile']
+    require(suite.d.models.file_identity(profile['path'])==profile['identity'] and
+        sha(profile['path'])==profile['sha256'],'historical expert profile differs')
+    execution=json.loads((root/'execution.json').read_text());entries=execution['commands']
+    require(not execution['active'] and len(entries)==1 and entries[0]['label']=='bench' and
+        owner.closed(entries[0]) and entries[0]['exit_code']==0, 'historical bench owner/exit differs')
+    config=json.loads((root/'config.json').read_text())
+    end=suite.m.component.gen.native_end(root,
+        dict(binary=plan['binary'],native_validation_probe=old['native_validation_probe']),
+        dict(config=config),old['boot'],entries[0]['pid'])
+    log=(root/'engine.stderr').read_text()
+    require(validation.preload_evidence(log,end['native']['pid'])==late['validation'] and
+        (root/'validation.log').stat().st_size==0 and
+        not any(t in log for t in ('UR_RESULT_ERROR_','ZE_RESULT_ERROR_','terminate called','teardown uncertain')),
+        'historical native quietness/pre-main validation differs')
+    result=evidence(root,{'processes':[]})
+    require(result['native_dense_route']==late['actual_route'] and
+        'strata MoE window configuration: requested_mode=10 effective_mode=10' in log,
+        'historical actual route differs')
+    for sample in result['samples']:
+        if sample['phase'].startswith(('prompt/32K','long-generation/')):
+            require('strata prefill: layer-major candidate, tokens='+str(sample['read_tokens']-1)+
+                ' chunk=8192 residual_dtype=bf16' in log,'historical long-prefill route missing')
+    suite.d.models.model_pins(config,old['model_assets'])
+    files=['record.json','0/config.json','0/plan.json','0/engine-start.json','0/engine-exit.json',
+        '0/engine.stderr','0/validation.log','0/execution.json']
+    files += [str(p.relative_to(OLD_ROOT)) for p in (root/'bench').glob('*/*')
+        if p.name in ('results.json','requests.jsonl')]
+    proof=dict(record_evidence_commit=OLD_EVIDENCE,original_controller_source_commit=old['source_commit'],
+        original_outcome='failed',original_error=previous['error'],root=str(root),
+        raw_sha256={p:sha(OLD_ROOT/p) for p in files},unchanged_helpers=list(unchanged),
+        only_observer_changed=True,timed_native_client_workload_environment_unchanged=True,
+        original_full_asset_audit_utc=late['checked_utc'],original_host_passed=True,
+        original_runtime_live_proof=previous['native_identity'],
+        limits='Historical control analysed under the new v5/no-Verifier-prompt reader;not a new process or retroactive V1 success. Same mandatory control,no speed-based selection or replacement.')
+    process=dict(index=0,arm='original',execution='historical_reanalysis',complete=True,passed=True,
+        postconditions_complete=True,host_probe_accepted=True,native_exit_code=0,ownership_closed=True,
+        fresh_faults=[],boot_unchanged=True,evidence=result,historical_origin=proof)
+    return old,proof,process
+
+
 def qualification(require_host=True):
     prior = json.loads((model.ROOT / 'record.json').read_text()); ctx = model.context()
     require(validation.committed(RESULT, (model.KEY,)) == ctx.compact(prior) and prior['stage'] == 'closed' and
@@ -110,6 +195,9 @@ def qualification(require_host=True):
         require(validation.committed(RESULT, (KEY, SCOPE)) == compact(row) and row['native_admission'] == proof and
             sha(TEMPLATE) == row['template_record']['sha256'] and
             row['model_evidence_sha256'] == signature(ctx.compact(prior)), 'commit exact stable performance stage')
+        _,historical,process=historical_control(row['sources'])
+        require(row['historical_control']==historical and row['processes'][0]==process,
+            'frozen historical-control analysis changed')
         if require_host:
             require(row['host_passed'] and row['stage'] in ('ready', 'running'), 'fresh frontend gates required')
     runtime = dict(boot=prior['boot'], runtime_files=prior['runtime_files'])
@@ -211,15 +299,52 @@ def audit(text, dense, long_requests=(17, 18)):
         scope='Static actual captures and per-request replay deltas;logical copy requests,not physical traffic or utilization.')
 
 
+def common_routes(reference, current):
+    common = set(reference) & set(current)
+    # Dedicated long prefill does not use the Verifier prompt capture. Its
+    # mode10/BF16 route is checked separately by the unchanged suite runner.
+    require('decode/4' in common and all(reference[k] == current[k] for k in common),
+        'common canonical phase/width routing changed')
+    return dict(common=sorted(common), reference_only=sorted(set(reference)-set(current)),
+        candidate_only=sorted(set(current)-set(reference)), passed=True)
+
+
+def generation_contract(generation, rows):
+    # Private v5 contract, following the existing Main-authored pool_spin
+    # reader. Preserve generation_engine's historical v4 contract unchanged.
+    workloads = ('regular-code', 'varied-prose')
+    require(generation.get('workload_version') == 5 and generation.get('thinking') is True and
+        generation.get('reasoning_budget_tokens') == 0 and generation.get('max_tokens') == 16384,
+        'unexpected v5 task or thinking/output budget')
+    require(len(rows) == len(workloads) and
+        [(r.get('workload'), r.get('run'), r.get('order')) for r in rows] ==
+        [(name, 0, i) for i, name in enumerate(workloads)] and
+        all(r.get('controller_eligible') is True for r in rows), 'incomplete/ineligible v5 generation')
+    require(generation.get('diagnostic_subset') is False and
+        generation.get('selected_workloads') == list(workloads), 'v5 workload selection differs')
+
+
+def suite_context():
+    spec = importlib.util.spec_from_file_location('dense_official_context', suite.__file__)
+    ctx = importlib.util.module_from_spec(spec); spec.loader.exec_module(ctx)
+    gen = SimpleNamespace(**(vars(ctx.m.component.gen) |
+        {'require_complete_generation':generation_contract}))
+    component = SimpleNamespace(**(vars(ctx.m.component) | {'gen':gen}))
+    ctx.m = SimpleNamespace(**(vars(ctx.m) | {'component':component}))
+    return ctx
+
+
 def audit_controls():
-    def sample(dense):
+    def sample(dense, verifier_prompt=False):
         out = ['strata native head packed: ready=1 columns=1..4 weight_bytes=521472000 canonical_device_weight_bytes=0 extra_device_weight_bytes=0 permanent_host_weight_bytes=0 default_adopted=0',
             'strata mtp: shared packed head tokens=106299 subset_weight_bytes=0 subset_logit_bytes=425196 saved_device_bytes=222802704']
         for request in range(1,19):
             capture, completed = request * 4, 5 if request % 2 else 8
             out += ['strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000',
                 'strata prefill heads: draft detached bytes=0 retained-map-bytes=425196']
-            for phase, tokens in (('prompt',4),('decode',1),('decode',4)):
+            phases = [('decode',1),('decode',4)]
+            if verifier_prompt: phases.insert(0,('prompt',4))
+            for phase, tokens in phases:
                 identity = f'request={request} device=0 phase={phase} tokens={tokens} capture_id={capture}'
                 active = phase == 'decode' and tokens == 4; cells = [(2560,512,(21,0,0,0))]
                 if not (dense and active):
@@ -232,9 +357,11 @@ def audit_controls():
                     out += ['strata Q6_DPAS_DENSE '+identity+f' ni={ni} no={no} nc=4 layout=canonical extra_weight_bytes=0 canonical_table_excludes_dpas=1 calls={count if active else 0} complete=1'
                         for (ni,no),count in zip(model.SHAPES,(40,14,22,5))]
         return '\n'.join(out)
-    a,b = audit(sample(0),0),audit(sample(1),1)
-    require(a['canonical_phase_width_sha256'] == b['canonical_phase_width_sha256'] and
-        b['long_request_C4_replay_deltas'] == {'17':5,'18':8}, 'full-suite source reader controls differ')
+    for verifier_prompt in (False,True):
+        a,b = audit(sample(0,verifier_prompt),0),audit(sample(1,verifier_prompt),1)
+        common_routes(a['canonical_phase_width_sha256'],b['canonical_phase_width_sha256'])
+        require(a['canonical_phase_width_sha256'] == b['canonical_phase_width_sha256'] and
+            b['long_request_C4_replay_deltas'] == {'17':5,'18':8}, 'full-suite source reader controls differ')
     text=sample(1);marker=next(v for v in text.splitlines() if v.startswith('strata Q6_DPAS_DENSE '))
     bad=[text.replace(marker,'',1),text+'\n'+marker,text.replace(marker,marker+' calls=0',1),
         text.replace(marker,marker.replace('calls=0','calls=1'),1),
@@ -250,21 +377,45 @@ def audit_controls():
     try:audit(text,0)
     except RuntimeError:pass
     else:raise RuntimeError('disabled selector accepted dense markers')
-    return dict(passed=True,positive_arms=2,corrupt_cases=len(bad)+1,GPU_executed=False)
+    for a,b in (({'decode/1':'a'},{'decode/1':'a'}),
+                ({'decode/4':'a'},{'decode/4':'b'}),
+                ({'decode/4':'a','prompt/4':'x'},{'decode/4':'a','prompt/4':'y'})):
+        try: common_routes(a,b)
+        except RuntimeError: continue
+        raise RuntimeError('canonical isolation reader accepted a changed common route')
+    root=OLD_ROOT/'0';path,=(root/'bench').glob('*/results.json')
+    generation=json.loads(path.read_text())['results']['long_generation']
+    rows=suite.m.component.gen.collect_samples(generation)
+    generation_contract(generation,rows)
+    mutations=[]
+    for field,value in (('workload_version',4),('thinking',False),('reasoning_budget_tokens',1),
+                        ('max_tokens',1024),('diagnostic_subset',True),('selected_workloads',['regular-code'])):
+        changed=copy.deepcopy(generation);changed[field]=value;mutations.append((changed,rows))
+    for field,value in (('run',1),('order',1),('controller_eligible',False)):
+        changed=copy.deepcopy(rows);changed[0][field]=value;mutations.append((generation,changed))
+    mutations.extend(((generation,rows[::-1]),(generation,rows[:-1])))
+    for changed,samples in mutations:
+        try: generation_contract(changed,samples)
+        except RuntimeError: continue
+        raise RuntimeError('current-v5 reader accepted changed version/order/eligibility/selection')
+    current=evidence(root,{'processes':[]})
+    require(len(current['samples'])==18 and
+        set(current['native_dense_route']['canonical_phase_width_sha256'])=={'decode/1','decode/4'},
+        'actual completed no-Verifier-prompt baseline does not pass the prospective reader')
+    return dict(passed=True,positive_route_arms=4,corrupt_route_cases=len(bad)+4,
+        current_v5_positive=1,current_v5_corrupt_cases=len(mutations),
+        actual18request_baseline_reader_passed=True,GPU_executed=False)
 
 
 def evidence(root, row):
-    result = suite.evidence(root, row)
+    result = suite_context().evidence(root, row)
     dense = int(ORDER[int(root.name)] == 'candidate')
     result['native_dense_route'] = audit((root / 'engine.stderr').read_text(), dense)
     result['journal'] = {k: result['journal'][k] for k in ('valid','complete','pending')}
     if row['processes']:
         a = row['processes'][0]['evidence']['native_dense_route']['canonical_phase_width_sha256']
-        b = result['native_dense_route']['canonical_phase_width_sha256']; common = set(a) & set(b)
-        require('decode/4' in common and any(k.startswith('prompt/') for k in common) and
-            all(a[k] == b[k] for k in common), 'prefill/other width canonical routing changed')
-        result['native_dense_route']['isolation'] = dict(common=sorted(common), reference_only=sorted(set(a)-set(b)),
-            candidate_only=sorted(set(b)-set(a)), passed=True)
+        b = result['native_dense_route']['canonical_phase_width_sha256']
+        result['native_dense_route']['isolation'] = common_routes(a,b)
     return result
 
 
@@ -305,8 +456,7 @@ def decision(processes):
 
 
 def context():
-    spec = importlib.util.spec_from_file_location('dense_official_context', suite.__file__)
-    ctx = importlib.util.module_from_spec(spec); spec.loader.exec_module(ctx)
+    ctx = suite_context()
     prior = json.loads((model.ROOT / 'record.json').read_text())
     runtime = SimpleNamespace(**(vars(ctx.m.runtime) | {'RESULT':Path(prior['runtime_manifest']['path'])}))
     ctx.m = SimpleNamespace(**(vars(ctx.m) | {'KEY':KEY,'runtime':runtime}))
@@ -322,49 +472,57 @@ def prepare():
     require(not ROOT.exists() and KEY not in build.primary.public(), 'fresh official cohort only;no overwrite/retry')
     _, n, runtime, manifest, prior = qualification(False)
     reference = json.loads(TEMPLATE.read_text()); revision = build.primary.source.git(P,'rev-parse','HEAD').decode().strip()
+    sources=pins(revision);old,historical,control=historical_control(sources)
     config = copy.deepcopy(reference['configuration']); config['log'] = str(ROOT / 'engine.stderr')
     require(config['exe'] == str(P / 'tools/sycl/engine_once.py'), 'qualified engine wrapper required')
     plans=[]; children=[]; invariants=[]
     for index, arm in enumerate(ORDER):
-        root=ROOT / str(index)
+        root=OLD_ROOT/'0' if index==0 else ROOT/str(index)
         child=copy.deepcopy(config);child['log']=str(root/'engine.stderr');children.append(child)
+        if index==0:
+            require(json.loads((root/'config.json').read_text())==child,
+                'historical actual configuration differs')
         with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
         env=environment(root,runtime); masked=dict(env,STRATA_SYCL_DECODE_Q6_DPAS_DENSE='<arm>')
         invariants.append(signature(json.loads(json.dumps(dict(config=child,environment=masked)).replace(str(root),'<process>'))))
-        plans.append(dict(index=index,arm=arm,root=str(root),binary=n['binaries']['strata'],
+        plans.append(copy.deepcopy(old['plans'][0]) if index==0 else dict(index=index,arm=arm,root=str(root),binary=n['binaries']['strata'],
             command=['/bin/sh',str(P/'bench.sh'),'--config',str(root/'config.json'),'--port',str(port),
                 '--long','--long-generation','--think','--runs','1','--workload-id','q6_dense_official_v1',
                 '--fail-fast-engine-error','--ready-timeout','600','--out',str(root/'bench')],
             environment_sha256=suite.d.fingerprint(env)))
-    require(len(set(invariants))==1, 'only dense selection and private process roots may differ')
+    require(len(set(invariants))==1 and invariants[0]==old['invariant_sha256'],
+        'historical and fresh arms differ beyond dense selection/private process roots')
     profile=config['args'][config['args'].index('--expert-profile')+1]
     proof=n['speed_observer_admission']
-    row=dict(stage='prepared',source_commit=revision,sources=pins(revision),native_source_commit=n['native_source_commit'],
+    row=dict(stage='prepared',source_commit=revision,sources=sources,native_source_commit=n['native_source_commit'],
         binary=n['binaries']['strata'],native_admission=proof,native_validation_probe=prior['probe'],
         configuration=config,model_assets=prior['models'],boot=prior['boot'],driver=prior['driver'],
         template_record=dict(path=str(TEMPLATE),sha256=sha(TEMPLATE)),model_evidence_sha256=signature(model.context().compact(prior)),
         runtime_sha256=sha(prior['runtime_manifest']['path']),python_contract=reference['python_contract'],
         python_selected=manifest['selected'],profile=dict(path=profile,identity=suite.d.models.file_identity(profile),sha256=sha(profile)),
-        invariant_sha256=invariants[0],plans=plans,processes=[],fixed_request_inputs=None,host_passed=False,
+        invariant_sha256=invariants[0],plans=plans,processes=[control],historical_control=historical,
+        fixed_request_inputs=None,host_passed=False,
         budgets=dict(wall=5400,cpu=43200,rss_cap=104<<30,text_cap=64<<20,file_cap=128<<20,total_cap=512<<20),
         plan=dict(question='Do the four individually winning C4decode-DPAS cells improve model decode while preserving prefill/TTFT?',
             order=list(ORDER),constants='Same a347/221e engine,head2,backing0,128KresidentINT8,1256cache,8192chunk,384bank,5workers,spec4,adapt96/every1,lease1,20ms spin,IQ3pair1 and existing BF16/GDN16/MTP16 paths. Only immutable decode-DPAS0/1 changes.',
-            samples='Six fresh processes,three opposite-order adjacent pairs. Each unchanged bench.sh --long --long-generation --think --runs1:18requests including six-turn agent and both >=32Kfresh/>=1Kthinking generation cases. Non-agent bodies/counts must match;generated text and optional MTP widths need not.',
-            acceptance='First bounded reader controls and two fresh CPU/mock frontend probes. Then complete journals/streams and answer bodies;actual current PID/providers/pre-main validation;normal native0,closed owners,quiet validation,no fresh fault;original exact source/5ELFs/census/recipe and assets. Both long requests must actually replay selected C4cells40/14/22/5;small generic21 and common canonical phase/width tables remain. Record actual head-copy requests. Full asset hashes at preparation/final closure.',
+            samples='One mandatory historical V1control plus five fresh processes,three opposite-order adjacent pairs. Same unchanged bench.sh --long --long-generation --think --runs1 and workload-id q6_dense_official_v1:18requests including six-turn agent and both >=32Kfresh/>=1Kthinking generation cases. Non-agent bodies/counts must match;generated text and optional MTP widths need not. Preserve the original failed V1source/outcome and explicit late-postcondition provenance;no speed-based replacement.',
+            acceptance='First current-v5/no-Verifier-prompt reader controls,actual18request baseline reanalysis,and two fresh CPU/mock frontend probes. Then complete journals/streams and answer bodies;actual PID/providers/pre-main validation;normal native0,closed owners,quiet validation,no fresh fault;original exact source/5ELFs/census/recipe and assets. Both long requests must actually replay selected C4cells40/14/22/5;small generic21 and common observed canonical phase/width tables remain. Independent mode10/BF16long-prefill checks stay unchanged. Full15asset hashes from the immediately preceding committed late audit plus unchanged identities at preparation;full hashes again at final closure.',
             decision='Keep all3pair TG ratios/geomean and individual samples. Gain in all3pairs is credible gain with no arbitrary minimum floor;GM>=1 is only a preservation screen. Confirm strong>=.60/weak<=.40 from each arm sample. Judge PP/TTFT and decode independently;no noise waiver or offsetting a regression by another phase.',
             stopping='Stop first ownership/runtime/fault/budget/incomplete-output/source/admission failure. No retries,replacements or speed-based early stops;classification/speed outcomes never discard samples. Commit every closed stage. Freeze the whole FUSED file and benchmark inputs while a process is active.',
-            limits='Nominal upstream32K may read32089 and is supplemental;added >=32768fresh generation inputs qualify strict long comparisons. Provider maps are checked at suite start,not throughout the complete executable address space/history. Validation/audits are charged;observer cost,semantic task quality,physical262144/RESTORE,ordinary provider teardown and hardware saturation remain unqualified.',
+            limits='First control was executed under original8fa/V1plan before this reader-only repair;its known observations are retained without changing the original performance criteria or selecting by speed. Native/client/timed launch/environment and helper equivalence are checked. Nominal upstream32K may read32089 and is supplemental;added >=32768fresh generation inputs qualify strict long comparisons. Provider maps are checked at suite start,not throughout the complete executable address space/history. Validation/audits are charged;observer cost,semantic task quality,physical262144/RESTORE,ordinary provider teardown and hardware saturation remain unqualified.',
             retention='Keep individual metric/body hashes,source/config/native identities and decisions. Retire successful full journals/logs/private caches after closure and source recovery;keep a347/5fixtures and1db for the named imminent comparisons. Other named phase/feature consumers and legacy holds remain separate.'),
         complete=False,passed=False,active=False,ownership_closed=True)
-    suite.d.models.model_pins(config,row['model_assets'],full=True)
+    suite.d.models.model_pins(config,row['model_assets'])
     ROOT.mkdir(mode=0o700)
     for plan,child in zip(plans,children):
+        if plan['index']==0:
+            continue
         root=Path(plan['root']);root.mkdir(mode=0o700)
         for name in ('tmp','cache'):(root/name).mkdir(mode=0o700)
         write(root/'config.json',child)
         write(root/'plan.json',dict(binary=n['binaries']['strata'],native_validation_probe=prior['probe']))
         plan['generated']={p:sha(root/p) for p in ('config.json','plan.json')}
-    save(row);print('Prepared six same-engine official long/agent/thinking processes;commit before frontend probes.',flush=True)
+    save(row);print('Prepared one explicit historical control and five fresh same-engine official processes;commit before frontend probes.',flush=True)
 
 
 def host():
@@ -374,7 +532,9 @@ def host():
     scope=None
     try:
         require(pins(row['source_commit'])==row['sources'],'frontend/controller source changed')
-        scope=owner.Owner(ROOT/'host-owned');env=environment(ROOT/'0',runtime)
+        scope=owner.Owner(ROOT/'host-owned');host_root=ROOT/'host-probe';host_root.mkdir(mode=0o700)
+        for name in ('tmp','cache'):(host_root/name).mkdir(mode=0o700)
+        env=environment(host_root,runtime)
         row['host_reader_controls']=audit_controls()
         allowed={v['realpath'] for v in manifest['inventory']['files'].values()};reports=[]
         for role,path in (('benchmark','tools/strata_bench.py'),('server','serve/server.py')):
@@ -395,8 +555,8 @@ def host():
 
 
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','host','0','1','2','3','4','5'),
-        'q6_dense_model_speed.py prepare|host|0..5')
+    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','host','1','2','3','4','5'),
+        'q6_dense_model_speed.py prepare|host|1..5 (index0 is the explicit historical control)')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
         if sys.argv[1]=='prepare':prepare()

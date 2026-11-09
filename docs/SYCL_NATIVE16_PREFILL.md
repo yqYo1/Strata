@@ -2257,10 +2257,15 @@ The next speed observer is `tools/sycl/q6_dense_model_speed.py`. It admits only
 that additional committed observer against the original1129model/build inputs;
 native221e,five ELFs,census and recipe remain unchanged. Head2/backing0 and the
 closed tuned128K/1256/spec4/8192/384bank/adapt96/lease1configuration stay fixed.
-Six fresh processes in0/1,1/0,0/1pair order each run the same official
-`bench.sh --long --long-generation --think --runs 1`,including the six-turn
-agent session. Two fresh frontend probes and bounded route-reader controls
-precede execution. Keep all paired TG/PP/TTFT samples and actual MTP classes;
+V2explicitly admits the mandatory historical V1control and five fresh
+processes in the same0/1,1/0,0/1pair order. Each uses the same official
+`bench.sh --long --long-generation --think --runs 1`and unchanged workload-id,
+including the six-turn agent session. Only this observer changes;all native/
+client/workload sources and the timed environment/launch helpers must match.
+The V2private reader accepts current v5metadata and compares actual common
+canonical windows without requiring a Verifier-prompt capture. The original
+v4helper and V1failure remain unchanged. Actual18request reanalysis,corrupt
+reader controls and two fresh frontend probes precede candidate execution. Keep all paired TG/PP/TTFT samples and actual MTP classes;
 the nominal32Kcase is supplemental and added generation inputs must meet the
 strict32768fresh-token requirement. This is prospective,not a speed result.
 The closed V1control exposes a reader mismatch before candidate1:the tuned
