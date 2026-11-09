@@ -1979,6 +1979,12 @@ The pre-GPU structural reader then refuses opcode70,which appears once in each
 it as `OpInBoundsPtrAccessChain`;the old reader supported only opcode67's
 non-inbounds form. The failed build gate remains failed,no GPU ran,and a fresh
 prospective reader/control admission is required for these exact ELFs.
+That V2 admission now passes40CPU controls,including pointer ID/declaration
+reordering,distinct inbounds semantics,changed element edges and malformed/
+undefined operands. Both full2443-instruction selected modules compare equal
+after only the declared ID/declaration normalization. Native source remains
+6dd74eab7 and all four ELFs/actual inputs/recipe stay unchanged;the reader
+admission is f518f10c8. No GPU qualification or performance is inherited.
 The0b engine/fixtures and closed V2/V3/V4 model diagnostic roots are now
 retired:354files/183373323bytes. Exact1119project and1145dependency source
 inputs are recovered from their original commits;the original recipe and
