@@ -10,10 +10,12 @@ import copy
 import fcntl
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 import select
 import subprocess
+import statistics
 import sys
 
 sys.dont_write_bytecode = True
@@ -51,13 +53,17 @@ def model_assets():
     return [dict(path=str(p),realpath=str(p.resolve()),bytes=p.stat().st_size,sha256=sha(p)) for p in paths]
 
 
-def run_gpu(row,scope,mode,outcome):
+def run_gpu(row,scope,mode,outcome,order=None,label=None):
     packed={'reference':0,'canonical':1,'sole-packed':2}[mode]
+    label=label or mode
+    require(order is None or mode=='sole-packed' and order in ('rc','cr'),'explicit timing order/format')
     require(model_assets()==row['assets'],'full pre-exec real-shard identities')
     env=dict(row['environment'],STRATA_SYCL_DECODE_Q6_DPAS_HEAD=str(packed),STRATA_Q6_HEAD_OWNER_GATE='1',
         LD_PRELOAD=row['native_validation_probe']['library']['path'],
         STRATA_UR_PROBE_EXPECTED_LOADER=row['native_validation_probe']['loader']['path'],
-        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(ROOT/(mode+'-validation.log')))
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(ROOT/(label+'-validation.log')))
+    if order is not None:
+        env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
     cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(
         ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
         if v.startswith('-- cursor: '))
@@ -93,18 +99,21 @@ def run_gpu(row,scope,mode,outcome):
                 io.poll()
                 if select.select([io.proc.stdout],[],[],.02)[0]:io.read();io.pending.clear()
             io.exit(1)
-        e,out,err=scope.run('native-'+mode,[row['binary']['path'],'--check',*[v['path'] for v in row['assets']]],
+        args=['--check'] if order is None else ['--timing',order]
+        e,out,err=scope.run('native-'+label,[row['binary']['path'],*args,*[v['path'] for v in row['assets']]],
             env,ROOT,interaction=interact,**row['native_budget'])
         require(owner.closed(e) and e['exit_code']==0,'owned NativeHead process failed')
         text,diagnostic=out.read_text(),err.read_text()
         outcome['native_exit_code']=e['exit_code']
         outcome['validation']=validation.preload_evidence(diagnostic,e['pid'])
         require(outcome['validation']['loader']==env['STRATA_UR_PROBE_EXPECTED_LOADER'],'actual validation loader')
-        log=ROOT/(mode+'-validation.log')
+        log=ROOT/(label+'-validation.log')
         require(not log.exists() or log.stat().st_size==0,'parameter validation error')
         outcome['owner']=parse_native(text,packed)
-        if packed:require(('Q6DpasC4Canonical' if packed==1 else 'Q6DpasC4') in diagnostic and 'urEnqueueCommandBufferExp' in diagnostic,'traced selected head graph path')
-        if packed==2:require('Q6DpasColumns' in diagnostic,'traced exact-width packed head path')
+        if order is not None:outcome['timing']=timing_samples(text,order)
+        elif packed:
+            require(('Q6DpasC4Canonical' if packed==1 else 'Q6DpasC4') in diagnostic and 'urEnqueueCommandBufferExp' in diagnostic,'traced selected head graph path')
+            if packed==2:require('Q6DpasColumns' in diagnostic,'traced exact-width packed head path')
         require(model_assets()==row['assets'],'full post-run real-shard identities')
         outcome['assets_pre_post_match']=True
         outcome['passed']=True
@@ -115,6 +124,33 @@ def run_gpu(row,scope,mode,outcome):
         if not outcome['passed'] or outcome.get('driver_after')!=row['driver'] or 'error' in outcome:
             outcome['passed']=False
     require(outcome['passed'],outcome.get('error','native owner/fault/closure gate failed'))
+
+
+def timing_samples(text,order):
+    require(order in ('rc','cr'),'known timing order')
+    lines=text.splitlines();timers=[v for v in lines if v.startswith('TIMER ')]
+    require(len(timers)==1,'one timer control required')
+    m=re.fullmatch(r'TIMER median_overhead_ns=(\d+) unit_ns=(\d+) floor_ns=(\d+)',timers[0])
+    require(m is not None,'timer control schema')
+    overhead,unit,floor=map(int,m.groups())
+    require(unit>=max(1,overhead) and floor==max(10000000,300*unit),'timer/floor eligibility')
+    samples=[]
+    for line in lines:
+        if not line.startswith('TIMING '):continue
+        m=re.fullmatch(r'TIMING sample=(\d+) arm=([01]) replays=(\d+) elapsed_ns=(\d+) floor_ns=(\d+) scope=quantize-projection-graph-submit-complete',line)
+        require(m is not None,'timing sample schema')
+        sample,arm,replays,elapsed,sample_floor=map(int,m.groups())
+        require(replays==256 and sample_floor==floor and elapsed>=floor,'timing sample below declared extent/floor')
+        samples.append(dict(sample=sample,arm=arm,replays=replays,elapsed_ns=elapsed,ns_per_replay=elapsed/replays))
+    sequence=(0,1) if order=='rc' else (1,0)
+    require([(v['sample'],v['arm']) for v in samples]==[(i,a) for i in range(5) for a in sequence],
+        'exact paired repetition order required')
+    require([v for v in lines if v.startswith('TIMING_DONE ')]==['TIMING_DONE samples_per_arm=5 model_speed=unqualified'],
+        'complete timing footer required')
+    medians={str(a):statistics.median(v['ns_per_replay'] for v in samples if v['arm']==a) for a in (0,1)}
+    return dict(order=order,samples=samples,median_ns=medians,candidate_over_reference=medians['1']/medians['0'],
+        timer=dict(median_overhead_ns=overhead,unit_ns=unit,floor_ns=floor),timed_replays=2560,
+        warmup_replays=6,numerical_replays=12,scope='C4 quantize+projection and graph submission/completion;parameter validation/retained-loader charged. No model throughput.')
 
 
 def compact(row):
@@ -212,7 +248,7 @@ def prepare():
             changed_observers=['tools/sycl/check_q6_head_model.py','tools/sycl/q6_head_owner.py',
                 'tools/sycl/test_q6_dpas_component.py'],
             scope='Controller-only new plan;native source6dd and all four artifacts stay exact. No old GPU/model result inherited.'),
-        plan='43CPU parser/census/protocol controls plus seven fresh CPU-only empty-owner/invalid-switch processes,'
+        plan='47CPU parser/census/protocol controls plus seven fresh CPU-only empty-owner/invalid-switch processes,'
              'then submission10 and phase-cache16 traced checks,then fresh reference0/canonical1/sole-packed2'
              ' real-GGUF owner processes. Retain484d supervision,explicit new format bindings and unchanged'
              ' fault finalizer;keep two gates/native identity/finite budgets. Full shard hashes before/after'
@@ -246,9 +282,9 @@ def execute(mode):
                 'tools.sycl.test_q6_dpas_component','tools.sycl.test_compile_census',
                 'tools.sycl.test_q6_head_generation_speed'],row['environment'],P,**row['host_budget'])
             control=out.read_text()+err.read_text()
-            require(owner.closed(e) and e['exit_code']==0 and 'Ran 43 tests' in control and '\nOK\n' in control,
-                'all43prospective host controls required')
-            row['host_controls']=dict(passed=True,cases=43,GPU_executed=False)
+            require(owner.closed(e) and e['exit_code']==0 and 'Ran 47 tests' in control and '\nOK\n' in control,
+                'all47prospective host controls required')
+            row['host_controls']=dict(passed=True,cases=47,GPU_executed=False)
             cases = [('empty', ['--host'], {}, 'HOST owner_negative_cases=3 GPU=0\nPACKED_HOST owner_negative_cases=1 GPU=0'),
                 ('flag3', ['--reject-switch', 'must be 0 or 1'], {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': '3'}, 'REJECT_SWITCH passed=1 GPU=0'),
                 ('empty-flag', ['--reject-switch', 'must be 0 or 1'], {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': ''}, 'REJECT_SWITCH passed=1 GPU=0'),
@@ -313,8 +349,79 @@ def execute(mode):
     print('Closed production-linked head ' + mode + ';commit before advancing.', flush=True)
 
 
+def prepare_timing():
+    require(not ROOT.exists() and KEY not in build.public(),'fresh timing cohort only')
+    prior=json.loads((B/'q6-head-packed-device-v1/record.json').read_text())
+    require(validation.committed(RESULT,('q6_head_packed_device_v1',))==compact(prior) and
+        prior['stage']=='closed' and prior['passed'] and prior['complete'] and prior['ownership_closed'] and
+        all(any(v['mode']==arm and v['passed'] and v['fresh_faults']==[] for v in prior['results'])
+            for arm in ('reference','canonical','sole-packed')),'close all three fresh device owners first')
+    n=native();require(n['binaries']==prior['binaries'],'same qualified four native artifacts required')
+    row=copy.deepcopy(prior)
+    row.update(stage='prepared',source_commit=build.source.git(P,'rev-parse','HEAD').decode().strip(),
+        controller=build.source.pin(P,['tools/sycl']),results=[],commands=[],passed=False,complete=False,
+        active=False,ownership_closed=True,GPU_executed=False,orders=['rc','cr','rc'],
+        device_qualification=dict(key='q6_head_packed_device_v1',evidence_commit='5145e8eb7229cdec7b33711f708cc95949d853cd',
+            native_artifacts_unchanged=True,model_or_speed_result_inherited=False),
+        plan='47CPU timing/owner/census/protocol controls first;then three fresh sole-packed fixture processes'
+             ' in R/C,C/R,R/C order. Each reruns four numerical and eight partial-column cases,two owner'
+             ' retire/overwrite/restore cycles and12numerical replays,before three warmups/arm and'
+             ' five paired samples/arm of256replays. Native and reader both enforce max(10ms,300timer-units).'
+             ' Remove only full API tracing before exec;parameter validation,retained loader and all'
+             ' runtime safety settings stay. Full shard hashes pre/post each process,normal0/closed/no fault.'
+             ' Require all three process median ratios<1 for component advancement;no minimum gain.'
+             ' Stop first failure,no retries. This is head C4 only,not MTP/model/PP/TTFT/TG adoption.',
+        retention='Keep the30eligible per-process timing samples,paired ratios and numerical/fault/ownership summary.'
+                  ' Retire normal API/stage logs and caches after the current model-entry consumer is updated;'
+                  ' keep current1db candidate plus5a6 fallback and named90f/552b/e1b references.')
+    row.pop('host_controls',None)
+    ROOT.mkdir(mode=0o700)
+    for name in ('tmp','cache'):(ROOT/name).mkdir(mode=0o700)
+    save(row);print('Prepared fresh three-process C4 timing cohort;commit before controls.',flush=True)
+
+
+def execute_timing(mode):
+    row=json.loads((ROOT/'record.json').read_text());verify(row)
+    require(row['stage']==('prepared' if mode=='timing-host' else 'host_passed'),'no timing retry/duplicate')
+    scope=None
+    def persist():write(ROOT/'execution.json',dict(active=bool(scope and scope.active),commands=scope.commands if scope else []))
+    try:
+        scope=owner.Owner(ROOT/('owned-'+mode),persist)
+        if mode=='timing-host':
+            e,out,err=scope.run('reader-controls',[build.HOST_PYTHON,'-B','-m','unittest','-v',
+                'tools.sycl.test_q6_dpas_component','tools.sycl.test_compile_census','tools.sycl.test_q6_head_generation_speed'],
+                row['environment'],P,**row['host_budget'])
+            text=out.read_text()+err.read_text()
+            require(owner.closed(e) and e['exit_code']==0 and 'Ran 47 tests' in text and '\nOK\n' in text,
+                'all47timing/owner controls required')
+            row.update(stage='host_passed',host_controls=dict(passed=True,cases=47,GPU_executed=False))
+        else:
+            for i,order in enumerate(row['orders']):
+                result=dict(mode='sole-packed',process=i,order=order,passed=False);row['results'].append(result)
+                run_gpu(row,scope,'sole-packed',result,order=order,label='timing'+str(i))
+                print('Completed C4 timing process'+str(i)+' '+order,flush=True)
+            ratios=[v['timing']['candidate_over_reference'] for v in row['results']]
+            gm=math.exp(sum(math.log(v) for v in ratios)/len(ratios))
+            row.update(stage='closed',passed=True,complete=True,
+                decision=dict(process_ratios=ratios,geometric_time_ratio=gm,component_speedup=1/gm,
+                    head_component_gain=all(v<1 for v in ratios),model_speed_qualified=False,inference_adopted=False,
+                    next='Only a repeatable full-head gain permits the new same-engine0/2 MTP/model proposal;'
+                         'MTP subset arithmetic,placement,phase preservation,long/agent/task and full context stay open.'))
+    except BaseException as error:row.update(stage='failed',passed=False,complete=False,error=repr(error))
+    finally:
+        row['commands']+=scope.commands if scope else [];row['active']=bool(scope and scope.active)
+        row['ownership_closed']=not row['active'] and all(owner.closed(c) for c in row['commands'])
+        row['passed']=bool(row['passed'] and row['ownership_closed']);save(row)
+    require(row['stage']!='failed' and row['ownership_closed'],row.get('error','timing did not close'))
+    print('Closed '+mode+';commit before advancing.',flush=True)
+
+
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['host'], ['device']), 'check_q6_head_model.py prepare|host|device')
+    require(sys.argv[1:] in (['prepare'], ['host'], ['device'],['prepare-timing'],['timing-host'],['timing']),
+        'check_q6_head_model.py prepare|host|device|prepare-timing|timing-host|timing')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        prepare() if sys.argv[1] == 'prepare' else execute(sys.argv[1])
+        if sys.argv[1] in ('prepare-timing','timing-host','timing'):
+            ROOT,KEY=B/'q6-head-packed-timing-v1','q6_head_packed_timing_v1'
+            prepare_timing() if sys.argv[1]=='prepare-timing' else execute_timing(sys.argv[1])
+        else:prepare() if sys.argv[1] == 'prepare' else execute(sys.argv[1])

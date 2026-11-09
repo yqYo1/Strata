@@ -10,6 +10,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import q6_dpas_component as component
 import q6_head_owner as head_owner
+import check_q6_head_model as production_head
 
 class LinkedSpirv(unittest.TestCase):
     @staticmethod
@@ -179,6 +180,40 @@ class NativeHeadProtocol(unittest.TestCase):
             failed=dict(complete,error='original failure must survive')
             head_owner.finish_gpu_probe(failed,scope,'fixture-cursor','fixture-boot')
             self.assertFalse(failed['passed'])
+
+
+class HeadTimingProtocol(unittest.TestCase):
+    @staticmethod
+    def output(order='rc'):
+        lines=['TIMER median_overhead_ns=20 unit_ns=30 floor_ns=10000000']
+        for sample in range(5):
+            for arm in ((0,1) if order=='rc' else (1,0)):
+                elapsed=(100000000 if arm==0 else 20000000)+sample*1000
+                lines.append(f'TIMING sample={sample} arm={arm} replays=256 elapsed_ns={elapsed} floor_ns=10000000 scope=quantize-projection-graph-submit-complete')
+        return '\n'.join(lines+['TIMING_DONE samples_per_arm=5 model_speed=unqualified'])+'\n'
+
+    def test_both_orders_and_individual_samples(self):
+        for order in ('rc','cr'):
+            value=production_head.timing_samples(self.output(order),order)
+            self.assertEqual(len(value['samples']),10);self.assertEqual(value['timed_replays'],2560)
+            self.assertEqual(value['median_ns'],{'0':100002000/256,'1':20002000/256})
+
+    def test_duplicate_truncated_or_wrong_order_refused(self):
+        text=self.output();line=next(v for v in text.splitlines() if v.startswith('TIMING '))
+        for bad in (text+line+'\n',text.replace(line+'\n','',1),self.output('cr'),
+                    text.replace('sample=4 arm=1','sample=3 arm=1')):
+            with self.assertRaises(RuntimeError):production_head.timing_samples(bad,'rc')
+
+    def test_short_wrong_extent_or_floor_refused(self):
+        for a,b in (('elapsed_ns=20000000','elapsed_ns=9999999'),('replays=256','replays=255'),
+                    ('floor_ns=10000000','floor_ns=1'),('unit_ns=30','unit_ns=0')):
+            with self.assertRaises(RuntimeError):production_head.timing_samples(self.output().replace(a,b),'rc')
+
+    def test_missing_footer_or_duplicate_timer_refused(self):
+        text=self.output()
+        for bad in (text.replace('TIMING_DONE','INCOMPLETE'),text+text.splitlines()[0]+'\n',
+                    text.replace('model_speed=unqualified','model_speed=qualified')):
+            with self.assertRaises(RuntimeError):production_head.timing_samples(bad,'rc')
 
 
 if __name__ == '__main__':
