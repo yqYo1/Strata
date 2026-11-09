@@ -225090,7 +225090,7 @@
     }
   },
   "q6_canonical_component_v4": {
-    "stage": "prepared",
+    "stage": "built",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -225470,6 +225470,22 @@
       "native_recompiled": false,
       "GPU_qualification_inherited": false,
       "scope": "Fresh selected14TU/compiler/link census and exact canonical callgraph from the unchanged11.6MB ELF. Failed v3 stays failed. New22CPU controls and all GPU stages still required."
+    },
+    "reader_controls": {
+      "passed": true,
+      "tests": 22,
+      "command": [
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "tools.sycl.test_q6_dpas_component",
+        "tools.sycl.test_compile_census"
+      ],
+      "exit_code": 0,
+      "ownership_closed": true,
+      "GPU_executed": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
