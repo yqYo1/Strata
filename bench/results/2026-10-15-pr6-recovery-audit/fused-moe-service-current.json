@@ -249366,8 +249366,8 @@
   },
   "q6_dense_cpu_leaves_host_v1": {
     "stage": "closed",
-    "source_commit": "adbd1fe8d92e283d9a0ebcc30fa92786fe6add84",
-    "source_signature_sha256": "040296a2286f12ade180d69567c71490ed82908380ff4fcae44a524e74c13956",
+    "source_commit": "c454d08445786580be2f619d959b14c9675945fa",
+    "source_signature_sha256": "b9f35aa217f50b30136be28b685bde8556fa8919cae62f165523b9ed069e7e6e",
     "source_count": 640,
     "GPU_executed": false,
     "passed": true,
@@ -249387,15 +249387,15 @@
     "tests": 14,
     "owner_results": [
       {
-        "pid": 4135604,
+        "pid": 4147856,
         "direct_identity": {
-          "pid": 4135604,
+          "pid": 4147856,
           "state": "R",
-          "ppid": 4135534,
-          "pgid": 4135604,
-          "sid": 4135604,
-          "start_ticks": 261088973,
-          "rss_bytes": 598016
+          "ppid": 4147791,
+          "pgid": 4147856,
+          "sid": 4147856,
+          "start_ticks": 261119446,
+          "rss_bytes": 573440
         },
         "exit_code": 0,
         "observation_complete": true,
@@ -249429,6 +249429,49 @@
         "exit_code": 0,
         "tests": 13,
         "error": "RuntimeError('CPU reader/controller controls failed')"
+      },
+      {
+        "stage": "closed",
+        "source_commit": "adbd1fe8d92e283d9a0ebcc30fa92786fe6add84",
+        "source_signature_sha256": "040296a2286f12ade180d69567c71490ed82908380ff4fcae44a524e74c13956",
+        "source_count": 640,
+        "GPU_executed": false,
+        "passed": true,
+        "ownership_closed": true,
+        "command": [
+          "/usr/bin/python3",
+          "-X",
+          "faulthandler",
+          "-B",
+          "-m",
+          "unittest",
+          "tools.test_q6_cpu_leaves",
+          "tools.test_adaptive_cpu_leaf_evidence",
+          "-v"
+        ],
+        "exit_code": 0,
+        "tests": 14,
+        "owner_results": [
+          {
+            "pid": 4135604,
+            "direct_identity": {
+              "pid": 4135604,
+              "state": "R",
+              "ppid": 4135534,
+              "pgid": 4135604,
+              "sid": 4135604,
+              "start_ticks": 261088973,
+              "rss_bytes": 598016
+            },
+            "exit_code": 0,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "error": null,
+            "errors": [],
+            "cleanup": []
+          }
+        ]
       }
     ]
   },
