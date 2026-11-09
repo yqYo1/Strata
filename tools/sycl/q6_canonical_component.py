@@ -23,7 +23,7 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = base.P, base.B
-ROOT, KEY = B / 'q6-canonical-component-v3', 'q6_canonical_component_v3'
+ROOT, KEY = B / 'q6-canonical-component-v4', 'q6_canonical_component_v4'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 PROTOCOL = 'f97893576704e6679c89ea6c4613d912665a0824'
 PROTOCOL_PATH = 'tools/sycl/q6_dpas_component.py'
@@ -43,7 +43,7 @@ def image(blob):
     spec = importlib.util.spec_from_file_location('canonical_q6_image_reader', reader.__file__)
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     module.KERNEL_ENTRY = KERNEL
-    return module.embedded_dpas(blob)
+    return module.embedded_dpas(blob, allow_shared_image=True)
 
 
 def context():
@@ -140,7 +140,7 @@ def prepare(ctx):
         plan=dict(question='Can direct canonical-layout C4 beat the current production column entry without extra weights?',
             motivation='Packed head was6.55283x faster as a component but its additional521472000device bytes refuse1256cache slots at131072context. Preserve that failed whole-model comparison.',
             reference='Same-source native_q6_k_columns_mmvq via ordinary one-node compatibility graph;candidate reads the identical canonical allocation. No repack or additional GPU weight array.',
-            order='14CPU linked-image/protocol controls;fresh14TU build and exact canonical DPAS image;12CPU shape/alignment controls;small traced3shape/2seed;full2shape/2seed;three timing processes0,1,2. Commit every closed stage;stop first failure,no retry.',
+            order='22CPU census/linked-image/protocol controls;fresh14TU build and exact canonical DPAS image;12CPU shape/alignment controls;small traced3shape/2seed;full2shape/2seed;three timing processes0,1,2. Commit every closed stage;stop first failure,no retry.',
             shapes='Small256x1,256x17,512x33;representative2560x640 and2560x248320;C4only,C1rejected before device access.',
             numerical='All outputs finite and forward-envelope comparison;independent byte scalar oracle on every small row and543distributed/head-tail full-head rows,guards,input immutability,C1reference preserved. Same f978 envelope;no bitwise output requirement.',
             timing='Same f978 asynchronous completion discipline,2warmup+5batches/arm/process;orderR/C,C/R,R/C;4096small or256full launches/batch;>=10ms and>=300timer-overhead units;retain individual samples and spreads.',
@@ -156,10 +156,70 @@ def prepare(ctx):
     print('Prepared canonical-only component;commit before controls/build.', flush=True)
 
 
+def admit(ctx):
+    """Prospective controller-only admission; never rerun or relabel failed v3."""
+    data = validation.committed(RESULT)
+    previous = data['q6_canonical_component_v3']
+    require(previous['stage'] == 'failed' and previous['ownership_closed'] and not previous['GPU_executed']
+        and len(previous['commands']) == 3 and all(c['exit_code'] == 0 and c['ownership_closed']
+        for c in previous['commands']), 'preserve original completed compile/failed admission')
+    require(not ROOT.exists() and KEY not in data, 'fresh controller-only admission only')
+    original_root = B / 'q6-canonical-component-v3'
+    original = json.loads((original_root / 'record.json').read_text())
+    proof = previous['census_failure']; artifact = proof['compiled_artifact']
+    require(original['census_failure'] == proof and digest(artifact['path']) == artifact['sha256']
+        and Path(artifact['path']).stat().st_size == artifact['bytes'], 'original compiled ELF changed')
+    for name, field in [('build/compile_commands.json', 'compile_database_sha256'),
+                        ('owned/dependencies.stdout', 'dependency_listing_sha256'),
+                        ('owned/compile.stdout', 'linker_output_sha256')]:
+        require(digest(original_root / name) == proof[field], 'original compiler evidence changed')
+    project = ctx.source.pin(P, ctx.PREFIXES)
+    old, new = original['project']['source_sha256'], project['source_sha256']
+    changed = {p for p in old if new.get(p) != old[p]}
+    allowed = {'tools/sycl/build_compat_profile.py', 'tools/sycl/q6_dpas_component.py',
+               'tools/sycl/q6_canonical_component.py'}
+    require(changed == allowed and set(new) - set(old) == {'tools/sycl/test_compile_census.py'},
+            'only named controller/parser/test changes;all native source and recipe inputs must match')
+    recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
+        ctx.source.blobs(P, original['project']['revision'], old)}
+    require(recovered == old, 'original native source must be recoverable from Git')
+    legacy_build = context(); legacy_build.ROOT = original_root
+    actual = legacy_build.census(original, original_root / 'owned/dependencies.stdout',
+                                 original_root / 'owned/compile.stdout')
+    row = copy.deepcopy(original)
+    for key in ('error', 'reader_controls', 'census_failure'): row.pop(key, None)
+    row.update(project=project, actual_inputs=actual, binary=artifact,
+        native_source_commit=original['project']['revision'], admission_source_commit=project['revision'],
+        codegen=image(Path(artifact['path']).read_bytes()), stage='prepared', compilation_passed=True,
+        commands=[], results=[], timing=[], passed=False, complete=False, active=False, ownership_closed=True,
+        GPU_executed=False, model_executed=False,
+        qualification_reuse=dict(original_failed_key='q6_canonical_component_v3',
+            original_evidence_commit='d979167dbfb2248b9038e59037bbb702cc77b424',
+            native_source_commit=original['project']['revision'], original_project_sha256=original['project']['aggregate_sha256'],
+            binary_sha256=artifact['sha256'], changed_controller_files=sorted(changed),
+            exact_native_inputs_and_recipe=True, native_recompiled=False, GPU_qualification_inherited=False,
+            scope='Fresh selected14TU/compiler/link census and exact canonical callgraph from the unchanged11.6MB ELF. Failed v3 stays failed. New22CPU controls and all GPU stages still required.'))
+    row['environment'] = {k: v.replace(str(original_root), str(ROOT)) for k, v in row['environment'].items()}
+    row['environment'].update(STRATA_MEASUREMENT_ROOT=str(ROOT),
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'validation.log'))
+    # The retained build is outside this new raw-output root. No need to give
+    # its diagnostic processes the old build tree's aggregate byte allowance.
+    row['host_budget']['total_cap'] = 64 << 20
+    row['native_budget'].update(file_cap=16 << 20, total_cap=64 << 20)
+    row['plan']['order'] = 'Reuse exact original native artifact after scoped source/recipe/census/image proof. Run22CPU controls,12CPU native guards,small traced checks,full checks and3fresh timing processes. No native rebuild or GPU result inherited.'
+    row['plan']['source_identity'] = 'native_source_commit is cdbd68796;project/admission source pins later controller inputs. Do not label the existing ELF with the later source revision.'
+    ctx.current(row, committed=False)
+    ROOT.mkdir(mode=0o700)
+    for name in ('tmp', 'cache'): (ROOT / name).mkdir(mode=0o700)
+    ctx.save(row)
+    print('Prepared independent controller-only admission;commit before22CPU controls. Native source/ELF unchanged.', flush=True)
+
+
 def controls(ctx):
     row = json.loads((ROOT / 'record.json').read_text()); ctx.current(row)
     require(row['stage'] == 'prepared' and 'reader_controls' not in row, 'fresh CPU controls only')
-    command = [PYTHON, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_q6_dpas_component']
+    command = [PYTHON, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_q6_dpas_component',
+               'tools.sycl.test_compile_census']
     scope = None
     def persist():
         write(ROOT / 'controls-execution.json', dict(active=bool(scope and scope.active),
@@ -169,10 +229,11 @@ def controls(ctx):
         entry, out, err = scope.run('reader-controls', command, row['recipe']['environment'], P, **row['host_budget'])
         text = out.read_text() + err.read_text()
         passed = bool(ownership.closed(entry) and entry['exit_code'] == 0 and
-            'Ran 14 tests' in text and '\nOK\n' in text and 'skipped' not in text)
-        row['reader_controls'] = dict(passed=passed, tests=14, command=command,
+            'Ran 22 tests' in text and '\nOK\n' in text and 'skipped' not in text)
+        row['reader_controls'] = dict(passed=passed, tests=22, command=command,
             exit_code=entry['exit_code'], ownership_closed=ownership.closed(entry), GPU_executed=False)
         require(passed, 'linked-image/protocol CPU controls failed')
+        if row.get('qualification_reuse'): row['stage'] = 'built'
     except BaseException as error:
         row.update(stage='failed', passed=False, complete=False, error=repr(error))
     finally:
@@ -181,12 +242,13 @@ def controls(ctx):
             all(ownership.closed(c) for c in scope.commands))
         persist(); ctx.save(row)
     require(row['stage'] != 'failed' and row['ownership_closed'], row.get('error', 'CPU controls not closed'))
-    print('14CPU controls passed;commit before building.', flush=True)
+    print('22CPU controls passed;commit before the next stage.', flush=True)
 
 
 def run(ctx, stage):
     if stage == 'build':
         row = json.loads((ROOT / 'record.json').read_text())
+        require(not row.get('qualification_reuse'), 'reused native artifact must not be rebuilt')
         require(row['reader_controls']['passed'], 'CPU controls first')
         ctx.compile_fixture()
         row = json.loads((ROOT / 'record.json').read_text())
@@ -218,10 +280,11 @@ def run(ctx, stage):
 
 if __name__ == '__main__':
     require(len(sys.argv) == 2 and sys.argv[1] in
-        ('prepare', 'controls', 'build', 'host', 'check-small', 'check', 'time0', 'time1', 'time2'), 'canonical component stage')
+        ('prepare', 'admit', 'controls', 'build', 'host', 'check-small', 'check', 'time0', 'time1', 'time2'), 'canonical component stage')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); guards.no_model_owners([])
         ctx = context(); stage = sys.argv[1]
         if stage == 'prepare': prepare(ctx)
+        elif stage == 'admit': admit(ctx)
         elif stage == 'controls': controls(ctx)
         else: run(ctx, stage)

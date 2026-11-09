@@ -225075,7 +225075,18 @@
       "compile_database_sha256": "8deb3b5ce1c284576659f0b3a509338fcd8d83f6987ee6db2f7116a2149e914e",
       "dependency_listing_sha256": "cac0cf71bee25d716f748a00cb5e1a22dc5f523bee8316d8bfe9540b34b42922",
       "linker_output_sha256": "db7428293ccadc964f5618ea923087e66c31f5c6ed81946c8d1e0dba45e9926d",
-      "next": "Preserve failed v3. New controller-only admission requires exact native input/recipe/artifact proof and CPU controls for scope/shared-image parsing;no native/GPU result inherited."
+      "next": "Preserve failed v3. New controller-only admission requires exact native input/recipe/artifact proof and CPU controls for scope/shared-image parsing;no native/GPU result inherited.",
+      "CPU_reproduction": {
+        "source_commit": "5659c4d5b4111546fce21e3996216bc5c6f2ca2d",
+        "command": "flock -n /home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/owned-v0141-measurement.lock timeout -k 5s 45s /home/yayoi/.local/share/strata-sycl/venv/bin/python3 -B -m unittest -v tools.sycl.test_q6_dpas_component tools.sycl.test_compile_census",
+        "tests": 22,
+        "failures": 2,
+        "errors": 2,
+        "original_14_tests_passed": true,
+        "exit_code": 1,
+        "GPU_executed": false,
+        "meaning": "Reproduces both old admission assumptions. Unselected target must not satisfy actual compiler evidence;shared image must qualify only the exact selected entry callgraph. Original single-entry contract stays strict."
+      }
     }
   }
 }

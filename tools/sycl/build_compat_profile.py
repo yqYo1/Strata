@@ -146,7 +146,18 @@ def prepare():
 
 
 def selected_compile_commands(database, expected, target):
-    commands = [c for c in database if c['file'] in expected]
+    commands = []
+    scopes = {target + '.dir', 'strata_sycl_runtime.dir'}
+    for command in database:
+        if command['file'] not in expected:
+            continue
+        args = shlex.split(command['command'])
+        require(args.count('-o') == 1, 'one compile object path required')
+        parts = Path(args[args.index('-o') + 1]).parts
+        if 'CMakeFiles' in parts:
+            at = parts.index('CMakeFiles') + 1
+            if at < len(parts) and parts[at] in scopes:
+                commands.append(command)
     require(len(commands) == len(expected) and {c['file'] for c in commands} == expected,
             'one production compile command per fixture/runtime unit required')
     return commands

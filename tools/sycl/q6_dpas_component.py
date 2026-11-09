@@ -93,10 +93,18 @@ def embedded_dpas(blob, *, allow_shared_image=False):
                     calls.append((function,a[2]))
                 cursor+=count
             require(function is None, 'closed SPIR-V function')
-            if not any(text==KERNEL_ENTRY for _,_,text in entries):continue
-            require(len(entries)==1 and entries[0][0]==6 and entries[0][1] in functions,
-                    'one exact C4 kernel entrypoint')
-            reachable=set();pending=[entries[0][1]];edges={}
+            chosen=[entry for entry in entries if entry[2]==KERNEL_ENTRY]
+            if not chosen:continue
+            require(len(chosen)==1, 'one exact named C4 kernel entrypoint')
+            if allow_shared_image:
+                require(len(entries)<=256 and len({v[1] for v in entries})==len(entries)
+                    and len({v[2] for v in entries})==len(entries)
+                    and all(v[0]==6 and v[1] in functions for v in entries),
+                    'distinct defined kernel entrypoints in shared image')
+            else:
+                require(len(entries)==1 and entries[0][0]==6 and entries[0][1] in functions,
+                        'one exact C4 kernel entrypoint')
+            reachable=set();pending=[chosen[0][1]];edges={}
             for caller,callee in calls:edges.setdefault(caller,[]).append(callee)
             while pending:
                 f=pending.pop()
@@ -110,6 +118,8 @@ def embedded_dpas(blob, *, allow_shared_image=False):
                 image_bytes=size,image_sha256=hashlib.sha256(image).hexdigest(),
                 entrypoint=KERNEL_ENTRY,reachable_functions=len(reachable),
                 dpas_static_calls=len(dpas),dpas_callees=sorted({labels[v] for _,v in dpas})))
+            if allow_shared_image:
+                matches[-1]['module_kernel_entrypoints']=[v[2] for v in entries]
     require(len(matches)==1, 'one exact linked C4 device image')
     return dict(matches[0],device_images=len(seen),
         scope='Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count.')
