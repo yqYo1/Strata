@@ -23,7 +23,7 @@ import measurement_owner as ownership
 import ur_validation as validation
 
 P, B = base.P, base.B
-ROOT, KEY = B / 'q6-canonical-component-v2', 'q6_canonical_component_v2'
+ROOT, KEY = B / 'q6-canonical-component-v3', 'q6_canonical_component_v3'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 PROTOCOL = 'f97893576704e6679c89ea6c4613d912665a0824'
 PROTOCOL_PATH = 'tools/sycl/q6_dpas_component.py'

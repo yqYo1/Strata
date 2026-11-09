@@ -224210,7 +224210,7 @@
     "correction": "Use only the retained prefill/decode guards and current selected90f feature,as the maintained build adapter does. New prospective v2;no hash refresh,old binary recreation or native qualification repeated."
   },
   "q6_canonical_component_v2": {
-    "stage": "prepared",
+    "stage": "failed",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -224537,6 +224537,7 @@
       "ownership_closed": true,
       "GPU_executed": false
     },
+    "error": "RuntimeError('fixture build command failed: compile')",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "16b3fba888155e46a94e8f680e876a5081b79502",
@@ -224601,6 +224602,27 @@
       ]
     },
     "build_environment_sha256": "2b7ef798707b5f5652d064593b4ca6b97d96be1cc1824f5720df9ecea25c5cbe",
-    "commands": []
+    "commands": [
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "compile",
+        "exit_code": 1,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ],
+    "build_failure": {
+      "translation_unit": "bench/sycl/q6_canonical.cpp",
+      "diagnostic": "error: unused function 'sentinel<unsigned short>' [-Werror,-Wunused-function]",
+      "cause": "Removing the extra packed weight buffer left its uint16_t guard specialization unused. No GPU/native execution occurred.",
+      "correction": "Remove only the unused specialization;new prospective v3 source/plan. Preserve original failed v2 and its compiler status."
+    }
   }
 }

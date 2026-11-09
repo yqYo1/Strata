@@ -64,7 +64,6 @@ void host() {
 
 template<class T> T sentinel();
 template<> uint8_t sentinel<uint8_t>() { return 0xa5; }
-template<> uint16_t sentinel<uint16_t>() { return 0xa5a5; }
 template<> float sentinel<float>() { return -731.25f; }
 template<class T> struct Buffer {
     static constexpr size_t Guard=128/sizeof(T);
