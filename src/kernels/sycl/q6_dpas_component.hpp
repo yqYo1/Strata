@@ -50,4 +50,12 @@ inline void q6_dpas_pack(std::span<const uint8_t> source,
 // before any runtime/device access. The reference C1 route stays unchanged.
 void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
                 int k, int n, int columns, void* stream);
+
+// Prospective component: read the canonical row-major Q6_K blocks directly.
+// It owns no additional weight storage and does not alter C1 or prompt routes.
+// The source has exactly n*(k/256)*210 bytes; masked loads cover an unpadded
+// final output tile. Same explicit queue, disjoint-span and lifetime contract.
+// No production dispatcher selects this entry before component/model checks.
+void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
+                         int k, int n, int columns, void* stream);
 } // namespace strata::kernels::component

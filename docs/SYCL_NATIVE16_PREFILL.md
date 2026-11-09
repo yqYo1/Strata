@@ -1868,6 +1868,21 @@ Initial free VRAM is 1,678 MiB ordinary versus 1,181 MiB packed, with the same
 1,042,944,000 H2D bytes. These placement and ownership observations do not
 qualify 32K speed, phase preservation, task quality or the full context.
 The next consumer is matched long-model speed and resource evaluation.
+That comparison now records source `67a0c9cf3`, engine `0b6633cd`, through
+the current `bench.sh` frontend. Reference process0 closes normally with
+32K inputs and 2,860/7,627 thinking-inclusive outputs, validating the intended
+strong/weak MTP classes. Its individual samples are at
+`c99e5febf:q6_head_generation_speed_v4`. Packed process1 exits1 before READY:
+the extra521472000device bytes leave2.09GiB free for a2.40GiB expert cache.
+Evidence `5a70c1f35` preserves the failed cohort and successful reference;
+no timed candidate request or new GPU fault occurred. Keep packed head off.
+The next component reads the canonical Q6 blocks directly with the same C4
+DPAS math and no second weight allocation. It is a source-only proposal,
+unselected by the model dispatcher. Compare it with the actual public column
+entry using fresh build/codegen, masked-tail/oracle checks and three process
+timings before proposing model use. The earlier packed speedup does not qualify
+this new loading path. A smaller expert cache would be a separate placement
+comparison rather than a repair of the failed same-placement cohort.
 Both standalone roots are retired after recovering all 1,285 original source
 files, the exact recipe, 803 compiler and 24 link inputs, and the final ELF.
 The deletion removes 1,366 files / 67,207,656 bytes. Another 146 successful

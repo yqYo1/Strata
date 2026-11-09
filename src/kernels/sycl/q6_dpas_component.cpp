@@ -1,4 +1,4 @@
-// Main-authored interleaved Q6_K x Q8_1 C4 component; repository LICENSE.
+// Main-authored interleaved/canonical Q6_K x Q8_1 C4 component; repository LICENSE.
 // DPAS operand-layout reference: this project's native_mmq_xmx.cpp and
 // ggml-org/llama.cpp 34ca79122b44d43eda7efb203b82ec91db94c55c esimd.hpp.
 // The latter's two K16 halves preserve Q6's per-16 signed scales. This uses a
@@ -37,16 +37,28 @@ using namespace sycl_backend;
 
 // Offsets are bytes into a uint16_t interleave. Every halfword is naturally
 // aligned, including original Q6 blocks whose 210-byte stride is not aligned4.
-U word(const uint16_t* weights, U base, uint32_t byte) SYCL_ESIMD_FUNCTION {
-    return e::convert<uint32_t>(e::gather<uint16_t, 16>(weights, base + byte * 16)) |
-        (e::convert<uint32_t>(e::gather<uint16_t, 16>(weights, base + (byte + 2) * 16)) << 16);
+template <bool Canonical>
+e::simd<uint16_t, 16> halfwords(const uint16_t* weights, U base, uint32_t byte,
+                                e::simd_mask<16> valid) SYCL_ESIMD_FUNCTION {
+    if constexpr (Canonical) {
+        // The installed ESIMD gather contract skips masked memory accesses
+        // and returns the explicit passthrough, including on unpadded tails.
+        return e::gather<uint16_t, 16>(weights, base + byte, valid, e::simd<uint16_t, 16>(0));
+    } else {
+        return e::gather<uint16_t, 16>(weights, base + byte * 16);
+    }
 }
-struct Q6DpasC4 {
-    const uint16_t* weights;
-    const uint8_t* activation;
-    float* output;
-    int k, n;
-    void operator()(sycl::nd_item<1> item) const SYCL_ESIMD_KERNEL {
+
+template <bool Canonical>
+U word(const uint16_t* weights, U base, uint32_t byte,
+       e::simd_mask<16> valid) SYCL_ESIMD_FUNCTION {
+    return e::convert<uint32_t>(halfwords<Canonical>(weights, base, byte, valid)) |
+        (e::convert<uint32_t>(halfwords<Canonical>(weights, base, byte + 2, valid)) << 16);
+}
+
+template <bool Canonical>
+void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activation,
+          float* output, int k, int n) SYCL_ESIMD_FUNCTION {
         const uint32_t first = uint32_t(item.get_global_linear_id()) * 16;
         if (first >= uint32_t(n)) return; // no collective, barrier or shared memory
         const U rows(first, 1);
@@ -56,9 +68,13 @@ struct Q6DpasC4 {
         const int blocks = k / 256;
         const size_t pitch = size_t(k / 32) * 36;
         for (int block = 0; block < blocks; ++block) {
-            const U base = lane_bytes + uint32_t((size_t(first / 16) * blocks + block) * (16 * 210));
+            U base;
+            if constexpr (Canonical)
+                base = rows * uint32_t(blocks * 210) + uint32_t(block * 210);
+            else
+                base = lane_bytes + uint32_t((size_t(first / 16) * blocks + block) * (16 * 210));
             const F super = esimd_half_decode<16>(e::convert<uint32_t>(
-                e::gather<uint16_t, 16>(weights, base + 208u * 16)));
+                halfwords<Canonical>(weights, base, 208, valid)));
 #pragma unroll 1
             for (int unit = 0; unit < 8; ++unit) {
                 const int part = unit % 4;
@@ -67,13 +83,13 @@ struct Q6DpasC4 {
                 e::simd<uint32_t, 128> w;
 #pragma unroll
                 for (int j = 0; j < 8; ++j) {
-                    const U low = (word(weights, base, ql + uint32_t(4 * j)) >> (4 * (part / 2))) & 0x0f0f0f0fu;
-                    const U high = ((word(weights, base, qh + uint32_t(4 * j)) >> (2 * part)) & 0x03030303u) << 4;
+                    const U low = (word<Canonical>(weights, base, ql + uint32_t(4 * j), valid) >> (4 * (part / 2))) & 0x0f0f0f0fu;
+                    const U high = ((word<Canonical>(weights, base, qh + uint32_t(4 * j), valid) >> (2 * part)) & 0x03030303u) << 4;
                     // Each byte is0..63. This exact packed subtraction cannot
                     // borrow across byte lanes because of the high guard bit.
                     w.template select<16, 1>(16 * j) = (((low | high) | 0x80808080u) - 0x20202020u) ^ 0x80808080u;
                 }
-                const U sc = e::convert<uint32_t>(e::gather<uint16_t, 16>(weights, base + uint32_t(192 + 2 * unit) * 16));
+                const U sc = e::convert<uint32_t>(halfwords<Canonical>(weights, base, uint32_t(192 + 2 * unit), valid));
                 auto lo8 = e::convert<uint8_t>(sc & 255u);
                 auto hi8 = e::convert<uint8_t>(sc >> 8);
                 const F s0 = e::convert<float>(e::simd<int8_t, 16>(lo8.template bit_cast_view<int8_t>())) * super;
@@ -106,6 +122,29 @@ struct Q6DpasC4 {
         for (int c = 0; c < 4; ++c)
             e::scatter<float, 16>(output, (rows + uint32_t(c * n)) * 4u,
                 F(sum.template select<16, 1>(c * 16)), valid);
+}
+
+struct Q6DpasC4 {
+    const uint16_t* weights;
+    const uint8_t* activation;
+    float* output;
+    int k, n;
+    void operator()(sycl::nd_item<1> item) const SYCL_ESIMD_KERNEL {
+        tile<false>(item, weights, activation, output, k, n);
+    }
+    constexpr auto get(sycl::ext::oneapi::experimental::properties_tag) const {
+        return sycl::ext::oneapi::experimental::properties{
+            sycl::ext::intel::experimental::grf_size<128>};
+    }
+};
+
+struct Q6DpasC4Canonical {
+    const uint16_t* weights;
+    const uint8_t* activation;
+    float* output;
+    int k, n;
+    void operator()(sycl::nd_item<1> item) const SYCL_ESIMD_KERNEL {
+        tile<true>(item, weights, activation, output, k, n);
     }
     constexpr auto get(sycl::ext::oneapi::experimental::properties_tag) const {
         return sycl::ext::oneapi::experimental::properties{
@@ -114,21 +153,40 @@ struct Q6DpasC4 {
 };
 } // namespace
 
-void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
-                int k, int n, int columns, void* stream) {
-    if (!q6_dpas_c4_shape(k, n, columns) || !stream)
+template <bool Canonical>
+void launch(const void* weights, const void* q8, float* output,
+            int k, int n, int columns, void* stream) {
+    if (!q6_dpas_c4_shape(k, n, columns) || !stream || (reinterpret_cast<uintptr_t>(weights) & 1))
         throw std::invalid_argument("Q6 DPAS needs explicit queue and eligible C4 shape");
     auto& q = queue_for(stream);
-    const size_t wb = q6_dpas_packed_bytes(k, n), xb = size_t(k / 32) * 36 * 4, yb = size_t(n) * 4 * 4;
-    validate_spans({{output, yb}}, {{packed, wb}, {q8, xb}});
-    validate_device_span(packed, wb, q); validate_device_span(q8, xb, q); validate_device_span(output, yb, q);
+    const size_t wb = Canonical ? size_t(n) * size_t(k / 256) * 210 : q6_dpas_packed_bytes(k, n);
+    const size_t xb = size_t(k / 32) * 36 * 4, yb = size_t(n) * 4 * 4;
+    validate_spans({{output, yb}}, {{weights, wb}, {q8, xb}});
+    validate_device_span(weights, wb, q); validate_device_span(q8, xb, q); validate_device_span(output, yb, q);
     const auto device = q.get_device();
     if (device.get_info<sycl::info::device::vendor_id>() != 0x8086 ||
         device.get_info<sycl::info::device::name>().find("B570") == std::string::npos || !device.has(sycl::aspect::fp16))
         throw std::invalid_argument("Q6 DPAS component is scoped to B570/fp16");
     const size_t items = (size_t(n) + 15) / 16;
-    const auto event = q.parallel_for(sycl::nd_range<1>(((items + 3) / 4) * 4, 4),
-        Q6DpasC4{packed, static_cast<const uint8_t*>(q8), output, k, n});
-    finish(stream, event);
+    const sycl::nd_range<1> range(((items + 3) / 4) * 4, 4);
+    if constexpr (Canonical) {
+        const auto event = q.parallel_for(range,
+            Q6DpasC4Canonical{static_cast<const uint16_t*>(weights), static_cast<const uint8_t*>(q8), output, k, n});
+        finish(stream, event);
+    } else {
+        const auto event = q.parallel_for(range,
+            Q6DpasC4{static_cast<const uint16_t*>(weights), static_cast<const uint8_t*>(q8), output, k, n});
+        finish(stream, event);
+    }
+}
+
+void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
+                int k, int n, int columns, void* stream) {
+    launch<false>(packed, q8, output, k, n, columns, stream);
+}
+
+void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
+                         int k, int n, int columns, void* stream) {
+    launch<true>(canonical, q8, output, k, n, columns, stream);
 }
 } // namespace strata::kernels::component
