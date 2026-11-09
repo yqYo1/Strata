@@ -2168,6 +2168,10 @@ their width equals the whole window's token count. A split eight-token window
 may contain four-column calls. The corrected source will use a fresh V2 plan
 and native build; neither V1 source identities nor outcomes are relabelled.
 The unchanged1db engine and its four fixtures remain the fallback.
+V2 is configured at native source `12ea4b002ba49855117123200a93b0b3a2dfb979`
+under `q6_dense_head_backing_build_v2`:all50host controls pass, and the128planned
+translation units plus generated/configured inputs are pinned. Compilation and
+the compiled CPU policy check are pending; no GPU execution is qualified.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
