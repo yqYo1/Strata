@@ -2271,7 +2271,7 @@ strict32768fresh-token requirement. V2now passes four route-positive cases,
 13corrupt-route refusals,11corrupt-v5metadata refusals and the actual18request
 reader. Fresh benchmark/server probes pass144/230modules and18/27code maps,
 with normal closed owners. No candidate speed result follows from these CPU
-gates. The historical control0and fresh processes1/2/3now complete all72requests,
+gates. The historical control0and fresh processes1/2/3/4now complete all90requests,
 normal native/bench0,closed ownership,quiet validation,no fresh fault and
 matched fixed inputs. Candidate TG is13.8/8.6and14.0/9.0versus the paired
 controls12.2/8.5and12.2/8.6. Across these two opposite-order pairs,the
@@ -2283,9 +2283,12 @@ Candidate/reference prompt-time ratios are1.012661/1.001509for code and
 1.065689/1.000391for prose;client-TTFT ratios are1.012733/1.002266and
 1.066016/1.000876. Keep every lower-prefill/higher-TTFT sample;two of three
 pairs do not qualify adoption or preservation. All exact individual PP/TTFT/TG
-values remain in the result. The common actual canonical tables match for
-decode1/4;mode10/BF16long-prefill checks remain independent. Continue the
-committed order with fresh control4/candidate5. The first-pair and higher second-candidate
+values remain in the result. Control4records PP710.4/693.0/709.6and
+clientTTFT45.370/48.129/47.066s for nominal32K/code/prose;its sustained
+code/prose TG is12.5/8.7. Its3656/7950output tokens and draft acceptance
+2529/3384and4227/11169match the earlier controls. The common actual canonical
+tables match for decode1/4;mode10/BF16long-prefill checks remain independent.
+Continue the committed order with final candidate5. The first-pair and higher second-candidate
 points are indexed in the performance CSV with their incomplete-cohort qualification. After
 source recovery and recorded path/hash deletion manifest,207closed-process1/2/3
 logs/journals/cache files(39487341bytes)are retired;post-retirement admission
