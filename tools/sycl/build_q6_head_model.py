@@ -26,7 +26,7 @@ from q6_canonical_component import image as canonical_image
 P, B = source.P, source.B
 ROOT = B / 'q6-head-packed-primary-v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_head_packed_primary_build_v1'
+KEY = 'q6_head_packed_primary_build_v2'
 READER = '484d403e60c49361422f00a16dfdd774e4fe90d5'
 TARGETS = ['strata', 'sycl_q6_head_owner_test', 'sycl_submission_test',
            'sycl_verifier_retirement_test']
@@ -100,7 +100,16 @@ def current(row):
     _, identity = selected.basis()
     require(signature(identity) == row['selected_native_sha256'], 'selected feature basis changed')
     require(row['native_source_commit']==row['project']['revision'],'new native source identity changed')
-    build.check_inputs(row)
+    check=dict(row)
+    if 'admission_project' in row:
+        require(row['admission_source_commit']==row['admission_project']['revision'],'controller admission changed')
+        check['project']=row['admission_project']
+        actual=row['actual_inputs'];require(digest(actual['path'])==actual['sha256'],'original census changed')
+        census=json.loads(Path(actual['path']).read_text())
+        require(all(digest(p)==h for field in ('compiled','generated','links') for p,h in census[field].items()),
+                'original actual compiler/fixture/link inputs changed')
+        require(all(digest(v['path'])==v['sha256'] for v in row['binaries'].values()),'original four ELFs changed')
+    build.check_inputs(check)
     require(digest(HOST_PYTHON) == row['host_python_sha256'], 'host interpreter changed')
     for path, sha in (row.get('generated_inputs', {}) | row.get('configured_files', {})).items():
         require(digest(path) == sha, 'configured generated input changed: ' + path)
@@ -113,6 +122,40 @@ def structure(binary, image):
     raw = blob[image['image_offset']:image['image_offset'] + image['image_bytes']]
     require(hashlib.sha256(raw).hexdigest() == image['image_sha256'], 'actual embedded SPIR-V changed')
     return spirv.spirv_structure(raw)
+
+
+def admit():
+    """Prospective opcode70 reader controls;keep the compiled V1 failure intact."""
+    require(KEY not in public(),'fresh reader admission only')
+    original=json.loads((ROOT/'record.json').read_text())
+    require(public()['q6_head_packed_primary_build_v1']==compact(original) and
+        original['stage']=='failed' and original['ownership_closed'] and not original['GPU_executed'] and
+        original['error']=="RuntimeError('unreviewed SPIR-V opcode: 70')" and
+        len(original['commands'])==5 and all(ownership.closed(c) and c['exit_code']==0 for c in original['commands']),
+        'preserve the original compiled/native-unexecuted failure')
+    project=source.pin(P,PREFIXES);before=original['project']['source_sha256'];after=project['source_sha256']
+    require(before=={n:hashlib.sha256(raw).hexdigest() for n,raw in
+        source.blobs(P,original['project']['revision'],before)},'original native source not recoverable')
+    require(set(before)==set(after) and {n for n in before if before[n]!=after[n]}=={
+        'tools/sycl/build_q6_head_model.py','tools/sycl/q6_dpas_component.py','tools/sycl/test_compile_census.py'},
+        'only the declared reader/controller/CPU controls may change;native and fixtures stay exact')
+    actual=original['actual_inputs'];require(digest(actual['path'])==actual['sha256'],'original actual-input census changed')
+    census=json.loads(Path(actual['path']).read_text())
+    require(all(digest(p)==h for field in ('compiled','generated','links') for p,h in census[field].items()) and
+        all(digest(v['path'])==v['sha256'] for v in original['binaries'].values()),'original native/fixture bytes changed')
+    row=copy.deepcopy(original);row.pop('error');row.pop('host_controls',None);row.pop('image_reader_refusal')
+    row.update(stage='admitted',commands=[],passed=False,complete=False,active=False,ownership_closed=True,
+        admission_project=project,admission_source_commit=project['revision'],compilation_passed=True,
+        qualification_reuse=dict(original_failed_key='q6_head_packed_primary_build_v1',
+            original_evidence_commit=source.git(P,'rev-parse','HEAD').decode().strip(),
+            original_private_record_sha256=digest(ROOT/'record.json'),native_source_commit=original['project']['revision'],
+            native_recompiled=False,GPU_qualification_inherited=False,
+            scope='Same four ELFs,127TUs/1461compiler inputs/generated1/29external links and recipe.'
+                  'Add only reviewed OpInBoundsPtrAccessChain70;preserve its opcode and every operand ID.'
+                  ' Require40CPU controls and complete2443-instruction engine/fixture structural identity.'
+                  ' Other unknown instructions and every prior bounds/ambiguity rejection stay refused.'))
+    row['plan']['host']='40CPU controls,including inbounds-pointer ID/order positives and opcode/element-edge/arity/undefined-ID negatives;then exact selected-module identity. No GPU result inherited.'
+    save(row);print('Admitted exact compiled artifacts for new40CPU reader controls;commit first.',flush=True)
 
 
 def planned_compilation(text):
@@ -240,7 +283,7 @@ def census(row, dependency_output, link_output):
 
 def execute(stage):
     row = json.loads((ROOT / 'record.json').read_text()); current(row)
-    require(row['stage'] == {'configure': 'prepared', 'compile': 'configured'}[stage],
+    require(row['stage'] == {'configure': 'prepared', 'compile': 'configured','controls':'admitted'}[stage],
             'wrong build stage')
     guards.no_model_owners([])
     frozen = copy.deepcopy(row); owner = None; outputs = {}
@@ -252,7 +295,7 @@ def execute(stage):
         host = ('host-controls', [HOST_PYTHON, '-B', '-m', 'unittest', '-v',
                                        'tools.sycl.test_q6_dpas_component', 'tools.sycl.test_compile_census',
                                        'tools.sycl.test_q6_head_generation_speed'])
-        commands = ([host,
+        commands = ([host] if stage=='controls' else [host,
                      ('configure', row['recipe']['configure']),
                      ('planned-commands', ['/usr/bin/ninja', '-C', str(ROOT / 'build'),
                                           '-t', 'commands', *TARGETS])]
@@ -268,12 +311,17 @@ def execute(stage):
                     'build command failed: ' + label + '; inspect the owned bounded diagnostic')
             if label == 'host-controls':
                 text = out.read_text() + err.read_text()
-                count = 36
+                count = 40 if stage=='controls' else 36
                 require('Ran ' + str(count) + ' tests' in text and '\nOK\n' in text, 'all CPU controls required')
                 row['host_controls'] = dict(passed=True, cases=count, fault_finalizer_AST_identical=True,
                     GPU_executed=False, source_commit=row.get('admission_source_commit', row['project']['revision']))
             print(json.dumps(dict(label=label, exit_code=entry['exit_code'], closed=True)), flush=True)
-        if stage == 'configure':
+        if stage=='controls':
+            actual={n:structure(row['binaries'][n],row['codegen'][n]) for n in row['codegen']}
+            require(actual['strata']==actual['sycl_q6_head_owner_test'],'fresh selected-module instructions differ')
+            row['linked_structure']=dict(production=actual,scope='Exact selected-module identity under only ID/declaration order;not final ISA,GPU behavior or speed.')
+            row.update(stage='built',passed=True,complete=True)
+        elif stage == 'configure':
             compilation = planned_compilation(outputs['planned-commands'].read_text())
             planned = {v['file'] for v in compilation}
             require(len(planned) > 20, 'selected target compiler commands absent')
@@ -315,9 +363,10 @@ def execute(stage):
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['configure'], ['compile']),
-            'build_q6_head_model.py prepare|configure|compile')
+    require(sys.argv[1:] in (['prepare'], ['configure'], ['compile'],['admit'],['controls']),
+            'build_q6_head_model.py prepare|configure|compile|admit|controls')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if sys.argv[1] == 'prepare': prepare()
+        elif sys.argv[1]=='admit':admit()
         else: execute(sys.argv[1])

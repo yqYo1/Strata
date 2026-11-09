@@ -68,7 +68,8 @@ class PlannedCommands(unittest.TestCase):
 
 class SpirvOrder(unittest.TestCase):
     @staticmethod
-    def module(offset=0, reverse=False, literal=4, wrap=False, rewire=False, body_swap=False, extra=None):
+    def module(offset=0, reverse=False, literal=4, wrap=False, rewire=False, body_swap=False, extra=None,
+               pointer=None,pointer_element=4):
         def op(code, *a): return [((len(a) + 1) << 16) | code, *a]
         def ID(value): return value + offset
         def name(value):
@@ -76,17 +77,19 @@ class SpirvOrder(unittest.TestCase):
             return struct.unpack('<' + 'I' * (len(raw) // 4), raw)
         entries = [op(15, 6, ID(20), *name('kernel')), op(15, 6, ID(40), *name('other'))]
         types = [op(19, ID(1)), op(21, ID(3), 32, 0)]
+        if pointer is not None:types += [op(32,ID(6),5,ID(3))]
         constants = [op(43, ID(3), ID(4), literal), op(43, ID(3), ID(5), 5)]
         body = [op(128, ID(3), ID(22), ID(4), ID(5 if rewire else 4)),
                 op(130, ID(3), ID(23), ID(5), ID(4))]
         if body_swap: body.reverse()
-        first = op(54, ID(1), ID(20), 0, ID(2)) + op(248, ID(21)) + sum(body, []) + op(253) + op(56)
-        second = op(54, ID(1), ID(40), 0, ID(2)) + op(248, ID(41)) + op(253) + op(56)
+        if pointer is not None:body += [op(pointer,ID(6),ID(25),ID(24),ID(pointer_element))]
+        first = op(54, ID(1), ID(20), 0, ID(2)) + (op(55,ID(6),ID(24)) if pointer is not None else []) + op(248, ID(21)) + sum(body, []) + op(253) + op(56)
+        second = op(54, ID(1), ID(40), 0, ID(2)) + (op(55,ID(6),ID(44)) if pointer is not None else []) + op(248, ID(41)) + op(253) + op(56)
         if reverse: entries.reverse(); types.reverse(); constants.reverse()
         words = [0x07230203, 0x10600, 0, 1000 + offset, 0]
         words += op(17, 6) + op(14, 2, 2) + sum(entries, []) + op(16, ID(20), 35, 1)
         if wrap: words += op(71, ID(22), 4469)
-        words += sum(types, []) + op(33, ID(2), ID(1)) + sum(constants, [])
+        words += sum(types, []) + op(33, ID(2), ID(1), *([ID(6)] if pointer is not None else [])) + sum(constants, [])
         if extra == 'alias': words += op(43, ID(3), ID(6), literal)
         if extra == 'unknown': words += op(65000)
         if extra == 'undefined': words += op(71, ID(999), 4469)
@@ -124,6 +127,30 @@ class SpirvOrder(unittest.TestCase):
     def test_truncated_instruction_refused(self):
         blob = bytearray(self.module()); blob[-4:] = struct.pack('<I', (2 << 16) | 56)
         with self.assertRaisesRegex(RuntimeError, 'instruction extent'): component.spirv_structure(blob)
+
+    def test_inbounds_pointer_ID_and_declaration_order(self):
+        self.assertEqual(component.spirv_structure(self.module(pointer=70)),
+                         component.spirv_structure(self.module(pointer=70,offset=50,reverse=True)))
+
+    def test_inbounds_pointer_promise_is_not_erased(self):
+        self.assertNotEqual(component.spirv_structure(self.module(pointer=70))['sha256'],
+                            component.spirv_structure(self.module(pointer=67))['sha256'])
+
+    def test_inbounds_pointer_element_edge_is_preserved(self):
+        self.assertNotEqual(component.spirv_structure(self.module(pointer=70))['sha256'],
+                            component.spirv_structure(self.module(pointer=70,pointer_element=5))['sha256'])
+
+    def test_inbounds_pointer_arity_and_IDs_refused(self):
+        raw=self.module(pointer=70);words=list(struct.unpack('<'+'I'*(len(raw)//4),raw));at=5
+        while words[at]&65535!=70:at+=words[at]>>16
+        for kind in ('missing-element','zero-element','undefined-element','undefined-index'):
+            with self.subTest(kind=kind):
+                bad=list(words)
+                if kind=='missing-element':bad[at]=4<<16|70;del bad[at+4]
+                elif kind=='undefined-index':bad[at]=6<<16|70;bad.insert(at+5,999)
+                else:bad[at+4]=0 if kind=='zero-element' else 999
+                blob=struct.pack('<'+'I'*len(bad),*bad)
+                with self.assertRaises(RuntimeError):component.spirv_structure(blob)
 
 
 class SharedImage(unittest.TestCase):

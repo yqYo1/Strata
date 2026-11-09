@@ -152,7 +152,7 @@ def spirv_structure(raw):
                 require(not any(b[split:]), 'SPIR-V string padding')
                 return b[:split].decode('utf-8'), end
         raise RuntimeError('unterminated SPIR-V string')
-    typed = {1, 41, 43, 44, 46, 55, 57, 61, 67, 79, 81, 82,
+    typed = {1, 41, 43, 44, 46, 55, 57, 61, 67, 70, 79, 81, 82,
              111, 113, 114, 115, 117, 121, 124, 128, 129, 130, 132, 133, 135,
              169, 170, 176, 177, 194, 196, 197, 198, 199, 245}
     fixed = {1: 2, 3: 2, 14: 2, 17: 1, 19: 1, 20: 1, 21: 3, 22: 2, 23: 3,
@@ -185,8 +185,10 @@ def spirv_structure(raw):
         elif op in (19, 20, 21, 22): ids = {0}
         elif op == 23: ids = {0, 1}
         elif op == 32: ids = {0, 2}
-        elif op in (33, 44, 57, 67, 245):
-            minimum = {33: 2, 44: 3, 57: 3, 67: 4, 245: 4}[op]
+        elif op in (33, 44, 57, 67, 70, 245):
+            # OpInBoundsPtrAccessChain70 has the same ID operand schema as67;
+            # retain the opcode itself,including its distinct inbounds promise.
+            minimum = {33: 2, 44: 3, 57: 3, 67: 4, 70: 4, 245: 4}[op]
             require(len(a) >= minimum and (op != 245 or len(a) % 2 == 0), 'SPIR-V variable operand count')
             ids = set(range(len(a)))
         elif op == 43:
