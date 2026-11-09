@@ -2271,53 +2271,48 @@ strict32768fresh-token requirement. V2now passes four route-positive cases,
 13corrupt-route refusals,11corrupt-v5metadata refusals and the actual18request
 reader. Fresh benchmark/server probes pass144/230modules and18/27code maps,
 with normal closed owners. No candidate speed result follows from these CPU
-gates. The historical control0and fresh processes1/2/3/4now complete all90requests,
-normal native/bench0,closed ownership,quiet validation,no fresh fault and
-matched fixed inputs. Candidate TG is13.8/8.6and14.0/9.0versus the paired
-controls12.2/8.5and12.2/8.6. Across these two opposite-order pairs,the
-geometric-mean TG ratios are1.139315for code and1.028992for prose,calculated
-from the API's one-decimal rates. Both candidates generate3044/6937tokens
-versus3656/7950in both controls;acceptance matches within each arm but differs
-between arms,so these are model-workload rates,not isolated kernel gains.
-Candidate/reference prompt-time ratios are1.012661/1.001509for code and
-1.065689/1.000391for prose;client-TTFT ratios are1.012733/1.002266and
-1.066016/1.000876. Keep every lower-prefill/higher-TTFT sample;two of three
-pairs do not qualify adoption or preservation. All exact individual PP/TTFT/TG
-values remain in the result. Control4records PP710.4/693.0/709.6and
-clientTTFT45.370/48.129/47.066s for nominal32K/code/prose;its sustained
-code/prose TG is12.5/8.7. Its3656/7950output tokens and draft acceptance
-2529/3384and4227/11169match the earlier controls. The common actual canonical
-tables match for decode1/4;mode10/BF16long-prefill checks remain independent.
-Continue the committed order with final candidate5. The first-pair and higher second-candidate
-points are indexed in the performance CSV with their incomplete-cohort qualification. After
-source recovery and recorded path/hash deletion manifest,276closed-process1/2/3/4
-logs/journals/cache files(52648231bytes)are retired;post-retirement admission
-passes. All four frozen config/plan pairs remain through cohort closure. V1control raw
-remains only for the explicit historical-admission reader.
-The closed V1control exposes a reader mismatch before candidate1:the tuned
-`--short-read 0`route uses dedicated prefill and its live Q6capture reports
-contain decode1/4only. `evidence()`incorrectly requires a common Verifier-prompt
-capture after the first process. Do not launch candidate1with that predicate.
-Preserve the original outcome,then commit a corrected prospective observer/admission that
-compares the actually observed canonical windows and retains the independent
-mode10/BF16long-prefill checks. A successful control may be reused only with
-its original source identity and proof that timed native/client inputs are
-unchanged;the current comparison has no qualified speed result yet.
-All18official requests and the native process finish normally,but V1fails
-postprocessing because the reused`generation_engine.require_complete_generation`
-expects workload_version4while the frozen current producer emits5. Native and
-bench exit0,closed ownership,complete journal and no fresh fault are observed;
-later native/source/asset postconditions were skipped by that exception. A
-separate read-only audit now passes:original committed source,native five ELFs/
-census/recipe,runtime/generated/profile identities,normal native/bench exit,
-quiet validation,mode10/BF16long routes and all15full model-asset hashes match.
-V1remains failed;this is late postcondition evidence,not new execution or speed
-qualification. Native Luna-max review permits historical-control reanalysis
-only under a new committed plan proving unchanged timed inputs;otherwise use a
-fresh control. Keep the V1failure unchanged. Preserve its raw artifacts
-for the current-v5 reader tests and explicit baseline-reuse audit,within the
-original512MiB budget;review that retention after the corrected admission.
-No model/default adoption or physical262144/RESTORE qualification follows here.
+gates. The mandatory historical control0and five fresh processes1..5now
+complete all108requests,normal native/bench0,closed ownership,quiet validation,
+no fresh fault and unchanged boot/driver. All15model assets pass final full
+hashing. Fixed non-agent request inputs match;agent history follows each arm's
+own generated answers. Candidate code TG is13.8/14.0/14.5versus paired controls
+12.2/12.2/12.5;prose is8.6/9.0/9.0versus8.5/8.6/8.7. All three paired TG
+ratios exceed one in both workloads,with geometric means1.146169/1.030819.
+Agent-followup rate ratios are also favorable in all three pairs,GM1.078221.
+Code/prose generation is3044/6937tokens in every candidate and3656/7950in
+every control. Code acceptance is2186/2577versus2529/3384;prose3688/9750
+versus4227/11169. Both arms confirm strong/weak MTP from all three samples.
+These are model-workload gains with different generated work,not isolated
+kernel attribution or70TG. The common actual canonical tables match for
+decode1/4,and the independent mode10/BF16long-prefill checks pass.
+
+Prefill and TTFT remain separate. On the strict33217/33287fresh-input cases,
+candidate/reference PP geometric means are0.998543/0.973261,prompt-time
+1.001419/1.027492,and clientTTFT1.001268/1.027758. Preserve every slower
+sample;the decode preservation screen does not establish prefill preservation.
+The nominal32088-input case is supplemental,below the strict32768minimum.
+Use dense1only as the next focused decode-resource candidate;keep the552b
+prefill fallback and independent selections. Physical limiting resource remains
+unknown. Qualify CPU_SERVICE observer-off/on on the exact a347 binary before
+attribution;host backing1is a separate unmeasured model-speed candidate.
+Task quality,physical262144/tails/RESTORE,ordinary provider teardown and full
+inference/default adoption remain open. All individual samples and decisions
+are in `q6_dense_dpas_official_v2.cohort`;the performance CSV retains the earlier
+partial milestones and will index the closed comparison.
+After original-source recovery,276closed-process1/2/3/4logs/journals/cache
+files(52648231bytes)are retired with a path/hash manifest and passing admission.
+Their frozen config/plan pairs and V1raw remain through the final retirement
+admission;review these consumers now that the cohort has closed.
+
+V1remains failed:its postprocessor expected metadata v4from the unchanged v5
+producer,and a second predicate wrongly required a Verifier-prompt capture
+under `--short-read 0`. All18requests/native/bench exits completed normally;
+the later independent source/five-ELF/census/recipe/runtime/asset audit passes.
+V2uses that mandatory control only through an explicit committed reanalysis
+proving unchanged timed native/client/workload/environment helpers. It does
+not turn the original failed V1into a success. The original outcome,late audit
+and historical-control proof remain in the committed result and original
+source;the closed V2reader replaces neither their criteria nor their history.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
