@@ -251864,6 +251864,171 @@
           "work_signature_sha256": "5fe43603664029969c474ef49c51d4aea416cb276f361632226b70467d16bb45",
           "long_request": null
         }
+      },
+      {
+        "index": 4,
+        "kernel": "reference",
+        "adapt_swaps": 96,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 174923,
+          "start_ticks": 261655434,
+          "sid": 174861
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33208,
+            "reused_tokens": 0,
+            "generated_tokens": 4923,
+            "output_chars": 5571,
+            "reasoning_chars": 8313,
+            "prompt_ms": 49688.7,
+            "prompt_tps": 668.3,
+            "decode_ms": 297310.8,
+            "decode_tps": 16.6,
+            "ttft_s": 49.796,
+            "total_s": 347.023,
+            "drafts_offered": 4419,
+            "drafts_accepted": 3451,
+            "acceptance_rate": 0.7809459153654673,
+            "request_sha256": "4d19ed07787db7b439c5bf399a3606744ab05293dbd250a68cbe5da4812e678b",
+            "output_sha256": "0ac9f5c5b5aa2579715202d6df0056f45614334317f707f052321653a4ceca00",
+            "reasoning_sha256": "2c6ae0fc55e94fa4e6027c38c0178c3d07471ab1741f625f6c3ef62563caee0d",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 174923,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33208,
+            "rows": 33207,
+            "GPU_residual_rows": 33207,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20291,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33207,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed current native16/GDN3 headers,MTP mode2 callbacks,actual IQ3 entry and target-head capture/replay policy. Source/runtime are pinned;no hardware saturation claim.",
+            "physical_resource_saturation_qualified": false,
+            "target_head_transfer": {
+              "freed": 521472000,
+              "D2H": 521472000,
+              "H2D": 521472000,
+              "draft_freed": 0,
+              "retained_map_bytes": 425196
+            },
+            "target_head_route": {
+              "request": 5,
+              "capture_id": 8,
+              "completed": 1473,
+              "packed_calls": 1,
+              "sole_packed_all_live_head_windows": true,
+              "scope": "one live capture epoch;completed is cumulative within its identity"
+            },
+            "IQ3_dispatch": {
+              "request": 5,
+              "arm": 1,
+              "calls": 2274692,
+              "nt1_rows": 257236480,
+              "pair_rows": 257236480
+            },
+            "dense_DPAS": {
+              "canonical_phase_width_sha256": {
+                "decode/1": "34136fb36571561fa01aa76c0fd618e4641a622e9cadcacfacf28173496893a6",
+                "decode/4": "b3d613c8c99bcfa3996d41f12ab54e17ed38bb9856cb4b818b486694fa232a6e"
+              },
+              "decode_C4": {
+                "capture_id": 8,
+                "replay_completed": 1473
+              },
+              "selected_C4_calls": {
+                "6144x2560": 40,
+                "2560x6144": 14,
+                "2560x10240": 22,
+                "2560x12288": 5
+              },
+              "generic_small_C4_calls": 21
+            }
+          }
+        ],
+        "cache": [
+          {
+            "hits": 1377972,
+            "lookups": 2828640,
+            "hit_percent": 48.7
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "43986747cc7de74e1f4253cd400e503ad314cf5dd3a640d26a7d036867ae3e0f",
+            "3b5063f49eb01110391cdfaacfc94b54677f279022cad8bd6ab2be91cd0854a3",
+            "3cc99036dad7545a8f3854efb8b6dc4b8080ab1ab7f9bfe8792b916006a12fbe",
+            "4d19ed07787db7b439c5bf399a3606744ab05293dbd250a68cbe5da4812e678b"
+          ],
+          "valid": true,
+          "journal_sha256": "6d40594df69b1688e65d761c03827682db0f9afb3d68e44f9e78ddb40360925f"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35524
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "resources": {
+          "passed": true,
+          "leaf_enabled": false,
+          "completed_requests": 5,
+          "warmup_prefix": 4,
+          "benchmark_clients": 1,
+          "work_signature_sha256": "5fe43603664029969c474ef49c51d4aea416cb276f361632226b70467d16bb45",
+          "long_request": null
+        }
       }
     ],
     "host_passed": true,
