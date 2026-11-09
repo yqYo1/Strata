@@ -2082,6 +2082,14 @@ cohort and six-shape component close, integrate this child's source into
 `feature/sycl` and retire the child. A fresh four-ELF build, CPU refusals, traced
 small ownership checks, matched model handoff and repeated PP/TTFT/TG comparison
 are required; do not reuse the old same-build qualification for this changed owner.
+The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
+samples, unchanged in the current result. Across its three processes/six
+cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
+detach0.103158..0.112146s (median0.108827), and restore0.137620..0.198068s
+(median0.144641). Preparation includes the request-scoped RAM vector's allocation
+and initialization; detach includes both D2H and free. Host backing removes
+the former allocation and D2H, but still frees/restores GPU weights. These are
+whole fixture-wrapper intervals, not pure copy latency, bandwidth or model gains.
 All30timing samples and the named21transfer-wrapper samples remain in Git.
 The ended device/timing private roots,normal traces and caches are retired:
 53files/10392061bytes after recovering both original controller manifests.
