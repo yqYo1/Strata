@@ -92,7 +92,25 @@ def requests(tokenizer):
     content = 'Review the following stable merge sort requirements, then implement and explain the algorithm.\n'
     content += '\n'.join(f'Requirement {i}: preserve the original order of equal elements and explain the merge invariant.'
                          for i in range(512))
-    long = model.request_ids(tokenizer, content)
+    # The shared small-model helper intentionally caps requests at2048. Keep
+    # that contract intact and build this bounded multi-chunk fixture here.
+    sys.path.insert(0, str(P / 'tools'))
+    from strata_tokenizer import Tokenizer
+    from jinja2 import Environment
+    vocab = json.loads((tokenizer / 'vocab.json').read_text()); tokens = [None] * len(vocab)
+    for name, i in vocab.items(): tokens[i] = name
+    config = json.loads((tokenizer / 'tokenizer.json').read_text())
+    require(config['pre'] == 'qwen35' and len(tokens) == 248320, 'unexpected target tokenizer')
+    tok = Tokenizer(tokens, (tokenizer / 'merges.txt').read_text().split('\n'),
+        json.loads((tokenizer / 'token_type.json').read_text()), config['pre'], config['special_ids'])
+    text = Environment().from_string((tokenizer / 'chat_template.jinja').read_text()).render(
+        messages=[dict(role='user', content=content)], tools=None, add_generation_prompt=True, enable_thinking=True)
+    require(text.endswith('<think>\n'), 'thinking prompt suffix changed')
+    ids = tok.encode(text, parse_special=True)
+    require(8192 < len(ids) <= 32768 and all(type(i) is int and 0 <= i < 248320 for i in ids) and
+        tok.decode(ids) == text, 'multi-chunk real prompt/tokenizer round trip')
+    long = dict(ids=ids, generated=32, thinking=True, rendered_sha256=hashlib.sha256(text.encode()).hexdigest(),
+        wire_sha256=hashlib.sha256(model.wire(ids, 32)).hexdigest(), prompt_tokens=len(ids))
     short = model.request_ids(tokenizer)
     require(8192 < long['prompt_tokens'] <= 32768 and short['prompt_tokens'] == 82,
             'diagnostic must exceed one8192chunk and retain the original short request')
