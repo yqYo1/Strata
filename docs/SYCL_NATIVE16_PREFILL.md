@@ -1867,9 +1867,15 @@ Initial free VRAM is 1,678 MiB ordinary versus 1,181 MiB packed, with the same
 1,256 expert slots. Each ordinary/packed transition restores 521,472,000 versus
 1,042,944,000 H2D bytes. These placement and ownership observations do not
 qualify 32K speed, phase preservation, task quality or the full context.
-The next consumer is matched long-model speed and resource evaluation. The
-closed standalone benchmark and runner remain recoverable in Git; retire
-their ended external roots at this work boundary.
+The next consumer is matched long-model speed and resource evaluation.
+Both standalone roots are retired after recovering all 1,285 original source
+files, the exact recipe, 803 compiler and 24 link inputs, and the final ELF.
+The deletion removes 1,366 files / 67,207,656 bytes. Another 146 successful
+log/cache files / 33,126,177 bytes are retired from the closed production
+checks. Original failed/successful results remain distinct in Git. The current
+model admission still passes after both deletions. Preserve the current engine
+and required fixtures/configuration for the imminent long comparison, plus
+the independent 90f/552b/e1b consumers and separate legacy provenance holds.
 
 The traced wrapper samples show268..323ms preparing the RAM snapshot and
 133..165ms versus289..345ms restoring reference/packed heads. These are two
