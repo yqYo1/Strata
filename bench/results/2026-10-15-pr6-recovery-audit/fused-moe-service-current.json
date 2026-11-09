@@ -234250,7 +234250,7 @@
     }
   },
   "q6_dense_c4_component_v2": {
-    "stage": "admitted",
+    "stage": "built",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -234670,6 +234670,46 @@
       "native_CPU_host_cases_reused": 31,
       "GPU_qualification_inherited": false,
       "scope": "Same14TUs,801compiler inputs,24external links,recipe,census,fixture and selected image. Original build and CPU checks stay unchanged in reachable Git. Recheck constructor/body trace predicates before any GPU stage."
+    },
+    "reader_controls": {
+      "passed": true,
+      "positive_process_orders": 3,
+      "corrupt_variants": 10,
+      "trace_controls": {
+        "positive": 2,
+        "negative": 8,
+        "passed": true
+      },
+      "GPU_executed": false
+    },
+    "module_import_controls": {
+      "source_commit": "7c6d0e1e453f19010fce00862347cc3768f8461b",
+      "passed": true,
+      "processes": [
+        {
+          "order": "component_then_builder",
+          "argv": [
+            "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+            "-B",
+            "-c",
+            "import sys;sys.path.insert(0,'tools/sycl');import q6_canonical_component as c;import build_q6_head_model as p;assert p.canonical_image is c.image;print('IMPORT_ORDER_PASS')"
+          ],
+          "exit_code": 0,
+          "image_binding_identical": true
+        },
+        {
+          "order": "builder_then_component",
+          "argv": [
+            "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+            "-B",
+            "-c",
+            "import sys;sys.path.insert(0,'tools/sycl');import build_q6_head_model as p;import q6_canonical_component as c;assert p.canonical_image is c.image;print('IMPORT_ORDER_PASS')"
+          ],
+          "exit_code": 0,
+          "image_binding_identical": true
+        }
+      ],
+      "GPU_executed": false
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",

@@ -2094,7 +2094,7 @@ It corrects the global trace-error regex that would reject the mandatory
 constructor canary. A unique verified pre-main receipt must attest expected37/46;
 other constructor errors and every subsequent UR/ZE error remain failures.
 Fresh3positive/10corrupt parser cases,2positive/8negative trace cases and both
-module-import orders are pending before the first small traced GPU check.
+module-import orders now pass. The first small traced GPU check is next.
 The original build/CPU outcomes are unchanged and no GPU has run this fixture.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
