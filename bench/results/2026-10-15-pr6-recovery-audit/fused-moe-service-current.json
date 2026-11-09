@@ -231687,6 +231687,65 @@
   },
   "q6_head_packed_primary_build_v1": {
     "stage": "failed",
+    "error": "RuntimeError('unreviewed SPIR-V opcode: 70')",
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "GPU_executed": false,
+    "native_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87",
+    "original_evidence_commit": "cfb09530c6b6f7268afde02ee93310a7d591eafb",
+    "original_evidence_key": "q6_head_packed_primary_build_v1",
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-packed-primary-v1/build/strata",
+        "sha256": "1db9bcaea30357d927d57c4a0613c71edcb44792e5050d711f360c5b3b9e1006",
+        "bytes": 26360440,
+        "origin_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87"
+      },
+      "sycl_q6_head_owner_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-packed-primary-v1/build/sycl_q6_head_owner_test",
+        "sha256": "e5aa53f2480f03639ca00420b3e2177d571a061a0dd31b06d35fc9e7c37bf93a",
+        "bytes": 11733816,
+        "origin_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87"
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-packed-primary-v1/build/sycl_submission_test",
+        "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
+        "bytes": 351832,
+        "origin_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87"
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-packed-primary-v1/build/sycl_verifier_retirement_test",
+        "sha256": "e4d3bf08af93954a42b14cb76c63d3a3f5ec036765821ff05591e4cbe179d8e1",
+        "bytes": 19729280,
+        "origin_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87"
+      }
+    },
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-packed-primary-v1/actual-inputs.json",
+      "sha256": "0f808f0fab5d42dc8ed701c020e5d8fb1dff0250485d4a0e104873179532ce45",
+      "compiler_files": 1461,
+      "generated_files": 1,
+      "external_link_files": 29,
+      "uncovered": 0,
+      "translation_units": 127,
+      "source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87"
+    },
+    "image_reader_refusal": {
+      "compilation_passed": true,
+      "actual_inputs_reconciled": true,
+      "exact_original_error": "RuntimeError('unreviewed SPIR-V opcode: 70')",
+      "unknown_opcode": 70,
+      "unknown_occurrences_per_module": 1,
+      "module_instructions": 2443,
+      "grammar": "Khronos SPIR-V1.6revision7 OpInBoundsPtrAccessChain: result-type/result/base/element IDs and optional index IDs.",
+      "qualification": "Native code and all four ELFs compiled;no GPU/runtime result. Original failed state stays failed.",
+      "next": "Commit this refusal;prospectively add only the reviewed opcode with ID/order/edge/arity controls,then a new controller-only admission retaining exact native/fixture/recipe inputs. No rebuild or inherited GPU result."
+    },
+    "retention": "Original full recipe/command/image proof is recoverable from the pinned original evidence commit. Exact ELFs remain live in the newV2 admission;no failed result inherited."
+  },
+  "q6_head_packed_primary_build_v2": {
+    "stage": "admitted",
     "native_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87",
     "recipe": {
       "configure": [
@@ -231883,19 +231942,12 @@
     "model_qualified": false,
     "production_Verifier_qualified": false,
     "plan": {
-      "host": "36 linked-image,census,owner/protocol and actual finalizer controls;retained fault-finalizer AST must match484d before running",
+      "host": "40CPU controls,including inbounds-pointer ID/order positives and opcode/element-edge/arity/undefined-ID negatives;then exact selected-module identity. No GPU result inherited.",
       "configure": "Commit configure recipe first; record generated inputs and selected Ninja commands;commit that configured stage before compiling.",
       "compile": "Build the engine plus production-linked head, submission and verifier-retirement fixtures.Verify all actual compiler/link inputs and fresh engine/fixture selected-module identity before any GPU execution;C1..3 and the shared-MTP path inherit no GPU result.",
       "subsequent": "Fresh CPU guards and bounded traced submission/phase/real-GGUF0/1/2owner checks,then three timing processes R/C,C/R,R/C with5samples/arm and256replays/sample.Native fixtures enforce max(10ms,300timer-units). Only a repeated C4 gain plus all numerical/lifetime gates permits same-engine0/2 MTP4 model handoffs and matched bench.sh long/agent/strong-and-weak thinking speed. No adoption from build."
     },
     "retention": "One temporary candidate for sole-packed0/2 qualification. Preserve qualified5a6 engine and its four fixture/recipe identities,90f feature and552b/e1b independent phase guards. The prior0b comparison consumer ended at V4 model closure;check and retire its binaries from exact original Git inputs before the new compile. Select the retained generation after fresh qualification;retire a rejected candidate after original source recovery. Legacy56ELF provenance holds remain unresolved and are not qualified references.",
-    "host_controls": {
-      "passed": true,
-      "cases": 36,
-      "fault_finalizer_AST_identical": true,
-      "GPU_executed": false,
-      "source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87"
-    },
     "planned_translation_units": [
       "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-alloc.c",
       "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-backend-meta.cpp",
@@ -232756,23 +232808,28 @@
         "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
       }
     },
-    "error": "RuntimeError('unreviewed SPIR-V opcode: 70')",
-    "image_reader_refusal": {
-      "compilation_passed": true,
-      "actual_inputs_reconciled": true,
-      "exact_original_error": "RuntimeError('unreviewed SPIR-V opcode: 70')",
-      "unknown_opcode": 70,
-      "unknown_occurrences_per_module": 1,
-      "module_instructions": 2443,
-      "grammar": "Khronos SPIR-V1.6revision7 OpInBoundsPtrAccessChain: result-type/result/base/element IDs and optional index IDs.",
-      "qualification": "Native code and all four ELFs compiled;no GPU/runtime result. Original failed state stays failed.",
-      "next": "Commit this refusal;prospectively add only the reviewed opcode with ID/order/edge/arity controls,then a new controller-only admission retaining exact native/fixture/recipe inputs. No rebuild or inherited GPU result."
+    "admission_source_commit": "f518f10c8bc81182d650a6319265eccf85ad1a32",
+    "compilation_passed": true,
+    "qualification_reuse": {
+      "original_failed_key": "q6_head_packed_primary_build_v1",
+      "original_evidence_commit": "f518f10c8bc81182d650a6319265eccf85ad1a32",
+      "original_private_record_sha256": "9956b75bf98784f5619b519330cae869a17c215a1a20ba368b06caf006534705",
+      "native_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87",
+      "native_recompiled": false,
+      "GPU_qualification_inherited": false,
+      "scope": "Same four ELFs,127TUs/1461compiler inputs/generated1/29external links and recipe.Add only reviewed OpInBoundsPtrAccessChain70;preserve its opcode and every operand ID. Require40CPU controls and complete2443-instruction engine/fixture structural identity. Other unknown instructions and every prior bounds/ambiguity rejection stay refused."
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "6dd74eab75a85f511cfde4eb6efc7db249386a87",
       "count": 1126,
       "aggregate_sha256": "359fb753a743f73365052c75607c67122a99b83ac0ba3d3b6b1911b8e3cd67ee"
+    },
+    "admission_project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "f518f10c8bc81182d650a6319265eccf85ad1a32",
+      "count": 1126,
+      "aggregate_sha256": "12a7ad771539b193f2fa133c6a25c7380d5283222d5fc7a8c1ec85e7801855e5"
     },
     "dependencies": [
       {
@@ -232788,42 +232845,6 @@
         "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
       }
     ],
-    "commands": [
-      {
-        "label": "host-controls",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "error": null,
-        "errors": []
-      },
-      {
-        "label": "configure",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "error": null,
-        "errors": []
-      },
-      {
-        "label": "planned-commands",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "error": null,
-        "errors": []
-      },
-      {
-        "label": "compile",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "error": null,
-        "errors": []
-      },
-      {
-        "label": "dependencies",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "error": null,
-        "errors": []
-      }
-    ]
+    "commands": []
   }
 }
