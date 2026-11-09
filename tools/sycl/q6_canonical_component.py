@@ -21,7 +21,6 @@ import sys
 sys.dont_write_bytecode = True
 import benchmark_runtime as python_runtime
 import build_compat_profile as base
-import build_q6_head_model as primary
 import measurement_guards as guards
 import measurement_owner as owner
 import q6_dpas_component as reader
@@ -45,6 +44,9 @@ require, sha, write, signature = guards.require, base.digest, base.write, base.s
 
 
 def basis():
+    # The primary builder imports this module's image reader. Resolve the
+    # builder only after module initialization, for either import order.
+    import build_q6_head_model as primary
     cohort = validation.committed(RESULT,(COHORT,))
     require(cohort['stage']=='closed' and cohort['complete'] and cohort['passed'] and
         cohort['ownership_closed'] and not cohort['active'] and len(cohort['processes'])==6 and
@@ -245,6 +247,7 @@ def controls():
 
 
 def prepare(ctx):
+    import build_q6_head_model as primary
     require(not ROOT.exists() and KEY not in validation.committed(RESULT),'fresh component plan only')
     native,identity=basis();model=validation.committed(RESULT,(MODEL,))
     require(model['passed'] and model['complete'] and model['ownership_closed'],'bounded current model/runtime proof required')
