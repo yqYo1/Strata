@@ -2290,9 +2290,9 @@ code/prose TG is12.5/8.7. Its3656/7950output tokens and draft acceptance
 tables match for decode1/4;mode10/BF16long-prefill checks remain independent.
 Continue the committed order with final candidate5. The first-pair and higher second-candidate
 points are indexed in the performance CSV with their incomplete-cohort qualification. After
-source recovery and recorded path/hash deletion manifest,207closed-process1/2/3
-logs/journals/cache files(39487341bytes)are retired;post-retirement admission
-passes. All three frozen config/plan pairs remain through cohort closure. V1control raw
+source recovery and recorded path/hash deletion manifest,276closed-process1/2/3/4
+logs/journals/cache files(52648231bytes)are retired;post-retirement admission
+passes. All four frozen config/plan pairs remain through cohort closure. V1control raw
 remains only for the explicit historical-admission reader.
 The closed V1control exposes a reader mismatch before candidate1:the tuned
 `--short-read 0`route uses dedicated prefill and its live Q6capture reports
