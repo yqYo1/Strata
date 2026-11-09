@@ -228803,5 +228803,23 @@
         "errors": []
       }
     ]
+  },
+  "q6_head_model_entry_v2_preparation": {
+    "state": "failed_before_plan_and_native_execution",
+    "source_commit": "51fbdc3812774bef1b7b0a0bc73501dbfa82fd2f",
+    "command": [
+      "python3",
+      "-B",
+      "tools/sycl/q6_head_model_entry.py",
+      "prepare"
+    ],
+    "interpreter": "/usr/bin/python3",
+    "exit_code": 1,
+    "error": "ModuleNotFoundError: No module named regex",
+    "plan_written": false,
+    "root_created": false,
+    "GPU_executed": false,
+    "native_model_executed": false,
+    "next": "Use existing qualified /home/yayoi/.local/share/strata-sycl/venv/bin/python3 for tokenizer/generator admission;do not install packages or retry the missing-dependency interpreter."
   }
 }
