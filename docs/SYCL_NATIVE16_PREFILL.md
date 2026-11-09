@@ -2092,8 +2092,9 @@ canonical-DPAS image reader. No GPU has run. Before GPU stages, correct the
 trace validator: its global error regex would reject the required pre-main
 null-handle canary. Bind expected37/46 to the verified constructor receipt and
 reject every later error, with fresh CPU controls and explicit admission of the
-unchanged fixture. Original build/CPU results stay unchanged;host-only bounds
-checks may proceed while that controller correction is pending.
+unchanged fixture. All31 native CPU bounds/policy cases now pass with normal
+exit0 and closed ownership. No GPU is used; the trace-controller correction
+remains the next prerequisite. Preserve these original build/CPU results.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's
