@@ -1971,6 +1971,14 @@ reference. DFlash2 still uses0/1;the experimental mode2 explicitly refuses its
 unadapted row-major binding. Fresh compilation,CPU/device/model checks and
 matched phase/long-thinking speed are pending. No packed-primary or MTP
 speed/adoption result exists yet;V4 above qualifies the originald174native only.
+The fresh sole-packed source6dd74eab7 passes36CPU controls and compiles all
+four ELFs,including engine1db9bcae and head fixturee5aa53f2. Its127TUs,
+1461compiler inputs,one generated header and29external link inputs reconcile.
+The pre-GPU structural reader then refuses opcode70,which appears once in each
+53528-byte/2443-instruction selected module. Khronos's pinned grammar identifies
+it as `OpInBoundsPtrAccessChain`;the old reader supported only opcode67's
+non-inbounds form. The failed build gate remains failed,no GPU ran,and a fresh
+prospective reader/control admission is required for these exact ELFs.
 The0b engine/fixtures and closed V2/V3/V4 model diagnostic roots are now
 retired:354files/183373323bytes. Exact1119project and1145dependency source
 inputs are recovered from their original commits;the original recipe and
