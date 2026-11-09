@@ -62,7 +62,7 @@ def basis(revision):
         model['ownership_closed'] and len(model['results']) == 2 and
         all(r['passed'] and r['native_exit_code'] == 0 and r['fresh_faults'] == []
             for r in model['results']), 'both current same-build model entries must close first')
-    native = entry.device.native()
+    native = entry.native()
     reference = json.loads(entry.REFERENCE.read_text())
     contract, manifest = frontend.python_manifest()
     require(reference['model_assets'] == model['models'], 'fixed model assets differ')

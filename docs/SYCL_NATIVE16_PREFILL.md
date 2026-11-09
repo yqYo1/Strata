@@ -1914,7 +1914,16 @@ retire/overwrite/restore cycles per arm before the same-engine model test.
 That test now requests actual131072-context/KV-resident allocation and1256cache
 slots,with8192prefill chunks but initially small513/82/513requests. Passing it
 will qualify placement and repeated handoff,not full-context processing or
-speed. The packed kernel/exports remain temporarily only to preserve the exact
+speed. V2 reaches READY131072/cache1256 but the observer stops it before GEN:
+`INFO kv_resident=0` means the main KV is fully resident;the observer incorrectly
+requires131072. The owned child is SIGTERM/reaped/session-empty with no fresh
+fault;the original failed/incomplete-observation outcome remains unchanged.
+The prospective V3 fixes this wire contract and adds owned DRM-memory snapshots.
+Its controller-only admission requires the same four exact engine/fixture ELFs,
+native compiler inputs/recipe and prior GPU proof;only the two model/cohort
+observer files may change. It inherits no failed model or speed result. Use the
+existing `~/.local/share/strata-sycl/venv/bin/python3` for these tokenizer/template
+controllers;the system Python lacks `regex`. The packed kernel/exports remain temporarily only to preserve the exact
 qualified shared image through this comparison;review their removal afterward.
 No model PP/TG,task,
 physical-context or default adoption follows from the component result.

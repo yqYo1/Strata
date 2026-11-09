@@ -21,10 +21,69 @@ import native_request_protocol as protocol
 
 build, guards, owner, validation = device.build, device.guards, device.owner, device.validation
 P, B, RESULT = device.P, device.B, device.RESULT
-ROOT, KEY = B / 'q6-head-model-entry-v2', 'q6_head_model_entry_v2'
+ROOT, KEY = B / 'q6-head-model-entry-v3', 'q6_head_model_entry_v3'
 REFERENCE = B / 'decode-iq3-audit-speed-v2/record.json'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json'
 require, sha, write, signature = device.require, device.sha, device.write, build.signature
+
+
+def native():
+    """Reuse exact qualified native/fixture bytes with two new observer files.
+
+    Keep native d174 and its recipe distinct from this controller admission;
+    the failed V2 model request gate is not inherited as a success.
+    """
+    row = json.loads((build.ROOT / 'record.json').read_text())
+    require(validation.committed(RESULT, (build.KEY,)) == build.compact(row) and
+        row['stage'] == 'built' and row['passed'] and row['complete'] and row['ownership_closed'] and
+        row['actual_inputs']['uncovered'] == 0, 'closed original native qualification required')
+    previous = row['admission_project']; current = build.source.pin(P, build.PREFIXES)
+    before, after = previous['source_sha256'], current['source_sha256']
+    require(before == {n: hashlib.sha256(raw).hexdigest() for n, raw in
+        build.source.blobs(P, previous['revision'], before)}, 'original admission source not recoverable')
+    require(set(before) == set(after) and {n for n in before if before[n] != after[n]} ==
+        {'tools/sycl/q6_head_model_entry.py', 'tools/sycl/q6_head_generation_speed.py'},
+        'only named model/cohort observers may change;no native,fixture or build-reader change')
+    check = dict(row, project=current); build.build.check_inputs(check)
+    for name, digest in (row.get('generated_inputs', {}) | row.get('configured_files', {})).items():
+        require(sha(name) == digest, 'original configured/recipe input changed')
+    inputs = row['actual_inputs']; require(sha(inputs['path']) == inputs['sha256'], 'native census changed')
+    census = json.loads(Path(inputs['path']).read_text())
+    require(all(sha(p) == digest for field in ('compiled', 'generated', 'links')
+        for p, digest in census[field].items()), 'actual native compiler/link input changed')
+    require(row['native_source_commit'] == row['project']['revision'] and
+        all(sha(v['path']) == v['sha256'] and Path(v['path']).stat().st_size == v['bytes']
+            for v in row['binaries'].values()), 'original engine/fixture/source identity changed')
+    return row
+
+
+def check_placement(fields):
+    # layer.cpp:kv_plan defaults to slots=pages/mode0. generate.cpp:INFO emits
+    # a nonzero resident count only for streamed mode1;zero means fully resident.
+    expected = dict(context='131072', kv='int8', kv_resident='0', expert_slots='1256',
+        spec='4', pool_workers='5', pcie_frac='0.00', mtp_max='0')
+    require(all(fields.get(k) == v for k, v in expected.items()), 'actual placement changed')
+
+
+def memory_snapshot(pid):
+    """Read owned DRM clients without a new GPU context or clocked observer."""
+    clients = {}; skipped = 0
+    try:
+        for path in Path('/proc', str(pid), 'fdinfo').iterdir():
+            try:
+                with path.open() as stream: text = stream.read(65537)
+            except FileNotFoundError: continue
+            if len(text) > 65536: skipped += 1; continue
+            fields = dict((k.strip(), v.strip()) for line in text.splitlines()
+                          if ':' in line for k, v in [line.split(':', 1)])
+            if fields.get('drm-pdev') != '0000:05:00.0': continue
+            key = fields.get('drm-client-id', 'fd-' + path.name)
+            clients[key] = {k: v for k, v in fields.items() if k in ('drm-pdev', 'drm-client-id', 'drm-driver') or
+                            k.startswith(('drm-memory-', 'drm-resident-', 'drm-shared-', 'drm-total-'))}
+        return dict(status='observed' if clients else 'unavailable', clients=list(clients.values()),
+            skipped_oversized=skipped, scope='Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients.')
+    except OSError as error:
+        return dict(status='unavailable', error=repr(error), scope='No memory or saturation claim.')
 
 
 def routes(text, arm):
@@ -83,7 +142,16 @@ def parser_controls():
         try: routes(bad, 1)
         except RuntimeError: continue
         raise RuntimeError('production head parser accepted a corrupted join/policy/count')
-    return dict(passed=True, positive_arms=2, corrupt_variants=8, GPU_executed=False)
+    fields = dict(context='131072', kv='int8', kv_resident='0', expert_slots='1256',
+        spec='4', pool_workers='5', pcie_frac='0.00', mtp_max='0')
+    check_placement(fields)
+    for key, value in [('kv_resident', '131072'), ('kv_resident', '4096'),
+                       ('context', '4096'), ('kv', 'fp16'), ('expert_slots', '1255')]:
+        try: check_placement(dict(fields, **{key: value}))
+        except RuntimeError: continue
+        raise RuntimeError('incorrect/streamed model placement accepted')
+    return dict(passed=True, positive_arms=2, corrupt_variants=8,
+        full_resident_placement_positive=1, incorrect_placement_variants=5, GPU_executed=False)
 
 
 def compact(row):
@@ -124,7 +192,7 @@ def verify(row):
         {p: hashlib.sha256(raw).hexdigest() for p, raw in build.source.blobs(P, pin['revision'],
             pin['source_sha256'])} == pin['source_sha256'] and
         all(sha(P / p) == h for p, h in pin['source_sha256'].items()), 'controller changed')
-    n = device.native()
+    n = native()
     require(n['binaries'] == row['native_build']['binaries'] and
         sha(build.ROOT / 'record.json') == row['native_record']['sha256'], 'new engine changed')
     require(signature(validation.committed(RESULT, (device.KEY,))) == row['device_evidence_sha256'], 'device prerequisite changed')
@@ -139,10 +207,11 @@ def verify(row):
 
 def prepare():
     require(not ROOT.exists() and KEY not in build.public(), 'fresh model-entry plan only')
-    n = device.native(); prior = validation.committed(RESULT, (device.KEY,))
+    n = native(); prior = validation.committed(RESULT, (device.KEY,))
     require(prior['passed'] and prior['complete'] and prior['ownership_closed'] and
         all(any(r.get('mode') == arm and r['passed'] for r in prior['results'])
-            for arm in ('submission', 'phase', 'reference', 'canonical')), 'same-build device closure required')
+            for arm in ('submission', 'phase', 'reference', 'canonical')) and
+        prior['binaries'] == n['binaries'], 'same-build device closure required')
     reference = json.loads(REFERENCE.read_text())
     old = validation.committed(STATUS, ('current_sync', 'dflash2_prefill_heads_check'))
     argv = list(old['argv']); argv[0] = n['binaries']['strata']['path']
@@ -170,6 +239,13 @@ def prepare():
     row = dict(stage='prepared', source_commit=build.source.git(P, 'rev-parse', 'HEAD').decode().strip(),
         controller=build.source.pin(P, ['tools/sycl', 'tools/strata_tokenizer.py', 'data/expert-profile.bin']),
         native_source_commit=n['project']['revision'], native_build=dict(binaries=n['binaries']),
+        native_qualification_reuse=dict(native_build_key=build.KEY, device_key=device.KEY,
+            device_evidence_commit='51fbdc3812774bef1b7b0a0bc73501dbfa82fd2f',
+            native_source_commit=n['project']['revision'], binaries_unchanged=True,
+            actual_compiler_and_fixture_and_recipe_inputs_unchanged=True,
+            changed_observers=['tools/sycl/q6_head_model_entry.py', 'tools/sycl/q6_head_generation_speed.py'],
+            previous_failed_model_key='q6_head_model_entry_v2', previous_failure_commit='4fa9f6e9aaea658c1f3652cc3698af966c5f75ef',
+            scope='Controller-only new plan;reuse exact original four native ELFs/fixtures/recipe and closed GPU owner proof. No failed model result or speed inherited.'),
         native_record=dict(path=str(build.ROOT / 'record.json'), sha256=sha(build.ROOT / 'record.json')),
         device_evidence_sha256=signature(prior), models=reference['model_assets'],
         models_sha256=signature(reference['model_assets']), model_files=15,
@@ -183,6 +259,7 @@ def prepare():
              ' requests in each. Context131072,KVresident131072,chunk8192,short-read128,1256cache,MTP4,'
              'no token/coupled graphs. This qualifies full-placement admission,not full-context processing.'
              ' Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps,'
+             ' native full-resident INFO kv_resident=0,owned DRM snapshots at READY/after requests,'
              ' complete GEN/drafts,all request route joins,positive C4replays,two target-head retirements and'
              ' fresh capture identities after restoration. No output-equality requirement. Full15asset hashes'
              ' at preparation and final cohort closure;stat checks before each process. Stop first failure.',
@@ -231,13 +308,13 @@ def execute(mode):
                 info = [v[5:] for v in startup if v.startswith('INFO ')]
                 require(len(info) == 1, 'one actual INFO required')
                 result['placement'] = dict(v.split('=', 1) for v in info[0].split())
-                require(all(result['placement'].get(k) == v for k, v in dict(context='131072', kv='int8', kv_resident='131072',
-                    expert_slots='1256', spec='4', pool_workers='5', pcie_frac='0.00', mtp_max='0').items()), 'actual placement changed')
+                check_placement(result['placement'])
                 actual = dict(v.split('=', 1) for v in Path('/proc', str(command['pid']), 'environ').read_text().split('\0') if '=' in v)
                 require(actual == env, 'native environment changed')
                 evidence_row = dict(row, environment=env)
                 result.update(model.runtime_evidence(evidence_row, command['pid'],
                     (ROOT / 'owned' / f'head{arm}.stderr').read_text(errors='replace')))
+                result['memory_at_READY'] = memory_snapshot(command['pid'])
                 print(f'Head{arm}: READY with pinned runtime and actual placement.', flush=True)
                 for label in ('long', 'short', 'long'):
                     request = row['requests'][label]; parser = protocol.RequestProtocol(request['prompt_tokens'], request['generated'])
@@ -248,6 +325,7 @@ def execute(mode):
                         generated=len(parser.tokens), accepted=int(parser.done[6]), offered=int(parser.done[7]),
                         output_ids_sha256=signature(parser.tokens), complete=True))
                     print(f'Head{arm}: {label} request complete.', flush=True)
+                result['memory_after_requests'] = memory_snapshot(command['pid'])
                 io.send(b'QUIT\n'); io.exit(30)
             e, out, err = scope.run(f'head{arm}', row['argv'], env, P, interaction=interact, **row['budgets'])
             require(owner.closed(e) and e['exit_code'] == 0, 'native model closure failed')
