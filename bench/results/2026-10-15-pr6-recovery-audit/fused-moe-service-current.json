@@ -251281,6 +251281,424 @@
             }
           }
         }
+      },
+      {
+        "index": 2,
+        "kernel": "candidate",
+        "adapt_swaps": 96,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 112770,
+          "start_ticks": 261508628,
+          "sid": 112711
+        },
+        "request_routes_checked_before_continue": 1,
+        "cache_footers_checked_before_continue": 5,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33208,
+            "reused_tokens": 0,
+            "generated_tokens": 4923,
+            "output_chars": 5571,
+            "reasoning_chars": 8313,
+            "prompt_ms": 49820.5,
+            "prompt_tps": 666.6,
+            "decode_ms": 299827.0,
+            "decode_tps": 16.4,
+            "ttft_s": 49.927,
+            "total_s": 349.672,
+            "drafts_offered": 4419,
+            "drafts_accepted": 3451,
+            "acceptance_rate": 0.7809459153654673,
+            "request_sha256": "4d19ed07787db7b439c5bf399a3606744ab05293dbd250a68cbe5da4812e678b",
+            "output_sha256": "0ac9f5c5b5aa2579715202d6df0056f45614334317f707f052321653a4ceca00",
+            "reasoning_sha256": "2c6ae0fc55e94fa4e6027c38c0178c3d07471ab1741f625f6c3ef62563caee0d",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 112770,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33208,
+            "rows": 33207,
+            "GPU_residual_rows": 33207,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20291,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33207,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed current native16/GDN3 headers,MTP mode2 callbacks,actual IQ3 entry and target-head capture/replay policy. Source/runtime are pinned;no hardware saturation claim.",
+            "physical_resource_saturation_qualified": false,
+            "target_head_transfer": {
+              "freed": 521472000,
+              "D2H": 521472000,
+              "H2D": 521472000,
+              "draft_freed": 0,
+              "retained_map_bytes": 425196
+            },
+            "target_head_route": {
+              "request": 5,
+              "capture_id": 8,
+              "completed": 1473,
+              "packed_calls": 1,
+              "sole_packed_all_live_head_windows": true,
+              "scope": "one live capture epoch;completed is cumulative within its identity"
+            },
+            "IQ3_dispatch": {
+              "request": 5,
+              "arm": 1,
+              "calls": 2274692,
+              "nt1_rows": 257236480,
+              "pair_rows": 257236480
+            },
+            "dense_DPAS": {
+              "canonical_phase_width_sha256": {
+                "decode/1": "34136fb36571561fa01aa76c0fd618e4641a622e9cadcacfacf28173496893a6",
+                "decode/4": "b3d613c8c99bcfa3996d41f12ab54e17ed38bb9856cb4b818b486694fa232a6e"
+              },
+              "decode_C4": {
+                "capture_id": 8,
+                "replay_completed": 1473
+              },
+              "selected_C4_calls": {
+                "6144x2560": 40,
+                "2560x6144": 14,
+                "2560x10240": 22,
+                "2560x12288": 5
+              },
+              "generic_small_C4_calls": 21
+            }
+          }
+        ],
+        "cache": [
+          {
+            "hits": 1377972,
+            "lookups": 2828640,
+            "hit_percent": 48.7
+          }
+        ],
+        "common_cache_footers": 5,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 1,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "43986747cc7de74e1f4253cd400e503ad314cf5dd3a640d26a7d036867ae3e0f",
+            "3b5063f49eb01110391cdfaacfc94b54677f279022cad8bd6ab2be91cd0854a3",
+            "3cc99036dad7545a8f3854efb8b6dc4b8080ab1ab7f9bfe8792b916006a12fbe",
+            "4d19ed07787db7b439c5bf399a3606744ab05293dbd250a68cbe5da4812e678b"
+          ],
+          "valid": true,
+          "journal_sha256": "58efea34466b779dfc9d5e9bb50696885b167beadca96497988c7c918e15d57b"
+        },
+        "native_request_binding": {
+          "requests": 5,
+          "draft_cells": 35524
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "resources": {
+          "passed": true,
+          "leaf_enabled": true,
+          "completed_requests": 5,
+          "warmup_prefix": 4,
+          "benchmark_clients": 1,
+          "work_signature_sha256": "5fe43603664029969c474ef49c51d4aea416cb276f361632226b70467d16bb45",
+          "long_request": {
+            "cpu_jobs": 1254500,
+            "cpu_entries": 1450668,
+            "concurrent_cpu_ns": 517166725628,
+            "concurrent_wall_ns": 525456177820,
+            "thread_count": 6,
+            "operations": {
+              "GU": {
+                "calls": 2274692,
+                "wall_ns": 355459650326,
+                "cpu_ns": 351054453947
+              },
+              "HQ": {
+                "calls": 1254500,
+                "wall_ns": 1805840453,
+                "cpu_ns": 1002908413
+              },
+              "DOWN": {
+                "calls": 2274692,
+                "wall_ns": 168190687041,
+                "cpu_ns": 165109363268
+              }
+            },
+            "format_nt_jobs": [
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 1,
+                "jobs": 328018
+              },
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 2,
+                "jobs": 39039
+              },
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 3,
+                "jobs": 5956
+              },
+              {
+                "gu": 18,
+                "down": 20,
+                "nt": 4,
+                "jobs": 1021
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 1,
+                "jobs": 73914
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 2,
+                "jobs": 9648
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 3,
+                "jobs": 1491
+              },
+              {
+                "gu": 18,
+                "down": 42,
+                "nt": 4,
+                "jobs": 231
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 1,
+                "jobs": 190100
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 2,
+                "jobs": 25969
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 3,
+                "jobs": 4563
+              },
+              {
+                "gu": 21,
+                "down": 20,
+                "nt": 4,
+                "jobs": 814
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 1,
+                "jobs": 25595
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 2,
+                "jobs": 3749
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 3,
+                "jobs": 604
+              },
+              {
+                "gu": 21,
+                "down": 42,
+                "nt": 4,
+                "jobs": 98
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 1,
+                "jobs": 343149
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 2,
+                "jobs": 43588
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 3,
+                "jobs": 6637
+              },
+              {
+                "gu": 22,
+                "down": 20,
+                "nt": 4,
+                "jobs": 1236
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 1,
+                "jobs": 108471
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 2,
+                "jobs": 15460
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 3,
+                "jobs": 2861
+              },
+              {
+                "gu": 22,
+                "down": 42,
+                "nt": 4,
+                "jobs": 567
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 1,
+                "jobs": 19439
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 2,
+                "jobs": 2020
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 3,
+                "jobs": 216
+              },
+              {
+                "gu": 23,
+                "down": 20,
+                "nt": 4,
+                "jobs": 46
+              }
+            ],
+            "top_cpu_bins": {
+              "GU": [
+                {
+                  "gu": 18,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 328018,
+                  "calls": 586935,
+                  "wall_ns": 96472367825,
+                  "cpu_ns": 95350774935
+                },
+                {
+                  "gu": 22,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 343149,
+                  "calls": 618142,
+                  "wall_ns": 70622353608,
+                  "cpu_ns": 69570822456
+                },
+                {
+                  "gu": 21,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 190100,
+                  "calls": 353128,
+                  "wall_ns": 70230002670,
+                  "cpu_ns": 69544594913
+                }
+              ],
+              "DOWN": [
+                {
+                  "gu": 22,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 343149,
+                  "calls": 618142,
+                  "wall_ns": 49299380381,
+                  "cpu_ns": 48424100310
+                },
+                {
+                  "gu": 18,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 328018,
+                  "calls": 586935,
+                  "wall_ns": 47284263036,
+                  "cpu_ns": 46428256938
+                },
+                {
+                  "gu": 21,
+                  "down": 20,
+                  "nt": 1,
+                  "jobs": 190100,
+                  "calls": 353128,
+                  "wall_ns": 27167710822,
+                  "cpu_ns": 26718851196
+                }
+              ]
+            }
+          }
+        }
       }
     ],
     "host_passed": true,
