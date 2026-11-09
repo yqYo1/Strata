@@ -229781,7 +229781,7 @@
     }
   },
   "q6_head_model_entry_v3": {
-    "stage": "host_passed",
+    "stage": "failed",
     "source_commit": "f361c8481e17959aab6dcfefee8492df87824b96",
     "native_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e",
     "native_build": {
@@ -230643,7 +230643,143 @@
     },
     "plan": "Committed parser controls first;fresh head0then1 processes,long513/short82/long513 thinking-on32output requests in each. Context131072,KVresident131072,chunk8192,short-read128,1256cache,MTP4,no token/coupled graphs. This qualifies full-placement admission,not full-context processing. Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps, native full-resident INFO kv_resident=0,owned DRM snapshots at READY/after requests, complete GEN/drafts,all request route joins,positive C4replays,two target-head retirements and fresh capture identities after restoration. No output-equality requirement. Full15asset hashes at preparation and final cohort closure;stat checks before each process. Stop first failure.",
     "limits": "Small ownership/routing diagnosis only;no clean PP/TTFT/TG claim,task quality,physical262144/RESTORE,ordinary provider teardown or default adoption. Long/agent/strong-and-weak thinking benchmarks and independent prefill/decode preservation remain required.",
-    "results": [],
+    "results": [
+      {
+        "arm": 0,
+        "passed": false,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 513,
+            "generated": 32,
+            "accepted": 20,
+            "offered": 42,
+            "output_ids_sha256": "47740ff7a85df17d71d7ead8ee5ce1c303788ba7bfdddec2a7ba9e32b3aca6a3",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 513,
+            "generated": 32,
+            "accepted": 20,
+            "offered": 42,
+            "output_ids_sha256": "47740ff7a85df17d71d7ead8ee5ce1c303788ba7bfdddec2a7ba9e32b3aca6a3",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "131072",
+          "kv": "int8",
+          "kv_resident": "0",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "0",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 2000821,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "b317756edd9a7c7191d8b6de3149e51ab5f842f0c3f35a60f6db4ba376a14243",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58533",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "821288 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "821288 KiB",
+              "drm-total-vram0": "9988144 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9988144 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "48976698446827",
+              "drm-total-cycles-vcs": "48976698446827",
+              "drm-total-cycles-vecs": "48976698446827",
+              "drm-total-cycles-bcs": "48976698446827",
+              "drm-total-cycles-ccs": "48976698446827"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58533",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "0",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "1078248 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "1078248 KiB",
+              "drm-total-vram0": "10390956 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "10390956 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "48978235593308",
+              "drm-total-cycles-vcs": "48978235593308",
+              "drm-total-cycles-vecs": "48978235593308",
+              "drm-total-cycles-bcs": "48978235593308",
+              "drm-total-cycles-ccs": "48978235593308"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "ownership_closed": true,
@@ -230658,6 +230794,42 @@
       "full_resident_placement_positive": 1,
       "incorrect_placement_variants": 5,
       "GPU_executed": false
+    },
+    "error": "RuntimeError('long prefill must retire and recapture the head reader')",
+    "fresh_faults": [],
+    "final_fault_check": {
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": false
+    },
+    "observer_refusal": {
+      "observed_model_executed": true,
+      "completed_requests": 3,
+      "native_exit_code": 0,
+      "target_head_detachments": 0,
+      "decode_C4_capture_ids": [
+        2,
+        2,
+        2
+      ],
+      "completed_replay_cumulative": [
+        14,
+        22,
+        36
+      ],
+      "reason": "513-token inputs do not exceed8192chunk;uses_layer_major requires rows>chunk. The diagnostic did not exercise the intended retirement,so the recapture criterion correctly refuses qualification.",
+      "original_status_and_model_executed_flag_preserved": true,
+      "candidate_executed": false,
+      "next": "Fresh prospectively committed >8192-input workload at unchanged131072context/1256cache/8192chunk;keep original retirement/numerical/fault gates."
     },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -230686,6 +230858,14 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "head0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }

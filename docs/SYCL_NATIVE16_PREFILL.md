@@ -1907,10 +1907,13 @@ with no rebuild or inherited GPU result. It requires36CPU controls and a whole
 selected-module comparison preserving every instruction,literal,annotation and
 function-body order while normalizing only IDs and global/function declaration
 order. Unknown instructions,modes,decorations or ambiguous IDs reject admission.
-This is not final-ISA or model-speed equivalence. Production GPU/model
-qualification is still open. The
-production-linked fixture will recheck actual GGUF numerics and two canonical
-retire/overwrite/restore cycles per arm before the same-engine model test.
+This is not final-ISA or model-speed equivalence. Production-linked device
+evidence `51fbdc381` passes five CPU guards and four GPU processes:10 submission,
+16 phase-cache cases,and reference/canonical real-GGUF heads. Each head passes
+four numerical cases,two retire/overwrite/restore cycles and12graph replays;
+canonical maximum absolute difference is4.17232513428e-7. All children exit0,
+close normally,keep validation quiet and add no fresh fault. Model qualification
+remains separate.
 That test now requests actual131072-context/KV-resident allocation and1256cache
 slots,with8192prefill chunks but initially small513/82/513requests. Passing it
 will qualify placement and repeated handoff,not full-context processing or
@@ -1921,7 +1924,16 @@ fault;the original failed/incomplete-observation outcome remains unchanged.
 The prospective V3 fixes this wire contract and adds owned DRM-memory snapshots.
 Its controller-only admission requires the same four exact engine/fixture ELFs,
 native compiler inputs/recipe and prior GPU proof;only the two model/cohort
-observer files may change. It inherits no failed model or speed result. Use the
+observer files may change. V3 closes reference0 normally with three complete
+513/82/513-input,32-output thinking requests,then fails its recapture check.
+Both long inputs are below the8192chunk,so `uses_layer_major` correctly does
+not retire the head:decode-C4 capture2 remains live,with cumulative completed
+replays14/22/36 and no detachments. No candidate request runs. Ownership is
+closed and no fresh fault occurs. The original failed status and its erroneous
+`model_executed=false` flag remain,with observed execution recorded separately.
+The next prospective diagnostic must exceed8192input tokens while preserving
+the intended context/cache/chunk settings and retirement criteria.
+It inherits no failed model or speed result. Use the
 existing `~/.local/share/strata-sycl/venv/bin/python3` for these tokenizer/template
 controllers;the system Python lacks `regex`. The packed kernel/exports remain temporarily only to preserve the exact
 qualified shared image through this comparison;review their removal afterward.
