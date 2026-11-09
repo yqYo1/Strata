@@ -145,6 +145,13 @@ def prepare():
     print('Prepared fixture-only production-runtime build;commit before configure/compile.', flush=True)
 
 
+def selected_compile_commands(database, expected, target):
+    commands = [c for c in database if c['file'] in expected]
+    require(len(commands) == len(expected) and {c['file'] for c in commands} == expected,
+            'one production compile command per fixture/runtime unit required')
+    return commands
+
+
 def census(row, dependency_output, link_output):
     allowed = {}
     for pin in (row['project'], *row['dependencies']):
@@ -179,9 +186,7 @@ def census(row, dependency_output, link_output):
         links[str(path)] = digest(path)
     require(len(links) > 8, 'actual link census incomplete')
     database = json.loads((ROOT / 'build/compile_commands.json').read_text())
-    commands = [c for c in database if c['file'] in expected]
-    require(len(commands) == len(UNITS) and {c['file'] for c in commands} == expected,
-            'one production compile command per fixture/runtime unit required')
+    commands = selected_compile_commands(database, expected, TARGET)
     for c in commands:
         args = shlex.split(c['command'])
         require(all(x in args for x in ('-DSTRATA_ENABLE_SYCL=1', '-O3', '-fsycl',

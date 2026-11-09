@@ -13,7 +13,7 @@ sys.dont_write_bytecode = True
 from measurement_guards import require
 
 KERNEL_ENTRY = '_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E'
-def embedded_dpas(blob):
+def embedded_dpas(blob, *, allow_shared_image=False):
     """Read exact linked ELF images and count reachable SPIR-V DPAS calls.
 
     This is a bounded format/callgraph check,not a full SPIR-V validator or
