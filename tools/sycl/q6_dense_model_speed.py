@@ -147,6 +147,7 @@ def save(row):
 
 def audit(text, dense, long_requests=(17, 18)):
     base, _ = model.previous.route_tables(text, 2)
+    require({int(k[0]) for k in base} == set(range(1,19)), 'all18actual native request identities required')
     selected = {k: {} for k in base}; legacy = {k: {} for k in base}
     for line in text.splitlines():
         if not line.startswith(('strata Q6_DPAS_DENSE ', 'strata Q6_SHAPE ')): continue
@@ -214,7 +215,8 @@ def audit_controls():
     def sample(dense):
         out = ['strata native head packed: ready=1 columns=1..4 weight_bytes=521472000 canonical_device_weight_bytes=0 extra_device_weight_bytes=0 permanent_host_weight_bytes=0 default_adopted=0',
             'strata mtp: shared packed head tokens=106299 subset_weight_bytes=0 subset_logit_bytes=425196 saved_device_bytes=222802704']
-        for request, capture, completed in ((17,7,5),(18,11,8)):
+        for request in range(1,19):
+            capture, completed = request * 4, 5 if request % 2 else 8
             out += ['strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000',
                 'strata prefill heads: draft detached bytes=0 retained-map-bytes=425196']
             for phase, tokens in (('prompt',4),('decode',1),('decode',4)):
@@ -308,6 +310,7 @@ def context():
     prior = json.loads((model.ROOT / 'record.json').read_text())
     runtime = SimpleNamespace(**(vars(ctx.m.runtime) | {'RESULT':Path(prior['runtime_manifest']['path'])}))
     ctx.m = SimpleNamespace(**(vars(ctx.m) | {'KEY':KEY,'runtime':runtime}))
+    ctx.P, ctx.B, ctx.RESULT = P, B, RESULT
     ctx.ROOT, ctx.KEY, ctx.ORDER = ROOT, SCOPE, ORDER
     ctx.qualification, ctx.pins, ctx.compact = qualification, pins, compact
     ctx.previous = SimpleNamespace(environment=environment)
