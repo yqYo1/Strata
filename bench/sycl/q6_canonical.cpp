@@ -2,6 +2,7 @@
 // Reuse the numerical/oracle/graph harness from our f97893576704e6679c89ea6c4613d912665a0824.
 // Both arms read the same canonical allocation; no secondary weight buffer.
 #include "q6_dpas_component.hpp"
+#include "strata/core/verify_window_policy.hpp"
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/runtime.hpp"
@@ -22,6 +23,19 @@ namespace {
 namespace sb = strata::sycl_backend;
 namespace cp = strata::kernels::component;
 namespace k = strata::kernels;
+namespace core = strata::core;
+// Actual request5/C4 shapes in 4ac5c8af8:q6_packed_head_generation_speed_v1,
+// processes[0].next_component_basis. Counts there are static capture calls,
+// not elapsed time or physical traffic. This fixture keeps every shape separate.
+struct Shape { int input, output; bool columns; };
+constexpr std::array<Shape, 6> production_shapes{{
+    {2560, 512, false}, {6144, 2560, true}, {2560, 6144, true},
+    {2560, 10240, true}, {2560, 12288, true}, {2560, 248320, true}
+}};
+bool use_columns(int input, int output, int columns) {
+    return core::verify_q6_columns(true, core::VerifyInput::decode,
+        k::native_mmvq_multi_exact(), 14, input, output, columns);
+}
 void need(bool b, const char* s) { if (!b) throw std::runtime_error(s); }
 void check(cudaError_t e) { need(e == cudaSuccess, cudaGetErrorString(e)); }
 int64_t clock_ns(clockid_t id) {
@@ -43,6 +57,13 @@ void gate(const char* tag) {
 
 void host() {
     int cases=0;
+    need(k::native_mmvq_multi_exact(),"exact native activation layout required"); ++cases;
+    for (const auto& s : production_shapes) {
+        need(cp::q6_dpas_c4_shape(s.input,s.output,4),"eligible actual production shape"); ++cases;
+        need(use_columns(s.input,s.output,4)==s.columns,"actual production reference policy"); ++cases;
+        need(!core::verify_q6_columns(true,core::VerifyInput::prompt,true,14,s.input,s.output,4),
+             "decode policy must not select a prompt route"); ++cases;
+    }
     for (const auto s : {std::array<int,2>{256,1},{512,33},{2560,248320}}) {
         need(cp::q6_dpas_c4_shape(s[0],s[1],4),"eligible canonical shape"); ++cases;
     }
@@ -91,6 +112,7 @@ struct Fixture {
         w(size_t(ni/256)*no*210),x(size_t(ni/32)*36*4),
         dw(r,w.size()),dx(r,x.size()),yr(r,size_t(no)*4),yc(r,size_t(no)*4) {
         check(cudaStreamCreate(&stream));check(cudaEventCreateWithFlags(&completion,cudaEventDisableTiming));
+        need(k::native_mmvq_multi_exact(),"production reference requires exact layout");
         fill(7);
         for(int arm=0;arm<2;++arm) {
             cudaGraph_t graph=nullptr;
@@ -109,7 +131,8 @@ struct Fixture {
         std::cout << "ADMISSION k=" << ni << " n=" << no << " canonical_bytes=" << w.size()
             << " packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=" << w.size()+x.size()+size_t(no)*32
             << " max_alloc_bytes=" << rt->device().get_info<sycl::info::device::max_mem_alloc_size>()
-            << " graphs=2 nodes_each=1\n" << std::flush;
+            << " graphs=2 nodes_each=1 reference=" << (use_columns(ni,no,4)?"columns":"generic")
+            << " scope=prequantized-canonical-C4\n" << std::flush;
     }
     ~Fixture() {
         // Never free graph storage or allocations while either queue owns work.
@@ -121,8 +144,11 @@ struct Fixture {
     }
     void drain() { check(cudaStreamSynchronize(stream));rt->wait(); }
     void entry(int arm,int columns) {
-        if(arm==0) k::native_q6_k_columns_mmvq(dw.data(),dx.data(),yr.data(),ni,no,columns,stream);
-        else cp::q6_dpas_c4_canonical(dw.data(),dx.data(),yc.data(),ni,no,columns,stream);
+        if(arm==0) {
+            if(use_columns(ni,no,columns))
+                k::native_q6_k_columns_mmvq(dw.data(),dx.data(),yr.data(),ni,no,columns,stream);
+            else k::native_mmvq(14,dw.data(),dx.data(),yr.data(),ni,no,columns,stream);
+        } else cp::q6_dpas_c4_canonical(dw.data(),dx.data(),yc.data(),ni,no,columns,stream);
     }
     void fill(uint32_t seed) {
         if(stream)drain();
@@ -208,8 +234,9 @@ std::shared_ptr<sb::Runtime> runtime() {
 }
 void checks(bool small,std::shared_ptr<sb::Runtime>& keep) {
     auto r=runtime();keep=r;int cases=0;
-    const std::vector<std::array<int,2>> shapes=small?std::vector<std::array<int,2>>{{256,1},{256,17},{512,33}}:
-        std::vector<std::array<int,2>>{{2560,640},{2560,248320}};
+    std::vector<std::array<int,2>> shapes;
+    if(small)shapes={{256,1},{256,17},{512,33},{6144,33}};
+    else for(const auto& shape:production_shapes)shapes.push_back({shape.input,shape.output});
     for(auto shape:shapes) {Fixture f(r,shape[0],shape[1]);for(uint32_t seed:{7u,19u}){
         f.fill(seed);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify(true);++cases;
     }f.c1();}
@@ -220,21 +247,22 @@ void timing(int process,std::shared_ptr<sb::Runtime>& keep) {
     std::vector<int64_t> overhead;for(int i=0;i<1000;++i){const auto a=stamp(),b=stamp();overhead.push_back(b.wall-a.wall);}std::sort(overhead.begin(),overhead.end());
     const auto timer=overhead[500];std::cout << "CLOCK median_stamp_ns=" << timer << " floor_ns=10000000 process=" << process << '\n';
     int samples=0;
-    for(int n:{640,248320}) {
-        Fixture f(r,2560,n);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify();
-        const int batch=n==640?4096:256;
+    for(const auto& shape:production_shapes) {
+        Fixture f(r,shape.input,shape.output);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify();
+        const int batch=shape.output<=1024?4096:(shape.output==248320?256:1024);
         for(int at=0;at<2;++at) {const int arm=process==1?1-at:at;
             for(int sample=-2;sample<5;++sample) {
                 const auto before=f.calls;const auto a=stamp();for(int i=0;i<batch;++i)f.launch(arm);const auto b=stamp();f.wait();const auto c=stamp();
                 need(f.calls-before==uint64_t(batch)&&c.wall-a.wall>=std::max<int64_t>(10000000,300*timer),"timing eligibility");
-                if(sample>=0){++samples;std::cout << "SAMPLE process=" << process << " arm=" << arm << " k=2560 n=" << n << " columns=4 sample=" << sample
+                if(sample>=0){++samples;std::cout << "SAMPLE process=" << process << " arm=" << arm << " k=" << f.ni << " n=" << f.no << " columns=4 sample=" << sample
                     << " launches=" << batch << " graph_launches=" << f.calls-before << " nodes_per_graph=1 route=compat_graph wall_ns=" << c.wall-a.wall
                     << " cpu_ns=" << c.cpu-a.cpu << " submit_wall_ns=" << b.wall-a.wall << " submit_cpu_ns=" << b.cpu-a.cpu
-                    << " wait_wall_ns=" << c.wall-b.wall << " wait_cpu_ns=" << c.cpu-b.cpu << '\n' << std::flush;}
+                    << " wait_wall_ns=" << c.wall-b.wall << " wait_cpu_ns=" << c.cpu-b.cpu
+                    << " reference=" << (shape.columns?"columns":"generic") << '\n' << std::flush;}
             }
         }f.verify(true);
     }
-    need(samples==20,"complete timing extent");std::cout << "TIMING passed=1 samples=20 model_speed=0 physical_traffic=0\n";
+    need(samples==60,"complete timing extent");std::cout << "TIMING passed=1 samples=60 shapes=6 model_speed=0 physical_traffic=0 cache=one-repeated-matrix\n";
 }
 } // namespace
 

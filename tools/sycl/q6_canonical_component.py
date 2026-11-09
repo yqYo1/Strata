@@ -1,290 +1,397 @@
 #!/usr/bin/env python3
-"""Build/check canonical-layout C4 without an additional weight allocation.
+"""Qualify canonical Q6 C4 separately for the actual decode shapes; Main only.
 
-Reuse the current compiler census and the immutable f978 component execution
-protocol. The latter keeps its source/ownership/graph/oracle/timing gates;
-this adapter binds current build inputs and additionally checks the exact
-canonical kernel trace. Main owns all serialized stages. Repository LICENSE.
+Main-authored from our owned compiler census and bounded fixture supervision.
+Repository LICENSE applies. No XeStrata source or implementation is used.
+The frozen model cohort must close before this independent component starts.
 """
 import copy
 import fcntl
 import hashlib
 import importlib.util
 import json
+import math
 from pathlib import Path
+import re
+import select
+import statistics
+import subprocess
 import sys
-from types import ModuleType
 
 sys.dont_write_bytecode = True
+import benchmark_runtime as python_runtime
 import build_compat_profile as base
-import q6_dpas_component as reader
 import measurement_guards as guards
-import measurement_owner as ownership
+import measurement_owner as owner
+import q6_dpas_component as reader
 import ur_validation as validation
 
 P, B = base.P, base.B
-ROOT, KEY = B / 'q6-canonical-component-v4', 'q6_canonical_component_v4'
+ROOT, KEY = B / 'q6-dense-c4-v1', 'q6_dense_c4_component_v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-PROTOCOL = 'f97893576704e6679c89ea6c4613d912665a0824'
-PROTOCOL_PATH = 'tools/sycl/q6_dpas_component.py'
-KERNEL = '_ZTSN6strata7kernels9component12_GLOBAL__N_117Q6DpasC4CanonicalE'
+COHORT, MODEL = 'q6_packed_head_generation_speed_v1', 'q6_head_packed_model_entry_v1'
 PYTHON = '/home/yayoi/.local/share/strata-sycl/venv/bin/python3'
-require, digest, write = guards.require, base.digest, base.write
-UNITS = ('src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
-    'src/kernels/sycl/native_mmvq.cpp', 'src/kernels/sycl/native_q5_head.cpp',
-    'src/kernels/sycl/native_q3_esimd.cpp', 'src/kernels/sycl/native_q4_esimd.cpp',
-    'src/kernels/sycl/native_q2_esimd.cpp', 'src/kernels/sycl/native_iq4xs_esimd.cpp',
-    'src/kernels/sycl/native_iq_esimd.cpp', 'src/kernels/sycl/native_mmq_xmx.cpp',
-    'src/kernels/sycl/iq.cpp', 'src/kernels/sycl/q6_dpas_component.cpp',
-    'bench/sycl/q6_canonical.cpp')
+KERNEL = '_ZTSN6strata7kernels9component12_GLOBAL__N_117Q6DpasC4CanonicalE'
+SHAPES = ((2560,512),(6144,2560),(2560,6144),(2560,10240),(2560,12288),(2560,248320))
+SMALL = ((256,1),(256,17),(512,33),(6144,33))
+UNITS = ('src/sycl/runtime.cpp','src/sycl/compat.cpp','src/sycl/command_profile.cpp',
+    'src/kernels/sycl/native_mmvq.cpp','src/kernels/sycl/native_q5_head.cpp',
+    'src/kernels/sycl/native_q3_esimd.cpp','src/kernels/sycl/native_q4_esimd.cpp',
+    'src/kernels/sycl/native_q2_esimd.cpp','src/kernels/sycl/native_iq4xs_esimd.cpp',
+    'src/kernels/sycl/native_iq_esimd.cpp','src/kernels/sycl/native_mmq_xmx.cpp',
+    'src/kernels/sycl/iq.cpp','src/kernels/sycl/q6_dpas_component.cpp','bench/sycl/q6_canonical.cpp')
+require, sha, write, signature = guards.require, base.digest, base.write, base.signature
+
+
+def basis():
+    # The primary builder imports this module's image reader. Resolve the
+    # builder only after module initialization, for either import order.
+    import build_q6_head_model as primary
+    cohort = validation.committed(RESULT,(COHORT,))
+    require(cohort['stage']=='closed' and cohort['complete'] and cohort['passed'] and
+        cohort['ownership_closed'] and not cohort['active'] and len(cohort['processes'])==6 and
+        all(v['passed'] and v['complete'] and v['ownership_closed'] and
+            v['native_exit_code']==0 and v['fresh_faults']==[] for v in cohort['processes']),
+        'close all six frozen model processes before this separate component')
+    native = json.loads((primary.ROOT/'record.json').read_text())
+    require(validation.committed(RESULT,(primary.KEY,))==primary.compact(native) and
+        native['stage']=='built' and native['passed'] and native['ownership_closed'] and
+        native['actual_inputs']['uncovered']==0 and cohort['binary']==native['binaries']['strata'],
+        'same qualified current native reference required')
+    original = native['project']
+    recovered = {p:hashlib.sha256(raw).hexdigest() for p,raw in
+        base.source.blobs(P,original['revision'],original['source_sha256'])}
+    require(recovered==original['source_sha256'],'original native inputs must remain recoverable')
+    runtime = {p:h for p,h in recovered.items() if p.startswith(('src/sycl/','include/strata/sycl/'))}
+    shared = set(UNITS[:-1]) | set(runtime) | {'src/kernels/sycl/q6_dpas_component.hpp',
+        'include/strata/core/verify_window_policy.hpp'}
+    require(runtime and all(p in recovered and sha(P/p)==recovered[p] for p in shared),
+        'component must retain the exact qualified runtime,kernel and reference-policy source')
+    for binary in native['binaries'].values():
+        require(sha(binary['path'])==binary['sha256'] and Path(binary['path']).stat().st_size==binary['bytes'],
+            'qualified engine/required fixture bytes changed')
+    return native,dict(record=dict(path=str(primary.ROOT/'record.json'),sha256=sha(primary.ROOT/'record.json')),
+        source_commit=original['revision'],engine=native['binaries']['strata'],
+        runtime_sources=runtime,shared_source_sha256=signature({p:recovered[p] for p in sorted(shared)}))
 
 
 def image(blob):
-    spec = importlib.util.spec_from_file_location('canonical_q6_image_reader', reader.__file__)
-    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-    module.KERNEL_ENTRY = KERNEL
-    return module.embedded_dpas(blob, allow_shared_image=True)
+    spec = importlib.util.spec_from_file_location('dense_q6_image',reader.__file__)
+    module = importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    module.KERNEL_ENTRY=KERNEL
+    return module.embedded_dpas(blob,allow_shared_image=True)
 
 
 def context():
-    spec = importlib.util.spec_from_file_location('canonical_q6_build', base.__file__)
-    ctx = importlib.util.module_from_spec(spec); spec.loader.exec_module(ctx)
-    ctx.ROOT, ctx.KEY, ctx.RESULT = ROOT, KEY, RESULT
-    ctx.TARGET, ctx.CPP, ctx.UNITS = 'sycl_q6_canonical_component', UNITS[-1], UNITS
-    ctx.PREFIXES = ('CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'bench/sycl', 'tools/sycl')
-    ctx.BUDGET = dict(wall=1200, cpu=3600, rss_cap=8 << 30, text_cap=16 << 20,
-                      file_cap=128 << 20, total_cap=768 << 20)
-
-    def current(row, committed=True):
-        if committed:
-            require(validation.committed(RESULT, (KEY,)) == ctx.compact(row), 'commit the exact canonical stage')
-        _, identity = ctx.basis()
-        require(identity == row['selected_native'], 'qualified runtime source/feature basis changed')
+    spec=importlib.util.spec_from_file_location('dense_q6_build',base.__file__)
+    ctx=importlib.util.module_from_spec(spec);spec.loader.exec_module(ctx)
+    ctx.ROOT,ctx.KEY,ctx.RESULT=ROOT,KEY,RESULT
+    ctx.TARGET,ctx.CPP,ctx.UNITS='sycl_q6_canonical_component',UNITS[-1],UNITS
+    ctx.PREFIXES=('CMakeLists.txt','cmake','src','include','third_party','bench/sycl','tools/sycl')
+    ctx.BUDGET=dict(wall=1200,cpu=3600,rss_cap=8<<30,text_cap=16<<20,file_cap=128<<20,total_cap=768<<20)
+    ctx.basis=basis
+    def current(row,committed=True):
+        if committed:require(validation.committed(RESULT,(KEY,))==ctx.compact(row),'commit the exact component stage first')
+        _,identity=basis();require(identity==row['selected_native'],'reference provenance changed')
         ctx.build.check_inputs(row)
-        require(all(n in row['project']['source_sha256'] for n in UNITS) and
-            'tools/sycl/q6_canonical_component.py' in row['project']['source_sha256'], 'component source missing')
-        require(row['recipe']['targets'] == row['recipe']['build_targets'] == [ctx.TARGET] and
-            not row['recipe']['environment'].get('LD_PRELOAD') and digest(PYTHON) == row['python_sha256'],
-            'frozen build/Python policy changed')
-        require(digest(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
-            all(digest(p) == sha for p, sha in row['runtime_pins'].items()), 'runtime bytes changed')
-        require(guards.driver_guard() == row['driver'] and
-            Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'driver/boot changed')
-        require(hashlib.sha256(ctx.source.git(P, 'show', PROTOCOL + ':' + PROTOCOL_PATH)).hexdigest() ==
-            row['protocol_sha256'], 'immutable execution protocol changed')
+        require(all(p in row['project']['source_sha256'] for p in UNITS) and
+            'tools/sycl/q6_canonical_component.py' in row['project']['source_sha256'],'missing fixture/controller input')
+        require(row['recipe']['targets']==row['recipe']['build_targets']==[ctx.TARGET] and
+            not row['recipe']['environment'].get('LD_PRELOAD') and sha(PYTHON)==row['python_sha256'],
+            'fixture-only recipe or Python changed')
+        manifest=row['runtime_manifest']
+        require(sha(manifest['path'])==manifest['sha256'] and
+            all(sha(p)==h for p,h in row['runtime_pins'].items()),'runtime bytes changed')
+        require(guards.driver_guard()==row['driver'] and
+            Path('/proc/sys/kernel/random/boot_id').read_text().strip()==row['boot'],'driver/boot changed')
         if 'binary' in row:
-            require(digest(row['binary']['path']) == row['binary']['sha256'], 'canonical executable changed')
+            require(sha(row['binary']['path'])==row['binary']['sha256'] and
+                Path(row['binary']['path']).stat().st_size==row['binary']['bytes'],'component ELF changed')
         if 'actual_inputs' in row:
-            inputs = row['actual_inputs']
-            require(digest(inputs['path']) == inputs['sha256'], 'actual compiler census changed')
-            data = json.loads(Path(inputs['path']).read_text())
-            require(all(digest(p) == sha for field in ('compiled', 'generated', 'links')
-                for p, sha in data[field].items()), 'actual compiler/link bytes changed')
-        if 'codegen' in row:
-            require(image(Path(row['binary']['path']).read_bytes()) == row['codegen'], 'direct DPAS image changed')
-    ctx.current = current
+            actual=row['actual_inputs'];require(sha(actual['path'])==actual['sha256'],'compiler census changed')
+            census=json.loads(Path(actual['path']).read_text())
+            require(all(sha(p)==h for field in ('compiled','generated','links') for p,h in census[field].items()),
+                'actual compiler/generated/link input changed')
+        if 'codegen' in row:require(image(Path(row['binary']['path']).read_bytes())==row['codegen'],'canonical DPAS image changed')
+    ctx.current=current
     return ctx
 
 
+def fields(line,prefix):
+    require(line.startswith(prefix),'expected native record')
+    pairs=[p.split('=',1) for p in line[len(prefix):].split()]
+    require(all(len(p)==2 for p in pairs) and len({p[0] for p in pairs})==len(pairs),'malformed/duplicate fields')
+    return dict(pairs)
+
+
+def number(f,key):
+    value=f.get(key,'');require(value.isdecimal(),'missing/noninteger '+key)
+    return int(value)
+
+
+def batch_size(n):
+    return 4096 if n<=1024 else 256 if n==248320 else 1024
+
+
+def admissions(text,shapes):
+    rows=[fields(v,'ADMISSION ') for v in text.splitlines() if v.startswith('ADMISSION ')]
+    require([(number(v,'k'),number(v,'n')) for v in rows]==list(shapes),'all actual matrix admissions required')
+    for v in rows:
+        k,n=number(v,'k'),number(v,'n');wb=n*(k//256)*210
+        reference='columns' if (k,n) in SHAPES and (k,n)!=(2560,512) else 'generic'
+        require(number(v,'canonical_bytes')==wb and
+            number(v,'packed_bytes')==number(v,'additional_candidate_weight_bytes')==0 and
+            number(v,'device_payload_bytes')==wb+(k//32)*36*4+n*32 and
+            number(v,'max_alloc_bytes')>=wb and number(v,'graphs')==2 and number(v,'nodes_each')==1 and
+            v.get('reference')==reference and v.get('scope')=='prequantized-canonical-C4',
+            'actual allocation/reference/graph admission differs')
+
+
+def numerical(text,shapes,*,timing=False):
+    admissions(text,shapes)
+    lines=text.splitlines();rows=[fields(v,'NUMERIC ') for v in lines if v.startswith('NUMERIC ')]
+    require([(number(v,'k'),number(v,'n')) for v in rows]==[s for s in shapes for _ in range(2)],
+        'complete ordered per-shape numerical checks required')
+    by_shape={}
+    for v in rows:
+        k,n=number(v,'k'),number(v,'n');value=float(v.get('max_abs_error','nan'));oracle=number(v,'oracle_rows')
+        require(v.get('passed')==v.get('guards')=='1' and number(v,'columns')==4 and
+            number(v,'outputs')==4*n and math.isfinite(value) and value>=0 and
+            min(n,512)<=oracle<=n and (n>1024 or oracle==n),'numerical/oracle/guard contract')
+        cell=by_shape.setdefault(f'{k}x{n}',dict(cases=0,max_abs_error=0.,minimum_oracle_rows=n))
+        cell['cases']+=1;cell['max_abs_error']=max(cell['max_abs_error'],value)
+        cell['minimum_oracle_rows']=min(cell['minimum_oracle_rows'],oracle)
+    require(lines.count('C1_CONTROL passed=1 dpas_launched=0')==(0 if timing else len(shapes)) and
+        sum(v.startswith('C1_CONTROL ') for v in lines)==(0 if timing else len(shapes)),'C1 refusal controls')
+    return dict(cases=len(rows),shapes=by_shape,finite_and_guards=True,inputs_immutable=True,
+        C1_negative_controls=0 if timing else len(shapes))
+
+
+def timing(text,index):
+    require(type(index) is int and index in (0,1,2),'fresh timing process0..2')
+    lines=text.splitlines();clocks=[fields(v,'CLOCK ') for v in lines if v.startswith('CLOCK ')]
+    require(len(clocks)==1 and number(clocks[0],'process')==index and number(clocks[0],'floor_ns')==10000000,
+        'one actual timer control')
+    timer=number(clocks[0],'median_stamp_ns');require(timer>0,'positive timer overhead')
+    rows=[]
+    for line in lines:
+        if not line.startswith('SAMPLE '):continue
+        f=fields(line,'SAMPLE ');k,n=number(f,'k'),number(f,'n');batch=batch_size(n)
+        v={a:number(f,a) for a in ('process','arm','sample','k','n','columns','launches','graph_launches',
+            'nodes_per_graph','wall_ns','cpu_ns','submit_wall_ns','submit_cpu_ns','wait_wall_ns','wait_cpu_ns')}
+        require(v['process']==index and v['columns']==4 and v['launches']==v['graph_launches']==batch and
+            v['nodes_per_graph']==1 and f.get('route')=='compat_graph' and
+            f.get('reference')==('generic' if (k,n)==(2560,512) else 'columns'),'actual timed route/extent')
+        require(v['wall_ns']>=max(10000000,300*timer) and
+            v['wall_ns']==v['submit_wall_ns']+v['wait_wall_ns'] and
+            v['cpu_ns']==v['submit_cpu_ns']+v['wait_cpu_ns'] and
+            v['cpu_ns']<=v['wall_ns']+10*timer,'timer floor/disjoint accounting')
+        v['ns_per_replay']=v['wall_ns']/batch;rows.append(v)
+    order=(1,0) if index==1 else (0,1)
+    require([(v['k'],v['n'],v['arm'],v['sample']) for v in rows]==
+        [(k,n,a,s) for k,n in SHAPES for a in order for s in range(5)],'complete timing order;no duplicate or excluded sample')
+    require(lines.count('TIMING passed=1 samples=60 shapes=6 model_speed=0 physical_traffic=0 cache=one-repeated-matrix')==1 and
+        sum(v.startswith('TIMING ') for v in lines)==1,
+        'complete timing footer/cache scope')
+    numeric=numerical(text,SHAPES,timing=True)
+    medians={f'{k}x{n}':{str(a):statistics.median(v['ns_per_replay'] for v in rows
+        if (v['k'],v['n'],v['arm'])==(k,n,a)) for a in (0,1)} for k,n in SHAPES}
+    return dict(index=index,samples=rows,median_ns=medians,numerical=numeric,timer_overhead_ns=timer,
+        scope='One repeated prequantized canonical matrix;graph submission/completion and parameter validation charged. Not model cache,critical wall,physical traffic or model throughput.')
+
+
+def decision(runs):
+    require([v['index'] for v in runs]==[0,1,2],'three independent timing processes required')
+    cells={}
+    for k,n in SHAPES:
+        name=f'{k}x{n}';ratios=[v['median_ns'][name]['1']/v['median_ns'][name]['0'] for v in runs]
+        cells[name]=dict(candidate_over_reference_process_ratios=ratios,
+            geometric_mean_time_ratio=math.exp(statistics.mean(math.log(v) for v in ratios)),
+            component_gain_qualified=all(v<1 for v in ratios))
+    return dict(cells=cells,eligible_shapes=[s for s,v in cells.items() if v['component_gain_qualified']],
+        inference_adopted=False,model_speed_qualified=False,physical_saturation_qualified=False,
+        next='Select only independently winning decode C4 shapes for a fresh production trial;preserve prompt/C1 and every losing shape. Matched model,agent/task,prefill preservation and physical262144/RESTORE remain separate.')
+
+
+def controls():
+    def sample(index):
+        out=[f'CLOCK median_stamp_ns=100 floor_ns=10000000 process={index}']
+        for k,n in SHAPES:
+            wb=n*(k//256)*210
+            out.append(f'ADMISSION k={k} n={n} canonical_bytes={wb} packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes={wb+(k//32)*36*4+n*32} max_alloc_bytes=1073741824 graphs=2 nodes_each=1 reference='+('generic' if n==512 else 'columns')+' scope=prequantized-canonical-C4')
+            numeric=f'NUMERIC passed=1 k={k} n={n} columns=4 outputs={n*4} oracle_rows={min(n,512)} max_abs_error=0.00001 guards=1'
+            out.append(numeric)
+            for a in ((1,0) if index==1 else (0,1)):
+                for s in range(5):
+                    batch=batch_size(n)
+                    out.append(f'SAMPLE process={index} arm={a} k={k} n={n} columns=4 sample={s} launches={batch} graph_launches={batch} nodes_per_graph=1 route=compat_graph wall_ns=20000000 cpu_ns=10000000 submit_wall_ns=5000000 submit_cpu_ns=4000000 wait_wall_ns=15000000 wait_cpu_ns=6000000 reference='+('generic' if n==512 else 'columns'))
+            out.append(numeric)
+        out.append('TIMING passed=1 samples=60 shapes=6 model_speed=0 physical_traffic=0 cache=one-repeated-matrix')
+        return '\n'.join(out)
+    for i in (0,1,2):timing(sample(i),i)
+    good=sample(0)
+    invalid=[good.replace('wall_ns=20000000','wall_ns=9999999',1),
+        good.replace('graph_launches=1024','graph_launches=1023',1),
+        good.replace('reference=generic','reference=columns',1),
+        good.replace('guards=1','guards=0',1),good.replace('oracle_rows=512','oracle_rows=511',1),
+        good.replace('wait_cpu_ns=6000000','wait_cpu_ns=6000001',1),
+        good.replace('SAMPLE process=0 arm=0 k=6144','SAMPLE process=0 arm=0 k=6143',1),
+        good.replace('samples=60 shapes=6','samples=59 shapes=6'),
+        good.replace('additional_candidate_weight_bytes=0','additional_candidate_weight_bytes=1',1),
+        '\n'.join(v for v in good.splitlines() if not v.startswith('SAMPLE process=0 arm=0 k=2560 n=512 columns=4 sample=0 '))]
+    for text in invalid:
+        try:timing(text,0)
+        except RuntimeError:continue
+        raise RuntimeError('corrupted component timing/numerical record accepted')
+    return dict(passed=True,positive_process_orders=3,corrupt_variants=len(invalid),GPU_executed=False)
+
+
 def prepare(ctx):
-    data = validation.committed(RESULT)
-    rejected = data['q6_head_generation_speed_v4']
-    require(rejected['stage'] == 'failed' and len(rejected['processes']) == 2 and
-        rejected['processes'][0]['passed'] and not rejected['processes'][1]['passed'] and
-        rejected['memory_admission']['native_exit_code'] == 1 and
-        rejected['memory_admission']['long_generation_samples'] == 0 and
-        rejected['memory_admission']['cleanup']['all_original_PIDs_absent'], 'preserve actual capacity refusal')
-    require(not ROOT.exists() and KEY not in data, 'fresh component only;no retries')
-    native, identity = ctx.basis()
-    qualified = data['q6_head_model_entry_v1']
-    require(qualified['passed'] and qualified['complete'] and qualified['ownership_closed'], 'qualified runtime required')
-    manifest = qualified['runtime_manifest']
-    require(digest(manifest['path']) == manifest['sha256'], 'qualified runtime manifest changed')
-    runtime = json.loads(Path(manifest['path']).read_text())
-    recipe = copy.deepcopy(native['recipe'])
-    recipe['configure'] = [v.replace(native['project']['root'], str(P)).replace(
-        str(ctx.feature.NATIVE), str(ROOT)) for v in recipe['configure']]
-    recipe['environment'] = {k: v.replace(str(ctx.feature.NATIVE), str(ROOT))
-                             for k, v in recipe['environment'].items()}
-    recipe['targets'] = recipe['build_targets'] = [ctx.TARGET]
-    recipe.pop('host_modes', None)
-    require(recipe['configure'][recipe['configure'].index('-S') + 1] == str(P) and
-        recipe['configure'][recipe['configure'].index('-B') + 1] == str(ROOT / 'build'), 'isolated build paths')
-    environment = dict(qualified['environment'])
-    for key in ('LD_PRELOAD', 'STRATA_UR_PROBE_EXPECTED_LOADER'): environment.pop(key, None)
-    environment.update(TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'),
-        PYTHONPYCACHEPREFIX=str(ROOT / 'cache/python'), STRATA_SYCL_DECODE_Q6_DPAS_HEAD='0',
-        UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
-        UR_LOG_TRACING='level:info;flush:info;output:stderr')
-    require(environment['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and
-        environment['EnableDirectSubmission'] == '0' and environment['NEOReadDebugKeys'] == '1' and
-        environment['STRATA_SYCL_PREFILL_SAME_QUEUE'] == '1' and
-        environment['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == environment['ZES_ENABLE_SYSMAN'] == '0',
-        'immutable qualified safety required')
-    source = ctx.source.git(P, 'show', PROTOCOL + ':' + PROTOCOL_PATH)
-    row = dict(stage='prepared', project=ctx.source.pin(P, ctx.PREFIXES),
-        dependencies=copy.deepcopy(native['dependencies']), recipe=recipe,
-        toolchain=native['toolchain'], external_inputs=native['external_inputs'],
-        fallbacks={name: native['fallbacks'][name] for name in ('prefill', 'decode')} |
-                  dict(selected_feature=identity['engine']), selected_native=identity,
-        environment=environment, runtime_manifest=manifest, runtime_pins=runtime,
-        native_validation_probe=qualified['probe'], python_sha256=digest(PYTHON),
-        protocol_source=PROTOCOL, protocol_sha256=hashlib.sha256(source).hexdigest(),
-        boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=guards.driver_guard(),
-        commands=[], results=[], timing=[], passed=False, complete=False, active=False, ownership_closed=True,
-        GPU_executed=False, model_executed=False, budgets=ctx.BUDGET,
-        host_budget=dict(wall=60, cpu=60, rss_cap=512 << 20, text_cap=512 << 10,
-            file_cap=2 << 20, total_cap=1024 << 20),
-        native_budget=dict(wall=600, cpu=1200, rss_cap=8 << 30, text_cap=16 << 20,
-            file_cap=128 << 20, total_cap=1024 << 20),
-        plan=dict(question='Can direct canonical-layout C4 beat the current production column entry without extra weights?',
-            motivation='Packed head was6.55283x faster as a component but its additional521472000device bytes refuse1256cache slots at131072context. Preserve that failed whole-model comparison.',
-            reference='Same-source native_q6_k_columns_mmvq via ordinary one-node compatibility graph;candidate reads the identical canonical allocation. No repack or additional GPU weight array.',
-            order='22CPU census/linked-image/protocol controls;fresh14TU build and exact canonical DPAS image;12CPU shape/alignment controls;small traced3shape/2seed;full2shape/2seed;three timing processes0,1,2. Commit every closed stage;stop first failure,no retry.',
-            shapes='Small256x1,256x17,512x33;representative2560x640 and2560x248320;C4only,C1rejected before device access.',
-            numerical='All outputs finite and forward-envelope comparison;independent byte scalar oracle on every small row and543distributed/head-tail full-head rows,guards,input immutability,C1reference preserved. Same f978 envelope;no bitwise output requirement.',
-            timing='Same f978 asynchronous completion discipline,2warmup+5batches/arm/process;orderR/C,C/R,R/C;4096small or256full launches/batch;>=10ms and>=300timer-overhead units;retain individual samples and spreads.',
-            acceptance='Per shape all3 process median ratios must favor candidate;no minimum percentage floor. Do not promote failed or slower shapes. Component result cannot qualify model speed,quality,physical262144/RESTORE or adoption.',
-            observers='Small full UR trace and parameter validation;full numeric/timing retain parameter validation and qualified preload,remove API trace;pre-main and post-device/pre-fixture real owner/provider gates. No environment mutation.',
-            memory='One canonical weight allocation shared by both graphs;0additional candidate device/host weight bytes. Kernel has no allocation,barrier,collective or CPU arithmetic fallback;16-lane masked halfword gathers handle unpadded N tails.',
-            provenance='Main-authored canonical-load adaptation of our current C4 math;harness/execution protocol from own f97893576704e6679c89ea6c4613d912665a0824. Retain existing MIT GGML operand-layout notice. No XeStrata source.'),
-        retention='One temporary component executable,not another engine generation. Keep compact numeric/owner/provider/timing evidence and recoverable source/recipe. Retire normal logs/JIT/build products after component closure. Preserve0b model reference,90f feature and552b/e1b phase guards;legacy56ELF holds unchanged.')
-    ctx.current(row, committed=False)
-    ROOT.mkdir(mode=0o700)
-    for name in ('tmp', 'cache'): (ROOT / name).mkdir(mode=0o700)
-    ctx.save(row)
-    print('Prepared canonical-only component;commit before controls/build.', flush=True)
+    import build_q6_head_model as primary
+    require(not ROOT.exists() and KEY not in validation.committed(RESULT),'fresh component plan only')
+    native,identity=basis();model=validation.committed(RESULT,(MODEL,))
+    require(model['passed'] and model['complete'] and model['ownership_closed'],'bounded current model/runtime proof required')
+    recipe=copy.deepcopy(native['recipe']);old_root=str(primary.ROOT)
+    recipe['configure']=[v.replace(native['project']['root'],str(P)).replace(old_root,str(ROOT)) for v in recipe['configure']]
+    recipe['environment']={k:v.replace(old_root,str(ROOT)) for k,v in recipe['environment'].items()}
+    recipe['targets']=recipe['build_targets']=[ctx.TARGET];recipe.pop('host_modes',None)
+    require(recipe['configure'][recipe['configure'].index('-S')+1]==str(P) and
+        recipe['configure'][recipe['configure'].index('-B')+1]==str(ROOT/'build'),'isolated build paths')
+    env=dict(model['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache'),
+        PYTHONPYCACHEPREFIX=str(ROOT/'cache/python'),STRATA_MEASUREMENT_ROOT=str(ROOT),STRATA_SYCL_DECODE_Q6_DPAS_HEAD='0',
+        STRATA_Q6_DPAS_GATE='1',UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
+        UR_LOG_TRACING='level:info;flush:info;output:stderr',
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(ROOT/'validation.log'))
+    for k in ('LD_PRELOAD','STRATA_UR_PROBE_EXPECTED_LOADER'):env.pop(k,None)
+    require(env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD']=='1' and env['EnableDirectSubmission']=='0' and
+        env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE']==env['ZES_ENABLE_SYSMAN']=='0','qualified runtime safety required')
+    manifest=model['runtime_manifest']
+    row=dict(stage='prepared',project=ctx.source.pin(P,ctx.PREFIXES),dependencies=copy.deepcopy(native['dependencies']),
+        recipe=recipe,toolchain=native['toolchain'],external_inputs=native['external_inputs'],
+        fallbacks=dict(selected_engine=identity['engine']),selected_native=identity,environment=env,
+        runtime_manifest=manifest,runtime_pins=json.loads(Path(manifest['path']).read_text()),
+        native_validation_probe=model['probe'],python_sha256=sha(PYTHON),boot=model['boot'],driver=model['driver'],
+        commands=[],results=[],timing=[],passed=False,complete=False,active=False,ownership_closed=True,
+        GPU_executed=False,model_executed=False,budgets=ctx.BUDGET,
+        host_budget=dict(wall=120,cpu=120,rss_cap=1<<30,text_cap=1<<20,file_cap=2<<20,total_cap=64<<20),
+        native_budget=dict(wall=900,cpu=1800,rss_cap=8<<30,text_cap=16<<20,file_cap=32<<20,total_cap=768<<20),
+        plan=dict(question='Which actual decode C4 Q6 shapes benefit from direct canonical DPAS without another weight allocation?',
+            source='4ac5c8af8:current model request5 static shape table;qualified shared-head cohort must close first.',
+            reference='Actual production columns entry for five shapes;generic native_mmvq for2560x512. Same canonical/Q8_1 allocation and one-node graphs in both arms.',
+            shapes=SHAPES,small=SMALL,order='CPU parser controls,fresh14TU build/IR census,31native host cases,small4shape/2seed traced checks,full6shape/2seed checks,three independent timing processesR/C,C/R,R/C. Commit every closed stage;stop first failure,no retry.',
+            timing='Five samples/arm/shape/process;two warmup batches.4096replays for512rows,1024for other dense shapes,256for the full head. Require>=10ms and>=300stamp units;submission/wait wall and threadCPU accounting stays disjoint. Retain all180samples.',
+            acceptance='Per-shape all3process median time ratios<1;no minimum improvement floor. Keep losing shapes and prompt/C1 on incumbents. No global dispatch/model adoption from a component.',
+            limits='Synthetic byte-valid Q6/Q8 and independent scalar/envelope oracle. One repeatedly accessed matrix;cache behavior differs from the complete model. No physical traffic,saturation,task,PP/TG,agent,full262144 or RESTORE claim.'),
+        retention='One temporary standalone fixture for this named comparison;no new engine generation. Keep useful per-shape numbers/all timing samples/source/recipe/fault results. Retire normal traces,JIT and fixture build after closure. Preserve current engine/phase references and unresolved legacy holds.')
+    ctx.current(row,committed=False);ROOT.mkdir(mode=0o700)
+    for name in ('tmp','cache'):(ROOT/name).mkdir(mode=0o700)
+    ctx.save(row);print('Prepared six-shape component;commit before CPU controls/build.',flush=True)
 
 
-def admit(ctx):
-    """Prospective controller-only admission; never rerun or relabel failed v3."""
-    data = validation.committed(RESULT)
-    previous = data['q6_canonical_component_v3']
-    require(previous['stage'] == 'failed' and previous['ownership_closed'] and not previous['GPU_executed']
-        and len(previous['commands']) == 3 and all(c['exit_code'] == 0 and c['ownership_closed']
-        for c in previous['commands']), 'preserve original completed compile/failed admission')
-    require(not ROOT.exists() and KEY not in data, 'fresh controller-only admission only')
-    original_root = B / 'q6-canonical-component-v3'
-    original = json.loads((original_root / 'record.json').read_text())
-    proof = previous['census_failure']; artifact = proof['compiled_artifact']
-    require(original['census_failure'] == proof and digest(artifact['path']) == artifact['sha256']
-        and Path(artifact['path']).stat().st_size == artifact['bytes'], 'original compiled ELF changed')
-    for name, field in [('build/compile_commands.json', 'compile_database_sha256'),
-                        ('owned/dependencies.stdout', 'dependency_listing_sha256'),
-                        ('owned/compile.stdout', 'linker_output_sha256')]:
-        require(digest(original_root / name) == proof[field], 'original compiler evidence changed')
-    project = ctx.source.pin(P, ctx.PREFIXES)
-    old, new = original['project']['source_sha256'], project['source_sha256']
-    changed = {p for p in old if new.get(p) != old[p]}
-    allowed = {'tools/sycl/build_compat_profile.py', 'tools/sycl/q6_dpas_component.py',
-               'tools/sycl/q6_canonical_component.py'}
-    require(changed == allowed and set(new) - set(old) == {'tools/sycl/test_compile_census.py'},
-            'only named controller/parser/test changes;all native source and recipe inputs must match')
-    recovered = {n: hashlib.sha256(raw).hexdigest() for n, raw in
-        ctx.source.blobs(P, original['project']['revision'], old)}
-    require(recovered == old, 'original native source must be recoverable from Git')
-    legacy_build = context(); legacy_build.ROOT = original_root
-    actual = legacy_build.census(original, original_root / 'owned/dependencies.stdout',
-                                 original_root / 'owned/compile.stdout')
-    row = copy.deepcopy(original)
-    for key in ('error', 'reader_controls', 'census_failure'): row.pop(key, None)
-    row.update(project=project, actual_inputs=actual, binary=artifact,
-        native_source_commit=original['project']['revision'], admission_source_commit=project['revision'],
-        codegen=image(Path(artifact['path']).read_bytes()), stage='prepared', compilation_passed=True,
-        commands=[], results=[], timing=[], passed=False, complete=False, active=False, ownership_closed=True,
-        GPU_executed=False, model_executed=False,
-        qualification_reuse=dict(original_failed_key='q6_canonical_component_v3',
-            original_evidence_commit='d979167dbfb2248b9038e59037bbb702cc77b424',
-            native_source_commit=original['project']['revision'], original_project_sha256=original['project']['aggregate_sha256'],
-            binary_sha256=artifact['sha256'], changed_controller_files=sorted(changed),
-            exact_native_inputs_and_recipe=True, native_recompiled=False, GPU_qualification_inherited=False,
-            scope='Fresh selected14TU/compiler/link census and exact canonical callgraph from the unchanged11.6MB ELF. Failed v3 stays failed. New22CPU controls and all GPU stages still required.'))
-    row['environment'] = {k: v.replace(str(original_root), str(ROOT)) for k, v in row['environment'].items()}
-    row['environment'].update(STRATA_MEASUREMENT_ROOT=str(ROOT),
-        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'validation.log'))
-    # The retained build is outside this new raw-output root. No need to give
-    # its diagnostic processes the old build tree's aggregate byte allowance.
-    row['host_budget']['total_cap'] = 64 << 20
-    row['native_budget'].update(file_cap=16 << 20, total_cap=64 << 20)
-    row['plan']['order'] = 'Reuse exact original native artifact after scoped source/recipe/census/image proof. Run22CPU controls,12CPU native guards,small traced checks,full checks and3fresh timing processes. No native rebuild or GPU result inherited.'
-    row['plan']['source_identity'] = 'native_source_commit is cdbd68796;project/admission source pins later controller inputs. Do not label the existing ELF with the later source revision.'
-    ctx.current(row, committed=False)
-    ROOT.mkdir(mode=0o700)
-    for name in ('tmp', 'cache'): (ROOT / name).mkdir(mode=0o700)
-    ctx.save(row)
-    print('Prepared independent controller-only admission;commit before22CPU controls. Native source/ELF unchanged.', flush=True)
-
-
-def controls(ctx):
-    row = json.loads((ROOT / 'record.json').read_text()); ctx.current(row)
-    require(row['stage'] == 'prepared' and 'reader_controls' not in row, 'fresh CPU controls only')
-    command = [PYTHON, '-B', '-m', 'unittest', '-v', 'tools.sycl.test_q6_dpas_component',
-               'tools.sycl.test_compile_census']
-    scope = None
-    def persist():
-        write(ROOT / 'controls-execution.json', dict(active=bool(scope and scope.active),
-            commands=scope.commands if scope else []))
-    try:
-        scope = ownership.Owner(ROOT / 'reader-controls', persist)
-        entry, out, err = scope.run('reader-controls', command, row['recipe']['environment'], P, **row['host_budget'])
-        text = out.read_text() + err.read_text()
-        passed = bool(ownership.closed(entry) and entry['exit_code'] == 0 and
-            'Ran 22 tests' in text and '\nOK\n' in text and 'skipped' not in text)
-        row['reader_controls'] = dict(passed=passed, tests=22, command=command,
-            exit_code=entry['exit_code'], ownership_closed=ownership.closed(entry), GPU_executed=False)
-        require(passed, 'linked-image/protocol CPU controls failed')
-        if row.get('qualification_reuse'): row['stage'] = 'built'
-    except BaseException as error:
-        row.update(stage='failed', passed=False, complete=False, error=repr(error))
-    finally:
-        row['active'] = bool(scope and scope.active)
-        row['ownership_closed'] = not row['active'] and (scope is None or
-            all(ownership.closed(c) for c in scope.commands))
-        persist(); ctx.save(row)
-    require(row['stage'] != 'failed' and row['ownership_closed'], row.get('error', 'CPU controls not closed'))
-    print('22CPU controls passed;commit before the next stage.', flush=True)
-
-
-def run(ctx, stage):
-    if stage == 'build':
-        row = json.loads((ROOT / 'record.json').read_text())
-        require(not row.get('qualification_reuse'), 'reused native artifact must not be rebuilt')
-        require(row['reader_controls']['passed'], 'CPU controls first')
-        ctx.compile_fixture()
-        row = json.loads((ROOT / 'record.json').read_text())
-        try:
-            row['codegen'] = image(Path(row['binary']['path']).read_bytes())
-            row.update(compilation_passed=True, passed=False, complete=False)
+def run(ctx,mode):
+    row=json.loads((ROOT/'record.json').read_text());ctx.current(row)
+    if mode=='controls':
+        require(row['stage']=='prepared' and 'reader_controls' not in row,'fresh parser controls only')
+        try:row['reader_controls']=controls()
         except BaseException as error:
-            row.update(stage='failed', passed=False, complete=False, error=repr(error))
-        ctx.save(row); require(row['stage'] == 'built', row.get('error', 'direct image check failed'))
-        return
-    if stage in ('check', 'time0', 'time1', 'time2'):
-        require(json.loads((ROOT / 'record.json').read_text()).get('canonical_kernel_trace_passed'),
-                'fresh canonical trace qualification required before launch')
-    raw = ctx.source.git(P, 'show', PROTOCOL + ':' + PROTOCOL_PATH)
-    protocol = ModuleType('canonical_q6_execution_protocol')
-    protocol.__file__ = str(P / PROTOCOL_PATH)
-    exec(compile(raw, PROTOCOL + ':' + PROTOCOL_PATH, 'exec'), protocol.__dict__)
-    protocol.ROOT, protocol.KEY, protocol.RESULT, protocol.TARGET = ROOT, KEY, RESULT, ctx.TARGET
-    protocol.current, protocol.save, protocol.compact = ctx.current, ctx.save, ctx.compact
-    protocol.execute(stage)
-    if stage == 'check-small':
-        row = json.loads((ROOT / 'record.json').read_text())
-        text = (ROOT / ('v7-owned-' + stage) / 'native.stderr').read_text()
-        passed = 'Q6DpasC4Canonical' in text
-        row['canonical_kernel_trace_passed'] = passed
-        if not passed: row.update(stage='failed', passed=False, complete=False, error='exact canonical kernel trace missing')
-        ctx.save(row); require(passed, 'exact canonical kernel trace missing')
+            row.update(stage='failed',passed=False,complete=False,error=repr(error),reader_controls=dict(passed=False,GPU_executed=False))
+            ctx.save(row);raise
+        ctx.save(row);print('CPU parser controls passed;commit before build.',flush=True);return
+    if mode=='build':
+        require(row['reader_controls']['passed'],'CPU parser controls first');ctx.compile_fixture()
+        row=json.loads((ROOT/'record.json').read_text())
+        try:row['codegen']=image(Path(row['binary']['path']).read_bytes())
+        except BaseException as error:
+            row.update(stage='failed',compilation_passed=True,passed=False,complete=False,error=repr(error))
+            ctx.save(row);raise
+        row.update(compilation_passed=True,passed=False,complete=False);ctx.save(row);return
+    stages=['host','check-small','check','time0','time1','time2']
+    require(mode in stages and row['stage']=='built' and len(row['results'])==stages.index(mode) and
+        all(v['passed'] for v in row['results']),'fresh ordered fixture stage only')
+    scope=None;outcome=dict(mode=mode,passed=False);cursor=None
+    def persist():write(ROOT/(mode+'-execution.json'),dict(active=bool(scope and scope.active),commands=scope.commands if scope else []))
+    try:
+        scope=owner.Owner(ROOT/('owned-'+mode),persist)
+        env=dict(row['environment']);log=ROOT/(mode+'-validation.log')
+        if mode=='host':
+            env.pop('STRATA_Q6_DPAS_GATE',None)
+            event,out,err=scope.run('host',[row['binary']['path'],'--host'],env,P,**row['host_budget'])
+            outcome['native_exit_code']=event.get('exit_code')
+            require(owner.closed(event) and event['exit_code']==0 and
+                out.read_text().splitlines().count('HOST passed=1 cases=31 GPU=0')==1,'31 actual native CPU controls required')
+            outcome.update(passed=True,native_exit_code=0,GPU_executed=False)
+        else:
+            if mode!='check-small':env['UR_ENABLE_LAYERS']='UR_LAYER_PARAMETER_VALIDATION';env.pop('UR_LOG_TRACING',None)
+            env.update(LD_PRELOAD=row['native_validation_probe']['library']['path'],
+                STRATA_UR_PROBE_EXPECTED_LOADER=row['native_validation_probe']['loader']['path'],
+                UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(log))
+            cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(
+                ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines() if v.startswith('-- cursor: '))
+            def interact(io,command):
+                for phase,tag in enumerate(('STRATA_Q6_DPAS_GATE ','STRATA_Q6_DPAS_DEVICE_GATE ')):
+                    while True:
+                        line=io.line(180)
+                        if line.startswith(tag):break
+                    require(line==tag+'pid='+str(command['pid']) and
+                        str(Path('/proc',str(command['pid']),'exe').resolve())==row['binary']['path'],'actual fixture process/gate identity')
+                    identity=owner.identity(command['pid'])
+                    require(identity and identity['pid']==identity['sid']==command['pid'] and
+                        all(identity[k]==command['direct_identity'][k] for k in ('pid','start_ticks','sid')),
+                        'actual owned fixture lifetime at both gates')
+                    outcome['native_identity']=identity
+                    actual=dict(v.split('=',1) for v in Path('/proc',str(command['pid']),'environ').read_text().split('\0') if '=' in v)
+                    mapped=set(python_runtime.code_maps(command['pid']))
+                    names=('LD_PRELOAD','STRATA_UR_PROBE_EXPECTED_LOADER','UR_ADAPTERS_FORCE_LOAD','ZE_ENABLE_ALT_DRIVERS')
+                    required={str(Path(env[k]).resolve()) for k in names[:2 if phase==0 else 4]}
+                    require(actual==env and required<=mapped and
+                        not mapped-(set(row['runtime_pins'])|{row['binary']['path']}),'immutable environment and phase-appropriate provider mappings')
+                    outcome.setdefault('provider_admission',[]).append(dict(phase=phase,mapped_files=len(mapped),
+                        mapped_path_sha256=hashlib.sha256('\0'.join(sorted(mapped)).encode()).hexdigest(),required_present=True,environment_immutable=True))
+                    if phase:outcome['GPU_initialized']=True
+                    io.send(b'continue\n')
+                io.proc.stdin.close()
+                while not io.exit_watch.poll(0) or not io.eof:
+                    io.poll()
+                    if select.select([io.proc.stdout],[],[],.02)[0]:io.read();io.pending.clear()
+                io.exit(1)
+            args=['--time',mode[-1]] if mode.startswith('time') else ['--'+mode]
+            outcome['native_execution_attempted']=True
+            event,out,err=scope.run(mode,[row['binary']['path'],*args],env,P,interaction=interact,**row['native_budget'])
+            outcome['native_exit_code']=event.get('exit_code')
+            require(owner.closed(event) and event['exit_code']==0,'owned native component failed')
+            text,diagnostic=out.read_text(),err.read_text();outcome['native_exit_code']=0
+            outcome['validation']=validation.preload_evidence(diagnostic,event['pid'])
+            require(outcome['validation']['loader']==env['STRATA_UR_PROBE_EXPECTED_LOADER'] and
+                (not log.exists() or log.stat().st_size==0) and
+                not re.search(r'(?:UR|ZE)_RESULT_ERROR_[A-Z_]+',diagnostic),'actual parameter-validation/UR result failed')
+            if mode.startswith('time'):
+                parsed=timing(text,int(mode[-1]));row['timing'].append(parsed)
+                outcome['timing_index']=parsed['index']
+            else:
+                small=mode=='check-small';shapes=SMALL if small else SHAPES
+                outcome['numerical']=numerical(text,shapes)
+                require(text.splitlines().count(f'CHECK passed=1 small={int(small)} cases={2*len(shapes)} route=compat_graph columns=4')==1,'complete native check footer')
+                if small:require('Q6DpasC4Canonical' in diagnostic and 'urEnqueueCommandBufferExp' in diagnostic,'actual traced canonical graph path')
+            row['GPU_executed']=True;outcome.update(passed=True,host_probe_accepted=True,GPU_executed=True)
+    except BaseException as error:outcome.update(passed=False,host_probe_accepted=False,error=repr(error))
+    finally:
+        if cursor is not None and scope:
+            validation.finish(outcome,scope,cursor,row['boot'])
+            if outcome.get('driver_after')!=row['driver']:outcome.update(passed=False,driver_mismatch=True)
+        outcome['ownership_closed']=not scope or scope.active is None and all(owner.closed(v) for v in scope.commands)
+        if scope and scope.commands and 'native_exit_code' not in outcome:
+            outcome['native_exit_code']=scope.commands[-1].get('exit_code')
+        outcome['passed']=bool(outcome['passed'] and outcome['ownership_closed'])
+        row['results'].append(outcome);row['active']=bool(scope and scope.active);row['ownership_closed']=outcome['ownership_closed']
+        if not outcome['passed']:row.update(stage='failed',passed=False,complete=False,error=outcome.get('error','fixture qualification failed'))
+        elif mode=='time2':row.update(stage='closed',passed=True,complete=True,decision=decision(row['timing']))
+        ctx.save(row)
+    require(outcome['passed'],outcome.get('error','fixture stage failed'))
+    print('Closed '+mode+';component/model adoption remain separate.',flush=True)
 
 
-if __name__ == '__main__':
-    require(len(sys.argv) == 2 and sys.argv[1] in
-        ('prepare', 'admit', 'controls', 'build', 'host', 'check-small', 'check', 'time0', 'time1', 'time2'), 'canonical component stage')
-    with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB); guards.no_model_owners([])
-        ctx = context(); stage = sys.argv[1]
-        if stage == 'prepare': prepare(ctx)
-        elif stage == 'admit': admit(ctx)
-        elif stage == 'controls': controls(ctx)
-        else: run(ctx, stage)
+if __name__=='__main__':
+    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','controls','build','host','check-small','check','time0','time1','time2'),'six-shape component stage')
+    with (B/'owned-v0141-measurement.lock').open('a+') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
+        ctx=context();prepare(ctx) if sys.argv[1]=='prepare' else run(ctx,sys.argv[1])
