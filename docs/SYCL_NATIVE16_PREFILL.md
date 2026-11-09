@@ -2083,10 +2083,10 @@ The six-shape Q6 C4 fixture/controller at `d003ba0b6` is integrated into
 retired locally and remotely after verifying all original commits against the
 pushed primary. It keeps the actual production generic/columns references and
 adds no inference dispatcher. Python preparation and exact native/runtime
-reference admission pass for the fresh `q6_dense_c4_component_v1` plan;
-parser controls, C++ compilation and device checks remain pending. The deferred
-primary-builder import removes the source-level initialization-order cycle;
-both explicit import orders will be checked with the CPU controls.
+reference admission pass for `q6_dense_c4_component_v1`. Three positive parser
+orders and ten corrupt variants pass, as do both explicit module-import orders
+in fresh Python processes with the same shared image-reader binding. No GPU
+runs in these controls. C++ compilation and device checks remain pending.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's

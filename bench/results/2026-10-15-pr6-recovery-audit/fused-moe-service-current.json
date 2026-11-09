@@ -234592,6 +234592,41 @@
       "limits": "Synthetic byte-valid Q6/Q8 and independent scalar/envelope oracle. One repeatedly accessed matrix;cache behavior differs from the complete model. No physical traffic,saturation,task,PP/TG,agent,full262144 or RESTORE claim."
     },
     "retention": "One temporary standalone fixture for this named comparison;no new engine generation. Keep useful per-shape numbers/all timing samples/source/recipe/fault results. Retire normal traces,JIT and fixture build after closure. Preserve current engine/phase references and unresolved legacy holds.",
+    "reader_controls": {
+      "passed": true,
+      "positive_process_orders": 3,
+      "corrupt_variants": 10,
+      "GPU_executed": false
+    },
+    "module_import_controls": {
+      "source_commit": "2d628e945c7619b74fa90d0e03a4e2da4cfb6e99",
+      "passed": true,
+      "processes": [
+        {
+          "order": "component_then_builder",
+          "argv": [
+            "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+            "-B",
+            "-c",
+            "import sys;sys.path.insert(0,'tools/sycl');import q6_canonical_component as c;import build_q6_head_model as p;assert p.canonical_image is c.image;print('IMPORT_ORDER_PASS')"
+          ],
+          "exit_code": 0,
+          "image_binding_identical": true
+        },
+        {
+          "order": "builder_then_component",
+          "argv": [
+            "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+            "-B",
+            "-c",
+            "import sys;sys.path.insert(0,'tools/sycl');import build_q6_head_model as p;import q6_canonical_component as c;assert p.canonical_image is c.image;print('IMPORT_ORDER_PASS')"
+          ],
+          "exit_code": 0,
+          "image_binding_identical": true
+        }
+      ],
+      "GPU_executed": false
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "7b07921ba1d3a811c631fca6c07ef9d98992f2c0",
