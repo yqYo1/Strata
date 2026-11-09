@@ -2298,7 +2298,7 @@ attribution;host backing1is a separate unmeasured model-speed candidate.
 Task quality,physical262144/tails/RESTORE,ordinary provider teardown and full
 inference/default adoption remain open. All individual samples and decisions
 are in `q6_dense_dpas_official_v2.cohort`;the performance CSV retains the earlier
-partial milestones and will index the closed comparison.
+partial milestones and now indexes the closed comparison and14.5TGpoint.
 After original-source recovery,276closed-process1/2/3/4logs/journals/cache
 files(52648231bytes)are retired with a path/hash manifest and passing admission.
 Their frozen config/plan pairs and V1raw remain through the final retirement
