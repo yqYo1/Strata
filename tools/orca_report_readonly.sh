@@ -41,11 +41,8 @@ import json, sys
 from pathlib import Path
 config = '''model = "gpt-6-luna"
 model_reasoning_effort = "medium"
-sandbox_mode = "workspace-write"
+sandbox_mode = "danger-full-access"
 approval_policy = "never"
-
-[sandbox_workspace_write]
-network_access = true
 
 '''
 config += '[projects.' + json.dumps(sys.argv[2], ensure_ascii=False) + ']\ntrust_level = "trusted"\n'
@@ -79,11 +76,12 @@ esac
 # A fresh no-daemon CLI avoids the shared app-server's tool executor. The real
 # worker must still prove its tool boundary and Task/Dispatch/terminal identity;
 # a launcher exit or an idle prompt does not establish task/process closure.
+# The outer bwrap is the filesystem sandbox. A second Codex namespace cannot
+# start here; use the installed CLI's externally-sandboxed mode inside bwrap.
 # No /dev/dri is mounted. Temporary output stays in the report directory without
 # hiding host /tmp sockets required for Orca lifecycle IPC.
 exec env TMPDIR="$report_tmp" timeout --foreground --kill-after=5s 480s \
     bwrap "${report_mounts[@]}" --chdir "$report_dir" \
     "$codex_executable" --no-daemon --no-alt-screen --cd "$report_dir" \
-    --sandbox workspace-write --ask-for-approval never \
-    --model gpt-6-luna --config 'model_reasoning_effort="medium"' \
-    --config sandbox_workspace_write.network_access=true
+    --dangerously-bypass-approvals-and-sandbox \
+    --model gpt-6-luna --config 'model_reasoning_effort="medium"'
