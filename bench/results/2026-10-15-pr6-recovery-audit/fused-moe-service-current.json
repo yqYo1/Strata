@@ -224076,7 +224076,7 @@
       "STRATA_SYCL_ADAPT_SYNC": "1",
       "STRATA_SYCL_Q6_ROUTE_AUDIT": "0"
     },
-    "stage": "prepared",
+    "stage": "failed",
     "source_commit": "5fbcd4d265aac9d32d07e90481af7ed9870753a6",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00",
@@ -224337,6 +224337,13 @@
       "interpretation": "Small model qualification is not speed evidence. Head audit counts are live-capture cumulative,not per-request deltas. No exact-output,task-quality,saturation,full-context or default-adoption claim."
     },
     "invariant_signature": "035bac240083dca7ca92031b1973c83418d855f210e13627eff8f28d97ef4a67",
+    "error": "RuntimeError('unfrozen project import')",
+    "host_failure_detail": {
+      "kind": "source_manifest_scope",
+      "missing_package": "strata_control",
+      "meaning": "Both current Python entrypoint probes ran normally with empty stderr. The server imported committed shared-control modules outside the legacy serve/tools-only source inventory. Reject as an unfrozen input;no native engine or GPU launched.",
+      "next": "Add the whole committed strata_control Python package to the new cohort manifest;retain this v2failure and prepare v3."
+    },
     "source_inputs": {
       "files": 550,
       "aggregate_sha256": "3a7baf239d89af5d8accdf424b3ae388d4a0055489e08b48dc78f40876e6be02"
