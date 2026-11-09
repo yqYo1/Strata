@@ -2271,18 +2271,21 @@ strict32768fresh-token requirement. V2now passes four route-positive cases,
 13corrupt-route refusals,11corrupt-v5metadata refusals and the actual18request
 reader. Fresh benchmark/server probes pass144/230modules and18/27code maps,
 with normal closed owners. No candidate speed result follows from these CPU
-gates. Candidate processes1and2now complete all36requests,normal native/bench0,
-closed ownership,quiet validation,no fresh fault and matched fixed inputs.
-Their strict long-generation rates are13.8/8.6and14.0/9.0TG versus the historical
-control12.2/8.5. Both candidates generate3044/6937tokens versus3656/7950;
-their acceptance matches each other but differs from control,so these are
-model-workload rates,not isolated kernel gains. Candidate PP is698.1/661.6and
-679.2/696.1versus707.0/705.1. Client TTFT is47.720/50.494and49.097/48.009s
-versus47.120/47.367s. Keep every lower-prefill/higher-TTFT sample;one completed
-pair and a partial second pair do not qualify adoption or preservation. The
-common actual canonical tables match for decode1/4;mode10/BF16long-prefill
-checks remain independent. Continue the committed order with fresh
-control3/control4/candidate5. The first-pair and higher second-candidate
+gates. The historical control0and fresh processes1/2/3now complete all72requests,
+normal native/bench0,closed ownership,quiet validation,no fresh fault and
+matched fixed inputs. Candidate TG is13.8/8.6and14.0/9.0versus the paired
+controls12.2/8.5and12.2/8.6. Across these two opposite-order pairs,the
+geometric-mean TG ratios are1.139315for code and1.028992for prose,calculated
+from the API's one-decimal rates. Both candidates generate3044/6937tokens
+versus3656/7950in both controls;acceptance matches within each arm but differs
+between arms,so these are model-workload rates,not isolated kernel gains.
+Candidate/reference prompt-time ratios are1.012661/1.001509for code and
+1.065689/1.000391for prose;client-TTFT ratios are1.012733/1.002266and
+1.066016/1.000876. Keep every lower-prefill/higher-TTFT sample;two of three
+pairs do not qualify adoption or preservation. All exact individual PP/TTFT/TG
+values remain in the result. The common actual canonical tables match for
+decode1/4;mode10/BF16long-prefill checks remain independent. Continue the
+committed order with fresh control4/candidate5. The first-pair and higher second-candidate
 points are indexed in the performance CSV with their incomplete-cohort qualification. After
 source recovery and recorded path/hash deletion manifest,138closed candidate1/2
 logs/journals/cache files(26325424bytes)are retired;post-retirement admission
