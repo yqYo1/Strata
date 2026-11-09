@@ -5,6 +5,7 @@ import io
 from pathlib import Path
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -29,6 +30,25 @@ def routes(prompt=False):
 
 
 class Q6LeafControls(unittest.TestCase):
+    def test_end_gate_precedes_client_result_journal_append(self):
+        pairs=[fixture(i) for i in range(1,6)]
+        bodies=[''.join(p[0] for p in pairs[:n]).encode() for n in (4,5)]
+        original=SimpleNamespace(route=lambda *_:None,cache_boundary=lambda root,n:(bodies[n-4],list(range(n))))
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);journal=root/'bench'/'current';journal.mkdir(parents=True)
+            import json
+            events=[dict(kind='result',sample=p[1]) for p in pairs[:4]]
+            events.append(dict(kind='start',phase='long-generation/regular-code'))
+            (journal/'requests.jsonl').write_text('\n'.join(map(json.dumps,events))+'\n')
+            with patch.object(profile.dense.head_speed,'context',return_value=original):
+                ctx=profile.context(1)
+            self.assertEqual(ctx.cache_boundary(root,4)[0],bodies[0])
+            # Native request5 is complete; the fifth client result is written
+            # only after this gate receives continue, so four results is valid.
+            self.assertEqual(ctx.cache_boundary(root,5)[0],bodies[1])
+            self.assertEqual(ctx.boundary_calls,2)
+            with self.assertRaises(RuntimeError):ctx.cache_boundary(root,5)
+
     def test_controls_budget_covers_only_this_attempt(self):
         roots=[]
         class Owner:

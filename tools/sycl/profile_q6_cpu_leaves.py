@@ -20,7 +20,7 @@ import profile_adaptive_cpu_leaves as leaf
 import q6_dense_model_speed as dense
 
 P, B, RESULT = dense.P, dense.B, dense.RESULT
-ROOT, KEY = B / 'q6-dense-cpu-leaves-v2', 'q6_dense_cpu_leaves_v2'
+ROOT, KEY = B / 'q6-dense-cpu-leaves-v3', 'q6_dense_cpu_leaves_v3'
 THIS = 'tools/sycl/profile_q6_cpu_leaves.py'
 TEST = 'tools/test_q6_cpu_leaves.py'
 HOST_KEY = 'q6_dense_cpu_leaves_host_v1'
@@ -213,12 +213,18 @@ def context(index=None):
         result['dense_DPAS']=dense_route(text,reference)
         return result
     def boundary(root,expected):
-        require(expected == (4,5)[ctx.boundary_calls], 'leaf warmup/long boundary order')
+        require(ctx.boundary_calls < 2 and expected == (4,5)[ctx.boundary_calls],
+            'leaf warmup/long boundary order')
         raw,history=original_boundary(root,expected)
-        path,=(root/'bench').glob('*/requests.jsonl')
-        samples=[e['sample'] for e in map(json.loads,path.read_text().splitlines()) if e['kind']=='result']
-        require(len(samples)==expected, 'native/client leaf prefix differs')
-        leaf.evidence(raw.decode(),samples,4,ORDER[index]=='candidate')
+        # Bench emits the end gate before appending the completed client
+        # sample. Bind the four warmups now; join all five only after normal
+        # benchmark/native exit in run(). The independent native cache footer
+        # still must be complete before either gate is acknowledged.
+        if ctx.boundary_calls == 0:
+            path,=(root/'bench').glob('*/requests.jsonl')
+            samples=[e['sample'] for e in map(json.loads,path.read_text().splitlines()) if e['kind']=='result']
+            require(len(samples)==4, 'native/client warmup leaf prefix differs')
+            leaf.evidence(raw.decode(),samples,4,ORDER[index]=='candidate')
         ctx.boundary_calls+=1
         return raw,history
     ctx.route,ctx.cache_boundary=route,boundary

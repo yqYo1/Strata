@@ -249965,7 +249965,7 @@
         "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
       }
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "b11217e2d0159144b4813f88922a17cd7dbeea74",
     "native_admission": {
       "native_source_commit": "221e95e9ad890383deb418d0a865ee32c99168b6",
@@ -250200,12 +250200,41 @@
         "environment_sha256": "b17a2093a4a6b3b176d457622420c364159afb7d66537b4865fd49a86ef4612a"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 96,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 4157070,
+          "start_ticks": 261143209,
+          "sid": 4157013
+        },
+        "request_routes_checked_before_continue": 0,
+        "cache_footers_checked_before_continue": 4,
+        "error": "RuntimeError(\"owned benchmark failed: RuntimeError('native/client leaf prefix differs')\")",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "whole_bytes": 402653184,
     "budgets": {
       "wall": 1800,
@@ -250232,6 +250261,20 @@
         "code_maps": 27
       }
     ],
+    "post_failure_diagnostic": {
+      "source": "tools/strata_bench.py::Bench.execute around549..553;end gate in finally precedes result journal append",
+      "native_completed_prompt_tokens": 33208,
+      "native_completed_generated_tokens": 4923,
+      "native_reported_TG": 16.5,
+      "speed_qualified": false,
+      "native_footer_count": 5,
+      "client_result_count_at_end_gate": 4,
+      "post_failure_physical_closure": true,
+      "captured_owner_identities": 4,
+      "original_failure_unchanged": true,
+      "no_new_driver_fault": true,
+      "next": "Fresh V3 warmup binding before begin;complete client/native leaf join after normal exit. Do not reuse the failed control as qualified speed."
+    },
     "source_inputs": {
       "files": 640,
       "aggregate_sha256": "422fd34581ddd1258e9976a1cc89861273c9f851862f19493d1e616f02b2a180"
