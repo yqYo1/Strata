@@ -2053,6 +2053,11 @@ in its common parameter-validation/audit envelope, not qualified observer cost,
 physical saturation or default adoption. Dedicated long-prefill/length,
 agent/task and physical262144/RESTORE checks remain open. Mode2 remains
 an opt-in development candidate.
+After recovery of all634 original benchmark inputs from `f1e2f622d`, the closed
+generation/frontend raw logs, journals and caches are retired:427files/77802912bytes.
+All12 speed samples and their original outcomes remain in Git. The cohort's
+`artifact_retirement` records the deletion manifest; its private record and runtime
+manifest remain for the next qualification consumer. No engine or model asset is deleted.
 All six processes also have identical requested-transfer counters
 for each long prefill. These are logical native copy requests, not measured
 PCIe traffic or bandwidth:
