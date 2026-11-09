@@ -249363,5 +249363,29 @@
         "model_assets": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
       }
     }
+  },
+  "q6_dense_cpu_leaves_host_v1": {
+    "stage": "failed",
+    "source_commit": "f4255d8bf1a576dd7813670d83de27f75880ba2e",
+    "source_signature_sha256": "ea5169d47269a7622c313c1b0823bca4f4601508f63b028cb98a910e0e8f7e9b",
+    "source_count": 640,
+    "GPU_executed": false,
+    "passed": false,
+    "ownership_closed": false,
+    "command": [
+      "/usr/bin/python3",
+      "-X",
+      "faulthandler",
+      "-B",
+      "-m",
+      "unittest",
+      "tools.test_q6_cpu_leaves",
+      "tools.test_adaptive_cpu_leaf_evidence",
+      "-v"
+    ],
+    "exit_code": 0,
+    "tests": 13,
+    "error": "RuntimeError('CPU reader/controller controls failed')",
+    "prior_attempts": []
   }
 }

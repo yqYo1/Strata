@@ -272,7 +272,8 @@ def prepare():
 def controls():
     revision=dense.build.primary.source.git(P,'rev-parse','HEAD').decode().strip();sources=pins(revision)
     root=B/('q6-dense-cpu-leaves-host-'+revision[:12]);require(not root.exists(),'one CPU control attempt per committed source')
-    scope=dense.owner.Owner(root);env=dict(PATH='/usr/bin:/bin',LANG='C.UTF-8',LC_ALL='C.UTF-8',
+    root.mkdir(mode=0o700)
+    scope=dense.owner.Owner(root/'owned');env=dict(PATH='/usr/bin:/bin',LANG='C.UTF-8',LC_ALL='C.UTF-8',
         PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
     row=dict(stage='running',source_commit=revision,source_signature_sha256=signature(sources),
         source_count=len(sources),GPU_executed=False,passed=False,ownership_closed=False)
@@ -289,6 +290,8 @@ def controls():
     except BaseException as error:row.update(stage='failed',error=repr(error))
     finally:
         row['ownership_closed']=not scope.active and all(dense.owner.closed(e) for e in scope.commands)
+        row['owner_results']=[{k:e.get(k) for k in ('pid','direct_identity','exit_code','observation_complete',
+            'direct_child_reaped','session_empty','error','errors','cleanup')} for e in scope.commands]
         data=json.loads(RESULT.read_text());previous=data.get(HOST_KEY,{})
         row['prior_attempts']=previous.get('prior_attempts',[])+([
             {k:v for k,v in previous.items() if k!='prior_attempts'}] if previous else [])

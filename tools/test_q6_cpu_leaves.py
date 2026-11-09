@@ -1,7 +1,10 @@
 """CPU-only controls for current dense-DPAS leaf cost attribution."""
 import copy
+import contextlib
+import io
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -26,6 +29,28 @@ def routes(prompt=False):
 
 
 class Q6LeafControls(unittest.TestCase):
+    def test_controls_budget_covers_only_this_attempt(self):
+        roots=[]
+        class Owner:
+            def __init__(self,root):
+                roots.append(root);root.mkdir();self.root=root;self.active=None;self.commands=[]
+            def run(self,*args,**kwargs):
+                entry=dict(exit_code=0);self.commands.append(entry)
+                out=self.root/'test.stdout';err=self.root/'test.stderr'
+                out.write_text('');err.write_text('Ran 1 test in 0.001s\n\nOK\n')
+                return entry,out,err
+        with tempfile.TemporaryDirectory() as temporary:
+            base=Path(temporary);result=base/'result.json';result.write_text('{}')
+            with patch.object(profile,'B',base),patch.object(profile,'RESULT',result),\
+                 patch.object(profile,'pins',return_value={'fixture':'sha'}),\
+                 patch.object(profile.dense.build.primary.source,'git',return_value=b'a'*40),\
+                 patch.object(profile.dense.owner,'Owner',Owner),\
+                 patch.object(profile.dense.owner,'closed',return_value=True),\
+                 contextlib.redirect_stdout(io.StringIO()):
+                profile.controls()
+            self.assertEqual(roots,[base/('q6-dense-cpu-leaves-host-'+'a'*12)/'owned'])
+            self.assertNotEqual(roots[0].parent,base)
+
     def test_actual_dense_join_accepts_optional_verifier_prompt(self):
         for prompt in (False,True):
             text,expected=routes(prompt)
