@@ -2034,9 +2034,14 @@ Candidate/reference prompt-time ratios are 1.006725 / 0.975358 and TTFT ratios
 1.006885 / 0.975494. Keep those first-long/after-code cases separate and retain
 the mixed prefill result; one pair establishes no repeated gain or adoption.
 Both children exit 0 with closed ownership, quiet validation and no fresh fault.
-The second candidate process also closes normally with the same body, output
-and draft counts. Three frozen processes remain, including its matched reference.
-The completed processes0/1/2 also have identical requested-transfer counters
+The second matched pair also closes normally0,with quiet validation,no fresh
+fault and the same body,output and draft counts. Its candidate/reference TG
+ratios are1.053754(code)and1.060156(prose);prompt-time ratios are1.004763and
+0.987319,and TTFT ratios1.004705and0.987366. Both pairs favor candidate TG,
+while the first-long code prefill/TTFT remains slightly slower in each pair.
+Keep that phase result unresolved rather than accepting it as noise. Four of
+the six frozen processes are closed;the final reference/candidate pair remains.
+The completed processes0/1/2/3 also have identical requested-transfer counters
 for each long prefill. These are logical native copy requests, not measured
 PCIe traffic or bandwidth:
 
