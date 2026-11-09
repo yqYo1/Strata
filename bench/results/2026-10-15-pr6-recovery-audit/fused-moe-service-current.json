@@ -225115,7 +225115,7 @@
       "STRATA_SYCL_ADAPT_SYNC": "1",
       "STRATA_SYCL_Q6_ROUTE_AUDIT": "0"
     },
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "67a0c9cf38f577cbfd05be821094790bcc64f02a",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00",
@@ -225525,13 +225525,34 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "adapt_swaps": 96,
+        "complete": false,
+        "passed": false,
+        "host_probe_accepted": false,
+        "model_executed": false,
+        "error": "RuntimeError(\"owned benchmark failed: RuntimeError('protocol EOF before expected line')\")",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "host_passed": true,
     "passed": false,
     "complete": false,
     "active": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "controls": {
       "common": {
         "passed": true,
@@ -225605,6 +225626,25 @@
     "source_inputs": {
       "files": 632,
       "aggregate_sha256": "c5c1105f67055ba8518a250c34bf5f96f855a88058a0630f359dc9202b1d9662"
+    },
+    "memory_admission": {
+      "stage": "native_expert_cache_capacity_refused_before_READY",
+      "native_exit_code": 1,
+      "capacity_error": "strata generate: ExpertCache: 1256 slots x 2662400 B = 2.40 GiB, but only 2.09 GiB of VRAM is free (7.85 GiB of 9.93 GiB total). Lower --expert-cache.",
+      "canonical_head_bytes": 521472000,
+      "additional_packed_device_bytes": 521472000,
+      "long_generation_samples": 0,
+      "fresh_gpu_faults": [],
+      "cleanup": {
+        "original_owned_identities": 4,
+        "all_original_PIDs_absent": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "survivors": 0
+      },
+      "original_status_preserved": "Failed cohort,passed reference process0 and failed candidate process1 unchanged. ownership_closed=false reflects incomplete observation,not remaining live owners.",
+      "decision": "Do not retry indices2..5 or change this frozen cohort. Additional full-head storage does not admit1256cache slots at131072context. Keep default packed head off. Investigate canonical-layout direct DPAS before any model adoption;smaller cache is a separate prospective placement comparison.",
+      "reference_result_commit": "c99e5febffe2425d5a9055302ec8eec127bc32c7"
     }
   }
 }
