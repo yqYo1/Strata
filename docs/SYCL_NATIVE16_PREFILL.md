@@ -2162,11 +2162,12 @@ selection fixed. No prior GPU or model qualification is inherited; both
 mechanisms need independent numerical/lifetime and repeated phase-performance
 checks. Existing phase/feature generations and legacy provenance holds remain
 separate; compilation alone does not qualify this candidate.
-The fresh build plan is prepared at native source
-`02d64c4ca533e357b0c408047a749626790b476b` under
-`q6_dense_head_backing_build_v1`. It pins1127project inputs and the existing
-compiler/dependency/recipe identities; no compilation or GPU execution is
-qualified yet. The unchanged1db engine and its four fixtures remain the fallback.
+The prepared V1 plan at source `02d64c4ca` is superseded before any compiler or
+GPU process:the capture audit must check actual C4 subcalls rather than assume
+their width equals the whole window's token count. A split eight-token window
+may contain four-column calls. The corrected source will use a fresh V2 plan
+and native build; neither V1 source identities nor outcomes are relabelled.
+The unchanged1db engine and its four fixtures remain the fallback.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),

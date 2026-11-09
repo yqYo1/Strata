@@ -249,7 +249,7 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
         for (size_t i = 0; i < window.q6_dpas_dense_calls.size(); ++i) {
             const auto& shape = verify_q6_dense_dpas_shapes[i];
             if (window.q6_dpas_dense_calls[i] && !verify_q6_dpas_dense(decode_q6_dpas_dense_,
-                input, strata::kernels::native_mmvq_multi_exact(), 14, shape[0], shape[1], T))
+                input, strata::kernels::native_mmvq_multi_exact(), 14, shape[0], shape[1], 4))
                 dense_complete = false;
         }
         const bool complete = window.q6_routes_complete && window.q6_capture_id != 0 &&
