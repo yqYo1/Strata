@@ -177,8 +177,20 @@ CPU pool's GU/Down and other leaf wall/thread-CPU clocks without a new native
 build. This is source/build evidence, not a current collection or overhead pass.
 The older overhead result bounds only its original incremental observer cost;
 it does not transfer that bound to a347 or establish RAM/arithmetic saturation.
-After the frozen dense-DPAS comparison closes, qualify a matched observer-off/on
-window on the selected binary before using those clocks for attribution. Keep
+The dense-DPAS official comparison is now closed. The source-prepared
+`tools/sycl/profile_q6_cpu_leaves.py` defines six fresh observer-off/on,
+on/off, off/on processes on its dense1/head2/backing0 decode candidate. It uses
+the official four warmups and unchanged full thinking-enabled long-code task,
+with at least32K fresh input,1K generated tokens and an answer; it does not
+replace answer eligibility with a truncated thinking prefix. Only the startup
+leaf flag differs. Current reader/controller controls and frontend probes must
+pass before model execution. Matching work/output hashes and all three
+per-token latency ratios within1.05 qualify the incremental observer cost only.
+The new admission verifies the original native inputs, five ELFs and complete
+compiler/link census, separately from this noncompiled observer. It consumes
+the closed comparison evidence, without rerunning its historical V1 raw reader
+or changing the original failure or adoption status. No new current-engine
+profile or observer-cost pass follows from source preparation. Keep
 leaf CPU time separate from completion polling and nested pool/wait intervals.
 Test physical counter collection separately before making a RAM-bandwidth claim.
 
