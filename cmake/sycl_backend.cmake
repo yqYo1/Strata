@@ -538,9 +538,12 @@ if(STRATA_SYCL_TESTS)
   target_link_libraries(sycl_prompt_k_cellmajor_test PRIVATE strata_kernels)
   target_compile_definitions(sycl_prompt_k_cellmajor_test PRIVATE STRATA_TEST_PROMPT_MATRIX=1)
   target_compile_options(sycl_prompt_k_cellmajor_test PRIVATE -fno-fast-math -ffp-contract=off)
-  # Manual only: Main owns serialized qualification after current GEMM cohorts.
-  add_executable(sycl_native16_qsa_test EXCLUDE_FROM_ALL tests/sycl/qsa_native16.cpp)
-  target_link_libraries(sycl_native16_qsa_test PRIVATE strata_prefill)
+  # Test the actual producer TU and Runtime without building an entire engine.
+  # Same strict arithmetic options as strata_prefill; manual serialized runs.
+  add_executable(sycl_native16_qsa_test EXCLUDE_FROM_ALL
+    tests/sycl/qsa_native16.cpp src/prefill/sycl/qsa_native16.cpp)
+  target_link_libraries(sycl_native16_qsa_test PRIVATE strata_sycl_runtime)
+  target_compile_features(sycl_native16_qsa_test PRIVATE cxx_std_20)
   target_compile_options(sycl_native16_qsa_test PRIVATE -fno-fast-math -ffp-contract=off)
   # Original selected planner's capacity/overflow checks, without the retired
   # prefix fallback. Main invokes this in the restoration host preflight.

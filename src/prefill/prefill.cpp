@@ -1240,6 +1240,7 @@ bool Prefill::carve(size_t T, void* alloc) {
     // R16 and gated_b16 occupy disjoint halves of the old gated allocation.
     (void)native16::requested(); // validate the immutable startup setting
     (void)native16::qsa::requested();
+    (void)native16::qsa::streaming_requested();
     (void)native16::qsa::attention_math(); // immutable startup selector
     m.R16 = reinterpret_cast<uint16_t*>(m.gated);
     m.gated_b16 = m.R16 + T * D;
@@ -2890,9 +2891,16 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (qp) qp->begin(QsaProfile::kv_append_query, m.cs);
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
-                        native16::qsa::append_q8(m.qsa_Krope16, m.qsa_V16, T, 512, p0,
-                            {st.k_q, st.v_q, st.k_scale, st.v_scale, st.page_table},
-                            s, {st.n_pages, st.n_slots}, m.cs);
+                        const native16::qsa::Q8WritePools resident{
+                            st.k_q,st.v_q,st.k_scale,st.v_scale,st.page_table};
+                        if (staged)
+                            native16::qsa::append_q8_streamed(m.qsa_Krope16,m.qsa_V16,T,512,p0,
+                                resident,{st.host.k_q,st.host.v_q,st.host.k_scale,st.host.v_scale},
+                                {m.stage.k_q,m.stage.v_q,m.stage.k_scale,m.stage.v_scale},
+                                s,{st.n_pages,st.n_slots},m.cs);
+                        else
+                            native16::qsa::append_q8(m.qsa_Krope16,m.qsa_V16,T,512,p0,
+                                resident,s,{st.n_pages,st.n_slots},m.cs);
                     } else {
 #endif
                     if (st.kv_hybrid) {   // K8V4: K INT8 unrotated, V rotated Q4_0 (only V and the output rotate)
@@ -3107,46 +3115,48 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
 #if defined(STRATA_ENABLE_SYCL)
                     if (typed_qsa) {
                         const auto arithmetic = native16::qsa::attention_math();
+                        const strata::kernels::QsaPromptBf16Bounds typed_bounds{
+                            st.n_pages,staged ? st.n_pages : st.n_slots};
                         if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)
                             matrix_used = strata::kernels::qsa_bf16_prefix_subgroup_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_tilepack)
                             matrix_used = strata::kernels::qsa_bf16_prefix_tilepack_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
                             matrix_used = strata::kernels::qsa_bf16_prefix_ordered_exp_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_qcache)
                             matrix_used = strata::kernels::qsa_bf16_prefix_qcache_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_optimized)
                             matrix_used = strata::kernels::qsa_bf16_prefix_optimized_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix)
                             matrix_used = strata::kernels::qsa_bf16_prefix_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, p0 + T, m.qsa_prefix, m.cs);
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16)
                             matrix_used = strata::kernels::qsa_bf16_attention_late_flags_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, m.cs);
+                                typed_bounds, m.cs);
                         else
                             matrix_used = strata::kernels::qsa_prompt_attn_bf16_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                {st.n_pages, st.n_slots}, m.cs);
+                                typed_bounds, m.cs);
                         if (!matrix_used) {
                             err = "prefill QSA16: unsupported typed attention; no fallback submitted"; return false;
                         }
