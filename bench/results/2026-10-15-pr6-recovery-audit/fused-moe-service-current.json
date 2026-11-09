@@ -241853,7 +241853,7 @@
       "file_cap": 67108864,
       "total_cap": 268435456
     },
-    "stage": "host_passed",
+    "stage": "in_progress",
     "source_commit": "413961faae234119b85f966f16e820f0f5248c4f",
     "native_source_commit": "221e95e9ad890383deb418d0a865ee32c99168b6",
     "native_build": {
@@ -241934,12 +241934,229 @@
     },
     "plan": "Four fresh ordered processes:dense0/backing0,dense1/backing0,dense0/backing1,dense1/backing1;head2/spec4 fixed. In each:10197/82/10197thinking inputs,32outputs per request,two long head retire/restore cycles,actual resident128K/1256cache/chunk8192 placement,immutable pre-exec flags,pre-main/maps proof,positive offered/accepted drafts,all live head and selected dense joins. Selected four C4call counts must match the control;all commonly observed canonical phase/width tables must match after excluding those four cells. Require shared prompt and decode-C4; differing optional visited widths are recorded,not treated as output-equality failures. Exact source/5ELFs/census/recipe and device evidence required. Full15asset hashes before preparation and final closure,identity checks before/after each process. Commit every closed stage;stop first failure,no retry.",
     "limits": "Routing/handoff diagnosis only;not clean PP/TTFT/TG,task quality,physical262144/RESTORE,ordinary provider teardown or adoption. Independent matched bench.sh long/agent and strong/weakthinking generation remain required. Current physical limiting resource is unknown.",
-    "results": [],
+    "results": [
+      {
+        "dense": 0,
+        "backing": 0,
+        "passed": true,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 10197,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 30,
+            "output_ids_sha256": "ec26a314e6f3659968545da33f3cb8a20bb40dd56cc87953914f29a1cef3d93b",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 10197,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 30,
+            "output_ids_sha256": "ec26a314e6f3659968545da33f3cb8a20bb40dd56cc87953914f29a1cef3d93b",
+            "complete": true
+          }
+        ],
+        "native_execution_attempted": true,
+        "placement": {
+          "context": "131072",
+          "kv": "int8",
+          "kv_resident": "0",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "98",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 3354283,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "8f8f393b1cba8cce6676ea571b267a19ebb160c998e77a7238ee3f35ec6e55fd",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58661",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "892968 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "892968 KiB",
+              "drm-total-vram0": "9769960 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9769960 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "49717755443173",
+              "drm-total-cycles-vcs": "49717755443173",
+              "drm-total-cycles-vecs": "49717755443173",
+              "drm-total-cycles-bcs": "49717755443173",
+              "drm-total-cycles-ccs": "49717755443173"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58661",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "0",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "1860008 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "1860008 KiB",
+              "drm-total-vram0": "10264556 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "10264556 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0",
+              "drm-total-cycles-rcs": "49720076380169",
+              "drm-total-cycles-vcs": "49720076380169",
+              "drm-total-cycles-vecs": "49720076380169",
+              "drm-total-cycles-bcs": "49720076380169",
+              "drm-total-cycles-ccs": "49720076380169"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "native_exit_code": 0,
+        "routes": {
+          "head": {
+            "snapshots": 8,
+            "requests": [
+              1,
+              2,
+              3
+            ],
+            "decode_C4": [
+              {
+                "request": 1,
+                "capture_id": 2,
+                "replay_completed": 10,
+                "packed_calls": 1
+              },
+              {
+                "request": 2,
+                "capture_id": 2,
+                "replay_completed": 18,
+                "packed_calls": 1
+              },
+              {
+                "request": 3,
+                "capture_id": 6,
+                "replay_completed": 10,
+                "packed_calls": 1
+              }
+            ],
+            "actual_decode_C4_replays": 28,
+            "sole_packed_all_live_head_windows": true,
+            "scope": "Per-request live-capture snapshots;coalesce repeated capture identities before summing replays."
+          },
+          "dense_enabled": 0,
+          "selected_C4_calls": {
+            "6144x2560": 40,
+            "2560x6144": 14,
+            "2560x10240": 22,
+            "2560x12288": 5
+          },
+          "generic_small_C4_calls": 21,
+          "unchanged_routes_sha256": "4c621c022f382681754f2e4513f51f215879e0c7775d44610f4c93c792953e24",
+          "phase_widths": [
+            "decode/1",
+            "decode/4",
+            "prompt/1",
+            "prompt/4"
+          ],
+          "phase_width_sha256": {
+            "decode/1": "34136fb36571561fa01aa76c0fd618e4641a622e9cadcacfacf28173496893a6",
+            "decode/4": "b3d613c8c99bcfa3996d41f12ab54e17ed38bb9856cb4b818b486694fa232a6e",
+            "prompt/1": "718f857cf378c22c6cffe16ffc0f6903d4ea89d3cc63d3ae34d586310b0470e8",
+            "prompt/4": "e8594e2e945a20593f5f0539321e78d2dc62abedb6bbb67414eaaf748898fb9d"
+          },
+          "scope": "Static captured call counts;live replay extents are separate. Four selected decode-C4 cells excluded from isolation hash."
+        },
+        "handoffs": {
+          "transitions": 2,
+          "target_freed_per_transition": 521472000,
+          "target_D2H_per_transition": 521472000,
+          "target_H2D_per_transition": 521472000,
+          "permanent_host_weight_bytes": 0,
+          "extra_device_weight_bytes": 0,
+          "draft_freed_per_transition": 0,
+          "retained_map_bytes": 425196,
+          "scope": "Declared actual allocation/copy requests;not physical bus traffic or bandwidth."
+        },
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "speed_eligible": false,
     "model_adoption_qualified": false,
     "retention": "Keep useful per-request extents,draft/route/transfer counts and outcomes. Retire successfuldiagnostic traces/caches after closure and verified source recovery. Keep a347/5fixtures and1dbfor imminent matched comparison;separate named phase/feature consumers and legacy holds unchanged.",
@@ -241989,6 +242206,14 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "dense0-backing0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
