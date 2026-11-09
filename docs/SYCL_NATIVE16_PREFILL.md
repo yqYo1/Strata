@@ -2022,9 +2022,23 @@ actual decode-C4 replays after coalescing repeated capture snapshots. All six
 requests offer and accept drafts. Both native exits are 0 with closed ownership,
 quiet validation, no fresh fault and unchanged hashes for all 15 model assets.
 This qualifies bounded placement and handoff. Speed, task quality and physical
-262144/RESTORE remain open. The next bench.sh comparison is planned as six fresh
+262144/RESTORE remain open. The bench.sh comparison uses six fresh
 head0/2 processes with the same strong/weak long-thinking bodies, judging
 prefill, TTFT and sustained TG separately.
+Its first matched pair is closed: regular-code has 33208 input / 2975 output
+tokens and TG 12.672177 to 13.354971 tok/s (+5.3881%); varied-prose has
+33278 input / 7961 output tokens and TG 7.527015 to 8.024354 (+6.6074%).
+Both arms have the same generated text, reasoning hashes and draft counts;
+observed acceptance is 0.861847 / 0.348578. Thinking remains enabled.
+Candidate/reference prompt-time ratios are 1.006725 / 0.975358 and TTFT ratios
+1.006885 / 0.975494. Keep those first-long/after-code cases separate and retain
+the mixed prefill result; one pair establishes no repeated gain or adoption.
+Both children exit 0 with closed ownership, quiet validation and no fresh fault.
+Four frozen processes remain. The next component fixture is source-only at
+`2d3b31536` on `tune/q6-dense-shapes`: six actual Q6 C4 shapes with their
+production generic/columns references, without a new inference dispatcher.
+Its controller adaptation, build and checks wait for this cohort's closure;
+integrate it into `feature/sycl` and retire the child before subsequent testing.
 All30timing samples and the named21transfer-wrapper samples remain in Git.
 The ended device/timing private roots,normal traces and caches are retired:
 53files/10392061bytes after recovering both original controller manifests.
