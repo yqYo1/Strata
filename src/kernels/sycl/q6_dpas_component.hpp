@@ -51,6 +51,12 @@ inline void q6_dpas_pack(std::span<const uint8_t> source,
 void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
                 int k, int n, int columns, void* stream);
 
+// Sole-packed-owner consumers: exact1..4 Q8_1 columns,with matching input and
+// output spans. No padding buffers or writes to inactive columns. C4 reuses
+// the original measured kernel;other widths require their own qualification.
+void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
+                     int k, int n, int columns, void* stream);
+
 // Prospective component: read the canonical row-major Q6_K blocks directly.
 // It owns no additional weight storage and does not alter C1 or prompt routes.
 // The source has exactly n*(k/256)*210 bytes; masked loads cover an unpadded

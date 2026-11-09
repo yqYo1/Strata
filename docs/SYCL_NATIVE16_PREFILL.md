@@ -1949,15 +1949,28 @@ No model PP/TG,task,
 physical-context or default adoption follows from the component result.
 A smaller expert cache would be a separate placement comparison rather than a
 repair of the failed packed same-placement cohort.
-The next implementation instead tests the faster owned packed representation
+The new default-off mode2 instead tests the faster owned packed representation
 as the sole GPU head owner. Its fixed geometry needs the same521472000bytes,
 not a second copy. C1 and partial-column consumers must be made format-aware,
 and MTP can project the shared full head then gather its subset logits instead
 of materializing223227900bytes of Q6 subset weights. That would trade the
 subset weights for425196bytes of one-row logits;the proposed arithmetic and
 net222802704-byte saving require fresh fixture/model checks and matched timing.
+The source now implements this proposal for MTP4/spec4,including format-aware
+C1..4 projection,immutable vocabulary IDs,one-row GPU-logit gathering and the
+existing graph retirement/byte-exact restore boundary. C4 keeps the original
+packed kernel;C1..3 use exact-width DPAS repeat counts and bounded input/output
+spans. The installed oneAPI2026.2 `esimd/xmx/dpas.hpp` and
+[Intel's API source](https://github.com/intel/llvm/blob/sycl/sycl/include/sycl/ext/intel/esimd/xmx/dpas.hpp)
+define that width contract;no SDK implementation is copied. All changes are
+authored here from the owned Q6 path. The fixture adds independent real-GGUF
+scalar/envelope checks for partial widths and a three-process C4 graph timing
+plan;fixture-only canonical reference memory is reported separately.
 The existing0/1canonical choices and dedicated long-prefill path remain the
-reference;no packed-primary or MTP speed/adoption result exists yet.
+reference. DFlash2 still uses0/1;the experimental mode2 explicitly refuses its
+unadapted row-major binding. Fresh compilation,CPU/device/model checks and
+matched phase/long-thinking speed are pending. No packed-primary or MTP
+speed/adoption result exists yet;V4 above qualifies the originald174native only.
 Both standalone roots are retired after recovering all 1,285 original source
 files, the exact recipe, 803 compiler and 24 link inputs, and the final ELF.
 The deletion removes 1,366 files / 67,207,656 bytes. Another 146 successful

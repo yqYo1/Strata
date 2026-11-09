@@ -22,7 +22,7 @@ NativeHead::~NativeHead() {
 #ifdef STRATA_ENABLE_SYCL
     if(head_prepared_ || head_detached_)
         strata::sycl_backend::cleanup_fail_stop("native head teardown while prompt head scope active");
-    if(head_release_used_ || decode_dpas_) {
+    if(head_release_used_ || decode_dpas_ || primary_packed_) {
         // The caller's reader lease has already drained main/verifier/MTP queues.
         if(scratch_ && cudaFree(scratch_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("native scratch free");
         if(weights_ && cudaFree(weights_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("native restored head free");
@@ -43,12 +43,13 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
     try {
 #ifdef STRATA_ENABLE_SYCL
         const char* dpas_value=std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_HEAD");
-        if(dpas_value && std::strcmp(dpas_value,"0") && std::strcmp(dpas_value,"1")) {
-            err="native head: STRATA_SYCL_DECODE_Q6_DPAS_HEAD must be 0 or 1";return false;
+        if(dpas_value && std::strcmp(dpas_value,"0") && std::strcmp(dpas_value,"1") && std::strcmp(dpas_value,"2")) {
+            err="native head: STRATA_SYCL_DECODE_Q6_DPAS_HEAD must be 0 or 1 or 2";return false;
         }
         const bool dpas=dpas_value && std::strcmp(dpas_value,"1")==0;
+        const bool packed=dpas_value && std::strcmp(dpas_value,"2")==0;
         const char* release_heads=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
-        if(dpas && (!release_heads || std::strcmp(release_heads,"1"))) {
+        if((dpas || packed) && (!release_heads || std::strcmp(release_heads,"1"))) {
             err="native head: DPAS requires STRATA_PREFILL_RELEASE_HEADS=1";return false;
         }
 #endif
@@ -72,13 +73,21 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
             return false;
         }
 #ifdef STRATA_ENABLE_SYCL
-        if(dpas) {
+        if(dpas || packed) {
             // Only this head/C4 cell won the repeated component comparison.
             // Reject unsupported explicit requests before any device allocation.
             if(tensor->type!=14 || n_in!=2560 || n_out!=248320 ||
                !strata::kernels::native_mmvq_multi_exact()) {
                 err="native head: DPAS requires exact Q8_1 and Q6_K 2560x248320";return false;
             }
+        }
+        std::vector<uint16_t> packed_host;
+        if(packed) {
+            const size_t packed_bytes=strata::kernels::component::q6_dpas_packed_bytes(int(n_in),int(n_out));
+            if(packed_bytes!=bytes){err="native head: sole packed owner must preserve exact weight bytes";return false;}
+            packed_host.resize(packed_bytes/2);
+            strata::kernels::component::q6_dpas_pack(
+                {static_cast<const uint8_t*>(gguf.tensor_data(*tensor)),size_t(bytes)},packed_host,int(n_in),int(n_out));
         }
 #endif
         void* weights = nullptr;
@@ -87,15 +96,19 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
         if (status == cudaSuccess)
             status = cudaMalloc(&scratch, strata::kernels::native_q8_1_bytes((int) n_in, 1));
         if (status == cudaSuccess) {
-            status = cudaMemcpy(weights, gguf.tensor_data(*tensor), bytes, cudaMemcpyHostToDevice);
+            const void* upload=gguf.tensor_data(*tensor);
 #ifdef STRATA_ENABLE_SYCL
-            if(dpas && status!=cudaSuccess)
+            if(packed)upload=packed_host.data();
+#endif
+            status = cudaMemcpy(weights, upload, bytes, cudaMemcpyHostToDevice);
+#ifdef STRATA_ENABLE_SYCL
+            if((dpas || packed) && status!=cudaSuccess)
                 strata::sycl_backend::cleanup_fail_stop("native head initial H2D completion unknown");
 #endif
         }
         if (status != cudaSuccess) {
 #ifdef STRATA_ENABLE_SYCL
-            if(dpas) {
+            if(dpas || packed) {
                 if(scratch && cudaFree(scratch)!=cudaSuccess)
                     strata::sycl_backend::cleanup_fail_stop("native scratch failed-allocation cleanup");
                 if(weights && cudaFree(weights)!=cudaSuccess)
@@ -116,7 +129,10 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
         type_ = (int) tensor->type;
 #ifdef STRATA_ENABLE_SYCL
         decode_dpas_=dpas;
+        primary_packed_=packed;
         if(dpas) std::fprintf(stderr,"strata native head DPAS: ready=1 columns=4 layout=canonical canonical_bytes=%llu extra_device_weight_bytes=0 extra_host_weight_bytes=0 default_adopted=0\n",
+            (unsigned long long)bytes_);
+        if(packed)std::fprintf(stderr,"strata native head packed: ready=1 columns=1..4 weight_bytes=%llu canonical_device_weight_bytes=0 extra_device_weight_bytes=0 permanent_host_weight_bytes=0 default_adopted=0\n",
             (unsigned long long)bytes_);
 #endif
         return true;
@@ -124,6 +140,23 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
         err = std::string("native head: ") + error.what();
         return false;
     }
+}
+
+const void* NativeHead::weights() const {
+    if(primary_packed_ && weights_)throw std::logic_error("native head: packed owner has no row-major GPU weights");
+    return weights_;
+}
+
+void NativeHead::run_packed_columns(const void* q8,float* logits,int columns,void* stream) const {
+#ifndef STRATA_ENABLE_SYCL
+    (void)q8;(void)logits;(void)columns;(void)stream;
+    throw std::invalid_argument("native packed head requires SYCL");
+#else
+    if(!primary_packed_ || head_detached_ || !weights_ || type_!=14 || n_in_!=2560 || n_out_!=248320 ||
+       !strata::kernels::native_mmvq_multi_exact())
+        throw std::invalid_argument("native packed head owner/format");
+    strata::kernels::component::q6_dpas_columns(static_cast<const uint16_t*>(weights_),q8,logits,n_in_,n_out_,columns,stream);
+#endif
 }
 
 void NativeHead::run_decode_c4(const void* q8,float* logits,void* stream) const {
@@ -150,7 +183,8 @@ bool NativeHead::run(const float* mixed, float* logits, void* stream, std::strin
             strata::kernels::native_q5_k_f32(weights_, mixed, scratch_, logits, n_in_, n_out_, 1, stream);
         } else {
             strata::kernels::native_quantize_q8_1(mixed, scratch_, n_in_, 1, stream);
-            strata::kernels::native_mmvq(type_, weights_, scratch_, logits, n_in_, n_out_, 1, stream);
+            if(primary_packed_)run_packed_columns(scratch_,logits,1,stream);
+            else strata::kernels::native_mmvq(type_, weights_, scratch_, logits, n_in_, n_out_, 1, stream);
         }
     } catch (const std::exception& error) {
         err = std::string("native head launch: ") + error.what();
@@ -172,7 +206,7 @@ bool NativeHead::prepare_prefill_weights(std::string& err) try {
        bytes_>uint64_t(std::numeric_limits<size_t>::max()) ||
        bytes_!=strata::kernels::native_mmvq_weight_bytes(type_,n_in_,n_out_) ||
        (decode_dpas_ && !decode_dpas_ready())) {
-        err="native head release requires ready exact canonical weights within 1 GiB snapshot budget";return false;
+        err="native head release requires ready exact weights within 1 GiB snapshot budget";return false;
     }
     try {head_snapshot_.resize(size_t(bytes_));}
     catch(const std::exception& e){err=std::string("native head RAM snapshot: ")+e.what();return false;}

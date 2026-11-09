@@ -255,6 +255,7 @@ private:
     bool head_detached_=false,head_recapture_checked_=false;
     uint64_t release_head_bytes_=0;
     bool release_head_decode_dpas_=false;
+    bool release_head_primary_packed_=false;
     size_t release_head_row_=0;
     int release_head_type_=-1;
     bool head_sampling_ = true;          ///< set_head_sampling

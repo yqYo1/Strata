@@ -123,10 +123,10 @@ bool read_file(const std::string& path, std::vector<uint8_t>& out) {
 
 MtpDrafter::~MtpDrafter() {
     if(head_prepared_ || head_detached_)expert_failstop("MTP teardown during prompt head release",cudaErrorUnknown);
-    if(head_release_used_)retire_full_head_graphs();
+    if(head_release_used_ || head_primary_packed_)retire_full_head_graphs();
     if (cs_) {
         const auto status = cudaStreamSynchronize(cs_);
-        bool checked = expert_source_valid_ || head_release_used_;
+        bool checked = expert_source_valid_ || head_release_used_ || head_primary_packed_;
 #ifdef STRATA_ENABLE_SYCL
         checked = checked || graph_observer_.enabled();
 #endif
@@ -169,6 +169,7 @@ MtpDrafter::~MtpDrafter() {
     if (state_arena_) cudaFree(state_arena_);
     if (arena_) cudaFree(arena_);
     if (head_logits_) {const auto status=cudaFree(head_logits_);if(head_release_used_ && status!=cudaSuccess)expert_failstop("restored head allocation teardown",status);}
+    if (subset_logits_) {const auto status=cudaFree(subset_logits_);if(status!=cudaSuccess)expert_failstop("packed-head subset logits teardown",status);}
     if (dhead_) {const auto status=cudaFree(dhead_);if(head_release_used_ && status!=cudaSuccess)expert_failstop("restored head allocation teardown",status);}
     if (dvocab_) {const auto status=cudaFree(dvocab_);if(head_release_used_ && status!=cudaSuccess)expert_failstop("restored head allocation teardown",status);}
     void* hosts[] = {h_tok_, h_step_, h_pos_, h_row_, h_out_, h_prob_};
@@ -483,15 +484,17 @@ bool MtpDrafter::prepare_prefill_head(const NativeHead& head,std::string& err) {
         err="mtp: head release requires ready noncoupled single-device native MTP4";return false;
     }
     if(uint64_t(n_vocab_)>UINT64_MAX/head.row_bytes() || head.weight_bytes()!=uint64_t(n_vocab_)*head.row_bytes()) {err="mtp: native head full span mismatch";return false;}
-    const bool subset=dhead_!=nullptr;
-    if((subset && (!dvocab_ || n_dvocab_<=0 || n_dvocab_>n_vocab_)) ||
-       (!subset && (dvocab_ || n_dvocab_!=0))) {
+    const bool subset=dvocab_!=nullptr;
+    if(head.primary_packed()!=head_primary_packed_ ||
+       (subset && (n_dvocab_<=0 || n_dvocab_>n_vocab_ ||
+        (head_primary_packed_ ? (!subset_logits_ || dhead_) : !dhead_))) ||
+       (!subset && (n_dvocab_!=0 || dhead_ || subset_logits_))) {
         err="mtp: inconsistent or oversized head map before release";return false;
     }
     const uint64_t rows=subset?uint64_t(n_dvocab_):0;
     if(rows>(1ull<<20)){err="mtp: retained head map exceeds 4 MiB per-vector budget";return false;}
     if(rows && head.row_bytes()>UINT64_MAX/rows){err="mtp: draft head size overflow";return false;}
-    const uint64_t bytes=rows*head.row_bytes();
+    const uint64_t bytes=head_primary_packed_?0:rows*head.row_bytes();
     if(bytes>uint64_t(SIZE_MAX) || vram_<bytes){err="mtp: draft head release size/accounting";return false;}
     if(cudaStreamSynchronize(cs_)!=cudaSuccess)expert_failstop("head map prepare did not drain",cudaErrorUnknown);
     try {
@@ -528,7 +531,8 @@ void MtpDrafter::retire_prefill_head_readers() noexcept {
     retire_full_head_graphs();
 }
 void MtpDrafter::detach_prefill_head() noexcept {
-    if(!head_prepared_ || !head_detached_ || head_restored_ || head_storage_released_ || (head_had_subset_ && !dhead_))
+    if(!head_prepared_ || !head_detached_ || head_restored_ || head_storage_released_ ||
+       (head_had_subset_ && (head_primary_packed_ ? (!subset_logits_ || dhead_) : !dhead_)))
         expert_failstop("MTP head detach state",cudaErrorUnknown);
     if(dhead_){
         const auto status=cudaFree(dhead_);
@@ -542,7 +546,8 @@ void MtpDrafter::detach_prefill_head() noexcept {
 }
 void MtpDrafter::restore_prefill_head() noexcept {
     if(!head_prepared_ || !head_detached_ || !head_storage_released_ || head_restored_ || dhead_ || !head_ || !head_->loaded() ||
-       head_->weight_bytes()!=head_full_bytes_ || head_->row_bytes()!=head_row_bytes_ || head_->type()!=head_type_)
+       head_->weight_bytes()!=head_full_bytes_ || head_->row_bytes()!=head_row_bytes_ || head_->type()!=head_type_ ||
+       head_->primary_packed()!=head_primary_packed_)
         expert_failstop("MTP head restore owner/format/state",cudaErrorUnknown);
     if(cudaStreamSynchronize(cs_)!=cudaSuccess)expert_failstop("MTP prompt completion before head restore",cudaErrorUnknown);
     if(head_had_subset_){
@@ -551,6 +556,7 @@ void MtpDrafter::restore_prefill_head() noexcept {
         if(cudaMemcpy(head_map_check_.data(),dvocab_,head_ids_.size()*sizeof(int32_t),cudaMemcpyDeviceToHost)!=cudaSuccess)
             expert_failstop("MTP retained map restore readback",cudaErrorUnknown);
         if(head_map_check_!=head_ids_)expert_failstop("MTP retained map changed during prompt",cudaErrorUnknown);
+        if(!head_primary_packed_) {
         const auto allocated=cudaMalloc(reinterpret_cast<void**>(&dhead_),size_t(head_release_bytes_));
         if(allocated!=cudaSuccess)expert_failstop("MTP duplicate head restore allocation",allocated);
         try {
@@ -562,6 +568,7 @@ void MtpDrafter::restore_prefill_head() noexcept {
         const auto completed=cudaStreamSynchronize(cs_);
         if(completed!=cudaSuccess)expert_failstop("MTP duplicate head restore gather completion",completed);
         vram_+=head_release_bytes_;
+        }
     }
     head_restored_=true;
 }
@@ -651,15 +658,16 @@ bool MtpPrefillExpertScope::close(std::string& err) {
     return true;
 }
 
-uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const {
+uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab, bool primary_packed) const {
     if(head_detached_ || head_owner_retired_)throw std::logic_error("MTP head bytes requested while detached/retired");
     uint64_t bytes = head_logits_ ? 0 : (uint64_t) max_t_ * (uint64_t) n_vocab * sizeof(float);
-    if (dhead_ == nullptr) {
+    if (dvocab_ == nullptr) {
         if (FILE* f = std::fopen((rt_dir_ + "/draft_vocab.bin").c_str(), "rb")) {
             std::fseek(f, 0, SEEK_END);
             const long size = std::ftell(f);
             std::fclose(f);
-            if (size >= 4 && size % 4 == 0) bytes += (uint64_t) (size / 4) * head_row_bytes + (uint64_t) size;
+            if (size >= 4 && size % 4 == 0)
+                bytes += (uint64_t) (size / 4) * (primary_packed?sizeof(float):head_row_bytes) + (uint64_t) size;
         }
     }
     // coupled draft sampling (STRATA_SPEC_COUPLED=1 only): an upper bound - the id -> subset map, the penalty ring,
@@ -671,7 +679,7 @@ uint64_t MtpDrafter::bind_bytes(uint64_t head_row_bytes, int64_t n_vocab) const 
 
 bool MtpDrafter::setup_coupled(std::string& err) {
     if(head_detached_ || head_owner_retired_){err="mtp: coupled setup while head detached/retired";return false;}
-    const int64_t nv = dhead_ != nullptr ? n_dvocab_ : n_vocab_;
+    const int64_t nv = dvocab_ != nullptr ? n_dvocab_ : n_vocab_;
     const size_t scratch = strata::kernels::coupled_draft_scratch_bytes((int) nv);
     if (scratch == 0) {
         std::fprintf(stderr, "strata mtp: STRATA_SPEC_COUPLED: %lld draft logits are too wide for the coupled sampler; "
@@ -689,7 +697,7 @@ bool MtpDrafter::setup_coupled(std::string& err) {
     cudaMemset(cring_, 0xff, ring);   // -1: no token
     std::fill(h_chist_, h_chist_ + kCoupledHistCap, -1);
     vram_ += sizeof(strata::kernels::SamplerParams) + ring + scratch;
-    if (dhead_ != nullptr) {   // token id -> subset index (-1: not in the draft head), for the penalties
+    if (dvocab_ != nullptr) {   // token id -> subset index (-1: not in the draft head), for the penalties
         std::vector<int32_t> sub((size_t) n_dvocab_), inv((size_t) n_vocab_, -1);
         cudaMemcpy(sub.data(), dvocab_, sub.size() * sizeof(int32_t), cudaMemcpyDeviceToHost);
         for (size_t i = 0; i < sub.size(); ++i)
@@ -768,7 +776,8 @@ bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float
     const OnDevice on_device(device_);
     if(head_release_used_) {
         if(&wt!=wt_ || head!=head_ || !head || !head->loaded() || head->head_detached() ||
-           head->weight_bytes()!=head_full_bytes_ || head->row_bytes()!=head_row_bytes_ || head->type()!=head_type_) {
+           head->weight_bytes()!=head_full_bytes_ || head->row_bytes()!=head_row_bytes_ || head->type()!=head_type_ ||
+           head->primary_packed()!=head_primary_packed_) {
             err="mtp: restored head rebind changed immutable owner/format";return false;
         }
         bool readers=false;
@@ -787,17 +796,37 @@ bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float
     if (!wo) { err = "mtp: output.weight is missing"; return false; }
     n_vocab_ = wo->ne1;
     if (head == nullptr || !head->loaded()) { err = "mtp: the draft layer needs the native head (--native)"; return false; }
+    if(head->primary_packed() && max_t_!=4) {err="mtp: experimental sole-packed head requires MTP4";return false;}
+    head_primary_packed_=head->primary_packed();
     if (head_logits_ == nullptr &&
         cudaMalloc((void**) &head_logits_, (size_t) max_t_ * (size_t) n_vocab_ * sizeof(float)) != cudaSuccess) {
         err = "mtp: the draft logits do not fit";
         return false;
     }
     // the draft head's token subset, when tools/draft_vocab.py wrote one
-    if (dhead_ == nullptr) {
+    if (dvocab_ == nullptr) {
         std::vector<uint8_t> raw;
         if (read_file(rt_dir_ + "/draft_vocab.bin", raw) && raw.size() >= 4 && raw.size() % 4 == 0) {
             n_dvocab_ = (int64_t) (raw.size() / 4);
             const int64_t row_bytes = (int64_t) head->row_bytes();   // a vocabulary row of the native head
+            if(head_primary_packed_) {
+                std::vector<int32_t> ids(raw.size()/4);
+                std::memcpy(ids.data(),raw.data(),raw.size());
+                if(ids.size()>(1u<<20) || !detail::valid_prefill_head_ids(ids.data(),ids.size(),n_vocab_)) {
+                    err="mtp: sole-packed head requires a bounded valid immutable vocabulary map";return false;
+                }
+                if(cudaMalloc(reinterpret_cast<void**>(&dvocab_),raw.size())!=cudaSuccess ||
+                   cudaMalloc(reinterpret_cast<void**>(&subset_logits_),ids.size()*sizeof(float))!=cudaSuccess) {
+                    err="mtp: packed-head subset logits/map do not fit";return false;
+                }
+                if(cudaMemcpy(dvocab_,raw.data(),raw.size(),cudaMemcpyHostToDevice)!=cudaSuccess) {
+                    expert_failstop("packed-head map upload completion unknown",cudaErrorUnknown);
+                }
+                vram_+=raw.size()+ids.size()*sizeof(float);
+                std::fprintf(stderr,"strata mtp: shared packed head tokens=%lld subset_weight_bytes=0 subset_logit_bytes=%zu saved_device_bytes=%llu\n",
+                    (long long)n_dvocab_,ids.size()*sizeof(float),
+                    (unsigned long long)(uint64_t(n_dvocab_)*uint64_t(row_bytes)-ids.size()*sizeof(float)));
+            } else {
             if (cudaMalloc((void**) &dvocab_, raw.size()) != cudaSuccess ||
                 cudaMalloc((void**) &dhead_, (size_t) (n_dvocab_ * row_bytes)) != cudaSuccess) {
                 err = "mtp: the draft head does not fit";
@@ -810,6 +839,7 @@ bool MtpDrafter::bind(const WeightTable& wt, const NativeHead* head, const float
             vram_ += (uint64_t) (n_dvocab_ * row_bytes) + raw.size();
             std::fprintf(stderr, "strata mtp: draft head over %lld tokens (%.1f MiB)\n", (long long) n_dvocab_,
                          (double) (n_dvocab_ * row_bytes) / 1048576.0);
+            }
         }
     }
     if (coupled_draft_env() && cparams_ == nullptr && !setup_coupled(err)) return false;
@@ -969,21 +999,30 @@ bool MtpDrafter::record_forward(int T, int step_row0, cudaStream_t cs, std::stri
                     bf16("hyper_connection_mixer.input_mix_weight_up.weight"), nullptr, EPS, gs, ss.block.gr,
                     sample_ + t * N, dummy_inj_, cs);
         native_quantize_q8_1(sample_, xq_, (int) N, T, cs);
-        const bool sub = dhead_ != nullptr;
+        const bool sub = dvocab_ != nullptr;
         const int64_t nv = sub ? n_dvocab_ : n_vocab_;
-        native_mmvq(head_->type(), sub ? dhead_ : head_->weights(), xq_, head_logits_, (int) N, (int) nv, T, cs);
+        float* projected=head_logits_;
+        if(head_primary_packed_) {
+            head_->run_packed_columns(xq_,head_logits_,T,cs);
+            if(sub) {
+                if(T!=1 || !subset_logits_ || dhead_)throw std::logic_error("mtp: packed subset requires one full-forward row");
+                gather_rows(reinterpret_cast<const uint8_t*>(head_logits_),sizeof(float),dvocab_,n_dvocab_,
+                    reinterpret_cast<uint8_t*>(subset_logits_),cs);
+                projected=subset_logits_;
+            }
+        } else native_mmvq(head_->type(), sub ? dhead_ : head_->weights(), xq_, head_logits_, (int) N, (int) nv, T, cs);
         if (coupled_rec_) {
             // coupled draft sampling: the target's chain and Philox draw for the row that will verify this draft
             // (counter = this cell + 1, from its step record), penalties over the ring; T == 1 (full layer)
-            coupled_draft_sample(head_logits_, (int) nv, sub ? dvocab_ : nullptr, sub ? dinv_ : nullptr, (int) n_vocab_,
+            coupled_draft_sample(projected, (int) nv, sub ? dvocab_ : nullptr, sub ? dinv_ : nullptr, (int) n_vocab_,
                                  cparams_, cring_, kCoupledHistCap, coupled_j_, step, cscratch_, out_ids_, probs_, cs);
             return true;
         }
         SamplerParams sp;
         sp.greedy = true;
         sp.temperature = 0.0f;
-        sample_tokens(head_logits_, T, (int) nv, nullptr, 0, sp, out_ids_, cs);
-        row_top_prob(head_logits_, T, (int) nv, out_ids_, probs_, cs);
+        sample_tokens(projected, T, (int) nv, nullptr, 0, sp, out_ids_, cs);
+        row_top_prob(projected, T, (int) nv, out_ids_, probs_, cs);
         if (sub) map_ids(out_ids_, dvocab_, T, cs);
     } catch (const std::exception& e) {
         err = std::string("mtp: ") + e.what();

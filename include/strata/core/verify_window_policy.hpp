@@ -82,6 +82,7 @@ public:
         // Packed target-head route is counted separately from canonical-row
         // MMVQ routes, preserving the existing Q6_ROUTE/SHAPE wire schema.
         uint64_t q6_dpas_head_calls = 0;
+        uint64_t q6_packed_head_calls = 0;
         struct Q6Shape {
             int n_in, n_out, columns;
             std::array<uint64_t, 4> calls{};
@@ -119,6 +120,7 @@ public:
             }
             q6_reference_calls = q6_columns_calls = q6_centered_calls = q6_native_half_calls = 0;
             q6_dpas_head_calls = 0;
+            q6_packed_head_calls = 0;
             q6_shapes.clear();
             q6_capture_id = q6_cache_hits = q6_replay_started = q6_replay_completed = 0;
             q6_routes_complete = true;

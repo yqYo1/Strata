@@ -260,6 +260,7 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
     if (!loaded_ || failed_ || bound_) { err = "dflash2: bind requires a fresh loaded owner"; return false; }
     const OnDevice on_device(device_);
     if (head == nullptr || !head->loaded()) { err = "dflash2: the drafter needs the native head (--native)"; return false; }
+    if(head->primary_packed()) {err="dflash2: experimental sole-packed head currently requires MTP4;use head mode0or1";return false;}
     const WeightRef* we = wt.find("token_embd.weight");
     if (we == nullptr || we->ne0 != N_ || we->ne1 != vocab_) {
         err = "dflash2: target embedding geometry does not match the draft model"; return false;

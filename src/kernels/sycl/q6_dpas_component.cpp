@@ -56,7 +56,7 @@ U word(const uint16_t* weights, U base, uint32_t byte,
         (e::convert<uint32_t>(halfwords<Canonical>(weights, base, byte + 2, valid)) << 16);
 }
 
-template <bool Canonical>
+template <bool Canonical, int Columns = 4>
 void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activation,
           float* output, int k, int n) SYCL_ESIMD_FUNCTION {
         const uint32_t first = uint32_t(item.get_global_linear_id()) * 16;
@@ -64,7 +64,7 @@ void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activat
         const U rows(first, 1);
         const e::simd_mask<16> valid = rows < uint32_t(n);
         const U lane_bytes(0, 2);
-        e::simd<float, 64> sum = 0.f;
+        e::simd<float, 16 * Columns> sum = 0.f;
         const int blocks = k / 256;
         const size_t pitch = size_t(k / 32) * 36;
         for (int block = 0; block < blocks; ++block) {
@@ -94,10 +94,10 @@ void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activat
                 auto hi8 = e::convert<uint8_t>(sc >> 8);
                 const F s0 = e::convert<float>(e::simd<int8_t, 16>(lo8.template bit_cast_view<int8_t>())) * super;
                 const F s1 = e::convert<float>(e::simd<int8_t, 16>(hi8.template bit_cast_view<int8_t>())) * super;
-                e::simd<int32_t, 32> a0 = 0, a1 = 0;
+                e::simd<int32_t, 8 * Columns> a0 = 0, a1 = 0;
                 F dx = 0.f;
 #pragma unroll
-                for (int c = 0; c < 4; ++c) {
+                for (int c = 0; c < Columns; ++c) {
                     const auto* p = activation + size_t(c) * pitch + size_t(block * 8 + unit) * 36;
                     const auto* words = reinterpret_cast<const int32_t*>(p);
                     a0.template select<4, 1>(c * 8) = e::gather<int32_t, 4>(words, e::simd<uint32_t, 4>(4, 4));
@@ -105,13 +105,13 @@ void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activat
                     dx[c] = esimd_half_decode<1>(e::convert<uint32_t>(e::gather<uint16_t, 1>(
                         reinterpret_cast<const uint16_t*>(p), e::simd<uint32_t, 1>(0))))[0];
                 }
-                const e::simd<int32_t, 64> zero = 0;
-                auto d0 = e::xmx::dpas<8, 4, int32_t, int32_t, uint32_t, int32_t,
+                const e::simd<int32_t, 16 * Columns> zero = 0;
+                auto d0 = e::xmx::dpas<8, Columns, int32_t, int32_t, uint32_t, int32_t,
                     e::xmx::dpas_argument_type::s8, e::xmx::dpas_argument_type::s8>(zero, w, a0);
-                auto d1 = e::xmx::dpas<8, 4, int32_t, int32_t, uint32_t, int32_t,
+                auto d1 = e::xmx::dpas<8, Columns, int32_t, int32_t, uint32_t, int32_t,
                     e::xmx::dpas_argument_type::s8, e::xmx::dpas_argument_type::s8>(zero, w, a1);
 #pragma unroll
-                for (int c = 0; c < 4; ++c) {
+                for (int c = 0; c < Columns; ++c) {
                     const F low = e::convert<float>(e::simd<int32_t, 16>(d0.template select<16, 1>(c * 16)));
                     const F high = e::convert<float>(e::simd<int32_t, 16>(d1.template select<16, 1>(c * 16)));
                     sum.template select<16, 1>(c * 16) += (low * s0 + high * s1) * F(dx[c]);
@@ -119,7 +119,7 @@ void tile(sycl::nd_item<1> item, const uint16_t* weights, const uint8_t* activat
             }
         }
 #pragma unroll
-        for (int c = 0; c < 4; ++c)
+        for (int c = 0; c < Columns; ++c)
             e::scatter<float, 16>(output, (rows + uint32_t(c * n)) * 4u,
                 F(sum.template select<16, 1>(c * 16)), valid);
 }
@@ -145,6 +145,21 @@ struct Q6DpasC4Canonical {
     int k, n;
     void operator()(sycl::nd_item<1> item) const SYCL_ESIMD_KERNEL {
         tile<true>(item, weights, activation, output, k, n);
+    }
+    constexpr auto get(sycl::ext::oneapi::experimental::properties_tag) const {
+        return sycl::ext::oneapi::experimental::properties{
+            sycl::ext::intel::experimental::grf_size<128>};
+    }
+};
+
+template <int Columns>
+struct Q6DpasColumns {
+    const uint16_t* weights;
+    const uint8_t* activation;
+    float* output;
+    int k, n;
+    void operator()(sycl::nd_item<1> item) const SYCL_ESIMD_KERNEL {
+        tile<false, Columns>(item, weights, activation, output, k, n);
     }
     constexpr auto get(sycl::ext::oneapi::experimental::properties_tag) const {
         return sycl::ext::oneapi::experimental::properties{
@@ -188,5 +203,36 @@ void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream) {
     launch<true>(canonical, q8, output, k, n, columns, stream);
+}
+
+template <int Columns>
+void packed_columns(const uint16_t* packed, const void* q8, float* output,
+                    int k, int n, void* stream) {
+    auto& q = queue_for(stream);
+    const size_t wb=q6_dpas_packed_bytes(k,n), xb=size_t(k/32)*36*Columns,
+                 yb=size_t(n)*sizeof(float)*Columns;
+    validate_spans({{output,yb}},{{packed,wb},{q8,xb}});
+    validate_device_span(packed,wb,q);validate_device_span(q8,xb,q);validate_device_span(output,yb,q);
+    const auto device=q.get_device();
+    if(device.get_info<sycl::info::device::vendor_id>()!=0x8086 ||
+       device.get_info<sycl::info::device::name>().find("B570")==std::string::npos || !device.has(sycl::aspect::fp16))
+        throw std::invalid_argument("Q6 packed columns require B570/fp16");
+    const size_t items=(size_t(n)+15)/16;
+    const auto event=q.parallel_for(sycl::nd_range<1>(((items+3)/4)*4,4),
+        Q6DpasColumns<Columns>{packed,static_cast<const uint8_t*>(q8),output,k,n});
+    finish(stream,event);
+}
+
+void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
+                     int k, int n, int columns, void* stream) {
+    if(!q6_dpas_c4_shape(k,n,4) || columns<1 || columns>4 || !stream ||
+       (reinterpret_cast<uintptr_t>(packed)&1))
+        throw std::invalid_argument("Q6 packed columns require explicit queue and1..4columns");
+    switch(columns) {
+        case 1:packed_columns<1>(packed,q8,output,k,n,stream);break;
+        case 2:packed_columns<2>(packed,q8,output,k,n,stream);break;
+        case 3:packed_columns<3>(packed,q8,output,k,n,stream);break;
+        case 4:q6_dpas_c4(packed,q8,output,k,n,4,stream);break;
+    }
 }
 } // namespace strata::kernels::component

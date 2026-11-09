@@ -6,6 +6,7 @@
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/kernels/native_mmvq.hpp"
 #include "strata/sycl/runtime.hpp"
+#include "../../src/kernels/sycl/q6_dpas_component.hpp"
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <array>
@@ -70,28 +71,36 @@ struct Fixture {
     strata::GgufModel source;
     NativeHead head; // Retires after the drained graphs and temporary buffers.
     const uint8_t* w=nullptr;
+    std::unique_ptr<sb::Allocation> reference_weights;
     Guard<float> mixed,reference,candidate,single;
     Guard<uint8_t> q8;
     cudaStream_t stream=nullptr;
     std::array<cudaGraphExec_t,3> graphs{};
     std::array<uint64_t,3> launches{};
-    bool dpas=false;
-    size_t numerical_cases=0,blocked_cases=0;
+    bool dpas=false,packed=false;
+    size_t numerical_cases=0,blocked_cases=0,partial_cases=0;
     Fixture(std::shared_ptr<sb::Runtime> r,const std::vector<std::string>& shards):rt(r),source(shards),
         mixed(r,K*4),reference(r,N*4),candidate(r,N*4),single(r,N*4),q8(r,k::native_q8_1_bytes(K,4)) {
         const char* flag=std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_HEAD");
-        need(flag&&(!std::strcmp(flag,"0")||!std::strcmp(flag,"1")),"explicit fixture arm");
+        need(flag&&(!std::strcmp(flag,"0")||!std::strcmp(flag,"1")||!std::strcmp(flag,"2")),"explicit fixture arm");
         dpas=!std::strcmp(flag,"1");
+        packed=!std::strcmp(flag,"2");
         size_t at=0;const auto* tensor=source.find("output.weight",&at);
         need(tensor&&tensor->type==14&&tensor->shape==std::vector<uint64_t>{K,N}&&
             source.in_bounds(*tensor,at),"actual Q6 head extent");
         w=static_cast<const uint8_t*>(source.shard(at).tensor_data(*tensor));
         check(cudaStreamCreate(&stream));
         std::string error;timed("load",-1,[&]{if(!head.load(shards,K,N,error))throw std::runtime_error(error);});
+        if(packed) {
+            // The independent reference is fixture-only,not a production owner.
+            reference_weights=std::make_unique<sb::Allocation>(rt,WeightBytes,sb::MemoryKind::Device);
+            check(cudaMemcpy(reference_weights->data(),w,WeightBytes,cudaMemcpyHostToDevice));
+        }
         metadata();need(head.loaded()&&head.decode_dpas_ready()==dpas,"loaded owner");
-        std::cout<<"HEAD admitted=1 dpas="<<int(dpas)<<" layout=canonical canonical_bytes="<<head.weight_bytes()
+        std::cout<<"HEAD admitted=1 dpas="<<int(dpas)<<" layout="<<(packed?"sole-packed":"canonical")<<" canonical_bytes="<<head.weight_bytes()
             <<" extra_device_weight_bytes=0 extra_host_weight_bytes=0"
             <<" max_alloc_bytes="<<rt->device().get_info<sycl::info::device::max_mem_alloc_size>()<<'\n';
+        if(packed)std::cout<<"FIXTURE_REFERENCE device_weight_bytes="<<WeightBytes<<" production_owner=0\n";
         capture();
     }
     ~Fixture() {
@@ -101,8 +110,13 @@ struct Fixture {
     }
     void metadata() const {
         need(head.type()==14&&head.weight_bytes()==WeightBytes&&head.row_bytes()==2100&&
-            head.decode_dpas_enabled()==dpas,"canonical metadata/immutable selector");
+            head.decode_dpas_enabled()==dpas&&head.primary_packed()==packed,"head metadata/immutable selector");
+        if(packed && head.loaded()) {
+            bool refused=false;try{(void)head.weights();}catch(const std::logic_error&){refused=true;}
+            need(refused,"packed owner exposed as row-major weights");
+        }
     }
+    const void* storage() const {return packed?head.packed_weights():head.weights();}
     void drain() {check(cudaStreamSynchronize(stream));rt->wait();}
     void retire() {
         drain();for(auto& g:graphs)if(g){check(cudaGraphExecDestroy(g));g=nullptr;}
@@ -115,8 +129,9 @@ struct Fixture {
             k::native_mmvq_multi_exact(),head.type(),K,N,4);
         need(selected==(arm==1&&dpas),"actual fixture phase/owner selection");
         float* out=arm==0?reference.data():candidate.data();
-        if(selected)head.run_decode_c4(q8.data(),out,stream);
-        else k::native_mmvq(head.type(),head.weights(),q8.data(),out,K,N,4,stream);
+        if(packed && arm==1)head.run_packed_columns(q8.data(),out,4,stream);
+        else if(selected)head.run_decode_c4(q8.data(),out,stream);
+        else k::native_mmvq(head.type(),packed?reference_weights->data():head.weights(),q8.data(),out,K,N,4,stream);
     }
     void capture() {
         for(int arm=0;arm<3;++arm) {
@@ -129,7 +144,7 @@ struct Fixture {
                 check(cudaGraphInstantiate(&graphs[size_t(arm)],g,0ull));check(cudaGraphDestroy(g));
             } catch(...) {std::cerr<<"head fixture capture incomplete\n"<<std::flush;std::_Exit(3);}
         }
-        std::cout<<"CAPTURE graphs=3 nodes_each=2 dpas_decode_calls="<<int(dpas)<<" dpas_prompt_calls=0 dpas_C1_calls=0\n";
+        std::cout<<"CAPTURE graphs=3 nodes_each=2 dpas_decode_calls="<<int(dpas||packed)<<" dpas_prompt_calls=0 dpas_C1_calls="<<int(packed)<<"\n";
     }
     std::pair<double,double> oracle(int row,int column,const std::vector<uint8_t>& x) const {
         double sum=0,l1=0;
@@ -152,6 +167,7 @@ struct Fixture {
         mixed.put(values);reference.reset();candidate.reset();single.reset();
         for(size_t arm=0;arm<graphs.size();++arm){check(cudaGraphLaunch(graphs[arm],stream));++launches[arm];drain();}
         const auto a=reference.get(),b=candidate.get(),c=single.get();const auto x=q8.get();
+        std::vector<double> forward_bounds(size_t(N)*4);
         need(mixed.get()==values,"mixed input changed");
         std::array<std::array<double,K/16>,4> xmax{};
         for(int col=0;col<4;++col)for(int unit=0;unit<K/16;++unit) {
@@ -174,6 +190,7 @@ struct Fixture {
                         16*32*xmax[size_t(col)][size_t(block*16+unit)];
                 }
                 const size_t index=size_t(col)*N+size_t(row);
+                forward_bounds[index]=2*gamma*envelope+1e-12;
                 need(std::isfinite(a[index])&&std::isfinite(b[index]),"finite full output");
                 const double delta=std::abs(double(a[index])-b[index]);worst=std::max(worst,delta);
                 need(delta<=2*gamma*envelope+1e-12,"full-output forward envelope");
@@ -191,6 +208,25 @@ struct Fixture {
         ++numerical_cases;
         std::cout<<"NUMERIC cycle="<<cycle<<" seed="<<seed<<" outputs="<<N*4<<" oracle_rows="<<rows
             <<" max_abs_pair_error="<<std::setprecision(12)<<worst<<" C1=PASS prompt=reference guards=PASS\n";
+        if(packed)for(int columns:{2,3}) {
+            candidate.reset();head.run_packed_columns(q8.data(),candidate.data(),columns,stream);drain();
+            const auto partial=candidate.get();
+            for(size_t i=0;i<partial.size();++i) {
+                if(i>=size_t(columns)*N)need(partial[i]==Guard<float>::Mark,"partial head wrote inactive column");
+                else {
+                    need(std::isfinite(partial[i]) && std::abs(double(partial[i])-a[i])<=forward_bounds[i],
+                         "partial head exceeds the full-output forward envelope");
+                    const int row=int(i%N),col=int(i/N);
+                    if(row<16 || row>=N-16 || row%(N/512)==0) {
+                        const auto expected=oracle(row,col,x);
+                        need(std::abs(double(partial[i])-expected.first)<=gamma*expected.second+1e-12,
+                             "partial-column independent scalar oracle");
+                    }
+                }
+            }
+            need(q8.get()==x,"partial head modified Q8 input");++partial_cases;
+            std::cout<<"PARTIAL columns="<<columns<<" outputs="<<columns*N<<" guards=PASS input_immutable=PASS\n";
+        }
     }
     void blocked(const char* phase) {
         std::string e;need(head.head_detached()&&!head.decode_dpas_ready()&&
@@ -198,13 +234,20 @@ struct Fixture {
         bool refused=false;try{head.run_decode_c4(q8.data(),candidate.data(),stream);}
         catch(const std::invalid_argument&){refused=true;}
         need(refused,"detached DPAS projection accepted");++blocked_cases;
+        refused=false;try{head.run_packed_columns(q8.data(),candidate.data(),4,stream);}
+        catch(const std::invalid_argument&){refused=true;}
+        need(refused,"detached packed projection accepted");
         std::cout<<"BLOCKED phase="<<phase<<" canonical=PASS dpas=PASS\n";
     }
     void immutable() {
         drain();
         {std::vector<uint8_t> bytes(WeightBytes);
-            check(cudaMemcpy(bytes.data(),head.weights(),bytes.size(),cudaMemcpyDeviceToHost));
-            need(std::memcmp(bytes.data(),w,bytes.size())==0,"canonical head byte mutation");}
+            check(cudaMemcpy(bytes.data(),storage(),bytes.size(),cudaMemcpyDeviceToHost));
+            if(packed) {
+                std::vector<uint16_t> expected(WeightBytes/2);
+                k::component::q6_dpas_pack({w,WeightBytes},expected,K,N);
+                need(std::memcmp(bytes.data(),expected.data(),bytes.size())==0,"packed head byte mutation");
+            } else need(std::memcmp(bytes.data(),w,bytes.size())==0,"canonical head byte mutation");}
         metadata();
     }
     void retired_span(const void* pointer) {
@@ -222,10 +265,10 @@ struct Fixture {
         for(int cycle=0;cycle<2;++cycle) {
             timed("prepare",cycle,[&]{if(!head.prepare_prefill_weights(error))throw std::runtime_error(error);});
             timed("retire_readers",cycle,[&]{retire();});
-            const void* old_canonical=head.weights();
+            const void* old_canonical=storage();
             sb::validate_device_span(old_canonical,WeightBytes,*stream);
             timed("detach",cycle,[&]{head.detach_prefill_weights();});
-            need(!head.loaded()&&head.weights()==nullptr,"canonical owner not detached");metadata();blocked("detached");
+            need(!head.loaded()&&storage()==nullptr,"head owner not detached");metadata();blocked("detached");
             retired_span(old_canonical);
             std::cout<<"RETIREMENT cycle="<<cycle<<" canonical_span=retired extra_weight_span=absent\n";
             {
@@ -244,7 +287,32 @@ struct Fixture {
             capture();numeric(cycle,uint32_t(31+cycle));immutable();
         }
         need(numerical_cases==4&&blocked_cases==4&&launches==std::array<uint64_t,3>{4,4,4},"complete owner extent");
+        need(partial_cases==(packed?8u:0u),"complete partial-column checks");
         std::cout<<"OWNER_CHECK dpas="<<int(dpas)<<" numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0\n";
+        if(packed)std::cout<<"PACKED_OWNER partial_cases=8 widths=1,2,3,4 row_major_access=refused sole_weight_bytes="<<WeightBytes<<" model=0\n";
+    }
+    void timing(bool candidate_first) {
+        need(packed,"only the sole-packed candidate has a new timing plan");
+        constexpr int Replays=256,Samples=5;
+        timespec resolution{};need(clock_getres(CLOCK_MONOTONIC,&resolution)==0,"timer resolution");
+        std::vector<int64_t> overhead(1001);
+        for(auto& value:overhead){const auto a=now(CLOCK_MONOTONIC);value=now(CLOCK_MONOTONIC)-a;}
+        std::sort(overhead.begin(),overhead.end());
+        const int64_t unit=std::max<int64_t>({1,overhead[overhead.size()/2],
+            int64_t(resolution.tv_sec)*1000000000+resolution.tv_nsec});
+        const int64_t floor=std::max<int64_t>(10000000,300*unit);
+        std::cout<<"TIMER median_overhead_ns="<<overhead[overhead.size()/2]<<" unit_ns="<<unit<<" floor_ns="<<floor<<'\n';
+        for(int arm:{0,1})for(int i=0;i<3;++i){check(cudaGraphLaunch(graphs[size_t(arm)],stream));drain();}
+        for(int sample=0;sample<Samples;++sample)for(int index=0;index<2;++index) {
+            const int arm=candidate_first?1-index:index;
+            drain();const int64_t start=now(CLOCK_MONOTONIC);
+            for(int i=0;i<Replays;++i)check(cudaGraphLaunch(graphs[size_t(arm)],stream));
+            check(cudaStreamSynchronize(stream));const int64_t elapsed=now(CLOCK_MONOTONIC)-start;
+            need(elapsed>=floor,"ineligible packed-head timing batch");
+            std::cout<<"TIMING sample="<<sample<<" arm="<<arm<<" replays="<<Replays<<" elapsed_ns="<<elapsed
+                <<" floor_ns="<<floor<<" scope=quantize-projection-graph-submit-complete\n";
+        }
+        immutable();std::cout<<"TIMING_DONE samples_per_arm=5 model_speed=unqualified\n";
     }
 };
 void host() {
@@ -253,7 +321,10 @@ void host() {
     need(!h.run(nullptr,nullptr,nullptr,e),"empty projection accepted");
     bool refused=false;try{h.run_decode_c4(nullptr,nullptr,nullptr);}catch(const std::invalid_argument&){refused=true;}
     need(refused,"empty DPAS owner reached runtime");
+    refused=false;try{h.run_packed_columns(nullptr,nullptr,1,nullptr);}catch(const std::invalid_argument&){refused=true;}
+    need(refused,"empty packed owner reached runtime");
     std::cout<<"HOST owner_negative_cases=3 GPU=0\n";
+    std::cout<<"PACKED_HOST owner_negative_cases=1 GPU=0\n";
 }
 } // namespace
 int main(int argc,char** argv) {
@@ -265,13 +336,16 @@ int main(int argc,char** argv) {
                 e.find(argv[2])!=std::string::npos,"switch rejection before file/device access");
             std::cout<<"REJECT_SWITCH passed=1 GPU=0\n";std::_Exit(0);
         }
-        need(argc>=3&&std::string(argv[1])=="--check","use --host|--reject-switch substring|--check shards...");
+        const bool timing=argc>=4&&std::string(argv[1])=="--timing";
+        need((argc>=3&&std::string(argv[1])=="--check") ||
+            (timing&&(std::string(argv[2])=="rc"||std::string(argv[2])=="cr")),
+            "use --host|--reject-switch substring|--check shards...|--timing rc|cr shards...");
         gate("STRATA_Q6_HEAD_OWNER_GATE");keep=sb::runtime_for();
         need(sb::Runtime::devices().size()==1&&keep->device().is_gpu()&&
             keep->device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,"actual B570");
         gate("STRATA_Q6_HEAD_OWNER_DEVICE_GATE");
-        const std::vector<std::string> shards(argv+2,argv+argc);
-        {Fixture fixture(keep,shards);fixture.run();}
+        const std::vector<std::string> shards(argv+(timing?3:2),argv+argc);
+        {Fixture fixture(keep,shards);fixture.run();if(timing)fixture.timing(std::string(argv[2])=="cr");}
         keep->wait();std::cout<<"HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified\n";
         std::cout.flush();std::cerr.flush();std::_Exit(0);
     }catch(const std::exception& e){std::cerr<<"head owner fixture failed: "<<e.what()<<'\n'<<std::flush;std::_Exit(2);}
