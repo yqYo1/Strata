@@ -2168,8 +2168,10 @@ controls pass. The actual census covers128translation units,1462compiler files,
 one generated input and29external links with0uncovered. Engine/head selected
 kernel structures match under the checked ID/declaration-order normalization.
 All five binaries are fresh; compilation and owned closure pass, with no GPU
-execution. The compiled CPU policy check and GPU/model qualification are pending.
-Before its first CPU policy execution, a controller-only admission corrects
+execution. The compiled CPU policy check also passes:four selected cells,
+prompt/width isolation and cache retirement,normal0/closed ownership. GPU/model
+qualification remains pending.
+Before its first CPU policy execution, controller-only admission `84e7deb51` corrects
 the output budget to include the existing144MB build tree:retain the builder's
 finite4GiB total/512MiB file ceilings and120s/1GiB RSS/1MiB text bounds.
 Native sources, recipe, census and all five ELF bytes must match the original
