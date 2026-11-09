@@ -228148,7 +228148,7 @@
     ]
   },
   "q6_head_model_device_v2": {
-    "stage": "host_passed",
+    "stage": "closed",
     "source_commit": "fa074840d9d3e065e5ed1aa14539e7a269c8906a",
     "native_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e",
     "native_record": {
@@ -228316,13 +228316,421 @@
         "passed": true,
         "ownership_closed": true,
         "GPU_executed": false
+      },
+      {
+        "mode": "submission",
+        "passed": true,
+        "validation": {
+          "pid": 1904546,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "phase",
+        "passed": true,
+        "validation": {
+          "pid": 1904571,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "reference",
+        "passed": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "8b1488fc024d48a01d3a5126bddd722280be2b36fae165d79cf6f6c572cf39e0",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_immutable": true
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "aea1a8713824674986e59c8971f5f9fab5f6d28c96001f10ec2b38221358c51e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_immutable": true
+          }
+        ],
+        "native_identity": {
+          "pid": 1907304,
+          "state": "S",
+          "ppid": 1903970,
+          "pgid": 1907304,
+          "sid": 1907304,
+          "start_ticks": 254810692,
+          "rss_bytes": 61595648
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1907304,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "owner": {
+          "dpas": 0,
+          "numeric": [
+            {
+              "cycle": -1,
+              "seed": 7,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": -1,
+              "seed": 19,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 0,
+              "seed": 31,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 1,
+              "seed": 32,
+              "max_abs_pair_error": 0.0,
+              "outputs": 993280,
+              "oracle_rows": 543
+            }
+          ],
+          "transitions": [
+            {
+              "phase": "load",
+              "cycle": -1,
+              "wall_ns": 200209697,
+              "thread_cpu_ns": 157913279
+            },
+            {
+              "phase": "prepare",
+              "cycle": 0,
+              "wall_ns": 299561416,
+              "thread_cpu_ns": 299558904
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 0,
+              "wall_ns": 309073,
+              "thread_cpu_ns": 309330
+            },
+            {
+              "phase": "detach",
+              "cycle": 0,
+              "wall_ns": 119875639,
+              "thread_cpu_ns": 116669739
+            },
+            {
+              "phase": "restore",
+              "cycle": 0,
+              "wall_ns": 189143971,
+              "thread_cpu_ns": 117866322
+            },
+            {
+              "phase": "resume",
+              "cycle": 0,
+              "wall_ns": 39320027,
+              "thread_cpu_ns": 39306246
+            },
+            {
+              "phase": "prepare",
+              "cycle": 1,
+              "wall_ns": 253592015,
+              "thread_cpu_ns": 253478258
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 1,
+              "wall_ns": 257344,
+              "thread_cpu_ns": 257553
+            },
+            {
+              "phase": "detach",
+              "cycle": 1,
+              "wall_ns": 98970876,
+              "thread_cpu_ns": 98246713
+            },
+            {
+              "phase": "restore",
+              "cycle": 1,
+              "wall_ns": 113181670,
+              "thread_cpu_ns": 68532911
+            },
+            {
+              "phase": "resume",
+              "cycle": 1,
+              "wall_ns": 37356598,
+              "thread_cpu_ns": 37306916
+            }
+          ],
+          "restore_cycles": 2,
+          "blocked_cases": 4,
+          "graph_replays": 12,
+          "graphs_each_capture": 3,
+          "nodes_each_graph": 2,
+          "canonical_bytes": 521472000,
+          "layout": "canonical",
+          "extra_device_weight_bytes": 0,
+          "extra_host_weight_bytes": 0,
+          "max_alloc_bytes": 10132807680,
+          "canonical_immutable": true,
+          "scope": "Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed."
+        },
+        "assets_pre_post_match": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "mode": "canonical",
+        "passed": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "8b1488fc024d48a01d3a5126bddd722280be2b36fae165d79cf6f6c572cf39e0",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_immutable": true
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "aea1a8713824674986e59c8971f5f9fab5f6d28c96001f10ec2b38221358c51e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_immutable": true
+          }
+        ],
+        "native_identity": {
+          "pid": 1912812,
+          "state": "S",
+          "ppid": 1903970,
+          "pgid": 1912812,
+          "sid": 1912812,
+          "start_ticks": 254828005,
+          "rss_bytes": 61390848
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1912812,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "owner": {
+          "dpas": 1,
+          "numeric": [
+            {
+              "cycle": -1,
+              "seed": 7,
+              "max_abs_pair_error": 4.17232513428e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": -1,
+              "seed": 19,
+              "max_abs_pair_error": 3.8743019104e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 0,
+              "seed": 31,
+              "max_abs_pair_error": 4.17232513428e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            },
+            {
+              "cycle": 1,
+              "seed": 32,
+              "max_abs_pair_error": 4.17232513428e-07,
+              "outputs": 993280,
+              "oracle_rows": 543
+            }
+          ],
+          "transitions": [
+            {
+              "phase": "load",
+              "cycle": -1,
+              "wall_ns": 172764543,
+              "thread_cpu_ns": 152243115
+            },
+            {
+              "phase": "prepare",
+              "cycle": 0,
+              "wall_ns": 280799758,
+              "thread_cpu_ns": 280735709
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 0,
+              "wall_ns": 264298,
+              "thread_cpu_ns": 264506
+            },
+            {
+              "phase": "detach",
+              "cycle": 0,
+              "wall_ns": 114855127,
+              "thread_cpu_ns": 114167770
+            },
+            {
+              "phase": "restore",
+              "cycle": 0,
+              "wall_ns": 148030714,
+              "thread_cpu_ns": 97760287
+            },
+            {
+              "phase": "resume",
+              "cycle": 0,
+              "wall_ns": 48864462,
+              "thread_cpu_ns": 48475018
+            },
+            {
+              "phase": "prepare",
+              "cycle": 1,
+              "wall_ns": 299348458,
+              "thread_cpu_ns": 298915728
+            },
+            {
+              "phase": "retire_readers",
+              "cycle": 1,
+              "wall_ns": 363274,
+              "thread_cpu_ns": 363501
+            },
+            {
+              "phase": "detach",
+              "cycle": 1,
+              "wall_ns": 113654427,
+              "thread_cpu_ns": 112616508
+            },
+            {
+              "phase": "restore",
+              "cycle": 1,
+              "wall_ns": 225049687,
+              "thread_cpu_ns": 112337852
+            },
+            {
+              "phase": "resume",
+              "cycle": 1,
+              "wall_ns": 37324551,
+              "thread_cpu_ns": 37320211
+            }
+          ],
+          "restore_cycles": 2,
+          "blocked_cases": 4,
+          "graph_replays": 12,
+          "graphs_each_capture": 3,
+          "nodes_each_graph": 2,
+          "canonical_bytes": 521472000,
+          "layout": "canonical",
+          "extra_device_weight_bytes": 0,
+          "extra_host_weight_bytes": 0,
+          "max_alloc_bytes": 10132807680,
+          "canonical_immutable": true,
+          "scope": "Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed."
+        },
+        "assets_pre_post_match": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -228361,6 +228769,34 @@
       },
       {
         "label": "release-absent",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "submission",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "phase",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "native-reference",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "native-canonical",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
