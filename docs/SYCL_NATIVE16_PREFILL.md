@@ -2169,6 +2169,11 @@ one generated input and29external links with0uncovered. Engine/head selected
 kernel structures match under the checked ID/declaration-order normalization.
 All five binaries are fresh; compilation and owned closure pass, with no GPU
 execution. The compiled CPU policy check and GPU/model qualification are pending.
+Before its first CPU policy execution, a controller-only admission corrects
+the output budget to include the existing144MB build tree:retain the builder's
+finite4GiB total/512MiB file ceilings and120s/1GiB RSS/1MiB text bounds.
+Native sources, recipe, census and all five ELF bytes must match the original
+V3 build; its native revision remains221e and no GPU result is inherited.
 The unchanged1db engine and its four fixtures remain the fallback.
 The original unbuilt V1 plan was superseded to fix split-window audit width;
 V2 failed compilation because its CPU policy target lacked matching SYCL mode.

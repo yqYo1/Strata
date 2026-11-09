@@ -138,6 +138,43 @@ def prepare(ctx):
     print('Prepared independent dense/backing build;commit before configure.',flush=True)
 
 
+def admit_policy(ctx):
+    """Correct only the controller before the first compiled policy execution."""
+    row=json.loads((ROOT/'record.json').read_text())
+    require(ctx.public()[KEY]==ctx.compact(row) and row['stage']=='built' and row['passed'] and
+        row['complete'] and row['ownership_closed'] and not row['active'] and not row['GPU_executed'] and
+        'policy_check' not in row and 'admission_project' not in row,
+        'fresh controller-only pre-policy admission;preserve the original build')
+    original=row['project'];project=ctx.source.pin(P,ctx.PREFIXES)
+    recovered={p:hashlib.sha256(raw).hexdigest() for p,raw in
+        ctx.source.blobs(P,original['revision'],original['source_sha256'])}
+    before,after=original['source_sha256'],project['source_sha256']
+    require(recovered==before and set(before)==set(after) and
+        {p for p in before if before[p]!=after[p]}=={'tools/sycl/build_q6_dense_model.py'},
+        'only this controller may change;native,fixtures,recipe and readers stay exact')
+    actual=row['actual_inputs'];require(sha(actual['path'])==actual['sha256'],'original census changed')
+    census=json.loads(Path(actual['path']).read_text())
+    require(actual['source_commit']==original['revision']==row['native_source_commit'] and
+        all(sha(p)==h for field in ('compiled','generated','links') for p,h in census[field].items()) and
+        all(sha(v['path'])==v['sha256'] and Path(v['path']).stat().st_size==v['bytes']
+            for v in row['binaries'].values()),'original compiled inputs/five ELFs changed')
+    original_record_sha=sha(ROOT/'record.json')
+    row.update(admission_project=project,admission_source_commit=project['revision'],
+        qualification_reuse=dict(original_evidence_commit=ctx.source.git(P,'rev-parse','HEAD').decode().strip(),
+            original_native_source=original['revision'],original_record_sha256=original_record_sha,
+            native_recompiled=False,GPU_qualification_inherited=False,
+            reason='Before any CPU policy execution,charge the already144MB build tree under the same'
+                ' pinned4GiB/512MiB artifact ceilings as the builder. Preserve120s/1GiB/1MiB host'
+                ' execution/RSS/text bounds. Exact128TUs/1462compiler inputs/generated1/29links'
+                ' and all five ELFs remain unchanged;no failed policy result exists.'))
+    require(prerequisites()==row['prerequisites'] and
+        all(sha(p)==h for p,h in (row['generated_inputs']|row['configured_files']).items()),
+        'reference or configured recipe changed')
+    ctx.build.check_inputs(dict(row,project=project))
+    ctx.save(row)
+    print('Admitted exact five artifacts for corrected controller budget;commit before policy.',flush=True)
+
+
 def policy(ctx):
     row=json.loads((ROOT/'record.json').read_text());ctx.current(row)
     require(row['stage']=='built' and row['passed'] and row['complete'] and 'policy_check' not in row,
@@ -147,11 +184,13 @@ def policy(ctx):
     try:
         scope=owner.Owner(ROOT/'owned-policy',persist)
         e,out,err=scope.run('phase-shape-policy',[row['binaries'][POLICY]['path']],row['recipe']['environment'],
-            P,wall=120,cpu=120,rss_cap=1<<30,text_cap=1<<20,file_cap=4<<20,total_cap=64<<20)
+            P,wall=120,cpu=120,rss_cap=1<<30,text_cap=1<<20,
+            file_cap=ctx.BUDGET['file_cap'],total_cap=ctx.BUDGET['total_cap'])
         require(owner.closed(e) and e['exit_code']==0 and out.read_text()==POLICY_OUT,
             'complete native phase/shape/cache policy controls required')
         row['policy_check']=dict(passed=True,GPU_executed=False,native_exit_code=0,
-            selections=4,prompt_and_width_isolation=True,cache_retirement=True,source_commit=row['project']['revision'])
+            selections=4,prompt_and_width_isolation=True,cache_retirement=True,source_commit=row['project']['revision'],
+            controller_source_commit=row.get('admission_source_commit',row['project']['revision']))
     except BaseException as error:row.update(stage='failed',passed=False,complete=False,error=repr(error))
     finally:
         row['commands']+=scope.commands if scope else []
@@ -163,11 +202,12 @@ def policy(ctx):
 
 
 if __name__=='__main__':
-    require(sys.argv[1:] in (['prepare'],['configure'],['compile'],['policy']),
-        'build_q6_dense_model.py prepare|configure|compile|policy')
+    require(sys.argv[1:] in (['prepare'],['configure'],['compile'],['admit-policy'],['policy']),
+        'build_q6_dense_model.py prepare|configure|compile|admit-policy|policy')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
         ctx=context();mode=sys.argv[1]
         if mode=='prepare':prepare(ctx)
+        elif mode=='admit-policy':admit_policy(ctx)
         elif mode=='policy':policy(ctx)
         else:ctx.execute(mode)
