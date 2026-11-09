@@ -231529,7 +231529,7 @@
     }
   },
   "q6_head_packed_model_entry_v1": {
-    "stage": "host_passed",
+    "stage": "closed",
     "source_commit": "0436502245fafec5cc1321a9486196e0a92d8ba5",
     "native_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87",
     "native_build": {
@@ -231791,11 +231791,396 @@
     },
     "plan": "Committed parser controls first;fresh head0then2 processes,long>8192/short82/long>8192 thinking-on32output requests in each. Context131072,KVresident131072,chunk8192,short-read128,1256cache,MTP4,no token/coupled graphs. This qualifies full-placement admission,not full-context processing. Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps, native full-resident INFO kv_resident=0,owned DRM snapshots at READY/after requests, complete GEN/drafts,all prompt/C1/C4 sole-packed route joins,positive C4replays,two target-head retirements, actual canonical223227900B versus packed0B MTP-subset retirements,immutable map extents and fresh capture identities after restoration. No output-equality requirement. Full15asset hashes at preparation and final cohort closure;stat checks before each process. Stop first failure.",
     "limits": "Small ownership/routing diagnosis only;no clean PP/TTFT/TG claim,task quality,physical262144/RESTORE,ordinary provider teardown or default adoption. Long/agent/strong-and-weak thinking benchmarks and independent prefill/decode preservation remain required.",
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "arm": 0,
+        "passed": true,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 10197,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 30,
+            "output_ids_sha256": "ec26a314e6f3659968545da33f3cb8a20bb40dd56cc87953914f29a1cef3d93b",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 10197,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 30,
+            "output_ids_sha256": "ec26a314e6f3659968545da33f3cb8a20bb40dd56cc87953914f29a1cef3d93b",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "131072",
+          "kv": "int8",
+          "kv_resident": "0",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "0",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 2370817,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "6fb2544f89611d7d25fe758dd172d831ad5b8452edcd34498202961caf945184",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58577",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "833576 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "833576 KiB",
+              "drm-total-vram0": "9988148 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9988148 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58577",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "0",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "2171112 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "2171112 KiB",
+              "drm-total-vram0": "10390672 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "10390672 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "routes": {
+          "snapshots": 8,
+          "requests": [
+            1,
+            2,
+            3
+          ],
+          "decode_C4": [
+            {
+              "request": 1,
+              "capture_id": 2,
+              "replay_completed": 10,
+              "packed_calls": 0
+            },
+            {
+              "request": 2,
+              "capture_id": 2,
+              "replay_completed": 18,
+              "packed_calls": 0
+            },
+            {
+              "request": 3,
+              "capture_id": 6,
+              "replay_completed": 10,
+              "packed_calls": 0
+            }
+          ],
+          "actual_decode_C4_replays": 28,
+          "sole_packed_all_live_head_windows": false,
+          "scope": "Per-request live-capture snapshots;coalesce repeated capture identities before summing replays."
+        },
+        "head_transitions": [
+          {
+            "freed": 521472000,
+            "D2H": 521472000,
+            "H2D": 521472000
+          },
+          {
+            "freed": 521472000,
+            "D2H": 521472000,
+            "H2D": 521472000
+          }
+        ],
+        "draft_transitions": [
+          {
+            "freed": 223227900,
+            "retained_map_bytes": 425196
+          },
+          {
+            "freed": 223227900,
+            "retained_map_bytes": 425196
+          }
+        ],
+        "sole_packed_owner": false,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "arm": 2,
+        "passed": true,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 10197,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 30,
+            "output_ids_sha256": "ec26a314e6f3659968545da33f3cb8a20bb40dd56cc87953914f29a1cef3d93b",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 10197,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 30,
+            "output_ids_sha256": "ec26a314e6f3659968545da33f3cb8a20bb40dd56cc87953914f29a1cef3d93b",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "131072",
+          "kv": "int8",
+          "kv_resident": "0",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "98",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 2377065,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "6fb2544f89611d7d25fe758dd172d831ad5b8452edcd34498202961caf945184",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "memory_at_READY": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58581",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "2816 KiB",
+              "drm-shared-system": "0",
+              "drm-resident-system": "2816 KiB",
+              "drm-total-gtt": "921640 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "921640 KiB",
+              "drm-total-vram0": "9769964 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "9769964 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "memory_after_requests": {
+          "status": "observed",
+          "clients": [
+            {
+              "drm-driver": "xe",
+              "drm-client-id": "58581",
+              "drm-pdev": "0000:05:00.0",
+              "drm-total-system": "0",
+              "drm-shared-system": "0",
+              "drm-resident-system": "0",
+              "drm-total-gtt": "2041192 KiB",
+              "drm-shared-gtt": "0",
+              "drm-resident-gtt": "2041192 KiB",
+              "drm-total-vram0": "10279980 KiB",
+              "drm-shared-vram0": "0",
+              "drm-resident-vram0": "10279980 KiB",
+              "drm-total-stolen": "0",
+              "drm-shared-stolen": "0",
+              "drm-resident-stolen": "0"
+            }
+          ],
+          "skipped_oversized": 0,
+          "scope": "Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients."
+        },
+        "routes": {
+          "snapshots": 8,
+          "requests": [
+            1,
+            2,
+            3
+          ],
+          "decode_C4": [
+            {
+              "request": 1,
+              "capture_id": 2,
+              "replay_completed": 10,
+              "packed_calls": 1
+            },
+            {
+              "request": 2,
+              "capture_id": 2,
+              "replay_completed": 18,
+              "packed_calls": 1
+            },
+            {
+              "request": 3,
+              "capture_id": 6,
+              "replay_completed": 10,
+              "packed_calls": 1
+            }
+          ],
+          "actual_decode_C4_replays": 28,
+          "sole_packed_all_live_head_windows": true,
+          "scope": "Per-request live-capture snapshots;coalesce repeated capture identities before summing replays."
+        },
+        "head_transitions": [
+          {
+            "freed": 521472000,
+            "D2H": 521472000,
+            "H2D": 521472000
+          },
+          {
+            "freed": 521472000,
+            "D2H": 521472000,
+            "H2D": 521472000
+          }
+        ],
+        "draft_transitions": [
+          {
+            "freed": 0,
+            "retained_map_bytes": 425196
+          },
+          {
+            "freed": 0,
+            "retained_map_bytes": 425196
+          }
+        ],
+        "sole_packed_owner": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "speed_eligible": false,
     "model_adoption_qualified": false,
     "retention": "Commit compact per-request extents/draft counts/route identities/ownership and limitations. Retire successful stage logs and superseded standalone head roots after exact input recovery; keep new engine for imminent long comparison and preserve90f/552b/e1b references.",
@@ -231810,6 +232195,22 @@
       "incorrect_placement_variants": 5,
       "GPU_executed": false
     },
+    "fresh_faults": [],
+    "final_fault_check": {
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    },
+    "retention_choice": "Keep actual per-client memory counters and units;discard unrelated repeated global engine-cycle counters. No physical traffic/saturation inference.",
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "0436502245fafec5cc1321a9486196e0a92d8ba5",
@@ -231837,6 +232238,21 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "head0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "head2",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }

@@ -2012,6 +2012,19 @@ comparison only. Preserve the earlier independent6.55283x columns comparison
 as separate evidence;the next same-engine0/2 model trial must exercise the
 actual selected decode path and MTP subset,then measure phase preservation and
 long/agent/strong-and-weak thinking workloads. Neither ratio establishes TG.
+The same-engine 0/2 model gate closes at controller `043650224`, native
+`6dd74eab7` / ELF `1db9bcae`. Each arm completes 10197/82/10197-input,
+32-output thinking requests with context 131072, fully resident INT8 KV,
+1256 cache slots and chunk 8192. Both retire/restore 521472000 target bytes
+twice; the canonical MTP subset retires 223227900 bytes while the shared packed
+owner retires 0 bytes and retains its 425196-byte map. Each arm completes 28
+actual decode-C4 replays after coalescing repeated capture snapshots. All six
+requests offer and accept drafts. Both native exits are 0 with closed ownership,
+quiet validation, no fresh fault and unchanged hashes for all 15 model assets.
+This qualifies bounded placement and handoff. Speed, task quality and physical
+262144/RESTORE remain open. The next bench.sh comparison is planned as six fresh
+head0/2 processes with the same strong/weak long-thinking bodies, judging
+prefill, TTFT and sustained TG separately.
 All30timing samples and the named21transfer-wrapper samples remain in Git.
 The ended device/timing private roots,normal traces and caches are retired:
 53files/10392061bytes after recovering both original controller manifests.
