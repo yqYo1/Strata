@@ -2018,6 +2018,12 @@ The ended device/timing private roots,normal traces and caches are retired:
 Native admission still passes with the current engine/four fixtures,census and
 configured recipe retained. The resolved V2/V3 model-observer detail is now
 archived at its original Git commits;its failed flags remain explicit.
+The last standalone canonical ELF/census is also retired:two files/
+11727623bytes. Its exact737-source native revisioncdbd68796,800compiler/
+24link inputs,finaldbecb5c6 ELF and full original recipe are re-recovered and
+reconciled before deletion. The complete old samples remain at0ccc4ed45;
+current1db admission still passes. This removes the ended standalone generation
+without altering the retained5a6/90f/552b/e1b consumers or the56legacy holds.
 The0b engine/fixtures and closed V2/V3/V4 model diagnostic roots are now
 retired:354files/183373323bytes. Exact1119project and1145dependency source
 inputs are recovered from their original commits;the original recipe and
