@@ -1971,6 +1971,14 @@ reference. DFlash2 still uses0/1;the experimental mode2 explicitly refuses its
 unadapted row-major binding. Fresh compilation,CPU/device/model checks and
 matched phase/long-thinking speed are pending. No packed-primary or MTP
 speed/adoption result exists yet;V4 above qualifies the originald174native only.
+The0b engine/fixtures and closed V2/V3/V4 model diagnostic roots are now
+retired:354files/183373323bytes. Exact1119project and1145dependency source
+inputs are recovered from their original commits;the original recipe and
+single generated header are committed with the retirement proof. All1461
+compiler and29external link identities and four final ELFs are reconciled.
+The replacement5a6 engine/fixtures/configuration stay live for the imminent
+sole-packed comparison;90f/552b/e1b retain their separate consumers. This
+cleanup does not resolve the56legacy ELF provenance holds.
 Both standalone roots are retired after recovering all 1,285 original source
 files, the exact recipe, 803 compiler and 24 link inputs, and the final ELF.
 The deletion removes 1,366 files / 67,207,656 bytes. Another 146 successful
