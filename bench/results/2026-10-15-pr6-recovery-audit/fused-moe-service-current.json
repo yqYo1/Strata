@@ -249852,5 +249852,375 @@
       "files": 640,
       "aggregate_sha256": "42f0bb27a6c71f7881b32de677ddfde4059299bec570c917b364c909036c8482"
     }
+  },
+  "q6_dense_cpu_leaves_v2": {
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-head-backing-native-v3/build/strata",
+      "sha256": "a347a9f839efe35b2034b9ca863426a109f0fc159891f4470a7371bcb4cb062c",
+      "bytes": 26360440,
+      "origin_source_commit": "221e95e9ad890383deb418d0a865ee32c99168b6"
+    },
+    "native_source_commit": "221e95e9ad890383deb418d0a865ee32c99168b6",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "131072",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "96",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "0",
+        "--spec",
+        "4",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "700",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--adapt-every",
+        "1"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-dpas-official-v2/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "stage": "prepared",
+    "source_commit": "b11217e2d0159144b4813f88922a17cd7dbeea74",
+    "native_admission": {
+      "native_source_commit": "221e95e9ad890383deb418d0a865ee32c99168b6",
+      "closed_dense_source_sha256": "47334f309ed41003c9604c6538cd2f8d9f33048e922f972cec1d7a823ef922c8",
+      "observer": {
+        "tools/sycl/profile_q6_cpu_leaves.py": "b1513da4394e43dd0fc85e5e88fdbb40a3df0de06a99e109642810f442fe5f65"
+      },
+      "exact_five_ELFs_census_recipe": true,
+      "compiled_leaf_producers": {
+        "include/strata/kernels/cpu/service_profile.hpp": "118bd5aaf8384daffc713c33e337e5a4e54132b990ab5b521395df81a5922dae",
+        "include/strata/kernels/cpu/pool.hpp": "a8be9d7685d1ab38ccfdf51f34668e9326cddc127f1ac3d55237d20d5f787dab",
+        "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00"
+      },
+      "native_recompiled": false
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "host_controls": {
+      "source_commit": "c454d08445786580be2f619d959b14c9675945fa",
+      "tests": 14,
+      "source_signature_sha256": "b9f35aa217f50b30136be28b685bde8556fa8919cae62f165523b9ed069e7e6e"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-audit-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21"
+    },
+    "plans": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 96,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/0",
+        "generated": {
+          "config.json": "836f6ebd377cc19839763b5eb8724d99de55cf317e85502d5a6aafbfa97c8ad2",
+          "plan.json": "b145279f81dd423c7b538c1ab9f7d2232ed5d8d1c81995f87e5df8c02a168904"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/0/config.json",
+          "--port",
+          "47309",
+          "--long-generation-only",
+          "--long-generation-workload",
+          "regular-code",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "q6_dense_cpu_leaves_v1_20261110",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/0/bench"
+        ],
+        "environment_sha256": "2604a6dad3753c1ae2483c8b913efc99a246aa7a82e37daed25c99568f59934b"
+      },
+      {
+        "index": 1,
+        "kernel": "candidate",
+        "adapt_swaps": 96,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/1",
+        "generated": {
+          "config.json": "245d5c84f0aa68965840c6b15f5a627cac2a014bfa54c131b1c0e4fedf01619b",
+          "plan.json": "b145279f81dd423c7b538c1ab9f7d2232ed5d8d1c81995f87e5df8c02a168904"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/1/config.json",
+          "--port",
+          "60889",
+          "--long-generation-only",
+          "--long-generation-workload",
+          "regular-code",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "q6_dense_cpu_leaves_v1_20261110",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/1/bench"
+        ],
+        "environment_sha256": "aa8abe302e52326fe3b29d9a1f49d9b96b5ac2d911f282ff8f22fbae14fa0518"
+      },
+      {
+        "index": 2,
+        "kernel": "candidate",
+        "adapt_swaps": 96,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/2",
+        "generated": {
+          "config.json": "90b983159debef3d37b0a3e96bdd8fd9f3268d76e96bf77b3ae08ee7a16d4712",
+          "plan.json": "b145279f81dd423c7b538c1ab9f7d2232ed5d8d1c81995f87e5df8c02a168904"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/2/config.json",
+          "--port",
+          "35571",
+          "--long-generation-only",
+          "--long-generation-workload",
+          "regular-code",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "q6_dense_cpu_leaves_v1_20261110",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/2/bench"
+        ],
+        "environment_sha256": "48e931aa892785e09897267f0f160c21866afbcb04a020fd6a4af34427b35f8e"
+      },
+      {
+        "index": 3,
+        "kernel": "reference",
+        "adapt_swaps": 96,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/3",
+        "generated": {
+          "config.json": "e1c60f356ee7e2b9e721177cd0da572f5fa81c4813ef307cf5f4b1f3caed547c",
+          "plan.json": "b145279f81dd423c7b538c1ab9f7d2232ed5d8d1c81995f87e5df8c02a168904"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/3/config.json",
+          "--port",
+          "39149",
+          "--long-generation-only",
+          "--long-generation-workload",
+          "regular-code",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "q6_dense_cpu_leaves_v1_20261110",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/3/bench"
+        ],
+        "environment_sha256": "2b717005103540d5d319da7617d5e471c531e5a2b555c8b9c243aae7414711e6"
+      },
+      {
+        "index": 4,
+        "kernel": "reference",
+        "adapt_swaps": 96,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/4",
+        "generated": {
+          "config.json": "90a12941bf6ac2981d12c03f7c3ab5940fdc03bf4022ae5398cd0a4d906bbcc7",
+          "plan.json": "b145279f81dd423c7b538c1ab9f7d2232ed5d8d1c81995f87e5df8c02a168904"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/4/config.json",
+          "--port",
+          "60247",
+          "--long-generation-only",
+          "--long-generation-workload",
+          "regular-code",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "q6_dense_cpu_leaves_v1_20261110",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/4/bench"
+        ],
+        "environment_sha256": "406f885b71ccbcc08be76f2460aeb64bf7c113d8cc7d853069da24d6ad15132f"
+      },
+      {
+        "index": 5,
+        "kernel": "candidate",
+        "adapt_swaps": 96,
+        "heads": 1,
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/5",
+        "generated": {
+          "config.json": "b74e969b33bf9ab7de8858865054e76bbe7e9c97794cb2063fa369355de87d9e",
+          "plan.json": "b145279f81dd423c7b538c1ab9f7d2232ed5d8d1c81995f87e5df8c02a168904"
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/5/config.json",
+          "--port",
+          "36383",
+          "--long-generation-only",
+          "--long-generation-workload",
+          "regular-code",
+          "--think",
+          "--runs",
+          "1",
+          "--profile-request-gates",
+          "--workload-id",
+          "q6_dense_cpu_leaves_v1_20261110",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-cpu-leaves-v2/5/bench"
+        ],
+        "environment_sha256": "b17a2093a4a6b3b176d457622420c364159afb7d66537b4865fd49a86ef4612a"
+      }
+    ],
+    "processes": [],
+    "host_passed": false,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "whole_bytes": 402653184,
+    "budgets": {
+      "wall": 1800,
+      "cpu": 18000,
+      "rss_cap": 111669149696,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "plan": "Six fresh same-a347/221e processes leaf0/1,1/0,0/1. Dense1/head2/backing0,adapt96/every1,spec4,128KresidentINT8,1256cache,8192chunk,384bank,5workers,20ms spin fixed. Four official warmups then one unchanged v5 regular-code thinking-on >=32Kfresh/>=1Kgenerated request with >=512answer characters,16Koutput allowance. Only immutable pre-exec CPU_SERVICE differs. Static census,caller/decode/full tracing stay off;common route audits/parameter validation/safety remain. Current CPU reader/controller controls then fresh frontend probes;check actual native/provider/environment,complete native/client prefixes,all3leaf operations/format/NT/thread conservation,mode10/BF16/GDN16/MTP16 and dense-C4 routing,normal0/closed owners/quiet validation/no fresh fault and all15asset hashes before/after. Cost qualifies only if all3on/off per-token latency ratios<=1.05 and aggregate CPU/token/draft/output hashes match. A hash/work mismatch is inconclusive for observer cost,not task-quality failure;collect all samples without retries/replacement. Commit every closed stage before next. No prefill/whole-route adoption or physical traffic/saturation claim.",
+    "retention": "Keep individual samples,operation totals,format/NT jobs,top3GU/Down bins and work hashes for the immediate current working-set decision. Retire successful raw output/caches after verified closure and source recovery. No new native generation;552b prefill fallback and a347 five ELFs remain unchanged.",
+    "invariant_signature": "92a397f6d85313bd223d6f6f1a05fe8407036b2f2665969406840f9e538e912b",
+    "source_inputs": {
+      "files": 640,
+      "aggregate_sha256": "422fd34581ddd1258e9976a1cc89861273c9f851862f19493d1e616f02b2a180"
+    }
   }
 }
