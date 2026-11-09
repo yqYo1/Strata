@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check and fetch | 2026-11-07 20:27:59 UTC / November 8 05:27:59 JST |
-| Observed upstream | `146df3c468739147f520ac3816de806f71232571`, `v0.2.11-98-g146df3c4` |
-| Next check at the approximate 48-hour cadence | 2026-11-09 20:27:59 UTC / November 10 05:27:59 JST |
-| Current upstream Python/setup/control/server/API/CLI/Web import | Present as a partial functional import from `146df3c4`; full validation remains open |
+| Last actual check and fetch | 2026-11-09 19:52:50 UTC / November 10 04:52:50 JST |
+| Observed upstream | `504b143342a9fe1aa8320a7b31e11f5c0ac265c3`, `v0.2.13.1-1-g504b1433` |
+| Next check at the approximate 48-hour cadence | 2026-11-11 19:52:50 UTC / November 12 04:52:50 JST |
+| Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4`; full validation remains open. New `146df3c4..504b1433` changes are fetched only |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
 | New inference adoption from this check | None |
@@ -32,6 +32,15 @@ adaptations. Focused configuration, streaming, API and CLI changes have their
 own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
+
+The new observation adds220commits and816changed paths. A preliminary source-only
+inspection identifies the Control/App Intel Arc setup fix and expert-arena
+shortfall/warning changes as required-function candidates. Fixed-order skinny
+BF16 GEMMs and compiled model geometry need component-level decisions; upstream
+A750 timings and default-build checksum claims are not measurements or
+qualification on this B570. No source from this new interval is imported and
+no new inference component is adopted. Its immutable source and pending review
+are recorded under `new_interval`; older unfinished scopes remain open.
 
 The current Unsloth v3.1 catalog/pinned metadata and stock DFlash2 pack are
 present. The focused v3.1 setup/pins/shard-discovery and DFlash2 packing tests
@@ -48,13 +57,13 @@ file for the original checks and limits; component success is not model adoption
 ## Remaining integration work
 
 The status file's `function_review`, `latest_interval_review`,
-`new_interval_function_slices` and `pending_interval` retain the reviewed scopes,
+`new_interval_function_slices`, `pending_interval` and `new_interval` retain the reviewed scopes,
 source identities, feature decisions and unfinished deltas. They are partial
 reviews, not a certified complete feature ledger. Preserve the original ported
 and tested records without converting pending functions into completed imports.
 
-Outstanding work includes the complete native function ledger and actual Arc
-entrypoint review; disk-session, BGEN/capability, tracking/recovery/alias and
+Outstanding work includes the new Control/App Arc setup fix, the complete native
+function ledger and actual Arc entrypoint review; disk-session, BGEN/capability, tracking/recovery/alias and
 remaining API/CLI behaviors; complete host validation; and the unmodified
 upstream's hardware-tuned comparison. Reconcile each applicable function
 through the observed target. Required server/API/CLI/UI/setup functions must be

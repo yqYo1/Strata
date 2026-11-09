@@ -1,14 +1,14 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-07T20:27:59.561848+00:00",
+  "queried_utc": "2026-11-09T19:52:50.499216+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "revision": "458e1824e19f83e4d63197192b5d476e6333d684",
-    "queried_utc": "2026-11-06T20:27:33+00:00",
-    "observed_sha": "54828c7efbcdf9474697e70922d851f6707f4b32"
+    "queried_utc": "2026-11-07T20:27:59.561848+00:00",
+    "observed_sha": "146df3c468739147f520ac3816de806f71232571",
+    "revision": "ca181b4049af47403e63e5ef0a6b018c219e7f93"
   },
-  "observed_sha": "146df3c468739147f520ac3816de806f71232571",
+  "observed_sha": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3",
   "changed_since_previous_observation": true,
   "source_fetched": true,
   "fetch_command": [
@@ -19,20 +19,41 @@
     "url.https://github.com/.insteadOf=git@github.com:",
     "-c",
     "credential.https://github.com.helper=!gh auth git-credential",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
     "fetch",
+    "--no-auto-maintenance",
     "origin"
   ],
   "remote_check": [
-    "146df3c468739147f520ac3816de806f71232571\tHEAD",
-    "146df3c468739147f520ac3816de806f71232571\trefs/heads/main"
+    "504b143342a9fe1aa8320a7b31e11f5c0ac265c3\tHEAD",
+    "504b143342a9fe1aa8320a7b31e11f5c0ac265c3\trefs/heads/main"
   ],
   "new_interval": {
-    "start": "54828c7efbcdf9474697e70922d851f6707f4b32",
-    "target": "146df3c468739147f520ac3816de806f71232571",
-    "commits": 94,
-    "changed_paths": 150,
-    "describe": "v0.2.11-98-g146df3c4",
-    "source_access": "Clean dedicated unmodified checkout .worktree/eval-upstream-146df3c4; divergent ghq root left untouched."
+    "start": "146df3c468739147f520ac3816de806f71232571",
+    "target": "504b143342a9fe1aa8320a7b31e11f5c0ac265c3",
+    "commits": 220,
+    "changed_paths": 816,
+    "describe": "v0.2.13.1-1-g504b1433",
+    "source_access": "Fetched immutable Git objects and matching origin/main/remote HEAD. No new checkout,branch,native build or inference changes.",
+    "integration_state": "fetched_not_imported",
+    "whole_function_ledger_complete": false,
+    "unmodified_hardware_tuned_performance_complete": false,
+    "source_only_review": {
+      "state": "preliminary_not_full_ledger",
+      "upstream_license_changed": false,
+      "required_function_candidates": [
+        "1130d824: Control/App Intel Arc Linux setup hotfix",
+        "4890fd95/b1277382: expert-arena shortfall accounting and service-visible warnings"
+      ],
+      "inference_component_candidates": [
+        "0bf2efe3: fixed-order skinny BF16 GEMMs;upstream A750 repeatability/timing claims are not measurements on this B570",
+        "db137d91: compiled model geometry;default-engine checksum claims are not this fork validation"
+      ],
+      "inference_adopted": false
+    }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
   "unmodified_upstream_performance_evaluation_complete": false,
@@ -42,8 +63,8 @@
   "current_engine_source_commit": "479a6fdac8cbaa35a9bf3a41d2b6e23be5260e54",
   "current_engine_sha256": "552b1616d21ad1b9aa6a317cb940d375c003246b896a255a935e09292804c96a",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-09T20:27:59.561848+00:00",
-  "pending": "Complete native SAVE/RESTORE/disk-session, batch/capability and desktop functional imports; finish the whole-function ledger/full host suite, native v3.1 model/type qualification and unmodified hardware-tuned Niko performance evaluation. DFlash2 weights, device fixtures and observed long-thinking routes are checked; clean repeated phase/agent/task/physical 262144/RESTORE qualification and default adoption remain open. Evaluate CPU/SYCL inference parts individually; DeepSeek/35B execution stays excluded.",
+  "next_check_utc": "2026-11-11T19:52:50.499216+00:00",
+  "pending": "Complete the required-function ledger/imports through504b1433,including the new Intel Arc setup fix;current630-path functional import remains146df3c4. Finish native SAVE/RESTORE/disk-session,BGEN/capability and desktop ports,full host validation,native v3.1 execution and unmodified hardware-tuned Niko performance evaluation. DFlash2 clean repeated agent/task/physical262144/RESTORE and default adoption remain open. Choose inference components separately;DeepSeek/35B execution remains excluded.",
   "legacy_upstream_clone_root": "Divergent checkout left untouched; fetch updates origin/main only. No root checkout, reset, commit or pull performed.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
