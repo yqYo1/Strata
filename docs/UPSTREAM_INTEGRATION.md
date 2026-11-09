@@ -76,12 +76,12 @@ and its old speed figures remain in [their original document revision](https://g
 they do not describe the current selected engines.
 
 Default-branch promotion remains pending through PR 180. Main ruleset `24638744`
-permits only squash PR merges. All92source/evidence commits referenced by the
-208-row performance CSV are verified ancestors of the pushed, permanent
-`feature/sycl`, and automatic head deletion is disabled. Under the updated
-project workflow, the default may receive the PR content snapshot while the
-primary retains those original identities; merge the updated default back into
-the primary normally and verify reachability again. This changes no protection
+permits only squash PR merges. Before merging, verify that every original
+source/evidence commit referenced by the performance CSV remains an ancestor
+of the pushed, permanent `feature/sycl`, and keep automatic head deletion
+disabled. Under the project workflow, the default may receive the PR content
+snapshot while the primary retains those original identities; merge the updated
+default back into the primary normally and verify reachability again. This changes no protection
 or measured source history. The last verified default before that operation is
 `05069aeedea43f778b97dce30c729739cb3bce5c`; do not claim integration until its
 remote ref and clean ghq mirror are verified.
