@@ -23,7 +23,7 @@ import engine_once
 from iq3_model_entry import dispatches
 
 P, B, RESULT, build = entry.P, entry.B, entry.RESULT, entry.build
-ROOT, KEY = B / 'q6-head-generation-v2', 'q6_head_generation_speed_v2'
+ROOT, KEY = B / 'q6-head-generation-v3', 'q6_head_generation_speed_v3'
 ARMS = (('reference', 96), ('candidate', 96), ('candidate', 96),
         ('reference', 96), ('reference', 96), ('candidate', 96))
 require, digest, signature = entry.require, entry.sha, entry.signature
@@ -32,6 +32,10 @@ SELF = Path(__file__).resolve()
 
 def pins(revision):
     result = protocol.shared.gen.benchmark_pins(revision)
+    paths = build.source.git(P, 'ls-tree', '-r', '--name-only', revision, '--', 'strata_control').decode().splitlines()
+    for name, raw in build.source.blobs(P, revision, [p for p in paths if p.endswith('.py')]):
+        require((P / name).read_bytes() == raw, 'uncommitted shared-control import: ' + name)
+        result[name] = hashlib.sha256(raw).hexdigest()
     name = 'data/expert-profile.bin'
     data = build.source.git(P, 'show', revision + ':' + name)
     require(data == (P / name).read_bytes(), 'committed expert profile changed')
