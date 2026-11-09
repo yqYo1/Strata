@@ -2299,9 +2299,10 @@ Task quality,physical262144/tails/RESTORE,ordinary provider teardown and full
 inference/default adoption remain open. All individual samples and decisions
 are in `q6_dense_dpas_official_v2.cohort`;the performance CSV retains the earlier
 partial milestones and now indexes the closed comparison and14.5TGpoint.
-After original-source recovery,345closed-process1..5logs/journals/cache files
-(65809703bytes)are retired with a path/hash manifest and passing final admission.
-Review the ended V2configuration/probe consumers now. V1raw remains consumed
+After original-source recovery,359closed-process1..5logs/journals/cache files,
+ended configuration inputs and frontend probe outputs(65843981bytes)are retired
+with a path/hash manifest and passing final admission. Only the private V2record
+and deletion manifest remain in that cohort root. V1raw remains consumed
 by the historical-admission reader;the next resource controller must use the
 closed committed evidence before that temporary raw hold can retire.
 
