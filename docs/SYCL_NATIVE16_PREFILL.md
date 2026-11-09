@@ -1876,13 +1876,28 @@ strong/weak MTP classes. Its individual samples are at
 the extra521472000device bytes leave2.09GiB free for a2.40GiB expert cache.
 Evidence `5a70c1f35` preserves the failed cohort and successful reference;
 no timed candidate request or new GPU fault occurred. Keep packed head off.
-The next component reads the canonical Q6 blocks directly with the same C4
-DPAS math and no second weight allocation. It is a source-only proposal,
-unselected by the model dispatcher. Compare it with the actual public column
-entry using fresh build/codegen, masked-tail/oracle checks and three process
-timings before proposing model use. The earlier packed speedup does not qualify
-this new loading path. A smaller expert cache would be a separate placement
-comparison rather than a repair of the failed same-placement cohort.
+The direct-canonical Q6 C4 component now closes at native source `cdbd68796`,
+ELF `dbecb5c6`, with controller admission `26ad7807e`. It shares the same
+canonical allocation with the reference, adding zero device/host weight bytes.
+Twenty-two CPU reader/census controls, 12 native guards, six small and four
+full-shape numerical cases pass. Five GPU processes exit0 with closed owners,
+quiet validation and no fresh fault; maximum absolute difference is6.10352e-5.
+The independent scalar oracle checks543 distributed full-head rows per seed.
+Three fresh R/C,C/R,R/C processes retain60 eligible timed batches. Full-head
+reference process medians are 11.068782,11.089001,11.076291ms,
+versus 5.225984,5.208117,5.257649ms canonical,
+for a geometric 2.117949x component gain. N640 is slower in all three
+processes and remains rejected. Individual samples and the original decision
+are in `q6_canonical_component_v4`; timing includes graph submission/completion
+and UR parameter validation, excluding setup/upload/JIT. This shared-image
+source/recipe reuses the original native artifact; it inherits no GPU result.
+The model dispatcher still does not select the canonical kernel. The next step
+is a decode-only full-head NativeHead integration, followed by production-linked
+ownership checks and actual131072-context/cache1256 admission before matched
+model speed. Preserve C1,prompt and other head paths. No model PP/TG,task,
+physical-context or default adoption follows from the component result.
+A smaller expert cache would be a separate placement comparison rather than a
+repair of the failed packed same-placement cohort.
 Both standalone roots are retired after recovering all 1,285 original source
 files, the exact recipe, 803 compiler and 24 link inputs, and the final ELF.
 The deletion removes 1,366 files / 67,207,656 bytes. Another 146 successful

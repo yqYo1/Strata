@@ -225090,7 +225090,7 @@
     }
   },
   "q6_canonical_component_v4": {
-    "stage": "timing",
+    "stage": "closed",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -225695,6 +225695,84 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "time2",
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "3ad02eeba5abaa5d75e3ba1ab158f11082af3aa0696c0ba2a5ef90b9dde2bc7e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "04afcfa60450f3a67a0a3f1662176d16dfeac5b29645321b13dc00962e5a79ce",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          }
+        ],
+        "native_identity": {
+          "pid": 1718840,
+          "state": "S",
+          "ppid": 1718324,
+          "pgid": 1718840,
+          "sid": 1718840,
+          "start_ticks": 254260519,
+          "rss_bytes": 61620224
+        },
+        "mapped_provider_count": 34,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1718840,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "setup": [
+          "SETUP k=2560 n=640 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=539826 upload_cpu_ns=533670",
+          "ADMISSION k=2560 n=640 canonical_bytes=1344000 packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=1376000 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=2560 n=248320 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=139726530 upload_cpu_ns=93782093",
+          "ADMISSION k=2560 n=248320 canonical_bytes=521472000 packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=529429760 max_alloc_bytes=10132807680 graphs=2 nodes_each=1"
+        ],
+        "numerical": [
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=640 columns=4 outputs=2560 oracle_rows=640 max_abs_error=2.28881835938e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1",
+          "NUMERIC passed=1 k=2560 n=248320 columns=4 outputs=993280 oracle_rows=543 max_abs_error=6.103515625e-05 guards=1"
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "timing": [
@@ -225973,10 +226051,148 @@
             ]
           }
         }
+      },
+      {
+        "index": 2,
+        "timer_stamp_median_ns": 701,
+        "cells": {
+          "640": {
+            "0": [
+              [
+                493106728,
+                485497468,
+                493031687,
+                485422938
+              ],
+              [
+                483649099,
+                474884329,
+                483582103,
+                474817985
+              ],
+              [
+                495653312,
+                486034469,
+                495364869,
+                485746679
+              ],
+              [
+                657186330,
+                640392968,
+                657116258,
+                640323388
+              ],
+              [
+                517419930,
+                509004719,
+                517350630,
+                508935990
+              ]
+            ],
+            "1": [
+              [
+                795933388,
+                787540259,
+                795847055,
+                787454498
+              ],
+              [
+                576018569,
+                568426575,
+                575667608,
+                568076289
+              ],
+              [
+                579985815,
+                572072927,
+                579899152,
+                571986946
+              ],
+              [
+                607713129,
+                590072720,
+                607629101,
+                589989324
+              ],
+              [
+                743698795,
+                732782854,
+                743611030,
+                732696041
+              ]
+            ]
+          },
+          "248320": {
+            "0": [
+              [
+                2827647841,
+                2825534155,
+                2816740175,
+                2814626903
+              ],
+              [
+                2835530576,
+                2833917726,
+                2824590590,
+                2822978323
+              ],
+              [
+                2825086494,
+                2823281049,
+                2814183096,
+                2812377974
+              ],
+              [
+                2837952575,
+                2835557323,
+                2826841968,
+                2824447451
+              ],
+              [
+                2837490527,
+                2830391876,
+                2826582631,
+                2819490765
+              ]
+            ],
+            "1": [
+              [
+                1348168243,
+                1347411397,
+                1343101849,
+                1342345568
+              ],
+              [
+                1345958025,
+                1343748307,
+                1340386331,
+                1338177211
+              ],
+              [
+                1351231641,
+                1345033432,
+                1346059889,
+                1339862446
+              ],
+              [
+                1334085889,
+                1331197550,
+                1328573095,
+                1325685424
+              ],
+              [
+                1338616036,
+                1336270013,
+                1333512602,
+                1331167124
+              ]
+            ]
+          }
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": true,
@@ -226105,6 +226321,31 @@
       "GPU_executed": false
     },
     "canonical_kernel_trace_passed": true,
+    "decision": {
+      "cells": {
+        "640": {
+          "candidate_over_reference_median_wall": [
+            1.1334487036985232,
+            1.0366565068919782,
+            1.2260850765786873
+          ],
+          "component_gain_qualified": false
+        },
+        "248320": {
+          "candidate_over_reference_median_wall": [
+            0.4721372440775442,
+            0.46966513845572894,
+            0.47467589889251116
+          ],
+          "component_gain_qualified": true
+        }
+      },
+      "head_component_gain": true,
+      "model_speed_qualified": false,
+      "inference_adopted": false,
+      "physical_traffic_qualified": false,
+      "next": "Only a winning full-head cell permits a new decode-only model proposal;placement/setup,phase preservation,task/agent and physical262144 remain unqualified."
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "26ad7807ecb6bd51166e4151bea31589dc9c2550",
@@ -226177,6 +226418,66 @@
         "error": null,
         "errors": []
       }
-    ]
+    ],
+    "summary": {
+      "cells": {
+        "640": {
+          "reference_process_medians_ms": [
+            0.13013978125,
+            0.12075528784179687,
+            0.121009109375
+          ],
+          "candidate_process_medians_ms": [
+            0.14750676635742188,
+            0.1251817548828125,
+            0.14836746313476562
+          ],
+          "reference_median_ms": 0.121009109375,
+          "candidate_median_ms": 0.14750676635742188,
+          "geomean_candidate_over_reference": 1.1294121396697527,
+          "geomean_speedup": 0.8854163727090859,
+          "replays_per_batch": 4096,
+          "process_count": 3,
+          "samples_per_arm": 15,
+          "component_gain_qualified": false
+        },
+        "248320": {
+          "reference_process_medians_ms": [
+            11.0687825,
+            11.08900146875,
+            11.0762913125
+          ],
+          "candidate_process_medians_ms": [
+            5.22598446484375,
+            5.20811741015625,
+            5.25764853515625
+          ],
+          "reference_median_ms": 11.0762913125,
+          "candidate_median_ms": 5.22598446484375,
+          "geomean_candidate_over_reference": 0.4721549956845576,
+          "geomean_speedup": 2.117948574387405,
+          "replays_per_batch": 256,
+          "process_count": 3,
+          "samples_per_arm": 15,
+          "component_gain_qualified": true
+        }
+      },
+      "eligible_samples": 60,
+      "min_batch_ms": 417.593097,
+      "numerical": {
+        "small_cases": 6,
+        "full_cases": 4,
+        "max_abs_error": 6.103515625e-05,
+        "full_head_independent_scalar_rows_per_seed": 543,
+        "all_outputs_finite": true,
+        "canaries_and_input_immutability": true
+      },
+      "GPU_processes": 5,
+      "normal_exit_closed_quiet_no_fresh_fault": true,
+      "additional_candidate_device_weight_bytes": 0,
+      "additional_candidate_host_weight_bytes": 0,
+      "scope": "Synthetic K2560/C4 component through ordinary one-node graphs;submission/completion and UR validation charged. Model route remains unselected;no PP/TG/task/full-context/default qualification.",
+      "next": "Integrate direct-canonical C4 only in experimental full-size decode NativeHead,with existing prompt/C1/reference routes unchanged;qualify production-linked ownership and actual128K/cache1256 admission before matched model speed."
+    }
   }
 }
