@@ -2271,16 +2271,18 @@ strict32768fresh-token requirement. V2now passes four route-positive cases,
 13corrupt-route refusals,11corrupt-v5metadata refusals and the actual18request
 reader. Fresh benchmark/server probes pass144/230modules and18/27code maps,
 with normal closed owners. No candidate speed result follows from these CPU
-gates. Candidate process1now completes all18requests,normal native/bench0,
+gates. Candidate processes1and2now complete all36requests,normal native/bench0,
 closed ownership,quiet validation,no fresh fault and matched fixed inputs.
-Its observed strict long-generation rates are13.8/8.6TG versus the historical
-control12.2/8.5;outputs are3044/6937versus3656/7950and acceptance differs,
-so these are model-workload rates,not isolated kernel gains. Candidate PP is
-698.1/661.6versus707.0/705.1and TTFT47.720/50.494s versus47.120/47.367s.
-Keep these lower prefill/higher TTFT samples;one pair does not qualify adoption
-or preservation. The common actual canonical tables match for decode1/4;
-mode10/BF16long-prefill checks remain independent. Continue the committed
-order with fresh candidate2,then control3/control4/candidate5. The first-pair
+Their strict long-generation rates are13.8/8.6and14.0/9.0TG versus the historical
+control12.2/8.5. Both candidates generate3044/6937tokens versus3656/7950;
+their acceptance matches each other but differs from control,so these are
+model-workload rates,not isolated kernel gains. Candidate PP is698.1/661.6and
+679.2/696.1versus707.0/705.1. Client TTFT is47.720/50.494and49.097/48.009s
+versus47.120/47.367s. Keep every lower-prefill/higher-TTFT sample;one completed
+pair and a partial second pair do not qualify adoption or preservation. The
+common actual canonical tables match for decode1/4;mode10/BF16long-prefill
+checks remain independent. Continue the committed order with fresh
+control3/control4/candidate5. The first-pair
 points are indexed in the performance CSV with their1-of3qualification. After
 source recovery and recorded path/hash deletion manifest,69closed candidate1
 logs/journals/cache files(13163485bytes)are retired;post-retirement admission
