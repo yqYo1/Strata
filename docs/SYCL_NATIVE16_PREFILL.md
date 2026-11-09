@@ -2078,13 +2078,15 @@ again to the two-map total. These values exclude other model copies and give
 no copy latency, CPU-grouping cost, overlap or bus-saturation measurement.
 They support the next long-prefill transfer/synchronization attribution;
 byte volume alone cannot decide whether moving grouping to the GPU wins.
-The next component fixture/controller is source-only at `d003ba0b6` on
-`tune/q6-dense-shapes`: six actual Q6 C4 shapes with their production
-generic/columns references, without a new inference dispatcher. Its syntax,
-parser, build and device checks remain unrun. Its primary-builder import is
-deferred to remove the source-level initialization-order cycle; that fix also
-remains unexecuted. After this cohort closes, review
-and integrate it into `feature/sycl`, retire the child, then test serially.
+The six-shape Q6 C4 fixture/controller at `d003ba0b6` is integrated into
+`feature/sycl` by merge `7b07921ba`. Its completed child branch/worktree are
+retired locally and remotely after verifying all original commits against the
+pushed primary. It keeps the actual production generic/columns references and
+adds no inference dispatcher. Python preparation and exact native/runtime
+reference admission pass for the fresh `q6_dense_c4_component_v1` plan;
+parser controls, C++ compilation and device checks remain pending. The deferred
+primary-builder import removes the source-level initialization-order cycle;
+both explicit import orders will be checked with the CPU controls.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's
