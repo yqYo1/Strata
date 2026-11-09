@@ -2170,8 +2170,9 @@ kernel structures match under the checked ID/declaration-order normalization.
 All five binaries are fresh; compilation and owned closure pass, with no GPU
 execution at that build step. The compiled CPU policy check also passes:four
 selected cells,prompt/width isolation and cache retirement,normal0/closed
-ownership. The fresh GPU fixture cohort below now passes;actual dense-dispatch
-model qualification remains pending.
+ownership. The fresh GPU fixture and bounded actual-model routing cohorts
+below now pass;broader model performance/task/full-context qualification remains
+pending.
 Before its first CPU policy execution, controller-only admission `84e7deb51` corrects
 the output budget to include the existing144MB build tree:retain the builder's
 finite4GiB total/512MiB file ceilings and120s/1GiB RSS/1MiB text bounds.
@@ -2215,10 +2216,10 @@ path/hash/reason retirement manifest remain in that device root. All individual
 numerical/transition samples and original outcomes are preserved;the current
 a347/five fixtures,configured inputs and1db reference remain for the next model
 comparison. Other named phase/feature consumers and legacy holds are unchanged.
-Next run actual four-combination dense0/1/backing0/1 model handoffs with head2
-fixed,checking both real C4 dense routing and prefill/short/decode state. Only
-then collect independent matched long/agent/strong-and-weak thinking speed.
-The prospective observer is `tools/sycl/q6_dense_model_entry.py`:four fresh
+The four-combination dense0/1/backing0/1 model handoffs below now pass with
+head2fixed,checking real C4dense routing and prefill/short/decode state. Next
+collect independent matched long/agent/strong-and-weak thinking speed.
+The observer is `tools/sycl/q6_dense_model_entry.py`:four fresh
 processes in0/0,1/0,0/1,1/1order,with the existing10197/82/10197thinking-input
 handoffs and32outputs per request. It preserves the original221e native source
 and five exact ELFs;only the committed device/model observers extend the build
@@ -2228,8 +2229,23 @@ optional MTP widths without demanding identical generated text. Commit each
 closed stage;stop on the first failed gate. These short outputs qualify routing
 and ownership only,not sustained generation speed.
 The original observer at`cc1f28bf4`fails during Python import before preparing
-the cohort:the dense builder exposes`primary.RESULT`,not`RESULT`. Correct that
-alias before preparation;no model/native execution or GPU result occurred.
+the cohort:the dense builder exposes`primary.RESULT`,not`RESULT`. That alias is
+corrected before preparation;the failed import has no model/native/GPU execution.
+At controller source`413961faa`,all four actual-model processes now pass:
+12thinking-on requests and8target-head transitions,normal0/closed owners,
+quiet validation,no fresh fault,unchanged boot/driver,and all15final model-asset
+hashes. Every request produces32tokens with positive MTP offers/acceptance.
+The selected C4static counts remain40/14/22/5;the small generic cell remains21.
+Prompt1/4and decode1/4canonical tables match across all four settings after
+excluding those selected C4cells. Packed target/MTP ownership is unchanged.
+Backing1reports521472000permanent host bytes,0requested target D2H per long
+transition,and the same521472000requested H2D-on-restore bytes as backing0.
+Restoration still uploads the full target head. These are
+logical allocation/copy extents,not measured physical PCIe traffic. This closes
+the bounded actual routing/handoff gate;model speed,agent/task,length scaling,
+physical262144/RESTORE and default adoption remain pending. Next use the
+maintained official long/agent and strong/weak thinking suite in fresh matched
+processes to assess the mechanisms independently.
 No model/default adoption or physical262144/RESTORE qualification follows here.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
