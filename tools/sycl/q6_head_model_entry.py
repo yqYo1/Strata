@@ -21,7 +21,7 @@ import native_request_protocol as protocol
 
 build, guards, owner, validation = device.build, device.guards, device.owner, device.validation
 P, B, RESULT = device.P, device.B, device.RESULT
-ROOT, KEY = B / 'q6-head-model-entry-v3', 'q6_head_model_entry_v3'
+ROOT, KEY = B / 'q6-head-model-entry-v4', 'q6_head_model_entry_v4'
 REFERENCE = B / 'decode-iq3-audit-speed-v2/record.json'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json'
 require, sha, write, signature = device.require, device.sha, device.write, build.signature
@@ -84,6 +84,21 @@ def memory_snapshot(pid):
             skipped_oversized=skipped, scope='Owned per-client counters with their original units;not global free memory,live-tensor extent,traffic or saturation. Do not sum shared clients.')
     except OSError as error:
         return dict(status='unavailable', error=repr(error), scope='No memory or saturation claim.')
+
+
+def requests(tokenizer):
+    # Keep the real8192chunk/cache placement. The old513-token fixture could
+    # never enter uses_layer_major and therefore could not test head retirement.
+    content = 'Review the following stable merge sort requirements, then implement and explain the algorithm.\n'
+    content += '\n'.join(f'Requirement {i}: preserve the original order of equal elements and explain the merge invariant.'
+                         for i in range(512))
+    long = model.request_ids(tokenizer, content)
+    short = model.request_ids(tokenizer)
+    require(8192 < long['prompt_tokens'] <= 32768 and short['prompt_tokens'] == 82,
+            'diagnostic must exceed one8192chunk and retain the original short request')
+    long['generator'] = 'q6_head_model_entry.requests:512numbered stable-merge requirements,thinking template'
+    short['generator'] = 'check_dflash2_model.request_ids:original82ID thinking prompt'
+    return dict(long=long, short=short)
 
 
 def routes(text, arm):
@@ -158,6 +173,7 @@ def compact(row):
     out = {k: v for k, v in row.items() if k not in ('controller', 'models', 'runtime_files', 'generator_runtime', 'commands')}
     out['controller'] = {k: v for k, v in row['controller'].items() if k != 'source_sha256'}
     out['generator_runtime'] = {k: v for k, v in row['generator_runtime'].items() if k != 'inputs'}
+    out['requests'] = {k: {n: v for n, v in r.items() if n != 'ids'} for k, r in row['requests'].items()}
     out['commands'] = [dict(label=c['label'], exit_code=c.get('exit_code'), ownership_closed=owner.closed(c),
         error=c.get('error'), errors=c.get('errors', [])) for c in row['commands']]
     return out
@@ -199,7 +215,7 @@ def verify(row):
     require(sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
         all(sha(p) == h for p, h in row['runtime_files'].items()), 'runtime files changed')
     require(prompts.generator_runtime() == row['generator_runtime'] and
-        prompts.requests(Path(row['tokenizer'])) == row['requests'], 'thinking workload generation changed')
+        requests(Path(row['tokenizer'])) == row['requests'], 'thinking workload generation changed')
     require(guards.driver_guard() == row['driver'] and
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'boot/driver changed')
     assets(row); guards.no_model_owners([])
@@ -244,7 +260,7 @@ def prepare():
             native_source_commit=n['project']['revision'], binaries_unchanged=True,
             actual_compiler_and_fixture_and_recipe_inputs_unchanged=True,
             changed_observers=['tools/sycl/q6_head_model_entry.py', 'tools/sycl/q6_head_generation_speed.py'],
-            previous_failed_model_key='q6_head_model_entry_v2', previous_failure_commit='4fa9f6e9aaea658c1f3652cc3698af966c5f75ef',
+            previous_failed_model_key='q6_head_model_entry_v3', previous_failure_commit='b3bbfb3f097500d89575e612579d685efdd43aca',
             scope='Controller-only new plan;reuse exact original four native ELFs/fixtures/recipe and closed GPU owner proof. No failed model result or speed inherited.'),
         native_record=dict(path=str(build.ROOT / 'record.json'), sha256=sha(build.ROOT / 'record.json')),
         device_evidence_sha256=signature(prior), models=reference['model_assets'],
@@ -252,10 +268,10 @@ def prepare():
         model_bytes=sum(v['identity']['bytes'] for v in reference['model_assets'].values()),
         runtime_manifest=prior['runtime_manifest'], runtime_files=json.loads(Path(prior['runtime_manifest']['path']).read_text()),
         probe=prior['native_validation_probe'], generator_runtime=prompts.generator_runtime(),
-        tokenizer=reference['configuration']['tokenizer'], requests=prompts.requests(Path(reference['configuration']['tokenizer'])),
+        tokenizer=reference['configuration']['tokenizer'], requests=requests(Path(reference['configuration']['tokenizer'])),
         environment=env, argv=argv, boot=prior['boot'], driver=prior['driver'],
         budgets=dict(wall=900, cpu=10800, rss_cap=104 << 30, text_cap=64 << 20, file_cap=64 << 20, total_cap=256 << 20),
-        plan='Committed parser controls first;fresh head0then1 processes,long513/short82/long513 thinking-on32output'
+        plan='Committed parser controls first;fresh head0then1 processes,long>8192/short82/long>8192 thinking-on32output'
              ' requests in each. Context131072,KVresident131072,chunk8192,short-read128,1256cache,MTP4,'
              'no token/coupled graphs. This qualifies full-placement admission,not full-context processing.'
              ' Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps,'
@@ -271,7 +287,8 @@ def prepare():
         retention='Commit compact per-request extents/draft counts/route identities/ownership and limitations.'
                   ' Retire successful stage logs and superseded standalone head roots after exact input recovery;'
                   ' keep new engine for imminent long comparison and preserve90f/552b/e1b references.')
-    require({k: v['prompt_tokens'] for k, v in row['requests'].items()} == {'long': 513, 'short': 82}, 'known diagnostic geometry')
+    require(8192 < row['requests']['long']['prompt_tokens'] <= 32768 and
+        row['requests']['short']['prompt_tokens'] == 82, 'known multi-chunk diagnostic geometry')
     assets(row, full=True)
     ROOT.mkdir(mode=0o700)
     for arm in (0, 1):
@@ -324,6 +341,7 @@ def execute(mode):
                     result['requests'].append(dict(label=label, prompt_tokens=request['prompt_tokens'],
                         generated=len(parser.tokens), accepted=int(parser.done[6]), offered=int(parser.done[7]),
                         output_ids_sha256=signature(parser.tokens), complete=True))
+                    row['model_executed'] = True
                     print(f'Head{arm}: {label} request complete.', flush=True)
                 result['memory_after_requests'] = memory_snapshot(command['pid'])
                 io.send(b'QUIT\n'); io.exit(30)
