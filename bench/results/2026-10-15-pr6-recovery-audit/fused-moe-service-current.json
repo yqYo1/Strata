@@ -225090,7 +225090,7 @@
     }
   },
   "q6_canonical_component_v4": {
-    "stage": "host-checked",
+    "stage": "small-checked",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -225364,6 +225364,97 @@
         "cases": 12,
         "native_execution_attempted": true,
         "GPU_executed": false
+      },
+      {
+        "mode": "check-small",
+        "passed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "3ad02eeba5abaa5d75e3ba1ab158f11082af3aa0696c0ba2a5ef90b9dde2bc7e",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "04afcfa60450f3a67a0a3f1662176d16dfeac5b29645321b13dc00962e5a79ce",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_extra_keys": [],
+            "environment_missing_keys": [],
+            "environment_changed_keys": []
+          }
+        ],
+        "native_identity": {
+          "pid": 1691071,
+          "state": "S",
+          "ppid": 1690572,
+          "pgid": 1691071,
+          "sid": 1691071,
+          "start_ticks": 254179887,
+          "rss_bytes": 61468672
+        },
+        "mapped_provider_count": 34,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1691071,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "setup": [
+          "SETUP k=256 n=1 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=461559 upload_cpu_ns=454472",
+          "ADMISSION k=256 n=1 canonical_bytes=210 packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=1394 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=256 n=1 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=1442426 upload_cpu_ns=1265933",
+          "SETUP k=256 n=1 seed=19 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=311106 upload_cpu_ns=303920",
+          "SETUP k=256 n=17 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=291459 upload_cpu_ns=285937",
+          "ADMISSION k=256 n=17 canonical_bytes=3570 packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=5266 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=256 n=17 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=375007 upload_cpu_ns=368932",
+          "SETUP k=256 n=17 seed=19 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=266612 upload_cpu_ns=261581",
+          "SETUP k=512 n=33 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=275759 upload_cpu_ns=270858",
+          "ADMISSION k=512 n=33 canonical_bytes=13860 packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=17220 max_alloc_bytes=10132807680 graphs=2 nodes_each=1",
+          "SETUP k=512 n=33 seed=7 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=367191 upload_cpu_ns=361999",
+          "SETUP k=512 n=33 seed=19 pack_wall_ns=0 pack_cpu_ns=0 upload_wall_ns=285939 upload_cpu_ns=281199"
+        ],
+        "numerical": [
+          "NUMERIC passed=1 k=256 n=1 columns=4 outputs=4 oracle_rows=1 max_abs_error=0 guards=1",
+          "NUMERIC passed=1 k=256 n=1 columns=4 outputs=4 oracle_rows=1 max_abs_error=0 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0",
+          "NUMERIC passed=1 k=256 n=17 columns=4 outputs=68 oracle_rows=17 max_abs_error=0 guards=1",
+          "NUMERIC passed=1 k=256 n=17 columns=4 outputs=68 oracle_rows=17 max_abs_error=0 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0",
+          "NUMERIC passed=1 k=512 n=33 columns=4 outputs=132 oracle_rows=33 max_abs_error=3.81469726562e-06 guards=1",
+          "NUMERIC passed=1 k=512 n=33 columns=4 outputs=132 oracle_rows=33 max_abs_error=3.81469726562e-06 guards=1",
+          "C1_CONTROL passed=1 dpas_launched=0"
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "timing": [],
@@ -225371,7 +225462,7 @@
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "budgets": {
       "wall": 1200,
@@ -225496,6 +225587,7 @@
       "ownership_closed": true,
       "GPU_executed": false
     },
+    "canonical_kernel_trace_passed": true,
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "26ad7807ecb6bd51166e4151bea31589dc9c2550",
@@ -225562,7 +225654,7 @@
     "build_environment_sha256": "92baa0b24e022bd730b57b47e6f8500c8ded60a2cd8374aa1a9e561ea463dbb1",
     "commands": [
       {
-        "label": "host-pack",
+        "label": "native",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
