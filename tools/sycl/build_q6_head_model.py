@@ -20,12 +20,13 @@ import build_upstream_features as build
 import build_compat_profile as selected
 import measurement_guards as guards
 import measurement_owner as ownership
+import q6_dpas_component as spirv
 from q6_canonical_component import image as canonical_image
 
 P, B = source.P, source.B
 ROOT = B / 'q6-head-model-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_head_model_build_v3'
+KEY = 'q6_head_model_build_v4'
 NATIVE = 'cdbd687965b9b1dd96e7a76002381cc257019da5'
 COMPONENT_EVIDENCE = '0ccc4ed45cbf219e835a9c6b03b08951fa321ab8'
 READER = '484d403e60c49361422f00a16dfdd774e4fe90d5'
@@ -44,8 +45,10 @@ def public():
 
 
 def compact(row):
-    out = {k: v for k, v in row.items() if k not in ('project', 'dependencies', 'commands')}
+    out = {k: v for k, v in row.items() if k not in ('project', 'admission_project', 'dependencies', 'commands')}
     out['project'] = {k: v for k, v in row['project'].items() if k != 'source_sha256'}
+    if 'admission_project' in row:
+        out['admission_project'] = {k: v for k, v in row['admission_project'].items() if k != 'source_sha256'}
     out['dependencies'] = [{k: v for k, v in d.items() if k != 'source_sha256'}
                            for d in row['dependencies']]
     out['commands'] = [dict(label=c['label'], exit_code=c.get('exit_code'),
@@ -108,10 +111,74 @@ def current(row):
     require(prerequisites() == row['prerequisites'], 'head prerequisite changed')
     _, identity = selected.basis()
     require(signature(identity) == row['selected_native_sha256'], 'selected feature basis changed')
-    build.check_inputs(row)
+    check = dict(row)
+    if 'admission_project' in row:
+        require(row['native_source_commit'] == row['project']['revision'] and
+            row['admission_source_commit'] == row['admission_project']['revision'], 'native/admission identity changed')
+        check['project'] = row['admission_project']
+        inputs = row['actual_inputs']
+        require(digest(inputs['path']) == inputs['sha256'], 'original actual-input inventory changed')
+        census = json.loads(Path(inputs['path']).read_text())
+        require(all(digest(p) == sha for field in ('compiled', 'generated', 'links')
+            for p, sha in census[field].items()), 'original actual compiler/link input changed')
+    build.check_inputs(check)
     require(digest(HOST_PYTHON) == row['host_python_sha256'], 'host interpreter changed')
     for path, sha in (row.get('generated_inputs', {}) | row.get('configured_files', {})).items():
         require(digest(path) == sha, 'configured generated input changed: ' + path)
+
+
+def structure(binary, image):
+    blob = Path(binary['path']).read_bytes()
+    require(hashlib.sha256(blob).hexdigest() == binary['sha256'] and
+        canonical_image(blob) == image, 'actual linked image/executable changed')
+    raw = blob[image['image_offset']:image['image_offset'] + image['image_bytes']]
+    require(hashlib.sha256(raw).hexdigest() == image['image_sha256'], 'actual embedded SPIR-V changed')
+    return spirv.spirv_structure(raw)
+
+
+def admit():
+    """New controller-only plan; preserve the failed exact-byte V3 outcome."""
+    require(KEY not in public(), 'fresh prospective admission only')
+    original = json.loads((ROOT / 'record.json').read_text())
+    prior = public()['q6_head_model_build_v3']
+    require({k: v for k, v in prior.items() if k != 'image_identity_refusal'} == compact(original) and
+        original['stage'] == 'failed' and original['ownership_closed'] and not original['GPU_executed'] and
+        original['error'] == "RuntimeError('production-linked canonical C4 image changed')" and
+        len(original['commands']) == 5 and all(ownership.closed(c) and c['exit_code'] == 0
+        for c in original['commands']), 'original compiled/native-refused V3 must stay failed')
+    require(all(digest(v['path']) == v['sha256'] for v in original['binaries'].values()),
+            'preserve exact original four ELFs;no rebuild')
+    project = source.pin(P, PREFIXES); before = original['project']['source_sha256']; after = project['source_sha256']
+    require(before == {n: hashlib.sha256(raw).hexdigest() for n, raw in
+        source.blobs(P, original['project']['revision'], before)}, 'original native source not recoverable')
+    changed = {n for n in before if after.get(n) != before[n]}
+    require(set(before) == set(after) and changed == {'tools/sycl/build_q6_head_model.py',
+        'tools/sycl/q6_dpas_component.py', 'tools/sycl/test_compile_census.py'},
+        'only declared reader/controller/tests may change;all native/recipe inputs must match')
+    inputs = original['actual_inputs']; require(digest(inputs['path']) == inputs['sha256'], 'original census changed')
+    census = json.loads(Path(inputs['path']).read_text())
+    require(all(digest(p) == sha for field in ('compiled', 'generated', 'links')
+        for p, sha in census[field].items()), 'original actual compiler/link inputs changed')
+    row = copy.deepcopy(original); row.pop('error'); row.pop('host_controls', None)
+    row.update(stage='admitted', commands=[], passed=False, complete=False, active=False, ownership_closed=True,
+        admission_project=project, admission_source_commit=project['revision'],
+        native_source_commit=original['project']['revision'], compilation_passed=True,
+        qualification_reuse=dict(original_failed_key='q6_head_model_build_v3',
+            original_evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
+            original_private_record_sha256=digest(ROOT / 'record.json'),
+            native_source_commit=original['project']['revision'], changed_controller_files=sorted(changed),
+            native_recompiled=False, GPU_qualification_inherited=False,
+            scope='Same127TUs/1461compiler inputs/generated1/29external links and four exact ELFs.'
+                  'New36CPU controls must prove exact selected-module instructions/literals/annotations'
+                  ' and function-body order after only ID/global/function declaration reordering.'
+                  'Unknown instructions/decorations/modes and ambiguous identities refuse admission.'
+                  'Fresh production GPU/real-model checks and matched speed still required.'))
+    row['plan'] = dict(host='36CPU controls including ID/declaration reorder positives and literal/annotation/'
+        'operand-edge/body-order/unknown-op/ambiguity/truncation negatives;then compare all1187instructions'
+        ' in the actual standalone,production head fixture and engine C4 images.',
+        subsequent='Only structural identity and all controls permit fresh traced production-linked GPU'
+        ' owner checks,then bounded128K model handoffs. No GPU result or model speed inherited.')
+    save(row); print('Admitted exact native artifacts for new structural reader controls;commit first.', flush=True)
 
 
 def planned_compilation(text):
@@ -259,17 +326,19 @@ def census(row, dependency_output, link_output):
 
 def execute(stage):
     row = json.loads((ROOT / 'record.json').read_text()); current(row)
-    require(row['stage'] == ('prepared' if stage == 'configure' else 'configured'), 'wrong build stage')
+    require(row['stage'] == {'configure': 'prepared', 'compile': 'configured', 'controls': 'admitted'}[stage],
+            'wrong build stage')
     guards.no_model_owners([])
     frozen = copy.deepcopy(row); owner = None; outputs = {}
     def persist():
         write(ROOT / 'execution.json', dict(active=bool(owner and owner.active),
             commands=owner.commands if owner else []))
     try:
-        owner = ownership.Owner(ROOT / ('v3-owned-' + stage), persist)
-        commands = ([('host-controls', [HOST_PYTHON, '-B', '-m', 'unittest', '-v',
+        owner = ownership.Owner(ROOT / (('v4-owned-' if stage == 'controls' else 'v3-owned-') + stage), persist)
+        host = ('host-controls', [HOST_PYTHON, '-B', '-m', 'unittest', '-v',
                                        'tools.sycl.test_q6_dpas_component', 'tools.sycl.test_compile_census',
-                                       'tools.sycl.test_q6_head_generation_speed']),
+                                       'tools.sycl.test_q6_head_generation_speed'])
+        commands = ([host] if stage == 'controls' else [host,
                      ('configure', row['recipe']['configure']),
                      ('planned-commands', ['/usr/bin/ninja', '-C', str(ROOT / 'build'),
                                           '-t', 'commands', *TARGETS])]
@@ -285,11 +354,21 @@ def execute(stage):
                     'build command failed: ' + label + '; inspect the owned bounded diagnostic')
             if label == 'host-controls':
                 text = out.read_text() + err.read_text()
-                require('Ran 28 tests' in text and '\nOK\n' in text, 'all28controls required')
-                row['host_controls'] = dict(passed=True, cases=28, fault_finalizer_AST_identical=True,
-                    GPU_executed=False, source_commit=row['project']['revision'])
+                count = 36 if stage == 'controls' else 28
+                require('Ran ' + str(count) + ' tests' in text and '\nOK\n' in text, 'all CPU controls required')
+                row['host_controls'] = dict(passed=True, cases=count, fault_finalizer_AST_identical=True,
+                    GPU_executed=False, source_commit=row.get('admission_source_commit', row['project']['revision']))
             print(json.dumps(dict(label=label, exit_code=entry['exit_code'], closed=True)), flush=True)
-        if stage == 'configure':
+        if stage == 'controls':
+            component = public()['q6_canonical_component_v4']
+            reference = structure(component['binary'], component['codegen'])
+            actual = {n: structure(row['binaries'][n], row['codegen'][n]) for n in row['codegen']}
+            require(all(v == reference for v in actual.values()), 'linked C4 instructions/literals/annotations differ')
+            row['linked_structure'] = dict(component=reference, production=actual,
+                raw_image_sha256={n: v['image_sha256'] for n, v in row['codegen'].items()},
+                scope='Exact selected module under ID/declaration reordering,not final GPU ISA or speed.')
+            row.update(stage='built', passed=True, complete=True)
+        elif stage == 'configure':
             compilation = planned_compilation(outputs['planned-commands'].read_text())
             planned = {v['file'] for v in compilation}
             require(len(planned) > 20, 'selected target compiler commands absent')
@@ -329,8 +408,10 @@ def execute(stage):
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['configure'], ['compile']),
-            'build_q6_head_model.py prepare|configure|compile')
+    require(sys.argv[1:] in (['prepare'], ['configure'], ['compile'], ['admit'], ['controls']),
+            'build_q6_head_model.py prepare|configure|compile|admit|controls')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        prepare() if sys.argv[1] == 'prepare' else execute(sys.argv[1])
+        if sys.argv[1] == 'prepare': prepare()
+        elif sys.argv[1] == 'admit': admit()
+        else: execute(sys.argv[1])

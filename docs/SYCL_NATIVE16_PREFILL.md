@@ -1896,13 +1896,19 @@ NativeHead trial. It removes the extra packed host/device owners and uses the
 canonical allocation;C1,prompt and other head paths remain unchanged. Selection
 is immutable after load and stays default-off. The Verifier snapshots that
 selection with the owner metadata across retirement,restore and lazy recapture.
-This integration is not built or production-qualified yet. V2 passes22CPU
-controls and CMake configuration but stops before native compilation:its
-Ninja reader rejects nested `ggml/src/CMakeFiles` object paths. The original
-failed result remains failed. The prospective V3 reader handles nested paths,
-rejects escaped/ambiguous outputs and freezes the long-cohort controller before
-building. It reuses only the configured directory,not an executable or result,
-and requires the exact qualified component image and fresh28CPU controls. The
+The engine and fixtures now compile from `d1744729f`:127TUs,1461compiler inputs,
+one generated input and29external link inputs are covered. All28CPU controls
+pass. The earlier nested-path reader refusal is preserved in Git. V3 then
+refuses raw device-image identity before any GPU run:the fixture retains
+`250b825f` but the engine embeds `5148340a`,both26028bytes/1187instructions,
+with the kernel entry order reversed. The original V3 refusal remains failed.
+The prospective V4 admission keeps those exact ELFs and native source identity,
+with no rebuild or inherited GPU result. It requires36CPU controls and a whole
+selected-module comparison preserving every instruction,literal,annotation and
+function-body order while normalizing only IDs and global/function declaration
+order. Unknown instructions,modes,decorations or ambiguous IDs reject admission.
+This is not final-ISA or model-speed equivalence. Production GPU/model
+qualification is still open. The
 production-linked fixture will recheck actual GGUF numerics and two canonical
 retire/overwrite/restore cycles per arm before the same-engine model test.
 That test now requests actual131072-context/KV-resident allocation and1256cache

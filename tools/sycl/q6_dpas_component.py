@@ -125,5 +125,138 @@ def embedded_dpas(blob, *, allow_shared_image=False):
         scope='Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count.')
 
 
+def spirv_structure(raw):
+    """Compare our finite C4 modules without depending on linker ID ordering.
+
+    Own code against Khronos SPIRV-Headers core grammar (1.6 revision7), SHA256
+    8f20f6ca4c2411391d14125cac69999f1c8248ef656e00d9d534e5e2b7a4f52c:
+    https://github.com/KhronosGroup/SPIRV-Headers/blob/main/include/spirv/unified1/spirv.core.grammar.json
+    Preserve every instruction, operand, annotation and function-body order.
+    Only IDs and global/function declaration order are canonicalized. Reject
+    unreviewed opcodes/decorations/modes and ambiguous identities. Not an ISA,
+    general SPIR-V validity, runtime safety or performance certificate.
+    """
+    require(20 <= len(raw) <= 1 << 20 and len(raw) % 4 == 0, 'bounded SPIR-V module')
+    w = struct.unpack('<' + 'I' * (len(raw) // 4), raw)
+    require(w[0] == 0x07230203 and w[4] == 0 and 0 < w[3] <= 100000, 'SPIR-V header')
+    operations = []; at = 5
+    while at < len(w):
+        count, op = w[at] >> 16, w[at] & 65535
+        require(count > 0 and at + count <= len(w), 'SPIR-V instruction extent')
+        operations.append((op, tuple(w[at + 1:at + count]))); at += count
+    def literal_string(a, start):
+        for end in range(start + 1, len(a) + 1):
+            b = struct.pack('<' + 'I' * (end - start), *a[start:end])
+            if b'\0' in b:
+                split = b.index(b'\0')
+                require(not any(b[split:]), 'SPIR-V string padding')
+                return b[:split].decode('utf-8'), end
+        raise RuntimeError('unterminated SPIR-V string')
+    typed = {1, 41, 43, 44, 46, 55, 57, 61, 67, 79, 81, 82,
+             111, 113, 114, 115, 117, 121, 124, 128, 129, 130, 132, 133, 135,
+             169, 170, 176, 177, 194, 196, 197, 198, 199, 245}
+    fixed = {1: 2, 3: 2, 14: 2, 17: 1, 19: 1, 20: 1, 21: 3, 22: 2, 23: 3,
+             32: 3, 41: 2, 46: 2, 54: 4, 55: 2, 56: 0, 111: 3, 113: 3,
+             114: 3, 115: 3, 117: 3, 121: 3, 124: 3, 128: 4, 129: 4,
+             130: 4, 132: 4, 133: 4, 135: 4, 169: 5, 170: 4, 176: 4,
+             177: 4, 194: 4, 196: 4, 197: 4, 198: 4, 199: 4, 246: 3,
+             248: 1, 249: 1, 253: 0}
+    def schema(op, a):
+        if op in fixed: require(len(a) == fixed[op], 'SPIR-V fixed operand count')
+        if op in (3, 14, 17, 56, 253): ids = set()
+        elif op in (5, 10, 11):
+            _, end = literal_string(a, int(op != 10)); require(end == len(a), 'SPIR-V string extent')
+            ids = {0} if op != 10 else set()
+        elif op == 15:
+            require(len(a) >= 3, 'SPIR-V entry operands')
+            _, end = literal_string(a, 2); ids = {1, *range(end, len(a))}
+        elif op == 16:
+            require(len(a) >= 2 and a[1] in (31, 35, 5618, 6417) and
+                len(a) == (2 if a[1] == 31 else 3), 'unreviewed SPIR-V execution mode')
+            ids = {0}
+        elif op == 71:
+            require(len(a) >= 2 and a[1] in (11, 22, 41, 44, 4469, 4470, 5625, 5626),
+                    'unreviewed SPIR-V decoration')
+            if a[1] == 41:
+                _, end = literal_string(a, 2); require(end + 1 == len(a), 'SPIR-V linkage extent')
+            else:
+                require(len(a) == (3 if a[1] in (11, 44, 5625) else 2), 'SPIR-V decoration extent')
+            ids = {0}
+        elif op in (19, 20, 21, 22): ids = {0}
+        elif op == 23: ids = {0, 1}
+        elif op == 32: ids = {0, 2}
+        elif op in (33, 44, 57, 67, 245):
+            minimum = {33: 2, 44: 3, 57: 3, 67: 4, 245: 4}[op]
+            require(len(a) >= minimum and (op != 245 or len(a) % 2 == 0), 'SPIR-V variable operand count')
+            ids = set(range(len(a)))
+        elif op == 43:
+            require(len(a) in (3, 4), 'SPIR-V constant extent'); ids = {0, 1}
+        elif op == 54: ids = {0, 1, 3}
+        elif op == 59:
+            require(len(a) in (3, 4), 'SPIR-V variable extent'); ids = {0, 1, *range(3, len(a))}
+        elif op == 61:
+            require(len(a) == 3 or (len(a) == 5 and a[3] == 2), 'unreviewed SPIR-V load memory operands')
+            ids = {0, 1, 2}
+        elif op in (79, 81, 82):
+            end = 3 if op == 81 else 4
+            require(len(a) > end, 'SPIR-V composite operands'); ids = set(range(end))
+        elif op == 246:
+            require(a[2] in (0, 1, 2), 'unreviewed SPIR-V loop control'); ids = {0, 1}
+        elif op in (248, 249): ids = {0}
+        elif op == 250:
+            require(len(a) in (3, 5), 'SPIR-V branch extent'); ids = {0, 1, 2}
+        else:
+            require(op in typed and op in fixed, 'unreviewed SPIR-V opcode: ' + str(op))
+            ids = set(range(len(a)))
+        result = 1 if op in typed or op in (54, 59) else 0 if op in (11, 19, 20, 21, 22, 23, 32, 33, 248) else None
+        require(all(0 < a[i] < w[3] for i in ids), 'SPIR-V ID bound')
+        return ids, result
+    records = []; names = {}; entries = {}; definitions = {}
+    for op, a in operations:
+        ids, result = schema(op, a); record = (op, a, ids, result); records.append(record)
+        if result is not None:
+            require(a[result] not in definitions, 'duplicate SPIR-V result ID'); definitions[a[result]] = record
+        if op == 5:
+            require(a[0] not in names, 'duplicate SPIR-V name target'); names[a[0]] = literal_string(a, 1)[0]
+        if op == 15:
+            require(a[1] not in entries, 'duplicate SPIR-V entry target'); entries[a[1]] = literal_string(a, 2)[0]
+    labels = {}; functions = {}; globals_ = []; current = None
+    for record in records:
+        op, a, ids, result = record
+        if op == 54:
+            require(current is None, 'nested SPIR-V function')
+            current = entries.get(a[1], names.get(a[1]))
+            require(current is not None and current not in functions, 'unique named SPIR-V function required')
+            functions[current] = []; labels[a[1]] = ('function', current)
+        if current is None: globals_.append(record)
+        else:
+            if result is not None and op != 54: labels[a[result]] = ('local', current, len(functions[current]))
+            functions[current].append(record)
+            if op == 56: current = None
+    require(current is None, 'unterminated SPIR-V function')
+    visiting = set()
+    def encode(record, defining=False):
+        op, a, ids, result = record
+        return (op, tuple(('result',) if defining and i == result else key(v) if i in ids else ('literal', v)
+                          for i, v in enumerate(a)))
+    def key(value):
+        if value in labels: return labels[value]
+        require(value in definitions and value not in visiting, 'undefined/cyclic SPIR-V global ID')
+        visiting.add(value)
+        definition = definitions[value]
+        # Names distinguish addressable global objects;all their definitions,
+        # types, initializers and annotations are still compared below.
+        tag = ('named', names[value]) if definition[0] == 59 and value in names else (
+            'global', hashlib.sha256(repr(encode(definition, True)).encode()).hexdigest())
+        visiting.remove(value); labels[value] = tag; return tag
+    for value in definitions: key(value)
+    require(len(set(labels.values())) == len(labels), 'ambiguous SPIR-V global/local identity')
+    normalized = (w[0:3], w[4], sorted((encode(v) for v in globals_), key=repr),
+                  sorted((name, [encode(v) for v in body]) for name, body in functions.items()))
+    return dict(sha256=hashlib.sha256(repr(normalized).encode()).hexdigest(),
+        instructions=len(records), functions=len(functions), IDs=len(definitions),
+        scope='All instructions/literals/decorations and in-function order preserved;only IDs/global/function order normalized.Not final ISA/runtime/performance.')
+
+
 if __name__ == '__main__':
     raise SystemExit('Import embedded_dpas for linked-image checks;the closed comparison CLI is archived at f97893576704e6679c89ea6c4613d912665a0824.')
