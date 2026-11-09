@@ -201,6 +201,50 @@ sample is relabeled as eligible speed. Keep
 leaf CPU time separate from completion polling and nested pool/wait intervals.
 Test physical counter collection separately before making a RAM-bandwidth claim.
 
+### KV and expert-cache capacity candidate
+
+The current1256-slot per-layer cache requests2,575,206,400device-arena bytes
+(2.39835GiB), including256-byte slot alignment. This is source-derived capacity,
+consistent with the startup's rounded2.40GiB, not physical VRAM traffic or the
+allocator's internal overhead. The frozen `native_experts.txt` has SHA256
+`d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d`.
+All48layer payload sizes are multiples of256; their sum is98,227,200bytes,
+and the final layer uses2,662,400bytes per slot. For N slots, the existing
+`per_layer_slot_sizes` gives every layer floor(N/48) slots and gives the entire
+remainder to the last layer. The arena therefore requests
+`floor(N/48)*98227200 + (N%48)*2662400` bytes.
+
+| Slots | Requested device-arena bytes | GiB |
+| --- | ---: | ---: |
+|1256|2,575,206,400|2.39835|
+|1488|3,045,043,200|2.83592|
+|1536|3,143,270,400|2.92740|
+|1632|3,339,724,800|3.11036|
+
+For this model's12QSA layers, INT8 K/V payload is12,672bytes per logical cell.
+131072/65536/49152resident cells reserve1,660,944,384/830,472,192/622,854,144
+payload bytes. A smaller resident window also needs full-context host backing,
+residency maps and a full-logical-range prefill staging pool; indexer/RoPE and
+other session buffers still depend on logical context. Payload savings alone
+do not establish net headroom or allocation admission. Keep262144logical
+capacity and its full-fill/tail/RESTORE/handoff requirements in the proposed
+residency experiment; do not reduce logical capacity to manufacture headroom.
+
+The current QSA16 preflight in `src/prefill/layer_major.inc` explicitly rejects
+mode1 streamed main KV and host mirrors before request submission. Merely
+lowering `--kv-resident` cannot run the current native16 long-prefill route.
+Before a residency/cache comparison, a separate prefill implementation must
+preserve BF16 tensor IO while publishing quantized K/V to authoritative host
+storage, full-range stage storage and any resident slots. Stage and resident
+page capacities differ; every attention consumer and restoration path must
+use the correct extent and event lifetime. Preserve the existing mode0 path
+and independently tuned decode. This is a prospective interface requirement,
+not an implemented candidate, measured speedup or identified physical limit.
+The source basis is native221e95e9ad890383deb418d0a865ee32c99168b6;
+`expert_slot_sizes.hpp`, `expert_cache.cpp`, `layer.cpp`, `session.cpp` and the
+QSA16 preflight retain that compiled implementation. Numerical component checks
+must not impose identical complete generated text as a task-quality criterion.
+
 ## Numerical reference for replacement kernels
 
 Use the reached SGLang/vLLM path for the same model as the preferred algorithm
