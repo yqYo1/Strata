@@ -249366,8 +249366,8 @@
   },
   "q6_dense_cpu_leaves_host_v1": {
     "stage": "closed",
-    "source_commit": "c454d08445786580be2f619d959b14c9675945fa",
-    "source_signature_sha256": "b9f35aa217f50b30136be28b685bde8556fa8919cae62f165523b9ed069e7e6e",
+    "source_commit": "4353b487fb69959dbcbb4f95db60478d0f8dc801",
+    "source_signature_sha256": "2c402c13079d1c0af6ffaae83302a9958e48961d770214aa903cddf398627375",
     "source_count": 640,
     "GPU_executed": false,
     "passed": true,
@@ -249384,18 +249384,18 @@
       "-v"
     ],
     "exit_code": 0,
-    "tests": 14,
+    "tests": 15,
     "owner_results": [
       {
-        "pid": 4147856,
+        "pid": 4183073,
         "direct_identity": {
-          "pid": 4147856,
+          "pid": 4183073,
           "state": "R",
-          "ppid": 4147791,
-          "pgid": 4147856,
-          "sid": 4147856,
-          "start_ticks": 261119446,
-          "rss_bytes": 573440
+          "ppid": 4183002,
+          "pgid": 4183073,
+          "sid": 4183073,
+          "start_ticks": 261207913,
+          "rss_bytes": 466944
         },
         "exit_code": 0,
         "observation_complete": true,
@@ -249462,6 +249462,49 @@
               "sid": 4135604,
               "start_ticks": 261088973,
               "rss_bytes": 598016
+            },
+            "exit_code": 0,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "error": null,
+            "errors": [],
+            "cleanup": []
+          }
+        ]
+      },
+      {
+        "stage": "closed",
+        "source_commit": "c454d08445786580be2f619d959b14c9675945fa",
+        "source_signature_sha256": "b9f35aa217f50b30136be28b685bde8556fa8919cae62f165523b9ed069e7e6e",
+        "source_count": 640,
+        "GPU_executed": false,
+        "passed": true,
+        "ownership_closed": true,
+        "command": [
+          "/usr/bin/python3",
+          "-X",
+          "faulthandler",
+          "-B",
+          "-m",
+          "unittest",
+          "tools.test_q6_cpu_leaves",
+          "tools.test_adaptive_cpu_leaf_evidence",
+          "-v"
+        ],
+        "exit_code": 0,
+        "tests": 14,
+        "owner_results": [
+          {
+            "pid": 4147856,
+            "direct_identity": {
+              "pid": 4147856,
+              "state": "R",
+              "ppid": 4147791,
+              "pgid": 4147856,
+              "sid": 4147856,
+              "start_ticks": 261119446,
+              "rss_bytes": 573440
             },
             "exit_code": 0,
             "observation_complete": true,
