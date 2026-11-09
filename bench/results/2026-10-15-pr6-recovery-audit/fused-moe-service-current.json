@@ -225040,6 +225040,42 @@
         "error": null,
         "errors": []
       }
-    ]
+    ],
+    "census_failure": {
+      "cause": "Compile database includes unbuilt production copies. Select the actual component/runtime object targets;actual compile/link owners already exit0.",
+      "declared_commands_for_selected_files": 24,
+      "actual_selected_target_commands": 14,
+      "original_error": "RuntimeError('one production compile command per fixture/runtime unit required')",
+      "native_compile_and_link_exit": 0,
+      "owned_commands_closed": true,
+      "compiled_artifact": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-canonical-component-v3/build/sycl_q6_canonical_component",
+        "sha256": "dbecb5c682c11f3c27bd40ff91cc1341de152f3b1ae61445946dc8be9930d10e",
+        "bytes": 11599624,
+        "origin_source_commit": "cdbd687965b9b1dd96e7a76002381cc257019da5"
+      },
+      "shared_image_observation": {
+        "sha256": "250b825f8394956decf76db7fab7eeeeac1cd0995bd781c4e8da22d41c1fdeec",
+        "entrypoints": [
+          {
+            "model": 6,
+            "function": 183,
+            "name": "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E"
+          },
+          {
+            "model": 6,
+            "function": 573,
+            "name": "_ZTSN6strata7kernels9component12_GLOBAL__N_117Q6DpasC4CanonicalE"
+          }
+        ],
+        "all_entries_defined": true
+      },
+      "image_qualified": false,
+      "strict_reader_error": "one exact C4 kernel entrypoint:old reader requires the entire image to have one entrypoint;new module shares an image. New admission must isolate the exact canonical entry and its reachable DPAS calls.",
+      "compile_database_sha256": "8deb3b5ce1c284576659f0b3a509338fcd8d83f6987ee6db2f7116a2149e914e",
+      "dependency_listing_sha256": "cac0cf71bee25d716f748a00cb5e1a22dc5f523bee8316d8bfe9540b34b42922",
+      "linker_output_sha256": "db7428293ccadc964f5618ea923087e66c31f5c6ed81946c8d1e0dba45e9926d",
+      "next": "Preserve failed v3. New controller-only admission requires exact native input/recipe/artifact proof and CPU controls for scope/shared-image parsing;no native/GPU result inherited."
+    }
   }
 }
