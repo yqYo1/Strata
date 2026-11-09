@@ -244170,7 +244170,7 @@
   },
   "q6_dense_dpas_official_v2": {
     "cohort": {
-      "stage": "prepared",
+      "stage": "ready",
       "source_commit": "fd212272fc15654e55e6b594d82fa9f6986dfc28",
       "native_source_commit": "221e95e9ad890383deb418d0a865ee32c99168b6",
       "binary": {
@@ -245359,7 +245359,7 @@
         "limits": "Historical control analysed under the new v5/no-Verifier-prompt reader;not a new process or retroactive V1 success. Same mandatory control,no speed-based selection or replacement."
       },
       "fixed_request_inputs": null,
-      "host_passed": false,
+      "host_passed": true,
       "budgets": {
         "wall": 5400,
         "cpu": 43200,
@@ -245390,6 +245390,29 @@
       "passed": false,
       "active": false,
       "ownership_closed": true,
+      "host_reader_controls": {
+        "passed": true,
+        "positive_route_arms": 4,
+        "corrupt_route_cases": 13,
+        "current_v5_positive": 1,
+        "current_v5_corrupt_cases": 11,
+        "actual18request_baseline_reader_passed": true,
+        "GPU_executed": false
+      },
+      "host_results": [
+        {
+          "role": "benchmark",
+          "passed": true,
+          "modules": 144,
+          "code_maps": 18
+        },
+        {
+          "role": "server",
+          "passed": true,
+          "modules": 230,
+          "code_maps": 27
+        }
+      ],
       "input_signatures": {
         "sources": "9d022743c570e0f7469b9dc814fb7b026e4faee6607032681459113fa9c396b0",
         "model_assets": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"

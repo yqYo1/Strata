@@ -2267,7 +2267,11 @@ canonical windows without requiring a Verifier-prompt capture. The original
 v4helper and V1failure remain unchanged. Actual18request reanalysis,corrupt
 reader controls and two fresh frontend probes precede candidate execution. Keep all paired TG/PP/TTFT samples and actual MTP classes;
 the nominal32Kcase is supplemental and added generation inputs must meet the
-strict32768fresh-token requirement. This is prospective,not a speed result.
+strict32768fresh-token requirement. V2now passes four route-positive cases,
+13corrupt-route refusals,11corrupt-v5metadata refusals and the actual18request
+reader. Fresh benchmark/server probes pass144/230modules and18/27code maps,
+with normal closed owners. No candidate speed result follows from these CPU
+gates;the next action is candidate process1.
 The closed V1control exposes a reader mismatch before candidate1:the tuned
 `--short-read 0`route uses dedicated prefill and its live Q6capture reports
 contain decode1/4only. `evidence()`incorrectly requires a common Verifier-prompt
