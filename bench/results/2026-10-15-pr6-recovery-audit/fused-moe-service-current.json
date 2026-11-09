@@ -233778,7 +233778,7 @@
     ]
   },
   "q6_head_packed_timing_v1": {
-    "stage": "host_passed",
+    "stage": "closed",
     "source_commit": "328735038517fd2c6ae019a977e515ce35265b43",
     "native_source_commit": "6dd74eab75a85f511cfde4eb6efc7db249386a87",
     "native_record": {
@@ -233929,12 +233929,661 @@
     "plan": "47CPU timing/owner/census/protocol controls first;then three fresh sole-packed fixture processes in R/C,C/R,R/C order. Each reruns four numerical and eight partial-column cases,two owner retire/overwrite/restore cycles and12numerical replays,before three warmups/arm and five paired samples/arm of256replays. Native and reader both enforce max(10ms,300timer-units). Remove only full API tracing before exec;parameter validation,retained loader and all runtime safety settings stay. Full shard hashes pre/post each process,normal0/closed/no fault. Require all three process median ratios<1 for component advancement;no minimum gain. Stop first failure,no retries. This is head C4 only,not MTP/model/PP/TTFT/TG adoption.",
     "limits": "Fresh production-linked fixture only. Not full model/production Verifier ownership,clean PP/TTFT/TG,task quality,physical262144/RESTORE,ordinary teardown or default adoption.",
     "retention": "Keep the30eligible per-process timing samples,paired ratios and numerical/fault/ownership summary. Retire normal API/stage logs and caches after the current model-entry consumer is updated; keep current1db candidate plus5a6 fallback and named90f/552b/e1b references.",
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "mode": "sole-packed",
+        "process": 0,
+        "order": "rc",
+        "passed": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "e28b1e5563a996d74e5dbb54a669cbd1c7935784295d6b644e640485739d5f2b",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_immutable": true
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "d4f5084102d92ddfce88b50ecfb1555874c253a378d2985bbc84f4b699e85460",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_immutable": true
+          }
+        ],
+        "native_identity": {
+          "pid": 2238459,
+          "state": "S",
+          "ppid": 2235432,
+          "pgid": 2238459,
+          "sid": 2238459,
+          "start_ticks": 255767894,
+          "rss_bytes": 62029824
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2238459,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "owner": {
+          "dpas": 2,
+          "layout": "sole-packed",
+          "primary_packed": true,
+          "partial_cases": 8,
+          "restore_cycles": 2,
+          "blocked_cases": 4,
+          "graph_replays": 12,
+          "canonical_bytes": 521472000,
+          "extra_device_weight_bytes": 0,
+          "extra_host_weight_bytes": 0,
+          "canonical_immutable": true,
+          "numerical_cases": 4,
+          "oracle_rows_per_case": 543,
+          "max_abs_pair_error": 4.17232513428e-07,
+          "inactive_outputs_and_Q8_inputs": "unchanged",
+          "row_major_access": "refused",
+          "all_required_canaries": "passed"
+        },
+        "timing": {
+          "order": "rc",
+          "samples": [
+            {
+              "sample": 0,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3135925355,
+              "ns_per_replay": 12249708.41796875
+            },
+            {
+              "sample": 0,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 463025363,
+              "ns_per_replay": 1808692.82421875
+            },
+            {
+              "sample": 1,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3121862282,
+              "ns_per_replay": 12194774.5390625
+            },
+            {
+              "sample": 1,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 416816960,
+              "ns_per_replay": 1628191.25
+            },
+            {
+              "sample": 2,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3120137567,
+              "ns_per_replay": 12188037.37109375
+            },
+            {
+              "sample": 2,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 439734544,
+              "ns_per_replay": 1717713.0625
+            },
+            {
+              "sample": 3,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3127435097,
+              "ns_per_replay": 12216543.34765625
+            },
+            {
+              "sample": 3,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 427209435,
+              "ns_per_replay": 1668786.85546875
+            },
+            {
+              "sample": 4,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3136889147,
+              "ns_per_replay": 12253473.23046875
+            },
+            {
+              "sample": 4,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 430791770,
+              "ns_per_replay": 1682780.3515625
+            }
+          ],
+          "median_ns": {
+            "0": 12216543.34765625,
+            "1": 1682780.3515625
+          },
+          "candidate_over_reference": 0.13774603041746192,
+          "timer": {
+            "median_overhead_ns": 20,
+            "unit_ns": 20,
+            "floor_ns": 10000000
+          },
+          "timed_replays": 2560,
+          "warmup_replays": 6,
+          "numerical_replays": 12,
+          "scope": "C4 quantize+projection and graph submission/completion;parameter validation/retained-loader charged. No model throughput."
+        },
+        "assets_pre_post_match": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "head_transfer_samples": [
+          {
+            "phase": "load",
+            "cycle": -1,
+            "wall_ns": 697160769,
+            "thread_cpu_ns": 655998601
+          },
+          {
+            "phase": "prepare",
+            "cycle": 0,
+            "wall_ns": 289918557,
+            "thread_cpu_ns": 288686276
+          },
+          {
+            "phase": "detach",
+            "cycle": 0,
+            "wall_ns": 111235124,
+            "thread_cpu_ns": 109264588
+          },
+          {
+            "phase": "restore",
+            "cycle": 0,
+            "wall_ns": 146864871,
+            "thread_cpu_ns": 87840183
+          },
+          {
+            "phase": "prepare",
+            "cycle": 1,
+            "wall_ns": 306318152,
+            "thread_cpu_ns": 306141257
+          },
+          {
+            "phase": "detach",
+            "cycle": 1,
+            "wall_ns": 112145597,
+            "thread_cpu_ns": 108582391
+          },
+          {
+            "phase": "restore",
+            "cycle": 1,
+            "wall_ns": 172733803,
+            "thread_cpu_ns": 99338277
+          }
+        ]
+      },
+      {
+        "mode": "sole-packed",
+        "process": 1,
+        "order": "cr",
+        "passed": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "e28b1e5563a996d74e5dbb54a669cbd1c7935784295d6b644e640485739d5f2b",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_immutable": true
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "d4f5084102d92ddfce88b50ecfb1555874c253a378d2985bbc84f4b699e85460",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_immutable": true
+          }
+        ],
+        "native_identity": {
+          "pid": 2245402,
+          "state": "S",
+          "ppid": 2235432,
+          "pgid": 2245402,
+          "sid": 2245402,
+          "start_ticks": 255786758,
+          "rss_bytes": 61865984
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2245402,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "owner": {
+          "dpas": 2,
+          "layout": "sole-packed",
+          "primary_packed": true,
+          "partial_cases": 8,
+          "restore_cycles": 2,
+          "blocked_cases": 4,
+          "graph_replays": 12,
+          "canonical_bytes": 521472000,
+          "extra_device_weight_bytes": 0,
+          "extra_host_weight_bytes": 0,
+          "canonical_immutable": true,
+          "numerical_cases": 4,
+          "oracle_rows_per_case": 543,
+          "max_abs_pair_error": 4.17232513428e-07,
+          "inactive_outputs_and_Q8_inputs": "unchanged",
+          "row_major_access": "refused",
+          "all_required_canaries": "passed"
+        },
+        "timing": {
+          "order": "cr",
+          "samples": [
+            {
+              "sample": 0,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 434263095,
+              "ns_per_replay": 1696340.21484375
+            },
+            {
+              "sample": 0,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3133190466,
+              "ns_per_replay": 12239025.2578125
+            },
+            {
+              "sample": 1,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 426194124,
+              "ns_per_replay": 1664820.796875
+            },
+            {
+              "sample": 1,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3136469051,
+              "ns_per_replay": 12251832.23046875
+            },
+            {
+              "sample": 2,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 428253793,
+              "ns_per_replay": 1672866.37890625
+            },
+            {
+              "sample": 2,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3118507996,
+              "ns_per_replay": 12181671.859375
+            },
+            {
+              "sample": 3,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 431754492,
+              "ns_per_replay": 1686540.984375
+            },
+            {
+              "sample": 3,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3125756435,
+              "ns_per_replay": 12209986.07421875
+            },
+            {
+              "sample": 4,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 451937199,
+              "ns_per_replay": 1765379.68359375
+            },
+            {
+              "sample": 4,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3127146273,
+              "ns_per_replay": 12215415.12890625
+            }
+          ],
+          "median_ns": {
+            "0": 12215415.12890625,
+            "1": 1686540.984375
+          },
+          "candidate_over_reference": 0.1380666122745196,
+          "timer": {
+            "median_overhead_ns": 20,
+            "unit_ns": 20,
+            "floor_ns": 10000000
+          },
+          "timed_replays": 2560,
+          "warmup_replays": 6,
+          "numerical_replays": 12,
+          "scope": "C4 quantize+projection and graph submission/completion;parameter validation/retained-loader charged. No model throughput."
+        },
+        "assets_pre_post_match": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "head_transfer_samples": [
+          {
+            "phase": "load",
+            "cycle": -1,
+            "wall_ns": 674325697,
+            "thread_cpu_ns": 638195943
+          },
+          {
+            "phase": "prepare",
+            "cycle": 0,
+            "wall_ns": 286951409,
+            "thread_cpu_ns": 285683295
+          },
+          {
+            "phase": "detach",
+            "cycle": 0,
+            "wall_ns": 108709442,
+            "thread_cpu_ns": 106826320
+          },
+          {
+            "phase": "restore",
+            "cycle": 0,
+            "wall_ns": 198067732,
+            "thread_cpu_ns": 110796392
+          },
+          {
+            "phase": "prepare",
+            "cycle": 1,
+            "wall_ns": 298131216,
+            "thread_cpu_ns": 296712835
+          },
+          {
+            "phase": "detach",
+            "cycle": 1,
+            "wall_ns": 103157930,
+            "thread_cpu_ns": 101919893
+          },
+          {
+            "phase": "restore",
+            "cycle": 1,
+            "wall_ns": 142416891,
+            "thread_cpu_ns": 94283055
+          }
+        ]
+      },
+      {
+        "mode": "sole-packed",
+        "process": 2,
+        "order": "rc",
+        "passed": true,
+        "native_execution_attempted": true,
+        "provider_admission": [
+          {
+            "phase": "pre-main",
+            "mapped_files": 21,
+            "mapped_path_sha256": "e28b1e5563a996d74e5dbb54a669cbd1c7935784295d6b644e640485739d5f2b",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [
+              "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+            ],
+            "environment_immutable": true
+          },
+          {
+            "phase": "post-device-pre-fixture",
+            "mapped_files": 34,
+            "mapped_path_sha256": "d4f5084102d92ddfce88b50ecfb1555874c253a378d2985bbc84f4b699e85460",
+            "missing_required": [],
+            "unexpected_mapped_paths": [],
+            "not_yet_mapped_forced_providers": [],
+            "environment_immutable": true
+          }
+        ],
+        "native_identity": {
+          "pid": 2251238,
+          "state": "S",
+          "ppid": 2235432,
+          "pgid": 2251238,
+          "sid": 2251238,
+          "start_ticks": 255804445,
+          "rss_bytes": 62431232
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2251238,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "owner": {
+          "dpas": 2,
+          "layout": "sole-packed",
+          "primary_packed": true,
+          "partial_cases": 8,
+          "restore_cycles": 2,
+          "blocked_cases": 4,
+          "graph_replays": 12,
+          "canonical_bytes": 521472000,
+          "extra_device_weight_bytes": 0,
+          "extra_host_weight_bytes": 0,
+          "canonical_immutable": true,
+          "numerical_cases": 4,
+          "oracle_rows_per_case": 543,
+          "max_abs_pair_error": 4.17232513428e-07,
+          "inactive_outputs_and_Q8_inputs": "unchanged",
+          "row_major_access": "refused",
+          "all_required_canaries": "passed"
+        },
+        "timing": {
+          "order": "rc",
+          "samples": [
+            {
+              "sample": 0,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3130216805,
+              "ns_per_replay": 12227409.39453125
+            },
+            {
+              "sample": 0,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 437800232,
+              "ns_per_replay": 1710157.15625
+            },
+            {
+              "sample": 1,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3132478705,
+              "ns_per_replay": 12236244.94140625
+            },
+            {
+              "sample": 1,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 431983091,
+              "ns_per_replay": 1687433.94921875
+            },
+            {
+              "sample": 2,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3133843095,
+              "ns_per_replay": 12241574.58984375
+            },
+            {
+              "sample": 2,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 424302291,
+              "ns_per_replay": 1657430.82421875
+            },
+            {
+              "sample": 3,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3112801401,
+              "ns_per_replay": 12159380.47265625
+            },
+            {
+              "sample": 3,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 433886754,
+              "ns_per_replay": 1694870.1328125
+            },
+            {
+              "sample": 4,
+              "arm": 0,
+              "replays": 256,
+              "elapsed_ns": 3129407625,
+              "ns_per_replay": 12224248.53515625
+            },
+            {
+              "sample": 4,
+              "arm": 1,
+              "replays": 256,
+              "elapsed_ns": 446961770,
+              "ns_per_replay": 1745944.4140625
+            }
+          ],
+          "median_ns": {
+            "0": 12227409.39453125,
+            "1": 1694870.1328125
+          },
+          "candidate_over_reference": 0.13861236490294798,
+          "timer": {
+            "median_overhead_ns": 20,
+            "unit_ns": 20,
+            "floor_ns": 10000000
+          },
+          "timed_replays": 2560,
+          "warmup_replays": 6,
+          "numerical_replays": 12,
+          "scope": "C4 quantize+projection and graph submission/completion;parameter validation/retained-loader charged. No model throughput."
+        },
+        "assets_pre_post_match": true,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "head_transfer_samples": [
+          {
+            "phase": "load",
+            "cycle": -1,
+            "wall_ns": 648580691,
+            "thread_cpu_ns": 603888621
+          },
+          {
+            "phase": "prepare",
+            "cycle": 0,
+            "wall_ns": 283009853,
+            "thread_cpu_ns": 282506561
+          },
+          {
+            "phase": "detach",
+            "cycle": 0,
+            "wall_ns": 108943875,
+            "thread_cpu_ns": 105667522
+          },
+          {
+            "phase": "restore",
+            "cycle": 0,
+            "wall_ns": 137929044,
+            "thread_cpu_ns": 85950005
+          },
+          {
+            "phase": "prepare",
+            "cycle": 1,
+            "wall_ns": 290844223,
+            "thread_cpu_ns": 290841979
+          },
+          {
+            "phase": "detach",
+            "cycle": 1,
+            "wall_ns": 107106736,
+            "thread_cpu_ns": 104247019
+          },
+          {
+            "phase": "restore",
+            "cycle": 1,
+            "wall_ns": 137619552,
+            "thread_cpu_ns": 81406548
+          }
+        ]
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false,
+    "GPU_executed": true,
     "model_executed": false,
     "orders": [
       "rc",
@@ -233957,6 +234606,49 @@
       "cases": 47,
       "GPU_executed": false
     },
+    "decision": {
+      "process_ratios": [
+        0.13774603041746192,
+        0.1380666122745196,
+        0.13861236490294798
+      ],
+      "geometric_time_ratio": 0.13814120648859662,
+      "component_speedup": 7.238969641419403,
+      "head_component_gain": true,
+      "model_speed_qualified": false,
+      "inference_adopted": false,
+      "next": "Only a repeatable full-head gain permits the new same-engine0/2 MTP/model proposal;MTP subset arithmetic,placement,phase preservation,long/agent/task and full context stay open.",
+      "decode_reference_comparison_qualified": false,
+      "reference_scope_clarification": "The measured generic native_mmvq reference is the prompt head route. Preserve this result as that component comparison;use the actual selected decode-columns reference in the new model0/2 plan. The earlier ownedV7 columns-versus-packed6.55283x result is separate evidence,not this cohort ratio."
+    },
+    "summary": {
+      "reference_process_ms": [
+        12.21654334765625,
+        12.21541512890625,
+        12.22740939453125
+      ],
+      "candidate_process_ms": [
+        1.6827803515625,
+        1.686540984375,
+        1.6948701328125
+      ],
+      "median_reference_ms": 12.21654334765625,
+      "median_candidate_ms": 1.686540984375,
+      "eligible_samples_total": 30,
+      "minimum_batch_ns": 416816960,
+      "maximum_abs_pair_error": 4.17232513428e-07,
+      "reference_dispatch": "native_mmvq(type14,K2560,N248320,T4):generic canonical path also used by prompt windows.",
+      "candidate_dispatch": "NativeHead::run_packed_columns(C4):sole-packed owner,original packed DPAS kernel.",
+      "interval": "Quantize plus projection two-node graph,including submission/completion;setup/upload/JIT excluded.",
+      "observers": "UR parameter validation and retained-loader preload charged;full API tracing removed;all runtime safety settings retained.",
+      "qualification": "Real-GGUF full-head C4 component only. Reference is the generic/prompt path,not the faster dedicated decode-columns entry;not whole-model PP/TTFT/TG or current decode adoption."
+    },
+    "retention_detail": {
+      "performance": "All30individual timing samples and three paired process medians retained.",
+      "correctness": "Strict owner parser already verified four seeded cases and eight partial cases per process;retain counts,max error,canaries,ownership and original source rather than the full parser object.",
+      "transition_consumer": "Next NativeHead RAM-backing/repack tradeoff after the matched model0/2 comparison;21 clean component wrapper samples retained,not physical bandwidth or model latency.",
+      "next_review": "After matched model0/2 results or rejection of the shared-head proposal;no complete API traces needed."
+    },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "328735038517fd2c6ae019a977e515ce35265b43",
@@ -233966,6 +234658,27 @@
     "commands": [
       {
         "label": "reader-controls",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "native-timing0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "native-timing1",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "native-timing2",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,

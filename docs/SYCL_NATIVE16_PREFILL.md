@@ -1998,6 +1998,20 @@ MTP subset was already retired during long prefill. Computing a full head for
 MTP instead of its106299-row subset adds arithmetic,so its net latency still
 needs matched model evidence. Keep the faster target-head path eligible for
 separate use if MTP's new subset strategy loses;do not reject both together.
+The fresh three-process C4 fixture timing now closes at controller328735038,
+native6dd74eab7 and fixturee5aa53f2. It compares quantization plus projection
+and two-node graph submission/completion,with parameter validation charged
+and full API tracing removed. Reference process medians are12.216543,
+12.215415,12.227409ms versus1.682780,1.686541,1.694870ms packed.
+All30samples meet their declared floor;the paired geometric ratio is
+0.1381412065,or7.238970x. Three native processes exit0 with closed ownership,
+quiet validation,no fresh fault and unchanged full shard hashes.
+This reference is generic `native_mmvq`,the prompt-window route. The dedicated
+decode-columns entry is different,so this ratio qualifies that component
+comparison only. Preserve the earlier independent6.55283x columns comparison
+as separate evidence;the next same-engine0/2 model trial must exercise the
+actual selected decode path and MTP subset,then measure phase preservation and
+long/agent/strong-and-weak thinking workloads. Neither ratio establishes TG.
 The0b engine/fixtures and closed V2/V3/V4 model diagnostic roots are now
 retired:354files/183373323bytes. Exact1119project and1145dependency source
 inputs are recovered from their original commits;the original recipe and
