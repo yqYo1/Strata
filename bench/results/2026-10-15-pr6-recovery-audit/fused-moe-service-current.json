@@ -223930,7 +223930,7 @@
     ]
   },
   "q6_head_model_entry_v1": {
-    "stage": "host_passed",
+    "stage": "closed",
     "source_commit": "6e7901058b0f640f30a991ff1bcf2c427808d446",
     "native_source_commit": "4c2c824e71d275c4f8371de46f2a89b1db308e6f",
     "native_build": {
@@ -224777,11 +224777,276 @@
     },
     "plan": "Committed parser controls first;fresh head0then1 processes,long513/short82/long513 thinking-on32output requests in each. Context4096,chunk256,short-read128,owned1256cache,MTP4,no token/coupled graphs. Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps, complete GEN/drafts,all request route joins,positive C4replays,two target-head retirements and fresh capture identities after restoration. No output-equality requirement. Full15asset hashes at preparation and final cohort closure;stat checks before each process. Stop first failure.",
     "limits": "Small ownership/routing diagnosis only;no clean PP/TTFT/TG claim,task quality,physical262144/RESTORE,ordinary provider teardown or default adoption. Long/agent/strong-and-weak thinking benchmarks and independent prefill/decode preservation remain required.",
-    "results": [],
-    "passed": false,
-    "complete": false,
+    "results": [
+      {
+        "arm": 0,
+        "passed": true,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 513,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 27,
+            "output_ids_sha256": "a68fcf2bc3746a061792d0cb05c86000f44103fd7c478ca222f90d27b2b5b803",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 513,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 27,
+            "output_ids_sha256": "a68fcf2bc3746a061792d0cb05c86000f44103fd7c478ca222f90d27b2b5b803",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "4096",
+          "kv": "int8",
+          "kv_resident": "0",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "1678",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 1327929,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "4faaef8cb92e7c46471a81899cc819c3456dc526129d3ecb7e377443d8c39ca4",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "routes": {
+          "snapshots": 8,
+          "requests": [
+            1,
+            2,
+            3
+          ],
+          "decode_C4": [
+            {
+              "request": 1,
+              "capture_id": 2,
+              "replay_completed": 9,
+              "packed_calls": 0
+            },
+            {
+              "request": 2,
+              "capture_id": 2,
+              "replay_completed": 17,
+              "packed_calls": 0
+            },
+            {
+              "request": 3,
+              "capture_id": 6,
+              "replay_completed": 9,
+              "packed_calls": 0
+            }
+          ],
+          "packed_only_decode_C4": false,
+          "prompt_and_C1_packed_calls": 0
+        },
+        "head_transitions": [
+          {
+            "freed": 521472000,
+            "D2H": 521472000,
+            "H2D": 521472000
+          },
+          {
+            "freed": 521472000,
+            "D2H": 521472000,
+            "H2D": 521472000
+          }
+        ],
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      },
+      {
+        "arm": 1,
+        "passed": true,
+        "requests": [
+          {
+            "label": "long",
+            "prompt_tokens": 513,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 27,
+            "output_ids_sha256": "a68fcf2bc3746a061792d0cb05c86000f44103fd7c478ca222f90d27b2b5b803",
+            "complete": true
+          },
+          {
+            "label": "short",
+            "prompt_tokens": 82,
+            "generated": 32,
+            "accepted": 23,
+            "offered": 24,
+            "output_ids_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "complete": true
+          },
+          {
+            "label": "long",
+            "prompt_tokens": 513,
+            "generated": 32,
+            "accepted": 22,
+            "offered": 27,
+            "output_ids_sha256": "a68fcf2bc3746a061792d0cb05c86000f44103fd7c478ca222f90d27b2b5b803",
+            "complete": true
+          }
+        ],
+        "placement": {
+          "context": "4096",
+          "kv": "int8",
+          "kv_resident": "0",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "1181",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        },
+        "pre_main_validation": {
+          "pid": 1333063,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "mapping": {
+          "files": 38,
+          "sha256": "4faaef8cb92e7c46471a81899cc819c3456dc526129d3ecb7e377443d8c39ca4",
+          "scope": "file-backed executable ELF mappings at READY",
+          "other_executable_vmas": {
+            "[vdso]": 1,
+            "[vsyscall]": 1
+          },
+          "full_executable_address_space_qualified": false
+        },
+        "routes": {
+          "snapshots": 8,
+          "requests": [
+            1,
+            2,
+            3
+          ],
+          "decode_C4": [
+            {
+              "request": 1,
+              "capture_id": 2,
+              "replay_completed": 9,
+              "packed_calls": 1
+            },
+            {
+              "request": 2,
+              "capture_id": 2,
+              "replay_completed": 17,
+              "packed_calls": 1
+            },
+            {
+              "request": 3,
+              "capture_id": 6,
+              "replay_completed": 9,
+              "packed_calls": 1
+            }
+          ],
+          "packed_only_decode_C4": true,
+          "prompt_and_C1_packed_calls": 0
+        },
+        "head_transitions": [
+          {
+            "freed": 1042944000,
+            "D2H": 521472000,
+            "H2D": 1042944000
+          },
+          {
+            "freed": 1042944000,
+            "D2H": 521472000,
+            "H2D": 1042944000
+          }
+        ],
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
-    "model_executed": false,
+    "model_executed": true,
     "speed_eligible": false,
     "model_adoption_qualified": false,
     "retention": "Commit compact per-request extents/draft counts/route identities/ownership and limitations. Retire successful stage logs and superseded standalone head roots after exact input recovery; keep new engine for imminent long comparison and preserve90f/552b/e1b references.",
@@ -224790,6 +225055,21 @@
       "positive_arms": 2,
       "corrupt_variants": 6,
       "GPU_executed": false
+    },
+    "fresh_faults": [],
+    "final_fault_check": {
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
     },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -224818,6 +225098,21 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "head0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "head1",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
