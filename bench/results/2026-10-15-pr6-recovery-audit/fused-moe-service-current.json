@@ -225115,7 +225115,7 @@
       "STRATA_SYCL_ADAPT_SYNC": "1",
       "STRATA_SYCL_Q6_ROUTE_AUDIT": "0"
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "67a0c9cf38f577cbfd05be821094790bcc64f02a",
     "compiled_pool_sources": {
       "src/kernels/cpu/pool.cpp": "53511c3014aff103635003ebf632da02e6f9eba2b325bcb176018baf7c112e00",
@@ -225320,7 +225320,213 @@
         "environment_sha256": "47284d3fbd702693991b1caa3cbe71f2402b6c70db86b57f27943d6648643494"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "kernel": "reference",
+        "adapt_swaps": 96,
+        "complete": true,
+        "passed": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "native_identity": {
+          "pid": 1503521,
+          "start_ticks": 253657721,
+          "sid": 1503453
+        },
+        "request_routes_checked_before_continue": 2,
+        "cache_footers_checked_before_continue": 6,
+        "samples": [
+          {
+            "workload": "regular-code",
+            "read_tokens": 33210,
+            "reused_tokens": 0,
+            "generated_tokens": 2860,
+            "output_chars": 5578,
+            "reasoning_chars": 2357,
+            "prompt_ms": 58270.4,
+            "prompt_tps": 569.9,
+            "decode_ms": 230538.0,
+            "decode_tps": 12.4,
+            "ttft_s": 58.423,
+            "total_s": 288.832,
+            "drafts_offered": 2391,
+            "drafts_accepted": 2064,
+            "acceptance_rate": 0.863237139272271,
+            "request_sha256": "7f9a64817191246dc363340454be0ecceb632fb28421d976aacd91e6101e2f0b",
+            "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+            "reasoning_sha256": "5b2d8630c7eec9ba293e5f0791622c322cd0402710373f044de2341ae12ea5f4",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          },
+          {
+            "workload": "varied-prose",
+            "read_tokens": 33280,
+            "reused_tokens": 0,
+            "generated_tokens": 7627,
+            "output_chars": 5968,
+            "reasoning_chars": 14435,
+            "prompt_ms": 49274.7,
+            "prompt_tps": 675.4,
+            "decode_ms": 1011408.1,
+            "decode_tps": 7.5,
+            "ttft_s": 49.46,
+            "total_s": 1060.72,
+            "drafts_offered": 11145,
+            "drafts_accepted": 3912,
+            "acceptance_rate": 0.35100942126514134,
+            "request_sha256": "4888710af5c28e89f6abad8bfd39c4b6b8e57c51df8ee576393919155413d9e9",
+            "output_sha256": "cfbe6ddc3a21017fa8be26eaead024a04e734e1756d735448dfb647fcbc4b92f",
+            "reasoning_sha256": "41225313ec78775a08d7049f9b3fc82926388ee42077d3fe4f67abab220257d9",
+            "finish_reason": "stop",
+            "controller_eligible": true
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1503521,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "read_tokens": 33210,
+            "rows": 33209,
+            "GPU_residual_rows": 33209,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 20288,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33209,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed current native16/GDN3 headers,MTP mode2 callbacks,actual IQ3 entry and target-head capture/replay policy. Source/runtime are pinned;no hardware saturation claim.",
+            "physical_resource_saturation_qualified": false,
+            "target_head_transfer": {
+              "freed": 521472000,
+              "D2H": 521472000,
+              "H2D": 521472000
+            },
+            "target_head_route": {
+              "request": 5,
+              "capture_id": 8,
+              "completed": 797,
+              "packed_calls": 0,
+              "prompt_and_C1_packed_calls": 0,
+              "scope": "one live capture epoch;completed is cumulative within its identity"
+            },
+            "IQ3_dispatch": {
+              "request": 5,
+              "arm": 1,
+              "calls": 1250242,
+              "nt1_rows": 145246080,
+              "pair_rows": 145246080
+            }
+          },
+          {
+            "read_tokens": 33280,
+            "rows": 33279,
+            "GPU_residual_rows": 33279,
+            "ordinary_staged_slots": 384,
+            "split": false,
+            "GDN_barriers": 3,
+            "windows": 48,
+            "jobs": 19992,
+            "MTP_prefill": {
+              "path": "batched",
+              "placement_mode": 2,
+              "callbacks": 5,
+              "nominal_cells": 33279,
+              "internal_needed_rows_and_shapes_observed": false
+            },
+            "dispatch_proof": "Observed current native16/GDN3 headers,MTP mode2 callbacks,actual IQ3 entry and target-head capture/replay policy. Source/runtime are pinned;no hardware saturation claim.",
+            "physical_resource_saturation_qualified": false,
+            "target_head_transfer": {
+              "freed": 521472000,
+              "D2H": 521472000,
+              "H2D": 521472000
+            },
+            "target_head_route": {
+              "request": 6,
+              "capture_id": 10,
+              "completed": 3715,
+              "packed_calls": 0,
+              "prompt_and_C1_packed_calls": 0,
+              "scope": "one live capture epoch;completed is cumulative within its identity"
+            },
+            "IQ3_dispatch": {
+              "request": 6,
+              "arm": 1,
+              "calls": 4816338,
+              "nt1_rows": 432278400,
+              "pair_rows": 432278400
+            }
+          }
+        ],
+        "cache": [
+          {
+            "hits": 748562,
+            "lookups": 1530720,
+            "hit_percent": 48.9
+          },
+          {
+            "hits": 4380280,
+            "lookups": 7133280,
+            "hit_percent": 61.4
+          }
+        ],
+        "common_cache_footers": 6,
+        "journal": {
+          "successful_warmups": 4,
+          "successful_long_requests": 2,
+          "phase_order": [
+            "warm-up/chat",
+            "calibration",
+            "calibration",
+            "warm-up/prompt",
+            "long-generation/regular-code",
+            "long-generation/varied-prose"
+          ],
+          "request_sha256": [
+            "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+            "6f7e1f6a7444dfd4724c1b6f5f5796248cb4ba26ed6fea9b406b9eeaaeae15f7",
+            "e102822b700ba0077339707121d6076c64c624c681b66bf092ed54179f4ccb61",
+            "a88b70532b79bdc3e0b83aeb23f0c6310f672edbc2290af76a85b6181fa5b8e5",
+            "7f9a64817191246dc363340454be0ecceb632fb28421d976aacd91e6101e2f0b",
+            "4888710af5c28e89f6abad8bfd39c4b6b8e57c51df8ee576393919155413d9e9"
+          ],
+          "valid": true,
+          "journal_sha256": "dc77e9ad2144ca7967d5fbb80b18845c16996e33a716f918e17d7bd1a59e43cd"
+        },
+        "native_request_binding": {
+          "requests": 6,
+          "draft_cells": 68800
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "host_passed": true,
     "passed": false,
     "complete": false,
