@@ -27,7 +27,8 @@ import q6_dpas_component as reader
 import ur_validation as validation
 
 P, B = base.P, base.B
-ROOT, KEY = B / 'q6-dense-c4-v1', 'q6_dense_c4_component_v1'
+ROOT, KEY = B / 'q6-dense-c4-v1', 'q6_dense_c4_component_v2'
+PREVIOUS_KEY = 'q6_dense_c4_component_v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 COHORT, MODEL = 'q6_packed_head_generation_speed_v1', 'q6_head_packed_model_entry_v1'
 PYTHON = '/home/yayoi/.local/share/strata-sycl/venv/bin/python3'
@@ -90,10 +91,26 @@ def context():
     ctx.PREFIXES=('CMakeLists.txt','cmake','src','include','third_party','bench/sycl','tools/sycl')
     ctx.BUDGET=dict(wall=1200,cpu=3600,rss_cap=8<<30,text_cap=16<<20,file_cap=128<<20,total_cap=768<<20)
     ctx.basis=basis
+    original_compact=ctx.compact
+    def compact(row):
+        result=original_compact(row)
+        if 'admission_project' in row:
+            result['admission_project']={k:v for k,v in row['admission_project'].items() if k!='source_sha256'}
+        return result
+    ctx.compact=compact
     def current(row,committed=True):
         if committed:require(validation.committed(RESULT,(KEY,))==ctx.compact(row),'commit the exact component stage first')
         _,identity=basis();require(identity==row['selected_native'],'reference provenance changed')
-        ctx.build.check_inputs(row)
+        check=dict(row)
+        if 'admission_project' in row:
+            original=row['project']
+            require(row['admission_source_commit']==row['admission_project']['revision'] and
+                original['count']==len(original['source_sha256']) and
+                signature(original['source_sha256'])==original['aggregate_sha256'] and
+                row['binary']['source_commit']==row['actual_inputs']['source_commit']==original['revision'],
+                'controller admission must preserve the exact original fixture source')
+            check['project']=row['admission_project']
+        ctx.build.check_inputs(check)
         require(all(p in row['project']['source_sha256'] for p in UNITS) and
             'tools/sycl/q6_canonical_component.py' in row['project']['source_sha256'],'missing fixture/controller input')
         require(row['recipe']['targets']==row['recipe']['build_targets']==[ctx.TARGET] and
@@ -127,6 +144,22 @@ def fields(line,prefix):
 def number(f,key):
     value=f.get(key,'');require(value.isdecimal(),'missing/noninteger '+key)
     return int(value)
+
+
+def validated_trace(text,pid):
+    """Attest the constructor canary before checking subsequent native work."""
+    proof=validation.preload_evidence(text,pid)
+    marker=re.search(r'^strata UR validation: pid='+str(pid)+r' phase=before-main [^\n]*\n',text,re.M)
+    require(marker is not None,'complete validated constructor boundary required')
+    errors=lambda value:re.findall(r'(?:UR|ZE)_RESULT_ERROR_[A-Z_]+',value)
+    # The pinned constructor deliberately tests preinit37 and null-handle46.
+    # Parameter-only runs need not print enum names, but the receipt is mandatory.
+    require(set(errors(text[:marker.end()]))<=
+        {'UR_RESULT_ERROR_UNINITIALIZED','UR_RESULT_ERROR_INVALID_NULL_HANDLE'},
+        'unexpected error before the validated constructor boundary')
+    body=text[marker.end():]
+    require(not errors(body),'native UR/ZE error after the validated constructor boundary')
+    return proof,body
 
 
 def batch_size(n):
@@ -243,7 +276,56 @@ def controls():
         try:timing(text,0)
         except RuntimeError:continue
         raise RuntimeError('corrupted component timing/numerical record accepted')
-    return dict(passed=True,positive_process_orders=3,corrupt_variants=len(invalid),GPU_executed=False)
+    pid=31
+    begin=f'strata UR validation: pid={pid} phase=begin loader=/qualified/libur_loader.so\n'
+    receipt=f'strata UR validation: pid={pid} phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\n'
+    constructor='UR_RESULT_ERROR_UNINITIALIZED\nUR_RESULT_ERROR_INVALID_NULL_HANDLE\n'
+    for text in (begin+receipt+'native body\n',begin+constructor+receipt+'native body\n'):
+        proof,body=validated_trace(text,pid)
+        require(proof['dispatch_result']==46 and body=='native body\n','positive constructor/body separation')
+    good=begin+constructor+receipt+'native body\n'
+    bad_trace=[good+'UR_RESULT_ERROR_INVALID_NULL_HANDLE\n',good+'ZE_RESULT_ERROR_DEVICE_LOST\n',
+        begin+'UR_RESULT_ERROR_OUT_OF_RESOURCES\n'+receipt,good.replace('checked=46','checked=47'),
+        good+receipt,good.replace('phase=begin loader','phase=beginX loader'),
+        begin+receipt.rstrip('\n'),good+'UR_RESULT_ERROR_UNINITIALIZED\n']
+    for text in bad_trace:
+        try:validated_trace(text,pid)
+        except RuntimeError:continue
+        raise RuntimeError('invalid constructor/body diagnostic accepted')
+    return dict(passed=True,positive_process_orders=3,corrupt_variants=len(invalid),
+        trace_controls=dict(positive=2,negative=len(bad_trace),passed=True),GPU_executed=False)
+
+
+def admit(ctx):
+    """Change only the controller before any GPU stage; reuse exact build bytes."""
+    require(KEY not in validation.committed(RESULT),'fresh controller admission required')
+    original=json.loads((ROOT/'record.json').read_text())
+    previous=validation.committed(RESULT,(PREVIOUS_KEY,))
+    require(ctx.compact(original)==previous and original['stage']=='built' and
+        original['compilation_passed'] and not original['GPU_executed'] and
+        not original['model_executed'] and not original['active'] and original['ownership_closed'] and
+        len(original['results'])==1 and original['results'][0]==dict(mode='host',passed=True,
+            native_exit_code=0,GPU_executed=False,ownership_closed=True),
+        'preserve the compiled and31-case CPU-qualified pre-GPU result')
+    project=ctx.source.pin(P,ctx.PREFIXES)
+    before,after=original['project']['source_sha256'],project['source_sha256']
+    require(before=={p:hashlib.sha256(raw).hexdigest() for p,raw in
+        ctx.source.blobs(P,original['project']['revision'],before)} and set(before)==set(after) and
+        {p for p in before if before[p]!=after[p]}=={'tools/sycl/q6_canonical_component.py'},
+        'only the declared controller may change;all native/fixture sources stay exact')
+    row=copy.deepcopy(original)
+    row.pop('reader_controls');row.pop('module_import_controls');row.pop('pending_before_gpu')
+    row.update(stage='admitted',passed=False,complete=False,admission_project=project,
+        admission_source_commit=project['revision'],qualification_reuse=dict(
+            original_result_key=PREVIOUS_KEY,original_evidence_commit=ctx.source.git(P,'rev-parse','HEAD').decode().strip(),
+            native_source_commit=original['project']['revision'],fixture_sha256=original['binary']['sha256'],
+            native_recompiled=False,native_CPU_host_cases_reused=31,GPU_qualification_inherited=False,
+            scope='Same14TUs,801compiler inputs,24external links,recipe,census,fixture and selected image. Original build and CPU checks stay unchanged in reachable Git. Recheck constructor/body trace predicates before any GPU stage.'))
+    row['plan']['trace_validation']='Unique qualified pre-main receipt must attest expected37/46. Only those named errors may precede it;every UR/ZE error after it remains a failure. Require2positive/8negative CPU trace controls,then fresh small full-trace GPU evidence. No prior GPU result or model gain inherited.'
+    ctx.current(row,committed=False);ctx.save(row)
+    data=json.loads(RESULT.read_text());require(data[PREVIOUS_KEY]==previous,'original result changed during admission')
+    del data[PREVIOUS_KEY];write(RESULT,data)
+    print('Admitted unchanged fixture for fresh trace controls;original result archived in Git. Commit first.',flush=True)
 
 
 def prepare(ctx):
@@ -291,12 +373,13 @@ def prepare(ctx):
 def run(ctx,mode):
     row=json.loads((ROOT/'record.json').read_text());ctx.current(row)
     if mode=='controls':
-        require(row['stage']=='prepared' and 'reader_controls' not in row,'fresh parser controls only')
+        require(row['stage'] in ('prepared','admitted') and 'reader_controls' not in row,'fresh parser controls only')
         try:row['reader_controls']=controls()
         except BaseException as error:
             row.update(stage='failed',passed=False,complete=False,error=repr(error),reader_controls=dict(passed=False,GPU_executed=False))
             ctx.save(row);raise
-        ctx.save(row);print('CPU parser controls passed;commit before build.',flush=True);return
+        if row['stage']=='admitted':row['stage']='built'
+        ctx.save(row);print('CPU parser controls passed;commit before next native stage.',flush=True);return
     if mode=='build':
         require(row['reader_controls']['passed'],'CPU parser controls first');ctx.compile_fixture()
         row=json.loads((ROOT/'record.json').read_text())
@@ -360,10 +443,9 @@ def run(ctx,mode):
             outcome['native_exit_code']=event.get('exit_code')
             require(owner.closed(event) and event['exit_code']==0,'owned native component failed')
             text,diagnostic=out.read_text(),err.read_text();outcome['native_exit_code']=0
-            outcome['validation']=validation.preload_evidence(diagnostic,event['pid'])
+            outcome['validation'],body=validated_trace(diagnostic,event['pid'])
             require(outcome['validation']['loader']==env['STRATA_UR_PROBE_EXPECTED_LOADER'] and
-                (not log.exists() or log.stat().st_size==0) and
-                not re.search(r'(?:UR|ZE)_RESULT_ERROR_[A-Z_]+',diagnostic),'actual parameter-validation/UR result failed')
+                (not log.exists() or log.stat().st_size==0),'actual parameter-validation/UR result failed')
             if mode.startswith('time'):
                 parsed=timing(text,int(mode[-1]));row['timing'].append(parsed)
                 outcome['timing_index']=parsed['index']
@@ -371,7 +453,7 @@ def run(ctx,mode):
                 small=mode=='check-small';shapes=SMALL if small else SHAPES
                 outcome['numerical']=numerical(text,shapes)
                 require(text.splitlines().count(f'CHECK passed=1 small={int(small)} cases={2*len(shapes)} route=compat_graph columns=4')==1,'complete native check footer')
-                if small:require('Q6DpasC4Canonical' in diagnostic and 'urEnqueueCommandBufferExp' in diagnostic,'actual traced canonical graph path')
+                if small:require('Q6DpasC4Canonical' in body and 'urEnqueueCommandBufferExp' in body,'actual traced canonical graph path')
             row['GPU_executed']=True;outcome.update(passed=True,host_probe_accepted=True,GPU_executed=True)
     except BaseException as error:outcome.update(passed=False,host_probe_accepted=False,error=repr(error))
     finally:
@@ -391,7 +473,10 @@ def run(ctx,mode):
 
 
 if __name__=='__main__':
-    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','controls','build','host','check-small','check','time0','time1','time2'),'six-shape component stage')
+    require(len(sys.argv)==2 and sys.argv[1] in ('prepare','admit','controls','build','host','check-small','check','time0','time1','time2'),'six-shape component stage')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
-        ctx=context();prepare(ctx) if sys.argv[1]=='prepare' else run(ctx,sys.argv[1])
+        ctx=context()
+        if sys.argv[1]=='prepare':prepare(ctx)
+        elif sys.argv[1]=='admit':admit(ctx)
+        else:run(ctx,sys.argv[1])
