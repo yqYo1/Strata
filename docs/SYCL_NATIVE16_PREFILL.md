@@ -2098,8 +2098,10 @@ module-import orders now pass. The first small full-trace GPU check also passes:
 four shapes/two seeds give8numerical cases and4C1 refusals, with guards and
 immutable inputs. Both native provider gates attest the actual process and
 environment; exit0, quiet validation, closed ownership and no fresh fault are
-confirmed. The original build/CPU outcomes are unchanged. Full six-shape
-numerics and three-process timing remain pending; no model speed is qualified.
+confirmed. Full six-shape numerics also pass:12cases,6C1 refusals, finite/guard
+checks and unchanged inputs, with normal0, closed ownership and no fresh fault.
+The original build/CPU outcomes are unchanged. Three-process timing remains
+pending; no model speed is qualified.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's

@@ -234598,6 +234598,101 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "check",
+        "passed": true,
+        "native_execution_attempted": true,
+        "native_identity": {
+          "pid": 2977619,
+          "state": "S",
+          "ppid": 2977119,
+          "pgid": 2977619,
+          "sid": 2977619,
+          "start_ticks": 257875539,
+          "rss_bytes": 62291968
+        },
+        "provider_admission": [
+          {
+            "phase": 0,
+            "mapped_files": 21,
+            "mapped_path_sha256": "70d619318fa8f3d0e0df6ef43588cddc197e7acef95f1415065629fde1c2eaf0",
+            "required_present": true,
+            "environment_immutable": true
+          },
+          {
+            "phase": 1,
+            "mapped_files": 34,
+            "mapped_path_sha256": "422f850045aa992690e339f8ca5eaf1902a1c094f610e00a30fef3c0606677ff",
+            "required_present": true,
+            "environment_immutable": true
+          }
+        ],
+        "GPU_initialized": true,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2977619,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "numerical": {
+          "cases": 12,
+          "shapes": {
+            "2560x512": {
+              "cases": 2,
+              "max_abs_error": 2.28881835938e-05,
+              "minimum_oracle_rows": 512
+            },
+            "6144x2560": {
+              "cases": 2,
+              "max_abs_error": 5.34057617188e-05,
+              "minimum_oracle_rows": 537
+            },
+            "2560x6144": {
+              "cases": 2,
+              "max_abs_error": 4.57763671875e-05,
+              "minimum_oracle_rows": 541
+            },
+            "2560x10240": {
+              "cases": 2,
+              "max_abs_error": 4.57763671875e-05,
+              "minimum_oracle_rows": 543
+            },
+            "2560x12288": {
+              "cases": 2,
+              "max_abs_error": 4.57763671875e-05,
+              "minimum_oracle_rows": 543
+            },
+            "2560x248320": {
+              "cases": 2,
+              "max_abs_error": 6.103515625e-05,
+              "minimum_oracle_rows": 543
+            }
+          },
+          "finite_and_guards": true,
+          "inputs_immutable": true,
+          "C1_negative_controls": 6
+        },
+        "host_probe_accepted": true,
+        "GPU_executed": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
     "timing": [],
