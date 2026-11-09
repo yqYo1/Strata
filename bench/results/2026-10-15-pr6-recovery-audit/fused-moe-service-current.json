@@ -225900,7 +225900,7 @@
     ]
   },
   "q6_head_model_build_v3": {
-    "stage": "configured",
+    "stage": "failed",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -226874,6 +226874,81 @@
       "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/CMakeFiles/rules.ninja": "49776093ae4cc38bbb75101933acbd4030b96438df63144fa2538084840a5d9f"
     },
     "active": false,
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/actual-inputs.json",
+      "sha256": "c1201c48ac1f59b0b371fe921ccb63ff7bb2a7b0813b73c52218897a8baa2440",
+      "compiler_files": 1461,
+      "generated_files": 1,
+      "external_link_files": 29,
+      "uncovered": 0,
+      "translation_units": 127,
+      "source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e"
+    },
+    "binaries": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/strata",
+        "sha256": "5a6d6fdf4c07effe50a030c33cd6e2be6620fea3b966dfb68411d836e2f39526",
+        "bytes": 26311272,
+        "origin_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e"
+      },
+      "sycl_q6_head_owner_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/sycl_q6_head_owner_test",
+        "sha256": "bfb7013c8c48832800b18ca68e18b8779f46db047a7a5e1fd19fed10de29f36b",
+        "bytes": 11675544,
+        "origin_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e"
+      },
+      "sycl_submission_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/sycl_submission_test",
+        "sha256": "d8d0f786a01b76bdb244e408aa02f5216c50a3d2f5c16d122307796eadea659d",
+        "bytes": 351832,
+        "origin_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e"
+      },
+      "sycl_verifier_retirement_test": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/sycl_verifier_retirement_test",
+        "sha256": "57d031e978187f896e6aa65eb64f7231ecfbf8c8e883160b12d6520dd1f2082d",
+        "bytes": 19680064,
+        "origin_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e"
+      }
+    },
+    "codegen": {
+      "strata": {
+        "image_symbol": ".sycl_offloading.49.data",
+        "image_offset": 10704976,
+        "image_bytes": 26028,
+        "image_sha256": "5148340a1ef5606666941b0e0c1420e8de3e0093c2e385c976c9b648bde03fb6",
+        "entrypoint": "_ZTSN6strata7kernels9component12_GLOBAL__N_117Q6DpasC4CanonicalE",
+        "reachable_functions": 17,
+        "dpas_static_calls": 2,
+        "dpas_callees": [
+          "llvm.genx.dpas2.v64i32.v64i32.v128i32.v32i32"
+        ],
+        "module_kernel_entrypoints": [
+          "_ZTSN6strata7kernels9component12_GLOBAL__N_117Q6DpasC4CanonicalE",
+          "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E"
+        ],
+        "device_images": 105,
+        "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
+      },
+      "sycl_q6_head_owner_test": {
+        "image_symbol": ".sycl_offloading.1.data",
+        "image_offset": 1041664,
+        "image_bytes": 26028,
+        "image_sha256": "250b825f8394956decf76db7fab7eeeeac1cd0995bd781c4e8da22d41c1fdeec",
+        "entrypoint": "_ZTSN6strata7kernels9component12_GLOBAL__N_117Q6DpasC4CanonicalE",
+        "reachable_functions": 17,
+        "dpas_static_calls": 2,
+        "dpas_callees": [
+          "llvm.genx.dpas2.v64i32.v64i32.v128i32.v32i32"
+        ],
+        "module_kernel_entrypoints": [
+          "_ZTSN6strata7kernels9component12_GLOBAL__N_18Q6DpasC4E",
+          "_ZTSN6strata7kernels9component12_GLOBAL__N_117Q6DpasC4CanonicalE"
+        ],
+        "device_images": 14,
+        "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
+      }
+    },
+    "error": "RuntimeError('production-linked canonical C4 image changed')",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e",
@@ -226915,7 +226990,31 @@
         "ownership_closed": true,
         "error": null,
         "errors": []
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "dependencies",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
       }
-    ]
+    ],
+    "image_identity_refusal": {
+      "expected_sha256": "250b825f8394956decf76db7fab7eeeeac1cd0995bd781c4e8da22d41c1fdeec",
+      "actual_engine_sha256": "5148340a1ef5606666941b0e0c1420e8de3e0093c2e385c976c9b648bde03fb6",
+      "image_bytes_each": 26028,
+      "instructions_each": 1187,
+      "opcode_histogram_equal": true,
+      "OpName_multiset_equal": true,
+      "entrypoint_order_reversed": true,
+      "scope": "Read-only structural census only;ID-renaming equivalence and production GPU behavior not yet qualified. Original exact-byte gate remains failed."
+    }
   }
 }
