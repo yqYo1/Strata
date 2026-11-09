@@ -249,7 +249,7 @@ void timing(int process,std::shared_ptr<sb::Runtime>& keep) {
     int samples=0;
     for(const auto& shape:production_shapes) {
         Fixture f(r,shape.input,shape.output);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify();
-        const int batch=shape.output<=1024?4096:256;
+        const int batch=shape.output<=1024?4096:(shape.output==248320?256:1024);
         for(int at=0;at<2;++at) {const int arm=process==1?1-at:at;
             for(int sample=-2;sample<5;++sample) {
                 const auto before=f.calls;const auto a=stamp();for(int i=0;i<batch;++i)f.launch(arm);const auto b=stamp();f.wait();const auto c=stamp();
