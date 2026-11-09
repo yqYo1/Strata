@@ -2227,6 +2227,9 @@ phase/width tables after excluding the four selected cells. Record differing
 optional MTP widths without demanding identical generated text. Commit each
 closed stage;stop on the first failed gate. These short outputs qualify routing
 and ownership only,not sustained generation speed.
+The original observer at`cc1f28bf4`fails during Python import before preparing
+the cohort:the dense builder exposes`primary.RESULT`,not`RESULT`. Correct that
+alias before preparation;no model/native execution or GPU result occurred.
 No model/default adoption or physical262144/RESTORE qualification follows here.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six

@@ -21,7 +21,7 @@ import build_q6_dense_model as build
 import check_q6_dense_model as device
 import q6_head_model_entry as previous
 
-P, B, RESULT = build.P, build.B, build.RESULT
+P, B, RESULT = build.P, build.B, build.primary.RESULT
 ROOT, KEY = B / 'q6-dense-head-backing-model-v1', 'q6_dense_head_backing_model_v1'
 THIS = 'tools/sycl/q6_dense_model_entry.py'
 ARMS = ((0, 0), (1, 0), (0, 1), (1, 1))
