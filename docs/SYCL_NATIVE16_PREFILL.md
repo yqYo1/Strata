@@ -2253,6 +2253,16 @@ Post-retirement admission passes with the exact source,five ELFs,census,recipe,
 runtime,generator and model identities retained. The model-generator venv is
 required for this check;the system-Python cleanup admission refused before any
 manifest/deletion because`regex`was absent. Original model outcomes are unchanged.
+The next speed observer is `tools/sycl/q6_dense_model_speed.py`. It admits only
+that additional committed observer against the original1129model/build inputs;
+native221e,five ELFs,census and recipe remain unchanged. Head2/backing0 and the
+closed tuned128K/1256/spec4/8192/384bank/adapt96/lease1configuration stay fixed.
+Six fresh processes in0/1,1/0,0/1pair order each run the same official
+`bench.sh --long --long-generation --think --runs 1`,including the six-turn
+agent session. Two fresh frontend probes and bounded route-reader controls
+precede execution. Keep all paired TG/PP/TTFT samples and actual MTP classes;
+the nominal32Kcase is supplemental and added generation inputs must meet the
+strict32768fresh-token requirement. This is prospective,not a speed result.
 No model/default adoption or physical262144/RESTORE qualification follows here.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
