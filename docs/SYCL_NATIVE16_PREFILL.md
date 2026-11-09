@@ -2061,10 +2061,12 @@ again to the two-map total. These values exclude other model copies and give
 no copy latency, CPU-grouping cost, overlap or bus-saturation measurement.
 They support the next long-prefill transfer/synchronization attribution;
 byte volume alone cannot decide whether moving grouping to the GPU wins.
-The next component fixture/controller is source-only at `bd6b375a6` on
+The next component fixture/controller is source-only at `d003ba0b6` on
 `tune/q6-dense-shapes`: six actual Q6 C4 shapes with their production
 generic/columns references, without a new inference dispatcher. Its syntax,
-parser, build and device checks remain unrun. After this cohort closes, review
+parser, build and device checks remain unrun. Its primary-builder import is
+deferred to remove the source-level initialization-order cycle; that fix also
+remains unexecuted. After this cohort closes, review
 and integrate it into `feature/sycl`, retire the child, then test serially.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
