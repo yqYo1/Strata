@@ -2131,8 +2131,8 @@ dependency sources and verifying the exact recipe and compiler/link census.
 The compact result keeps every sample and original outcome; its retirement
 entry identifies the external deletion manifest and retained source/census
 receipts. The qualified engine and required same-build fixtures are unchanged.
-A separate source-only prefill proposal is committed and pushed on
-`tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
+The source-only prefill proposal at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`
+is integrated into `feature/sycl` by merge `f3e1941a3597b4611d8d0e0835da25978083c766`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's
 exact canonical/packed bytes in RAM. It transfers the existing packed host
 allocation into the owner, adds no GPU weight allocation, and skips the per-prompt
@@ -2142,11 +2142,26 @@ trade is 521472000 permanent RAM bytes for 521472000 fewer requested D2H bytes
 per long transition, plus removal of request-scoped snapshot allocation. Neither
 copy latency nor a PP/TTFT gain is measured. The ownership fixture source adds
 checks for both policies' actual RAM extent, byte equality and repeated
-retire/overwrite/restore; it remains unbuilt and unexecuted. After the current frozen
-cohort and six-shape component close, integrate this child's source into
-`feature/sycl` and retire the child. A fresh four-ELF build, CPU refusals, traced
+retire/overwrite/restore; it remains unbuilt and unexecuted. The completed source
+child is eligible for retirement after its original identity is verified on the
+pushed primary. A fresh four-ELF build, CPU refusals, traced
 small ownership checks, matched model handoff and repeated PP/TTFT/TG comparison
 are required; do not reuse the old same-build qualification for this changed owner.
+The independent dense trial is default-off at
+`STRATA_SYCL_DECODE_Q6_DPAS_DENSE=1`. It selects only the four winning non-head
+C4 decode shapes, requires exact Q8_1/columns1/centering0/native-half0, and leaves
+prompt, other widths, the smallest shape and the packed head on their incumbents.
+`Q6_DPAS_DENSE` records per-shape static capture counts separately from the
+unchanged four-arm `Q6_SHAPE` schema. Neither path adds device weights.
+`tools/sycl/build_q6_dense_model.py` prepares a fresh private candidate with the
+engine, three production-linked GPU fixtures and a CPU phase/shape/cache-policy
+fixture. It preserves the1db engine/four fixtures and records50host controls,
+complete actual compiler/generated/link inputs and selected linked-kernel
+identity. Compare dense0/1 with backing fixed0, then backing0/1 with decode
+selection fixed. No prior GPU or model qualification is inherited; both
+mechanisms need independent numerical/lifetime and repeated phase-performance
+checks. Existing phase/feature generations and legacy provenance holds remain
+separate; compilation alone does not qualify this candidate.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),

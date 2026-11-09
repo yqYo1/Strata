@@ -1,6 +1,6 @@
 // Main-authored compressed-Q6 component; repository LICENSE.
-// Opt-in decode C4 proposal. Only the measured full target head is eligible
-// for model trials; default adoption and model-level gain remain unqualified.
+// Opt-in decode C4 proposal. Independently measured head/dense shapes may be
+// selected by their owner policies; model/default adoption remains unqualified.
 #pragma once
 #include <algorithm>
 #include <cstddef>
@@ -61,7 +61,8 @@ void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
 // It owns no additional weight storage and does not alter C1 or prompt routes.
 // The source has exactly n*(k/256)*210 bytes; masked loads cover an unpadded
 // final output tile. Same explicit queue, disjoint-span and lifetime contract.
-// No production dispatcher selects this entry before component/model checks.
+// Production policies restrict this to separately qualified component shapes
+// for prospective model trials; this does not imply model/default adoption.
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);
 } // namespace strata::kernels::component

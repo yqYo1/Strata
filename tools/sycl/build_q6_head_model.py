@@ -30,6 +30,9 @@ KEY = 'q6_head_packed_primary_build_v2'
 READER = '484d403e60c49361422f00a16dfdd774e4fe90d5'
 TARGETS = ['strata', 'sycl_q6_head_owner_test', 'sycl_submission_test',
            'sycl_verifier_retirement_test']
+# Historical fresh V1 used36; prospective build contexts supply their exact
+# committed reader-suite count without relabelling the old admission/results.
+HOST_CASES = 36
 PREFIXES = ['CMakeLists.txt', 'cmake', 'src', 'include', 'third_party',
             'tests', 'bench/sycl', 'tools/sycl']
 HOST_PYTHON = '/home/yayoi/.local/state/strata-sycl/upstream-host-tests-146df3c4/bin/python'
@@ -311,7 +314,7 @@ def execute(stage):
                     'build command failed: ' + label + '; inspect the owned bounded diagnostic')
             if label == 'host-controls':
                 text = out.read_text() + err.read_text()
-                count = 40 if stage=='controls' else 36
+                count = 40 if stage=='controls' else HOST_CASES
                 require('Ran ' + str(count) + ' tests' in text and '\nOK\n' in text, 'all CPU controls required')
                 row['host_controls'] = dict(passed=True, cases=count, fault_finalizer_AST_identical=True,
                     GPU_executed=False, source_commit=row.get('admission_source_commit', row['project']['revision']))

@@ -11,6 +11,7 @@ using strata::core::verify_q6_columns;
 using strata::core::verify_q6_centering;
 using strata::core::verify_q6_native_half;
 using strata::core::verify_q6_dpas_head;
+using strata::core::verify_q6_dpas_dense;
 using strata::core::VerifyQ6Route;
 
 static void need(bool ok, const char* message) {
@@ -34,6 +35,25 @@ int main() try {
                         "unmeasured packed-head geometry selected");
             }
     need(dpas_selected==1,"wrong number of packed target-head selections");
+    // Independent expected set from e44575158; exclude the losing512-row
+    // shape, packed full head and every prompt/C1-C3/C8 call.
+    int dense_selected = 0;
+    for (const auto& shape : {std::array<int,2>{6144,2560}, {2560,6144},
+                              {2560,10240}, {2560,12288}})
+        for (bool enabled : {false,true}) for (bool exact : {false,true})
+            for (auto phase : {VerifyInput::prompt,VerifyInput::decode,static_cast<VerifyInput>(255)})
+                for (int type : {-1,13,14,15}) for (int c=0;c<=9;++c) {
+                    const bool expected=enabled && exact && phase==VerifyInput::decode && type==14 && c==4;
+                    need(verify_q6_dpas_dense(enabled,phase,exact,type,shape[0],shape[1],c)==expected,
+                         "dense DPAS escaped the independently measured phase/layout/type/shape set");
+                    dense_selected += expected;
+                }
+    need(dense_selected==4,"wrong number of qualified dense-DPAS cells");
+    for (const auto& shape : {std::array<int,2>{2560,512}, {2560,640}, {2560,248320},
+                              {6144,2559}, {2561,6144}, {0,0}, {-2560,10240}})
+        for (int c=0;c<=9;++c)
+            need(!verify_q6_dpas_dense(true,VerifyInput::decode,true,14,shape[0],shape[1],c),
+                 "unqualified dense DPAS shape selected");
     // Expected selections come from the committed component decision, not a
     // second implementation of the dispatch predicate. Bit c means columns c.
     const int eligible[][3] = {
@@ -124,6 +144,7 @@ int main() try {
     decode.q6_columns_calls = 42;
     decode.q6_centered_calls = 12;
     decode.q6_dpas_head_calls = 1;
+    decode.q6_dpas_dense_calls = {40,14,22,5};
     need(!decode.ready, "a partial graph cache became replayable");
     decode.ready = true;
     need(cache.at(VerifyInput::prompt, 4).layer == std::vector<int>{11} &&
@@ -134,6 +155,10 @@ int main() try {
          "decode changed an already captured prompt window");
     need(prompt.q6_dpas_head_calls==0 && cache.at(VerifyInput::decode,4).q6_dpas_head_calls==1,
          "packed head route leaked across phase caches");
+    need(prompt.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
+         cache.at(VerifyInput::decode,4).q6_dpas_dense_calls==std::array<uint64_t,4>{40,14,22,5} &&
+         cache.at(VerifyInput::decode,3).q6_dpas_dense_calls==std::array<uint64_t,4>{},
+         "dense DPAS capture metadata crossed phase/token keys");
     auto& decode8 = cache.at(VerifyInput::decode, 8);
     decode8.layer = {31};
     decode8.q6_columns_calls = decode8.q6_native_half_calls = 26;
@@ -175,6 +200,8 @@ int main() try {
          prompt.q6_reference_calls == 0 && decode.q6_columns_calls == 0 &&
          prompt.q6_centered_calls == 0 && decode.q6_centered_calls == 0 &&
          prompt.q6_dpas_head_calls==0 && decode.q6_dpas_head_calls==0 &&
+         prompt.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
+         decode.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
          decode8.q6_native_half_calls == 0 && decode8.q6_shapes.empty() &&
          decode8.q6_capture_id == 0 && decode8.q6_replay_started == 0 &&
          decode8.q6_replay_completed == 0 && decode8.q6_cache_hits == 0 &&
@@ -196,7 +223,7 @@ int main() try {
     need(!decode8.q6_routes_complete && decode8.q6_shapes.empty(), "invalid audit route indexed counters");
     cache.clear([](int) {});
     need(decode8.q6_routes_complete, "audit retirement kept an incomplete flag");
-    std::puts("verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64");
+    std::puts("verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 dpas-dense=4 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64");
     return 0;
 } catch (const std::exception& error) {
     std::fprintf(stderr, "verify-window-policy: %s\n", error.what());

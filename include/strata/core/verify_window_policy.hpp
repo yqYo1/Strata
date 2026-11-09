@@ -16,6 +16,25 @@ constexpr bool valid_verify_input(VerifyInput input) {
     return input == VerifyInput::prompt || input == VerifyInput::decode;
 }
 
+// e44575158:q6_dense_c4_component_v2: these four non-head shapes won in
+// all three fresh processes against the production columns entry. Keep the
+// losing512-row shape and the separately faster sole-packed head unchanged.
+inline constexpr std::array<std::array<int, 2>, 4> verify_q6_dense_dpas_shapes{{
+    {6144, 2560}, {2560, 6144}, {2560, 10240}, {2560, 12288}
+}};
+
+constexpr std::size_t verify_q6_dense_dpas_index(int n_in, int n_out) {
+    for (std::size_t i = 0; i < verify_q6_dense_dpas_shapes.size(); ++i)
+        if (verify_q6_dense_dpas_shapes[i] == std::array<int, 2>{n_in, n_out}) return i;
+    return verify_q6_dense_dpas_shapes.size();
+}
+
+constexpr bool verify_q6_dpas_dense(bool enabled, VerifyInput input, bool exact,
+                                   int type, int n_in, int n_out, int columns) {
+    return enabled && input == VerifyInput::decode && exact && type == 14 && columns == 4 &&
+        verify_q6_dense_dpas_index(n_in, n_out) < verify_q6_dense_dpas_shapes.size();
+}
+
 // 0ccc4ed45:q6_canonical_component_v4: only the full target head/C4 won.
 // The enabled owner supplies unchanged canonical Q6 rows. Never select the
 // slower 2560x640 matrix. This is eligibility for a model trial only.
@@ -83,6 +102,9 @@ public:
         // MMVQ routes, preserving the existing Q6_ROUTE/SHAPE wire schema.
         uint64_t q6_dpas_head_calls = 0;
         uint64_t q6_packed_head_calls = 0;
+        // Separate from the four-arm legacy Q6_SHAPE schema. These are static
+        // capture counts, never a per-replay global/atomic counter.
+        std::array<uint64_t, verify_q6_dense_dpas_shapes.size()> q6_dpas_dense_calls{};
         struct Q6Shape {
             int n_in, n_out, columns;
             std::array<uint64_t, 4> calls{};
@@ -121,6 +143,7 @@ public:
             q6_reference_calls = q6_columns_calls = q6_centered_calls = q6_native_half_calls = 0;
             q6_dpas_head_calls = 0;
             q6_packed_head_calls = 0;
+            q6_dpas_dense_calls.fill(0);
             q6_shapes.clear();
             q6_capture_id = q6_cache_hits = q6_replay_started = q6_replay_completed = 0;
             q6_routes_complete = true;

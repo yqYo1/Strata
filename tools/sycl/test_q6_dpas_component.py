@@ -113,6 +113,34 @@ class NativeHeadProtocol(unittest.TestCase):
             self.assertEqual(value['graph_replays'],12)
             self.assertEqual(len(value['numeric']),4)
 
+    @staticmethod
+    def backed_output(arm):
+        return NativeHeadProtocol.output(arm).replace('extra_host_weight_bytes=0','extra_host_weight_bytes=521472000').replace(
+            'extra_weights=absent','extra_weights=host-backing').replace('HEAD_OWNER_EXIT',
+            'HOST_BACKING_CHECK passed=1 bytes=521472000 detach_D2H_bytes=0 restore_H2D_bytes=521472000 restore_cycles=2 extra_device_weight_bytes=0\nHEAD_OWNER_EXIT')
+
+    def test_initial_host_backing_in_all_three_layouts(self):
+        for arm in (0,1,2):
+            value=head_owner.parse_native(self.backed_output(arm),arm,host_backed=True)
+            self.assertTrue(value['host_backed']);self.assertEqual(value['extra_host_weight_bytes'],521472000)
+            self.assertEqual(value['restore_cycles'],2)
+
+    def test_host_backing_receipt_is_mandatory_and_cannot_be_borrowed(self):
+        text=self.backed_output(2);line=next(v for v in text.splitlines() if v.startswith('HOST_BACKING_CHECK '))
+        for corrupt in (text.replace(line+'\n',''),text.replace(line,line+'\n'+line),
+                        text.replace('detach_D2H_bytes=0','detach_D2H_bytes=521472000'),
+                        text.replace('restore_H2D_bytes=521472000','restore_H2D_bytes=0')):
+            with self.assertRaises(RuntimeError):head_owner.parse_native(corrupt,2,host_backed=True)
+        with self.assertRaises(RuntimeError):head_owner.parse_native(text,2)
+        with self.assertRaises(RuntimeError):head_owner.parse_native(self.output(2),2,host_backed=True)
+
+    def test_host_backing_cannot_hide_actual_ram_or_extra_device_weights(self):
+        for a,b in (('extra_host_weight_bytes=521472000','extra_host_weight_bytes=0'),
+                    ('bytes=521472000 detach','bytes=521471999 detach'),
+                    ('extra_device_weight_bytes=0','extra_device_weight_bytes=521472000')):
+            with self.assertRaises(RuntimeError):head_owner.parse_native(self.backed_output(1).replace(a,b),1,host_backed=True)
+        with self.assertRaises(RuntimeError):head_owner.parse_native(self.backed_output(1),1,host_backed=1)
+
     def test_sole_packed_widths_and_single_owner(self):
         value=head_owner.parse_native(self.output(2),2)
         self.assertEqual(value['layout'],'sole-packed');self.assertTrue(value['primary_packed'])

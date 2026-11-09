@@ -13,13 +13,15 @@ sys.dont_write_bytecode=True
 from measurement_guards import require
 import ur_validation as validation
 
-def parse_native(text,dpas):
+def parse_native(text,dpas,*,host_backed=False):
     require(type(dpas) is int and dpas in (0,1,2),'explicit owner arm')
+    require(type(host_backed) is bool,'explicit immutable host backing policy')
+    host_bytes=521472000 if host_backed else 0
     packed=dpas==2;canonical_dpas=int(dpas==1);selected=int(dpas!=0)
     lines=text.splitlines()
     captures=f'CAPTURE graphs=3 nodes_each=2 dpas_decode_calls={selected} dpas_prompt_calls=0 dpas_C1_calls={int(packed)}'
     require(lines.count(captures)==3 and sum(v.startswith('CAPTURE ') for v in lines)==3,'all graph families recaptured')
-    end=f'OWNER_CHECK dpas={canonical_dpas} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0'
+    end=f'OWNER_CHECK dpas={canonical_dpas} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights='+('host-backing' if host_backed else 'absent')+' model=0 Verifier_owner=0'
     require(lines.count(end)==1 and lines.count('HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified')==1
         and lines[-1]=='HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified','complete owner/exit proof')
     numeric=[]
@@ -40,9 +42,12 @@ def parse_native(text,dpas):
     require([v for v in lines if v.startswith('RETIREMENT ')]==retired,'registered pointer retirement')
     admission=[v for v in lines if v.startswith('HEAD admitted=')]
     require(len(admission)==1,'one actual admission')
-    match=re.fullmatch(r'HEAD admitted=1 dpas=([01]) layout=(canonical|sole-packed) canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 max_alloc_bytes=(\d+)',admission[0])
+    match=re.fullmatch(rf'HEAD admitted=1 dpas=([01]) layout=(canonical|sole-packed) canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes={host_bytes} max_alloc_bytes=(\d+)',admission[0])
     require(match and int(match[1])==canonical_dpas and match[2]==('sole-packed' if packed else 'canonical') and int(match[3])>=521472000,
         'admitted selected head/zero extra weights/single-allocation bound')
+    backing='HOST_BACKING_CHECK passed=1 bytes=521472000 detach_D2H_bytes=0 restore_H2D_bytes=521472000 restore_cycles=2 extra_device_weight_bytes=0'
+    require([v for v in lines if v.startswith('HOST_BACKING_CHECK ')]==([backing] if host_backed else []),
+        'exact initial host bytes,zero detach D2H and two full restores required')
     partial=[f'PARTIAL columns={c} outputs={c*248320} guards=PASS input_immutable=PASS' for _ in range(4) for c in (2,3)]
     require([v for v in lines if v.startswith('PARTIAL ')]==(partial if packed else []),
         'all partial-column numerics,canaries and immutable inputs required')
@@ -62,7 +67,7 @@ def parse_native(text,dpas):
     return dict(dpas=dpas,numeric=numeric,transitions=timings,restore_cycles=2,blocked_cases=4,
         graph_replays=12,graphs_each_capture=3,nodes_each_graph=2,canonical_bytes=521472000,
         layout='sole-packed' if packed else 'canonical',primary_packed=packed,partial_cases=8 if packed else 0,
-        extra_device_weight_bytes=0,extra_host_weight_bytes=0,max_alloc_bytes=int(match[3]),
+        extra_device_weight_bytes=0,extra_host_weight_bytes=host_bytes,host_backed=host_backed,max_alloc_bytes=int(match[3]),
         canonical_immutable=True,
         scope='Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed.')
 
