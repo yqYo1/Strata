@@ -22,7 +22,7 @@ NativeHead::~NativeHead() {
 #ifdef STRATA_ENABLE_SYCL
     if(head_prepared_ || head_detached_)
         strata::sycl_backend::cleanup_fail_stop("native head teardown while prompt head scope active");
-    if(head_release_used_ || decode_dpas_ || primary_packed_) {
+    if(head_release_used_ || decode_dpas_ || primary_packed_ || head_host_backed_) {
         // The caller's reader lease has already drained main/verifier/MTP queues.
         if(scratch_ && cudaFree(scratch_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("native scratch free");
         if(weights_ && cudaFree(weights_)!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("native restored head free");
@@ -48,9 +48,17 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
         }
         const bool dpas=dpas_value && std::strcmp(dpas_value,"1")==0;
         const bool packed=dpas_value && std::strcmp(dpas_value,"2")==0;
+        const char* backing_value=std::getenv("STRATA_PREFILL_HEAD_HOST_BACKING");
+        if(backing_value && std::strcmp(backing_value,"0") && std::strcmp(backing_value,"1")) {
+            err="native head: STRATA_PREFILL_HEAD_HOST_BACKING must be 0 or 1";return false;
+        }
+        const bool host_backed=backing_value && std::strcmp(backing_value,"1")==0;
         const char* release_heads=std::getenv("STRATA_PREFILL_RELEASE_HEADS");
         if((dpas || packed) && (!release_heads || std::strcmp(release_heads,"1"))) {
             err="native head: DPAS requires STRATA_PREFILL_RELEASE_HEADS=1";return false;
+        }
+        if(host_backed && (!release_heads || std::strcmp(release_heads,"1"))) {
+            err="native head: host backing requires STRATA_PREFILL_RELEASE_HEADS=1";return false;
         }
 #endif
         // The architecture is the metadata shard's; output.weight comes from whichever shard holds it (shard 2
@@ -81,14 +89,19 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
                 err="native head: DPAS requires exact Q8_1 and Q6_K 2560x248320";return false;
             }
         }
-        std::vector<uint16_t> packed_host;
+        if(host_backed && (!bytes || bytes>(1ull<<30) || bytes%sizeof(uint16_t))) {
+            err="native head: host backing requires an even payload within 1 GiB";return false;
+        }
+        std::vector<uint16_t> initial_host;
+        if(packed || host_backed) {
+            initial_host.resize(size_t(bytes)/sizeof(uint16_t));
+        }
         if(packed) {
             const size_t packed_bytes=strata::kernels::component::q6_dpas_packed_bytes(int(n_in),int(n_out));
             if(packed_bytes!=bytes){err="native head: sole packed owner must preserve exact weight bytes";return false;}
-            packed_host.resize(packed_bytes/2);
             strata::kernels::component::q6_dpas_pack(
-                {static_cast<const uint8_t*>(gguf.tensor_data(*tensor)),size_t(bytes)},packed_host,int(n_in),int(n_out));
-        }
+                {static_cast<const uint8_t*>(gguf.tensor_data(*tensor)),size_t(bytes)},initial_host,int(n_in),int(n_out));
+        } else if(host_backed)std::memcpy(initial_host.data(),gguf.tensor_data(*tensor),size_t(bytes));
 #endif
         void* weights = nullptr;
         void* scratch = nullptr;
@@ -98,17 +111,17 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
         if (status == cudaSuccess) {
             const void* upload=gguf.tensor_data(*tensor);
 #ifdef STRATA_ENABLE_SYCL
-            if(packed)upload=packed_host.data();
+            if(packed || host_backed)upload=initial_host.data();
 #endif
             status = cudaMemcpy(weights, upload, bytes, cudaMemcpyHostToDevice);
 #ifdef STRATA_ENABLE_SYCL
-            if((dpas || packed) && status!=cudaSuccess)
+            if((dpas || packed || host_backed) && status!=cudaSuccess)
                 strata::sycl_backend::cleanup_fail_stop("native head initial H2D completion unknown");
 #endif
         }
         if (status != cudaSuccess) {
 #ifdef STRATA_ENABLE_SYCL
-            if(dpas || packed) {
+            if(dpas || packed || host_backed) {
                 if(scratch && cudaFree(scratch)!=cudaSuccess)
                     strata::sycl_backend::cleanup_fail_stop("native scratch failed-allocation cleanup");
                 if(weights && cudaFree(weights)!=cudaSuccess)
@@ -130,10 +143,14 @@ bool NativeHead::load(const std::vector<std::string>& shards, int64_t n_in, int6
 #ifdef STRATA_ENABLE_SYCL
         decode_dpas_=dpas;
         primary_packed_=packed;
-        if(dpas) std::fprintf(stderr,"strata native head DPAS: ready=1 columns=4 layout=canonical canonical_bytes=%llu extra_device_weight_bytes=0 extra_host_weight_bytes=0 default_adopted=0\n",
-            (unsigned long long)bytes_);
-        if(packed)std::fprintf(stderr,"strata native head packed: ready=1 columns=1..4 weight_bytes=%llu canonical_device_weight_bytes=0 extra_device_weight_bytes=0 permanent_host_weight_bytes=0 default_adopted=0\n",
-            (unsigned long long)bytes_);
+        head_host_backed_=host_backed;
+        if(host_backed)head_backing_.swap(initial_host); // transfer ownership without another full-size copy
+        if(dpas) std::fprintf(stderr,"strata native head DPAS: ready=1 columns=4 layout=canonical canonical_bytes=%llu extra_device_weight_bytes=0 extra_host_weight_bytes=%llu default_adopted=0\n",
+            (unsigned long long)bytes_,(unsigned long long)host_backing_bytes());
+        if(packed)std::fprintf(stderr,"strata native head packed: ready=1 columns=1..4 weight_bytes=%llu canonical_device_weight_bytes=0 extra_device_weight_bytes=0 permanent_host_weight_bytes=%llu default_adopted=0\n",
+            (unsigned long long)bytes_,(unsigned long long)host_backing_bytes());
+        if(host_backed)std::fprintf(stderr,"strata native head backing: source=initial-upload layout=%s bytes=%llu immutable=1 request_D2H_bytes=0 default_adopted=0\n",
+            packed?"packed":"canonical",(unsigned long long)host_backing_bytes());
 #endif
         return true;
     } catch (const std::exception& error) {
@@ -208,8 +225,15 @@ bool NativeHead::prepare_prefill_weights(std::string& err) try {
        (decode_dpas_ && !decode_dpas_ready())) {
         err="native head release requires ready exact weights within 1 GiB snapshot budget";return false;
     }
-    try {head_snapshot_.resize(size_t(bytes_));}
-    catch(const std::exception& e){err=std::string("native head RAM snapshot: ")+e.what();return false;}
+    if(head_host_backed_) {
+        if(host_backing_bytes()!=bytes_ || !head_snapshot_.empty()) {
+            err="native head: immutable host backing extent changed";return false;
+        }
+    } else {
+        if(!head_backing_.empty()) {err="native head: unexpected host backing";return false;}
+        try {head_snapshot_.resize(size_t(bytes_));}
+        catch(const std::exception& e){err=std::string("native head RAM snapshot: ")+e.what();return false;}
+    }
     head_prepared_=true;return true;
 #endif
 } catch(const std::exception& e) {err=std::string("native head prepare: ")+e.what();return false;}
@@ -222,24 +246,29 @@ void NativeHead::cancel_prefill_weights() noexcept {
 void NativeHead::detach_prefill_weights() noexcept {
 #ifdef STRATA_ENABLE_SYCL
     using strata::sycl_backend::cleanup_fail_stop;
-    if(!head_prepared_ || head_detached_ || !weights_ || head_snapshot_.size()!=bytes_)cleanup_fail_stop("native head detach state");
+    if(!head_prepared_ || head_detached_ || !weights_ ||
+       (head_host_backed_ ? host_backing_bytes()!=bytes_ || !head_snapshot_.empty() : head_snapshot_.size()!=bytes_))
+        cleanup_fail_stop("native head detach state");
     // Every head reader was retired by the common request boundary before here.
-    if(cudaMemcpy(head_snapshot_.data(),weights_,size_t(bytes_),cudaMemcpyDeviceToHost)!=cudaSuccess)
+    if(!head_host_backed_ && cudaMemcpy(head_snapshot_.data(),weights_,size_t(bytes_),cudaMemcpyDeviceToHost)!=cudaSuccess)
         cleanup_fail_stop("native head D2H snapshot completion unknown");
     head_detached_=true;head_release_used_=true;
     if(cudaFree(weights_)!=cudaSuccess)cleanup_fail_stop("native head detach free");
     weights_=nullptr;
-    std::fprintf(stderr,"strata prefill heads: target detached bytes=%llu source=owned-RAM D2H=%llu H2D-on-restore=%llu\n",
-        (unsigned long long)bytes_,(unsigned long long)bytes_,(unsigned long long)bytes_);
+    std::fprintf(stderr,"strata prefill heads: target detached bytes=%llu source=%s D2H=%llu H2D-on-restore=%llu\n",
+        (unsigned long long)bytes_,head_host_backed_?"initial-RAM":"owned-RAM",
+        (unsigned long long)(head_host_backed_?0:bytes_),(unsigned long long)bytes_);
 #endif
 }
 void NativeHead::restore_prefill_weights() noexcept {
 #ifdef STRATA_ENABLE_SYCL
     using strata::sycl_backend::cleanup_fail_stop;
     if(!head_prepared_ || !head_detached_ || weights_ ||
-       head_snapshot_.size()!=bytes_)cleanup_fail_stop("native head restore state");
+       (head_host_backed_ ? host_backing_bytes()!=bytes_ || !head_snapshot_.empty() : head_snapshot_.size()!=bytes_))
+        cleanup_fail_stop("native head restore state");
     if(cudaMalloc(&weights_,size_t(bytes_))!=cudaSuccess)cleanup_fail_stop("native head restore allocation");
-    if(cudaMemcpy(weights_,head_snapshot_.data(),size_t(bytes_),cudaMemcpyHostToDevice)!=cudaSuccess)
+    const void* source=head_host_backed_?static_cast<const void*>(head_backing_.data()):head_snapshot_.data();
+    if(cudaMemcpy(weights_,source,size_t(bytes_),cudaMemcpyHostToDevice)!=cudaSuccess)
         cleanup_fail_stop("native head restore H2D completion unknown");
     // Full-forward remains blocked until both target and draft owners are ready.
 #endif
