@@ -24,6 +24,8 @@ public:
     // retires their graphs/streams before detach. Snapshot budget: 1 GiB canonical
     // weights, no files; scratch and tensor metadata remain owned and unchanged.
     // Mode2 keeps the packed representation through this same byte-exact lease.
+    // Opt-in host backing retains the immutable initial upload instead of
+    // reading weights back from the GPU. Graph/queue retirement is unchanged.
     bool prepare_prefill_weights(std::string& err);
     void cancel_prefill_weights() noexcept;
     void detach_prefill_weights() noexcept;
@@ -32,6 +34,8 @@ public:
     bool head_detached() const { return head_detached_; }
     bool run(const float* mixed, float* logits, void* stream, std::string& err) const;
     uint64_t weight_bytes() const { return bytes_; }
+    bool has_host_backing() const { return head_host_backed_; }
+    uint64_t host_backing_bytes() const { return uint64_t(head_backing_.size()) * sizeof(uint16_t); }
     bool loaded() const { return weights_ != nullptr; }
     /// Plan v0.3 P6: the GGUF blocks, for the verify window's multi-column head.
     // Row-major consumers fail before launch when the owner is packed.
@@ -57,6 +61,8 @@ private:
     bool head_prepared_=false,head_detached_=false,head_release_used_=false;
     bool decode_dpas_=false; // immutable after load; reads the canonical owner
     bool primary_packed_=false; // immutable;one packed allocation,no canonical GPU copy
+    bool head_host_backed_=false; // immutable startup policy,default off
+    std::vector<uint16_t> head_backing_; // exact initial canonical/packed bytes;never device-written
     std::vector<uint8_t> head_snapshot_; // exact selected storage bytes,request-scoped RAM
     void* weights_ = nullptr;
     void* scratch_ = nullptr;

@@ -77,7 +77,7 @@ struct Fixture {
     cudaStream_t stream=nullptr;
     std::array<cudaGraphExec_t,3> graphs{};
     std::array<uint64_t,3> launches{};
-    bool dpas=false,packed=false;
+    bool dpas=false,packed=false,host_backed=false;
     size_t numerical_cases=0,blocked_cases=0,partial_cases=0;
     Fixture(std::shared_ptr<sb::Runtime> r,const std::vector<std::string>& shards):rt(r),source(shards),
         mixed(r,K*4),reference(r,N*4),candidate(r,N*4),single(r,N*4),q8(r,k::native_q8_1_bytes(K,4)) {
@@ -85,6 +85,9 @@ struct Fixture {
         need(flag&&(!std::strcmp(flag,"0")||!std::strcmp(flag,"1")||!std::strcmp(flag,"2")),"explicit fixture arm");
         dpas=!std::strcmp(flag,"1");
         packed=!std::strcmp(flag,"2");
+        const char* backing=std::getenv("STRATA_PREFILL_HEAD_HOST_BACKING");
+        need(!backing||!std::strcmp(backing,"0")||!std::strcmp(backing,"1"),"explicit host backing policy");
+        host_backed=backing&&!std::strcmp(backing,"1");
         size_t at=0;const auto* tensor=source.find("output.weight",&at);
         need(tensor&&tensor->type==14&&tensor->shape==std::vector<uint64_t>{K,N}&&
             source.in_bounds(*tensor,at),"actual Q6 head extent");
@@ -98,7 +101,7 @@ struct Fixture {
         }
         metadata();need(head.loaded()&&head.decode_dpas_ready()==dpas,"loaded owner");
         std::cout<<"HEAD admitted=1 dpas="<<int(dpas)<<" layout="<<(packed?"sole-packed":"canonical")<<" canonical_bytes="<<head.weight_bytes()
-            <<" extra_device_weight_bytes=0 extra_host_weight_bytes=0"
+            <<" extra_device_weight_bytes=0 extra_host_weight_bytes="<<head.host_backing_bytes()
             <<" max_alloc_bytes="<<rt->device().get_info<sycl::info::device::max_mem_alloc_size>()<<'\n';
         if(packed)std::cout<<"FIXTURE_REFERENCE device_weight_bytes="<<WeightBytes<<" production_owner=0\n";
         capture();
@@ -111,6 +114,8 @@ struct Fixture {
     void metadata() const {
         need(head.type()==14&&head.weight_bytes()==WeightBytes&&head.row_bytes()==2100&&
             head.decode_dpas_enabled()==dpas&&head.primary_packed()==packed,"head metadata/immutable selector");
+        need(head.has_host_backing()==host_backed&&head.host_backing_bytes()==(host_backed?WeightBytes:0),
+            "immutable initial host backing/actual extra RAM bytes");
         if(packed && head.loaded()) {
             bool refused=false;try{(void)head.weights();}catch(const std::logic_error&){refused=true;}
             need(refused,"packed owner exposed as row-major weights");
@@ -288,7 +293,10 @@ struct Fixture {
         }
         need(numerical_cases==4&&blocked_cases==4&&launches==std::array<uint64_t,3>{4,4,4},"complete owner extent");
         need(partial_cases==(packed?8u:0u),"complete partial-column checks");
-        std::cout<<"OWNER_CHECK dpas="<<int(dpas)<<" numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0\n";
+        std::cout<<"OWNER_CHECK dpas="<<int(dpas)<<" numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights="
+            <<(host_backed?"host-backing":"absent")<<" model=0 Verifier_owner=0\n";
+        if(host_backed)std::cout<<"HOST_BACKING_CHECK passed=1 bytes="<<head.host_backing_bytes()
+            <<" detach_D2H_bytes=0 restore_H2D_bytes="<<WeightBytes<<" restore_cycles=2 extra_device_weight_bytes=0\n";
         if(packed)std::cout<<"PACKED_OWNER partial_cases=8 widths=1,2,3,4 row_major_access=refused sole_weight_bytes="<<WeightBytes<<" model=0\n";
     }
     void timing(bool candidate_first) {
@@ -317,6 +325,7 @@ struct Fixture {
 };
 void host() {
     NativeHead h;std::string e;
+    need(!h.has_host_backing()&&h.host_backing_bytes()==0,"empty owner has host backing");
     need(!h.prepare_prefill_weights(e),"empty prepare accepted");
     need(!h.run(nullptr,nullptr,nullptr,e),"empty projection accepted");
     bool refused=false;try{h.run_decode_c4(nullptr,nullptr,nullptr);}catch(const std::invalid_argument&){refused=true;}
