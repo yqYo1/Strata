@@ -375,6 +375,8 @@ def prepare_timing():
                   ' Retire normal API/stage logs and caches after the current model-entry consumer is updated;'
                   ' keep current1db candidate plus5a6 fallback and named90f/552b/e1b references.')
     row.pop('host_controls',None)
+    original_root=str(B/'q6-head-packed-device-v1')
+    row['environment']={k:v.replace(original_root,str(ROOT)) for k,v in row['environment'].items()}
     ROOT.mkdir(mode=0o700)
     for name in ('tmp','cache'):(ROOT/name).mkdir(mode=0o700)
     save(row);print('Prepared fresh three-process C4 timing cohort;commit before controls.',flush=True)
