@@ -2034,11 +2034,13 @@ Candidate/reference prompt-time ratios are 1.006725 / 0.975358 and TTFT ratios
 1.006885 / 0.975494. Keep those first-long/after-code cases separate and retain
 the mixed prefill result; one pair establishes no repeated gain or adoption.
 Both children exit 0 with closed ownership, quiet validation and no fresh fault.
-Four frozen processes remain. The next component fixture is source-only at
-`2d3b31536` on `tune/q6-dense-shapes`: six actual Q6 C4 shapes with their
-production generic/columns references, without a new inference dispatcher.
-Its controller adaptation, build and checks wait for this cohort's closure;
-integrate it into `feature/sycl` and retire the child before subsequent testing.
+The second candidate process also closes normally with the same body, output
+and draft counts. Three frozen processes remain, including its matched reference.
+The next component fixture/controller is source-only at `bd6b375a6` on
+`tune/q6-dense-shapes`: six actual Q6 C4 shapes with their production
+generic/columns references, without a new inference dispatcher. Its syntax,
+parser, build and device checks remain unrun. After this cohort closes, review
+and integrate it into `feature/sycl`, retire the child, then test serially.
 All30timing samples and the named21transfer-wrapper samples remain in Git.
 The ended device/timing private roots,normal traces and caches are retired:
 53files/10392061bytes after recovering both original controller manifests.
