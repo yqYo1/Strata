@@ -20,7 +20,7 @@ import profile_adaptive_cpu_leaves as leaf
 import q6_dense_model_speed as dense
 
 P, B, RESULT = dense.P, dense.B, dense.RESULT
-ROOT, KEY = B / 'q6-dense-cpu-leaves-v1', 'q6_dense_cpu_leaves_v1'
+ROOT, KEY = B / 'q6-dense-cpu-leaves-v2', 'q6_dense_cpu_leaves_v2'
 THIS = 'tools/sycl/profile_q6_cpu_leaves.py'
 TEST = 'tools/test_q6_cpu_leaves.py'
 HOST_KEY = 'q6_dense_cpu_leaves_host_v1'
@@ -184,7 +184,7 @@ def current(row):
     require(contract_ == row['python_contract'] and manifest['selected'] == row['python_selected'] and
         sha(row['template']['path']) == row['template']['sha256'], 'frontend/template changed')
     require(sha(row['runtime_manifest']['path']) == row['runtime_manifest']['sha256'] and
-        dense.build.context().build.supervision.artifact_bytes(ROOT) <= row['whole_bytes'],
+        dense.owner.artifact_bytes(ROOT) <= row['whole_bytes'],
         'runtime inventory/output budget changed')
     dense.suite.d.models.model_pins(row['configuration'], row['model_assets'])
     for plan in row['plans']:
@@ -301,10 +301,11 @@ def controls():
 
 
 def host():
-    row=json.loads((ROOT/'record.json').read_text());_,manifest=current(row)
-    require(row['stage']=='prepared' and not row['host_passed'],'fresh host gates only')
+    row=json.loads((ROOT/'record.json').read_text())
     scope=None
     try:
+        _,manifest=current(row)
+        require(row['stage']=='prepared' and not row['host_passed'],'fresh host gates only')
         scope=dense.owner.Owner(ROOT/'host-owned');root=ROOT/'host-probe';root.mkdir(mode=0o700)
         for p in ('tmp','cache'):(root/p).mkdir(mode=0o700)
         env=environment(root,False);allowed={v['realpath'] for v in manifest['inventory']['files'].values()}
@@ -320,7 +321,7 @@ def host():
         row.update(stage='ready',host_passed=True,host_results=reports)
     except BaseException as error:row.update(stage='failed',error=repr(error))
     finally:
-        row['ownership_closed']=bool(scope and not scope.active and all(dense.owner.closed(v) for v in scope.commands))
+        row['ownership_closed']=scope is None or not scope.active and all(dense.owner.closed(v) for v in scope.commands)
         row['active']=bool(scope and scope.active);save(row)
     require(row['host_passed'] and row['ownership_closed'],row.get('error','host gates failed'))
     print('Both current frontend probes pass;commit before GPU execution.',flush=True)
