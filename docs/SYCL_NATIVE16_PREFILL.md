@@ -2066,6 +2066,22 @@ The next component fixture/controller is source-only at `bd6b375a6` on
 generic/columns references, without a new inference dispatcher. Its syntax,
 parser, build and device checks remain unrun. After this cohort closes, review
 and integrate it into `feature/sycl`, retire the child, then test serially.
+A separate source-only prefill proposal is committed and pushed on
+`tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
+`STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's
+exact canonical/packed bytes in RAM. It transfers the existing packed host
+allocation into the owner, adds no GPU weight allocation, and skips the per-prompt
+target D2H snapshot; restore still uploads the same bytes after reader retirement.
+The flag defaults to 0, retaining the current snapshot path. For this head the
+trade is 521472000 permanent RAM bytes for 521472000 fewer requested D2H bytes
+per long transition, plus removal of request-scoped snapshot allocation. Neither
+copy latency nor a PP/TTFT gain is measured. The ownership fixture source adds
+checks for both policies' actual RAM extent, byte equality and repeated
+retire/overwrite/restore; it remains unbuilt and unexecuted. After the current frozen
+cohort and six-shape component close, integrate this child's source into
+`feature/sycl` and retire the child. A fresh four-ELF build, CPU refusals, traced
+small ownership checks, matched model handoff and repeated PP/TTFT/TG comparison
+are required; do not reuse the old same-build qualification for this changed owner.
 All30timing samples and the named21transfer-wrapper samples remain in Git.
 The ended device/timing private roots,normal traces and caches are retired:
 53files/10392061bytes after recovering both original controller manifests.
