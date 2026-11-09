@@ -2196,6 +2196,22 @@ the actual process/provider/environment at both gates. Keep all six sets of
 numerical/transition samples and original faults;commit every closed stage and
 stop on the first failure. This is fixture qualification,not a dense-dispatch
 model trial or a PP/TTFT/TG claim.
+That device cohort now closes successfully:50CPU readers,11native CPU-only
+refusals,submission10,phase-cache16 and all six head-mode/backing processes.
+The eight GPU processes exit0 with closed ownership,quiet validation,no fresh
+fault and unchanged boot/driver. The six real-head processes hash both shards
+before/after;24numerical cases,16partial-column cases,12restore cycles and72
+graph replays pass,max paired absolute error4.17232513428e-7.
+Post-hoc UR trace counts in `copy_trace_observation` show two fewer successful
+521472000-byte memcpy requests for each format's backing1 process across its
+two transitions:1042944000fewer requested bytes. These include fixture validation
+copies;the removed D2H direction follows the unchanged source branch,not a
+physical-traffic measurement. All transition clocks remain diagnostic samples,
+one process per layout/policy,two cycles;no short-interval speed ratio is qualified.
+Next run actual four-combination dense0/1/backing0/1 model handoffs with head2
+fixed,checking both real C4 dense routing and prefill/short/decode state. Only
+then collect independent matched long/agent/strong-and-weak thinking speed.
+No model/default adoption or physical262144/RESTORE qualification follows here.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
