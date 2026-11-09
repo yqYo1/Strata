@@ -83,6 +83,14 @@ class LinkedSpirv(unittest.TestCase):
 class NativeHeadProtocol(unittest.TestCase):
     @staticmethod
     def output(dpas=1):
+        if dpas==2:
+            text=NativeHeadProtocol.output(0).replace('layout=canonical','layout=sole-packed').replace(
+                'dpas_decode_calls=0 dpas_prompt_calls=0 dpas_C1_calls=0',
+                'dpas_decode_calls=1 dpas_prompt_calls=0 dpas_C1_calls=1')
+            extra=['FIXTURE_REFERENCE device_weight_bytes=521472000 production_owner=0',
+                'PACKED_OWNER partial_cases=8 widths=1,2,3,4 row_major_access=refused sole_weight_bytes=521472000 model=0']
+            extra += [f'PARTIAL columns={c} outputs={c*248320} guards=PASS input_immutable=PASS' for _ in range(4) for c in (2,3)]
+            return text.replace('HEAD_OWNER_EXIT','\n'.join(extra)+'\nHEAD_OWNER_EXIT')
         lines=[f'HEAD admitted=1 dpas={dpas} layout=canonical canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 max_alloc_bytes=10132807680',
             'TRANSITION phase=load cycle=-1 wall_ns=100 thread_cpu_ns=1 scope=whole_wrapper']
         lines += [f'CAPTURE graphs=3 nodes_each=2 dpas_decode_calls={dpas} dpas_prompt_calls=0 dpas_C1_calls=0']*3
@@ -103,6 +111,23 @@ class NativeHeadProtocol(unittest.TestCase):
             value=head_owner.parse_native(self.output(arm),arm)
             self.assertEqual(value['graph_replays'],12)
             self.assertEqual(len(value['numeric']),4)
+
+    def test_sole_packed_widths_and_single_owner(self):
+        value=head_owner.parse_native(self.output(2),2)
+        self.assertEqual(value['layout'],'sole-packed');self.assertTrue(value['primary_packed'])
+        self.assertEqual(value['partial_cases'],8)
+
+    def test_sole_packed_partial_or_owner_evidence_cannot_be_omitted(self):
+        text=self.output(2)
+        for prefix in ('PARTIAL ','PACKED_OWNER ','FIXTURE_REFERENCE '):
+            line=next(v for v in text.splitlines() if v.startswith(prefix))
+            with self.assertRaises(RuntimeError):head_owner.parse_native(text.replace(line+'\n','',1),2)
+
+    def test_sole_packed_cannot_borrow_canonical_or_inactive_column_claims(self):
+        for a,b in (('layout=sole-packed','layout=canonical'),('dpas_C1_calls=1','dpas_C1_calls=0'),
+                    ('outputs=744960','outputs=993280'),('input_immutable=PASS','input_immutable=FAIL'),
+                    ('production_owner=0','production_owner=1')):
+            with self.assertRaises(RuntimeError):head_owner.parse_native(self.output(2).replace(a,b),2)
 
     def test_truncated_numerics(self):
         text=self.output();line=next(v for v in text.splitlines() if v.startswith('NUMERIC '))

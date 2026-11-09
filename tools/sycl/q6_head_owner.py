@@ -2,7 +2,7 @@
 """Read the current real-head fixture protocol and seal its fault/closure proof.
 
 The earlier packed protocol is recoverable from484d403e6 and its successful
-evidence0840eccd2. The current fixture shares canonical weights in both arms.
+evidence0840eccd2. Modes0/1 use canonical weights;mode2 has one packed owner.
 These pure readers serve the production-linked model fixture/entry gate.
 Main-authored;repository LICENSE.
 """
@@ -14,11 +14,12 @@ from measurement_guards import require
 import ur_validation as validation
 
 def parse_native(text,dpas):
-    require(type(dpas) is int and dpas in (0,1),'explicit owner arm')
+    require(type(dpas) is int and dpas in (0,1,2),'explicit owner arm')
+    packed=dpas==2;canonical_dpas=int(dpas==1);selected=int(dpas!=0)
     lines=text.splitlines()
-    captures=f'CAPTURE graphs=3 nodes_each=2 dpas_decode_calls={dpas} dpas_prompt_calls=0 dpas_C1_calls=0'
+    captures=f'CAPTURE graphs=3 nodes_each=2 dpas_decode_calls={selected} dpas_prompt_calls=0 dpas_C1_calls={int(packed)}'
     require(lines.count(captures)==3 and sum(v.startswith('CAPTURE ') for v in lines)==3,'all graph families recaptured')
-    end=f'OWNER_CHECK dpas={dpas} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0'
+    end=f'OWNER_CHECK dpas={canonical_dpas} numeric_cases=4 blocked_cases=4 restore_cycles=2 cancel_cases=1 graph_replays=12 canonical_immutable=PASS extra_weights=absent model=0 Verifier_owner=0'
     require(lines.count(end)==1 and lines.count('HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified')==1
         and lines[-1]=='HEAD_OWNER_EXIT passed=1 normal=1 provider_teardown=unqualified','complete owner/exit proof')
     numeric=[]
@@ -39,9 +40,17 @@ def parse_native(text,dpas):
     require([v for v in lines if v.startswith('RETIREMENT ')]==retired,'registered pointer retirement')
     admission=[v for v in lines if v.startswith('HEAD admitted=')]
     require(len(admission)==1,'one actual admission')
-    match=re.fullmatch(r'HEAD admitted=1 dpas=([01]) layout=canonical canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 max_alloc_bytes=(\d+)',admission[0])
-    require(match and int(match[1])==dpas and int(match[2])>=521472000,
-        'admitted canonical head/zero extra weights/single-allocation bound')
+    match=re.fullmatch(r'HEAD admitted=1 dpas=([01]) layout=(canonical|sole-packed) canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 max_alloc_bytes=(\d+)',admission[0])
+    require(match and int(match[1])==canonical_dpas and match[2]==('sole-packed' if packed else 'canonical') and int(match[3])>=521472000,
+        'admitted selected head/zero extra weights/single-allocation bound')
+    partial=[f'PARTIAL columns={c} outputs={c*248320} guards=PASS input_immutable=PASS' for _ in range(4) for c in (2,3)]
+    require([v for v in lines if v.startswith('PARTIAL ')]==(partial if packed else []),
+        'all partial-column numerics,canaries and immutable inputs required')
+    for prefix,expected in (
+        ('FIXTURE_REFERENCE ','FIXTURE_REFERENCE device_weight_bytes=521472000 production_owner=0'),
+        ('PACKED_OWNER ','PACKED_OWNER partial_cases=8 widths=1,2,3,4 row_major_access=refused sole_weight_bytes=521472000 model=0')):
+        require([v for v in lines if v.startswith(prefix)]==([expected] if packed else []),
+            'sole-packed owner/reference separation and row-major refusal required')
     timings=[]
     for line in lines:
         if not line.startswith('TRANSITION '):continue
@@ -52,7 +61,8 @@ def parse_native(text,dpas):
         for p in ('prepare','retire_readers','detach','restore','resume')],'all head transition clocks')
     return dict(dpas=dpas,numeric=numeric,transitions=timings,restore_cycles=2,blocked_cases=4,
         graph_replays=12,graphs_each_capture=3,nodes_each_graph=2,canonical_bytes=521472000,
-        layout='canonical',extra_device_weight_bytes=0,extra_host_weight_bytes=0,max_alloc_bytes=int(match[2]),
+        layout='sole-packed' if packed else 'canonical',primary_packed=packed,partial_cases=8 if packed else 0,
+        extra_device_weight_bytes=0,extra_host_weight_bytes=0,max_alloc_bytes=int(match[3]),
         canonical_immutable=True,
         scope='Actual NativeHead and selector with fixture graphs;not production Verifier/model ownership or speed.')
 

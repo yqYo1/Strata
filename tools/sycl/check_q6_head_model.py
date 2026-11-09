@@ -2,7 +2,7 @@
 """Qualify the production-linked Q6 head before a full-model trial.
 
 Main-authored; repository LICENSE. Adapt our closed native supervision from484d
-to the canonical arm/entry, with fresh source/runtime checks and processes.
+to canonical/sole-packed entries, with fresh source/runtime checks and processes.
 No old executable or private standalone source tree is a dependency.
 """
 import ast
@@ -27,7 +27,7 @@ from run_q6_columns import validation_log
 from check_verify_window_phase import SUBMISSION, PHASE
 
 P, B, RESULT = build.P, build.B, build.RESULT
-ROOT, KEY = B / 'q6-head-model-device-v2', 'q6_head_model_device_v2'
+ROOT, KEY = B / 'q6-head-packed-device-v1', 'q6_head_packed_device_v1'
 require, sha, write = guards.require, build.digest, build.write
 ORIGINAL = '484d403e60c49361422f00a16dfdd774e4fe90d5'
 ORIGINAL_PATH = 'tools/sycl/q6_head_owner.py'
@@ -37,26 +37,84 @@ RUNTIME_SHA = '43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21'
 
 
 def archived_gate():
-    raw = build.source.git(P, 'show', ORIGINAL + ':' + ORIGINAL_PATH)
-    tree = ast.parse(raw)
-    nodes = [n for n in tree.body if isinstance(n, ast.FunctionDef) and
-             n.name in ('model_assets', 'run_gpu')]
-    require([n.name for n in nodes] == ['model_assets', 'run_gpu'], 'exact archived GPU functions required')
-    # Only the arm label and exact traced kernel change. Ownership, providers,
-    # input assets, finite budgets and actual finalizer keep their old contract.
-    class CanonicalGate(ast.NodeTransformer):
-        def visit_Name(self, node):
-            if node.id == 'packed': node.id = 'dpas'
-            return node
-        def visit_Constant(self, node):
-            replacements = {'packed': 'canonical', 'Q6DpasC4': 'Q6DpasC4Canonical',
-                            'traced packed graph path': 'traced canonical graph path'}
-            if isinstance(node.value, str): node.value = replacements.get(node.value, node.value)
-            return node
-    nodes = [CanonicalGate().visit(n) for n in nodes]
-    namespace = dict(globals())
-    exec(compile(ast.Module(body=nodes, type_ignores=[]), ORIGINAL + ':' + ORIGINAL_PATH, 'exec'), namespace)
-    return namespace['run_gpu'], hashlib.sha256(raw).hexdigest()
+    # Supervision is authored here from our archived484d owner,with explicit
+    # 0/1/2format selection. The actual shared fault finalizer stays identical.
+    raw=build.source.git(P,'show',ORIGINAL+':'+ORIGINAL_PATH)
+    return run_gpu,hashlib.sha256(raw).hexdigest()
+
+
+def model_assets():
+    root=Path('/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S')
+    paths=sorted(root.glob('*.gguf'))
+    require(len(paths)==2 and all(p.is_file() and p.stat().st_size>1<<30 for p in paths),
+            'two existing real model shards required')
+    return [dict(path=str(p),realpath=str(p.resolve()),bytes=p.stat().st_size,sha256=sha(p)) for p in paths]
+
+
+def run_gpu(row,scope,mode,outcome):
+    packed={'reference':0,'canonical':1,'sole-packed':2}[mode]
+    require(model_assets()==row['assets'],'full pre-exec real-shard identities')
+    env=dict(row['environment'],STRATA_SYCL_DECODE_Q6_DPAS_HEAD=str(packed),STRATA_Q6_HEAD_OWNER_GATE='1',
+        LD_PRELOAD=row['native_validation_probe']['library']['path'],
+        STRATA_UR_PROBE_EXPECTED_LOADER=row['native_validation_probe']['loader']['path'],
+        UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(ROOT/(mode+'-validation.log')))
+    cursor=next(v.split(': ',1)[1] for v in subprocess.check_output(
+        ['journalctl','-k','-b','-n','0','--show-cursor','--no-pager'],text=True,timeout=15).splitlines()
+        if v.startswith('-- cursor: '))
+    outcome['native_execution_attempted']=True
+    try:
+        def interact(io,command):
+            keys=('LD_PRELOAD','STRATA_UR_PROBE_EXPECTED_LOADER','UR_ADAPTERS_FORCE_LOAD','ZE_ENABLE_ALT_DRIVERS')
+            all_required={str(Path(env[k]).resolve()) for k in keys}
+            for phase,tag in enumerate(('STRATA_Q6_HEAD_OWNER_GATE ','STRATA_Q6_HEAD_OWNER_DEVICE_GATE ')):
+                while True:
+                    line=io.line(120)
+                    if line.startswith(tag):break
+                    require(not line.startswith('STRATA_Q6_HEAD_OWNER_'),'native gate order')
+                identity=owner.identity(command['pid'])
+                require(identity and identity['pid']==identity['sid']==command['pid']
+                    and all(identity[k]==command['direct_identity'][k] for k in ('pid','start_ticks','sid'))
+                    and line==tag+'pid='+str(command['pid']),'actual native owner at both gates')
+                require(str(Path('/proc',str(command['pid']),'exe').resolve())==row['binary']['path'],'actual native ELF')
+                actual=dict(v.split('=',1) for v in Path('/proc',str(command['pid']),'environ').read_text().split('\0') if '=' in v)
+                mapped=set(python_runtime.code_maps(command['pid']))
+                required=all_required if phase else {str(Path(env[k]).resolve()) for k in keys[:2]}
+                missing=sorted(required-mapped);extra=sorted(mapped-(set(row['runtime_pins'])|{row['binary']['path']}))
+                outcome.setdefault('provider_admission',[]).append(dict(phase='post-device-pre-fixture' if phase else 'pre-main',
+                    mapped_files=len(mapped),mapped_path_sha256=hashlib.sha256('\0'.join(sorted(mapped)).encode()).hexdigest(),
+                    missing_required=missing,unexpected_mapped_paths=extra,
+                    not_yet_mapped_forced_providers=sorted(all_required-mapped),environment_immutable=actual==env))
+                require(actual==env and not missing and not extra,'immutable environment and phase-appropriate providers')
+                outcome['native_identity']=identity
+                io.send(b'continue\n')
+                if phase:row['GPU_executed']=True
+            io.proc.stdin.close()
+            while not io.exit_watch.poll(0) or not io.eof:
+                io.poll()
+                if select.select([io.proc.stdout],[],[],.02)[0]:io.read();io.pending.clear()
+            io.exit(1)
+        e,out,err=scope.run('native-'+mode,[row['binary']['path'],'--check',*[v['path'] for v in row['assets']]],
+            env,ROOT,interaction=interact,**row['native_budget'])
+        require(owner.closed(e) and e['exit_code']==0,'owned NativeHead process failed')
+        text,diagnostic=out.read_text(),err.read_text()
+        outcome['native_exit_code']=e['exit_code']
+        outcome['validation']=validation.preload_evidence(diagnostic,e['pid'])
+        require(outcome['validation']['loader']==env['STRATA_UR_PROBE_EXPECTED_LOADER'],'actual validation loader')
+        log=ROOT/(mode+'-validation.log')
+        require(not log.exists() or log.stat().st_size==0,'parameter validation error')
+        outcome['owner']=parse_native(text,packed)
+        if packed:require(('Q6DpasC4Canonical' if packed==1 else 'Q6DpasC4') in diagnostic and 'urEnqueueCommandBufferExp' in diagnostic,'traced selected head graph path')
+        if packed==2:require('Q6DpasColumns' in diagnostic,'traced exact-width packed head path')
+        require(model_assets()==row['assets'],'full post-run real-shard identities')
+        outcome['assets_pre_post_match']=True
+        outcome['passed']=True
+    except BaseException as e:
+        outcome.update(passed=False,error=repr(e))
+    finally:
+        finish_gpu_probe(outcome,scope,cursor,row['boot'])
+        if not outcome['passed'] or outcome.get('driver_after')!=row['driver'] or 'error' in outcome:
+            outcome['passed']=False
+    require(outcome['passed'],outcome.get('error','native owner/fault/closure gate failed'))
 
 
 def compact(row):
@@ -74,14 +132,31 @@ def save(row):
 
 
 def native():
-    row = json.loads((build.ROOT / 'record.json').read_text()); build.current(row)
+    row = json.loads((build.ROOT / 'record.json').read_text())
+    require(validation.committed(RESULT,(build.KEY,))==build.compact(row),'closed native proof changed')
     require(row['stage'] == 'built' and row['passed'] and row['complete'] and
         row['ownership_closed'] and row['actual_inputs']['uncovered'] == 0, 'closed full-engine build required')
+    require(build.prerequisites()==row['prerequisites'],'fallback or exact shared fault finalizer changed')
+    previous=row['admission_project'];current=build.source.pin(P,build.PREFIXES)
+    before,after=previous['source_sha256'],current['source_sha256']
+    require(before=={n:hashlib.sha256(raw).hexdigest() for n,raw in
+        build.source.blobs(P,previous['revision'],before)},'original admission inputs not recoverable')
+    allowed={'tools/sycl/check_q6_head_model.py','tools/sycl/q6_head_owner.py',
+        'tools/sycl/test_q6_dpas_component.py','tools/sycl/q6_head_model_entry.py',
+        'tools/sycl/q6_head_generation_speed.py'}
+    require(set(before)==set(after) and {n for n in before if before[n]!=after[n]}<=allowed,
+        'only predeclared observers may change;native/fixtures/recipe/readers stay exact')
+    build.build.check_inputs(dict(row,project=current))
+    for path,digest in (row.get('generated_inputs',{})|row.get('configured_files',{})).items():
+        require(sha(path)==digest,'original generated/configured recipe changed')
     for binary in row['binaries'].values():
         require(sha(binary['path']) == binary['sha256'] and
             Path(binary['path']).stat().st_size == binary['bytes'], 'fresh same-build executable changed')
     actual = row['actual_inputs']
     require(sha(actual['path']) == actual['sha256'], 'actual-input inventory changed')
+    census=json.loads(Path(actual['path']).read_text())
+    require(all(sha(p)==h for field in ('compiled','generated','links') for p,h in census[field].items()),
+        'original actual compiler/fixture/link bytes changed')
     return row
 
 
@@ -131,11 +206,19 @@ def prepare():
         runtime_pins=json.loads(RUNTIME.read_text()), native_validation_probe=old['native_validation_probe'],
         boot=old['boot'], driver=old['driver'], native_budget=old['native_budget'],
         host_budget=old['host_budget'],
-        plan='Five fresh CPU-only empty-owner/invalid-switch processes,then submission10 and phase-cache16'
-             ' traced checks,then fresh reference0/canonical1 real-GGUF owner processes. Adapt only484d'
-             ' arm/entry labels;keep two gates/native identity/finite budgets. Full shard hashes before/after'
+        native_qualification_reuse=dict(native_source_commit=n['native_source_commit'],
+            native_build_key=build.KEY,admission_source_commit=n['admission_source_commit'],
+            exact_four_ELFs_and_actual_inputs_and_recipe=True,GPU_result_inherited=False,
+            changed_observers=['tools/sycl/check_q6_head_model.py','tools/sycl/q6_head_owner.py',
+                'tools/sycl/test_q6_dpas_component.py'],
+            scope='Controller-only new plan;native source6dd and all four artifacts stay exact. No old GPU/model result inherited.'),
+        plan='43CPU parser/census/protocol controls plus seven fresh CPU-only empty-owner/invalid-switch processes,'
+             'then submission10 and phase-cache16 traced checks,then fresh reference0/canonical1/sole-packed2'
+             ' real-GGUF owner processes. Retain484d supervision,explicit new format bindings and unchanged'
+             ' fault finalizer;keep two gates/native identity/finite budgets. Full shard hashes before/after'
              ' each head process. Four numerical cases,two retire/overwrite/restore cycles,12graph replays'
-             ' per arm. Commit host closure before device. Stop first failure;no retries.',
+             ' per arm;mode2also checks eight partial-column cases and immutable inputs/packed weights.'
+             ' Commit host closure before device. Stop first failure;no retries.',
         limits='Fresh production-linked fixture only. Not full model/production Verifier ownership,clean'
                ' PP/TTFT/TG,task quality,physical262144/RESTORE,ordinary teardown or default adoption.',
         retention='Current model-entry prerequisite. Retire normal traces/caches and obsolete standalone'
@@ -159,13 +242,24 @@ def execute(mode):
     try:
         scope = owner.Owner(ROOT / ('owned-' + mode), persist)
         if mode == 'host':
-            cases = [('empty', ['--host'], {}, 'HOST owner_negative_cases=3 GPU=0'),
-                ('flag2', ['--reject-switch', 'must be 0 or 1'], {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': '2'}, 'REJECT_SWITCH passed=1 GPU=0'),
+            e,out,err=scope.run('reader-controls',[build.HOST_PYTHON,'-B','-m','unittest','-v',
+                'tools.sycl.test_q6_dpas_component','tools.sycl.test_compile_census',
+                'tools.sycl.test_q6_head_generation_speed'],row['environment'],P,**row['host_budget'])
+            control=out.read_text()+err.read_text()
+            require(owner.closed(e) and e['exit_code']==0 and 'Ran 43 tests' in control and '\nOK\n' in control,
+                'all43prospective host controls required')
+            row['host_controls']=dict(passed=True,cases=43,GPU_executed=False)
+            cases = [('empty', ['--host'], {}, 'HOST owner_negative_cases=3 GPU=0\nPACKED_HOST owner_negative_cases=1 GPU=0'),
+                ('flag3', ['--reject-switch', 'must be 0 or 1'], {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': '3'}, 'REJECT_SWITCH passed=1 GPU=0'),
                 ('empty-flag', ['--reject-switch', 'must be 0 or 1'], {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': ''}, 'REJECT_SWITCH passed=1 GPU=0'),
                 ('release0', ['--reject-switch', 'requires STRATA_PREFILL_RELEASE_HEADS=1'],
                     {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': '1', 'STRATA_PREFILL_RELEASE_HEADS': '0'}, 'REJECT_SWITCH passed=1 GPU=0'),
                 ('release-absent', ['--reject-switch', 'requires STRATA_PREFILL_RELEASE_HEADS=1'],
-                    {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': '1', 'STRATA_PREFILL_RELEASE_HEADS': None}, 'REJECT_SWITCH passed=1 GPU=0')]
+                    {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD': '1', 'STRATA_PREFILL_RELEASE_HEADS': None}, 'REJECT_SWITCH passed=1 GPU=0'),
+                ('packed-release0', ['--reject-switch','requires STRATA_PREFILL_RELEASE_HEADS=1'],
+                    {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD':'2','STRATA_PREFILL_RELEASE_HEADS':'0'},'REJECT_SWITCH passed=1 GPU=0'),
+                ('packed-release-absent', ['--reject-switch','requires STRATA_PREFILL_RELEASE_HEADS=1'],
+                    {'STRATA_SYCL_DECODE_Q6_DPAS_HEAD':'2','STRATA_PREFILL_RELEASE_HEADS':None},'REJECT_SWITCH passed=1 GPU=0')]
             for label, args, changes, expected in cases:
                 env = dict(row['environment']); env.pop('LD_PRELOAD', None)
                 for k, v in changes.items():
@@ -201,7 +295,7 @@ def execute(mode):
                 require(outcome['passed'], 'small fixture/fault/closure gate failed: ' + label)
                 print('Production-linked device gate passed: ' + label, flush=True)
             run_gpu, _ = archived_gate()
-            for arm in ('reference', 'canonical'):
+            for arm in ('reference', 'canonical','sole-packed'):
                 outcome = dict(mode=arm, passed=False)
                 row['results'].append(outcome)
                 run_gpu(row, scope, arm, outcome)
