@@ -2086,7 +2086,14 @@ adds no inference dispatcher. Python preparation and exact native/runtime
 reference admission pass for `q6_dense_c4_component_v1`. Three positive parser
 orders and ten corrupt variants pass, as do both explicit module-import orders
 in fresh Python processes with the same shared image-reader binding. No GPU
-runs in these controls. C++ compilation and device checks remain pending.
+runs in these controls. Fixture `8b4d0ca9` now compiles all14TUs, covers801
+compiler inputs/24external links with0uncovered, and passes its selected
+canonical-DPAS image reader. No GPU has run. Before GPU stages, correct the
+trace validator: its global error regex would reject the required pre-main
+null-handle canary. Bind expected37/46 to the verified constructor receipt and
+reject every later error, with fresh CPU controls and explicit admission of the
+unchanged fixture. Original build/CPU results stay unchanged;host-only bounds
+checks may proceed while that controller correction is pending.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's
