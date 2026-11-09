@@ -2036,6 +2036,26 @@ the mixed prefill result; one pair establishes no repeated gain or adoption.
 Both children exit 0 with closed ownership, quiet validation and no fresh fault.
 The second candidate process also closes normally with the same body, output
 and draft counts. Three frozen processes remain, including its matched reference.
+The completed processes0/1/2 also have identical requested-transfer counters
+for each long prefill. These are logical native copy requests, not measured
+PCIe traffic or bandwidth:
+
+| Workload / FFN rows | Expert uploads / H2D bytes | Router-ID D2H bytes | Two route-map H2D bytes |
+| --- | --- | --- | --- |
+| regular-code /33207 |19368 /39552998400 |63757440 |127514880 |
+| varied-prose /33277 |19048 /38936601600 |63891840 |127783680 |
+
+Native source `6dd74eab7:src/prefill/moe_window.inc` reads `rows*K*4` router
+bytes back before CPU grouping, then uploads two distinct maps of that size.
+The printed `source_H2D_bytes` counter advances only once per window; it counts
+one map, not both maps or all H2D transfers. The expert-bank byte counter
+advances separately after accepted enqueue. All48windows complete per request.
+Thus the router/map round trip requests191272320/191675520bytes, versus
+39552998400/38936601600expert-weight H2D bytes. Do not add the one-map counter
+again to the two-map total. These values exclude other model copies and give
+no copy latency, CPU-grouping cost, overlap or bus-saturation measurement.
+They support the next long-prefill transfer/synchronization attribution;
+byte volume alone cannot decide whether moving grouping to the GPU wins.
 The next component fixture/controller is source-only at `bd6b375a6` on
 `tune/q6-dense-shapes`: six actual Q6 C4 shapes with their production
 generic/columns references, without a new inference dispatcher. Its syntax,
