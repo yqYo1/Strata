@@ -27161,7 +27161,7 @@
       "bytes": 7032,
       "sha256": "8a36f891b5f7853adf58d6c4f3c834bfb14ea84e196d4f4f310d44fb794789c1",
       "verdict": "conditional_decision_support",
-      "corrections": "Recover exact1256-slot stride/actual allocated bytes before choosing a resident-window/cache budget;98MiB startup free is not saturation proof. Logical context,resident cells,reserved bytes and physical traffic differ. K8V4 streaming remains rejected. Physical262144/tails/RESTORE/handoff remain required.",
+      "corrections": "Recover exact1256-slot stride/actual allocated bytes before choosing a resident-window/cache budget;98MiB startup free is not saturation proof. Logical context,resident cells,reserved bytes and physical traffic differ. K8V4 streaming remains rejected. Physical262144/tails/RESTORE/handoff remain required. Main resolved sized-arena gap in docs/RESOURCE_PROFILING.md at acfbfe172:1256slots request2575206400bytes. Its proposed exact whole-output oracle is not an acceptance rule;complete generated LLM text need not match. Existing QSA16 preflight refuses Mode1,so residency experiment needs a separate native16 implementation first.",
       "scope_exception": "Reviewer reported one inadvertent read-only Git status/rev-parse before recovering no-Git boundary;no mutation."
     },
     "retirement": {
@@ -27235,5 +27235,55 @@
       "source_recovery": null,
       "evidence_commit": "d7fe0bdcb88cb1d5aa7d6aa2329693cd1d49ae4d"
     }
+  },
+  "qsa16_stream_contract_20261110": {
+    "classification": "decision_support",
+    "topic": "QSA16 streamed-prefill contract",
+    "stage": "prepared_not_dispatched",
+    "schedulable_now": true,
+    "prerequisite": "orca_ro_bound_context_preflight_20261110",
+    "prerequisite_evidence": "Qualified outer filesystem/literal lifecycle contract and three ordinary report workers now settled,reviewed and physically closed. Existing Mode0-only QSA16 guard verified at native221e/sourceacfb;source design and independent primary-source collection require no new hardware measurement.",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "source_commit": "acfbfe1720e2df2f5c9fcc61e91750a5a7d3325b",
+    "helper_source_commit": "69a8051893e0b6dac27fb73c76b1ddbda58c1480",
+    "helper_sha256": "c41550676cbc0d80f4c7351faa940d01879a4e90fa7befd3aa0562336aa1ec19",
+    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-contract-20261110",
+    "spec_sha256": "a8414099748a576779b4bc8df77f5f249a95a543dba23a50fe6505fa7b4ea23a",
+    "launch_input_sha256": {
+      "preflight.py": "d1c380af3525b33c7405aadaccd8b92430a0a37eb3aad596dc5e085ff5089070",
+      "finish.py": "5c1425c4d7021939b1faa59d1111cd75311950daf7db6783859655ba3089dfea",
+      "task-spec.md": "a8414099748a576779b4bc8df77f5f249a95a543dba23a50fe6505fa7b4ea23a"
+    },
+    "expected_report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/qsa16-stream-contract-20261110/report.md",
+    "report_budget_bytes": 24576,
+    "wall_budget_seconds": 480,
+    "owner": "Main",
+    "next_review": "Native Luna-max scope/novelty/accuracy review after report;Main reads short digest. Verify exact Task/Dispatch settlement and captured PID/start closure before retirement or replacement. No steering;Main continues frozen serialized leaf cohort."
+  },
+  "usm_host_publication_20261110": {
+    "classification": "knowledge_collection",
+    "topic": "Host USM publication choices",
+    "stage": "prepared_not_dispatched",
+    "schedulable_now": true,
+    "prerequisite": "orca_ro_bound_context_preflight_20261110",
+    "prerequisite_evidence": "Qualified outer filesystem/literal lifecycle contract and three ordinary report workers now settled,reviewed and physically closed. Existing Mode0-only QSA16 guard verified at native221e/sourceacfb;source design and independent primary-source collection require no new hardware measurement.",
+    "model": "gpt-6-luna",
+    "reasoning_effort": "medium",
+    "source_commit": "acfbfe1720e2df2f5c9fcc61e91750a5a7d3325b",
+    "helper_source_commit": "69a8051893e0b6dac27fb73c76b1ddbda58c1480",
+    "helper_sha256": "c41550676cbc0d80f4c7351faa940d01879a4e90fa7befd3aa0562336aa1ec19",
+    "report_root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/usm-host-publication-20261110",
+    "spec_sha256": "527c12c08301bd555d0a78a9ccaaddba8ea73c944f08da24fe66f22d6e4759d2",
+    "launch_input_sha256": {
+      "preflight.py": "d1c380af3525b33c7405aadaccd8b92430a0a37eb3aad596dc5e085ff5089070",
+      "finish.py": "5c1425c4d7021939b1faa59d1111cd75311950daf7db6783859655ba3089dfea",
+      "task-spec.md": "527c12c08301bd555d0a78a9ccaaddba8ea73c944f08da24fe66f22d6e4759d2"
+    },
+    "expected_report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/usm-host-publication-20261110/report.md",
+    "report_budget_bytes": 24576,
+    "wall_budget_seconds": 480,
+    "owner": "Main",
+    "next_review": "Native Luna-max scope/novelty/accuracy review after report;Main reads short digest. Verify exact Task/Dispatch settlement and captured PID/start closure before retirement or replacement. No steering;Main continues frozen serialized leaf cohort."
   }
 }

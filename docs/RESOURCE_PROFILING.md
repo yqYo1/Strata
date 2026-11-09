@@ -189,8 +189,12 @@ per-token latency ratios within1.05 qualify the incremental observer cost only.
 The new admission verifies the original native inputs, five ELFs and complete
 compiler/link census, separately from this noncompiled observer. It consumes
 the closed comparison evidence, without rerunning its historical V1 raw reader
-or changing the original failure or adoption status. No new current-engine
-profile or observer-cost pass follows from source preparation. V1's prelaunch
+or changing the original failure or adoption status. V3's first off/on pair now
+closes normally with matched work/output hashes and on/off per-token decode
+latency1.00904. The observed leaf CPU totals are349.82s GU,165.31s Down and
+1.00s hidden quantization over4923generated tokens and1254500CPU expert jobs.
+These are concurrent CPU sums including memory stalls;the other two pairs
+remain required before observer-cost qualification. V1's prelaunch
 artifact-reader lookup and V2's end-gate/client-journal ordering failures remain
 failed in their original records. The end gate precedes client result append:
 bind four warmups before begin, and all five client/native leaf records after
