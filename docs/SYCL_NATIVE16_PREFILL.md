@@ -2246,6 +2246,13 @@ the bounded actual routing/handoff gate;model speed,agent/task,length scaling,
 physical262144/RESTORE and default adoption remain pending. Next use the
 maintained official long/agent and strong/weak thinking suite in fresh matched
 processes to assess the mechanisms independently.
+After recovering all291original controller inputs from413961faa and verifying
+the four normal closed owners,228successful diagnostic/cache files/42019543bytes
+are retired. Only the private record and path/hash/reason manifest remain.
+Post-retirement admission passes with the exact source,five ELFs,census,recipe,
+runtime,generator and model identities retained. The model-generator venv is
+required for this check;the system-Python cleanup admission refused before any
+manifest/deletion because`regex`was absent. Original model outcomes are unchanged.
 No model/default adoption or physical262144/RESTORE qualification follows here.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
