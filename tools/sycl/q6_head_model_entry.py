@@ -21,40 +21,29 @@ import native_request_protocol as protocol
 
 build, guards, owner, validation = device.build, device.guards, device.owner, device.validation
 P, B, RESULT = device.P, device.B, device.RESULT
-ROOT, KEY = B / 'q6-head-model-entry-v4', 'q6_head_model_entry_v4'
+ROOT, KEY = B / 'q6-head-packed-model-entry-v1', 'q6_head_packed_model_entry_v1'
 REFERENCE = B / 'decode-iq3-audit-speed-v2/record.json'
 STATUS = P / 'bench/results/2026-10-15-pr6-recovery-audit/upstream-status.json'
 require, sha, write, signature = device.require, device.sha, device.write, build.signature
 
 
 def native():
-    """Reuse exact qualified native/fixture bytes with two new observer files.
+    """Check the sole-packed native source, recipe, four ELFs and actual inputs.
 
-    Keep native d174 and its recipe distinct from this controller admission;
-    the failed V2 model request gate is not inherited as a success.
+    The shared reader preserves native6dd and admissionf518 identities, rather
+    than relabeling the retained engine with this new model-controller commit.
     """
-    row = json.loads((build.ROOT / 'record.json').read_text())
-    require(validation.committed(RESULT, (build.KEY,)) == build.compact(row) and
-        row['stage'] == 'built' and row['passed'] and row['complete'] and row['ownership_closed'] and
-        row['actual_inputs']['uncovered'] == 0, 'closed original native qualification required')
-    previous = row['admission_project']; current = build.source.pin(P, build.PREFIXES)
-    before, after = previous['source_sha256'], current['source_sha256']
-    require(before == {n: hashlib.sha256(raw).hexdigest() for n, raw in
-        build.source.blobs(P, previous['revision'], before)}, 'original admission source not recoverable')
-    require(set(before) == set(after) and {n for n in before if before[n] != after[n]} ==
-        {'tools/sycl/q6_head_model_entry.py', 'tools/sycl/q6_head_generation_speed.py'},
-        'only named model/cohort observers may change;no native,fixture or build-reader change')
-    check = dict(row, project=current); build.build.check_inputs(check)
-    for name, digest in (row.get('generated_inputs', {}) | row.get('configured_files', {})).items():
-        require(sha(name) == digest, 'original configured/recipe input changed')
-    inputs = row['actual_inputs']; require(sha(inputs['path']) == inputs['sha256'], 'native census changed')
-    census = json.loads(Path(inputs['path']).read_text())
-    require(all(sha(p) == digest for field in ('compiled', 'generated', 'links')
-        for p, digest in census[field].items()), 'actual native compiler/link input changed')
-    require(row['native_source_commit'] == row['project']['revision'] and
-        all(sha(v['path']) == v['sha256'] and Path(v['path']).stat().st_size == v['bytes']
-            for v in row['binaries'].values()), 'original engine/fixture/source identity changed')
-    return row
+    return device.native()
+
+
+def controller_pin():
+    pin = build.source.pin(P, ['tools/sycl', 'tools/strata_tokenizer.py', 'data/expert-profile.bin'])
+    # This later consumer imports us; we never import or execute it. Keeping it
+    # out of this plan lets the closed model proof qualify its subsequent plan
+    # without pretending that a changed measurement dependency is unchanged.
+    del pin['source_sha256']['tools/sycl/q6_head_generation_speed.py']
+    pin['aggregate_sha256'] = signature(pin['source_sha256'])
+    return pin
 
 
 def check_placement(fields):
@@ -119,24 +108,43 @@ def requests(tokenizer):
     return dict(long=long, short=short)
 
 
-def routes(text, arm):
-    base, dpas = {}, {}
+def route_tables(text, arm):
+    require(type(arm) is int and arm in (0, 2), 'explicit canonical0 or sole-packed2 arm')
+    base, packed = {}, {}
     for line in text.splitlines():
-        if not line.startswith(('strata Q6_ROUTE ', 'strata Q6_DPAS_HEAD ')): continue
-        fields = dict(p.split('=', 1) for p in line.split()[2:])
+        require(not line.startswith('strata Q6_DPAS_HEAD '), 'unexpected canonical-DPAS trial marker')
+        if not line.startswith(('strata Q6_ROUTE ', 'strata Q6_PACKED_HEAD ')): continue
+        pairs = [p.split('=', 1) for p in line.split()[2:]]
+        require(all(len(p) == 2 for p in pairs), 'malformed head route fields')
+        fields = dict(pairs)
+        require(len(fields) == len(pairs) and
+            all(k in fields for k in ('request', 'device', 'phase', 'tokens', 'capture_id', 'complete')),
+            'missing or duplicate head route identity')
+        require(all(fields[k].isdecimal() for k in ('request', 'tokens', 'capture_id')) and
+            int(fields['request']) > 0 and int(fields['capture_id']) > 0 and fields['device'] == '0' and
+            fields['phase'] in ('prompt', 'decode') and 1 <= int(fields['tokens']) <= 4,
+            'unplanned head route geometry')
         key = tuple(fields[k] for k in ('request', 'device', 'phase', 'tokens', 'capture_id'))
         require(fields['complete'] == '1', 'incomplete production head route')
         if line.startswith('strata Q6_ROUTE '):
-            require(key not in base and fields['native_half_enabled'] == '0' and
-                fields['replay_started'] == fields['replay_completed'], 'invalid production graph identity/count')
+            require(key not in base and fields.get('native_half_enabled') == '0' and
+                fields.get('scope') == 'live_capture_cumulative' and
+                str(fields.get('replay_started', '')).isdecimal() and
+                fields['replay_started'] == fields.get('replay_completed'),
+                'invalid production graph identity/count')
             base[key] = fields
         else:
-            require(key not in dpas and fields['canonical_table_excludes_dpas'] == '1' and
-                fields['layout'] == 'canonical' and fields['extra_weight_bytes'] == '0' and
-                fields['calls'] == str(int(fields['phase'] == 'decode' and fields['tokens'] == '4')),
-                'canonical DPAS head escaped its decode-C4/no-extra-weight policy')
-            dpas[key] = fields
-    require(base and ((set(base) == set(dpas)) if arm else not dpas), 'missing/unexpected DPAS route joins')
+            require(key not in packed and fields.get('layout') == 'sole-packed' and
+                fields.get('extra_weight_bytes') == '0' and fields.get('calls') == '1',
+                'sole-packed head layout/call/zero-extra-weight policy')
+            packed[key] = fields
+    require(base and ((set(base) == set(packed)) if arm == 2 else not packed),
+            'missing/unexpected sole-packed route joins')
+    return base, packed
+
+
+def routes(text, arm):
+    base, packed = route_tables(text, arm)
     ids = sorted({int(k[0]) for k in base})
     require(ids == [1, 2, 3], 'all three actual request route snapshots required')
     decode = []
@@ -146,35 +154,87 @@ def routes(text, arm):
                 'decode-C4 must actually replay in every request')
         k, fields = found[0]
         decode.append(dict(request=request, capture_id=int(k[4]),
-            replay_completed=int(fields['replay_completed']), dpas_calls=int(dpas[k]['calls']) if arm else 0))
+            replay_completed=int(fields['replay_completed']), packed_calls=int(packed[k]['calls']) if arm else 0))
     require(decode[0]['capture_id'] != decode[-1]['capture_id'], 'long prefill must retire and recapture the head reader')
+    epochs = {}
+    for item in decode:
+        capture, completed = item['capture_id'], item['replay_completed']
+        require(completed >= epochs.get(capture, 0), 'cumulative replay count decreased within one capture')
+        epochs[capture] = completed
     return dict(snapshots=len(base), requests=ids, decode_C4=decode,
-                dpas_only_decode_C4=bool(arm), prompt_and_C1_dpas_calls=0)
+        actual_decode_C4_replays=sum(epochs.values()), sole_packed_all_live_head_windows=arm == 2,
+        scope='Per-request live-capture snapshots;coalesce repeated capture identities before summing replays.')
+
+
+def handoffs(text, arm, transitions):
+    require(type(arm) is int and arm in (0, 2) and transitions in (1, 2), 'explicit model handoff arm/count')
+    target = re.findall(r'^strata prefill heads: target detached bytes=(\d+) source=owned-RAM D2H=(\d+) H2D-on-restore=(\d+)$', text, re.M)
+    expected = ('521472000', '521472000', '521472000')
+    require(target == [expected] * transitions, 'actual long-prefill target retire/restore transitions required')
+    draft = re.findall(r'^strata prefill heads: draft detached bytes=(\d+) retained-map-bytes=(\d+)$', text, re.M)
+    require(draft == [('0' if arm == 2 else '223227900', '425196')] * transitions,
+            'actual MTP subset retirement/map extent changed')
+    admission = 'strata native head packed: ready=1 columns=1..4 weight_bytes=521472000 canonical_device_weight_bytes=0 extra_device_weight_bytes=0 permanent_host_weight_bytes=0 default_adopted=0'
+    mtp = 'strata mtp: shared packed head tokens=106299 subset_weight_bytes=0 subset_logit_bytes=425196 saved_device_bytes=222802704'
+    lines = text.splitlines()
+    require([v for v in lines if v.startswith('strata native head packed:')] == ([admission] if arm == 2 else []) and
+        [v for v in lines if v.startswith('strata mtp: shared packed head ')] == ([mtp] if arm == 2 else []) and
+        not any(v.startswith('strata native head DPAS:') for v in lines), 'head/MTP owner admission changed')
+    return dict(target=[dict(freed=int(v[0]), D2H=int(v[1]), H2D=int(v[2])) for v in target],
+        draft=[dict(freed=int(v[0]), retained_map_bytes=int(v[1])) for v in draft],
+        sole_packed_owner=arm == 2, scope='Requested allocation/copy extents,not physical bus traffic or tensor residency.')
 
 
 def parser_controls():
     def sample(arm):
         lines = []
-        for request, capture in ((1, 1), (2, 1), (3, 2)):
+        for request, capture, completed in ((1, 2, 10), (2, 2, 18), (3, 6, 10)):
             for phase, tokens in (('prompt', 4), ('decode', 1), ('decode', 4)):
                 shared = f'request={request} device=0 phase={phase} tokens={tokens} capture_id={capture}'
-                lines.append('strata Q6_ROUTE ' + shared + ' native_half_enabled=0 complete=1 replay_started=1 replay_completed=1')
-                if arm: lines.append('strata Q6_DPAS_HEAD ' + shared +
-                    ' layout=canonical extra_weight_bytes=0 canonical_table_excludes_dpas=1 calls=' + str(int(phase == 'decode' and tokens == 4)) + ' complete=1')
+                lines.append('strata Q6_ROUTE ' + shared + f' scope=live_capture_cumulative native_half_enabled=0 complete=1 replay_started={completed} replay_completed={completed}')
+                if arm: lines.append('strata Q6_PACKED_HEAD ' + shared +
+                    ' layout=sole-packed extra_weight_bytes=0 calls=1 complete=1')
         return '\n'.join(lines)
-    for arm in (0, 1): routes(sample(arm), arm)
-    text = sample(1)
-    variants = [text.replace('calls=0', 'calls=1', 1),
-        '\n'.join(v for v in text.splitlines() if not v.startswith('strata Q6_DPAS_HEAD request=2')),
-        text.replace('canonical_table_excludes_dpas=1', 'canonical_table_excludes_dpas=0', 1),
-        text.replace('layout=canonical', 'layout=packed', 1),
+    for arm in (0, 2):
+        require(routes(sample(arm), arm)['actual_decode_C4_replays'] == 28, 'cumulative replay snapshots double-counted')
+    text = sample(2)
+    variants = [text.replace('calls=1', 'calls=0', 1),
+        '\n'.join(v for v in text.splitlines() if not v.startswith('strata Q6_PACKED_HEAD request=2')),
+        text.replace('layout=sole-packed', 'layout=canonical', 1),
         text.replace('extra_weight_bytes=0', 'extra_weight_bytes=521472000', 1),
-        text.replace('replay_completed=1', 'replay_completed=0', 1),
-        text + '\n' + text.splitlines()[0], text.replace('request=3', 'request=4')]
+        text.replace('replay_completed=10', 'replay_completed=0', 1),
+        text + '\n' + text.splitlines()[0], text.replace('request=3', 'request=4'),
+        text.replace('tokens=4', 'tokens=8', 1), text.replace('capture_id=2', 'capture_id=0', 1),
+        text.replace('scope=live_capture_cumulative', 'scope=per_request', 1),
+        text.replace('replay_started=18 replay_completed=18', 'replay_started=9 replay_completed=9'),
+        text + '\nstrata Q6_DPAS_HEAD request=1 device=0 phase=decode tokens=4 capture_id=2',
+        text.replace('native_half_enabled=0', 'native_half_enabled=1', 1),
+        text.replace('request=1 device=0', 'request=1 request=1 device=0', 1),
+        text.replace('complete=1', 'complete=0', 1)]
     for bad in variants:
-        try: routes(bad, 1)
+        try: routes(bad, 2)
         except RuntimeError: continue
         raise RuntimeError('production head parser accepted a corrupted join/policy/count')
+    try: routes(text, 0)
+    except RuntimeError: pass
+    else: raise RuntimeError('reference accepted packed head markers')
+    target = 'strata prefill heads: target detached bytes=521472000 source=owned-RAM D2H=521472000 H2D-on-restore=521472000'
+    draft = 'strata prefill heads: draft detached bytes=0 retained-map-bytes=425196'
+    admission = 'strata native head packed: ready=1 columns=1..4 weight_bytes=521472000 canonical_device_weight_bytes=0 extra_device_weight_bytes=0 permanent_host_weight_bytes=0 default_adopted=0'
+    mtp = 'strata mtp: shared packed head tokens=106299 subset_weight_bytes=0 subset_logit_bytes=425196 saved_device_bytes=222802704'
+    handoff = '\n'.join([admission, mtp, target, draft, target, draft])
+    handoffs(handoff, 2, 2)
+    handoffs('\n'.join([target, draft.replace('bytes=0 ', 'bytes=223227900 ')] * 2), 0, 2)
+    invalid = [handoff.replace('H2D-on-restore=521472000', 'H2D-on-restore=0', 1),
+        handoff.replace('draft detached bytes=0', 'draft detached bytes=223227900', 1),
+        handoff.replace('retained-map-bytes=425196', 'retained-map-bytes=0', 1),
+        handoff.replace('canonical_device_weight_bytes=0', 'canonical_device_weight_bytes=521472000'),
+        handoff.replace('subset_weight_bytes=0', 'subset_weight_bytes=223227900'),
+        handoff + '\n' + mtp, handoff.replace(target, '', 1), handoff.replace(draft, '', 1)]
+    for bad in invalid:
+        try: handoffs(bad, 2, 2)
+        except RuntimeError: continue
+        raise RuntimeError('head/MTP parser accepted corrupted owner/transfer evidence')
     fields = dict(context='131072', kv='int8', kv_resident='0', expert_slots='1256',
         spec='4', pool_workers='5', pcie_frac='0.00', mtp_max='0')
     check_placement(fields)
@@ -183,7 +243,8 @@ def parser_controls():
         try: check_placement(dict(fields, **{key: value}))
         except RuntimeError: continue
         raise RuntimeError('incorrect/streamed model placement accepted')
-    return dict(passed=True, positive_arms=2, corrupt_variants=8,
+    return dict(passed=True, positive_arms=2, corrupt_route_variants=len(variants) + 1,
+        handoff_positive_arms=2, corrupt_handoff_variants=len(invalid), coalesced_decode_replays=28,
         full_resident_placement_positive=1, incorrect_placement_variants=5, GPU_executed=False)
 
 
@@ -244,7 +305,7 @@ def prepare():
     n = native(); prior = validation.committed(RESULT, (device.KEY,))
     require(prior['passed'] and prior['complete'] and prior['ownership_closed'] and
         all(any(r.get('mode') == arm and r['passed'] for r in prior['results'])
-            for arm in ('submission', 'phase', 'reference', 'canonical')) and
+            for arm in ('submission', 'phase', 'reference', 'canonical', 'sole-packed')) and
         prior['binaries'] == n['binaries'], 'same-build device closure required')
     reference = json.loads(REFERENCE.read_text())
     old = validation.committed(STATUS, ('current_sync', 'dflash2_prefill_heads_check'))
@@ -271,14 +332,14 @@ def prepare():
     require(env['STRATA_PREFILL_NATIVE_DENSE_BANK'] == '1' and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1'
         and env['EnableDirectSubmission'] == '0' and env['STRATA_SYCL_VERIFY_NATIVE_CAPTURE'] == '0', 'preserve runtime safety')
     row = dict(stage='prepared', source_commit=build.source.git(P, 'rev-parse', 'HEAD').decode().strip(),
-        controller=build.source.pin(P, ['tools/sycl', 'tools/strata_tokenizer.py', 'data/expert-profile.bin']),
+        controller=controller_pin(),
         native_source_commit=n['project']['revision'], native_build=dict(binaries=n['binaries']),
         native_qualification_reuse=dict(native_build_key=build.KEY, device_key=device.KEY,
-            device_evidence_commit='51fbdc3812774bef1b7b0a0bc73501dbfa82fd2f',
+            device_evidence_commit='5145e8eb7229cdec7b33711f708cc95949d853cd',
             native_source_commit=n['project']['revision'], binaries_unchanged=True,
             actual_compiler_and_fixture_and_recipe_inputs_unchanged=True,
-            changed_observers=['tools/sycl/q6_head_model_entry.py', 'tools/sycl/q6_head_generation_speed.py'],
-            previous_failed_model_key='q6_head_model_entry_v3', previous_failure_commit='b3bbfb3f097500d89575e612579d685efdd43aca',
+            changed_observers=['tools/sycl/q6_head_model_entry.py'],
+            earlier_canonical_model_key='q6_head_model_entry_v4', earlier_model_evidence_commit='bde0c43bd1ff6fe92f98914d83c991abf2a798a6',
             scope='Controller-only new plan;reuse exact original four native ELFs/fixtures/recipe and closed GPU owner proof. No failed model result or speed inherited.'),
         native_record=dict(path=str(build.ROOT / 'record.json'), sha256=sha(build.ROOT / 'record.json')),
         device_evidence_sha256=signature(prior), models=reference['model_assets'],
@@ -289,12 +350,13 @@ def prepare():
         tokenizer=reference['configuration']['tokenizer'], requests=requests(Path(reference['configuration']['tokenizer'])),
         environment=env, argv=argv, boot=prior['boot'], driver=prior['driver'],
         budgets=dict(wall=900, cpu=10800, rss_cap=104 << 30, text_cap=64 << 20, file_cap=64 << 20, total_cap=256 << 20),
-        plan='Committed parser controls first;fresh head0then1 processes,long>8192/short82/long>8192 thinking-on32output'
+        plan='Committed parser controls first;fresh head0then2 processes,long>8192/short82/long>8192 thinking-on32output'
              ' requests in each. Context131072,KVresident131072,chunk8192,short-read128,1256cache,MTP4,'
              'no token/coupled graphs. This qualifies full-placement admission,not full-context processing.'
              ' Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps,'
              ' native full-resident INFO kv_resident=0,owned DRM snapshots at READY/after requests,'
-             ' complete GEN/drafts,all request route joins,positive C4replays,two target-head retirements and'
+             ' complete GEN/drafts,all prompt/C1/C4 sole-packed route joins,positive C4replays,two target-head retirements,'
+             ' actual canonical223227900B versus packed0B MTP-subset retirements,immutable map extents and'
              ' fresh capture identities after restoration. No output-equality requirement. Full15asset hashes'
              ' at preparation and final cohort closure;stat checks before each process. Stop first failure.',
         limits='Small ownership/routing diagnosis only;no clean PP/TTFT/TG claim,task quality,physical262144/'
@@ -309,10 +371,10 @@ def prepare():
         row['requests']['short']['prompt_tokens'] == 82, 'known multi-chunk diagnostic geometry')
     assets(row, full=True)
     ROOT.mkdir(mode=0o700)
-    for arm in (0, 1):
+    for arm in (0, 2):
         path = ROOT / str(arm); path.mkdir(mode=0o700)
         for name in ('tmp', 'cache'): (path / name).mkdir(mode=0o700)
-    save(row); print('Prepared same-engine head0/1 real-model entry;commit before controls.', flush=True)
+    save(row); print('Prepared same-engine head0/2 real-model entry;commit before controls.', flush=True)
 
 
 def execute(mode):
@@ -328,7 +390,7 @@ def execute(mode):
     def persist(): write(ROOT / 'execution.json', dict(active=bool(scope and scope.active), commands=scope.commands if scope else []))
     try:
         scope = owner.Owner(ROOT / 'owned', persist)
-        for arm in (0, 1):
+        for arm in (0, 2):
             assets(row); guards.no_model_owners([])
             env = dict(row['environment'], TMPDIR=str(ROOT / str(arm) / 'tmp'), XDG_CACHE_HOME=str(ROOT / str(arm) / 'cache'),
                 PYTHONPYCACHEPREFIX=str(ROOT / str(arm) / 'cache/python'), STRATA_MEASUREMENT_ROOT=str(ROOT / str(arm)),
@@ -367,15 +429,12 @@ def execute(mode):
             require(owner.closed(e) and e['exit_code'] == 0, 'native model closure failed')
             text = err.read_text(errors='replace')
             result['routes'] = routes(text, arm)
-            detached = re.findall(r'^strata prefill heads: target detached bytes=(\d+) source=owned-RAM D2H=(\d+) H2D-on-restore=(\d+)$', text, re.M)
-            expected = ('521472000', '521472000', '521472000')
-            require(detached == [expected, expected], 'two actual long-prefill target retire/restore transitions required')
-            admission = 'strata native head DPAS: ready=1 columns=4 layout=canonical canonical_bytes=521472000 extra_device_weight_bytes=0 extra_host_weight_bytes=0 default_adopted=0'
-            require([v for v in text.splitlines() if v.startswith('strata native head DPAS:')] == ([admission] if arm else []) and
-                not re.search(r'UR_RESULT_ERROR_[A-Z_]+', text), 'head layout/UR failure')
+            transfers = handoffs(text, arm, 2)
+            require(not re.search(r'UR_RESULT_ERROR_[A-Z_]+', text), 'native UR failure')
             log = ROOT / str(arm) / 'validation.log'
             require(not log.exists() or log.stat().st_size == 0, 'native parameter-validation error')
-            result.update(head_transitions=[dict(freed=int(v[0]), D2H=int(v[1]), H2D=int(v[2])) for v in detached],
+            result.update(head_transitions=transfers['target'], draft_transitions=transfers['draft'],
+                sole_packed_owner=transfers['sole_packed_owner'],
                 host_probe_accepted=True, native_exit_code=0)
             validation.finish(result, scope, cursor, row['boot'])
             require(result['passed'], 'model fault/closure gate failed')
@@ -391,7 +450,7 @@ def execute(mode):
         if not row['passed']: row['stage'] = 'failed'
         save(row)
     require(row['passed'], row.get('error', 'small head model entry failed'))
-    print('Closed real-model head0/1 routes and repeated handoffs;speed/adoption remain unqualified.', flush=True)
+    print('Closed real-model head0/2 routes and repeated handoffs;speed/adoption remain unqualified.', flush=True)
 
 
 if __name__ == '__main__':
