@@ -43,6 +43,19 @@ def pins(revision):
     return result
 
 
+def configuration(reference):
+    config = copy.deepcopy(reference['configuration'])
+    config.update(exe=str(P / 'tools/sycl/engine_once.py'), family='qwen', env={})
+    args = config['args']
+    args[args.index('--adapt-swaps') + 1] = '96'
+    if '--adapt-every' not in args: args += ['--adapt-every', '1']
+    require(args[args.index('--adapt-every') + 1] == '1' and
+        args[args.index('--max-context') + 1] == args[args.index('--kv-resident') + 1] == '131072' and
+        args[args.index('--prefill') + 1] == '8192' and args[args.index('--expert-cache') + 1] == '1256',
+        'preserve the measured long-generation placement')
+    return config
+
+
 def basis(revision):
     model = json.loads((entry.ROOT / 'record.json').read_text()); entry.verify(model)
     require(model['stage'] == 'closed' and model['passed'] and model['complete'] and
@@ -53,15 +66,7 @@ def basis(revision):
     reference = json.loads(entry.REFERENCE.read_text())
     contract, manifest = frontend.python_manifest()
     require(reference['model_assets'] == model['models'], 'fixed model assets differ')
-    config = copy.deepcopy(reference['configuration'])
-    config.update(exe=str(P / 'tools/sycl/engine_once.py'), family='qwen', env={})
-    args = config['args']
-    args[args.index('--adapt-swaps') + 1] = '96'
-    if '--adapt-every' not in args: args += ['--adapt-every', '1']
-    require(args[args.index('--adapt-every') + 1] == '1' and
-        args[args.index('--max-context') + 1] == args[args.index('--kv-resident') + 1] == '131072' and
-        args[args.index('--prefill') + 1] == '8192' and args[args.index('--expert-cache') + 1] == '1256',
-        'preserve the measured long-generation placement')
+    config = configuration(reference)
     original_environment = reference['environment_template']
     environment = {k: v.replace(original_environment['STRATA_MEASUREMENT_ROOT'], str(ROOT))
                    for k, v in original_environment.items()}
