@@ -2218,6 +2218,15 @@ comparison. Other named phase/feature consumers and legacy holds are unchanged.
 Next run actual four-combination dense0/1/backing0/1 model handoffs with head2
 fixed,checking both real C4 dense routing and prefill/short/decode state. Only
 then collect independent matched long/agent/strong-and-weak thinking speed.
+The prospective observer is `tools/sycl/q6_dense_model_entry.py`:four fresh
+processes in0/0,1/0,0/1,1/1order,with the existing10197/82/10197thinking-input
+handoffs and32outputs per request. It preserves the original221e native source
+and five exact ELFs;only the committed device/model observers extend the build
+admission. Require identical selected call counts and identical common canonical
+phase/width tables after excluding the four selected cells. Record differing
+optional MTP widths without demanding identical generated text. Commit each
+closed stage;stop on the first failed gate. These short outputs qualify routing
+and ownership only,not sustained generation speed.
 No model/default adoption or physical262144/RESTORE qualification follows here.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
