@@ -2168,9 +2168,10 @@ controls pass. The actual census covers128translation units,1462compiler files,
 one generated input and29external links with0uncovered. Engine/head selected
 kernel structures match under the checked ID/declaration-order normalization.
 All five binaries are fresh; compilation and owned closure pass, with no GPU
-execution. The compiled CPU policy check also passes:four selected cells,
-prompt/width isolation and cache retirement,normal0/closed ownership. GPU/model
-qualification remains pending.
+execution at that build step. The compiled CPU policy check also passes:four
+selected cells,prompt/width isolation and cache retirement,normal0/closed
+ownership. The fresh GPU fixture cohort below now passes;actual dense-dispatch
+model qualification remains pending.
 Before its first CPU policy execution, controller-only admission `84e7deb51` corrects
 the output budget to include the existing144MB build tree:retain the builder's
 finite4GiB total/512MiB file ceilings and120s/1GiB RSS/1MiB text bounds.
@@ -2208,6 +2209,12 @@ two transitions:1042944000fewer requested bytes. These include fixture validatio
 copies;the removed D2H direction follows the unchanged source branch,not a
 physical-traffic measurement. All transition clocks remain diagnostic samples,
 one process per layout/policy,two cycles;no short-interval speed ratio is qualified.
+After closure and recovery of the original906e85fc5controller inputs,61successful
+diagnostic files/6531467bytes are retired. Only the compact private record and
+path/hash/reason retirement manifest remain in that device root. All individual
+numerical/transition samples and original outcomes are preserved;the current
+a347/five fixtures,configured inputs and1db reference remain for the next model
+comparison. Other named phase/feature consumers and legacy holds are unchanged.
 Next run actual four-combination dense0/1/backing0/1 model handoffs with head2
 fixed,checking both real C4 dense routing and prefill/short/decode state. Only
 then collect independent matched long/agent/strong-and-weak thinking speed.
@@ -2251,9 +2258,10 @@ the independent 90f/552b/e1b consumers and separate legacy provenance holds.
 
 The traced wrapper samples show268..323ms preparing the RAM snapshot and
 133..165ms versus289..345ms restoring reference/packed heads. These are two
-samples per arm,not clean performance or physical bandwidth. After whole-model
-routing admission,check persistent canonical RAM backing or deferred packed
-upload against actual PP/TTFT/TG before adopting either. Neither is implemented.
+samples per arm,not clean performance or physical bandwidth. The current
+immutable initial-RAM backing above is now implemented and passes fresh device
+fixtures;its actual PP/TTFT/TG effect remains unmeasured. Deferred packed upload
+remains unimplemented. Neither is adopted for model inference.
 The bounded real-model Verifier/head handoff above passes. Clean matched model
 speed,agent/long-thinking,phase/length behavior,task quality and physical262144/
 RESTORE remain open.
