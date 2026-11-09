@@ -169,6 +169,19 @@ pending work, model observer overhead or inference performance. Requalify the
 current collector/provider inputs before execution, preserve the owned launcher's
 `ZES_ENABLE_SYSMAN=0` policy, and serialize this work after the frozen model cohort.
 
+The current a347 engine, built from `221e95e9ad890383deb418d0a865ee32c99168b6`,
+already has `STRATA_CPU_SERVICE_PROFILE:BOOL=ON`. Its compiled `pool.cpp` and
+`pool.hpp` match the producers in `verify_window_cpu_service_overhead_v1`.
+The existing `STRATA_CPU_SERVICE=1` startup setting can therefore expose the
+CPU pool's GU/Down and other leaf wall/thread-CPU clocks without a new native
+build. This is source/build evidence, not a current collection or overhead pass.
+The older overhead result bounds only its original incremental observer cost;
+it does not transfer that bound to a347 or establish RAM/arithmetic saturation.
+After the frozen dense-DPAS comparison closes, qualify a matched observer-off/on
+window on the selected binary before using those clocks for attribution. Keep
+leaf CPU time separate from completion polling and nested pool/wait intervals.
+Test physical counter collection separately before making a RAM-bandwidth claim.
+
 ## Numerical reference for replacement kernels
 
 Use the reached SGLang/vLLM path for the same model as the preferred algorithm
