@@ -2271,7 +2271,16 @@ strict32768fresh-token requirement. V2now passes four route-positive cases,
 13corrupt-route refusals,11corrupt-v5metadata refusals and the actual18request
 reader. Fresh benchmark/server probes pass144/230modules and18/27code maps,
 with normal closed owners. No candidate speed result follows from these CPU
-gates;the next action is candidate process1.
+gates. Candidate process1now completes all18requests,normal native/bench0,
+closed ownership,quiet validation,no fresh fault and matched fixed inputs.
+Its observed strict long-generation rates are13.8/8.6TG versus the historical
+control12.2/8.5;outputs are3044/6937versus3656/7950and acceptance differs,
+so these are model-workload rates,not isolated kernel gains. Candidate PP is
+698.1/661.6versus707.0/705.1and TTFT47.720/50.494s versus47.120/47.367s.
+Keep these lower prefill/higher TTFT samples;one pair does not qualify adoption
+or preservation. The common actual canonical tables match for decode1/4;
+mode10/BF16long-prefill checks remain independent. Continue the committed
+order with fresh candidate2,then control3/control4/candidate5.
 The closed V1control exposes a reader mismatch before candidate1:the tuned
 `--short-read 0`route uses dedicated prefill and its live Q6capture reports
 contain decode1/4only. `evidence()`incorrectly requires a common Verifier-prompt
