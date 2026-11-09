@@ -225900,7 +225900,7 @@
     ]
   },
   "q6_head_model_build_v3": {
-    "stage": "prepared",
+    "stage": "configured",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
@@ -226087,6 +226087,793 @@
       "native_source_bytes_unchanged": true,
       "reason": "Prospective V3 fixes nested Ninja object parsing;reuses only configured build directory,not a native executable or failed result."
     },
+    "host_controls": {
+      "passed": true,
+      "cases": 28,
+      "fault_finalizer_AST_identical": true,
+      "GPU_executed": false,
+      "source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e"
+    },
+    "planned_translation_units": [
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-alloc.c",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-backend-meta.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-backend.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/amx/amx.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/amx/mmq.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/arch/x86/quants.c",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/arch/x86/repack.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/binary-ops.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/ggml-cpu.c",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/ggml-cpu.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/hbm.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/iqp.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/ops.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/quants.c",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/repack.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/traits.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/unary-ops.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/vec.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-opt.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-quants.c",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-threading.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml.c",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml.cpp",
+      "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/gguf.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/conversation_memory.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/conversation_snapshot.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/conversation_state.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/dflash2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/dflash2_pack.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_cache.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_source.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/graph.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/layer.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/layout.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/mtp.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/native_dense.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/native_head.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/pinned.cu",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/remote_experts.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/session.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/verify.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/core/weights.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/expert.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/expert_layout.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq2_pair_avx2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_avx2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_avx512.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_single_avx2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/kq_avx2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/native_expert.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/pool.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/q2_avx2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/ngram.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/attention.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/bf16_gemv.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/cvec.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/decode_attention.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/dflash2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/elementwise.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/expert_routing.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gdn.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gr.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/gdn.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/gr.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/iq.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/kv.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/kv_stream.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_flash_attn.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_iq4xs_esimd.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_iq_esimd.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmvq.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q2.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q2_esimd.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q3_esimd.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q4_esimd.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q5_head.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_qsa_indexer.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_router.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/ple.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/prompt_attention.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/q6_dpas_component.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_attention.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_attention_late_flags.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_packed.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_index.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_select.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_topk_prefill_early.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/quantize_act.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/rope.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/router.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/s2_experts.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/s2_gemv_q8.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/s_gemv.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/sampler.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/sequence.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/shared_expert.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/ngram/ple_reader.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/platform/direct_file.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/platform/memory.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/blob.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/dflash2_taps.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gdn_chunk64.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gemm.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gemm16.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/moe_fused.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/moe_mmq.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/native16.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/postops.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/qsa_native16.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/qsa_score_gemm.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/vllm_xe2/native16.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/program/dense_prefill_nll.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/spec/controller.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/spec/draft_policy.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/spec/suffix_drafter.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/device.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/compat.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/native_head_dpas.cpp",
+      "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/verifier_retirement.cpp"
+    ],
+    "planned_compilation": [
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/vllm_xe2/native16.cpp",
+        "output": "CMakeFiles/strata_vllm_xe2_native16.dir/src/prefill/sycl/vllm_xe2/native16.cpp.o",
+        "target": "strata_vllm_xe2_native16"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/runtime.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/runtime.cpp.o",
+        "target": "strata_sycl_runtime"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/compat.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/compat.cpp.o",
+        "target": "strata_sycl_runtime"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/command_profile.cpp",
+        "output": "CMakeFiles/strata_sycl_runtime.dir/src/sycl/command_profile.cpp.o",
+        "target": "strata_sycl_runtime"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/program/generate.cpp",
+        "output": "CMakeFiles/strata.dir/src/program/generate.cpp.o",
+        "target": "strata"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/program/dense_prefill_nll.cpp",
+        "output": "CMakeFiles/strata.dir/src/program/dense_prefill_nll.cpp.o",
+        "target": "strata"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/prefill.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/prefill.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gemm.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/qsa_score_gemm.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_score_gemm.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gemm16.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gemm16.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/native16.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/native16.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/qsa_native16.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/qsa_native16.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/gdn_chunk64.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/gdn_chunk64.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/postops.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/postops.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/blob.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/blob.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/moe_mmq.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_mmq.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/moe_fused.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/moe_fused.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/dflash2_taps.cpp",
+        "output": "CMakeFiles/strata_prefill.dir/src/prefill/sycl/dflash2_taps.cpp.o",
+        "target": "strata_prefill"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml.c",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-alloc.c",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-backend.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-backend-meta.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml-backend-meta.cpp.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-opt.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-threading.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-quants.c",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/gguf.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o",
+        "target": "ggml-base"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/ggml-cpu.c",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/ggml-cpu.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/repack.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/iqp.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/iqp.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/hbm.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/quants.c",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/traits.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/amx/amx.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/amx/mmq.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/binary-ops.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/unary-ops.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/vec.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/ops.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/arch/x86/quants.c",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/ggml-cpu/arch/x86/repack.cpp",
+        "output": "ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/repack.cpp.o",
+        "target": "ggml-cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/sycl/device.cpp",
+        "output": "CMakeFiles/strata_core.dir/src/sycl/device.cpp.o",
+        "target": "strata_core"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/pinned.cu",
+        "output": "CMakeFiles/strata_core.dir/src/core/pinned.cu.o",
+        "target": "strata_core"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/platform/memory.cpp",
+        "output": "CMakeFiles/strata_core.dir/src/platform/memory.cpp.o",
+        "target": "strata_core"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/graph.cpp",
+        "output": "CMakeFiles/strata_core.dir/src/core/graph.cpp.o",
+        "target": "strata_core"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/weights.cpp",
+        "output": "CMakeFiles/strata_core.dir/src/core/weights.cpp.o",
+        "target": "strata_core"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/layout.cpp",
+        "output": "CMakeFiles/strata_core.dir/src/core/layout.cpp.o",
+        "target": "strata_core"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/layer.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/layer.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/session.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/session.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_source.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/expert_source.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/remote_experts.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/remote_experts.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/expert_cache.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/expert_cache.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/native_head.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/native_head.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/native_dense.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/native_dense.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/verify.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/verify.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/mtp.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/mtp.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/conversation_snapshot.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/conversation_snapshot.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/conversation_state.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/conversation_state.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/conversation_memory.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/conversation_memory.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/peer_experts.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/peer_experts.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/dflash2.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/dflash2.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/core/dflash2_pack.cpp",
+        "output": "CMakeFiles/strata_engine.dir/src/core/dflash2_pack.cpp.o",
+        "target": "strata_engine"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/elementwise.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/elementwise.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/cvec.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/cvec.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/router.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/router.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_router.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_router.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/gdn.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/gdn.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gdn.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/fused_gdn.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/sampler.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/sampler.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/sequence.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/sequence.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/expert_routing.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/expert_routing.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/quantize_act.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/quantize_act.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/bf16_gemv.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/bf16_gemv.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmvq.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_mmvq.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q5_head.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q5_head.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q3_esimd.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q3_esimd.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q4_esimd.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q4_esimd.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q2_esimd.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2_esimd.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_iq4xs_esimd.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_iq4xs_esimd.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_q2.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_q2.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/gr.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/gr.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/fused_gr.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/fused_gr.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/rope.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/rope.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/kv.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/attention.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/attention.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_flash_attn.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_flash_attn.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_index.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/qsa_index.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_qsa_indexer.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_qsa_indexer.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_select.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/qsa_select.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/decode_attention.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/decode_attention.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/prompt_attention.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/prompt_attention.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/kv_stream.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/kv_stream.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/ple.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/ple.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/s2_gemv_q8.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/s2_gemv_q8.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/s2_experts.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/s2_experts.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/s_gemv.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/s_gemv.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/shared_expert.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/shared_expert.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/iq.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/iq.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/ngram.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/ngram.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/ngram/ple_reader.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/ngram/ple_reader.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/platform/direct_file.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/platform/direct_file.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_iq_esimd.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_iq_esimd.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/dflash2.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/dflash2.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/q6_dpas_component.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/q6_dpas_component.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/native_mmq_xmx.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/native_mmq_xmx.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_attention.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/qsa_bf16_attention.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_attention_late_flags.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/qsa_bf16_attention_late_flags.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_packed.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/qsa_bf16_packed.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_bf16_prefix.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/qsa_bf16_prefix.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/sycl/qsa_topk_prefill_early.cpp",
+        "output": "CMakeFiles/strata_kernels.dir/src/kernels/sycl/qsa_topk_prefill_early.cpp.o",
+        "target": "strata_kernels"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/expert.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/expert.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/pool.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/pool.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/expert_layout.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/expert_layout.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/q2_avx2.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/q2_avx2.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/native_expert.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/native_expert.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_avx512.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_avx512.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_avx2.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_avx2.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq_single_avx2.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq_single_avx2.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/iq2_pair_avx2.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/iq2_pair_avx2.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/kernels/cpu/kq_avx2.cpp",
+        "output": "CMakeFiles/strata_kernels_cpu.dir/src/kernels/cpu/kq_avx2.cpp.o",
+        "target": "strata_kernels_cpu"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/spec/suffix_drafter.cpp",
+        "output": "CMakeFiles/strata_spec.dir/src/spec/suffix_drafter.cpp.o",
+        "target": "strata_spec"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/spec/controller.cpp",
+        "output": "CMakeFiles/strata_spec.dir/src/spec/controller.cpp.o",
+        "target": "strata_spec"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/src/spec/draft_policy.cpp",
+        "output": "CMakeFiles/strata_spec.dir/src/spec/draft_policy.cpp.o",
+        "target": "strata_spec"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/native_head_dpas.cpp",
+        "output": "CMakeFiles/sycl_q6_head_owner_test.dir/tests/sycl/native_head_dpas.cpp.o",
+        "target": "sycl_q6_head_owner_test"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/compat.cpp",
+        "output": "CMakeFiles/sycl_submission_test.dir/tests/sycl/compat.cpp.o",
+        "target": "sycl_submission_test"
+      },
+      {
+        "file": "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/verifier_retirement.cpp",
+        "output": "CMakeFiles/sycl_verifier_retirement_test.dir/tests/sycl/verifier_retirement.cpp.o",
+        "target": "sycl_verifier_retirement_test"
+      }
+    ],
+    "generated_inputs": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/CMakeFiles/3.28.3/CompilerIdCXX/CMakeCXXCompilerId.cpp": "9b1ebe4919c111011dba043f743e42ada0f1e3804b211e42191d773e7043282c",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/CMakeFiles/3.28.3/CompilerIdC/CMakeCCompilerId.c": "9a95913d134b6c5dca36f23acb80765b86313bcfd8da754e5ceb2e259e954074"
+    },
+    "configured_commands_sha256": "7f1a32183b6f4a1b3711ca7eb8047d03a61daf3c3d061dfd8f2c785acb94d4e6",
+    "configured_files": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/build.ninja": "bc23fa027a903e7c8f7c3552f3b63e095195e348eaf60a798623a0c971bd1273",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/CMakeCache.txt": "f160a59868bc479737517a180e1eb7a370c3bf3f069509976a527ac3c3f2fe46",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/compile_commands.json": "a13a6aff7f5dbb1b2c40dc68c461e367a8203c8e1c87839c518b7f16a0dbb989",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/v3-owned-configure/planned-commands.stdout": "7f1a32183b6f4a1b3711ca7eb8047d03a61daf3c3d061dfd8f2c785acb94d4e6",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-head-model-v2/build/CMakeFiles/rules.ninja": "49776093ae4cc38bbb75101933acbd4030b96438df63144fa2538084840a5d9f"
+    },
+    "active": false,
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e",
@@ -226107,6 +226894,28 @@
         "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
       }
     ],
-    "commands": []
+    "commands": [
+      {
+        "label": "host-controls",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "planned-commands",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
