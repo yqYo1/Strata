@@ -1968,9 +1968,8 @@ scalar/envelope checks for partial widths and a three-process C4 graph timing
 plan;fixture-only canonical reference memory is reported separately.
 The existing0/1canonical choices and dedicated long-prefill path remain the
 reference. DFlash2 still uses0/1;the experimental mode2 explicitly refuses its
-unadapted row-major binding. Fresh compilation,CPU/device/model checks and
-matched phase/long-thinking speed are pending. No packed-primary or MTP
-speed/adoption result exists yet;V4 above qualifies the originald174native only.
+unadapted row-major binding. Current packed-primary component and model evidence
+follows below; V4 above remains scoped to the originald174native.
 The fresh sole-packed source6dd74eab7 passes36CPU controls and compiles all
 four ELFs,including engine1db9bcae and head fixturee5aa53f2. Its127TUs,
 1461compiler inputs,one generated header and29external link inputs reconcile.
@@ -2025,23 +2024,36 @@ This qualifies bounded placement and handoff. Speed, task quality and physical
 262144/RESTORE remain open. The bench.sh comparison uses six fresh
 head0/2 processes with the same strong/weak long-thinking bodies, judging
 prefill, TTFT and sustained TG separately.
-Its first matched pair is closed: regular-code has 33208 input / 2975 output
-tokens and TG 12.672177 to 13.354971 tok/s (+5.3881%); varied-prose has
-33278 input / 7961 output tokens and TG 7.527015 to 8.024354 (+6.6074%).
-Both arms have the same generated text, reasoning hashes and draft counts;
-observed acceptance is 0.861847 / 0.348578. Thinking remains enabled.
-Candidate/reference prompt-time ratios are 1.006725 / 0.975358 and TTFT ratios
-1.006885 / 0.975494. Keep those first-long/after-code cases separate and retain
-the mixed prefill result; one pair establishes no repeated gain or adoption.
-Both children exit 0 with closed ownership, quiet validation and no fresh fault.
-The second matched pair also closes normally0,with quiet validation,no fresh
-fault and the same body,output and draft counts. Its candidate/reference TG
-ratios are1.053754(code)and1.060156(prose);prompt-time ratios are1.004763and
-0.987319,and TTFT ratios1.004705and0.987366. Both pairs favor candidate TG,
-while the first-long code prefill/TTFT remains slightly slower in each pair.
-Keep that phase result unresolved rather than accepting it as noise. Five of
-the six frozen processes are closed; only the final candidate remains.
-The completed processes0/1/2/3/4 also have identical requested-transfer counters
+The six-process 0/2 cohort now closes: all six native exits are0, owners close,
+validation is quiet, no fresh GPU fault occurs, and the final full15-asset hash
+check passes. Thinking remains enabled. Every arm has the same body, output,
+reasoning hashes and draft counts; exact output equality was not required.
+
+| Workload / input / output | Reference TG median [min,max] | Candidate TG median [min,max] | Paired geometric mean C/R |
+| --- | --- | --- | --- |
+| regular-code /33208 /2975 |12.672177 [12.647078,12.681181] |13.354971 [13.326907,13.406964] |1.054955 |
+| varied-prose /33278 /7961 |7.562103 [7.527015,7.603605] |8.021696 [8.017009,8.024354] |1.060396 |
+
+All three TG ratios exceed1 for each workload: code1.053881/1.053754/1.057233,
+prose1.066074/1.060156/1.054986. Observed acceptance is0.861847/0.348578 in
+every sample, confirming strong/weak classification. Each arm has three fresh
+processes with one sample per workload. Speeds use actual token counts and
+unrounded native intervals; all individual samples remain in the result.
+
+| Workload | Median PP R/C | Median prompt seconds R/C | Median client TTFT seconds R/C |
+| --- | --- | --- | --- |
+| regular-code, first long request |580.070640 /579.572546 |57.2482 /57.2974 |57.373 /57.438 |
+| varied-prose, after code |684.835377 /697.171134 |48.5927 /47.7329 |48.768 /47.880 |
+
+Code prompt-time ratios are1.006725/1.004763/0.989495 and TTFT ratios
+1.006885/1.004705/0.988970: preserve the mixed result and pending phase gate.
+Prose prompt-time ratios are0.975358/0.987319/0.982306 and TTFT ratios
+0.975494/0.987366/0.981791. This comparison establishes sustained TG gains
+in its common parameter-validation/audit envelope, not qualified observer cost,
+physical saturation or default adoption. Dedicated long-prefill/length,
+agent/task and physical262144/RESTORE checks remain open. Mode2 remains
+an opt-in development candidate.
+All six processes also have identical requested-transfer counters
 for each long prefill. These are logical native copy requests, not measured
 PCIe traffic or bandwidth:
 
