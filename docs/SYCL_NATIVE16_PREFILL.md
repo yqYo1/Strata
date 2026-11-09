@@ -2162,22 +2162,19 @@ selection fixed. No prior GPU or model qualification is inherited; both
 mechanisms need independent numerical/lifetime and repeated phase-performance
 checks. Existing phase/feature generations and legacy provenance holds remain
 separate; compilation alone does not qualify this candidate.
-The prepared V1 plan at source `02d64c4ca` is superseded before any compiler or
-GPU process:the capture audit must check actual C4 subcalls rather than assume
-their width equals the whole window's token count. A split eight-token window
-may contain four-column calls. The corrected source will use a fresh V2 plan
-and native build; neither V1 source identities nor outcomes are relabelled.
+The current V3 build is `q6_dense_head_backing_build_v3`, native source
+`221e95e9ad890383deb418d0a865ee32c99168b6`, engine `a347a9f8`. All50host
+controls pass. The actual census covers128translation units,1462compiler files,
+one generated input and29external links with0uncovered. Engine/head selected
+kernel structures match under the checked ID/declaration-order normalization.
+All five binaries are fresh; compilation and owned closure pass, with no GPU
+execution. The compiled CPU policy check and GPU/model qualification are pending.
 The unchanged1db engine and its four fixtures remain the fallback.
-V2 is configured at native source `12ea4b002ba49855117123200a93b0b3a2dfb979`
-under `q6_dense_head_backing_build_v2`:all50host controls pass, and the128planned
-translation units plus generated/configured inputs are pinned. Compilation
-failed on the new CPU policy target:the globally pinned SYCL range option lacked
-matching `-fsycl` mode on that target. Ownership closes normally;no GPU executes.
-V3 adds target-scoped `-fsycl` at compile and link, retaining Werror and all
-native flags. Its fresh build and compiled CPU policy check remain pending;
-the V2 failure stays unchanged. Retire the unbuilt V1 receipt and partial V2
-objects/logs after the corrected build closes and their useful evidence/source
-recipe recovery is verified. No failed generation replaces the1db fallback.
+The original unbuilt V1 plan was superseded to fix split-window audit width;
+V2 failed compilation because its CPU policy target lacked matching SYCL mode.
+V3 adds target-scoped `-fsycl` at compile/link without relaxing Werror. Original
+V1/V2 outcomes remain in their result keys. Retire the unbuilt V1 receipt and
+partial V2 objects/logs after useful evidence/source-recipe recovery is verified.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
