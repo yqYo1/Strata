@@ -2282,8 +2282,8 @@ versus47.120/47.367s. Keep every lower-prefill/higher-TTFT sample;one completed
 pair and a partial second pair do not qualify adoption or preservation. The
 common actual canonical tables match for decode1/4;mode10/BF16long-prefill
 checks remain independent. Continue the committed order with fresh
-control3/control4/candidate5. The first-pair
-points are indexed in the performance CSV with their1-of3qualification. After
+control3/control4/candidate5. The first-pair and higher second-candidate
+points are indexed in the performance CSV with their incomplete-cohort qualification. After
 source recovery and recorded path/hash deletion manifest,138closed candidate1/2
 logs/journals/cache files(26325424bytes)are retired;post-retirement admission
 passes. Both frozen config/plan pairs remain through cohort closure. V1control raw
