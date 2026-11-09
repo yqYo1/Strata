@@ -228823,7 +228823,7 @@
     "next": "Use existing qualified /home/yayoi/.local/share/strata-sycl/venv/bin/python3 for tokenizer/generator admission;do not install packages or retry the missing-dependency interpreter."
   },
   "q6_head_model_entry_v2": {
-    "stage": "host_passed",
+    "stage": "failed",
     "source_commit": "a9f62479adc5ad95cb867cd9f769e6c6cb3d9094",
     "native_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e",
     "native_build": {
@@ -229670,10 +229670,38 @@
     },
     "plan": "Committed parser controls first;fresh head0then1 processes,long513/short82/long513 thinking-on32output requests in each. Context131072,KVresident131072,chunk8192,short-read128,1256cache,MTP4,no token/coupled graphs. This qualifies full-placement admission,not full-context processing. Require actual READY/INFO,immutable environment,pre-main validation and pinned file-backed maps, complete GEN/drafts,all request route joins,positive C4replays,two target-head retirements and fresh capture identities after restoration. No output-equality requirement. Full15asset hashes at preparation and final cohort closure;stat checks before each process. Stop first failure.",
     "limits": "Small ownership/routing diagnosis only;no clean PP/TTFT/TG claim,task quality,physical262144/RESTORE,ordinary provider teardown or default adoption. Long/agent/strong-and-weak thinking benchmarks and independent prefill/decode preservation remain required.",
-    "results": [],
+    "results": [
+      {
+        "arm": 0,
+        "passed": false,
+        "requests": [],
+        "placement": {
+          "context": "131072",
+          "kv": "int8",
+          "kv_resident": "0",
+          "expert_slots": "1256",
+          "expert_cache_mib": "2455",
+          "expert_slots_primary": "1256",
+          "expert_cache_primary_mib": "2455",
+          "spec": "4",
+          "mtp_max": "0",
+          "lookup": "0",
+          "vram_free_mib": "0",
+          "cvec": "0",
+          "arena_mib": "47962",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00",
+          "conversation_cache_mib": "0",
+          "conversation_cache_slots": "4",
+          "conversation_cache_min_free_mib": "2560",
+          "engine": "0.1.38"
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
-    "ownership_closed": true,
+    "ownership_closed": false,
     "model_executed": false,
     "speed_eligible": false,
     "model_adoption_qualified": false,
@@ -229683,6 +229711,22 @@
       "positive_arms": 2,
       "corrupt_variants": 8,
       "GPU_executed": false
+    },
+    "error": "RuntimeError('native model closure failed')",
+    "fresh_faults": [],
+    "final_fault_check": {
+      "ownership_closed": false,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": false
     },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
@@ -229711,6 +229755,29 @@
       "input_files": 34,
       "sha256": "3caaa997d821c22cc83f385028f23e707ff93179a7c572727621b46668e79768"
     },
-    "commands": []
+    "commands": [
+      {
+        "label": "head0",
+        "exit_code": -15,
+        "ownership_closed": false,
+        "error": "RuntimeError('actual placement changed')",
+        "errors": []
+      }
+    ],
+    "observer_refusal": {
+      "cause": "Observer incorrectly required INFO kv_resident=131072; native full-resident mode is reported as0. READY131072/cache1256 was reached before any GEN.",
+      "native_source_commit": "d1744729fb5f03c59d6fa3e0f7563ec2a0f2895e",
+      "source_contract": "src/core/layer.cpp:kv_plan defaults slots=pages/mode0; src/program/generate.cpp:INFO reports nonzero only for streamed mode1. --kv-resident is cells,not this wire field.",
+      "requests_executed": 0,
+      "native_exit_code": -15,
+      "termination": "Owned supervisor SIGTERM after actual-placement mismatch;not native crash/hang.",
+      "direct_child_reaped": true,
+      "anchored_session_empty": true,
+      "survivors": [],
+      "direct_owner_absent_after_closure": true,
+      "original_ownership_closed_preserved": false,
+      "fresh_gpu_faults": [],
+      "next": "New prospective controller-only admission,correct full-resident wire contract and actual owned DRM-memory snapshots;retain original failure."
+    }
   }
 }
