@@ -225090,7 +225090,7 @@
     }
   },
   "q6_canonical_component_v4": {
-    "stage": "built",
+    "stage": "host-checked",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -225356,7 +225356,16 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "results": [],
+    "results": [
+      {
+        "mode": "host",
+        "passed": true,
+        "host_probe_accepted": false,
+        "cases": 12,
+        "native_execution_attempted": true,
+        "GPU_executed": false
+      }
+    ],
     "timing": [],
     "passed": false,
     "complete": false,
@@ -225551,6 +225560,14 @@
       ]
     },
     "build_environment_sha256": "92baa0b24e022bd730b57b47e6f8500c8ded60a2cd8374aa1a9e561ea463dbb1",
-    "commands": []
+    "commands": [
+      {
+        "label": "host-pack",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
