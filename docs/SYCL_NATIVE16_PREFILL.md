@@ -2180,8 +2180,12 @@ The unchanged1db engine and its four fixtures remain the fallback.
 The original unbuilt V1 plan was superseded to fix split-window audit width;
 V2 failed compilation because its CPU policy target lacked matching SYCL mode.
 V3 adds target-scoped `-fsycl` at compile/link without relaxing Werror. Original
-V1/V2 outcomes remain in their result keys. Retire the unbuilt V1 receipt and
-partial V2 objects/logs after useful evidence/source-recipe recovery is verified.
+V1/V2 outcomes remain in their result keys, with full records archived at
+`261b7d1b3`. Their ended receipts/partial objects/logs are retired after original
+source/recipe recovery:101files/36103460bytes. The successful V3 build/host/policy
+raw output is also retired:13files/6686539bytes. Current five ELFs,census,
+generated/configured inputs and the live planned-command input remain;source,
+numeric/CPU results and original failure statuses are unchanged.
 The original `58a15c29b:q6_head_packed_timing_v1` retains all21 transition
 samples, unchanged in the current result. Across its three processes/six
 cycles, snapshot preparation takes0.283010..0.306318s (median0.290381),
