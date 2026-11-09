@@ -2082,19 +2082,20 @@ The six-shape Q6 C4 fixture/controller at `d003ba0b6` is integrated into
 `feature/sycl` by merge `7b07921ba`. Its completed child branch/worktree are
 retired locally and remotely after verifying all original commits against the
 pushed primary. It keeps the actual production generic/columns references and
-adds no inference dispatcher. Python preparation and exact native/runtime
-reference admission pass for `q6_dense_c4_component_v1`. Three positive parser
-orders and ten corrupt variants pass, as do both explicit module-import orders
-in fresh Python processes with the same shared image-reader binding. No GPU
-runs in these controls. Fixture `8b4d0ca9` now compiles all14TUs, covers801
-compiler inputs/24external links with0uncovered, and passes its selected
-canonical-DPAS image reader. No GPU has run. Before GPU stages, correct the
-trace validator: its global error regex would reject the required pre-main
-null-handle canary. Bind expected37/46 to the verified constructor receipt and
-reject every later error, with fresh CPU controls and explicit admission of the
-unchanged fixture. All31 native CPU bounds/policy cases now pass with normal
-exit0 and closed ownership. No GPU is used; the trace-controller correction
-remains the next prerequisite. Preserve these original build/CPU results.
+adds no inference dispatcher. Fixture `8b4d0ca9`, built from `7b07921ba`, covers
+all14TUs/801compiler inputs/24external links with0uncovered and passes its
+selected canonical-DPAS image reader. Its31 native CPU bounds/policy cases
+pass with normal0 and closed ownership. The original V1 build/parser/import
+results are archived at `491953c77:q6_dense_c4_component_v1` in the result file.
+Controller `491953c77` now admits those unchanged fixture/census/recipe bytes
+as `q6_dense_c4_component_v2`. Compiled bytes and31CPU cases are reused;
+GPU qualification remains pending.
+It corrects the global trace-error regex that would reject the mandatory
+constructor canary. A unique verified pre-main receipt must attest expected37/46;
+other constructor errors and every subsequent UR/ZE error remain failures.
+Fresh3positive/10corrupt parser cases,2positive/8negative trace cases and both
+module-import orders are pending before the first small traced GPU check.
+The original build/CPU outcomes are unchanged and no GPU has run this fixture.
 A separate source-only prefill proposal is committed and pushed on
 `tune/prefill-head-backing` at `2ca460fa3ec74f6be7c9760216ac4b4044b987ab`.
 `STRATA_PREFILL_HEAD_HOST_BACKING=1` retains the immutable initial upload's

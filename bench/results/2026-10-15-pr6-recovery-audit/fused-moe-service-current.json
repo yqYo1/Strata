@@ -234249,8 +234249,8 @@
       "aggregate_sha256": "2dc3326937c37f5a444662e9a79b5cf34d31739743414ed3b4d8037e78920f7b"
     }
   },
-  "q6_dense_c4_component_v1": {
-    "stage": "built",
+  "q6_dense_c4_component_v2": {
+    "stage": "admitted",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -234597,44 +234597,10 @@
       "order": "CPU parser controls,fresh14TU build/IR census,31native host cases,small4shape/2seed traced checks,full6shape/2seed checks,three independent timing processesR/C,C/R,R/C. Commit every closed stage;stop first failure,no retry.",
       "timing": "Five samples/arm/shape/process;two warmup batches.4096replays for512rows,1024for other dense shapes,256for the full head. Require>=10ms and>=300stamp units;submission/wait wall and threadCPU accounting stays disjoint. Retain all180samples.",
       "acceptance": "Per-shape all3process median time ratios<1;no minimum improvement floor. Keep losing shapes and prompt/C1 on incumbents. No global dispatch/model adoption from a component.",
-      "limits": "Synthetic byte-valid Q6/Q8 and independent scalar/envelope oracle. One repeatedly accessed matrix;cache behavior differs from the complete model. No physical traffic,saturation,task,PP/TG,agent,full262144 or RESTORE claim."
+      "limits": "Synthetic byte-valid Q6/Q8 and independent scalar/envelope oracle. One repeatedly accessed matrix;cache behavior differs from the complete model. No physical traffic,saturation,task,PP/TG,agent,full262144 or RESTORE claim.",
+      "trace_validation": "Unique qualified pre-main receipt must attest expected37/46. Only those named errors may precede it;every UR/ZE error after it remains a failure. Require2positive/8negative CPU trace controls,then fresh small full-trace GPU evidence. No prior GPU result or model gain inherited."
     },
     "retention": "One temporary standalone fixture for this named comparison;no new engine generation. Keep useful per-shape numbers/all timing samples/source/recipe/fault results. Retire normal traces,JIT and fixture build after closure. Preserve current engine/phase references and unresolved legacy holds.",
-    "reader_controls": {
-      "passed": true,
-      "positive_process_orders": 3,
-      "corrupt_variants": 10,
-      "GPU_executed": false
-    },
-    "module_import_controls": {
-      "source_commit": "2d628e945c7619b74fa90d0e03a4e2da4cfb6e99",
-      "passed": true,
-      "processes": [
-        {
-          "order": "component_then_builder",
-          "argv": [
-            "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
-            "-B",
-            "-c",
-            "import sys;sys.path.insert(0,'tools/sycl');import q6_canonical_component as c;import build_q6_head_model as p;assert p.canonical_image is c.image;print('IMPORT_ORDER_PASS')"
-          ],
-          "exit_code": 0,
-          "image_binding_identical": true
-        },
-        {
-          "order": "builder_then_component",
-          "argv": [
-            "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
-            "-B",
-            "-c",
-            "import sys;sys.path.insert(0,'tools/sycl');import build_q6_head_model as p;import q6_canonical_component as c;assert p.canonical_image is c.image;print('IMPORT_ORDER_PASS')"
-          ],
-          "exit_code": 0,
-          "image_binding_identical": true
-        }
-      ],
-      "GPU_executed": false
-    },
     "actual_inputs": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-dense-c4-v1/actual-inputs.json",
       "sha256": "59c2e3a2d6acf8c09a182cdab5dfbe0dea516223967c2269a8f9146e391282cf",
@@ -234688,10 +234654,22 @@
       "scope": "Reachable static GenX DPAS calls in exact linked ELF SPIR-V;not final native ISA,utilization or dynamic call count."
     },
     "compilation_passed": true,
-    "pending_before_gpu": {
-      "reason": "Source review:global UR/ZE error regex would reject the required pre-main validation canary when full tracing uses stderr. No GPU stage was attempted.",
-      "required": "Prospective controller admission for unchanged fixture bytes. Bind expected37/46 constructor results to the unique validated pre-main receipt;reject other pre-main errors and every body error. Add CPU trace controls before first GPU launch.",
-      "host_only_permitted": true
+    "admission_project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "491953c7775c0b7f1af3e4281d3d0860a517dada",
+      "count": 740,
+      "aggregate_sha256": "4887a12ea62d95275cd4ecb664079caf6d7ff08e96d57a6ae3727445f993bb98"
+    },
+    "admission_source_commit": "491953c7775c0b7f1af3e4281d3d0860a517dada",
+    "qualification_reuse": {
+      "original_result_key": "q6_dense_c4_component_v1",
+      "original_evidence_commit": "491953c7775c0b7f1af3e4281d3d0860a517dada",
+      "native_source_commit": "7b07921ba1d3a811c631fca6c07ef9d98992f2c0",
+      "fixture_sha256": "8b4d0ca975080daaea06f84cb430726b79408bd187c548e8e5772eef9f2e2d40",
+      "native_recompiled": false,
+      "native_CPU_host_cases_reused": 31,
+      "GPU_qualification_inherited": false,
+      "scope": "Same14TUs,801compiler inputs,24external links,recipe,census,fixture and selected image. Original build and CPU checks stay unchanged in reachable Git. Recheck constructor/body trace predicates before any GPU stage."
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
