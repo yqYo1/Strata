@@ -1836,22 +1836,49 @@ Verifier's lease or full model. V1's overall failed result remains failed:
 the caller omitted host_probe_accepted;the V2 acceptance-contract regression
 and fresh processes resolve that controller defect without a native rebuild.
 
-The next whole-model build uses the current primary native tree and selected
-90f recipe,preserving the independent phase guards. The measured e1b tree has
-24native-file differences from current;its actual measured iq3s_dot body is
-byte-identical to current. This source comparison does not prove whole-engine
-parity. The head fixture now links strata_engine's production objects instead
-of a separately compiled kernel/owner copy;that new linkage still needs build
-and execution qualification. The closed standalone benchmark/runner retire to
-Git;unchanged protocol/acceptance readers remain for this model admission.
+The whole-model build uses primary source `4c2c824e7` and the selected 90f
+recipe, preserving the independent phase guards. The measured e1b tree has
+24 native-file differences from current; its measured `iq3s_dot` body is
+byte-identical to current. This source comparison does not prove engine parity.
+The head fixture links the production `strata_engine` objects. Build evidence
+`cc05a1034` records 127 translation units, 1,461 compiler inputs, one generated
+input and 29 external link inputs, with zero uncovered inputs. Engine
+`0b6633cd` and fixture `d59bfea1` both contain the qualified `e9f6543e` C4 image.
+Fourteen CPU controls pass; the retained reader bodies are AST-identical to
+`484d`.
+
+Device evidence `0e6c9385e` passes five CPU owner/switch processes, 10 submission
+and 16 phase-cache checks, and separate ordinary/packed real-head processes.
+Each head arm passes four numerical cases, two retire/overwrite/restore cycles
+and 12 graph replays. Packed maximum absolute error remains 4.17232513428e-7.
+All four GPU processes exit 0 with closed owners, quiet validation and no fresh
+fault. Full shard hashes agree for each head process. This qualifies the
+production-linked fixture; model speed remains unqualified.
+
+Real-model evidence `873907a1e` closes two fresh head0/1 processes. Each runs
+thinking-enabled 513/82/513-token inputs and 32 outputs per request. Both arms
+offer and accept MTP drafts, exit 0 with quiet validation and no fresh fault,
+and preserve all 15 model assets. The Verifier uses two decode-C4 capture IDs
+per process: 2 and 6. Their cumulative completed replay maxima are 17 and 9,
+giving 26 head replays per arm; the intermediate snapshot of 9 belongs within
+the later 17. Only packed decode C4 selects DPAS. Prompt and C1 retain their
+canonical paths. Both long requests retire and restore the target head.
+Initial free VRAM is 1,678 MiB ordinary versus 1,181 MiB packed, with the same
+1,256 expert slots. Each ordinary/packed transition restores 521,472,000 versus
+1,042,944,000 H2D bytes. These placement and ownership observations do not
+qualify 32K speed, phase preservation, task quality or the full context.
+The next consumer is matched long-model speed and resource evaluation. The
+closed standalone benchmark and runner remain recoverable in Git; retire
+their ended external roots at this work boundary.
 
 The traced wrapper samples show268..323ms preparing the RAM snapshot and
 133..165ms versus289..345ms restoring reference/packed heads. These are two
 samples per arm,not clean performance or physical bandwidth. After whole-model
 routing admission,check persistent canonical RAM backing or deferred packed
 upload against actual PP/TTFT/TG before adopting either. Neither is implemented.
-Production Verifier/state handoff,clean matched model speed,agent/long-thinking,
-phase/length behavior,task quality and physical262144/RESTORE remain open.
+The bounded real-model Verifier/head handoff above passes. Clean matched model
+speed,agent/long-thinking,phase/length behavior,task quality and physical262144/
+RESTORE remain open.
 The6.55283x component ratio is not a model-throughput result.
 
 The current device-service diagnostic targets `9922 / b310` through
