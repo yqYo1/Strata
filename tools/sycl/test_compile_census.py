@@ -11,6 +11,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_compat_profile as build
 import q6_dpas_component as component
+import build_q6_head_model as model_build
 import tools.sycl.test_q6_dpas_component as fixtures
 
 
@@ -41,6 +42,28 @@ class SelectedCommands(unittest.TestCase):
         other = self.command('/repo/kernel.cpp', 'measured_extra')
         with self.assertRaisesRegex(RuntimeError, 'one production compile command'):
             build.selected_compile_commands([other], {'/repo/kernel.cpp'}, 'measured')
+
+
+class PlannedCommands(unittest.TestCase):
+    def test_root_compile_target(self):
+        value = model_build.planned_compilation('icpx -o CMakeFiles/strata_engine.dir/a.o -c /repo/a.cpp')
+        self.assertEqual(value, [dict(file='/repo/a.cpp', output='CMakeFiles/strata_engine.dir/a.o',
+                                    target='strata_engine')])
+
+    def test_nested_dependency_target(self):
+        value = model_build.planned_compilation('cc -o ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o -c /repo/ggml.c')
+        self.assertEqual(value, [dict(file='/repo/ggml.c', output='ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o',
+                                    target='ggml-base')])
+
+    def test_unowned_or_unrecognized_output_refused(self):
+        for output in ('../escaped.o', '/tmp/escaped.o', 'other/a.o', 'CMakeFiles/fake/a.o'):
+            with self.assertRaises(RuntimeError):
+                model_build.planned_compilation('icpx -o ' + output + ' -c /repo/a.cpp')
+
+    def test_duplicate_actual_source_refused(self):
+        with self.assertRaisesRegex(RuntimeError, 'duplicate selected source compilation'):
+            model_build.planned_compilation('icpx -o CMakeFiles/one.dir/a.o -c /repo/a.cpp\n'
+                                           'icpx -o nested/CMakeFiles/two.dir/a.o -c /repo/a.cpp')
 
 
 class SharedImage(unittest.TestCase):

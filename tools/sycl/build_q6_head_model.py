@@ -8,6 +8,7 @@ Main-authored; repository LICENSE applies.
 import ast
 import copy
 import fcntl
+import hashlib
 import json
 from pathlib import Path
 import shlex
@@ -24,7 +25,7 @@ from q6_canonical_component import image as canonical_image
 P, B = source.P, source.B
 ROOT = B / 'q6-head-model-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_head_model_build_v2'
+KEY = 'q6_head_model_build_v3'
 NATIVE = 'cdbd687965b9b1dd96e7a76002381cc257019da5'
 COMPONENT_EVIDENCE = '0ccc4ed45cbf219e835a9c6b03b08951fa321ab8'
 READER = '484d403e60c49361422f00a16dfdd774e4fe90d5'
@@ -113,9 +114,57 @@ def current(row):
         require(digest(path) == sha, 'configured generated input changed: ' + path)
 
 
+def planned_compilation(text):
+    """Read actual Ninja outputs, including dependencies in nested directories."""
+    units = []
+    for line in text.splitlines():
+        args = shlex.split(line)
+        if '-c' not in args: continue
+        require(args.count('-c') == args.count('-o') == 1, 'one compile source/object required')
+        p = Path(args[args.index('-c') + 1])
+        name = str((p if p.is_absolute() else ROOT / 'build' / p).resolve())
+        output = Path(args[args.index('-o') + 1])
+        absolute = (output if output.is_absolute() else ROOT / 'build' / output).resolve()
+        require(absolute.is_relative_to(ROOT / 'build'), 'compile output escaped owned build')
+        relative = absolute.relative_to(ROOT / 'build')
+        parts = relative.parts
+        require(parts.count('CMakeFiles') == 1, 'selected target compile output required')
+        at = parts.index('CMakeFiles') + 1
+        require(at + 1 < len(parts) and parts[at].endswith('.dir') and len(parts[at]) > 4,
+                'selected target compile output required')
+        units.append(dict(file=name, output=str(relative), target=parts[at][:-4]))
+    require(len(units) == len({v['file'] for v in units}),
+            'duplicate selected source compilation requires explicit admission')
+    return units
+
+
 def prepare():
-    require(not ROOT.exists() and KEY not in public(), 'fresh build only; never retry a failed plan')
+    require(KEY not in public(), 'fresh prospective build plan only')
     guards.no_model_owners([])
+    project = source.pin(P, PREFIXES)
+    previous = None
+    if ROOT.exists():
+        original = json.loads((ROOT / 'record.json').read_text())
+        require(public()['q6_head_model_build_v2'] == compact(original) and
+            original['stage'] == 'failed' and original['ownership_closed'] and
+            not original['GPU_executed'] and original['error'] ==
+            "RuntimeError('selected target compile output required')" and
+            len(original['commands']) == 3 and all(ownership.closed(c) and c['exit_code'] == 0
+            for c in original['commands']) and not any((ROOT / 'build' / n).exists() for n in TARGETS),
+            'only the closed failed V2 configure tree may be reused;never retry its plan')
+        pin = original['project']; before, after = pin['source_sha256'], project['source_sha256']
+        require(before ==
+            {n: hashlib.sha256(raw).hexdigest() for n, raw in
+                source.blobs(P, pin['revision'], before)}, 'original failed configure source not recoverable')
+        allowed = {'tools/sycl/build_q6_head_model.py', 'tools/sycl/test_compile_census.py'}
+        added = {'tools/sycl/q6_head_generation_speed.py', 'tools/sycl/test_q6_head_generation_speed.py'}
+        require({n for n in before if after.get(n) != before[n]} == allowed and
+            set(after) - set(before) == added, 'only named controller/test updates;native inputs unchanged')
+        previous = dict(key='q6_head_model_build_v2', evidence_commit=source.git(P, 'rev-parse', 'HEAD').decode().strip(),
+            source_commit=pin['revision'], private_record_sha256=digest(ROOT / 'record.json'),
+            source_files=pin['count'], source_sha256=pin['aggregate_sha256'],
+            native_source_bytes_unchanged=True, reason='Prospective V3 fixes nested Ninja object parsing;'
+            'reuses only configured build directory,not a native executable or failed result.')
     native, identity = selected.basis()
     recipe = copy.deepcopy(native['recipe'])
     recipe['configure'] = [v.replace(native['project']['root'], str(P)).replace(
@@ -128,7 +177,7 @@ def prepare():
     require(recipe['configure'][recipe['configure'].index('-S') + 1] == str(P) and
         recipe['configure'][recipe['configure'].index('-B') + 1] == str(ROOT / 'build'),
         'primary source and private build directory required')
-    row = dict(stage='prepared', project=source.pin(P, PREFIXES),
+    row = dict(stage='prepared', project=project,
         dependencies=copy.deepcopy(native['dependencies']), recipe=recipe,
         toolchain=native['toolchain'], external_inputs=native['external_inputs'],
         fallbacks={n: native['fallbacks'][n] for n in ('prefill', 'decode')} |
@@ -137,7 +186,7 @@ def prepare():
         host_python=HOST_PYTHON, host_python_sha256=digest(HOST_PYTHON),
         budgets=BUDGET, commands=[], passed=False, complete=False, ownership_closed=True,
         GPU_executed=False, model_qualified=False, production_Verifier_qualified=False,
-        plan=dict(host='22 linked-image,census,current canonical owner-protocol and actual finalizer controls;'
+        plan=dict(host='28 linked-image,census,current canonical owner/long-cohort protocol and actual finalizer controls;'
                        'retained fault-finalizer AST must match484d before running',
             configure='Commit configure recipe first; record generated inputs and selected Ninja commands;'
                       'commit that configured stage before compiling.',
@@ -152,8 +201,9 @@ def prepare():
                   ' candidate on rejection after exact source/recipe recovery. Standalone owner consumer ended.'
                   ' Legacy56ELF provenance holds remain unresolved and are not qualified references.')
     build.check_inputs(row)
-    ROOT.mkdir(mode=0o700)
-    for name in ('tmp', 'cache'): (ROOT / name).mkdir(mode=0o700)
+    if previous: row['previous_failed_plan'] = previous
+    ROOT.mkdir(mode=0o700, exist_ok=bool(previous))
+    for name in ('tmp', 'cache'): (ROOT / name).mkdir(mode=0o700, exist_ok=bool(previous))
     save(row)
     print('Prepared production-head model build; commit before host/configure.', flush=True)
 
@@ -216,9 +266,10 @@ def execute(stage):
         write(ROOT / 'execution.json', dict(active=bool(owner and owner.active),
             commands=owner.commands if owner else []))
     try:
-        owner = ownership.Owner(ROOT / ('owned-' + stage), persist)
+        owner = ownership.Owner(ROOT / ('v3-owned-' + stage), persist)
         commands = ([('host-controls', [HOST_PYTHON, '-B', '-m', 'unittest', '-v',
-                                       'tools.sycl.test_q6_dpas_component', 'tools.sycl.test_compile_census']),
+                                       'tools.sycl.test_q6_dpas_component', 'tools.sycl.test_compile_census',
+                                       'tools.sycl.test_q6_head_generation_speed']),
                      ('configure', row['recipe']['configure']),
                      ('planned-commands', ['/usr/bin/ninja', '-C', str(ROOT / 'build'),
                                           '-t', 'commands', *TARGETS])]
@@ -234,25 +285,14 @@ def execute(stage):
                     'build command failed: ' + label + '; inspect the owned bounded diagnostic')
             if label == 'host-controls':
                 text = out.read_text() + err.read_text()
-                require('Ran 22 tests' in text and '\nOK\n' in text, 'all22controls required')
-                row['host_controls'] = dict(passed=True, cases=22, fault_finalizer_AST_identical=True,
+                require('Ran 28 tests' in text and '\nOK\n' in text, 'all28controls required')
+                row['host_controls'] = dict(passed=True, cases=28, fault_finalizer_AST_identical=True,
                     GPU_executed=False, source_commit=row['project']['revision'])
             print(json.dumps(dict(label=label, exit_code=entry['exit_code'], closed=True)), flush=True)
         if stage == 'configure':
-            planned = set(); compilation = []
-            for line in outputs['planned-commands'].read_text().splitlines():
-                args = shlex.split(line)
-                if '-c' in args:
-                    p = Path(args[args.index('-c') + 1])
-                    name = str((p if p.is_absolute() else ROOT / 'build' / p).resolve())
-                    output = Path(args[args.index('-o') + 1])
-                    relative = (output.relative_to(ROOT / 'build') if output.is_absolute() else output)
-                    require(len(relative.parts) > 2 and relative.parts[0] == 'CMakeFiles'
-                        and relative.parts[1].endswith('.dir'), 'selected target compile output required')
-                    planned.add(name)
-                    compilation.append(dict(file=name, output=str(relative), target=relative.parts[1][:-4]))
+            compilation = planned_compilation(outputs['planned-commands'].read_text())
+            planned = {v['file'] for v in compilation}
             require(len(planned) > 20, 'selected target compiler commands absent')
-            require(len(compilation) == len(planned), 'duplicate selected source compilation requires explicit admission')
             row['planned_translation_units'] = sorted(planned)
             row['planned_compilation'] = compilation
             row['generated_inputs'] = {str(p.resolve()): digest(p)

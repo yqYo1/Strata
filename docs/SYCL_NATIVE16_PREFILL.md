@@ -1896,8 +1896,13 @@ NativeHead trial. It removes the extra packed host/device owners and uses the
 canonical allocation;C1,prompt and other head paths remain unchanged. Selection
 is immutable after load and stays default-off. The Verifier snapshots that
 selection with the owner metadata across retirement,restore and lazy recapture.
-This integration is not built or production-qualified yet. The V2 model builder
-requires the exact qualified component image and fresh22CPU controls. The
+This integration is not built or production-qualified yet. V2 passes22CPU
+controls and CMake configuration but stops before native compilation:its
+Ninja reader rejects nested `ggml/src/CMakeFiles` object paths. The original
+failed result remains failed. The prospective V3 reader handles nested paths,
+rejects escaped/ambiguous outputs and freezes the long-cohort controller before
+building. It reuses only the configured directory,not an executable or result,
+and requires the exact qualified component image and fresh28CPU controls. The
 production-linked fixture will recheck actual GGUF numerics and two canonical
 retire/overwrite/restore cycles per arm before the same-engine model test.
 That test now requests actual131072-context/KV-resident allocation and1256cache
