@@ -73,7 +73,7 @@ def configure_fast_fit_point():
 
 def configure_model_profile():
     global ROOT, KEY, READS, ORDER, RUNS, CLEAN_FAST, MODEL_PROFILE
-    ROOT, KEY = B / 'qsa16-stream-fast-profile-v1', 'qsa16_stream_fast_profile_v1'
+    ROOT, KEY = B / 'qsa16-stream-fast-profile-v2', 'qsa16_stream_fast_profile_v2'
     READS, ORDER, RUNS = (32769,) * 3, [(32769, 1)] * 3, 2
     CLEAN_FAST, MODEL_PROFILE = True, True
 
@@ -199,6 +199,8 @@ def current(row):
     if MODEL_PROFILE:
         require(row['collector_control'] == profile_control_proof(native)
             and row['profile_clock_controls'] == profile_window_controls()
+            and row['profile_cleanup_controls'] == profile_cleanup_controls()
+            and row['profile_previous_failure'] == previous_profile_failure()
             and row['maximum_observer_ratio'] == 1.2
             and [p['profile'] for p in row['plans']] == [False, True, False],
             'committed current-native collector/observer order changed')
@@ -438,17 +440,20 @@ def profile_control_proof(native):
 def profile_prepare():
     controls = profile_window_controls()
     native, _, _, _ = basis(); proof = profile_control_proof(native)
+    previous = previous_profile_failure()
+    cleanup_controls = profile_cleanup_controls()
     prepare()
     row = json.loads((ROOT / 'record.json').read_text())
     row.update(collector_control=proof, profile_clock_controls=controls, maximum_observer_ratio=1.2,
-        budgets=dict(row['budgets'], file_cap=256 << 20, total_cap=512 << 20), whole_bytes=768 << 20)
+        profile_previous_failure=previous, profile_cleanup_controls=cleanup_controls,
+        budgets=dict(row['budgets'], file_cap=1 << 30, total_cap=1536 << 20), whole_bytes=2 << 30)
     row['plan'] = dict(question='Which device services and disjoint main-thread wait/host regions dominate current fast streamed32K prefill,and how much does whole-process observation perturb it?',
         order='Three fresh immutable processes:clean-before,profile,clean-after. Each runs identical bench.sh fixed-workload bodies,two distinct-nonce exact32769-input thinking-on requests,24outputs. First-use and second-request scopes separate. Commit each closed result before next;no speed-based early stop.',
         settings='Same b9aa/1e598 five-ELF native generation,nine FAST values,logical262144/resident20480,owned264MiBstage,8192chunks,packed384bank,1256decode slots,5workers,spec4,head2/dense1/Hostbacking0. Decode implementation/placement and qualified runtime safety unchanged. Only middle process enables STRATA_TRACE1,CPU_WAIT_PROFILE1 and the current qualified Sysman0 active-from-exec aggregate/kernel-only collector.',
         acceptance='Fresh current-source frontend probes,original native/recipe/fiveELFs/collector/runtime/Python/model identities,exact bodies/counts/reuse,actual all-GPU384bank routes and journal,quiet pre-main validation,normal native/benchmark0,closed ownership and unchanged boot/no fresh fault. Require complete conserved CPUv4/status partitions,flushed timeline,finite contained clocks and unique native host-flow joins on PCI05:00.0. Stop first correctness/source/owner/fault/budget failure;no retry or pin refresh.',
         observer='Per request position,profile prompt time and clientTTFT must each be<=1.2times BOTH bracketing clean values to qualify normal-route attribution. Preserve individual ratios and mixed/failing results. Finish the bracket even if latency exceeds the screen. Two clean processes are a bounded admission screen,not precise process variance or an engine speedup.',
         clocks='Sample RAW/MONOTONIC before launch,at both client gates,and after native exit. Same native/controller time namespace;existing BOOTTIME continuity check. Require<=1ms individual brackets and<=5ms observed offset span. Slice request-start through first nonempty thinking/content using midpoint observed offset;retain the sampled envelope and boundary-command count. This includes first-token/handoff work,not an exact engine-prefill endpoint or a bound on unsampled clock error.',
-        retention='Main owns the full active trace because paused graph construction loses later kernels. Finite256MiB/file,512MiB/job,768MiBwhole,2400s/104GiBRSS. Reduce immediately after native exit;retain compact per-request samples,CPU partitions,top families/gaps,clocks,joins and decision. Retire successful raw traces/logs/JIT after verified reduction and bracket decision. Existing three named engine generations unchanged.',
+        retention='Main owns the full active trace because paused graph construction loses later kernels. Finite1GiB/file,1.5GiB/job,2GiBwhole,2400s/104GiBRSS. V1 hit its256MiB file limit during layer37 of the first request;two complete requests need a larger prospective budget. Keep that original SIGXFSZ/failed ownership outcome. After all captured native/session identities are confirmed gone,close only this named collector session,including incomplete exits. Isolate the8MiB control budget from the model trace. Reduce immediately after native exit;retain compact samples,CPU partitions,top families/gaps,clocks,joins and decision. Retire raw traces/logs/JIT after verified reduction and bracket decision. Existing three named engine generations unchanged.',
         limits='Diagnostic only. Device services/API-request payloads and observed gaps do not establish arithmetic utilization,physical PCIe/RAM/VRAM traffic,complete critical-path dependencies or saturation. No sustainedTG,task/agent quality,physical262144/RESTORE,ordinary-provider teardown,1000PP target qualification or adoption.')
     for plan in row['plans']:
         plan['profile'] = plan['trace_progress'] = plan['index'] == 1
@@ -520,6 +525,139 @@ def profile_window_controls():
         else: raise RuntimeError('corrupt client/RAW clock window accepted')
     return dict(passed=True, valid_windows=1, rejected_windows=7,
         limits='CPU clock-window controls only;not a runtime/provider/trace or overhead result.')
+
+
+def profile_executor_closure(execution, inspect=build.supervision.identity):
+    """Permit named-session cleanup after physical exit, without qualifying a run."""
+    require(execution.get('active') is False and len(execution.get('commands', [])) == 1,
+        'one inactive owned model command required')
+    command, = execution['commands']
+    require(command.get('direct_child_reaped') is True and command.get('session_empty') is True
+        and command.get('survivors') == [] and command.get('errors') == []
+        and command.get('ownership_status') == 'observed', 'physical owner closure not established')
+    owners, direct = command.get('owners', []), command.get('direct_identity', {})
+    require(owners and all(type(o.get(k)) is int and o[k] > 0 for o in owners
+        for k in ('pid', 'start_ticks', 'sid')) and all(o['sid'] == direct.get('pid') for o in owners),
+        'captured owner identities required')
+    identities = {(o['pid'], o['start_ticks']) for o in owners}
+    native = execution.get('native_identity', {})
+    require((direct.get('pid'), direct.get('start_ticks')) in identities and
+        (native.get('pid'), native.get('start_ticks')) in identities, 'direct/native identity not captured')
+    for pid, ticks in identities:
+        now = inspect(pid)
+        require(now is None or now['start_ticks'] != ticks, 'captured executor still exists')
+    return dict(captured_identities=len(identities), physical_executors_gone=True,
+        original_ownership_closed=execution.get('ownership_closed') is True,
+        original_observation_complete=command.get('observation_complete') is True,
+        limits='Physical absence permits named-session cleanup only;original validation/outcome stays unchanged.')
+
+
+def profile_cleanup_controls():
+    owner = dict(pid=11, start_ticks=22, sid=11)
+    case = dict(active=False, ownership_closed=False, native_identity=owner,
+        commands=[dict(direct_child_reaped=True, session_empty=True, survivors=[], errors=[],
+            ownership_status='observed', owners=[owner], direct_identity=owner, observation_complete=False)])
+    accepted = [profile_executor_closure(case, lambda pid: None),
+        profile_executor_closure(case, lambda pid: dict(start_ticks=23))]
+    require(all(not p['original_ownership_closed'] and not p['original_observation_complete']
+        for p in accepted), 'cleanup must not qualify an incomplete original observation')
+    invalid = []
+    for key, value in [('direct_child_reaped', False), ('session_empty', False),
+        ('survivors', [owner]), ('errors', ['unknown']), ('ownership_status', 'unknown'),
+        ('owners', []), ('direct_identity', dict(pid=12, start_ticks=22))]:
+        bad = copy.deepcopy(case); bad['commands'][0][key] = value; invalid.append(bad)
+    invalid += [dict(case, active=True), dict(case, commands=[]),
+        dict(case, native_identity=dict(pid=12, start_ticks=22))]
+    for bad in invalid:
+        try: profile_executor_closure(bad, lambda pid: None)
+        except RuntimeError: pass
+        else: raise RuntimeError('unsafe physical closure accepted')
+    try: profile_executor_closure(case, lambda pid: dict(start_ticks=22))
+    except RuntimeError: pass
+    else: raise RuntimeError('live captured executor accepted')
+    return dict(passed=True, accepted=2, refused=len(invalid) + 1,
+        scope='CPU authorization controls only;PID reuse is absence of the original,not a new owner.')
+
+
+def close_profile_session(row, plan):
+    root, prof = Path(plan['root']), plan['native_profile']
+    execution = json.loads((root / 'execution.json').read_text())
+    physical = profile_executor_closure(execution)
+    start = json.loads((root / 'engine-start.json').read_text())
+    profile = source.compatibility.profile
+    require(start['native_profile'] == prof and start['boot_id'] == row['boot'] ==
+        Path('/proc/sys/kernel/random/boot_id').read_text().strip(), 'original session/boot differs')
+    for item in (prof['launcher'], prof['collector']):
+        require(digest(item['path']) == item['sha256'] and Path(item['path']).stat().st_size == item['bytes'],
+            'original collector executable changed')
+    control_root = root / 'collector-controls'; control_root.mkdir(exist_ok=True)
+    receipt = control_root / 'execution.json'
+    require(not receipt.exists(), 'existing collector-control receipt must be reconciled,not retried')
+    outcome, owner = dict(session=prof['session'], physical_closure=physical,
+        source_commit=source.device.common.source.git(P, 'rev-parse', 'HEAD').decode().strip()), None
+
+    def persist():
+        write(receipt, dict(outcome, active=bool(owner and owner.active),
+            commands=owner.commands if owner else []))
+
+    owner = build.supervision.Owner(control_root / 'owned', persist)
+    try:
+        if profile.session_path(prof['session']).exists():
+            command, _, _ = owner.run('stop', [prof['launcher']['path'], '--stop', prof['session']],
+                environment(row, plan), P, wall=15, cpu=15, rss_cap=2 << 30,
+                text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
+            require(build.supervision.closed(command) and command['exit_code'] == 0, 'collector stop failed')
+        require(not profile.session_path(prof['session']).exists(), 'collector session remains')
+        outcome['session_removed'] = True
+    except BaseException as error:
+        outcome['error'] = repr(error)
+    finally:
+        outcome.update(control_closed=owner.active is None and all(build.supervision.closed(c) for c in owner.commands),
+            active=bool(owner.active), session_removed=not profile.session_path(prof['session']).exists())
+        persist()
+    return outcome
+
+
+def reconcile_profile_v1():
+    key, root = 'qsa16_stream_fast_profile_v1', B / 'qsa16-stream-fast-profile-v1'
+    row = json.loads((root / 'record.json').read_text())
+    require(build.committed(RESULT)[key] == compact(row) and row['stage'] == 'failed'
+        and not row['passed'] and not row['complete'] and not row['active']
+        and len(row['processes']) == 2 and row['processes'][0]['passed']
+        and row['processes'][1]['ownership_closed'] is False, 'original failed V1 required')
+    controls = profile_cleanup_controls()
+    cleanup = close_profile_session(row, row['plans'][1])
+    p = row['processes'][1]; p['collector_cleanup'] = cleanup
+    r = row['post_failure_reconciliation']
+    r.pop('original_ownership_result_preserved', None)
+    r.update(stage='physical_executors_gone_named_session_removed' if cleanup.get('session_removed') else 'cleanup_failed',
+        original_ownership_closed=False, named_session_removed=cleanup.get('session_removed', False),
+        cleanup_controls=controls)
+    write(root / 'record.json', row)
+    data = json.loads(RESULT.read_text()); data[key] = compact(row); write(RESULT, data)
+    require(cleanup.get('session_removed') and cleanup['control_closed'] and not cleanup['active']
+        and not cleanup.get('error'), 'failed V1 collector cleanup remains pending')
+    print('V1 named collector session removed;original failed/incomplete ownership result preserved.', flush=True)
+
+
+def previous_profile_failure():
+    row = json.loads((B / 'qsa16-stream-fast-profile-v1/record.json').read_text())
+    require(build.committed(RESULT)['qsa16_stream_fast_profile_v1'] == compact(row)
+        and row['stage'] == 'failed' and not row['passed'] and not row['complete'] and not row['active']
+        and len(row['processes']) == 2, 'committed original failed V1 required')
+    p = row['processes'][1]; r = row['post_failure_reconciliation']; cleanup = p['collector_cleanup']
+    require(p['ownership_closed'] is False and not p['passed'] and r['observed_native_exit_code'] == -25
+        and r['incomplete_timeline']['bytes'] == row['budgets']['file_cap'] == 256 << 20
+        and cleanup['session_removed'] and cleanup['control_closed'] and not cleanup['active']
+        and not cleanup.get('error') and not source.compatibility.profile.session_path(cleanup['session']).exists(),
+        'exact SIGXFSZ cause and closed named session required')
+    physical = profile_executor_closure(json.loads((B / 'qsa16-stream-fast-profile-v1/1/execution.json').read_text()))
+    return dict(key='qsa16_stream_fast_profile_v1', source_commit=row['source_commit'],
+        original_failure_evidence='057f7103feb6e413eca04d536a3e0f1ea117c780',
+        native_exit_code=-25, original_file_cap=256 << 20, original_passed=False,
+        original_ownership_closed=False, physical_closure=physical,
+        cleanup_receipt_sha256=digest(B / 'qsa16-stream-fast-profile-v1/1/collector-controls/execution.json'),
+        limits='Only output budget and forced-exit cleanup change;all three V2processes are fresh. No V1failure relabel or hash refresh.')
 
 
 def profile_run(index):
@@ -594,16 +732,12 @@ def profile_run(index):
     def finish(value):
         p = value['processes'][-1]
         if prof:
-            controls = build.supervision.Owner(root / 'collector-controls')
+            cleanup = None
             try:
-                require(p.get('ownership_closed'), 'native ownership not closed;keep session pending')
-                if profile.session_path(prof['session']).exists():
-                    command, _, _ = controls.run('stop', [prof['launcher']['path'], '--stop', prof['session']],
-                        environment(value, plan), P, wall=15, cpu=15, rss_cap=2 << 30,
-                        text_cap=1 << 20, file_cap=2 << 20, total_cap=8 << 20)
-                    require(build.supervision.closed(command) and command['exit_code'] == 0, 'collector stop failed')
-                require(not profile.session_path(prof['session']).exists() and controls.active is None,
-                    'collector session remains')
+                cleanup = close_profile_session(value, plan)
+                p['collector_cleanup'] = cleanup
+                require(cleanup['session_removed'] and cleanup['control_closed'] and not cleanup.get('error'),
+                    'collector cleanup failed')
                 p['resource_observation'] = capture
                 require(capture.get('complete'), 'model trace reduction incomplete')
                 p['collector_session_removed'] = True
@@ -612,10 +746,10 @@ def profile_run(index):
                 value.update(stage='failed', passed=False, complete=False)
                 value.pop('decision', None)
             finally:
-                closed = controls.active is None and all(build.supervision.closed(c) for c in controls.commands)
+                closed = bool(cleanup and cleanup['control_closed'] and cleanup['session_removed'])
                 p['ownership_closed'] = bool(p.get('ownership_closed') and closed)
                 value['ownership_closed'] = bool(value['ownership_closed'] and closed)
-                value['active'] = bool(value['active'] or controls.active)
+                value['active'] = bool(value['active'] or (cleanup and cleanup['active']))
         save(value)
 
     module.engine_once.native_environment = expected
@@ -1039,6 +1173,8 @@ if __name__ == '__main__':
             configure_fast_fit_point(); action = action[1:]
         elif action[:1] == ['fast-profile']:
             configure_model_profile(); action = action[1:]
+            if action == ['reconcile-v1']:
+                reconcile_profile_v1(); raise SystemExit(0)
         if action == ['prepare']: profile_prepare() if MODEL_PROFILE else prepare()
         elif action == ['host']: comparison.host(sys.modules[__name__])
         elif len(action) == 1 and action[0].isdigit() and int(action[0]) < len(ORDER):
