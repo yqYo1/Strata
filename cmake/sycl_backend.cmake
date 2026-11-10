@@ -624,6 +624,11 @@ if(STRATA_SYCL_TESTS)
   target_compile_definitions(sycl_qsa_bf16_prefix_subgroup_test PRIVATE
     qsa_bf16_prefix_batch=qsa_bf16_prefix_subgroup_batch)
 
+  # Host metadata controls; no GPU initialization or device operation.
+  add_executable(sycl_moe_upload_census_host_test EXCLUDE_FROM_ALL tests/sycl/moe_upload_census_host.cpp)
+  target_include_directories(sycl_moe_upload_census_host_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  target_compile_features(sycl_moe_upload_census_host_test PRIVATE cxx_std_20)
+
   # Prefill-only component candidate; independent CPU oracle and uncached
   # subgroup reference. Does not select a model/decode implementation.
   add_executable(sycl_qsa_bf16_prefix_cached_subgroup_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)

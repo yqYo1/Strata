@@ -159,7 +159,10 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             detail::MoeWindowRoutes::build_split_accum(rows, owner.ids.data(), owner.ids.size()) :
             detail::MoeWindowRoutes::build_accum(rows, owner.ids.data(), owner.ids.size());
     }
-    if (m.layer_major_profile) {
+    std::unique_ptr<detail::MoeUploadCensus> upload_census;
+    if (detail::moe_upload_census_requested())
+        upload_census = std::make_unique<detail::MoeUploadCensus>();
+    if (m.layer_major_profile || upload_census) {
         // Metadata already owned on the host after the existing router drain.
         // No additional tensor readback, GPU submission or inference mutation.
         // This is a planned-job census; only final request/issuer totals prove
@@ -228,6 +231,7 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
                     detail::stage_expert_bank(*owner.expert_slots, *owner.expert_cache,
                         owner.expert_slab, owner.expert_slab_bytes, owner.expert_stride,
                         layout.blob_bytes(layer), job.expert, m.cs, owner.expert_source_stride);
+                if (upload_census) upload_census->record(job.rows, ticket.upload);
                 slot = ticket.slot;
                 if (ticket.upload) {
                     ++owner.staged_uploads; ++stats_.experts_streamed;
@@ -353,6 +357,10 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
     if (cudaStreamSynchronize(m.cs) != cudaSuccess) { err = "prefill MoE accumulator: HC writes drain"; return false; }
+    if (upload_census && !upload_census->emit_after_checked_drain(stderr, layer,
+            first_row, rows, format.gu_type, format.d_type, layout.blob_bytes(layer))) {
+        err = "prefill MoE census: output failed after checked drain"; return false;
+    }
     if (owner.scratch_mixed && std::getenv("STRATA_TRACE"))
         std::fprintf(stderr, "strata MoE mixed owners: phase=retired layer=%lld first=%lld rows=%lld route_status=0 shared_HC=checked_drain callbacks=after_return\n",
             (long long)layer, (long long)first_row, (long long)rows);

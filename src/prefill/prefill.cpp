@@ -44,6 +44,7 @@
 #include "strata/prefill/moe_window_routes.hpp"
 #include "strata/prefill/moe_accum_plan.hpp"
 #include "strata/prefill/expert_bank_upload.hpp"
+#include "strata/prefill/moe_upload_census.hpp"
 #include "strata/prefill/qsa_native16.hpp"
 #include "strata/prefill/qsa_score_gemm.hpp"
 #include "strata/prefill/gdn_chunk64.hpp"

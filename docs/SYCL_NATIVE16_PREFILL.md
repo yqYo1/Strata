@@ -1799,11 +1799,23 @@ in `qsa_cached_subgroup_prefill_compare_v1`;the CSV retains all eight aggregate
 first/warmed points. Local adjacent slopes are0.9009384/0.8975922ms/token,
 not a fitted law or physical fixed cost. Older56cad9/827.5-and970.5PP evidence
 remains a separate retained reference,not a performance claim for this build.
-Next observe the existing planned MoE census at32K/64K before choosing a
-selective Host-USM upload or grouped-GEMM policy. Profile metadata already exists
-on the CPU after the router drain;collecting it adds no GPU tensor readback.
-Reconcile split-expert reuse and cache misses before treating job rows as
-upload rows. Global staging remains off after its failed component gate;
+The initial `moe_job_geometry_v1` observer is failed at
+`237f6390fc64081d8a02bc4c6ba9f00f24807eee`:the timing-coupled
+`STRATA_PREFILL_LAYER_MAJOR_PROFILE=1` run stops at the announced layer18/GDN
+stage until the480-second watchdog aborts the native process(-6). Planned
+censuses cover layers0..17 only;zero requests complete. The original failed
+ownership result remains false;the native/wrapper are gone and the owned
+benchmark session is independently observed empty. No fresh driver fault is
+recorded;GPU health and the stall's exact cause are unproved. No64K run/retry.
+The successor adds `STRATA_SYCL_PREFILL_MOE_CENSUS=1` independently of GPU
+timing. Its host-only counters use the existing router data and record accepted
+uploads/hits once per expert,including format/blob/row bins,after the existing
+checked HC-write drain. It adds no GPU event,readback,wait or math. Source and
+CPU controls are prepared;new native and model qualification remain pending.
+Keep LM_PROFILE off for that successor. Next collect the complete32K/64K
+geometry before selecting a transfer policy. Reconcile split-expert reuse and
+cache misses before treating job rows as upload rows.
+Global staging remains off after its failed component gate;
 1280-row component gains alone do not qualify a selective model policy or
 physical PCIe/CPU saturation. The native source audit closes the old helper-
 snapshot gap and finds no ordered-exp/decode replacement;it does not identify
