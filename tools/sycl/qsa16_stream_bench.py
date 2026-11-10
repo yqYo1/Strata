@@ -51,6 +51,13 @@ def configure_fast_clean():
     READS, ORDER, CLEAN_FAST = (32769,), [(32769, 1)], True
 
 
+def configure_fast_curve():
+    global ROOT, KEY, READS, ORDER, CLEAN_FAST
+    ROOT, KEY = B / 'qsa16-stream-fast-curve-v1', 'qsa16_stream_fast_curve_v1'
+    READS = (32769, 49153, 65537, 81921, 98305)
+    ORDER, CLEAN_FAST = [(n, 1) for n in READS], True
+
+
 def pins(revision):
     values = shared.pins(revision)
     values.update(build.controls(revision, controller=P / THIS))
@@ -215,6 +222,17 @@ def decision(processes):
         and (p['read'], p['heads']) == ORDER[i] and len(p['samples']) == RUNS
         for i, p in enumerate(processes)), 'complete ordered curve required')
     points = []
+    def placement(value):
+        # Work/copy counts legitimately change with nonce-token routing. Keep
+        # them as evidence, but compare actual placement rather than all fields.
+        keys = ('rows', 'actual_chunk', 'residual_dtype', 'residual_gpu_rows',
+            'residual_gpu_bytes', 'residual_host_bytes', 'layer_cache_bytes',
+            'configured_context', 'configured_resident', 'owned_stage')
+        result = {k: value[k] for k in keys}
+        if 'fast_window' in value:
+            result['window'] = {k: value['fast_window'][k] for k in
+                ('prefill_slots', 'staged', 'split', 'maximum_window_rows')}
+        return result
     for p in processes:
         samples, routes = p['samples'], p['routes']
         points.append(dict(read=p['read'], first_use=samples[0],
@@ -224,11 +242,16 @@ def decision(processes):
             median_PP=p['read'] * 1000 / p['subsequent_median_ms'],
             median_TTFT_s=statistics.median(s['ttft_s'] for s in samples[1:]),
             residual_GPU_rows=routes[0]['residual_gpu_rows'],
-            placement_unchanged_within_process=all(r == routes[0] for r in routes)))
+            placement=placement(routes[0]),
+            placement_unchanged_within_process=all(placement(r) == placement(routes[0]) for r in routes)))
     groups = {}
     for point in points:
         key = 'all_GPU' if point['residual_GPU_rows'] == point['read'] - 1 else (
             'partial_GPU_' + str(point['residual_GPU_rows']))
+        window = point['placement'].get('window')
+        if window:
+            key += f'/slots{window["prefill_slots"]}/staged{int(window["staged"])}/split{int(window["split"])}'
+        point['route_group'] = key
         groups.setdefault(key, []).append(dict(actual_read_tokens=point['read'],
             prompt_ms=point['median_prompt_ms']))
     fits = {key: dict(affine=linear_fit(values), alternatives=approximation_models(values),
@@ -314,15 +337,17 @@ def prepare():
             retention=f'Keep all{len(READS)*RUNS}compact samples/TTFT,placement and source/native/environment/workload identity. Retire verified successful full logs/journals/cache/ownership output after extraction. Existing current native plus a347/552b imminent phase references unchanged.'))
     if previous_attempt is not None: row['previous_attempt'] = previous_attempt
     if CLEAN_FAST:
-        row['plan'].update(question='Measure clean32K PP/clientTTFT for the admitted fastest-setting composition on streamed QSA16 before longer shapes and independent-process repeats.',
+        row['plan'].update(question=('Measure clean32K PP/clientTTFT for the admitted fastest-setting composition on streamed QSA16 before longer shapes and independent-process repeats.' if len(READS) == 1 else
+                'Characterize clean32/48/64/80/96K PP/clientTTFT and time scaling for the admitted fast-setting composition;repeat32K in a fresh process and separate actual bank/split routes.'),
+            order=f'{len(READS)}fresh processes in fixed input order{list(READS)}. Four distinct-nonce thinking-on exact-count bench.sh requests per process;first separate,retain all subsequent3. Commit each closed process before advancing. No speed-based stop or replacement. One process per length in this cohort;the earlier32Kpoint is a separately scoped independent process.',
             settings=row['plan']['settings'].replace('MTP_BATCH_F16=0', 'MTP_BATCH_F16=1') +
                 ' Restore exactly the nine FAST values from the owned552b reference before exec;qualified by the closed3d2a diagnostic. No native rebuild or decode-selector change.',
             acceptance=row['plan']['acceptance'] +
-                ' Each actual32Krequest must use all32768GPU residual rows,staged384bank,window10,ordinary accumulator,checked final drains and complete675MiB MTP expert restoration.',
+                ' Require all actual prefill rows on GPU,window10,checked bank drains and complete675MiB MTP expert restoration. At32/48/64/80K require staged384bank and ordinary accumulation;96K requires the actual staged128/split route with checked tail guard/drain. Keep observed jobs/copy counts;compare placement separately from these counters.',
             stopping=row['plan']['stopping'].replace('Full15asset hashes before and after the cohort.',
                 'Reuse the exact closed fast-diagnostic final full hashes after identity/source recovery;hash all15assets again after this cohort.'),
             limits=row['plan']['limits'] +
-                ' The old baseline is one earlier process,not a prospective repeated pair. Retain that distinction;no gain/target/adoption claim from this single candidate process.')
+                ' The old baseline is one earlier process,not a prospective repeated pair. Retain that distinction;no gain/target/adoption claim from one process per length. Group fits by actual GPU residency AND bank/split route;do not fit the96Ksplit point with the ordinary384-bank points. Compare affine,nlogn,quadratic models using residuals/held-out errors and adjacent slopes,without assigning a mixed-route intercept to physical fixed work.')
     for index, (read, heads) in enumerate(ORDER):
         root = ROOT / str(index); root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root / part).mkdir()
@@ -543,6 +568,8 @@ if __name__ == '__main__':
             configure_baseline(); action = action[1:]
         elif action[:1] == ['fast-clean']:
             configure_fast_clean(); action = action[1:]
+        elif action[:1] == ['fast-curve']:
+            configure_fast_curve(); action = action[1:]
         if action == ['prepare']: prepare()
         elif action == ['host']: comparison.host(sys.modules[__name__])
         elif len(action) == 1 and action[0].isdigit() and int(action[0]) < len(ORDER):
