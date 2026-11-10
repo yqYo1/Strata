@@ -286099,7 +286099,7 @@
     }
   },
   "gu_compact_device_v2": {
-    "stage": "prepared",
+    "stage": "in_progress",
     "source_commit": "da62721163df060ca9d096c1b9735c6a466375f2",
     "controller_sha256": "809ce95c7dcad12c4c057620efa688af73a29206588145d171f0dc71cfccda23",
     "fixture_build_key": "gu_compact_component_v3",
@@ -286166,11 +286166,51 @@
     },
     "limits": "Kernel-only timing excludes GGUF dequant,gather,PCIe,production dispatch and model handoff. No model PP/TG/TTFT or default adoption claim.",
     "retention": "Commit useful numeric summary and individual speed pairs,then retire successful API/build logs. Keep fixture only for this decision and imminent production-dispatch comparison;old native proof holds remain separate.",
-    "results": [],
+    "results": [
+      {
+        "mode": "smoke",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "native_execution_attempted": true,
+        "correctness_cases": 2,
+        "max_half_ulp": 0,
+        "BF16_capture_exact": true,
+        "guards": true,
+        "inputs_immutable": true,
+        "validation": {
+          "pid": 3147813,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "stdout_sha256": "da68d30515b9ffc184d97f11b15d060cf066bb866952c032ada0e158a9cb3ebb",
+        "stderr_sha256": "dc239e26d1e3b31a9c380ca86191c7b3156288ba7145ecff6b9782ac6cc147fa",
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
+      }
+    ],
     "passed": false,
     "complete": false,
     "active": false,
     "ownership_closed": true,
-    "GPU_executed": false
+    "GPU_executed": true
   }
 }
