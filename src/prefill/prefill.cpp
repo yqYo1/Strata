@@ -3117,7 +3117,11 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                         const auto arithmetic = native16::qsa::attention_math();
                         const strata::kernels::QsaPromptBf16Bounds typed_bounds{
                             st.n_pages,staged ? st.n_pages : st.n_slots};
-                        if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)
+                        if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_cached_subgroup)
+                            matrix_used = strata::kernels::qsa_bf16_prefix_cached_subgroup_batch(
+                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
+                        else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_subgroup)
                             matrix_used = strata::kernels::qsa_bf16_prefix_subgroup_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
                                 typed_bounds, p0 + T, m.qsa_prefix, m.cs);

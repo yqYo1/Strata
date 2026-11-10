@@ -76,7 +76,8 @@ bool qsa_bf16_prefix_subgroup_batch(const uint16_t *q, const QsaAttnPools &pools
 // Component candidate: cached Q/typed KVvec4 with the existing subgroup
 // FP32 max/sum. Reassociates the normalizer relative to ordered_exp; retains
 // BF16 probability rounding, FP32 online state and all admission/lifetimes.
-// No model or decode dispatch selects this export.
+// Only the explicitly selected long-prefill route may use this export;
+// decode has its independent implementation and selection.
 bool qsa_bf16_prefix_cached_subgroup_batch(const uint16_t *q, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
     uint16_t *out, int64_t queries, const QsaPromptBf16Bounds &bounds,

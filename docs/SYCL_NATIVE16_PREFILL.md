@@ -1760,8 +1760,12 @@ costs. The cached-Q/vector-KV subgroup component now passes11numerical cases
 geomean ratio0.99292646. This is the same bba952e33 mechanism,not a new one;
 its older<=0.95speed gate remains failed. The new prospectively committed
 reproducibility gate passes without a minimum gain. No model PP/TG or
-adoption follows. Keep it for a combined prefill candidate and prioritize
-upload preparation/submission or actual selector-locality evidence. See
+adoption follows. The explicit startup selection
+`STRATA_SYCL_PREFILL_QSA_MATH=bf16-prefix-cached-subgroup`now connects
+long-prefill scratch admission,dispatch and diagnostics;defaults and decode
+source are unchanged. This model wiring still needs a fresh full native build
+and actual handoff/phase comparison. Keep it for a combined prefill candidate
+and prioritize upload preparation/submission or actual selector-locality evidence. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.
