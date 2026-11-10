@@ -1770,10 +1770,18 @@ inputs. Its9-stage native qualification passes at`82e8ce35a`:54CPU reader
 cases,11CPU-only refusals,submission10/phase16,canonical and packed-head
 numeric/restore checks,11attention oracle cases including262144live cells,
 and off/on producer full-fill plus final-cell overwrite. All8GPU stages
-close normally without fresh faults. This is component/native evidence;
-actual long/short/long model handoff,matched phase speed,task quality and
-physical262144model/RESTORE remain open. Keep the startup choice explicit
-and prioritize upload preparation/submission or actual selector-locality evidence.
+close normally without fresh faults. At`81948ba22`,the same engine also passes
+the actual thinking-enabled32769/82/32769input sequence,32outputs each,with
+logical262144/resident20480cells. Both long entries confirm cached-Q/typed4/
+subgroup dispatch and96bulk calls;MTP restores twice and the live decode
+head records27C4replays. All15model assets match afterward,normal0/closed
+ownership and no fresh fault. This is a validation-charged route/handoff
+diagnostic,not clean PP/TG,task quality or physical262144model/RESTORE
+qualification. Those gates and matched phase speed remain open. Keep the
+startup choice explicit. Next qualify and compare the existing four-slot
+Host-USM expert staging on this private packed route;do not infer savings
+or physical PCIe saturation from upload-submit CPU time. Actual selector
+locality remains another measured-evidence prerequisite.
 The old two component ELFs remain a bounded proof-reader dependency until
 that consumer is updated to this qualified successor;retire them at the current
 model-entry/comparison boundary. The current9af candidate temporarily joins
