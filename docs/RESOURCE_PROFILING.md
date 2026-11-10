@@ -588,9 +588,12 @@ exact24is selected by the new policy while legacy range defaults remain.
 Original measurement source93d908and all24samples/outcomes remain unchanged.
 The actual b9aa1132project inputs and two dependency revisions,128TUs/1462
 compiler inputs,recipe and generated header are recovered in the compact
-generation review. Actual retirement and before/after admission are next,
-before the same-binary bulk clean/profile/clean bracket. Keep552bfor its
-faster117Kprefill revalidation and a347for independent sustained decode.
+generation review,including52GGML headers absent from the old prefix list.
+The superseded b9aa root is now retired:188files/151969592bytes,with the
+current five-ELF/device/model/runtime and byte-identical collector-fixture
+admission passing before and after deletion. Three named generations remain:
+current56cad9,552bfor faster117Kprefill revalidation,and a347for independent
+sustained decode. Next is the same-binary bulk clean/profile/clean bracket.
 This is not an expanded build quota or a new native/GPU validation.
 The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors

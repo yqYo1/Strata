@@ -268710,44 +268710,11 @@
         }
       },
       "superseded_b9aa_live_dependency": {
-        "reader": "tools/sycl/check_qsa16_stream_model.py::native",
-        "caller": "tools/sycl/check_qsa_bulk_model.py::context",
+        "reader": "tools/sycl/qsa_bulk_controls.py::basis",
+        "caller": "tools/sycl/qsa_bulk_profile.py",
         "native_record": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-model-native-v1/record.json",
-        "preserved_ELFs": 11,
-        "b9aa_required_ELFs": [
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
-            "sha256": "1e598e8e6f04c4bf2e65fb295fb7c9fea9d66406084d612c7d7cda8744ddf391",
-            "bytes": 26382496,
-            "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
-          },
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/sycl_q6_head_owner_test",
-            "sha256": "b13f489feee5d8d038d5d7ad9ef6d0011fdaf15c8b8cb8839b6cbc48e44c5657",
-            "bytes": 11734112,
-            "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
-          },
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/sycl_submission_test",
-            "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
-            "bytes": 352152,
-            "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
-          },
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/sycl_verifier_retirement_test",
-            "sha256": "fb5e421c89bdcf6a8d1e19270ee6c52d76150d311bc26fceb9ba0fa124e502e4",
-            "bytes": 19733696,
-            "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
-          },
-          {
-            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/sycl_verify_window_policy_test",
-            "sha256": "3c78d87eed186c47eb5ee893568a07f90573923ddd431b2393a682c29138b4fd",
-            "bytes": 114968,
-            "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
-          }
-        ],
-        "status": "prospective_scoped_reader_admitted_original_inputs_recovered_pending_actual_retirement",
-        "next_action": "Retire actual superseded b9aa build after this evidence is committed;before/after qsa_bulk_controls.basis must pass with all five current ELFs. Then remove active old-build hold and launch current bulk profile.",
+        "status": "retired_verified_current_five_ELF_and_collector_admission_passes",
+        "next_action": "Superseded b9aa generation retired;no live-byte hold remains. Recover original source/recipe from Git if a later new comparison needs a rebuild.",
         "source_recovery": {
           "checked_utc": "2026-11-10T13:17:01.361626+00:00",
           "source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
@@ -268794,7 +268761,17 @@
           "original_five_ELFs_verified": true,
           "selected_current_compiler_inputs_do_not_read_old_build": true,
           "scope": "Original measured b9aa source/recipe/dependency/generated inputs recovered,not a seed or later build. Installed compiler/SDK inputs are verified and retained;no claim of new native or GPU validation."
-        }
+        },
+        "retirement": {
+          "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/superseded-b9aa-native-retirement-20261110.json",
+          "sha256": "ac7906e8fa72cff90981480d3d56b4ab2e807337c72a46b77d1562df9b460eb1",
+          "files": 188,
+          "bytes": 151969592,
+          "current_five_ELFs_preserved": true,
+          "before_after_admission_passed": true,
+          "collector_reuse_passed": true
+        },
+        "historical_preserved_ELF_descriptors": 11
       },
       "other_current_consumers": [
         {
@@ -268806,10 +268783,10 @@
           "consumer": "a347 independent sustained-decode preservation and current qualification reader."
         }
       ],
-      "retained_generation_count": 4,
+      "retained_generation_count": 3,
       "normal_quota_expanded": false,
-      "retirement_completed": false,
-      "review_point": "Immediate serialized retirement before current bulk profiling;no extra native build.",
+      "retirement_completed": true,
+      "review_point": "Current bulk profile closure:keep selected current native plus552b117Kprefill and a347sustained-decode consumers;resolve these named comparisons before another native generation.",
       "legacy_holds": "Existing configured build-sycl/build-sycl-aot/build-vision-sycl provenance holds are separate;this review does not establish their recovery or global retirement."
     },
     "raw_retirement": {
