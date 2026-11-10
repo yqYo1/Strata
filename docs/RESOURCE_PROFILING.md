@@ -544,9 +544,11 @@ The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors
 are gone and its exact named collector session is separately removed. V2 used
 a prospective1GiB/file,1.5GiB/job,2GiBwhole budget and a581101981-byte flushed
-trace. V1's incomplete timeline and V2's raw trace are due for retirement after
-the compact evidence and this resource decision are committed;retain no timeline merely because a
-run succeeded or failed. Task/agent quality,sustained TG,physical262144/RESTORE,
+trace. After committing the compact evidence and resource decision,336closed
+raw/log/JIT files totaling914207701bytes are physically retired with a hashed
+deletion manifest. The33thin records/runtime/plans/ownership receipts remain
+for the next candidate admission;all original outcomes and native builds are
+unchanged. Task/agent quality,sustained TG,physical262144/RESTORE,
 ordinary provider teardown and overall model adoption remain open.
 
 ## Numerical reference for replacement kernels
