@@ -1743,10 +1743,19 @@ are local differences,not a fitted law or physical fixed-cost estimate.
 The old multi-length curve/profile remains separately scoped. Current
 source-view mode1is observed in all24requests;the old4.5512%source-view
 result must be crosswalked before any duplicate experiment. Hardware
-saturation and post-bulk append cost remain unknown. The bulk flag remains
+saturation remains unknown;post-bulk append service is now measured below.
+The bulk flag remains
 default off;1000PP,sustained decode,task/agent,full262144model/RESTORE and
-adoption remain open. Next measure the remaining cost on this faster path;
-expert-copy preparation/submission is a separate candidate. See
+adoption remain open. The remaining cost is now profiled on this faster path;
+expert-copy preparation/submission is a separate candidate. The current
+bulk32Kclean/profile/clean bracket now passes all6requests,observer ratio
+screen,quiet validation,normal closure,no fresh fault and15final hashes.
+Second-request prefix service is6.796s versus append0.0838s;copy/kernel
+overlap is only0.0064s. Main outside-wait CPU is20.518s,with upload-submit
+4.678s and GEMM-submit3.670s;grouping and source copying are negligible.
+These are diagnostic intervals,not physical saturation or additive wall
+costs. Prioritize the cached-Q/vector-KV plus subgroup-normalizer composition
+and upload-path source/registration work over further append arithmetic. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.

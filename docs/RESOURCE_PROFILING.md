@@ -574,8 +574,8 @@ software-dispatch evidence,not observed bulk-command counts or physical
 traffic. Exact24is checked from every retained original sample because the
 shared runner accepts1..24;fix that gate before another cohort.
 This improvement does not locate physical saturation. The older2.217678s
-append service is not a post-bulk arithmetic cost;profile the new path before
-selecting a subgroup quantizer. Source-view mode1is already observed in all24
+append service is not a post-bulk arithmetic cost;the current measured cost
+is recorded below before selecting another quantizer. Source-view mode1is already observed in all24
 requests,so crosswalk its earlier4.5512%gain before repeating it. The two-point
 adjacent slopes0.9215233/0.8523079ms pertoken(off/on)are local only. The flag
 stays default off;1000PP,sustained decode,task/agent,full262144model/RESTORE,
@@ -593,8 +593,27 @@ The superseded b9aa root is now retired:188files/151969592bytes,with the
 current five-ELF/device/model/runtime and byte-identical collector-fixture
 admission passing before and after deletion. Three named generations remain:
 current56cad9,552bfor faster117Kprefill revalidation,and a347for independent
-sustained decode. Next is the same-binary bulk clean/profile/clean bracket.
+sustained decode. The completed same-binary bulk bracket is recorded below.
 This is not an expanded build quota or a new native/GPU validation.
+The post-bulk32Kclean/profile/clean bracket closes at3d5857f99:all6
+thinking-on exact24-output requests pass,normal0,closed owners,quiet
+validation,no fresh fault and15final model hashes. Observer prompt/TTFT
+ratios1.086..1.170pass the prospective1.2screen. Clean second requests are
+825.1807/826.3940PP and39.856/39.797s clientTTFT;these are controls,not a new
+paired speedup or sustainedTG. The second observed request has27.6665s
+kernel union,10.9801s copy union and only0.006408s observed overlap. M2D
+service is10.2080s for46.505GB API-request bytes;prefix attention is6.7960s.
+The maintained interval reducer identifies48append kernels totaling0.08380s
+and192D2Hcopy commands totaling0.07404s/415236096requested bytes. Thus the
+old2.2177s append cost no longer selects a quantizer optimization. Main CPU
+has19.9011s in known waits and20.5176s outside,including4.6777s upload-submit,
+3.6695s GEMM-submit,0.07558s grouping and0.000046s source copying. These
+CPU categories overlap GPU work;source-view copying is already eliminated.
+Next test the existing subgroup-softmax arithmetic combined with cached Q
+and vector K/V in the measured prefix path,and investigate actual upload
+registration/coalescing. Keep numerical/physical-context and independent
+decode gates. Hardware saturation and the limiting physical resource remain
+unknown;observed GPU copy services are not wire traffic.
 The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors
 are gone and its exact named collector session is separately removed. V2 used

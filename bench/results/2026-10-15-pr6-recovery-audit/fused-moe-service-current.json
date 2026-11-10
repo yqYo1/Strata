@@ -271272,6 +271272,51 @@
       "inference_adopted": false,
       "limits": "Two bracketing clean processes,one profile;request positions separate. A failed observer screen leaves instrumented services diagnostic only. Services and API payloads are not saturation or physical traffic."
     },
+    "post_capture_reduction": {
+      "analysis_source_commit": "a743bbfc938b7e9fa61d8cb2384f163e62affaf9",
+      "source_path": "tools/sycl_trace_intervals.py",
+      "source_sha256": "8eb9f1d0352662851922eda26a6e22089618eff00ca4d8f0bb6757280c9e9e9e",
+      "command": [
+        "timeout",
+        "180",
+        "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+        "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl_trace_intervals.py",
+        "--record",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-fast-profile-v1/record.json",
+        "--kernel",
+        "append_q8_streamed",
+        "--expected-calls",
+        "48"
+      ],
+      "selfcheck": "Overlapping/duplicate/touching intervals,partial client-window clipping and three invalid-window refusals pass.",
+      "timeline_sha256": "506cc034e596872d4458b936db8f36f64a4ba77593f0f8ead39d23d715d53aa1",
+      "windows": [
+        {
+          "selected_kernel_calls": 48,
+          "selected_kernel_service_s": 0.0839289375,
+          "kernel_union_s": 27.674459379882812,
+          "copy_union_s": 10.715161986816407,
+          "observed_copy_kernel_overlap_s": 0.00428516259765625
+        },
+        {
+          "selected_kernel_calls": 48,
+          "selected_kernel_service_s": 0.08379550732421875,
+          "kernel_union_s": 27.666517819335937,
+          "copy_union_s": 10.980093813476563,
+          "observed_copy_kernel_overlap_s": 0.00640766943359375
+        }
+      ],
+      "scope": "Post-capture derivation from original qualified GPU events/client windows;copied from the maintained reducer output and crosschecked against existing window kernel unions. Not a new GPU run,physical traffic or saturation."
+    },
+    "next_optimization_decision": {
+      "priority": "QSA prefix cached-query/vector-KV plus parallel subgroup normalizer;also investigate upload source registration/coalescing.",
+      "basis": "Observer-qualified second request:prefix6.796s,append0.0838s,D2H0.0740s,M2D10.208s/46.505GBrequested,kernel union27.667s,copy union10.980s,copy/kernel overlap0.00641s. Main CPU19.901s known waits/20.518s outside,including upload_submit4.678s,GEMMsubmit3.670s,host grouping0.0756s and sourcecopy0.000046s. CPU regions overlap GPU execution;they are not additive wall latency.",
+      "source_mechanism": "Current prefix<33,false,false,true,true,true,true,false> retains cached Q and vector K/V but performs32ordered subgroup exchanges for each normalizer sum. The existing subgroup-softmax branch is not composed with those storage optimizations. Test that explicit composition before a new model route.",
+      "quantizer_priority": "Defer subgroup append arithmetic:its measured remaining service is0.084s,so it is a smaller opportunity than prefix/upload work. Keep earlier numerical/source findings for later.",
+      "required_gates": "Commit component source/recipe/criteria before build;compare all candidate bits to the existing subgroup numerical branch and retain original ordered-reference outcomes/tolerances. Preserve alias/owner/collective/NaN/tail/full262144 checks. Measure whole production prefix path,then separate model/decode/task/agent/fullcontext gates before adoption.",
+      "limiting_hardware_resource": "Unknown:GPU services and host submission costs are attributed;physical PCIe/RAM/VRAM traffic,occupancy/arithmetic saturation and complete dependency critical path are not measured.",
+      "adopted": false
+    },
     "source_inputs": {
       "files": 696,
       "sha256": "d7ab08e63fb4fd9c75744ebd6fc71cb2ea5dcd5c24a2fcba276ee74bbb0b077b"
