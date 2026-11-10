@@ -260729,5 +260729,133 @@
     },
     "environment_template_sha256": "a48a042baf9ecd4b82ef4af7d8ff232743930893109582b2861dbd37a2bb374c",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "qsa16_stream_collector_active_v2": {
+    "stage": "prepared",
+    "source_commit": "9cc9711af4b6d1b36cf32cbf0a98b14ba588bec8",
+    "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
+    "engine": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
+      "sha256": "1e598e8e6f04c4bf2e65fb295fb7c9fea9d66406084d612c7d7cda8744ddf391",
+      "bytes": 26382496,
+      "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/sycl_submission_test",
+      "sha256": "fad9542788d73036841b00dd95d26941b0dd3cd7c480b564f92c5db167fd87e7",
+      "bytes": 352152,
+      "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "assets": {
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      }
+    },
+    "profile": {
+      "mode": "aggregate",
+      "launcher": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+        "bytes": 513168,
+        "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+      },
+      "collector": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+        "bytes": 2329704,
+        "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+      },
+      "session": "StrataPrefillcdc42bf6c3046c835f08fb9c",
+      "environment": {
+        "UNITRACE_SystemTime": "1",
+        "UNITRACE_FollowChildProcess": "1",
+        "UNITRACE_TraceOutputDir": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-collector-active-v2/trace",
+        "LD_DEBUG": "libs"
+      }
+    },
+    "cases": [],
+    "plan": {
+      "question": "Does the unchanged owned Sysman0 indexed collector cover exact current b9aa fixture kernel classes,flow joins and graph lifecycle?",
+      "native": "Same b9aa/1e598 engine and fad954 compatibility fixture,all five original native ELFs/recipe/runtime exact. Existing MIT collector/launcher;no native rebuild. No arguments:ordinary graph recording/replay,not --native or --submission.",
+      "order": "CPU6valid/6refusal inventory controls,then one fresh finite active-from-exec aggregate/kernel-only collection with original two native gates. Detach only the exact qualified inherited probe fields before the native wrapper attaches its private preload. All runtime safety remains immutable before exec.",
+      "acceptance": "Require1direct/37producer/24consumer exact kernel types,62unique native host-flow joins,finite contained clocks,original numerical/copy/event/graph/lifetime pass,pre-main parameter validation,normal0,closed owners,unchanged boot/no fresh fault and removed collector session. Stop first failure;no retry,pin refresh or count-only replacement.",
+      "limits": "Current-build collector control only. No model trace/overhead,physical traffic,saturation,clean PP/TG,task quality,physical262144/RESTORE,ordinary-provider teardown or inference adoption.",
+      "next": "Commit representative32K+ current fast-route capture and matched observer-overhead plan before attributing model resources. Keep service coverage,wall critical path and hardware saturation distinct.",
+      "stopping": "Stop first source,ownership,provider,validation,fault,budget,numerical,count or join failure. No retry,hash refresh or changed criteria.",
+      "retention": "Keep compact counts,clock/identity/qualification limits and diagnostic outcome. Retire successful full API trace,timeline,JIT and execution bookkeeping after joins and next-consumer needs are recorded. No new native generation."
+    },
+    "budgets": {
+      "wall": 180,
+      "cpu": 180,
+      "rss_cap": 4294967296,
+      "text_cap": 16777216,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "whole_bytes": 134217728,
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "host_controls": {
+      "passed": true,
+      "valid_inventories": 6,
+      "rejected_inventories": 6,
+      "scope": "CPU class-inventory controls only;no native/GPU/clock/join/collector qualification."
+    },
+    "observer_admission": {
+      "native": {
+        "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
+        "original_source_files": 1132,
+        "observer_source_files": 1136,
+        "observer_source_sha256": "62390e25f6d16eb140c6e5a49714e34812cc4c99240c9c4cdac63982a76302d4",
+        "added_observers": {
+          "tools/sycl/check_qsa16_stream_model.py": "23fb8126ce10b0efa7b15c4f865aecf41f940541d3cd968043a42c201776c402",
+          "tools/sycl/qsa16_stream_bench.py": "0920eb10a51873444b308a6030a2c86beaac106d6b7e7fdedd38f3c5242f94b9",
+          "tools/sycl/qsa16_stream_model_entry.py": "68476f4bab242151cef5fceeff4ec6af3fb8630e85bfd2df8001a65b651ddb49",
+          "tools/sycl/qsa16_stream_profile.py": "aaa8707207375ca98482535e936f736727436305735d574faa96a072cf4d1c97"
+        },
+        "exact_five_ELFs_census_recipe": true,
+        "exact_seed_recipe_sha256": "937bf0671a29b72ab39b032361553c882e809436680f737144997b804257985d",
+        "native_recompiled": false,
+        "GPU_result_inherited": false
+      },
+      "original_model_source": "48e4a5e02f15b48b5f75a91e341bca4dc3dc53f9",
+      "original_model_evidence_sha256": "f50f7c1993d50452fe1a3f73da293302f69948c4e0d5a8a7ca24225d2240a74d",
+      "original_model_receipt_sha256": "31ae61ccb2b995d58441c2e31fce5b95aae18b786a317ca504984547b5127074",
+      "original_model_controls_recovered": 296,
+      "added_observers": {
+        "tools/sycl/qsa16_stream_profile.py": "aaa8707207375ca98482535e936f736727436305735d574faa96a072cf4d1c97",
+        "tools/sycl/qsa16_stream_bench.py": "0920eb10a51873444b308a6030a2c86beaac106d6b7e7fdedd38f3c5242f94b9"
+      },
+      "collector_qualification_inherited": false,
+      "native_recompiled": false
+    },
+    "sources_sha256": "f4cca2a6b798d4c700bf495c3d0be87a5b8f4ff9d6d413b1219e175ee75c9e6e",
+    "environment_template_sha256": "42621817354afa9874fd37e05e8a8f989bb9d533be22ec556892164154162c1f"
   }
 }
