@@ -420,13 +420,40 @@ the validated552b fallback. The reviewed runtime split gate is
 actual prefill rows>90112and<=117488,with additional admission checks;its
 accepted replan requests128slots. Do not assume the32K384-slot geometry
 at117489input tokens. Actual hardware saturation remains unknown.
-The committed `qsa16_stream_fast_curve_v1` campaign uses32/48/64/80/96K
-actual inputs in that order,with four requests per fresh process. Its first
-four lengths share the ordinary384-slot route;96K has a separately required
-128-slot split route. `tools/prefill_scaling_bench.py::approximation_models`
+The closed `qsa16_stream_fast_curve_v1` campaign measured32/48/64/80/96K
+actual inputs in that order,with four thinking-on24-output requests per fresh
+process. All20requests pass with zero reuse,actual8192chunks,all residual rows
+on GPU,675MiB MTP expert restoration,quiet validation,normal0,closed owners,
+unchanged boot/driver and no fresh fault. All15model assets pass full hashing
+after the fifth process. Original controller source set is
+`131ce053b106df631037355fe62b0cd9eb1da79c`,native remains b9aa/1e598,and
+closed evidence is`616562a28f009a2e7be2404cb3119861aea6acc2`.
+
+| Actual input tokens | First PP (tok/s) | Subsequent-three median PP (tok/s) | Median prompt (s) | First client TTFT (s) | Subsequent median client TTFT (s) |
+| --- | --- | --- | --- | --- | --- |
+|32769 |636.9282 |794.9319 |41.2224 |51.583 |41.357 |
+|49153 |742.0116 |876.5926 |56.0728 |66.392 |56.218 |
+|65537 |805.4761 |916.5706 |71.5024 |81.517 |71.662 |
+|81921 |838.3281 |934.2008 |87.6910 |97.881 |87.866 |
+|98305 |866.0715 |946.8245 |103.8260 |113.717 |104.007 |
+
+First means the first measured long request after standard bench warmups and
+count-only preflight,not cold server startup. The first four lengths share the
+ordinary384-slot route;96K uses the separately checked128-slot split route.
+The latter splits the accumulator across GPU allocations,not CPU accumulation;
+its256-byte tail guard and final drain pass. Useful samples/source limits and
+both first/subsequent scopes are indexed in the performance CSV. This is one
+process per length,not a repeated paired gain,sustained decode,task quality,
+physical262144/RESTORE,ordinary-provider teardown or inference adoption.
+
+For the four ordinary-route warmed medians,the descriptive affine fit is
+`T_seconds = 9.92881496 + 0.0009450402832 * actual_read_tokens`,with maximum
+relative residual0.7898%. Adjacent slopes rise0.9064/0.9417/0.9881ms/token;
+the intercept is not an attributed physical fixed cost and the fit must not
+be extrapolated. `tools/prefill_scaling_bench.py::approximation_models`
 requires five length points for its held-out affine/quadratic/n-log-n
 comparison. Four compatible lengths therefore permit the descriptive affine
-fit,but not that comparison. After this original cohort closes,prepare a
+fit,but not that comparison. Next prepare a
 separate57345-input(56K)point with the same ordinary route and settings,
 then fit only the five distinct compatible lengths. Keep first-use and
 subsequent-request series separate. Do not pool the96Ksplit point or lower

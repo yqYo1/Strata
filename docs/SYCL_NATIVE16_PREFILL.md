@@ -1688,11 +1688,17 @@ median514.2599PP/clientTTFT63.863s in one process. Nine fastest552b prefill
 choices remain disabled in that admission configuration. Their separate
 `qsa16_stream_fast_entry_v1` composition now passes actual long/short/long
 route,packed-bank/cache-loan,MTP expert restoration and decode recapture
-checks on the same native build. Its first separate clean32769-input
-`bench.sh`point now closes at639.5848PP first use and788.3531PP subsequent-
-three median/clientTTFT41.738s,with all32768residual rows on GPU. This is
-one process,not a repeated paired gain,sustained decode,>=64Ktarget or
-adoption;next repeat and collect the new length/route curve. See
+checks on the same native build. Its clean five-length `bench.sh` campaign
+now closes all20thinking-on24-output requests,with normal0,closed owners,
+quiet validation,no fresh fault and15final model hashes. Subsequent-three
+medians are794.9319/876.5926/916.5706/934.2008/946.8245PP at actual
+32769/49153/65537/81921/98305inputs;clientTTFT is41.357/56.218/71.662/
+87.866/104.007s. Each length uses one fresh process,with first-use samples
+separate. All residual rows stay on GPU. The96K128-slot split accumulator
+route stays separate from the ordinary384-slot32..80Kfit. Next add57345
+inputs under a new committed plan to compare affine,nlogn and quadratic
+models on five compatible lengths. This is characterization,not a repeated
+paired gain,sustained decode,1000PPtarget qualification or adoption. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.
