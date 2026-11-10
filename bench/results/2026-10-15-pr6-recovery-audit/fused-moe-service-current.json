@@ -255188,6 +255188,93 @@
       "passed": true,
       "GPU_executed": false
     },
+    "diagnostic_latency_screen": {
+      "arms": [
+        {
+          "arm": "v1",
+          "source_commit": "016bec0f20c3bf7db6e4dfb2800b8e855aea1801",
+          "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
+          "actual_chunk": 4096,
+          "native_exit_code": 0,
+          "route_gate_passed": false,
+          "stdout_sha256": "d7bd9694aaa4a256efa1be1f3c91d79d929bbf8119cbcc213005df4db1eb901b",
+          "samples": [
+            {
+              "label": "long",
+              "actual_read_tokens": 32769,
+              "generated_tokens": 32,
+              "prompt_ms": 107050.9,
+              "decode_ms": 8392.2,
+              "prompt_tps": 306.1067211952445,
+              "accepted": 23,
+              "offered": 27
+            },
+            {
+              "label": "short",
+              "actual_read_tokens": 82,
+              "generated_tokens": 32,
+              "prompt_ms": 4215.2,
+              "decode_ms": 1952.0,
+              "prompt_tps": 19.453406718542418,
+              "accepted": 24,
+              "offered": 27
+            },
+            {
+              "label": "long",
+              "actual_read_tokens": 32769,
+              "generated_tokens": 32,
+              "prompt_ms": 93267.2,
+              "decode_ms": 2324.8,
+              "prompt_tps": 351.34538187058257,
+              "accepted": 23,
+              "offered": 27
+            }
+          ]
+        },
+        {
+          "arm": "v2",
+          "source_commit": "48e4a5e02f15b48b5f75a91e341bca4dc3dc53f9",
+          "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
+          "actual_chunk": 8192,
+          "native_exit_code": 0,
+          "route_gate_passed": true,
+          "stdout_sha256": "7ae8f003d3c358eaf3306d66d678e33b42fdde8cbeea849a989ccc5589911de9",
+          "samples": [
+            {
+              "label": "long",
+              "actual_read_tokens": 32769,
+              "generated_tokens": 32,
+              "prompt_ms": 86718.5,
+              "decode_ms": 8818.6,
+              "prompt_tps": 377.8778461343312,
+              "accepted": 20,
+              "offered": 36
+            },
+            {
+              "label": "short",
+              "actual_read_tokens": 82,
+              "generated_tokens": 32,
+              "prompt_ms": 4114.2,
+              "decode_ms": 1906.6,
+              "prompt_tps": 19.93097078411356,
+              "accepted": 24,
+              "offered": 27
+            },
+            {
+              "label": "long",
+              "actual_read_tokens": 32769,
+              "generated_tokens": 32,
+              "prompt_ms": 73678.5,
+              "decode_ms": 2761.2,
+              "prompt_tps": 444.7566114945337,
+              "accepted": 20,
+              "offered": 36
+            }
+          ]
+        }
+      ],
+      "scope": "Post-close extraction from original owned DONE transcripts;parameter validation and route auditing charged. One process per arm,first and subsequent long request distinct,32outputs only. Token-tiled native diagnostic,not bench.sh;no client TTFT,clean speed,sustained TG,statistical gain or adoption claim. V1 remains failed by its actual8192route gate."
+    },
     "controller": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "48e4a5e02f15b48b5f75a91e341bca4dc3dc53f9",
