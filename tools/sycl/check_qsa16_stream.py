@@ -52,6 +52,13 @@ def compact(row):
     out['commands'] = [dict(label=c['label'],exit_code=c.get('exit_code'),
         ownership_closed=ownership.closed(c),errors=c.get('errors',[]),error=c.get('error'))
         for c in row['commands']]
+    if 'producer_component' in row and 'planned_compilation' in row:
+        # The live private plan drives census verification. Its full parser
+        # arrays need no second permanent copy in the public result.
+        planned=out.pop('planned_compilation');out.pop('planned_translation_units')
+        out['planned_compilation_summary']=dict(translation_units=len(planned),
+            canonical_json_sha256=hashlib.sha256(json.dumps(planned,sort_keys=True,
+                separators=(',',':')).encode()).hexdigest())
     return out
 
 
@@ -309,7 +316,9 @@ if __name__=='__main__':
     action=sys.argv[1]
     if action.startswith('engine-'):
         MODEL_BUILD=True;action=action.removeprefix('engine-')
-        ROOT=B/'qsa16-stream-model-native-v1';KEY='qsa16_stream_model_native_v1'
+        # V1 closed after successful configure, before native compilation,
+        # to avoid retaining its full per-TU parser arrays in Git.
+        ROOT=B/'qsa16-stream-model-native-v2';KEY='qsa16_stream_model_native_v2'
         TARGETS=['strata','sycl_q6_head_owner_test','sycl_submission_test',
                  'sycl_verifier_retirement_test','sycl_verify_window_policy_test']
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
