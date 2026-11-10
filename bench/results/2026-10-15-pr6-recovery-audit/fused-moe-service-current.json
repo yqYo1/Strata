@@ -285376,7 +285376,7 @@
     }
   },
   "gu_compact_component_v2": {
-    "stage": "prepared",
+    "stage": "built",
     "source_commit": "99ebd755f8c946a5a54c006f0a36aaefb0773fa8",
     "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
     "engine": {
@@ -285549,9 +285549,100 @@
     },
     "active": false,
     "ownership_closed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "GPU_executed": false,
-    "commands": []
+    "commands": [
+      {
+        "label": "compile",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-DSTRATA_CPU_SERVICE_PROFILE=1",
+          "-DSTRATA_ENABLE_SYCL=1",
+          "-DSTRATA_NATIVE_EXPERTS=1",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+          "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+          "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++20",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v2/fixture.o",
+          "-c",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/gu_compact.cpp",
+          "-fno-fast-math",
+          "-ffp-contract=off",
+          "-MD",
+          "-MF",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v2/fixture.d"
+        ],
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "label": "link",
+        "argv": [
+          "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+          "-fsycl-id-queries-range=size_t",
+          "-Wno-error=deprecated-declarations",
+          "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+          "-O3",
+          "-DNDEBUG",
+          "-Wl,-t",
+          "-fsycl",
+          "-fsycl-id-queries-range=size_t",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v2/fixture.o",
+          "-o",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v2/fixture",
+          "-Wl,-rpath,/opt/intel/oneapi/mkl/2026.1/lib",
+          "strata_vllm_xe2_image.o",
+          "strata_vllm_xe2_host.o",
+          "libstrata_prefill.a",
+          "libstrata_spec.a",
+          "libstrata_engine.a",
+          "libstrata_kernels.a",
+          "libstrata_core.a",
+          "libstrata_sycl_runtime.a",
+          "libstrata_kernels_cpu.a",
+          "ggml/src/libggml-cpu.a",
+          "ggml/src/libggml-base.a",
+          "-lm",
+          "-fsycl",
+          "-fsycl-allow-device-image-dependencies",
+          "-Wl,-rpath=/opt/intel/oneapi/mkl/2026.1/lib",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sycl_blas.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_intel_ilp64.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_sequential.so",
+          "/opt/intel/oneapi/mkl/2026.1/lib/libmkl_core.so",
+          "-lm",
+          "-ldl",
+          "-lpthread"
+        ],
+        "exit_code": 0,
+        "ownership_closed": true,
+        "stdout_sha256": "acf710255edbc7ee9f8505c2ee34284e13c0a1a3e2913e2edb5c9d3fff52f629",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "actual_headers": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v2/actual-headers.json",
+      "sha256": "bd7505709a2debf7129fb99a62add2ca0b901d080f795784895de499c5626e93",
+      "files": 695
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v2/fixture",
+      "sha256": "2e347dd51b85bc953c1b894499caafadda9ba62f1185485d97987a938e6bef0f",
+      "bytes": 2683456
+    }
   }
 }
