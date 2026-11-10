@@ -16,7 +16,7 @@ import check_moe_census_model as device
 import measurement_owner as owner
 
 P,B,RESULT=device.P,device.B,device.RESULT
-ROOT,KEY=B/'gu-compact-component-v1','gu_compact_component_v1'
+ROOT,KEY=B/'gu-compact-component-v2','gu_compact_component_v2'
 THIS,CPP='tools/sycl/build_gu_compact.py','bench/sycl/gu_compact.cpp'
 NATIVE=device.build.ROOT
 require,sha=device.require,device.sha
@@ -46,7 +46,7 @@ def current(row,extra_observers=frozenset()):
         raw=device.original.common.source.git(P,'show',row['source_commit']+':'+name)
         require(hashlib.sha256(raw).hexdigest()==h==sha(P/name),'component source changed')
     require(sha(row['compile_seed']['path'])==row['compile_seed']['sha256'],'compiler recipe changed')
-    require(all(sha(p)==h for p,h in row['static_libraries'].items()),'same-build library changed')
+    require(all(sha(p)==h for p,h in row['link_inputs'].items()),'same-build archive/image/runtime link input changed')
     return n
 
 
@@ -64,13 +64,20 @@ def prepare():
     compile_argv[compile_argv.index('-o')+1]=str(ROOT/'fixture.o')
     compile_argv+=['-fno-fast-math','-ffp-contract=off','-MD','-MF',str(ROOT/'fixture.d')]
     text=subprocess.check_output(['ninja','-C',str(build),'-t','commands',
-        'sycl_verifier_retirement_test'],text=True).splitlines()[-1]
+        'strata'],text=True).splitlines()[-1]
     require(text.startswith(': && ') and text.endswith(' && :'),'known exact link rule required')
-    link=shlex.split(text[5:-5]);old=entry['output']
-    require(link.count(old)==1,'one exact fixture object required')
-    link[link.index(old)]=str(ROOT/'fixture.o');link[link.index('-o')+1]=str(ROOT/'fixture')
-    libraries={str((build/x).resolve()):sha((build/x).resolve()) for x in link if x.endswith('.a')}
-    require(len(libraries)==7,'seven same-build static libraries required')
+    link=shlex.split(text[5:-5])
+    programs=[x for x in link if x.startswith('CMakeFiles/strata.dir/') and x.endswith('.o')]
+    require(len(programs)==2 and all(link.count(x)==1 for x in programs),
+        'two exact engine program objects required')
+    at=link.index(programs[0]);link=[x for x in link if x not in programs]
+    link.insert(at,str(ROOT/'fixture.o'));link[link.index('-o')+1]=str(ROOT/'fixture')
+    inputs=[x for x in link if x.endswith('.a') or x in
+        ('strata_vllm_xe2_image.o','strata_vllm_xe2_host.o') or (x.startswith('/') and x.endswith('.so'))]
+    libraries={str((build/x).resolve()):sha((build/x).resolve()) for x in inputs}
+    require(sum(x.endswith('.a') for x in inputs)==9 and
+        all(x in inputs for x in ('strata_vllm_xe2_image.o','strata_vllm_xe2_host.o')),
+        'nine exact engine archives and both vllm image/host objects required')
     revision=device.original.common.source.git(P,'rev-parse','HEAD').decode().strip()
     sources={x:sha(P/x) for x in (THIS,CPP)}
     require(all(hashlib.sha256(device.original.common.source.git(P,'show',revision+':'+x)).hexdigest()==h
@@ -80,10 +87,11 @@ def prepare():
     row=dict(stage='prepared',source_commit=revision,source_files=sources,
         native_source_commit=n['native_source_commit'],engine=n['binaries']['strata'],
         native_admission=n['observer_admission'],compile_seed=dict(path=str(seed),sha256=sha(seed)),
-        static_libraries=libraries,recipe=dict(compile=compile_argv,link=link,cwd=str(build),environment=env),
-        plan='Compile only this fixture and link the seven exact97fda7ba same-build static libraries;do not overwrite/reconfigure the native engine. CPU source/native/recipe/SDK checks precede any build. Commit build evidence before fresh bounded traced smoke,numerics and separately planned clean component timing.',
+        link_inputs=libraries,recipe=dict(compile=compile_argv,link=link,cwd=str(build),environment=env),
+        plan='Compile only this fixture and link the exact97fda7ba engine archive,image-object and runtime set;do not overwrite/reconfigure the native engine. CPU source/native/recipe/SDK checks precede any build. Commit build evidence before fresh bounded traced smoke,numerics and separately planned clean component timing.',
         prospective_checks='Smoke compact M3 finite/edge;numeric compact/wide M1,3,17,33,64,127,129,640,1280 plus edge17. Exact BF16capture,independent small integer-dot oracle,<=1FP16ULP,guards,immutableinputs. No profiling queue or GPU timing markers. Later3processes x7rowshapes x4matched wall-time pairs;150mscalibration,100mseligibilityfloor,max8192repeats. Select a shape only from consistent per-process gains;no blanket minimum gain. Resident reused operands omit dequant,gather,PCIe and production dispatcher;no model advancement solely from these times.',
         retention='One current-API component fixture using the existing native generation;no new engine generation. Retire object/build output after useful compiled-input/safety/speed evidence is committed and the next production decision closes. Five existing engine/proof holds remain separate and are under source review.',
+        previous_failure=dict(key='gu_compact_component_v1',source_commit='e3b4069d086c250b05748c20eec50e058c3adcf5',evidence_commit='b56f19571',stage='failed',GPU_executed=False,reason='Verifier-only link rule omitted prefill and vllm image/host objects. V2uses the actual engine link rule;no engine rebuild or mathematical change.'),
         budget=dict(wall=300,cpu=600,rss_cap=8<<30,text_cap=32<<20,file_cap=128<<20,total_cap=512<<20),
         active=False,ownership_closed=True,passed=False,complete=False,GPU_executed=False,commands=[])
     save(row);print('Prepared current-library compact-GU fixture;commit before building.',flush=True)
