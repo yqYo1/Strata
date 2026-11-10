@@ -33,7 +33,7 @@ shared, build = comparison.shared, comparison.build
 
 def configure_baseline():
     global ROOT, KEY, READS, ORDER
-    ROOT, KEY = B / 'qsa16-stream-prefill-baseline-v1', 'qsa16_stream_prefill_baseline_v1'
+    ROOT, KEY = B / 'qsa16-stream-prefill-baseline-v2', 'qsa16_stream_prefill_baseline_v2'
     READS = (32769,)
     ORDER = [(32769, 1)]
 
@@ -41,6 +41,11 @@ def configure_baseline():
 def pins(revision):
     values = shared.pins(revision)
     values.update(build.controls(revision, controller=P / THIS))
+    # The imported Niko server now uses Control outside serve/tools. Pin its
+    # complete packages, including deferred imports; keep the failed old
+    # serve/tools-only host admission in V1 rather than refreshing its hashes.
+    values.update(source.device.common.source.pin(P,
+        ['strata_control', 'strata_cli', 'packaging', 'setup.py'])['source_sha256'])
     return values
 
 
@@ -214,7 +219,28 @@ def prepare():
     native, prior, providers, _ = basis()
     reference = json.loads(REFERENCE.read_text())
     contract, python = frontend.python_manifest()
-    source.model.previous.assets(prior, full=True)
+    previous_attempt = None
+    if len(READS) == 1:
+        old_root = B / 'qsa16-stream-prefill-baseline-v1'
+        old = json.loads((old_root / 'record.json').read_text())
+        require(build.committed(RESULT)['qsa16_stream_prefill_baseline_v1'] == compact(old)
+            and old['stage'] == 'failed' and not old['passed'] and old['ownership_closed']
+            and not old['active'] and not old['processes']
+            and old['error'] == "RuntimeError('unfrozen project import')"
+            and old['model_assets'] == prior['models'],
+            'preserve closed pre-GPU host-source failure and exact model assets')
+        recovered = source.device.common.source.git(P, 'show', old['source_commit'] + ':' + THIS)
+        require(hashlib.sha256(recovered).hexdigest() == old['sources'][THIS]
+            and b'source.model.previous.assets(prior, full=True)' in recovered,
+            'recover the exact V1 preparation that fully hashed all assets')
+        source.model.previous.assets(prior)
+        previous_attempt = dict(key='qsa16_stream_prefill_baseline_v1',
+            source_commit=old['source_commit'], receipt_sha256=digest(old_root / 'record.json'),
+            passed=False, native_execution_attempted=False,
+            model_hash_reuse='The exact recovered V1 prepare fully hashed all15assets before its CPU/mock host refusal. Every full file identity and manifest still matches;no native ran. Reuse these before-cohort hashes,not a fresh full-hash claim. Hash all15again after the V2 cohort.',
+            correction='Pin complete current Control/CLI/packaging/setup source packages in addition to serve/tools. Keep native,config,workloads,environment and all acceptance criteria unchanged.')
+    else:
+        source.model.previous.assets(prior, full=True)
     config = copy.deepcopy(reference['configuration'])
     args = list(prior['argv'][1:]); require(args.count('--serve') == 1, 'one native serve selector')
     args.remove('--serve')
@@ -251,6 +277,7 @@ def prepare():
             stopping='Stop first source,provider,owner,clock,count,route,validation,fault or finite budget failure. No retry,hash refresh,performance-based early stop or retrospective exclusion. Full15asset hashes before and after the cohort.',
             limits='Characterization only:one process per length,not a paired engine speedup,independent-process reproducibility,1000PP target qualification,sustainedTG,agent/task quality,full262144fill/RESTORE,ordinary-provider teardown or adoption. Fit by actual route only;no assumed fixed-plus-linear law.',
             retention=f'Keep all{len(READS)*RUNS}compact samples/TTFT,placement and source/native/environment/workload identity. Retire verified successful full logs/journals/cache/ownership output after extraction. Existing current native plus a347/552b imminent phase references unchanged.'))
+    if previous_attempt is not None: row['previous_attempt'] = previous_attempt
     for index, (read, heads) in enumerate(ORDER):
         root = ROOT / str(index); root.mkdir(mode=0o700)
         for part in ('tmp', 'cache'): (root / part).mkdir()
