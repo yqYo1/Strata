@@ -261479,7 +261479,21 @@
           "devcoredump": false
         },
         "passed": false,
-        "resource_observation": {}
+        "resource_observation": {},
+        "collector_cleanup": {
+          "session": "StrataPrefilla9af4f9e9310b91db9ff7908",
+          "physical_closure": {
+            "captured_identities": 4,
+            "physical_executors_gone": true,
+            "original_ownership_closed": false,
+            "original_observation_complete": false,
+            "limits": "Physical absence permits named-session cleanup only;original validation/outcome stays unchanged."
+          },
+          "source_commit": "24b8aa9e2a84eb900e2e9d78f514f3b38b9f52d7",
+          "session_removed": true,
+          "control_closed": true,
+          "active": false
+        }
       }
     ],
     "request_hashes": {
@@ -261567,7 +261581,7 @@
       }
     ],
     "post_failure_reconciliation": {
-      "stage": "physical_executors_gone_named_session_cleanup_pending",
+      "stage": "physical_executors_gone_named_session_removed",
       "cause": "Native SIGXFSZ(-25) at the exact256MiB RLIMIT_FSIZE;incomplete first request. Benchmark owner terminated/reaped its session. No model/collector coverage or observer-cost qualification.",
       "observed_native_exit_code": -25,
       "incomplete_timeline": {
@@ -261577,10 +261591,16 @@
       },
       "physical_executors_gone": true,
       "captured_identities": 4,
-      "original_ownership_result_preserved": false,
       "named_session": "StrataPrefilla9af4f9e9310b91db9ff7908",
-      "named_session_removed": false,
-      "next": "Commit this failed outcome;close only the exact abandoned collector session after fresh identity checks. Then commit a fresh prospective V2 with justified1GiB/file and new three-process bracket;never refresh V1 pins or relabel it."
+      "named_session_removed": true,
+      "next": "Prepare and commit fresh V2 with1GiB/file,1.5GiB/job,2GiBwhole and three new processes. Named session is removed;retain original failed/incomplete ownership outcome and V1source pins.",
+      "original_ownership_closed": false,
+      "cleanup_controls": {
+        "passed": true,
+        "accepted": 2,
+        "refused": 11,
+        "scope": "CPU authorization controls only;PID reuse is absence of the original,not a new owner."
+      }
     },
     "source_inputs": {
       "files": 689,
