@@ -285644,5 +285644,80 @@
       "sha256": "2e347dd51b85bc953c1b894499caafadda9ba62f1185485d97987a938e6bef0f",
       "bytes": 2683456
     }
+  },
+  "gu_compact_device_v1": {
+    "stage": "prepared",
+    "source_commit": "de3e1266397b61ab271cea0541996fe3f5b63660",
+    "controller_sha256": "4fefd2abc8766d5415cb23e07258daeb88d93bae41c73c0f4d343779350e98d2",
+    "fixture_build_key": "gu_compact_component_v2",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/gu-compact-component-v2/fixture",
+      "sha256": "2e347dd51b85bc953c1b894499caafadda9ba62f1185485d97987a938e6bef0f",
+      "bytes": 2683456
+    },
+    "native_admission": {
+      "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
+      "original_source_files": 1152,
+      "observer_source_files": 1157,
+      "observer_source_sha256": "c30c1159edb68bdfcd04bf4b10b5a32eb8c1e85e74b7d8cc552655b79b9f4b51",
+      "added_observers": {
+        "bench/sycl/gu_compact.cpp": "7972577ad91df1b0d070810fdf1044a9aa5c329a1c2939d8a2b83b6e78387fa8",
+        "tools/sycl/build_gu_compact.py": "bed3cf0d6e50b47a8ac473f584f8bcc7b3f4013196bb10195973ca1ffcbe4f79",
+        "tools/sycl/check_gu_compact.py": "4fefd2abc8766d5415cb23e07258daeb88d93bae41c73c0f4d343779350e98d2",
+        "tools/sycl/check_moe_census_model.py": "f0cc8aaf4f9488d88ce649f836f8d4ede20705fcc916ca4c0c03cd50f64a2dc8",
+        "tools/sycl/moe_host_census_model.py": "533d025775fa1c75421ea101bfe381196105d61b5154d21d59f849d620bfa67a"
+      },
+      "exact_nine_ELFs_census_recipe": true,
+      "exact_seed_recipe_sha256": "ebe2d919d6d45a62e1706f698d18f90b54fda62d54444772c5f5c7bffdbaf90b",
+      "native_recompiled": false,
+      "GPU_result_inherited": false
+    },
+    "environment_basis": "moe_host_census_device_v1",
+    "environment_sha256": "7de298490c4ca578b448e82e72b2ea9ad75880d19050237a7d2e7e657e1975db",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "plan": {
+      "order": [
+        "smoke",
+        "numerics",
+        "perf0",
+        "perf1",
+        "perf2"
+      ],
+      "commands": [
+        "--smoke",
+        "--numerics",
+        "--bench 0",
+        "--bench 1",
+        "--bench 2"
+      ],
+      "correctness": "Exact BF16 dense capture;independent integer-dot oracle for M1/3;<=1FP16ULP,NaN/saturation,guards and immutable inputs. Compact and wide numerical shapes include partial tiles.",
+      "timing": "Resident same FP16 X/W,compact separate GEMM+SwiGLU versus fused GU/SwiGLU. No profiling queue or GPU timing events. Warm8each;calibrate both >=150ms;64..8192 same repeats;4 rotated pairs each shape per process;all samples >=100ms. Three fresh processes. Reset/oracle/guards outside timing.",
+      "eligibility": "A shape is a follow-up candidate only when all three independent-process median paired fused/separate ratios are <1. No blanket minimum gain. Retain all4matched pairs and process spread. This does not advance a model route.",
+      "safety": "First smoke full UR trace and parameter validation;later parameter validation without API trace. Preserve copy-offload/direct-submission avoidance. Stop first failure;no retry/reset/foreign signalling."
+    },
+    "budget": {
+      "wall": 240,
+      "cpu": 720,
+      "rss_cap": 4294967296,
+      "text_cap": 67108864,
+      "file_cap": 67108864,
+      "total_cap": 83886080
+    },
+    "limits": "Kernel-only timing excludes GGUF dequant,gather,PCIe,production dispatch and model handoff. No model PP/TG/TTFT or default adoption claim.",
+    "retention": "Commit useful numeric summary and individual speed pairs,then retire successful API/build logs. Keep fixture only for this decision and imminent production-dispatch comparison;old native proof holds remain separate.",
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "GPU_executed": false
   }
 }
