@@ -560,13 +560,34 @@ Its fresh thinking-enabled32769/82/32769input model handoff closes at
 owners,quiet validation,no fresh fault and15final model hashes. Actual long
 prefills publish96bulk calls,384copy commands and830472192requested bytes;
 packed-bank/cache binding,MTP expert restoration and independent decode
-recapture pass. This diagnostic charges validation/logging. Clean repeated
-same-binary32K/64Koff/on`bench.sh` comparisons are next;no speedup,sustained
-decode,full-context model qualification or adoption is established. The declared
-temporary fourth engine preserves b9aa as clean-reference,552b as fast-prefill
-fallback and a347 as sustained-decode guard. At matched phase closure,select
-candidate or b9aa and retire the superseded generation after exact input
-recovery;this does not expand the normal retention quota.
+recapture pass. This diagnostic charges validation/logging. A separate clean
+`bench.sh`cohort at`f0b08ded893c9ed253322b330fd825c96234357c`now closes:
+eight fresh processes,ABBA at32769and65537inputs,three requests each.
+All24original requests have exactly24outputs and zero reuse;normal0,closed
+owners,quiet validation,unchanged boot/driver,no fresh fault and15final
+asset hashes pass. Subsequent-two process-median aggregates(off/on)are
+790.5512/827.4974PP(+4.6735%)at32Kand914.7170/970.5080(+6.0993%)at64K;
+clientTTFT is41.5905/39.74375and71.811/67.687seconds. Both independent
+pairs favor bulk at each length. First-use,individual and process spread
+remain separate in the compact result and eight CSV points. This is clean
+software-dispatch evidence,not observed bulk-command counts or physical
+traffic. Exact24is checked from every retained original sample because the
+shared runner accepts1..24;fix that gate before another cohort.
+This improvement does not locate physical saturation. The older2.217678s
+append service is not a post-bulk arithmetic cost;profile the new path before
+selecting a subgroup quantizer. Source-view mode1is already observed in all24
+requests,so crosswalk its earlier4.5512%gain before repeating it. The two-point
+adjacent slopes0.9215233/0.8523079ms pertoken(off/on)are local only. The flag
+stays default off;1000PP,sustained decode,task/agent,full262144model/RESTORE,
+ordinary-provider teardown and adoption remain open.
+The temporary fourth generation needs a concrete consumer migration before
+retirement:the current native reader hashes all11preservedELFs,including the
+five b9aa files. Preserve original records/outcomes;commit a scoped reader
+update that retains current native/recipe/five-fixture evidence,verify its
+admission,and recover original b9aa inputs before retiring the superseded
+build. Review this hold before another build/GPU campaign. Keep552bfor its
+faster117Kprefill revalidation and a347for the independent sustained-decode
+comparison;this is not a new default four-build quota.
 The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors
 are gone and its exact named collector session is separately removed. V2 used

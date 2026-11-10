@@ -52,7 +52,33 @@
         "0bf2efe3: fixed-order skinny BF16 GEMMs;upstream A750 repeatability/timing claims are not measurements on this B570",
         "db137d91: compiled model geometry;default-engine checksum claims are not this fork validation"
       ],
-      "inference_adopted": false
+      "inference_adopted": false,
+      "arc_setup_contract_followup": {
+        "state": "source_mapped_not_ported_or_runtime_qualified",
+        "upstream_hotfix": "1130d824aa1791f763d0083008bded14fc09dcb9",
+        "current_fork_source": "93d908410c15d526b855b3de0c54f9d703ea7b48",
+        "required_gaps": [
+          "setup.py sycl_setup routes to ROOT/sycl/setup_intel.py,which is absent;tools/setup_intel.py is separate and not that wired entrypoint.",
+          "strata_cli.launch.runner direct adopt.plan/adopt.write is outside tools/setup_intel.py validate_config/to_native guards."
+        ],
+        "reference": "docs/research/upstream-arc-control-setup.md",
+        "validation_pending": [
+          "Resolve entrypoint/adapter mapping.",
+          "Guard direct config replacement.",
+          "Map actual native accepted CLI flags.",
+          "Host packaged-Control dispatch observation."
+        ],
+        "changes_imported": false
+      },
+      "unmodified_arc_benchmark_readiness": {
+        "state": "source_readiness_only_not_built_or_measured",
+        "reference": "docs/research/upstream-arc-benchmark-readiness.md",
+        "remaining": [
+          "Complete benchmark helper dependency closure and target config-to-argv/MTP asset mapping.",
+          "Pin image/compiler/driver/provider and qualify existing safety settings on actual upstream queues/capture.",
+          "Run unmodified hardware-tuned long-input,agent-session and thinking-enabled sustained strong/weak-MTP workloads."
+        ]
+      }
     }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",

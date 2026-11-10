@@ -1722,11 +1722,31 @@ normal0,closed owners,quiet validation,no fresh fault and15final model hashes.
 The two long-prefills publish96bulk calls,384copy commands and830472192
 requested bytes,with packed-bank/cache-lease binding,MTP expert restoration
 and independent decode recapture checked. This diagnostic charges validation
-and logging;repeated clean same-binary32K/64Koff/on measurements remain
-pending. The flag stays default off;no speedup,full-context model qualification
-or adoption follows. Expert-copy preparation/submission is a separate candidate.
-The existing curve/profile is characterization,not a repeated
-paired gain,sustained decode,1000PPtarget qualification or adoption. See
+and logging. The separate clean same-binary comparison closes at
+`f0b08ded893c9ed253322b330fd825c96234357c`:eight fresh processes in
+32Koff/on/on/off then64Koff/on/on/off order,three thinking-on requests per
+process. All24original samples have exactly24outputs and zero reuse;all
+processes exit0with closed owners,quiet validation,no fresh fault and15final
+model hashes. Median-of-process subsequent-two PP is790.5512/827.4974at
+32769inputs(off/on,+4.6735%)and914.7170/970.5080at65537(+6.0993%).
+Corresponding clientTTFT is41.5905/39.74375and71.811/67.687seconds. Both
+independent opposite-order pairs favor bulk at each length. First requests
+stay separate:633.3361/650.3534PP at32Kand803.5971/847.9418at64K.
+Clean bulk selection is inferred from actual typed-QSA entry,immutable
+environment observed at both live gates and exact deterministic dispatch;
+per-launch command counts and physical bus traffic are not measured here.
+The shared runner accepts1..24outputs,so Main checked every retained count
+before advancing and after closure;passed alone was insufficient. Add the
+strict24gate before another cohort. The single CSV retains all eight points.
+Two-length adjacent slopes are0.9215233ms/token off and0.8523079on;they
+are local differences,not a fitted law or physical fixed-cost estimate.
+The old multi-length curve/profile remains separately scoped. Current
+source-view mode1is observed in all24requests;the old4.5512%source-view
+result must be crosswalked before any duplicate experiment. Hardware
+saturation and post-bulk append cost remain unknown. The bulk flag remains
+default off;1000PP,sustained decode,task/agent,full262144model/RESTORE and
+adoption remain open. Next measure the remaining cost on this faster path;
+expert-copy preparation/submission is a separate candidate. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
 validated552b117Kreference or adopt a production resident/cache policy.

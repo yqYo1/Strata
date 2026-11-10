@@ -42,6 +42,16 @@ qualification on this B570. No source from this new interval is imported and
 no new inference component is adopted. Its immutable source and pending review
 are recorded under `new_interval`; older unfinished scopes remain open.
 
+The follow-up [Arc setup source map](research/upstream-arc-control-setup.md)
+confirms an unfinished entrypoint: this fork's `setup.py` routes SYCL setup to
+the absent `sycl/setup_intel.py`; the separate `tools/setup_intel.py` adapter
+is not wired through that path. Its guards also do not cover the CLI launcher's
+direct `adopt.plan` / `adopt.write` config replacement. These are required
+port gaps, not completed fixes. The [unmodified Arc benchmark source map](research/upstream-arc-benchmark-readiness.md)
+records B570 build/workload prerequisites; its helper dependency closure,
+target configuration, runtime qualification and actual measurement remain open.
+These source reviews did not perform another upstream fetch or import.
+
 The current Unsloth v3.1 catalog/pinned metadata and stock DFlash2 pack are
 present. The focused v3.1 setup/pins/shard-discovery and DFlash2 packing tests
 passed77host cases with1skip; this does not qualify native v3.1 model/type
