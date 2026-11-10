@@ -281730,7 +281730,7 @@
     }
   },
   "moe_host_census_device_v1": {
-    "stage": "in_progress",
+    "stage": "closed",
     "source_commit": "38304f3c8502df27711027b855671f6c3b212dfd",
     "native_source_commit": "dc645342a8e23f8fd2d76396caa6604b2f234bd7",
     "native_record": {
@@ -282581,10 +282581,76 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      {
+        "mode": "producer-full",
+        "passed": true,
+        "complete": true,
+        "GPU_executed": true,
+        "checks": [
+          {
+            "name": "producer-0",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "validation": {
+              "pid": 3030837,
+              "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "flag": "0",
+            "physical_cells": 262144,
+            "bulk_calls": 0,
+            "accepted_copy_commands": 0,
+            "requested_D2H_bytes": 0
+          },
+          {
+            "name": "producer-1",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "validation": {
+              "pid": 3030943,
+              "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+              "threads_before": 1,
+              "preinit": 37,
+              "config_enabled": true,
+              "first_init": true,
+              "dispatch_result": 46,
+              "output_untouched": true,
+              "retained_reference_until_exit": true,
+              "runtime_teardown_qualified": false
+            },
+            "flag": "1",
+            "physical_cells": 262144,
+            "bulk_calls": 33,
+            "accepted_copy_commands": 136,
+            "requested_D2H_bytes": 276825120
+          }
+        ],
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "GPU_executed": true,
@@ -282748,6 +282814,20 @@
       },
       {
         "label": "numerical",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "producer-0",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "producer-1",
         "exit_code": 0,
         "ownership_closed": true,
         "error": null,
