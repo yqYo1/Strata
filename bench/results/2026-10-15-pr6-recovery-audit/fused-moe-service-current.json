@@ -257467,7 +257467,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "qsa16_stream_fast_curve_v1": {
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "131ce053b106df631037355fe62b0cd9eb1da79c",
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
@@ -258846,6 +258846,270 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 4,
+        "read": 98305,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-stream-model-native-v2/build/strata",
+          "sha256": "1e598e8e6f04c4bf2e65fb295fb7c9fea9d66406084d612c7d7cda8744ddf391",
+          "bytes": 26382496,
+          "origin_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c"
+        },
+        "native_source_commit": "b9aa9c4dea9ca512ed20731fc81d805a1a695c2c",
+        "native_identity": {
+          "pid": 983940,
+          "start_ticks": 263844578,
+          "sid": 983879
+        },
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 983940,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 98304,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 98304,
+            "residual_gpu_bytes": 2013265920,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 98304,
+              "residual_gpu_rows": 98304,
+              "residual_gpu_bytes": 2013265920,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 22659,
+              "fused_down_jobs": 6228,
+              "maximum_window_rows": 98304,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38107750400,
+              "requested_dequant_H2D_bytes": 188743680,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          },
+          {
+            "rows": 98304,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 98304,
+            "residual_gpu_bytes": 2013265920,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 98304,
+              "residual_gpu_rows": 98304,
+              "residual_gpu_bytes": 2013265920,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 22762,
+              "fused_down_jobs": 6228,
+              "maximum_window_rows": 98304,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38313318400,
+              "requested_dequant_H2D_bytes": 188743680,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          },
+          {
+            "rows": 98304,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 98304,
+            "residual_gpu_bytes": 2013265920,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 98304,
+              "residual_gpu_rows": 98304,
+              "residual_gpu_bytes": 2013265920,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 22658,
+              "fused_down_jobs": 6228,
+              "maximum_window_rows": 98304,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38116710400,
+              "requested_dequant_H2D_bytes": 188743680,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          },
+          {
+            "rows": 98304,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 98304,
+            "residual_gpu_bytes": 2013265920,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 98304,
+              "residual_gpu_rows": 98304,
+              "residual_gpu_bytes": 2013265920,
+              "residual_host_bytes": 0,
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "windows": 48,
+              "jobs": 22706,
+              "fused_down_jobs": 6222,
+              "maximum_window_rows": 98304,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": true,
+              "requested_bank_H2D_bytes": 38204185600,
+              "requested_dequant_H2D_bytes": 188743680,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 98305,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 113506.8,
+            "prompt_tps": 866.1,
+            "ttft_s": 113.717,
+            "total_s": 115.551,
+            "generated_tokens": 24,
+            "request_sha256": "e5e46563ce375e4bff8213b14380607ab5cc77ec8875a1c50d1c638f278c3d01",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 98305,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 103826.0,
+            "prompt_tps": 946.8,
+            "ttft_s": 104.007,
+            "total_s": 105.729,
+            "generated_tokens": 24,
+            "request_sha256": "30cf05871274654d6c2edb3b4d7abe11fee871f633d1d69290072dc8f81aa264",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 98305,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 103462.8,
+            "prompt_tps": 950.1,
+            "ttft_s": 103.641,
+            "total_s": 105.356,
+            "generated_tokens": 24,
+            "request_sha256": "bf0109ce5c2b5382f8c0939226df3cc931f8a1212fc854b8b746309a5fba05dc",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 98305,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 104015.0,
+            "prompt_tps": 945.1,
+            "ttft_s": 104.191,
+            "total_s": 105.734,
+            "generated_tokens": 24,
+            "request_sha256": "d5dd04a0f8f0a2b4901650935015a3ebfb52aa12fb90a670001f7c5afae1de59",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 103826.0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
     "request_hashes": {
@@ -258872,11 +259136,17 @@
         "7304f0523e99afd9754adf4c0849c0ddb2e41b1ecb4714fe46d8800943950c4c",
         "8454fdc3b3b122dded1764d8bddfdba67fa7df7850fb085e3aef0f67367e4890",
         "ddd01c1a495475e14c9af4c28b750ae105aa63f31c0bddb7073e3aa718783bcc"
+      ],
+      "98305": [
+        "e5e46563ce375e4bff8213b14380607ab5cc77ec8875a1c50d1c638f278c3d01",
+        "30cf05871274654d6c2edb3b4d7abe11fee871f633d1d69290072dc8f81aa264",
+        "bf0109ce5c2b5382f8c0939226df3cc931f8a1212fc854b8b746309a5fba05dc",
+        "d5dd04a0f8f0a2b4901650935015a3ebfb52aa12fb90a670001f7c5afae1de59"
       ]
     },
     "host_passed": true,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "budgets": {
@@ -258920,6 +259190,313 @@
         "passed": true
       }
     ],
+    "decision": {
+      "points": [
+        {
+          "read": 32769,
+          "first_use": {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 51448.5,
+            "prompt_tps": 636.9,
+            "ttft_s": 51.583,
+            "total_s": 53.089,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            41222.4,
+            41385.9,
+            41071.1
+          ],
+          "subsequent_TTFT_s": [
+            41.357,
+            41.624,
+            41.217
+          ],
+          "median_prompt_ms": 41222.4,
+          "median_PP": 794.9318816953889,
+          "median_TTFT_s": 41.357,
+          "residual_GPU_rows": 32768,
+          "placement": {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "window": {
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "maximum_window_rows": 32768
+            }
+          },
+          "placement_unchanged_within_process": true,
+          "route_group": "all_GPU/slots384/staged1/split0"
+        },
+        {
+          "read": 49153,
+          "first_use": {
+            "actual_read_tokens": 49153,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 66242.9,
+            "prompt_tps": 742.0,
+            "ttft_s": 66.392,
+            "total_s": 68.096,
+            "generated_tokens": 24,
+            "request_sha256": "fc59aa0cc471e4f23728fa7c63ee1708734781c33e4d79a7fbd71f6203cbbe81",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            55791.2,
+            56072.8,
+            56095.7
+          ],
+          "subsequent_TTFT_s": [
+            55.942,
+            56.218,
+            56.24
+          ],
+          "median_prompt_ms": 56072.8,
+          "median_PP": 876.592572512876,
+          "median_TTFT_s": 56.218,
+          "residual_GPU_rows": 49152,
+          "placement": {
+            "rows": 49152,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 49152,
+            "residual_gpu_bytes": 1006632960,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "window": {
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "maximum_window_rows": 49152
+            }
+          },
+          "placement_unchanged_within_process": true,
+          "route_group": "all_GPU/slots384/staged1/split0"
+        },
+        {
+          "read": 65537,
+          "first_use": {
+            "actual_read_tokens": 65537,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 81364.3,
+            "prompt_tps": 805.5,
+            "ttft_s": 81.517,
+            "total_s": 83.334,
+            "generated_tokens": 24,
+            "request_sha256": "aa6eaf3891895ac7d1fcd9f6343453d45b88ec95e8798a64c2eeffb3ef6091a7",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            71348.1,
+            71502.4,
+            71604.3
+          ],
+          "subsequent_TTFT_s": [
+            71.538,
+            71.662,
+            71.789
+          ],
+          "median_prompt_ms": 71502.4,
+          "median_PP": 916.5706325941508,
+          "median_TTFT_s": 71.662,
+          "residual_GPU_rows": 65536,
+          "placement": {
+            "rows": 65536,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 65536,
+            "residual_gpu_bytes": 1342177280,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "window": {
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "maximum_window_rows": 65536
+            }
+          },
+          "placement_unchanged_within_process": true,
+          "route_group": "all_GPU/slots384/staged1/split0"
+        },
+        {
+          "read": 81921,
+          "first_use": {
+            "actual_read_tokens": 81921,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 97719.5,
+            "prompt_tps": 838.3,
+            "ttft_s": 97.881,
+            "total_s": 99.639,
+            "generated_tokens": 24,
+            "request_sha256": "0056ad8d097014c52dc762d101698106c06c29cae9188fd96215e9d88656a9d9",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            87977.6,
+            87482.0,
+            87691.0
+          ],
+          "subsequent_TTFT_s": [
+            88.16,
+            87.652,
+            87.866
+          ],
+          "median_prompt_ms": 87691.0,
+          "median_PP": 934.2007731694245,
+          "median_TTFT_s": 87.866,
+          "residual_GPU_rows": 81920,
+          "placement": {
+            "rows": 81920,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 81920,
+            "residual_gpu_bytes": 1677721600,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "window": {
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "maximum_window_rows": 81920
+            }
+          },
+          "placement_unchanged_within_process": true,
+          "route_group": "all_GPU/slots384/staged1/split0"
+        },
+        {
+          "read": 98305,
+          "first_use": {
+            "actual_read_tokens": 98305,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 113506.8,
+            "prompt_tps": 866.1,
+            "ttft_s": 113.717,
+            "total_s": 115.551,
+            "generated_tokens": 24,
+            "request_sha256": "e5e46563ce375e4bff8213b14380607ab5cc77ec8875a1c50d1c638f278c3d01",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          "subsequent_prompt_ms": [
+            103826.0,
+            103462.8,
+            104015.0
+          ],
+          "subsequent_TTFT_s": [
+            104.007,
+            103.641,
+            104.191
+          ],
+          "median_prompt_ms": 103826.0,
+          "median_PP": 946.8244948278851,
+          "median_TTFT_s": 104.007,
+          "residual_GPU_rows": 98304,
+          "placement": {
+            "rows": 98304,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 98304,
+            "residual_gpu_bytes": 2013265920,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 340787200,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "window": {
+              "prefill_slots": 128,
+              "staged": true,
+              "split": true,
+              "maximum_window_rows": 98304
+            }
+          },
+          "placement_unchanged_within_process": true,
+          "route_group": "all_GPU/slots128/staged1/split1"
+        }
+      ],
+      "route_group_approximations": {
+        "all_GPU/slots384/staged1/split0": {
+          "affine": {
+            "intercept_ms": 9928.814959716809,
+            "ms_per_token": 0.9450402832031248,
+            "r_squared": 0.9996253083854371,
+            "max_relative_residual": 0.007897647880763622,
+            "points": [
+              {
+                "actual_read_tokens": 32769,
+                "prompt_ms": 41222.4,
+                "residual_ms": 325.5599999999904
+              },
+              {
+                "actual_read_tokens": 49153,
+                "prompt_ms": 56072.8,
+                "residual_ms": -307.58000000000175
+              },
+              {
+                "actual_read_tokens": 65537,
+                "prompt_ms": 71502.4,
+                "residual_ms": -361.5200000000041
+              },
+              {
+                "actual_read_tokens": 81921,
+                "prompt_ms": 87691.0,
+                "residual_ms": 343.54000000000815
+              }
+            ],
+            "interpretation": "Descriptive only. Check route, chunk boundaries and residuals before interpreting the intercept as fixed cost; no linearity or saturation qualification."
+          },
+          "alternatives": null,
+          "adjacent_ms_per_token": [
+            0.9063964843750001,
+            0.9417480468749995,
+            0.9880737304687504
+          ]
+        },
+        "all_GPU/slots128/staged1/split1": {
+          "affine": null,
+          "alternatives": null,
+          "adjacent_ms_per_token": []
+        }
+      },
+      "single_process_per_length": true,
+      "clean_speed": true,
+      "input_length_curve_complete": true,
+      "next": "Fit only compatible route groups using actual n and retained individual times;compare affine,nlogn and quadratic residuals/held-out errors with sample spread. Gather independent-process repeats for promising points before claiming a gain or target.",
+      "matched_speedup": false,
+      "resource_saturation_qualified": false,
+      "sustained_decode_qualified": false,
+      "physical262144_qualified": false,
+      "inference_adopted": false
+    },
     "source_inputs": {
       "files": 689,
       "sha256": "731659191d23ea86818b57460d72081bb1e809f7beef3e9e7d7381157485b392"
