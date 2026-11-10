@@ -11,11 +11,9 @@ import json
 import math
 from pathlib import Path
 import re
-import shlex
 import statistics
 import subprocess
 import sys
-import time
 sys.dont_write_bytecode = True
 import build_engine as source
 import measurement_guards as guards
@@ -23,10 +21,9 @@ import measurement_owner as owner
 import check_qsa16_stream as shared
 
 P, B = shared.P, shared.B
-ROOT = B / 'qsa-cached-subgroup-component-v1'
+ROOT = B / 'qsa-cached-subgroup-component-v2'
 RESULT = shared.RESULT
-KEY = 'qsa_cached_subgroup_component_v1'
-SEED = B / 'qsa16-bulk-mirror-model-native-v1/record.json'
+KEY = 'qsa_cached_subgroup_component_v2'
 NATIVE = ['src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
           'src/kernels/sycl/prompt_attention.cpp', 'src/kernels/sycl/qsa_bf16_prefix.cpp']
 FIXTURES = ['tests/sycl/qsa_bf16_prefix.cpp', 'tests/sycl/qsa_bf16_prefix_layout_bench.cpp']
@@ -85,99 +82,75 @@ def current(row, committed=True):
         Path('/proc/sys/kernel/random/boot_id').read_text().strip() == row['boot'], 'platform changed')
     for item in row.get('binaries', {}).values():
         require(sha(item['path']) == item['sha256'], 'fixture executable changed')
+    for group in row.get('actual_inputs', {}).values():
+        for name, expected in group.items():
+            require(sha(name) == expected, 'original actual compiler/link input changed')
 
-def allowed_inputs(row):
-    external = json.loads(Path(row['basis']['sdk']['path']).read_text())
-    census = json.loads(Path(row['basis']['census']['path']).read_text())
-    allowed = {}
-    for name, expected in {**external, **census['compiled'], **census['links']}.items():
-        if not Path(name).resolve().is_relative_to(P):
-            allowed[str(Path(name).resolve())] = expected
-    allowed.update({str((P / n).resolve()):h for n,h in row['input_sha256'].items()})
-    return allowed
+def diagnostics(errors, pid):
+    marker = re.search(r'^strata UR validation: pid=' + str(pid) + r' phase=before-main .*$', errors, re.M)
+    require(marker is not None, 'missing before-main marker')
+    expected = re.compile(r'^\s*<--- urPlatformGetApiVersion\(\.hPlatform = nullptr, '
+        r'\.pVersion = 0x[0-9a-fA-F]+ \([^\n]*\)\) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;$')
+    canaries = 0
+    for match in re.finditer(r'^.*(?:UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|terminate called).*$', errors, re.M):
+        require(match.start() < marker.start() and expected.fullmatch(match[0]) is not None,
+            'unexpected native diagnostic outside the qualified canary')
+        canaries += 1
+    require(canaries <= 1, 'duplicate canary diagnostic')
+
+def diagnostic_controls():
+    marker = 'strata UR validation: pid=123 phase=before-main checked=46\n'
+    expected = '   <--- urPlatformGetApiVersion(.hPlatform = nullptr, .pVersion = 0x1234 (-1.65535)) -> UR_RESULT_ERROR_INVALID_NULL_HANDLE;\n'
+    diagnostics(expected + marker, 123); diagnostics(marker, 123)
+    cases = [marker + expected, expected + expected + marker,
+        expected.replace('urPlatformGetApiVersion','urQueueCreate') + marker,
+        expected.replace('INVALID_NULL_HANDLE','INVALID_ARGUMENT') + marker,
+        'UR_RESULT_ERROR_UNKNOWN\n' + marker, expected]
+    for case in cases:
+        try: diagnostics(case, 123)
+        except RuntimeError: continue
+        raise RuntimeError('diagnostic refusal control unexpectedly accepted')
+    return dict(valid_controls=2, refused_controls=len(cases), passed=True)
 
 def prepare():
-    require(not ROOT.exists(), 'fresh component only; inspect previous receipt, no retry')
-    revision = source.git(P, 'rev-parse', 'HEAD').decode().strip()
-    pins = inputs(revision); native = json.loads(SEED.read_text())
-    require(native['passed'] and native['complete'] and native['ownership_closed'] and not native['active'],
-        'closed retained engine required')
-    for item in native['binaries'].values():
-        require(sha(item['path']) == item['sha256'], 'retained fallback ELF changed')
-    ROOT.mkdir(mode=0o700); (ROOT / 'tmp').mkdir(); (ROOT / 'cache').mkdir()
-    compiler = '/opt/intel/oneapi/compiler/2026.2/bin/icpx'
-    flags = ['-std=c++20', '-O3', '-DNDEBUG', '-g0', '-fsycl',
-        '-fsycl-id-queries-range=size_t', '--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13',
-        '-fno-fast-math', '-ffp-contract=off', '-DSTRATA_ENABLE_SYCL=1',
-        '-I' + str(P / 'include'), '-I' + str(P / 'include/strata/sycl/compat')]
-    commands, objects = [], []
-    for i, name in enumerate(NATIVE + FIXTURES):
-        obj = ROOT / ('input-' + str(i) + '.o'); objects.append(obj)
-        extra = (['-Dqsa_bf16_prefix_batch=qsa_bf16_prefix_cached_subgroup_batch',
-            '-DSTRATA_QSA_COMPARE_SUBGROUP=1', '-DSTRATA_QSA_PACKED_GUARD=17'] if name == FIXTURES[0]
-            else ['-DSTRATA_QSA_BENCH_CACHED_SUBGROUP=1'] if name == FIXTURES[1] else [])
-        commands.append([compiler, *flags, *extra, '-MD', '-MF', str(obj.with_suffix('.d')),
-            '-c', str(P / name), '-o', str(obj)])
-    for name, obj in [('numerical', objects[5]), ('fixture', objects[6])]:
-        commands.append([compiler, *flags, *map(str, [*objects[:5], obj]),
-            '-pthread', '-ldl', '-Wl,-t', '-o', str(ROOT / name)])
-    probe, qualification = shared.probe_qualification()
-    row = dict(stage='prepared', source_commit=revision, input_sha256=pins,
-        basis=dict(native=dict(path=str(SEED), sha256=sha(SEED)), sdk=native['external_inputs'],
-            census=native['actual_inputs']),
-        compiler={compiler:native['toolchain'][compiler]}, commands=commands,
-        native_validation_probe=probe, validation_qualification=qualification,
-        environment=dict(native['recipe']['environment'], TMPDIR=str(ROOT/'tmp'), XDG_CACHE_HOME=str(ROOT/'cache')),
-        boot=Path('/proc/sys/kernel/random/boot_id').read_text().strip(), driver=guards.driver_guard(),
-        preserved_engine=native['binary'], passed=False, complete=False, active=False, ownership_closed=True,
-        outcomes={}, GPU_executed=False,
-        plan='Commit source/recipe before build. Smoke then full numerical component,then3fresh processes with6rotated timed samples per arm at each of3existing geometries. Full entry wall includes admission,prefix pack,attention and checked drain;upload/readback/oracles outside. Each timed production-shaped sample must exceed2ms. Candidate must exactly equal the existing uncached subgroup export and pass the unchanged independent CPU BF16 operand oracle,nonfinite/domain/alias/guard/input tests. Ordered-versus-subgroup output differences are recorded,never called bit-identical or model-quality evidence. No model/decode dispatcher changes.',
-        performance_gate='All3pooled shape-median candidate/base ratios<=1 and geometric mean<1;at least2of3process medians improve for each cap2051pattern. No blanket minimum gain. Numerical/ownership/runtime/fault and timing-completeness gates must all pass before a separate prospective model plan.',
-        numerical_policy='The independent BF16 operand oracle retains its existing1BF16-ULP+2e-6 tolerance. A failure remains failed. Any framework-contract criterion revision requires source-based justification and a new committed prospective plan;no model advance from self-consistency alone.',
-        retention='One component fixture/numerical generation for this imminent comparison,beside3named retained full engines56cad9/552b/a347. No new full engine or overwrite. Commit compact useful samples,verify original source/recipe and retire unsuccessful/superseded component bytes/logs at decision closure. Physical262144model/RESTORE,task/agent,sustained TG,default adoption remain open.')
-    current(row, committed=False); save(row)
-    print('Prepared7TUs/2executables;commit exact source/recipe before build.', flush=True)
-
-def build(row):
-    require(row['stage'] == 'prepared', 'fresh prepared build only')
-    scope = shared.owned(ROOT / 'build')
-    result = dict(passed=False, complete=False)
-    actual = dict(compiled={}, links={})
-    try:
-        allow = allowed_inputs(row); deadline = time.monotonic() + 1200
-        for i, command in enumerate(row['commands']):
-            print('compile/link', i + 1, '/', len(row['commands']), flush=True)
-            entry, out, err = scope.run(str(i), command, row['environment'], P,
-                wall=min(420, max(1, deadline-time.monotonic())), cpu=900,
-                rss_cap=12<<30, text_cap=8<<20, file_cap=512<<20, total_cap=1<<30)
-            require(owner.closed(entry) and entry['exit_code'] == 0, 'compile/link failed: ' + err.read_text()[-4096:])
-            if i >= 7:
-                for line in out.read_text().splitlines():
-                    path = Path(line.strip())
-                    if path.is_absolute() and path.is_file() and not path.resolve().is_relative_to(ROOT):
-                        resolved = str(path.resolve()); h = sha(path)
-                        require(allow.get(resolved) == h, 'unfrozen external link input: ' + resolved)
-                        actual['links'][resolved] = h
-        for dep in sorted(ROOT.glob('*.d')):
-            for name in shlex.split(dep.read_text().replace('\\\n', ' ').split(':', 1)[1]):
-                path = Path(name).resolve(); h = sha(path)
-                require(allow.get(str(path)) == h, 'unfrozen actual compiler input: ' + str(path))
-                actual['compiled'][str(path)] = h
-        require(len(actual['compiled']) > 500 and len(actual['links']) >= 10, 'incomplete dependency/link census')
-        current(row)
-        row['actual_inputs'] = actual
-        row['binaries'] = {name:dict(path=str(ROOT/name), bytes=(ROOT/name).stat().st_size,
-            sha256=sha(ROOT/name)) for name in ('numerical','fixture')}
-        result.update(passed=True, complete=True)
-    except BaseException as error:
-        result['error'] = repr(error)
-    finally:
-        result['ownership_closed'] = scope.active is None and all(owner.closed(c) for c in scope.commands)
-        row.update(stage='built' if result.get('passed') else 'failed', passed=result.get('passed',False),
-            ownership_closed=result['ownership_closed'], build_outcome=result)
-        save(row)
-    require(result.get('passed'), result.get('error','build failed'))
-    print('PASS component build;GPU/model/speed remain unrun.', flush=True)
+    require(not ROOT.exists(), 'fresh V2 only; inspect existing receipt, no retry')
+    original_path = B / 'qsa-cached-subgroup-component-v1/record.json'
+    previous = json.loads(original_path.read_text())
+    public = json.loads(source.git(P, 'show', 'HEAD:' + str(RESULT.relative_to(P))))
+    require(public['qsa_cached_subgroup_component_v1'] == compact(previous),
+        'commit original failed V1 first')
+    failure = previous['outcomes']['smoke']
+    require(previous['stage']=='failed' and not previous['passed'] and previous['ownership_closed'] and
+        failure['error']=="RuntimeError('native diagnostic error')" and failure['fresh_faults']==[] and
+        failure['ownership_closed'] and len(failure['checks'])==1 and
+        failure['checks'][0]['exit_code']==0 and failure['checks'][0]['ownership_closed'],
+        'original failed controller result must remain unchanged')
+    recovered = {n:hashlib.sha256(raw).hexdigest() for n,raw in
+        source.blobs(P,previous['source_commit'],previous['input_sha256'])}
+    require(recovered==previous['input_sha256'], 'original native/controller source unrecoverable')
+    revision=source.git(P,'rev-parse','HEAD').decode().strip(); pins=inputs(revision)
+    require(set(pins)==set(recovered) and {n for n in pins if pins[n]!=recovered[n]}==
+        {'tools/sycl/qsa_cached_subgroup.py'}, 'only declared controller may change')
+    for item in previous['binaries'].values():
+        require(sha(item['path'])==item['sha256'], 'original component ELF changed')
+    for group in previous['actual_inputs'].values():
+        for name,h in group.items(): require(sha(name)==h,'original actual compiler/link input changed')
+    ROOT.mkdir(mode=0o700);(ROOT/'tmp').mkdir();(ROOT/'cache').mkdir()
+    row={k:v for k,v in previous.items() if k not in ('outcomes','error')}
+    row.update(stage='built',source_commit=revision,native_source_commit=previous['source_commit'],
+        input_sha256=pins,outcomes={},passed=True,complete=False,active=False,ownership_closed=True,
+        GPU_executed=False,diagnostic_controls=diagnostic_controls(),
+        controller_reuse=dict(original_record=dict(path=str(original_path),sha256=sha(original_path)),
+            original_failed_evidence_commit='4d5167c88d1b58ba7ff12f0881e6b1d07cd03781',
+            only_changed_input='tools/sycl/qsa_cached_subgroup.py',
+            original_native_source_recovered=True,all722compiled_and25link_inputs_unchanged=True,
+            same_two_executable_hashes_verified=True,new_native_build_or_GPU_qualification_claimed=False,
+            reason='V1 controller rejected exactly the pre-main invalid-null-handle canary,although the numerical child completed0. Keep V1 failed. V2 admits at most one exact known function/error line strictly before the checked pre-main marker,and refuses all native errors afterward. Fresh smoke/numerical/timing evidence required.'),
+        environment=dict(previous['environment'],TMPDIR=str(ROOT/'tmp'),XDG_CACHE_HOME=str(ROOT/'cache')))
+    row['basis']['original_component']=dict(path=str(original_path),sha256=sha(original_path))
+    row['plan'] += ' V2 changes only the diagnostic controller and private temp/cache paths;reuses exact original compiled native/fixture bytes7350b16d,without relabelling them as the controller source. Original V1 stays failed.'
+    current(row,committed=False);save(row)
+    print('Prepared V2 with exact original7TU/2ELF reuse and6diagnostic-refusal controls;commit before fresh smoke.',flush=True)
 
 def run(row, mode):
     prior = list(row['outcomes'])
@@ -216,8 +189,7 @@ def run(row, mode):
             result['checks'].append(check)
             require(owner.closed(entry) and entry['exit_code']==0 and 'fixture_status=PASS' in text,
                 'component failed: '+(errors+text)[-4096:])
-            require(not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|cleanup failed|terminate called',errors),
-                'native diagnostic error')
+            diagnostics(errors,entry['pid'])
             require(not (root/'validation.log').exists() or (root/'validation.log').stat().st_size==0,
                 'parameter validation warning')
             if name=='numerical':
@@ -260,11 +232,10 @@ def run(row, mode):
     require(result['passed'],result.get('error','component failed'))
 
 if __name__ == '__main__':
-    require(len(sys.argv)==2,'use prepare|build|smoke|component|perf0|perf1|perf2')
+    require(len(sys.argv)==2,'use prepare|smoke|component|perf0|perf1|perf2')
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
         if sys.argv[1]=='prepare': prepare()
         else:
             row=json.loads((ROOT/'record.json').read_text());current(row)
-            if sys.argv[1]=='build': build(row)
-            else: run(row,sys.argv[1])
+            run(row,sys.argv[1])
