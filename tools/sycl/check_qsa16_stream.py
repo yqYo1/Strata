@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build and screen the actual streamed-QSA16 producer; Main serializes commands.
+"""Build/screen streamed QSA16 and its prospective engine; Main serializes work.
 
 Repository LICENSE. Component evidence only, without a model/speed claim.
 Use the owned native build/census readers in an isolated module context.
@@ -26,6 +26,9 @@ ROOT = B / 'qsa16-stream-components-v1'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'qsa16_stream_components_v1'
 TARGET = 'sycl_native16_qsa_test'
+COMPONENT_ROOT, COMPONENT_KEY = ROOT, KEY
+MODEL_BUILD = False
+TARGETS = [TARGET]
 SEED = B / 'q6-dense-head-backing-native-v3/record.json'
 SEED_KEY = 'q6_dense_head_backing_build_v3'
 UNITS = {'tests/sycl/qsa_native16.cpp', 'src/prefill/sycl/qsa_native16.cpp',
@@ -37,7 +40,7 @@ def context():
     spec = importlib.util.spec_from_file_location('qsa16_stream_build_context', common.__file__)
     ctx = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctx)
-    ctx.ROOT, ctx.KEY, ctx.TARGETS = ROOT, KEY, [TARGET]
+    ctx.ROOT, ctx.KEY, ctx.TARGETS = ROOT, KEY, TARGETS
     return ctx
 
 
@@ -77,6 +80,41 @@ def probe_qualification():
     return v.current_runtime_probe(reference)
 
 
+def component_reference():
+    """Recover the closed producer source, never rerun its retired executable."""
+    row=json.loads((COMPONENT_ROOT/'record.json').read_text())
+    public=json.loads(common.source.git(P,'show','HEAD:'+str(RESULT.relative_to(P))))
+    require(public.get(COMPONENT_KEY)==compact(row) and row['stage']=='closed' and
+        row['passed'] and row['complete'] and row['ownership_closed'] and not row['active'],
+        'committed closed producer qualification required')
+    require(set(row['outcomes'])=={'small','full'} and
+        all(v['passed'] and v['complete'] and v['ownership_closed'] and
+            v['fresh_faults']==[] and v['boot_unchanged'] and v['host_probe_accepted']
+            for v in row['outcomes'].values()) and
+        row['outcomes']['full']['physical_cells']==262144,
+        'small and full-capacity producer evidence required')
+    retirement=row['raw_retirement']
+    require(retirement['component_build_and_ELF_removed'] and
+        sha(retirement['path'])==retirement['sha256'] and
+        not Path(row['binary']['path']).exists() and
+        sorted(p.name for p in COMPONENT_ROOT.iterdir())==['record.json','retirement.json'],
+        'retire the temporary component generation before a fresh engine')
+    original=row['project']
+    recovered={n:hashlib.sha256(raw).hexdigest() for n,raw in
+        common.source.blobs(P,original['revision'],original['source_sha256'])}
+    require(recovered==original['source_sha256'],'original producer source recovery failed')
+    common.source.git(P,'merge-base','--is-ancestor',original['revision'],'origin/feature/sycl')
+    now=common.source.pin(P,common.PREFIXES)['source_sha256']
+    require(set(now)==set(recovered) and {n for n in now if now[n]!=recovered[n]}=={
+        'tools/sycl/check_qsa16_stream.py'},
+        'only this prospective build controller may differ from the tested producer')
+    return dict(key=COMPONENT_KEY,path=str(COMPONENT_ROOT/'record.json'),
+        sha256=sha(COMPONENT_ROOT/'record.json'),native_source_commit=original['revision'],
+        source_files=len(recovered),native_and_fixture_bytes_unchanged=True,
+        source_recovered_from='pushed permanent feature/sycl',component_generation_retired=True,
+        component_only=True,model_or_attention_qualification_inherited=False)
+
+
 def current(row, *, committed=True):
     if committed:
         public=json.loads(common.source.git(P,'show','HEAD:'+str(RESULT.relative_to(P))))
@@ -99,11 +137,17 @@ def current(row, *, committed=True):
                 'existing native fallback changed')
     require(probe_qualification()==(row['native_validation_probe'],row['validation_qualification']),
             'qualified pre-main/runtime probe changed')
+    if MODEL_BUILD:
+        require(component_reference()==row['producer_component'],
+                'closed producer provenance changed')
     for p,h in (row.get('configured_files',{})|row.get('generated_inputs',{})).items():
         require(sha(p)==h,'configured/generated component input changed')
     if 'binary' in row:
         require(sha(row['binary']['path'])==row['binary']['sha256'],'component executable changed')
         require(sha(row['actual_inputs']['path'])==row['actual_inputs']['sha256'],'compiler census changed')
+    for binary in row.get('binaries',{}).values():
+        require(Path(binary['path']).stat().st_size==binary['bytes'] and
+            sha(binary['path'])==binary['sha256'],'fresh engine or same-build fixture changed')
 
 
 def prepare():
@@ -121,7 +165,7 @@ def prepare():
     recipe['configure'][recipe['configure'].index('-S')+1]=str(P)
     recipe['environment']={k:v.replace(str(old),str(ROOT)) for k,v in recipe['environment'].items()}
     recipe['environment']['STRATA_SYCL_PREFILL_QSA_STREAM']='1'
-    recipe['targets']=recipe['build_targets']=[TARGET]
+    recipe['targets']=recipe['build_targets']=TARGETS
     require(recipe['configure'][recipe['configure'].index('-B')+1]==str(ROOT/'build'),
             'fresh component build root required')
     probe,proof=probe_qualification()
@@ -142,10 +186,17 @@ def prepare():
                      full=dict(wall=180,cpu=900,rss_cap=4<<30,text_cap=16<<20,file_cap=32<<20,total_cap=64<<20)),
         commands=[],outcomes={},passed=False,complete=False,active=False,ownership_closed=True,
         model_qualified=False,physical262144_model_qualified=False,performance_qualified=False)
+    if MODEL_BUILD:
+        row['producer_component']=component_reference()
+        row['GPU_executed']=False
+        row['budgets']=dict(build=dict(wall=2400,cpu=7200,rss_cap=12<<30,
+            text_cap=32<<20,file_cap=512<<20,total_cap=4<<30))
+        row['plan']='Commit every stage. Build the full engine and four production-linked owner/submission/retirement/phase-policy fixtures with the unchanged current a347 compiler/SDK recipe. Require24compiler-census controls,at least120actual selected translation units,complete generated/compiler/link census and zero uncovered inputs. Native producer/Runtime/fixture bytes are unchanged from the closed small/262144component;no attention/model/runtime result is inherited. After build,commit a separate bounded native/actual-mode1-session plan before model execution. Preserve physical262144capacity and independent prefill/decode,RESTORE,numerical/task and matched PP/TG/TTFT gates;do not select a residency/cache budget from successful compilation.'
+        row['retention']='Temporary third engine generation for an imminent streamed-prefill comparison requiring both the a347 current-decode reference and552b fastest-prefill reference. The earlier temporary producer generation is already retired. Preserve both references without overwrite;review at first mode1 model admission and matched phase closure,then retire the rejected/superseded generation after original source recovery. Four same-build fixtures belong to this candidate,not independent generations. Existing56legacy provenance holds remain separate.'
     ROOT.mkdir(mode=0o700)
     for n in ('tmp','cache'): (ROOT/n).mkdir(mode=0o700)
     current(row,committed=False);save(row)
-    print('Prepared exact component build;commit before configure.',flush=True)
+    print('Prepared exact '+('engine' if MODEL_BUILD else 'component')+' build;commit before configure.',flush=True)
 
 
 def build(stage):
@@ -156,8 +207,8 @@ def build(stage):
         if stage=='configure':
             commands=[('host-controls',['/usr/bin/python3','-B','-m','unittest','tools.sycl.test_compile_census','-v']),
                 ('configure',row['recipe']['configure']),
-                ('planned',['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','commands',TARGET])]
-        else: commands=[('compile',['/usr/bin/cmake','--build',str(ROOT/'build'),'--target',TARGET,'-j','2']),
+                ('planned',['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','commands',*TARGETS])]
+        else: commands=[('compile',['/usr/bin/cmake','--build',str(ROOT/'build'),'--target',*TARGETS,'-j','2']),
                 ('dependencies',['/usr/bin/ninja','-C',str(ROOT/'build'),'-t','deps'])]
         for label,command in commands:
             current(frozen)
@@ -173,8 +224,15 @@ def build(stage):
         ctx=context()
         if stage=='configure':
             planned=ctx.planned_compilation(outputs['planned'].read_text())
-            require({v['file'] for v in planned}=={str(P/n) for n in UNITS} and len(planned)==5,
-                    'exact five-TU component build required')
+            units={v['file'] for v in planned}
+            if MODEL_BUILD:
+                required={'src/program/generate.cpp','src/prefill/prefill.cpp',
+                          'src/prefill/sycl/qsa_native16.cpp','src/sycl/runtime.cpp'}
+                require(len(planned)>=120 and {str(P/n) for n in required}<=units,
+                        'complete selected engine/producer/Runtime compilation required')
+            else:
+                require(units=={str(P/n) for n in UNITS} and len(planned)==5,
+                        'exact five-TU component build required')
             row['planned_compilation']=planned;row['planned_translation_units']=sorted(v['file'] for v in planned)
             row['generated_inputs']={str(p.resolve()):sha(p) for p in (ROOT/'build').rglob('*')
                 if p.is_file() and p.suffix in ('.h','.hpp','.c','.cpp','.cxx','.inc')}
@@ -182,11 +240,17 @@ def build(stage):
             paths += sorted((ROOT/'build/CMakeFiles').glob('*.ninja'))+[outputs['planned']]
             row['configured_files']={str(p.resolve()):sha(p) for p in paths};row['stage']='configured'
         else:
-            row['actual_inputs']=ctx.census(row,outputs['dependencies'],outputs['compile'],minimum_translation_units=5)
-            binary=ROOT/'build'/TARGET
+            row['actual_inputs']=ctx.census(row,outputs['dependencies'],outputs['compile'],
+                minimum_translation_units=120 if MODEL_BUILD else 5)
+            if MODEL_BUILD:
+                row['binaries']={name:dict(path=str(ROOT/'build'/name),
+                    sha256=sha(ROOT/'build'/name),bytes=(ROOT/'build'/name).stat().st_size,
+                    origin_source_commit=row['native_source_commit']) for name in TARGETS}
+            binary=ROOT/'build'/('strata' if MODEL_BUILD else TARGET)
             row['binary']=dict(path=str(binary),sha256=sha(binary),bytes=binary.stat().st_size,
                                origin_source_commit=row['native_source_commit'])
             row.update(stage='built',passed=True)
+            if MODEL_BUILD:row['complete']=True
         current(frozen)
     except BaseException as error:row.update(stage='failed',passed=False,error=repr(error))
     finally:
@@ -239,10 +303,17 @@ def screen(mode):
 
 
 if __name__=='__main__':
-    require(sys.argv[1:] in ([s] for s in ('prepare','configure','compile','small','full')),
-            'check_qsa16_stream.py prepare|configure|compile|small|full')
+    actions=('prepare','configure','compile','small','full',
+             'engine-prepare','engine-configure','engine-compile')
+    require(sys.argv[1:] in ([s] for s in actions),'check_qsa16_stream.py '+ '|'.join(actions))
+    action=sys.argv[1]
+    if action.startswith('engine-'):
+        MODEL_BUILD=True;action=action.removeprefix('engine-')
+        ROOT=B/'qsa16-stream-model-native-v1';KEY='qsa16_stream_model_native_v1'
+        TARGETS=['strata','sycl_q6_head_owner_test','sycl_submission_test',
+                 'sycl_verifier_retirement_test','sycl_verify_window_policy_test']
     with (B/'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB);guards.no_model_owners([])
-        if sys.argv[1]=='prepare':prepare()
-        elif sys.argv[1] in ('configure','compile'):build(sys.argv[1])
-        else:screen(sys.argv[1])
+        if action=='prepare':prepare()
+        elif action in ('configure','compile'):build(action)
+        else:screen(action)

@@ -250,8 +250,8 @@ capacity and its full-fill/tail/RESTORE/handoff requirements in the proposed
 residency experiment; do not reduce logical capacity to manufacture headroom.
 
 The compiled native221e QSA16 preflight rejects mode1 main KV before request
-submission. The isolated `experiment/qsa16-streamed-prefill` source now adds
-an opt-in `STRATA_SYCL_PREFILL_QSA_STREAM=1` route alongside the existing
+submission. The new source adds an opt-in `STRATA_SYCL_PREFILL_QSA_STREAM=1`
+route alongside the existing
 native16/QSA selectors. Default mode0 retains its original producer. The new
 producer quantizes BF16 K/V once on the GPU, publishing the same INT8 codes
 and FP16 scales to registered Host storage, full-logical-range Device staging
@@ -304,6 +304,13 @@ current full-engine source basis remains native221e95e9ad890383deb418d0a865ee32c
 The unchanged `expert_slot_sizes.hpp`, `expert_cache.cpp`, `layer.cpp` and
 `session.cpp` supply the capacity arithmetic above. The new QSA16 prefill route
 remains unqualified until the separate attention/model gates close.
+Source and component evidence are merged into the pushed permanent
+`feature/sycl` at `340ea79f9fe0914383643efaf0148da4fd5e4b19`. Every original
+measured child commit remains reachable there;the completed
+`experiment/qsa16-streamed-prefill` remote/local branch and worktree are removed.
+The prospective `check_qsa16_stream.py engine-*` build reuses the a347
+compiler/SDK recipe,requires exact original producer/Runtime/fixture bytes
+and a complete full-engine census,and inherits no model qualification.
 
 ## Numerical reference for replacement kernels
 
