@@ -546,7 +546,9 @@ int main(int argc,char** argv) try {
     norm_case(runtime, 1, 24, 0, -128);
     for (int T : {1, 3, 17}) gate_case(runtime, T);
     append_case(runtime);
-    streamed_case(runtime,3);streamed_case(runtime,15);
+    // Cover every partial-page offset: trailing-only, both ends, leading-only,
+    // and the final logical page. The oracle also checks untouched neighbours.
+    for (int pos0 : {0,1,2,3,15}) streamed_case(runtime,pos0);
     runtime->wait();
     std::cout << "QSA16 local component screen PASS; attention/model/physical262144/RESTORE/performance unqualified\n";
     return 0;
