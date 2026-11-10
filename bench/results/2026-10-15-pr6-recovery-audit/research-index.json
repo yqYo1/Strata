@@ -28030,10 +28030,6 @@
     "terminal": "term_5e7dabd3-f6ea-41c7-ac62-a580ed51a9cf",
     "worker_bound_IPC_preflight_passed": true,
     "ownership_closed": true,
-    "ownership": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-20261110/owned-launch.json",
-      "sha256": "38a7ed14aec4b640fa04793a8db3a4d0bd26472f934e690065ad9d58f51ad526"
-    },
     "main_has_read_report_body": false,
     "report": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-20261110/report.md",
@@ -28044,11 +28040,6 @@
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
       "state": "completed",
-      "review": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-review-20261110/review.md",
-        "bytes": 3474,
-        "sha256": "a4acf52251c3a5062d9eaf643a2a7904c67e92436af14bedf6dcb4974dad7a6c"
-      },
       "digest": {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-review-20261110/digest.json",
         "bytes": 2514,
@@ -28057,14 +28048,47 @@
       "source_hashes_verified": 14,
       "corrections": "Generic FP64 vs native FP32 remains source-only. fmax single-NaN wording,stale CUDA comment,generic pointer/test-coverage limits corrected;native router provenance is MIT llama.cpp3cf03257,not XeStrata."
     },
-    "retention": "R3 target-production-contract review consumes this report and native digest. Preserve those two until R3 curation;retire closed private CLI/transactions after useful evidence is committed. Main has not read report body.",
-    "retrieval_question": "For a concrete router precision or dispatch proposal, does the actual model's route preserve the SGLang/vLLM producer-rounding, normalization, tie-order and phase-selection contract?"
+    "retention": "Keep only report/source pins/spec and native digest for the immediately eligible exact SGLang/vLLM production-router trace;review again at that follow-up curation. Private CLI/transactions/full review physically retired;Main has not read report body.",
+    "retrieval_question": "For a concrete router precision or dispatch proposal, does the actual model's route preserve the SGLang/vLLM producer-rounding, normalization, tie-order and phase-selection contract?",
+    "output_retirement": {
+      "manifests": [
+        {
+          "manifest": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-20261110/retirement.json",
+            "bytes": 161491,
+            "sha256": "e3a379ae767bb158c02734414ff2de419e02fffa1c106f58b52ee61b6f09660b"
+          },
+          "files": 429,
+          "bytes": 105962637,
+          "symlinks": 4,
+          "preserved": [
+            "report.md",
+            "source.json",
+            "task-spec.md"
+          ]
+        },
+        {
+          "manifest": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/moe-router-execution-contract-review-20261110/retirement.json",
+            "bytes": 1149,
+            "sha256": "2170d250bead99f2f5829fc35a552c49204bcb0dfd295df2b072afdff9c95c03"
+          },
+          "files": 2,
+          "bytes": 5799,
+          "symlinks": 0,
+          "preserved": [
+            "digest.json"
+          ]
+        }
+      ],
+      "decision": "Closed transaction/CLI output physically retired;retained report/pins/spec and short native digest have a named immediate follow-up consumer."
+    }
   },
   "target_router_production_contract_20261110": {
     "classification": "knowledge_collection",
     "model": "gpt-6-luna",
     "reasoning_effort": "medium",
-    "stage": "report_and_executors_closed_native_review_running",
+    "stage": "partial_collection_reviewed_exact_production_traces_pending",
     "schedulable_now": false,
     "source_commit": "cb1151b7473189de78173ac148e04fe92a431a6c",
     "source_files": 15,
@@ -28074,11 +28098,6 @@
     "terminal": "term_31c7ebd7-1566-4e7c-8da3-bbc5229a8924",
     "worker_bound_IPC_preflight_passed": true,
     "ownership_closed": true,
-    "ownership": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-router-production-contract-20261110/owned-launch.json",
-      "bytes": 1141,
-      "sha256": "987dd9278547bdde15a97963e74ff65d0b6e4069531a192aac8be021341dc1c5"
-    },
     "report": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-router-production-contract-20261110/report.md",
       "bytes": 10023,
@@ -28088,10 +28107,59 @@
     "native_review": {
       "model": "gpt-6-luna",
       "reasoning_effort": "max",
-      "state": "running",
-      "task": "/root/review_target_router_contract_20261110"
+      "state": "completed",
+      "digest": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-router-production-contract-review-20261110/digest.json",
+        "bytes": 2297,
+        "sha256": "0a66ee368f08b8efb53d9e0a7820e5ed4a65e022caf548e45bf860092fdcfcf4"
+      },
+      "source_hashes_verified": 15,
+      "limits": "Useful partial reconnaissance; incomplete against the actual SGLang/vLLM router comparison. No implementation adoption."
     },
     "limits": "Orca task/dispatch completed,capability revoked,failure_count0;all4 original executor identities gone. Source/model-header knowledge only;no GPU,runtime numerical,resource saturation,speed or adoption evidence.",
-    "retention": "Native review decides unique reusable contract findings. Keep report,pins and R2 report/digest until review;retire closed CLI/transaction output afterward. Main reads only short native digest."
+    "retention": "Keep partial report/source pins/spec and native short digest for immediate eligible exact production-source trace;review at its curation. Full review/private CLI/transactions physically retired;Main has not read original report body.",
+    "recommended_scopes": [
+      {
+        "name": "Finish exact SGLang and vLLM Qwen4Exp router source traces",
+        "classification": "knowledge_collection",
+        "schedulable_now": true,
+        "evidence": "Immutable SGLang/vLLM pins and exact target GGUF header identity are recorded; exact vLLM package path is confirmed and rejects XPU. No profile or model weights are needed.",
+        "scope": "Trace model/config through selected router helper/kernel for prefill and decode in SGLang and vLLM; compare only source-proven producer dtype, normalization, tie/order, scaling and dispatch. Mark unresolved items unknown; no runtime, tensor, performance, bottleneck, or adoption claims."
+      }
+    ],
+    "corrections": "vLLM pinned Qwen4Exp package exists and rejects XPU/TPU;trace inherited Qwen3Next helper before claiming router math. SGLang route remains untraced. FP32 logits[0,-1e-8]remain distinct;probability storage may tie. No runtime/performance/adoption evidence.",
+    "output_retirement": {
+      "manifests": [
+        {
+          "manifest": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-router-production-contract-20261110/retirement.json",
+            "bytes": 162977,
+            "sha256": "ed4443efec944b8a5b81005669f35981af35f10632878c814f4078a03d54d507"
+          },
+          "files": 428,
+          "bytes": 109595218,
+          "symlinks": 4,
+          "preserved": [
+            "report.md",
+            "source.json",
+            "task-spec.md"
+          ]
+        },
+        {
+          "manifest": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/target-router-production-contract-review-20261110/retirement.json",
+            "bytes": 895,
+            "sha256": "ff1d7d26a0255973bbb22c4a0a290478f3ff9abb452d1486068e56530e2d5605"
+          },
+          "files": 1,
+          "bytes": 5199,
+          "symlinks": 0,
+          "preserved": [
+            "digest.json"
+          ]
+        }
+      ],
+      "decision": "Closed transaction/CLI output physically retired;retained report/pins/spec and short native digest have a named immediate follow-up consumer."
+    }
   }
 }
