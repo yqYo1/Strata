@@ -269433,6 +269433,1526 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 1,
+        "read": 32769,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-model-native-v1/build/strata",
+          "sha256": "56cad9eb45f8f5fc9158eef968504424ac83a47e75cef7ad1bfa1ea8c436a93d",
+          "bytes": 26401120,
+          "origin_source_commit": "611a0fd6fecc4593e17160c294103cd4464a292b"
+        },
+        "native_source_commit": "611a0fd6fecc4593e17160c294103cd4464a292b",
+        "native_identity": {
+          "pid": 2036708,
+          "start_ticks": 266643550,
+          "sid": 2036649
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2036708,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 32768,
+              "residual_gpu_rows": 32768,
+              "residual_gpu_bytes": 671088640,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 18228,
+              "fused_down_jobs": 2084,
+              "maximum_window_rows": 32768,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 35386649600,
+              "requested_dequant_H2D_bytes": 62914560,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "bulk_mirror": 1,
+            "selector_evidence": "Actual typed-QSA entry plus immutable pre-exec bulk flag checked at both live gates;exact recovered production dispatch.",
+            "actual_bulk_command_count_measured": false,
+            "cpu_partition": {
+              "version": 4,
+              "wait": {
+                "version": "4",
+                "available": "1",
+                "complete": "1",
+                "clock_or_accounting_error": "0",
+                "open_waits": "0",
+                "wait_throws": "0",
+                "wall_s": "55.644899090",
+                "main_cpu_s": "45.025676438",
+                "wait_cpu_s": "19.848503639",
+                "wait_wall_s": "19.914946606",
+                "outside_wait_cpu_s": "25.177172799",
+                "wait_count": "992",
+                "compute_count": "11",
+                "transfer_count": "11",
+                "event_count": "2",
+                "compat_count": "968",
+                "direct_count": "0",
+                "compute_cpu_s": "0.000015129",
+                "transfer_cpu_s": "0.000168286",
+                "event_cpu_s": "0.023811851",
+                "compat_cpu_s": "19.824508373",
+                "direct_cpu_s": "0.000000000",
+                "compute_wall_s": "0.000014975",
+                "transfer_wall_s": "0.000167844",
+                "event_wall_s": "0.025861851",
+                "compat_wall_s": "19.888901935",
+                "direct_wall_s": "0.000000000"
+              },
+              "host": {
+                "version": "4",
+                "available": "1",
+                "open_regions": "0",
+                "unclassified_cpu_s": "7.989149011",
+                "unclassified_wall_s": "17.905849355",
+                "source_copy_count": "48",
+                "source_copy_throws": "0",
+                "source_copy_cpu_s": "0.000039256",
+                "source_copy_wall_s": "0.000044164",
+                "source_copy_outside_wait_cpu_s": "0.000039256",
+                "source_copy_outside_wait_wall_s": "0.000044164",
+                "host_group_count": "48",
+                "host_group_throws": "0",
+                "host_group_cpu_s": "0.075077882",
+                "host_group_wall_s": "0.075359949",
+                "host_group_outside_wait_cpu_s": "0.075077882",
+                "host_group_outside_wait_wall_s": "0.075359949",
+                "gemm_submit_count": "41180",
+                "gemm_submit_throws": "0",
+                "gemm_submit_cpu_s": "3.675363584",
+                "gemm_submit_wall_s": "3.857902824",
+                "gemm_submit_outside_wait_cpu_s": "3.675363584",
+                "gemm_submit_outside_wait_wall_s": "3.857902824",
+                "route_exchange_count": "0",
+                "route_exchange_throws": "0",
+                "route_exchange_cpu_s": "0.000000000",
+                "route_exchange_wall_s": "0.000000000",
+                "route_exchange_outside_wait_cpu_s": "0.000000000",
+                "route_exchange_outside_wait_wall_s": "0.000000000",
+                "upload_submit_count": "17366",
+                "upload_submit_throws": "0",
+                "upload_submit_cpu_s": "4.535050108",
+                "upload_submit_wall_s": "4.632525213",
+                "upload_submit_outside_wait_cpu_s": "4.535050108",
+                "upload_submit_outside_wait_wall_s": "4.632525213",
+                "residual_input_host_count": "0",
+                "residual_input_host_throws": "0",
+                "residual_input_host_cpu_s": "0.000000000",
+                "residual_input_host_wall_s": "0.000000000",
+                "residual_input_host_outside_wait_cpu_s": "0.000000000",
+                "residual_input_host_outside_wait_wall_s": "0.000000000",
+                "residual_input_device_count": "188",
+                "residual_input_device_throws": "0",
+                "residual_input_device_cpu_s": "0.026882250",
+                "residual_input_device_wall_s": "0.028035484",
+                "residual_input_device_outside_wait_cpu_s": "0.026882250",
+                "residual_input_device_outside_wait_wall_s": "0.028035484",
+                "residual_store_host_count": "0",
+                "residual_store_host_throws": "0",
+                "residual_store_host_cpu_s": "0.000000000",
+                "residual_store_host_wall_s": "0.000000000",
+                "residual_store_host_outside_wait_cpu_s": "0.000000000",
+                "residual_store_host_outside_wait_wall_s": "0.000000000",
+                "residual_store_device_count": "0",
+                "residual_store_device_throws": "0",
+                "residual_store_device_cpu_s": "0.000000000",
+                "residual_store_device_wall_s": "0.000000000",
+                "residual_store_device_outside_wait_cpu_s": "0.000000000",
+                "residual_store_device_outside_wait_wall_s": "0.000000000",
+                "moe_map_upload_count": "48",
+                "moe_map_upload_throws": "0",
+                "moe_map_upload_cpu_s": "0.016875905",
+                "moe_map_upload_wall_s": "0.017332172",
+                "moe_map_upload_outside_wait_cpu_s": "0.016875905",
+                "moe_map_upload_outside_wait_wall_s": "0.017332172",
+                "moe_job_weights_count": "48",
+                "moe_job_weights_throws": "0",
+                "moe_job_weights_cpu_s": "0.005284550",
+                "moe_job_weights_wall_s": "0.005524279",
+                "moe_job_weights_outside_wait_cpu_s": "0.005284550",
+                "moe_job_weights_outside_wait_wall_s": "0.005524279",
+                "moe_dequant_gu_count": "17318",
+                "moe_dequant_gu_throws": "0",
+                "moe_dequant_gu_cpu_s": "1.500387159",
+                "moe_dequant_gu_wall_s": "1.572404779",
+                "moe_dequant_gu_outside_wait_cpu_s": "1.500387159",
+                "moe_dequant_gu_outside_wait_wall_s": "1.572404779",
+                "moe_dequant_down_count": "17318",
+                "moe_dequant_down_throws": "0",
+                "moe_dequant_down_cpu_s": "1.430404858",
+                "moe_dequant_down_wall_s": "1.497865023",
+                "moe_dequant_down_outside_wait_cpu_s": "1.430404858",
+                "moe_dequant_down_outside_wait_wall_s": "1.497865023",
+                "moe_gather_count": "18228",
+                "moe_gather_throws": "0",
+                "moe_gather_cpu_s": "1.528761719",
+                "moe_gather_wall_s": "1.601932110",
+                "moe_gather_outside_wait_cpu_s": "1.528761719",
+                "moe_gather_outside_wait_wall_s": "1.601932110",
+                "moe_swiglu_count": "16144",
+                "moe_swiglu_throws": "0",
+                "moe_swiglu_cpu_s": "1.372751097",
+                "moe_swiglu_wall_s": "1.444891723",
+                "moe_swiglu_outside_wait_cpu_s": "1.372751097",
+                "moe_swiglu_outside_wait_wall_s": "1.444891723",
+                "moe_accumulate_count": "16144",
+                "moe_accumulate_throws": "0",
+                "moe_accumulate_cpu_s": "1.360543553",
+                "moe_accumulate_wall_s": "1.424863862",
+                "moe_accumulate_outside_wait_cpu_s": "1.360543553",
+                "moe_accumulate_outside_wait_wall_s": "1.424863862",
+                "moe_status_count": "48",
+                "moe_status_throws": "0",
+                "moe_status_cpu_s": "3.569622496",
+                "moe_status_wall_s": "3.581542314",
+                "moe_status_outside_wait_cpu_s": "1.660601867",
+                "moe_status_outside_wait_wall_s": "1.665421548"
+              },
+              "partition_qualified": true
+            },
+            "status_partition": {
+              "scopes": 48,
+              "complete": true,
+              "cpu_s": 3.569807496,
+              "wall_s": 3.581727954,
+              "unclassified_cpu_s": 0.000545985,
+              "unclassified_wall_s": 0.000567422,
+              "parts": [
+                {
+                  "name": "tag",
+                  "calls": 48,
+                  "cpu_s": 2.9146e-05,
+                  "wall_s": 3.0152e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 2.9146e-05,
+                  "outside_known_wait_wall_s": 3.0152e-05
+                },
+                {
+                  "name": "precheck",
+                  "calls": 96,
+                  "cpu_s": 8.5583e-05,
+                  "wall_s": 8.6622e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 8.5583e-05,
+                  "outside_known_wait_wall_s": 8.6622e-05
+                },
+                {
+                  "name": "queue_context",
+                  "calls": 96,
+                  "cpu_s": 8.4779e-05,
+                  "wall_s": 8.3924e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 8.4779e-05,
+                  "outside_known_wait_wall_s": 8.3924e-05
+                },
+                {
+                  "name": "enqueue",
+                  "calls": 48,
+                  "cpu_s": 1.659787721,
+                  "wall_s": 1.664557611,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 1.659787721,
+                  "outside_known_wait_wall_s": 1.664557611
+                },
+                {
+                  "name": "observer",
+                  "calls": 48,
+                  "cpu_s": 3.1949e-05,
+                  "wall_s": 3.364e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 3.1949e-05,
+                  "outside_known_wait_wall_s": 3.364e-05
+                },
+                {
+                  "name": "drain",
+                  "calls": 48,
+                  "cpu_s": 1.909119473,
+                  "wall_s": 1.916245629,
+                  "known_wait_cpu_s": 1.909020629,
+                  "known_wait_wall_s": 1.916120766,
+                  "outside_known_wait_cpu_s": 9.884400000004234e-05,
+                  "outside_known_wait_wall_s": 0.0001248630000001416
+                },
+                {
+                  "name": "postcheck",
+                  "calls": 48,
+                  "cpu_s": 5.6879e-05,
+                  "wall_s": 5.6048e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 5.6879e-05,
+                  "outside_known_wait_wall_s": 5.6048e-05
+                },
+                {
+                  "name": "after_drain",
+                  "calls": 48,
+                  "cpu_s": 3.3711e-05,
+                  "wall_s": 3.4219e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 3.3711e-05,
+                  "outside_known_wait_wall_s": 3.4219e-05
+                },
+                {
+                  "name": "branch",
+                  "calls": 48,
+                  "cpu_s": 3.227e-05,
+                  "wall_s": 3.2687e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 3.227e-05,
+                  "outside_known_wait_wall_s": 3.2687e-05
+                }
+              ],
+              "limits": "Enqueue includes the called wrapper/runtime and possible internal waits;outside known waits does not prove CPU arithmetic. This partition is nested within the main CPU partition."
+            }
+          },
+          {
+            "rows": 32768,
+            "actual_chunk": 8192,
+            "residual_dtype": "bf16",
+            "residual_gpu_rows": 32768,
+            "residual_gpu_bytes": 671088640,
+            "residual_host_bytes": 0,
+            "layer_cache_bytes": 1022361600,
+            "actual_typed_QSA": true,
+            "configured_context": 262144,
+            "configured_resident": 20480,
+            "owned_stage": true,
+            "stage_payload_bytes": 276824064,
+            "target_requested_D2H": 521472000,
+            "target_requested_H2D_restore": 521472000,
+            "draft_requested_D2H": 0,
+            "scope": "Actual per-request placement headers and handoff extents,with pinned production state policy. No per-launch telemetry,physical bus traffic or saturation claim.",
+            "fast_window": {
+              "rows": 32768,
+              "residual_gpu_rows": 32768,
+              "residual_gpu_bytes": 671088640,
+              "residual_host_bytes": 0,
+              "prefill_slots": 384,
+              "staged": true,
+              "split": false,
+              "windows": 48,
+              "jobs": 18275,
+              "fused_down_jobs": 2083,
+              "maximum_window_rows": 32768,
+              "staged_bank_checked_drain": true,
+              "split_guard_checked": false,
+              "requested_bank_H2D_bytes": 35492889600,
+              "requested_dequant_H2D_bytes": 62914560,
+              "target_snapshot_bytes": 521472000,
+              "draft_rebuilt_bytes": 0,
+              "physical_saturation_qualified": false,
+              "head_payload_bytes_verified": false
+            },
+            "MTP_expert_restore_bytes": 707788800,
+            "bulk_mirror": 1,
+            "selector_evidence": "Actual typed-QSA entry plus immutable pre-exec bulk flag checked at both live gates;exact recovered production dispatch.",
+            "actual_bulk_command_count_measured": false,
+            "cpu_partition": {
+              "version": 4,
+              "wait": {
+                "version": "4",
+                "available": "1",
+                "complete": "1",
+                "clock_or_accounting_error": "0",
+                "open_waits": "0",
+                "wait_throws": "0",
+                "wall_s": "41.224497652",
+                "main_cpu_s": "40.418700024",
+                "wait_cpu_s": "19.901050314",
+                "wait_wall_s": "19.993214601",
+                "outside_wait_cpu_s": "20.517649710",
+                "wait_count": "993",
+                "compute_count": "11",
+                "transfer_count": "11",
+                "event_count": "3",
+                "compat_count": "968",
+                "direct_count": "0",
+                "compute_cpu_s": "0.000014204",
+                "transfer_cpu_s": "0.000013915",
+                "event_cpu_s": "0.039940846",
+                "compat_cpu_s": "19.861081349",
+                "direct_cpu_s": "0.000000000",
+                "compute_wall_s": "0.000014125",
+                "transfer_wall_s": "0.000013715",
+                "event_wall_s": "0.040316256",
+                "compat_wall_s": "19.952870505",
+                "direct_wall_s": "0.000000000"
+              },
+              "host": {
+                "version": "4",
+                "available": "1",
+                "open_regions": "0",
+                "unclassified_cpu_s": "2.927705186",
+                "unclassified_wall_s": "3.052157087",
+                "source_copy_count": "48",
+                "source_copy_throws": "0",
+                "source_copy_cpu_s": "0.000043765",
+                "source_copy_wall_s": "0.000045665",
+                "source_copy_outside_wait_cpu_s": "0.000043765",
+                "source_copy_outside_wait_wall_s": "0.000045665",
+                "host_group_count": "48",
+                "host_group_throws": "0",
+                "host_group_cpu_s": "0.075581885",
+                "host_group_wall_s": "0.075586814",
+                "host_group_outside_wait_cpu_s": "0.075581885",
+                "host_group_outside_wait_wall_s": "0.075586814",
+                "gemm_submit_count": "41274",
+                "gemm_submit_throws": "0",
+                "gemm_submit_cpu_s": "3.669523638",
+                "gemm_submit_wall_s": "3.833962524",
+                "gemm_submit_outside_wait_cpu_s": "3.669523638",
+                "gemm_submit_outside_wait_wall_s": "3.833962524",
+                "route_exchange_count": "0",
+                "route_exchange_throws": "0",
+                "route_exchange_cpu_s": "0.000000000",
+                "route_exchange_wall_s": "0.000000000",
+                "route_exchange_outside_wait_cpu_s": "0.000000000",
+                "route_exchange_outside_wait_wall_s": "0.000000000",
+                "upload_submit_count": "17413",
+                "upload_submit_throws": "0",
+                "upload_submit_cpu_s": "4.677668952",
+                "upload_submit_wall_s": "4.769164266",
+                "upload_submit_outside_wait_cpu_s": "4.677668952",
+                "upload_submit_outside_wait_wall_s": "4.769164266",
+                "residual_input_host_count": "0",
+                "residual_input_host_throws": "0",
+                "residual_input_host_cpu_s": "0.000000000",
+                "residual_input_host_wall_s": "0.000000000",
+                "residual_input_host_outside_wait_cpu_s": "0.000000000",
+                "residual_input_host_outside_wait_wall_s": "0.000000000",
+                "residual_input_device_count": "188",
+                "residual_input_device_throws": "0",
+                "residual_input_device_cpu_s": "0.026979282",
+                "residual_input_device_wall_s": "0.028001392",
+                "residual_input_device_outside_wait_cpu_s": "0.026979282",
+                "residual_input_device_outside_wait_wall_s": "0.028001392",
+                "residual_store_host_count": "0",
+                "residual_store_host_throws": "0",
+                "residual_store_host_cpu_s": "0.000000000",
+                "residual_store_host_wall_s": "0.000000000",
+                "residual_store_host_outside_wait_cpu_s": "0.000000000",
+                "residual_store_host_outside_wait_wall_s": "0.000000000",
+                "residual_store_device_count": "0",
+                "residual_store_device_throws": "0",
+                "residual_store_device_cpu_s": "0.000000000",
+                "residual_store_device_wall_s": "0.000000000",
+                "residual_store_device_outside_wait_cpu_s": "0.000000000",
+                "residual_store_device_outside_wait_wall_s": "0.000000000",
+                "moe_map_upload_count": "48",
+                "moe_map_upload_throws": "0",
+                "moe_map_upload_cpu_s": "0.015652890",
+                "moe_map_upload_wall_s": "0.016137970",
+                "moe_map_upload_outside_wait_cpu_s": "0.015652890",
+                "moe_map_upload_outside_wait_wall_s": "0.016137970",
+                "moe_job_weights_count": "48",
+                "moe_job_weights_throws": "0",
+                "moe_job_weights_cpu_s": "0.004306830",
+                "moe_job_weights_wall_s": "0.004485513",
+                "moe_job_weights_outside_wait_cpu_s": "0.004306830",
+                "moe_job_weights_outside_wait_wall_s": "0.004485513",
+                "moe_dequant_gu_count": "17365",
+                "moe_dequant_gu_throws": "0",
+                "moe_dequant_gu_cpu_s": "1.604933001",
+                "moe_dequant_gu_wall_s": "1.672377866",
+                "moe_dequant_gu_outside_wait_cpu_s": "1.604933001",
+                "moe_dequant_gu_outside_wait_wall_s": "1.672377866",
+                "moe_dequant_down_count": "17365",
+                "moe_dequant_down_throws": "0",
+                "moe_dequant_down_cpu_s": "1.504720451",
+                "moe_dequant_down_wall_s": "1.570236803",
+                "moe_dequant_down_outside_wait_cpu_s": "1.504720451",
+                "moe_dequant_down_outside_wait_wall_s": "1.570236803",
+                "moe_gather_count": "18275",
+                "moe_gather_throws": "0",
+                "moe_gather_cpu_s": "1.615651518",
+                "moe_gather_wall_s": "1.685885772",
+                "moe_gather_outside_wait_cpu_s": "1.615651518",
+                "moe_gather_outside_wait_wall_s": "1.685885772",
+                "moe_swiglu_count": "16192",
+                "moe_swiglu_throws": "0",
+                "moe_swiglu_cpu_s": "1.439772241",
+                "moe_swiglu_wall_s": "1.503000238",
+                "moe_swiglu_outside_wait_cpu_s": "1.439772241",
+                "moe_swiglu_outside_wait_wall_s": "1.503000238",
+                "moe_accumulate_count": "16192",
+                "moe_accumulate_throws": "0",
+                "moe_accumulate_cpu_s": "1.440248237",
+                "moe_accumulate_wall_s": "1.501996526",
+                "moe_accumulate_outside_wait_cpu_s": "1.440248237",
+                "moe_accumulate_outside_wait_wall_s": "1.501996526",
+                "moe_status_count": "48",
+                "moe_status_throws": "0",
+                "moe_status_cpu_s": "3.396779378",
+                "moe_status_wall_s": "3.403681059",
+                "moe_status_outside_wait_cpu_s": "1.514861834",
+                "moe_status_outside_wait_wall_s": "1.518244617"
+              },
+              "partition_qualified": true
+            },
+            "status_partition": {
+              "scopes": 48,
+              "complete": true,
+              "cpu_s": 3.396962151,
+              "wall_s": 3.403864348,
+              "unclassified_cpu_s": 0.000526274,
+              "unclassified_wall_s": 0.000541902,
+              "parts": [
+                {
+                  "name": "tag",
+                  "calls": 48,
+                  "cpu_s": 2.9012e-05,
+                  "wall_s": 2.9461e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 2.9012e-05,
+                  "outside_known_wait_wall_s": 2.9461e-05
+                },
+                {
+                  "name": "precheck",
+                  "calls": 96,
+                  "cpu_s": 8.1649e-05,
+                  "wall_s": 8.2017e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 8.1649e-05,
+                  "outside_known_wait_wall_s": 8.2017e-05
+                },
+                {
+                  "name": "queue_context",
+                  "calls": 96,
+                  "cpu_s": 8.313e-05,
+                  "wall_s": 8.3492e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 8.313e-05,
+                  "outside_known_wait_wall_s": 8.3492e-05
+                },
+                {
+                  "name": "enqueue",
+                  "calls": 48,
+                  "cpu_s": 1.514080227,
+                  "wall_s": 1.517418815,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 1.514080227,
+                  "outside_known_wait_wall_s": 1.517418815
+                },
+                {
+                  "name": "observer",
+                  "calls": 48,
+                  "cpu_s": 3.215e-05,
+                  "wall_s": 3.3839e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 3.215e-05,
+                  "outside_known_wait_wall_s": 3.3839e-05
+                },
+                {
+                  "name": "drain",
+                  "calls": 48,
+                  "cpu_s": 1.882009184,
+                  "wall_s": 1.885553058,
+                  "known_wait_cpu_s": 1.881917544,
+                  "known_wait_wall_s": 1.885436443,
+                  "outside_known_wait_cpu_s": 9.163999999994843e-05,
+                  "outside_known_wait_wall_s": 0.0001166150000000421
+                },
+                {
+                  "name": "postcheck",
+                  "calls": 48,
+                  "cpu_s": 5.6126e-05,
+                  "wall_s": 5.6578e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 5.6126e-05,
+                  "outside_known_wait_wall_s": 5.6578e-05
+                },
+                {
+                  "name": "after_drain",
+                  "calls": 48,
+                  "cpu_s": 3.3333e-05,
+                  "wall_s": 3.3748e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 3.3333e-05,
+                  "outside_known_wait_wall_s": 3.3748e-05
+                },
+                {
+                  "name": "branch",
+                  "calls": 48,
+                  "cpu_s": 3.1066e-05,
+                  "wall_s": 3.1438e-05,
+                  "known_wait_cpu_s": 0.0,
+                  "known_wait_wall_s": 0.0,
+                  "outside_known_wait_cpu_s": 3.1066e-05,
+                  "outside_known_wait_wall_s": 3.1438e-05
+                }
+              ],
+              "limits": "Enqueue includes the called wrapper/runtime and possible internal waits;outside known waits does not prove CPU arithmetic. This partition is nested within the main CPU partition."
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 57801.1,
+            "prompt_tps": 566.9,
+            "ttft_s": 58.103,
+            "total_s": 60.494,
+            "generated_tokens": 24,
+            "request_sha256": "e4e9db53bcdc5233ec25618653137c4a315b77bcce4f45697e9ed8cfc26f3287",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 32769,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 43120.9,
+            "prompt_tps": 759.9,
+            "ttft_s": 43.62,
+            "total_s": 45.723,
+            "generated_tokens": 24,
+            "request_sha256": "f7eb23c19d7326da152b2fbe811b2364ce923124a4ea72a1304952ce8f69490d",
+            "drafts_offered": 21,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 43120.9,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "collector_cleanup": {
+          "session": "StrataPrefillea86b9b2de3bac400a820138",
+          "physical_closure": {
+            "captured_identities": 4,
+            "physical_executors_gone": true,
+            "original_ownership_closed": true,
+            "original_observation_complete": true,
+            "limits": "Physical absence permits named-session cleanup only;original validation/outcome stays unchanged."
+          },
+          "source_commit": "7da2a42e1e4cdf1a1587448a4127f6e73eae656d",
+          "session_removed": true,
+          "control_closed": true,
+          "active": false
+        },
+        "resource_observation": {
+          "complete": true,
+          "native_PID": 2036708,
+          "clocks": [
+            {
+              "raw_before_ns": 2666394231471854,
+              "monotonic_ns": 2666415382592002,
+              "raw_after_ns": 2666394231472786
+            },
+            {
+              "raw_before_ns": 2666492259040777,
+              "monotonic_ns": 2666513411044332,
+              "raw_after_ns": 2666492259041338
+            },
+            {
+              "raw_before_ns": 2666552974828953,
+              "monotonic_ns": 2666574127377634,
+              "raw_after_ns": 2666552974829534
+            },
+            {
+              "raw_before_ns": 2666553612721682,
+              "monotonic_ns": 2666574765276022,
+              "raw_after_ns": 2666553612722213
+            },
+            {
+              "raw_before_ns": 2666599505879322,
+              "monotonic_ns": 2666620658844632,
+              "raw_after_ns": 2666599505879813
+            },
+            {
+              "raw_before_ns": 2666624442569950,
+              "monotonic_ns": 2666645595759211,
+              "raw_after_ns": 2666624442571433
+            }
+          ],
+          "full_capture": {
+            "gpu_events": 517850,
+            "host_events": 731997,
+            "operation_counts": {
+              "copy": 91010,
+              "fill": 4645,
+              "kernel": 422187,
+              "barrier": 8
+            },
+            "observed_copy_fill_payload_bytes": {
+              "zeCommandListAppendMemoryCopy(H2D)": 6030038528,
+              "zeCommandListAppendMemoryCopy(M2D)": 96434979332,
+              "zeCommandListAppendMemoryFill(D)": 39179203976,
+              "zeCommandListAppendMemoryCopy(D2M)": 1172806292,
+              "zeCommandListAppendMemoryCopy(D2D)": 130248065300,
+              "zeCommandListAppendMemoryCopy(D2H)": 830472192
+            },
+            "gpu_union_us": 83236008.71191406,
+            "host_api_union_in_window_us": 92992346.5805664,
+            "controlled_request_wall_us": 230211099.57910156,
+            "largest_service_names": [
+              {
+                "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD16 {16384; 1; 1} {128; 1; 1}]",
+                "kind": "kernel",
+                "count": 96,
+                "sum_us": 13611958.080999997
+              },
+              {
+                "name": "zeCommandListAppendMemoryCopy(M2D)[2176000]",
+                "kind": "copy",
+                "count": 10995,
+                "sum_us": 5290801.5299998885
+              },
+              {
+                "name": "zeCommandListAppendMemoryCopy(M2D)[1971200]",
+                "kind": "copy",
+                "count": 11522,
+                "sum_us": 4855464.946999938
+              },
+              {
+                "name": "strata::kernels::(anonymous namespace)::recurrence_columns<4, true, unsigned short>(float*, unsigned short const*, float const*, float const*, float*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}[SIMD32 {192; 1; 1} {128; 1; 1}]",
+                "kind": "kernel",
+                "count": 288,
+                "sum_us": 4412470.610000001
+              },
+              {
+                "name": "zeCommandListAppendMemoryCopy(M2D)[2329600]",
+                "kind": "copy",
+                "count": 6913,
+                "sum_us": 3527156.161000065
+              },
+              {
+                "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}[SIMD16 {5; 5; 1} {2; 256; 1}]",
+                "kind": "kernel",
+                "count": 12655,
+                "sum_us": 3130286.065000103
+              },
+              {
+                "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>[SIMD16 {1; 20; 64} {128; 1; 1}]",
+                "kind": "kernel",
+                "count": 768,
+                "sum_us": 2739013.0270000068
+              },
+              {
+                "name": "hgemm_nocopy_tn_32x64_8x4[SIMD16 {20; 1; 1} {128; 4; 1}]",
+                "kind": "kernel",
+                "count": 288,
+                "sum_us": 2279747.906000002
+              },
+              {
+                "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<22, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {3200; 1; 1} {1024; 1; 1}]",
+                "kind": "kernel",
+                "count": 14359,
+                "sum_us": 1687213.648000069
+              },
+              {
+                "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DownScatterKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false, (strata::experimental::vllm_xe2_native16::ScatterLayout)2>[SIMD16 {1; 20; 64} {128; 1; 1}]",
+                "kind": "kernel",
+                "count": 1857,
+                "sum_us": 1651601.948000014
+              },
+              {
+                "name": "strata::sycl_backend::for_each<strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}[SIMD32 {81920; 1; 1} {1024; 1; 1}]",
+                "kind": "kernel",
+                "count": 768,
+                "sum_us": 1534671.8540000038
+              },
+              {
+                "name": "hgemm_nocopy_tn_64x40_4x8[SIMD16 {20; 1; 1} {64; 8; 1}]",
+                "kind": "kernel",
+                "count": 288,
+                "sum_us": 1423308.5220000017
+              }
+            ],
+            "raw_window_containment": true,
+            "unique_gpu_ids": true,
+            "all_native_host_sources": true,
+            "limits": "Nonexclusive service/copy payloads for the whole controlled request including<=24decode tokens. No exact native prefill endpoint,complete graph dependency,wire/DRAM byte or saturation claim."
+          },
+          "windows": [
+            {
+              "clock": {
+                "begin_raw_ns": 2666492476149018,
+                "end_raw_ns": 2666550579200537,
+                "sampled_offset_range_ns": [
+                  -21153189261,
+                  -21151119216
+                ],
+                "sampled_offset_span_ns": 2070045,
+                "client_interval": {
+                  "request_begin_monotonic_ns": 2666513628303257,
+                  "first_output_monotonic_ns": 2666571731354776,
+                  "request_end_monotonic_ns": 2666574122335603
+                },
+                "limits": "Observed clock envelope,not an unsampled bound;request-to-first-output includes handoff/first-token work."
+              },
+              "GPU_boundary_commands": 1,
+              "services": {
+                "families": [
+                  {
+                    "name": "other_kernel",
+                    "count": 65777,
+                    "service_sum_s": 10.570931574707053,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "copy:M2D",
+                    "count": 20135,
+                    "service_sum_s": 9.917123437500084,
+                    "payload_bytes": 46399000580
+                  },
+                  {
+                    "name": "qsa_prefix",
+                    "count": 96,
+                    "service_sum_s": 6.827028501953125,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "native16_dense_gemm",
+                    "count": 33968,
+                    "service_sum_s": 3.807814103515691,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "gdn_recurrence",
+                    "count": 144,
+                    "service_sum_s": 2.212309628417968,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "native16_gu_fused",
+                    "count": 2084,
+                    "service_sum_s": 1.1588726030273442,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "moe_gather",
+                    "count": 18228,
+                    "service_sum_s": 1.0149360258789337,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "native16_io_write",
+                    "count": 384,
+                    "service_sum_s": 0.7663814008789065,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "library_gemm",
+                    "count": 2756,
+                    "service_sum_s": 0.7121379321289065,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "copy:D2D",
+                    "count": 677,
+                    "service_sum_s": 0.3955248403320306,
+                    "payload_bytes": 65095933952
+                  },
+                  {
+                    "name": "qsa_topk",
+                    "count": 1548,
+                    "service_sum_s": 0.3555791650390625,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "moe_accumulate",
+                    "count": 16144,
+                    "service_sum_s": 0.25308420263671116,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "copy:H2D",
+                    "count": 148,
+                    "service_sum_s": 0.22386650341796882,
+                    "payload_bytes": 958398464
+                  },
+                  {
+                    "name": "copy:D2M",
+                    "count": 112,
+                    "service_sum_s": 0.10568119433593742,
+                    "payload_bytes": 585237196
+                  },
+                  {
+                    "name": "copy:D2H",
+                    "count": 192,
+                    "service_sum_s": 0.07404430957031248,
+                    "payload_bytes": 415236096
+                  },
+                  {
+                    "name": "fill",
+                    "count": 280,
+                    "service_sum_s": 0.025338097167968754,
+                    "payload_bytes": 16893792452
+                  },
+                  {
+                    "name": "barrier_or_other_L0",
+                    "count": 4,
+                    "service_sum_s": 5.2001953125e-07,
+                    "payload_bytes": 0
+                  }
+                ],
+                "largest_normalized_kernel_groups": [
+                  {
+                    "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "count": 48,
+                    "service_sum_s": 6.815949354492188
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                    "count": 8322,
+                    "service_sum_s": 2.673876688476554
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::recurrence_columns<4, true, unsigned short>(float*, unsigned short const*, float const*, float const*, float*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "count": 144,
+                    "service_sum_s": 2.212309628417968
+                  },
+                  {
+                    "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+                    "count": 6334,
+                    "service_sum_s": 1.566766896972659
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DownScatterKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false, (strata::experimental::vllm_xe2_native16::ScatterLayout)2>",
+                    "count": 2084,
+                    "service_sum_s": 1.4560658173828112
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::GuSwiGLUKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false>",
+                    "count": 2084,
+                    "service_sum_s": 1.1588726030273442
+                  },
+                  {
+                    "name": "hgemm_nocopy_tn_32x64_8x4",
+                    "count": 144,
+                    "service_sum_s": 1.141064733398438
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 1044,
+                    "service_sum_s": 1.0652613647460933
+                  },
+                  {
+                    "name": "strata::sycl_backend::for_each<strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 18228,
+                    "service_sum_s": 1.0149360258789337
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::bfloat16_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                    "count": 768,
+                    "service_sum_s": 0.8581529194335943
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<22, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 7168,
+                    "service_sum_s": 0.8422862055663829
+                  },
+                  {
+                    "name": "strata::sycl_backend::for_each<strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 384,
+                    "service_sum_s": 0.7663814008789065
+                  },
+                  {
+                    "name": "hgemm_nocopy_tn_64x40_4x8",
+                    "count": 144,
+                    "service_sum_s": 0.7118721264648439
+                  },
+                  {
+                    "name": "strata::sycl_backend::for_each<strata::prefill::native16::mix(unsigned short const*, float const*, float const*, unsigned short const*, unsigned short*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::mix(unsigned short const*, float const*, float const*, unsigned short const*, unsigned short*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 384,
+                    "service_sum_s": 0.5058511958007813
+                  },
+                  {
+                    "name": "strata::prefill::native16::norm(unsigned short const*, float const*, float, float*, unsigned short*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "count": 384,
+                    "service_sum_s": 0.4922558906250002
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<20, false>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 14253,
+                    "service_sum_s": 0.4862791640625006
+                  }
+                ],
+                "largest_host_apis": [
+                  {
+                    "name": "zeCommandListHostSynchronize",
+                    "count": 4656,
+                    "wall_sum_s": 18.247990244140656
+                  },
+                  {
+                    "name": "zeCommandListAppendMemoryCopy",
+                    "count": 21264,
+                    "wall_sum_s": 7.344150017089806
+                  },
+                  {
+                    "name": "zeModuleCreate",
+                    "count": 34,
+                    "wall_sum_s": 5.046720899414062
+                  },
+                  {
+                    "name": "zeCommandListAppendLaunchKernelWithArguments",
+                    "count": 141205,
+                    "wall_sum_s": 1.78039695068358
+                  },
+                  {
+                    "name": "zeEventHostSynchronize",
+                    "count": 893,
+                    "wall_sum_s": 0.18173893115234388
+                  },
+                  {
+                    "name": "zeCommandListReset",
+                    "count": 98,
+                    "wall_sum_s": 0.019200476074218757
+                  },
+                  {
+                    "name": "zeKernelSetGroupSize",
+                    "count": 141205,
+                    "wall_sum_s": 0.011807738769524423
+                  },
+                  {
+                    "name": "zeCommandListAppendMemoryFill",
+                    "count": 280,
+                    "wall_sum_s": 0.004279685546874999
+                  },
+                  {
+                    "name": "zeCommandListImmediateAppendCommandListsExp",
+                    "count": 98,
+                    "wall_sum_s": 0.0019031606445312499
+                  },
+                  {
+                    "name": "zeKernelCreate",
+                    "count": 67,
+                    "wall_sum_s": 0.00046479150390625005
+                  },
+                  {
+                    "name": "zeEventQueryStatus",
+                    "count": 99,
+                    "wall_sum_s": 0.00031138085937499997
+                  },
+                  {
+                    "name": "zeCommandListAppendBarrier",
+                    "count": 4,
+                    "wall_sum_s": 7.881787109375e-05
+                  }
+                ],
+                "kernel_interval_union_s": 27.674459379882812,
+                "observed_gpu_gap_total_s": 19.692376801714843,
+                "internal_gaps_at_least_1ms": 286,
+                "largest_internal_observed_gaps": [
+                  {
+                    "duration_s": 7.631114749023437,
+                    "before": "zeCommandListAppendMemoryCopy(M2D)[131072]",
+                    "after": "zeCommandListAppendMemoryCopy(H2D)[83886080]",
+                    "start_relative_s": 1.8968851630859376,
+                    "host_api_overlap_s": {
+                      "zeCommandListAppendMemoryCopy": 0.00102396484375
+                    }
+                  },
+                  {
+                    "duration_s": 3.1647269208984374,
+                    "before": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "after": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "start_relative_s": 14.474245873046875,
+                    "host_api_overlap_s": {
+                      "zeModuleCreate": 3.1637074658203126,
+                      "zeCommandListAppendLaunchKernelWithArguments": 0.0006463720703125,
+                      "zeKernelCreate": 6.3818359375e-06
+                    }
+                  },
+                  {
+                    "duration_s": 1.2994766748046875,
+                    "before": "zeCommandListAppendMemoryCopy(M2D)[131072]",
+                    "after": "zeCommandListAppendMemoryCopy(H2D)[83886080]",
+                    "start_relative_s": 9.649945499023438,
+                    "host_api_overlap_s": {
+                      "zeCommandListAppendMemoryCopy": 4.6005859375e-05
+                    }
+                  },
+                  {
+                    "duration_s": 0.6379050439453126,
+                    "before": "zeCommandListAppendMemoryCopy(M2D)[131072]",
+                    "after": "zeCommandListAppendMemoryCopy(H2D)[83886080]",
+                    "start_relative_s": 11.053210702148437,
+                    "host_api_overlap_s": {
+                      "zeCommandListAppendMemoryCopy": 4.6837890625e-05
+                    }
+                  },
+                  {
+                    "duration_s": 0.4619462861328125,
+                    "before": "strata::kernels::(anonymous namespace)::submit_topk<1>(sycl::_V1::queue&, float const*, int const*, long, long, long, int*, long)::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "after": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "start_relative_s": 14.012105732910156,
+                    "host_api_overlap_s": {
+                      "zeModuleCreate": 0.46105635693359376,
+                      "zeCommandListAppendLaunchKernelWithArguments": 0.00053134716796875,
+                      "zeKernelCreate": 6.591796875e-06
+                    }
+                  },
+                  {
+                    "duration_s": 0.4513234399414062,
+                    "before": "gemm_bf16bf16f32_nocopy_tn_64x40_4x8",
+                    "after": "strata::prefill::native16::qsa::norm_rope_split(unsigned short const*, float const*, unsigned short*, long, long, long, long, long, long, long, float const*, float const*, float, void*)::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "start_relative_s": 13.304524504882812,
+                    "host_api_overlap_s": {
+                      "zeModuleCreate": 0.45053202294921874,
+                      "zeCommandListAppendLaunchKernelWithArguments": 0.0004631181640625,
+                      "zeKernelCreate": 5.81103515625e-06
+                    }
+                  },
+                  {
+                    "duration_s": 0.297741080078125,
+                    "before": "gemm_bf16bf16f32_nocopy_tn_32x32_2x2x8",
+                    "after": "strata::sycl_backend::for_each<strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::gdn_gates(float const*, float const*, float const*, float*, float*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "start_relative_s": 0.8126269379882812,
+                    "host_api_overlap_s": {
+                      "zeModuleCreate": 0.29717090625,
+                      "zeCommandListAppendLaunchKernelWithArguments": 0.00026739111328125,
+                      "zeKernelCreate": 5.82080078125e-06
+                    }
+                  },
+                  {
+                    "duration_s": 0.26077467822265626,
+                    "before": "zeCommandListAppendMemoryCopy(D2M)[425196]",
+                    "after": "zeCommandListAppendMemoryCopy(D2M)[521472000]",
+                    "start_relative_s": 0.0566876318359375,
+                    "host_api_overlap_s": {
+                      "zeEventHostSynchronize": 0.0001607045898437501,
+                      "zeCommandListAppendMemoryCopy": 0.000147033203125,
+                      "zeCommandListHostSynchronize": 1.2205078125e-05
+                    }
+                  }
+                ],
+                "limits": "Service/API sums can overlap. Gaps are between observed GPU events,not proof of hardware idle. Normalized names identify producers,not arithmetic or bandwidth saturation."
+              }
+            },
+            {
+              "clock": {
+                "begin_raw_ns": 2666553777940993,
+                "end_raw_ns": 2666597397980752,
+                "sampled_offset_range_ns": [
+                  -21153189261,
+                  -21151119216
+                ],
+                "sampled_offset_span_ns": 2070045,
+                "client_interval": {
+                  "request_begin_monotonic_ns": 2666574930095232,
+                  "first_output_monotonic_ns": 2666618550134991,
+                  "request_end_monotonic_ns": 2666620653683067
+                },
+                "limits": "Observed clock envelope,not an unsampled bound;request-to-first-output includes handoff/first-token work."
+              },
+              "GPU_boundary_commands": 0,
+              "services": {
+                "families": [
+                  {
+                    "name": "other_kernel",
+                    "count": 65993,
+                    "service_sum_s": 10.596537641113276,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "copy:M2D",
+                    "count": 20181,
+                    "service_sum_s": 10.20799618847651,
+                    "payload_bytes": 46505240576
+                  },
+                  {
+                    "name": "qsa_prefix",
+                    "count": 96,
+                    "service_sum_s": 6.806986102050779,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "native16_dense_gemm",
+                    "count": 34064,
+                    "service_sum_s": 3.815547448730511,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "gdn_recurrence",
+                    "count": 144,
+                    "service_sum_s": 2.200160984375,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "native16_gu_fused",
+                    "count": 2083,
+                    "service_sum_s": 1.1590719838867205,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "moe_gather",
+                    "count": 18275,
+                    "service_sum_s": 1.0161704912109613,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "native16_io_write",
+                    "count": 384,
+                    "service_sum_s": 0.7682904609374999,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "library_gemm",
+                    "count": 2756,
+                    "service_sum_s": 0.702641892089843,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "copy:D2D",
+                    "count": 677,
+                    "service_sum_s": 0.39563328417968685,
+                    "payload_bytes": 65095933952
+                  },
+                  {
+                    "name": "qsa_topk",
+                    "count": 1548,
+                    "service_sum_s": 0.3526051953125004,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "moe_accumulate",
+                    "count": 16192,
+                    "service_sum_s": 0.2532692851562443,
+                    "payload_bytes": 0
+                  },
+                  {
+                    "name": "copy:H2D",
+                    "count": 148,
+                    "service_sum_s": 0.1974516083984375,
+                    "payload_bytes": 958398464
+                  },
+                  {
+                    "name": "copy:D2M",
+                    "count": 111,
+                    "service_sum_s": 0.10534015527343743,
+                    "payload_bytes": 585237192
+                  },
+                  {
+                    "name": "copy:D2H",
+                    "count": 192,
+                    "service_sum_s": 0.07403983251953125,
+                    "payload_bytes": 415236096
+                  },
+                  {
+                    "name": "fill",
+                    "count": 280,
+                    "service_sum_s": 0.025255695312500027,
+                    "payload_bytes": 16893792452
+                  },
+                  {
+                    "name": "barrier_or_other_L0",
+                    "count": 4,
+                    "service_sum_s": 4.16015625e-07,
+                    "payload_bytes": 0
+                  }
+                ],
+                "largest_normalized_kernel_groups": [
+                  {
+                    "name": "strata::kernels::prefix_batch_impl<33, false, false, true, true, true, true, false>(unsigned short const*, strata::kernels::QsaAttnPools const&, int const*, int const*, long, strata::kernels::QsaShapes const&, unsigned short*, long, strata::kernels::QsaPromptBf16Bounds const&, long, strata::kernels::QsaBf16PackedScratch const&, void*, strata::kernels::QsaPrefixStateProbe)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "count": 48,
+                    "service_sum_s": 6.796008727539061
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::half_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                    "count": 8318,
+                    "service_sum_s": 2.6726188139648537
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::recurrence_columns<4, true, unsigned short>(float*, unsigned short const*, float const*, float const*, float*, int, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "count": 144,
+                    "service_sum_s": 2.200160984375
+                  },
+                  {
+                    "name": "strata::kernels::iq_dequant_gu_f16(int, void const*, void const*, long, long, unsigned short*, void*)::{lambda(sycl::_V1::id<2>)#1}",
+                    "count": 6321,
+                    "service_sum_s": 1.5635192919921865
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DownScatterKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false, (strata::experimental::vllm_xe2_native16::ScatterLayout)2>",
+                    "count": 2083,
+                    "service_sum_s": 1.456727606933591
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::GuSwiGLUKernel<(strata::experimental::vllm_xe2_native16::Tile)1, false>",
+                    "count": 2083,
+                    "service_sum_s": 1.1590719838867205
+                  },
+                  {
+                    "name": "hgemm_nocopy_tn_32x64_8x4",
+                    "count": 144,
+                    "service_sum_s": 1.1386831752929696
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 1044,
+                    "service_sum_s": 1.065481349121095
+                  },
+                  {
+                    "name": "strata::sycl_backend::for_each<strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::moe_gather_mixed(strata::prefill::detail::MoeWindowRoutes const&, unsigned long, unsigned short const*, unsigned short const*, long, int const*, unsigned short*, unsigned int*, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 18275,
+                    "service_sum_s": 1.0161704912109613
+                  },
+                  {
+                    "name": "strata::experimental::vllm_xe2_native16::(anonymous namespace)::DenseKernel<cutlass::bfloat16_t, cutlass::bfloat16_t, (strata::experimental::vllm_xe2_native16::Tile)1>",
+                    "count": 768,
+                    "service_sum_s": 0.8659810415039053
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<22, true>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 7191,
+                    "service_sum_s": 0.8449275888671653
+                  },
+                  {
+                    "name": "strata::sycl_backend::for_each<strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::write(unsigned short*, unsigned short const*, float const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 384,
+                    "service_sum_s": 0.7682904609374999
+                  },
+                  {
+                    "name": "hgemm_nocopy_tn_64x40_4x8",
+                    "count": 144,
+                    "service_sum_s": 0.7114363984375002
+                  },
+                  {
+                    "name": "strata::sycl_backend::for_each<strata::prefill::native16::mix(unsigned short const*, float const*, float const*, unsigned short const*, unsigned short*, unsigned short*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::prefill::native16::mix(unsigned short const*, float const*, float const*, unsigned short const*, unsigned short*, unsigned short*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 384,
+                    "service_sum_s": 0.50585296484375
+                  },
+                  {
+                    "name": "strata::prefill::native16::norm(unsigned short const*, float const*, float, float*, unsigned short*, long, void*)::{lambda(sycl::_V1::handler&)#1}::operator()(sycl::_V1::handler&) const::{lambda(sycl::_V1::nd_item<1>)#1}",
+                    "count": 384,
+                    "service_sum_s": 0.4917802509765624
+                  },
+                  {
+                    "name": "strata::kernels::(anonymous namespace)::parallel_iq_launch<20, false>(void const*, void const*, unsigned long, unsigned long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "count": 14300,
+                    "service_sum_s": 0.4877280439453168
+                  }
+                ],
+                "largest_host_apis": [
+                  {
+                    "name": "zeCommandListHostSynchronize",
+                    "count": 4657,
+                    "wall_sum_s": 18.37241995019531
+                  },
+                  {
+                    "name": "zeCommandListAppendMemoryCopy",
+                    "count": 21309,
+                    "wall_sum_s": 7.184012970703149
+                  },
+                  {
+                    "name": "zeCommandListAppendLaunchKernelWithArguments",
+                    "count": 141535,
+                    "wall_sum_s": 1.8050405205078235
+                  },
+                  {
+                    "name": "zeEventHostSynchronize",
+                    "count": 500,
+                    "wall_sum_s": 0.13606932080078132
+                  },
+                  {
+                    "name": "zeCommandListReset",
+                    "count": 98,
+                    "wall_sum_s": 0.031181881347656256
+                  },
+                  {
+                    "name": "zeKernelSetGroupSize",
+                    "count": 141535,
+                    "wall_sum_s": 0.011893220703118204
+                  },
+                  {
+                    "name": "zeCommandListAppendMemoryFill",
+                    "count": 280,
+                    "wall_sum_s": 0.004611154785156247
+                  },
+                  {
+                    "name": "zeCommandListImmediateAppendCommandListsExp",
+                    "count": 98,
+                    "wall_sum_s": 0.004324453124999998
+                  },
+                  {
+                    "name": "zeEventQueryStatus",
+                    "count": 96,
+                    "wall_sum_s": 0.002017103515625
+                  },
+                  {
+                    "name": "zeCommandListClose",
+                    "count": 98,
+                    "wall_sum_s": 7.996826171875002e-05
+                  },
+                  {
+                    "name": "zeCommandListAppendBarrier",
+                    "count": 4,
+                    "wall_sum_s": 3.77421875e-05
+                  }
+                ],
+                "kernel_interval_union_s": 27.666517819335937,
+                "observed_gpu_gap_total_s": 4.954585125210941,
+                "internal_gaps_at_least_1ms": 286,
+                "largest_internal_observed_gaps": [
+                  {
+                    "duration_s": 0.2575912177734375,
+                    "before": "zeCommandListAppendMemoryCopy(M2D)[98304]",
+                    "after": "strata::sycl_backend::for_each<strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1}>(long, void*, strata::kernels::copy_i32_from_mapped(int*, int const*, long, void*)::{lambda(unsigned long)#1})::{lambda(sycl::_V1::id<1>)#1}",
+                    "start_relative_s": 43.139814685058596,
+                    "host_api_overlap_s": {
+                      "zeCommandListReset": 0.031181881347656256,
+                      "zeCommandListAppendLaunchKernelWithArguments": 0.00749255517578126,
+                      "zeCommandListAppendMemoryFill": 0.0007229199218750003
+                    }
+                  },
+                  {
+                    "duration_s": 0.2504709248046875,
+                    "before": "zeCommandListAppendMemoryCopy(D2M)[425196]",
+                    "after": "zeCommandListAppendMemoryCopy(D2M)[521472000]",
+                    "start_relative_s": 0.0561224658203125,
+                    "host_api_overlap_s": {
+                      "zeCommandListAppendMemoryCopy": 0.0001624619140625,
+                      "zeEventHostSynchronize": 9.623681640625035e-05,
+                      "zeCommandListHostSynchronize": 1.2611816406249999e-05
+                    }
+                  },
+                  {
+                    "duration_s": 0.0847862109375,
+                    "before": "zeCommandListAppendMemoryCopy(D2M)[4]",
+                    "after": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "start_relative_s": 20.948225403808593,
+                    "host_api_overlap_s": {
+                      "zeCommandListHostSynchronize": 0.00038880908203125,
+                      "zeCommandListAppendLaunchKernelWithArguments": 6.1666015625e-05,
+                      "zeCommandListAppendMemoryCopy": 5.626953125e-06
+                    }
+                  },
+                  {
+                    "duration_s": 0.08429101025390626,
+                    "before": "zeCommandListAppendMemoryCopy(D2M)[4]",
+                    "after": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "start_relative_s": 28.415657653808594,
+                    "host_api_overlap_s": {
+                      "zeCommandListHostSynchronize": 0.000403546875,
+                      "zeCommandListAppendLaunchKernelWithArguments": 4.876220703125e-05,
+                      "zeCommandListAppendMemoryCopy": 8.06591796875e-06
+                    }
+                  },
+                  {
+                    "duration_s": 0.08276448486328125,
+                    "before": "zeCommandListAppendMemoryCopy(D2M)[4]",
+                    "after": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "start_relative_s": 35.934431106933594,
+                    "host_api_overlap_s": {
+                      "zeCommandListHostSynchronize": 0.00043168017578125,
+                      "zeCommandListAppendLaunchKernelWithArguments": 4.926220703125e-05,
+                      "zeCommandListAppendMemoryCopy": 1.555224609375e-05
+                    }
+                  },
+                  {
+                    "duration_s": 0.0826502939453125,
+                    "before": "zeCommandListAppendMemoryCopy(D2M)[4]",
+                    "after": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "start_relative_s": 5.84978724609375,
+                    "host_api_overlap_s": {
+                      "zeCommandListHostSynchronize": 0.00036697802734375,
+                      "zeCommandListAppendLaunchKernelWithArguments": 5.7126953125e-05,
+                      "zeCommandListAppendMemoryCopy": 1.011474609375e-05
+                    }
+                  },
+                  {
+                    "duration_s": 0.077571666015625,
+                    "before": "zeCommandListAppendMemoryCopy(D2M)[4]",
+                    "after": "strata::kernels::(anonymous namespace)::dequant<unsigned short>(int, void const*, long, unsigned short*, void*)::{lambda(sycl::_V1::id<1>)#1}",
+                    "start_relative_s": 33.23270823388672,
+                    "host_api_overlap_s": {
+                      "zeCommandListHostSynchronize": 0.00035925390625,
+                      "zeCommandListAppendLaunchKernelWithArguments": 7.62431640625e-05,
+                      "zeCommandListAppendMemoryCopy": 1.343359375e-05
+                    }
+                  },
+                  {
+                    "duration_s": 0.07573356298828125,
+                    "before": "zeCommandListAppendMemoryCopy(M2D)[1126400]",
+                    "after": "zeCommandListAppendMemoryCopy(M2D)[1538035200]",
+                    "start_relative_s": 42.16897073583984,
+                    "host_api_overlap_s": {
+                      "zeCommandListAppendMemoryCopy": 0.062281787109375,
+                      "zeCommandListHostSynchronize": 0.0002692138671875
+                    }
+                  }
+                ],
+                "limits": "Service/API sums can overlap. Gaps are between observed GPU events,not proof of hardware idle. Normalized names identify producers,not arithmetic or bandwidth saturation."
+              }
+            }
+          ],
+          "timeline": {
+            "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-fast-profile-v1/1/trace/strata.2036708.json",
+            "sha256": "506cc034e596872d4458b936db8f36f64a4ba77593f0f8ead39d23d715d53aa1",
+            "bytes": 581512942
+          },
+          "limits": "Window service is clipped;payload counts are complete API-request bytes for touching commands,not proportional boundary or physical wire traffic. Native startup/warmups excluded by client windows. No resource saturation or complete dependency-path proof."
+        },
+        "collector_session_removed": true
       }
     ],
     "request_hashes": {
