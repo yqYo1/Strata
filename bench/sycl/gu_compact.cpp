@@ -5,6 +5,7 @@
 #include "strata/prefill/gemm.hpp"
 #include "strata/sycl/command_profile.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
+#include "strata/sycl/launch.hpp"
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -84,6 +85,7 @@ struct Case {
   int rows;
   sycl::queue &q;
   xe::Gemm gemm;
+  strata::prefill::Gemm production;
   Buffer x, w, gu, capture, reference, candidate;
   std::vector<uint16_t> hx, hw;
   bool edges;
@@ -101,16 +103,26 @@ struct Case {
       hw[i]=edges ? (i%K == 0 ? values[(i/K)%values.size()] : 0) :
           half(float(int((i*7+i/K)%23)-11)/64.f);
     x.set(hx); w.set(hw);
+    std::string error;
+    const bool initialized=production.init_external(&q,nullptr,0,nullptr,0,error);
+    need(initialized,error.c_str());
   }
   ~Case() { drain(q); }
   xe::GuSwiGLUProblem problem(bool observe=false) {
     return {x.data(),w.data(),candidate.data(),rows,observe ? capture.data() : nullptr};
   }
-  sycl::event fused(xe::Tile tile, bool observe=false) { return gemm.gu_swiglu(problem(observe),tile); }
-  void separate(xe::Tile tile) {
+  sycl::event fused(xe::Tile tile, bool observe=false) {
+    auto event=gemm.gu_swiglu(problem(observe),tile);
+    sb::finish(&q,event);
+    return event;
+  }
+  void separate([[maybe_unused]] xe::Tile tile) {
     try {
-      xe::Problem p; p.x=x.data(); p.w=w.data(); p.y=gu.data(); p.t=rows; p.n=N; p.k=K;
-      (void)gemm.beta0(p,tile);
+      // Actual production entry, including its immutable auto-tile selection,
+      // binding, preflight, profiling hooks and finish; all declared rows <2334.
+      need(!production.try_gu_swiglu16(x.data(),w.data(),reference.data(),rows),
+           "production baseline unexpectedly selected large GU fusion");
+      production.f16_out16(x.data(),w.data(),gu.data(),rows,N,K,true);
       strata::prefill::native16::swiglu(gu.data(),reference.data(),rows,&q);
     } catch (...) { drain(q); throw; }
   }
@@ -135,7 +147,7 @@ struct Case {
     need(x.get()==hx && w.get()==hw,"input changed");
     std::cout << "{\"kind\":\"correctness\",\"rows\":" << rows << ",\"tile\":" << int(tile)
       << ",\"edges\":" << edges << ",\"max_half_ulp\":" << ulp
-      << ",\"BF16_capture_exact\":true,\"guards\":true,\"inputs_immutable\":true,\"status\":\"PASS\"}\n";
+      << ",\"BF16_capture_exact\":true,\"guards\":true,\"inputs_immutable\":true,\"production_baseline\":true,\"status\":\"PASS\"}\n";
     return ulp;
   }
 };
@@ -153,7 +165,7 @@ double batch(Case& c,bool fused,int repeat) {
 void bench(int process,sycl::queue& q) {
   need(process>=0 && process<3,"three declared process ordinals");
   int ordinal=0;
-  for (int rows:{1,16,64,128,256,640,1280}) {
+  for (int rows:{1,16,32,64,65,96,127,128,129,256,640,1280}) {
     Case c(rows,false,q);c.check(xe::Tile::compact_16x64);
     (void)batch(c,false,8);(void)batch(c,true,8);
     int repeat=64;double first=0,second=0;
@@ -198,7 +210,7 @@ int main(int argc,char** argv) {
       Case edge(3,true,q);edge.check(xe::Tile::compact_16x64);
     } else if (mode=="--numerics") {
       for (auto tile:{xe::Tile::compact_16x64,xe::Tile::wide_128x128}) {
-        for (int rows:{1,3,17,33,64,127,129,640,1280}) {Case c(rows,false,q);c.check(tile);}
+        for (int rows:{1,3,16,17,32,33,64,65,96,127,128,129,256,640,1280}) {Case c(rows,false,q);c.check(tile);}
         Case edge(17,true,q);edge.check(tile);
       }
     } else bench(std::stoi(argv[2]),q);

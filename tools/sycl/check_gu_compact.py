@@ -16,10 +16,10 @@ sys.dont_write_bytecode = True
 import build_gu_compact as build
 
 P, B, RESULT = build.P, build.B, build.RESULT
-ROOT, KEY = B/'gu-compact-device-v2', 'gu_compact_device_v2'
+ROOT, KEY = B/'gu-compact-device-v3', 'gu_compact_device_v3'
 THIS = 'tools/sycl/check_gu_compact.py'
 STAGES = ('smoke', 'numerics', 'perf0', 'perf1', 'perf2')
-ROWS = (1, 16, 64, 128, 256, 640, 1280)
+ROWS = (1, 16, 32, 64, 65, 96, 127, 128, 129, 256, 640, 1280)
 original, component = build.device.original, build.device.component
 require, sha = build.require, build.sha
 
@@ -75,13 +75,13 @@ def parsed(text, stage):
         for v in records), 'unexpected fixture output')
     correct = [v for v in records if v['kind'] == 'correctness']
     expected = ([(3,0,0),(3,0,1)] if stage == 'smoke' else
-        [(r,t,0) for t in (0,1) for r in (1,3,17,33,64,127,129,640,1280)]+[(17,t,1) for t in (0,1)]
+        [(r,t,0) for t in (0,1) for r in (1,3,16,17,32,33,64,65,96,127,128,129,256,640,1280)]+[(17,t,1) for t in (0,1)]
         if stage == 'numerics' else [(r,0,0) for r in ROWS])
     require(len(correct) == len(expected) and
         sorted((v['rows'],v['tile'],v['edges']) for v in correct) == sorted(expected),
         'complete exact numerical coverage required')
     require(all(v['status'] == 'PASS' and v['BF16_capture_exact'] is True
-        and v['guards'] is True and v['inputs_immutable'] is True
+        and v['guards'] is True and v['inputs_immutable'] is True and v['production_baseline'] is True
         and type(v['max_half_ulp']) is int and 0 <= v['max_half_ulp'] <= 1 for v in correct),
         'BF16 capture/FP16 bound/guard/input qualification failed')
     answer = dict(correctness_cases=len(correct),max_half_ulp=max(v['max_half_ulp'] for v in correct),
@@ -92,8 +92,8 @@ def parsed(text, stage):
     process = int(stage[-1])
     calibrations = [v for v in records if v['kind'] == 'calibration']
     samples = [v for v in records if v['kind'] == 'sample']
-    require(len(calibrations) == 7 and [v['rows'] for v in calibrations] == list(ROWS)
-        and len(samples) == 56, 'seven shapes/eight samples per shape required')
+    require(len(calibrations) == len(ROWS) and [v['rows'] for v in calibrations] == list(ROWS)
+        and len(samples) == len(ROWS)*8, 'twelve shapes/eight samples per shape required')
     valid_ms = lambda v, floor: type(v) in (int,float) and math.isfinite(v) and v >= floor
     shapes = []
     for ordinal,(rows,cal) in enumerate(zip(ROWS,calibrations)):
@@ -130,12 +130,12 @@ def prepare():
         native_admission=native['observer_admission'],environment_basis=build.device.KEY,
         environment_sha256=original.common.signature(basis['environment']),boot=basis['boot'],driver=basis['driver'],
         plan=dict(order=list(STAGES),commands=['--smoke','--numerics','--bench 0','--bench 1','--bench 2'],
-            correctness='Exact BF16 dense capture;independent integer-dot oracle for M1/3;<=1FP16ULP,NaN/saturation,guards and immutable inputs. Compact and wide numerical shapes include partial tiles.',
-            timing='Resident same FP16 X/W,compact separate GEMM+SwiGLU versus fused GU/SwiGLU. No profiling queue or GPU timing events. Warm8each;calibrate both >=150ms;64..262144 same repeats;4 rotated pairs each shape per process;all samples >=100ms. Three fresh processes. Reset/oracle/guards outside timing.',
+            correctness='Actual production auto baseline versus compact/wide fused adapter. Exact BF16 capture;independent integer-dot oracle for M1/3;<=1FP16ULP,NaN/saturation,guards and immutable inputs.32full numeric cases.',
+            timing='Resident same FP16 X/W;baseline actual try_gu/f16_out16/native SwiGLU with auto(T<128compact,elsewide);candidate compact fused adapter plus common finish. Candidate production binding remains excluded. No profiling queue or GPU timing events. Warm8each;calibrate both >=150ms;64..262144 same repeats;4 rotated pairs/shape/process;all samples>=100ms. Three fresh processes. Reset/oracle/guards outside timing.',
             eligibility='A shape is a follow-up candidate only when all three independent-process median paired fused/separate ratios are <1. No blanket minimum gain. Retain all4matched pairs and process spread. This does not advance a model route.',
             safety='First smoke full UR trace and parameter validation;later parameter validation without API trace. Preserve copy-offload/direct-submission avoidance. Stop first failure;no retry/reset/foreign signalling.'),
         budget=dict(wall=240,cpu=720,rss_cap=4<<30,text_cap=64<<20,file_cap=64<<20,total_cap=80<<20),
-        limits='Kernel-only timing excludes GGUF dequant,gather,PCIe,production dispatch and model handoff. No model PP/TG/TTFT or default adoption claim.',
+        limits='Baseline includes actual production entry and finish;candidate uses existing adapter plus finish,without future production binding. Excludes GGUF dequant,gather,PCIe and model handoff. No model PP/TG/TTFT or default adoption claim.',
         retention='Commit useful numeric summary and individual speed pairs,then retire successful API/build logs. Keep fixture only for this decision and imminent production-dispatch comparison;old native proof holds remain separate.',
         results=[],passed=False,complete=False,active=False,ownership_closed=True,GPU_executed=False)
     save(row);print('Prepared compact-GU smoke/numerics/three-process timing;commit before execution.',flush=True)
@@ -163,12 +163,16 @@ def execute(stage):
             TMPDIR=str(root/'tmp'),XDG_CACHE_HOME=str(root/'cache'),STRATA_MEASUREMENT_ROOT=str(root),
             UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION' if trace else 'UR_LAYER_PARAMETER_VALIDATION',
             UR_LOG_VALIDATION='level:warning;flush:warning;output:file,'+str(root/'validation.log'))
+        env.update(STRATA_SYCL_PREFILL_NATIVE16='bf16',STRATA_SYCL_PREFILL_NATIVE16_BACKEND='vllm',
+            STRATA_SYCL_PREFILL_NATIVE16_VLLM_TILE='auto',STRATA_SYCL_PREFILL_GU_SWIGLU='large')
         if not trace:env.pop('UR_LOG_TRACING',None)
         args = ['--bench',stage[-1]] if stage.startswith('perf') else ['--'+stage]
         result['native_execution_attempted'] = True
         e,out,err = scope.run(stage,[row['binary']['path'],*args],env,P,**row['budget'])
         errors = err.read_text();proof = original.validation.preload_evidence(errors,e['pid'])
         component.diagnostics(errors,e['pid'])
+        require(errors.count('[native16-route] engine=bf16 backend=vllm tile=auto(T<128:compact;else:wide) aot=bmg-g21-a0 isolated=1 experimental\n') == 1,
+            'actual immutable production-auto configuration missing')
         require(original.owner.closed(e) and e['exit_code'] == 0
             and proof['loader'] == probe['loader']['path'], 'normal validated fixture closure required')
         log = root/'validation.log'
