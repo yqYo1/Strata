@@ -433,12 +433,13 @@ closed evidence is`616562a28f009a2e7be2404cb3119861aea6acc2`.
 | --- | --- | --- | --- | --- | --- |
 |32769 |636.9282 |794.9319 |41.2224 |51.583 |41.357 |
 |49153 |742.0116 |876.5926 |56.0728 |66.392 |56.218 |
+|57345 (added) |784.8137 |911.2347 |62.9311 |73.226 |63.084 |
 |65537 |805.4761 |916.5706 |71.5024 |81.517 |71.662 |
 |81921 |838.3281 |934.2008 |87.6910 |97.881 |87.866 |
 |98305 |866.0715 |946.8245 |103.8260 |113.717 |104.007 |
 
 First means the first measured long request after standard bench warmups and
-count-only preflight,not cold server startup. The first four lengths share the
+count-only preflight,not cold server startup. All32..80Kpoints share the
 ordinary384-slot route;96K uses the separately checked128-slot split route.
 The latter splits the accumulator across GPU allocations,not CPU accumulation;
 its256-byte tail guard and final drain pass. Useful samples/source limits and
@@ -446,18 +447,36 @@ both first/subsequent scopes are indexed in the performance CSV. This is one
 process per length,not a repeated paired gain,sustained decode,task quality,
 physical262144/RESTORE,ordinary-provider teardown or inference adoption.
 
-For the four ordinary-route warmed medians,the descriptive affine fit is
-`T_seconds = 9.92881496 + 0.0009450402832 * actual_read_tokens`,with maximum
-relative residual0.7898%. Adjacent slopes rise0.9064/0.9417/0.9881ms/token;
-the intercept is not an attributed physical fixed cost and the fit must not
-be extrapolated. `tools/prefill_scaling_bench.py::approximation_models`
-requires five length points for its held-out affine/quadratic/n-log-n
-comparison. Four compatible lengths therefore permit the descriptive affine
-fit,but not that comparison. Next prepare a
-separate57345-input(56K)point with the same ordinary route and settings,
-then fit only the five distinct compatible lengths. Keep first-use and
-subsequent-request series separate. Do not pool the96Ksplit point or lower
-the model-comparison data requirement merely to obtain coefficients.
+The separately added `qsa16_stream_fast_fit_point_v1` closes all four57345-input
+requests with the same native binary,configuration,nine FAST values,boot and
+driver. All57344BF16 residual rows stay on GPU with384staged slots;quiet
+validation,normal0,closed owners,no fresh fault and15final full model hashes
+pass. Only controller source`6e51f04b114a9939bbfe632d8e3e937cb502a9e8`
+differs;the other688measurement input hashes match. Its committed evidence is
+`f48954c35eff79dff47a045a4bbd3dcdd98fbaf8`,with both scopes in the CSV.
+
+Five distinct ordinary-route lengths now support whole-length held-out
+comparison of the existing three hypotheses. Keep96Ksplit separate;it has
+one point and no fit. The retained result separates first/warmed prompt and
+client-TTFT series and all individual subsequent samples.
+
+| Prompt-time hypothesis | First mean / maximum held-out error | Warmed mean / maximum held-out error |
+| --- | --- | --- |
+|Affine |1.438% /3.165% |1.618% /3.908% |
+|Quadratic |0.972% /2.584% |0.956% /1.780% |
+|n-log-n |1.272% /3.754% |1.133% /3.013% |
+
+With`x=actual_read_tokens/65536`,the warmed quadratic description is
+`T_seconds=15.1106322+48.4445914*x+7.70819048*x*x`;
+the first-use description is`25.8472962+47.2465768*x+8.18681905*x*x`.
+Warmed client-TTFT quadratic held-out error is0.952%mean/1.766%maximum.
+Quadratic has the smallest observed prediction errors here,not a proved
+universal law. Its worst warmed prompt error still exceeds the within-process
+sample ranges;one process per length does not measure independent-process
+variance. The56Kpoint also reveals a local slope change,so this is only an
+interpolation aid within measured32..80Kand this route. Do not extrapolate or
+attribute any fitted intercept to physical fixed work. Keep all three models
+and their residuals/held-out errors;no hardware-bottleneck conclusion follows.
 Use the existing owned UnitTrace launcher with Sysman0 for later attribution;
 current collector V1 refused before native launch because its parent already
 carried the target preload. A fresh plan must also discriminate the declared

@@ -1695,9 +1695,15 @@ medians are794.9319/876.5926/916.5706/934.2008/946.8245PP at actual
 32769/49153/65537/81921/98305inputs;clientTTFT is41.357/56.218/71.662/
 87.866/104.007s. Each length uses one fresh process,with first-use samples
 separate. All residual rows stay on GPU. The96K128-slot split accumulator
-route stays separate from the ordinary384-slot32..80Kfit. Next add57345
-inputs under a new committed plan to compare affine,nlogn and quadratic
-models on five compatible lengths. This is characterization,not a repeated
+route stays separate from the ordinary384-slot32..80Kfit. The separately
+committed57345-input point also passes all four requests and15final hashes,
+with911.2347PP/63.084s clientTTFT subsequent median. Only the observer changed;
+688other source hashes,configuration and native binary remain exact. On five
+compatible lengths,quadratic has0.956%mean/1.780%maximum whole-length held-out
+prompt error versus affine1.618%/3.908%;first and warmed timing scopes stay
+separate. Treat this as bounded interpolation,not a physical cost law. Next
+qualify the current collector and profile the actual route. This is
+characterization,not a repeated
 paired gain,sustained decode,1000PPtarget qualification or adoption. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
 limits and pending profiler/full-context/task gates. This does not replace the
