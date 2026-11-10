@@ -276579,7 +276579,7 @@
     }
   },
   "expert_upload_chain_v1": {
-    "stage": "prepared",
+    "stage": "scanned",
     "source_commit": "6b7b5e70de016559033dd3d91a8b61a8d64ea018",
     "native_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
     "inputs": {
@@ -276772,8 +276772,49 @@
       "kernel": "7.0.0-38-generic",
       "devcoredump": false
     },
-    "outcomes": {},
-    "passed": false,
+    "outcomes": {
+      "scan": {
+        "passed": true,
+        "complete": true,
+        "ownership_closed": true,
+        "commands": [
+          {
+            "argv": [
+              "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+              "-DSTRATA_CPU_SERVICE_PROFILE=1",
+              "-DSTRATA_ENABLE_SYCL=1",
+              "-DSTRATA_SYCL_GGML_ORACLE=1",
+              "-DSTRATA_VERSION=\"0.1.38\"",
+              "-I/home/yayoi/orca/workspaces/Strata/sycl/include",
+              "-I/home/yayoi/orca/workspaces/Strata/sycl/include/strata/sycl/compat",
+              "-I/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011/ggml/src/../include",
+              "-fsycl-id-queries-range=size_t",
+              "-Wno-error=deprecated-declarations",
+              "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+              "-O3",
+              "-DNDEBUG",
+              "-std=c++20",
+              "-fno-fast-math",
+              "-ffp-contract=off",
+              "-fsycl",
+              "-fsycl-id-queries-range=size_t",
+              "-Wall",
+              "-Wextra",
+              "-Werror",
+              "/home/yayoi/orca/workspaces/Strata/sycl/tests/sycl/expert_upload_chain.cpp",
+              "-M",
+              "-MF",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-upload-chain-v1/planned.d",
+              "-MT",
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/expert-upload-chain-v1/expert-upload-chain.o"
+            ],
+            "exit_code": 0,
+            "closed": true
+          }
+        ]
+      }
+    },
+    "passed": true,
     "complete": false,
     "ownership_closed": true,
     "GPU_executed": false,
@@ -276810,6 +276851,10 @@
       ],
       "reason": "Earlier byte-consumer fixture did not qualify full dequant/GEMM or model advancement. This prospective current-SDK full-chain question does not rewrite that outcome."
     },
-    "retention": "One small fixture alongside the existing engine,not another engine generation. Keep individual timings and decisions in Git. At closure retire normal trace,depfiles,object,private receipts and unused fixture after exact-source recovery;never remove original native proof dependencies or physical component holds here."
+    "retention": "One small fixture alongside the existing engine,not another engine generation. Keep individual timings and decisions in Git. At closure retire normal trace,depfiles,object,private receipts and unused fixture after exact-source recovery;never remove original native proof dependencies or physical component holds here.",
+    "headers_summary": {
+      "files": 707,
+      "sha256": "65be9e623b50b5f5c91e7f187a89db9adb0f9ec1ef9a72939210fea28d28cbf4"
+    }
   }
 }
