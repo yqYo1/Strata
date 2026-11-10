@@ -274433,15 +274433,15 @@
       "next_action": "No further isolated-sum rediscovery. Keep the eligible choice for a combined long-prefill model candidate;prioritize upload preparation/submission or actual selector-locality evidence. Model speed,decode preservation,task/agent and physical262144/RESTORE remain open."
     }
   },
-  "qsa_cached_subgroup_model_native_v2": {
-    "stage": "failed",
+  "qsa_cached_subgroup_model_native_v3": {
+    "stage": "prepared",
     "recipe": {
       "configure": [
         "/usr/bin/cmake",
         "-S",
         "/home/yayoi/orca/workspaces/Strata/sycl",
         "-B",
-        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v2/build",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v3/build",
         "-G",
         "Ninja",
         "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
@@ -274492,8 +274492,8 @@
         "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
         "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
-        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v2/tmp",
-        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v2/cache",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v3/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa-cached-subgroup-model-native-v3/cache",
         "STRATA_IQ_SINGLE_EXACT": "0",
         "STRATA_IQ3_PAIR": "1",
         "STRATA_IQ3_PAIR_AUDIT": "1",
@@ -274543,7 +274543,7 @@
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
       "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
     },
-    "native_source_commit": "3fc7945dd23b47f47b14ef0f7d57c0a20c1bbc94",
+    "native_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
     "preserved_binaries": [
       {
         "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/qsa16-bulk-mirror-model-native-v1/build/strata",
@@ -274678,26 +274678,32 @@
         "original_source_recipe_recovered": true
       }
     },
-    "host_controls": {
-      "tests": 24,
-      "passed": true
+    "previous_configuration": {
+      "source_commit": "3fc7945dd23b47f47b14ef0f7d57c0a20c1bbc94",
+      "evidence_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
+      "key": "qsa_cached_subgroup_model_native_v2",
+      "stage": "failed",
+      "reason": "All3configure/host/planned commands closed0;generic parser refused the explicitly intended qsa_native16.cpp production/test target pair. No engine compilation or GPU/model execution. Original refusal stays failed.",
+      "retirement": {
+        "outcome": "deleted_verified",
+        "manifest": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/refused-cached-model-configure-retirement-20261111.json",
+        "manifest_sha256": "584b003b49407de2b453ea9090d6becd6c0192b9cc80dd25a4e32522c3791efd",
+        "files": 36,
+        "bytes": 1731577,
+        "original_source_recipe_recovered": true
+      }
     },
-    "error": "RuntimeError('duplicate selected source compilation requires explicit admission')",
-    "failure_mechanism": {
-      "source": "src/prefill/sycl/qsa_native16.cpp",
-      "targets": [
+    "duplicate_source_admission": {
+      "/home/yayoi/orca/workspaces/Strata/sycl/src/prefill/sycl/qsa_native16.cpp": [
         "strata_prefill",
         "sycl_native16_qsa_test"
-      ],
-      "unexpected_compiler_failure": false,
-      "engine_compilation_started": false,
-      "GPU_executed": false
+      ]
     },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "revision": "3fc7945dd23b47f47b14ef0f7d57c0a20c1bbc94",
+      "revision": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
       "count": 1145,
-      "aggregate_sha256": "cea0a02b0f84795f46149d562685d6b1ca386f647232a8410fe3bd85d16be375"
+      "aggregate_sha256": "b4b5aa6b9c4abcfbc45f94213c9acda8524e23c459266f528cc06515585af896"
     },
     "dependencies": [
       {
@@ -274713,28 +274719,6 @@
         "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
       }
     ],
-    "commands": [
-      {
-        "label": "host-controls",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "errors": [],
-        "error": null
-      },
-      {
-        "label": "configure",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "errors": [],
-        "error": null
-      },
-      {
-        "label": "planned",
-        "exit_code": 0,
-        "ownership_closed": true,
-        "errors": [],
-        "error": null
-      }
-    ]
+    "commands": []
   }
 }
