@@ -555,8 +555,14 @@ The full candidate is compiled from`611a0fd6fecc4593e17160c294103cd4464a292b`
 (engine`56cad9eb45f8f5fc…`):128TUs,1462compiler inputs,one generated file,
 29external links and zero uncovered inputs. Its five native host/submission/
 phase/head checks close at`65cff97e1`,with original decode-head IR preserved.
-Model-route/handoff diagnostics and clean repeated32K/64Koff/on`bench.sh`
-comparisons are next;no speedup or adoption is established. The declared
+Its fresh thinking-enabled32769/82/32769input model handoff closes at
+`f79a5cd2145efb91ff85445710bbb31f62f00e61`:32outputs each,normal0,closed
+owners,quiet validation,no fresh fault and15final model hashes. Actual long
+prefills publish96bulk calls,384copy commands and830472192requested bytes;
+packed-bank/cache binding,MTP expert restoration and independent decode
+recapture pass. This diagnostic charges validation/logging. Clean repeated
+same-binary32K/64Koff/on`bench.sh` comparisons are next;no speedup,sustained
+decode,full-context model qualification or adoption is established. The declared
 temporary fourth engine preserves b9aa as clean-reference,552b as fast-prefill
 fallback and a347 as sustained-decode guard. At matched phase closure,select
 candidate or b9aa and retire the superseded generation after exact input

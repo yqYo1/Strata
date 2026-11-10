@@ -1716,9 +1716,15 @@ small/full off/on producer oracles,including physical262144fill and last-cell
 overwrite,at component source`a4162bf1a396c8633bcc0f34f743b1c772b2fdb5`.
 Its full engine is built from`611a0fd6fecc4593e17160c294103cd4464a292b`
 (SHA`56cad9eb45f8f5fc…`);all five fresh native checks close at`65cff97e1`.
-This is producer/native evidence only. Actual long/short/long handoff and
-repeated same-binary32K/64Koff/on measurements are pending;the flag remains
-default off. Expert-copy preparation/submission remains a separate candidate.
+The fresh actual thinking-enabled32769/82/32769input handoff also closes at
+`f79a5cd2145efb91ff85445710bbb31f62f00e61`,with32outputs per request,
+normal0,closed owners,quiet validation,no fresh fault and15final model hashes.
+The two long-prefills publish96bulk calls,384copy commands and830472192
+requested bytes,with packed-bank/cache-lease binding,MTP expert restoration
+and independent decode recapture checked. This diagnostic charges validation
+and logging;repeated clean same-binary32K/64Koff/on measurements remain
+pending. The flag stays default off;no speedup,full-context model qualification
+or adoption follows. Expert-copy preparation/submission is a separate candidate.
 The existing curve/profile is characterization,not a repeated
 paired gain,sustained decode,1000PPtarget qualification or adoption. See
 [the resource decision](RESOURCE_PROFILING.md) for exact identities,samples,
