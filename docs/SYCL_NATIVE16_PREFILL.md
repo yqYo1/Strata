@@ -1678,13 +1678,14 @@ The read-only capacity audit uses the same recorded native inputs.
 optional layer-bank snapshots in owned RAM;that owner is not a second full
 FP16 expansion in VRAM. This finding covers NativeDense,not the whole process.
 `layer.cpp::kv_plan`selects streamed mode1when`--kv-resident`is below the
-configured context. Although the general layer-major path accepts mode1,
-the selected QSA16 branch in`layer_major.inc`requires mode0,INT8,all pages
-resident and no host backing. Therefore lowering only resident cells is not
-a configuration-only capacity optimization for this route. A smaller-context
-screen would be a separate workload/capacity comparison;extending QSA16 to
-streamed storage needs its own implementation and validation. Neither has
-been executed,and the current8/32cohort's context/residency remains131072.
+configured context. The original8/32cohort's QSA16 branch requires mode0,
+INT8,all pages resident and no host backing;its context/residency remains131072.
+The independently authored streamed-QSA16 extension now passes its small and
+physical262144producer components,and the full candidate's same-build native
+prerequisites close under`qsa16_stream_model_device_v1`. See
+[the resource decision](RESOURCE_PROFILING.md) for source/recipe identities and
+remaining actual typed-attention/model gates. These components do not select
+a production resident/cache size or qualify a smaller-context workload.
 For a future capacity screen,the pinned main-QSA state-arena formula gives
 an exact948699136-byte(904.75MiB)reduction from131072to65536configured cells
 under resident Mode0/K8V8. The12QSA layers have2KV heads of256elements,

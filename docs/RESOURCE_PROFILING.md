@@ -319,9 +319,20 @@ Its closed `qsa16_stream_model_native_v2` build records128TUs,
 inputs,plus four same-build ownership/submission/retirement/policy fixtures.
 V1 closed after successful configuration,before native compilation,to replace
 full public parser arrays with a count/hash summary;its temporary configuration
-is retired. V2 retains the exact original producer/Runtime/test bytes. Fresh
-native fixture checks and an actual streamed model session remain pending;
-compilation does not establish numerical,model,physical-context or speed gates.
+is retired. V2 retains the exact original producer/Runtime/test bytes.
+`qsa16_stream_model_device_v1` now closes all five prerequisite stages:
+50CPU controls,11native refusals,the phase/shape policy,unchanged selected
+head-module structure,10submission cases,16phase-cache windows,and fresh real
+head0/head2 processes with backing0. Both head modes pass four numerical cases,
+two retire/overwrite/restore cycles and12graph replays;head2 also passes eight
+partial-column cases. All native processes exit0with closed owners,quiet
+validation,unchanged boot and no fresh fault. At the closed four-stage boundary,
+controller source`54e1f9ffaff3fbf54d1fa240db3e00aae5381981`adds exact seed-recipe
+equality and12CPU controls before head2. The actual recipe matches;the original
+observer's missing equality predicate and original results remain recorded.
+No engine/fixture is rebuilt or relabelled. Typed attention in an actual
+streamed model session,whole-model physical262144/RESTORE,task behavior and
+matched PP/TG/TTFT remain unqualified.
 
 ## Numerical reference for replacement kernels
 
