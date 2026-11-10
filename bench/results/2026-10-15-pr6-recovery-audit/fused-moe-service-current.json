@@ -276579,7 +276579,7 @@
     }
   },
   "expert_upload_chain_v1": {
-    "stage": "checked",
+    "stage": "failed",
     "source_commit": "6b7b5e70de016559033dd3d91a8b61a8d64ea018",
     "native_source_commit": "cf7ad7bc4a30ea252b8e7447941cfc85fe2b2d35",
     "inputs": {
@@ -276927,9 +276927,38 @@
           "kernel": "7.0.0-38-generic",
           "devcoredump": false
         }
+      },
+      "check": {
+        "passed": false,
+        "complete": false,
+        "native_exit_code": 1,
+        "validation": {
+          "pid": 2533280,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "error": "RuntimeError('chain failed: strata UR validation: pid=2533280 phase=begin loader=/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0\\nstrata UR validation API: pid=2533280 operation=preinit result=37\\nstrata UR validation API: pid=2533280 operation=config-create result=0\\nstrata UR validation API: pid=2533280 operation=layers-size result=0\\nstrata UR validation API: pid=2533280 operation=layers-query result=0\\nstrata UR validation API: pid=2533280 operation=enable result=0\\nstrata UR validation API: pid=2533280 operation=first-init result=0\\nstrata UR validation API: pid=2533280 operation=config-release result=0\\nstrata UR validation API: pid=2533280 operation=postinit result=46\\nstrata UR validation: pid=2533280 phase=before-main threads_before=1 preinit=37 config_create=0 layers_query=0 enable=0 init=0 config_release=0 checked=46 untouched=1 retained_ref=1\\n[native16-route] engine=bf16 backend=vllm tile=auto(T<128:compact;else:wide) aot=bmg-g21-a0 isolated=1 experimental\\n[native16-gu] fusion=large min_rows=2334\\n[native16-down] fusion=0 min_rows=2334 split_kernel=original\\nfixture_status=FAIL reason=BF16 operands/FP32 accumulator GEMM oracle\\n')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        }
       }
     },
-    "passed": true,
+    "passed": false,
     "complete": false,
     "ownership_closed": true,
     "GPU_executed": true,
