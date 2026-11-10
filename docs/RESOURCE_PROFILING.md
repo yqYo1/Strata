@@ -257,7 +257,7 @@ completion. Production mode1 backing in `layer.cpp` comes from the registered
 Host allocator through `cudaHostAlloc`/`cudaHostGetDevicePointer`, rather than
 ordinary pageable memory. No foreign pointer is admitted merely by its USM kind.
 
-Source-only tests in `tests/sycl/qsa_native16.cpp` add Host-domain/move/retirement
+The tests in `tests/sycl/qsa_native16.cpp` add Host-domain/move/retirement
 refusals, three-store dyadic numerical and nonfinite/underflow/overflow checks,
 missing/invalid resident maps, page tails, padding, aliases and short owners.
 The default small screen preserves the resident tests. Separate
@@ -269,20 +269,26 @@ the actual producer TU and Runtime with the production strict arithmetic flags,
 without building the entire engine. This is not an attention/model/RESTORE or
 performance qualification, nor an identical-generated-text requirement.
 
-Compilation and GPU execution of this prototype are still unrun. Main must
-commit the exact supervised build/measurement recipe and its inputs before
-building, then run the small traced/validated screen before the full producer
-extent screen. Use the qualified runtime safety environment, finite deadlines
-and output/RSS budgets. Preserve the552b prefill fallback and a347 current
-decode reference; the component output is a named temporary qualification
-consumer, not another retained engine. Typed staged attention, whole-model
-physical262144/RESTORE/handoff and matched PP/TG/TTFT are separate remaining
-gates before a cache-residency choice. No resident size/cache count is selected
-from payload arithmetic alone. The compiled source basis remains
-native221e95e9ad890383deb418d0a865ee32c99168b6;
+At native source `7067084897574ad727bae6d93ca3a4726ea6e00c`,the supervised
+five-TU component build passes24host compiler-census controls and records
+724compiler inputs/24external links/zero uncovered inputs. Its executable
+SHA256 is `dcc3097facc58b9603f5662709e97176746a13ac0e0a8ab0f1378a257f974cf2`.
+The small traced/parameter-validated fixture and the separate262144-cell
+producer fixture both pass on this Arc B570:normal0,closed owners,quiet
+parameter warnings,unchanged boot and no fresh driver faults. Both use the
+qualified runtime safety environment and pre-main loader probe;ordinary
+provider teardown remains unqualified. Follow `qsa16_stream_components_v1`
+in the compact committed results. No model or speed is measured by these tests.
+Preserve the552b prefill fallback and a347 current decode reference. Retire
+the temporary component build before a fresh engine generation after exact
+source/recipe recovery;keep only the compact evidence required by that build.
+Typed staged attention,whole-model physical262144/RESTORE/handoff and matched
+PP/TG/TTFT are separate remaining gates before a cache-residency choice. No
+resident size/cache count is selected from payload arithmetic alone. The
+current full-engine source basis remains native221e95e9ad890383deb418d0a865ee32c99168b6;
 The unchanged `expert_slot_sizes.hpp`, `expert_cache.cpp`, `layer.cpp` and
-`session.cpp` supply the capacity arithmetic above. The new QSA16 producer and
-preflight remain unqualified until the separate gates close.
+`session.cpp` supply the capacity arithmetic above. The new QSA16 prefill route
+remains unqualified until the separate attention/model gates close.
 
 ## Numerical reference for replacement kernels
 
