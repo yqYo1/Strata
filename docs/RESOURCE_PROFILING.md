@@ -540,18 +540,27 @@ expert staging and GPU-local quantization followed by bounded bulk mirror
 copies are candidates,not adopted improvements. Preserve exact KV codes/scales,
 partial-page/tail writes,authoritative host state,checked lifetime and decode
 handoff. Each candidate needs its own committed plan and clean phase comparison.
-The bulk-mirror candidate is now prepared in`src/prefill/sycl/qsa_native16.cpp`,
+The bulk-mirror candidate is implemented in`src/prefill/sycl/qsa_native16.cpp`,
 default off under`STRATA_SYCL_PREFILL_QSA_BULK_HOST_MIRROR=1`. The quantizer
 keeps resident/Device-stage writes and publishes the Host mirror through
 same-queue copies. Whole pages use one contiguous span;each partial page uses
 an exact per-head span. Existing owner/domain/alias checks precede every
-submission,and completion observation includes the copies. This source has
-not been compiled or executed. Next commit its original-input/build/fixture
-plan,then run the existing independent streamed-code/scale/guard oracles in
-separate immutable off/on processes,including physical262144full fill and
-last-cell overwrite,before any32K/64Kmodel or clean-speed comparison. Keep the
-three existing named native generations until that plan selects a replacement;
-no fourth engine generation has been built.
+submission,and completion observation includes the copies. The five-TU
+component at`a4162bf1a396c8633bcc0f34f743b1c772b2fdb5`passes all four fresh
+small/full off/on processes,including all page-offset cases,physical262144
+producer fill and final-cell overwrite. Full-on observes33calls,136copies and
+276825120requested bytes;normal0,closed owners,quiet validation and no fresh
+fault pass. This qualifies the producer,not full-model context or RESTORE.
+The full candidate is compiled from`611a0fd6fecc4593e17160c294103cd4464a292b`
+(engine`56cad9eb45f8f5fc…`):128TUs,1462compiler inputs,one generated file,
+29external links and zero uncovered inputs. Its five native host/submission/
+phase/head checks close at`65cff97e1`,with original decode-head IR preserved.
+Model-route/handoff diagnostics and clean repeated32K/64Koff/on`bench.sh`
+comparisons are next;no speedup or adoption is established. The declared
+temporary fourth engine preserves b9aa as clean-reference,552b as fast-prefill
+fallback and a347 as sustained-decode guard. At matched phase closure,select
+candidate or b9aa and retire the superseded generation after exact input
+recovery;this does not expand the normal retention quota.
 The original model profile V1 remains failed:SIGXFSZ at its exact256MiB file
 limit. Its original ownership result stays false;the four captured executors
 are gone and its exact named collector session is separately removed. V2 used
